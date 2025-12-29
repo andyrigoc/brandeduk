@@ -1,0 +1,151 @@
+/* Footer Styles - BrandedUK Mobile */
+
+.mobile-footer {
+    background: #f9fafb;
+    padding: 40px 16px 120px;
+    margin-top: 32px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 16px;
+}
+
+/* Brand Column */
+.footer-brand {
+    grid-column: 1 / -1;
+}
+
+.footer-logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: -0.5px;
+    font-family: 'Inter', sans-serif;
+}
+
+.footer-copyright,
+.footer-rights {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.footer-social-btn {
+    width: 36px;
+    height: 36px;
+    background: #1f2937;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.footer-social-btn:hover,
+.footer-social-btn:active {
+    opacity: 1;
+    background: #6b21a8;
+}
+
+/* Footer Columns */
+.footer-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-heading {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.footer-link {
+    font-size: 14px;
+    color: #4b5563;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover,
+.footer-link:active {
+    color: #6b21a8;
+}
+
+/* Newsletter */
+.footer-newsletter {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.newsletter-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.newsletter-form {
+    display: flex;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    background: #fff;
+    color: #1f2937;
+}
+
+.newsletter-input::placeholder {
+    color: #9ca3af;
+}
+
+.newsletter-btn {
+    padding: 14px 16px;
+    background: #6b21a8;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.newsletter-btn:hover,
+.newsletter-btn:active {
+    background: #7c3aed;
+}
+
+/* Responsive - larger screens */
+@media (min-width: 640px) {
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+    
+    .footer-brand {
+        grid-column: 1;
+    }
+}

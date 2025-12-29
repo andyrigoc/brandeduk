@@ -1,0 +1,17 @@
+{
+    "liveServer.settings.port": 5502,
+
+    "files.watcherExclude": {
+        "**/_prototype-original/**": true,
+        "**/Assets Customization/**": true,
+        "**/barra prodotti/**": true,
+        "**/dist/**": true
+    },
+    "search.exclude": {
+        "**/_prototype-original/**": true,
+        "**/Assets Customization/**": true,
+        "**/barra prodotti/**": true,
+        "**/dist/**": true
+    },
+    "chat.agent.maxRequests": 100
+}

@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6B21A8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Customize Product - BrandedUK</title>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/social-buttons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="customize-page">
+    
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <ul class="social-buttons-header">
+                <li><a href="https://www.facebook.com/brandeduk" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.linkedin.com/company/brandeduk" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.youtube.com/@brandeduk" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.pinterest.com/brandeduk" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                    </span>
+                </a></li>
+            </ul>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-status" id="vatStatus">ex VAT</span>
+                <button class="vat-toggle-btn" id="vatToggleBtn" type="button" aria-pressed="false" aria-label="Toggle VAT">
+                    <span class="vat-toggle-thumb"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Back + Logo + Search -->
+        <div class="header-logo-row">
+            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <a href="home-mobile.html" class="mobile-logo-center">
+                <img src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="customize-main">
+        
+        <!-- Product Gallery -->
+        <section class="product-gallery">
+            <div class="gallery-main">
+                <div class="gallery-badge bestseller">BESTSELLER</div>
+                <div class="product-img-placeholder large" id="productPreviewContainer">
+                    <img src="https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" alt="Gildan Softstyle Hoodie" id="mainImage" style="width: 100%; height: 100%; object-fit: contain;">
+                    <!-- Logo Overlay Box - posizioni predefinite -->
+                    <div class="logo-overlay-box" id="logoOverlayBox" hidden>
+                        <img src="" alt="Your Logo" id="logoOverlayImg" class="logo-overlay-img">
+                    </div>
+                </div>
+                <div class="gallery-zoom">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                        <path d="M11 8v6M8 11h6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="gallery-thumbs">
+                <button class="thumb active" data-view="front">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Front">
+                    </div>
+                </button>
+                <button class="thumb" data-view="back">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Back">
+                    </div>
+                </button>
+                <button class="thumb" data-view="side">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Side">
+                    </div>
+                </button>
+                <button class="thumb" data-view="detail">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Detail">
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Product Info -->
+        <section class="product-info">
+            <div class="product-sku">#GD067 • Gildan Softstyle</div>
+            <h1 class="product-title">Gildan Softstyle Hoodie</h1>
+            <div class="product-specs">
+                <span class="spec">S-5XL</span>
+                <span class="spec-divider">|</span>
+                <span class="spec">37 Colors</span>
+                <span class="spec-divider">|</span>
+                <span class="spec">276 gsm</span>
+                <span class="spec-divider">|</span>
+                <span class="spec">8.0 oz</span>
+            </div>
+        </section>
+
+        <!-- Color Selection -->
+        <section class="customize-section">
+            <h2 class="section-title">
+                <span>Color</span>
+                <span class="color-count">37 colors</span>
+            </h2>
+            <div class="selected-color-name">Selected: <span id="selectedColor">Aquatic</span></div>
+            <div class="color-options" id="colorOptions">
+                <!-- Colors rendered dynamically by JS -->
+            </div>
+        </section>
+
+        <!-- Unit Pricing with Discounts -->
+        <section class="customize-section pricing-section">
+            <h2 class="section-title">Unit Price <span class="vat-suffix">ex VAT</span></h2>
+            <div class="basket-qty-notice" id="basketQtyNotice" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                <span>You have <strong id="basketQtyCount">0</strong> of this product in your basket - discount applies to total!</span>
+            </div>
+            <div class="pricing-tiers-grid" id="pricingTiers">
+                <div class="tier-card" data-min="1">
+                    <div class="tier-qty">1-9</div>
+                    <div class="tier-price">£17.58</div>
+                    <div class="tier-suffix">ex VAT</div>
+                </div>
+                <div class="tier-card" data-min="10">
+                    <div class="tier-qty">10-24</div>
+                    <div class="tier-price">£16.54</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 6%</div>
+                </div>
+                <div class="tier-card" data-min="25">
+                    <div class="tier-qty">25-49</div>
+                    <div class="tier-price">£16.18</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 8%</div>
+                </div>
+                <div class="tier-card" data-min="50">
+                    <div class="tier-qty">50-99</div>
+                    <div class="tier-price">£14.94</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 15%</div>
+                </div>
+                <div class="tier-card" data-min="100">
+                    <div class="tier-qty">100-249</div>
+                    <div class="tier-price">£13.49</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 23%</div>
+                </div>
+                <div class="tier-card" data-min="250">
+                    <div class="tier-qty">250+</div>
+                    <div class="tier-price">£12.59</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 28%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Size & Quantity Selection -->
+        <section class="customize-section" id="sizeQtySection">
+            <h2 class="section-title">
+                <span>Size & Quantity</span>
+                <a href="#" class="size-guide-link" id="sizeGuideBtn">Size Guide</a>
+            </h2>
+            
+            <!-- Compact Size+Qty Selector -->
+            <div class="size-qty-compact" id="sizeQtyCompact" autocomplete="off">
+                <!-- Selected Sizes List -->
+                <div class="selected-sizes" id="selectedSizes">
+                    <!-- Size rows will be added dynamically -->
+                </div>
+                
+                <!-- Add Size Button -->
+                <button class="add-size-btn" id="addSizeBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Size
+                </button>
+                
+                <!-- Save Selection Button -->
+                <button class="save-selection-btn" id="saveSelectionBtn" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save & Continue
+                </button>
+                
+                <!-- Total Summary -->
+                <div class="qty-total-bar">
+                    <span class="total-label">Total Pieces:</span>
+                    <span class="total-value"><span id="totalQty">0</span> pcs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Customization Options - Simplified -->
+        <section class="customize-section customization-options">
+            <!-- Technique Selection - Compact -->
+            <div class="technique-group compact">
+                <h3 class="subsection-title">Technique</h3>
+                <div class="technique-pills" id="techniqueOptions">
+                    <button class="technique-pill active" data-technique="embroidery">
+                        <span class="pill-icon">🧵</span>
+                        <span class="pill-name">Embroidery</span>
+                    </button>
+                    <button class="technique-pill" data-technique="dtg">
+                        <span class="pill-icon">🖨️</span>
+                        <span class="pill-name">DTG Print</span>
+                    </button>
+                    <button class="technique-pill" data-technique="screen">
+                        <span class="pill-icon">📋</span>
+                        <span class="pill-name">Screen Printing</span>
+                    </button>
+                    <button class="technique-pill" data-technique="dtf">
+                        <span class="pill-icon">🎨</span>
+                        <span class="pill-name">DTF</span>
+                    </button>
+                    <button class="technique-pill" data-technique="vinyl">
+                        <span class="pill-icon">✂️</span>
+                        <span class="pill-name">Vinyl Print</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Position Selection - Full Cards -->
+            <div class="position-group">
+                <h3 class="subsection-title">Position(s)</h3>
+                <div class="key">
+                    <span class="key-label">Key:</span>
+                    <span class="key-badge embroidery">🧵 Embroidery</span>
+                    <span class="key-badge print">🖨️ Print</span>
+                </div>
+                <div class="positions-grid" id="positionOptions">
+                    <!-- Left Chest -->
+                    <div class="position-card" data-position="left-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-breast">
+                                <span>Left Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png" alt="Left Chest">
+                            <div class="logo-overlay-box left-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Right Chest -->
+                    <div class="position-card" data-position="right-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-breast">
+                                <span>Right Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg" alt="Right Chest">
+                            <div class="logo-overlay-box right-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Front Center -->
+                    <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="small-centre-front">
+                                <span>Front Center</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Front Center">
+                            <div class="logo-overlay-box front-center" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Large Front -->
+                    <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="6.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-front-center">
+                                <span>Large Front</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £6.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £6.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Large Front">
+                            <div class="logo-overlay-box large-front" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Back Large -->
+                    <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="5.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-back">
+                                <span>Back Large</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £5.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png" alt="Large Back">
+                            <div class="logo-overlay-box large-back" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Left Sleeve -->
+                    <div class="position-card" data-position="left-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-arm">
+                                <span>Left Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Left Arm">
+                            <div class="logo-overlay-box left-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+
+                    <!-- Right Sleeve -->
+                    <div class="position-card" data-position="right-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-arm">
+                                <span>Right Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">+ £5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">+ £3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Right Arm" style="transform: scaleX(-1);">
+                            <div class="logo-overlay-box right-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Delivery Estimate -->
+        <section class="customize-section delivery-section">
+            <h2 class="section-title">Estimated Delivery</h2>
+            <div class="delivery-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Production</span>
+                        <span class="timeline-value">3-5 days</span>
+                    </div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Shipping</span>
+                        <span class="timeline-value">2-3 days</span>
+                    </div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-item highlight">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Delivered by</span>
+                        <span class="timeline-value" id="deliveryDate">Jan 2 - Jan 5</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Summary Section (Like PC Version) -->
+        <section class="order-summary-section" id="orderSummary">
+            <h2 class="section-title">Your Order Summary:</h2>
+            
+            <div class="sidebar-costs">
+                <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+                
+                <!-- Garment Cost Section -->
+                <div class="section garment-section">
+                    <div class="row">
+                        <span class="label">Garment Cost <span class="vat-suffix">ex VAT</span></span>
+                        <span class="value" id="sidebarGarmentCost">£0.00</span>
+                    </div>
+                    <div class="row detail">
+                        <span>Unit Price:</span>
+                        <span class="detail-values">
+                            <span id="garmentUnitPrice">£0.00</span>
+                            <span id="garmentQty">Qty: 0</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Customization Costs (populated by JS) -->
+                <div id="customizationCostsList">
+                    <!-- Populated dynamically with embroidery/print cards -->
+                </div>
+                
+                <!-- Total Cost Row -->
+                <div class="cost-row total-row">
+                    <strong>Total Cost</strong>
+                    <strong id="sidebarTotalCost" class="total-amount">£0.00 <span class="vat-suffix">ex VAT</span></strong>
+                </div>
+            </div>
+            
+            <!-- Basket Items List with +/- controls -->
+            <div id="basketItemsList" class="basket-items-scroll">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <p class="summary-note">Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.</p>
+            
+            <!-- Submit Quote Button -->
+            <button class="submit-quote-btn" id="submitQuoteBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                </svg>
+                Submit your QUOTE
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Fixed Action Bar -->
+    <div class="action-bar">
+        <div class="action-price">
+            <span class="price-label">Total</span>
+            <span class="price-value total-green" id="actionBarTotal">£0.00</span>
+            <span class="price-suffix vat-suffix">ex VAT</span>
+        </div>
+        <button class="design-btn" id="designNowBtn">
+            <span>Add to Quote</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Design Customization Modal -->
+    <div class="design-modal-overlay" id="designModal">
+        <div class="design-modal">
+            <div class="design-modal-header">
+                <h3 id="designModalTitle">Customise Left Chest</h3>
+                <button class="design-modal-close" id="closeDesignModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="design-modal-body">
+                <!-- Upload Logo Section -->
+                <div class="design-section" id="uploadLogoSection">
+                    <h4 class="design-section-title" id="uploadLogoTitle">Upload Logo</h4>
+                    <div class="upload-dropzone" id="designUploadZone">
+                        <input type="file" id="designLogoUpload" accept="image/*,.pdf,.ai,.svg,.eps" hidden>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        <p class="dropzone-text">Drag & drop or <span class="browse-link">Browse image</span></p>
+                    </div>
+                    <div class="upload-preview-container" id="designUploadPreview" hidden>
+                        <img src="" alt="" class="upload-preview-img" id="designPreviewImg">
+                        <button class="upload-remove-btn" id="removeUploadedLogo" title="Remove logo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                        <!-- Keep/Remove BG button - top left square -->
+                        <button class="toggle-bg-btn" id="removeBgBtn" title="Toggle background">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M9 3v18"/>
+                                <path d="M15 3v18"/>
+                                <path d="M3 9h18"/>
+                                <path d="M3 15h18"/>
+                            </svg>
+                            <span>Remove BG</span>
+                        </button>
+                        <!-- Add to Product button - bottom center -->
+                        <button class="add-to-product-btn" id="quickApplyLogo">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14"/>
+                                <path d="M5 12h14"/>
+                            </svg>
+                            <span>Add to Product</span>
+                        </button>
+                        <!-- Pulsante Undo nascosto, funzionalità integrata nel pulsante principale -->
+                        <button class="undo-bg-btn" id="undoBgBtn" title="Restore background" hidden style="display:none;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 7v6h6"/>
+                                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                            </svg>
+                            <span>Undo</span>
+                        </button>
+                    </div>
+                    <canvas id="bgRemovalCanvas" style="display: none;"></canvas>
+                </div>
+
+                <!-- Add Text Section -->
+                <div class="design-section">
+                    <h4 class="design-section-title">Add Text</h4>
+                    <input type="text" class="design-text-input" id="designTextInput" placeholder="Enter your custom text...">
+                </div>
+
+                <!-- Text Color Section -->
+                <div class="design-section">
+                    <h4 class="design-section-title">Your Text</h4>
+                    <div class="color-picker-row">
+                        <button class="color-circle active" data-color="#1f2937" style="background: #1f2937;"></button>
+                        <button class="color-circle" data-color="#6b7280" style="background: #6b7280;"></button>
+                        <button class="color-circle" data-color="#dc2626" style="background: #dc2626;"></button>
+                        <button class="color-circle" data-color="#2563eb" style="background: #2563eb;"></button>
+                        <button class="color-circle" data-color="#16a34a" style="background: #16a34a;"></button>
+                        <button class="color-circle" data-color="#fbbf24" style="background: #fbbf24;"></button>
+                        <label class="color-none-option">
+                            <input type="checkbox" id="textColorNone">
+                            <span>None</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Stroke Color Section -->
+                <div class="design-section">
+                    <h4 class="design-section-title">Stroke Color</h4>
+                    <div class="color-picker-row">
+                        <button class="stroke-circle active" data-color="#1f2937" style="background: #1f2937;"></button>
+                        <button class="stroke-circle" data-color="#6b7280" style="background: #6b7280;"></button>
+                        <button class="stroke-circle" data-color="#dc2626" style="background: #dc2626;"></button>
+                        <button class="stroke-circle" data-color="#2563eb" style="background: #2563eb;"></button>
+                        <button class="stroke-circle" data-color="#16a34a" style="background: #16a34a;"></button>
+                        <button class="stroke-circle" data-color="#fbbf24" style="background: #fbbf24;"></button>
+                        <button class="stroke-circle" data-color="#7c3aed" style="background: #7c3aed;"></button>
+                    </div>
+                </div>
+
+                <!-- Stroke Color Dropdown (optional advanced) -->
+                <div class="design-section">
+                    <div class="stroke-dropdown">
+                        <button class="stroke-dropdown-btn" id="strokeDropdownBtn">
+                            <span>Stroke Color</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clipart Section -->
+                <div class="design-section">
+                    <h4 class="design-section-title">Clipart</h4>
+                    <div class="clipart-tabs">
+                        <button class="clipart-tab active" data-category="trending">Trending</button>
+                        <button class="clipart-tab" data-category="sports">Sports</button>
+                        <button class="clipart-tab" data-category="shapes">Shapes</button>
+                        <button class="clipart-tab" data-category="icons">Icons</button>
+                    </div>
+                    <div class="clipart-grid" id="clipartGrid">
+                        <button class="clipart-item" data-clipart="soccer">⚽</button>
+                        <button class="clipart-item" data-clipart="basketball">🏀</button>
+                        <button class="clipart-item" data-clipart="trophy">🏆</button>
+                        <button class="clipart-item" data-clipart="bull">🐂</button>
+                        <button class="clipart-item" data-clipart="diamond">💎</button>
+                        <button class="clipart-item" data-clipart="star">⭐</button>
+                        <button class="clipart-item" data-clipart="heart">❤️</button>
+                        <button class="clipart-item" data-clipart="sparkles">✨</button>
+                        <button class="clipart-item" data-clipart="gem">💠</button>
+                        <button class="clipart-item" data-clipart="gamepad">🎮</button>
+                        <button class="clipart-item" data-clipart="coffee">☕</button>
+                        <button class="clipart-item" data-clipart="shirt">👕</button>
+                        <button class="clipart-item" data-clipart="bag">🛍️</button>
+                        <button class="clipart-item" data-clipart="camera">📷</button>
+                        <button class="clipart-item" data-clipart="music">🎵</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apply Button -->
+            <div class="design-modal-footer">
+                <button class="apply-design-btn" id="applyDesignBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Apply Design To Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Size Guide Modal -->
+    <div class="modal-overlay" id="sizeGuideModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Size Guide</h3>
+                <button class="modal-close" id="closeSizeGuide">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="size-chart">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                <th>Chest (cm)</th>
+                                <th>Length (cm)</th>
+                                <th>Sleeve (cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>S</td><td>96-101</td><td>68</td><td>62</td></tr>
+                            <tr><td>M</td><td>101-106</td><td>71</td><td>64</td></tr>
+                            <tr><td>L</td><td>106-111</td><td>74</td><td>66</td></tr>
+                            <tr><td>XL</td><td>111-116</td><td>76</td><td>68</td></tr>
+                            <tr><td>2XL</td><td>116-122</td><td>78</td><td>70</td></tr>
+                            <tr><td>3XL</td><td>122-127</td><td>80</td><td>72</td></tr>
+                            <tr><td>4XL</td><td>127-132</td><td>82</td><td>74</td></tr>
+                            <tr><td>5XL</td><td>132-137</td><td>84</td><td>76</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="home-mobile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="shop-mobile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <a href="customize-mobile.html" class="nav-item-center active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </a>
+        <a href="#orderSummary" class="nav-item" id="basketNavLink">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-badge" id="navCartBadge">0</span>
+            <span class="nav-item-label">Basket</span>
+        </a>
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+    </nav>
+
+    <!-- Quote Request Popup -->
+    <div class="quote-popup-overlay" id="quotePopupOverlay">
+        <div class="quote-popup">
+            <button class="quote-popup-close" id="closeQuotePopup">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <h2 class="quote-popup-title">Request Your Quote</h2>
+            <p class="quote-popup-subtitle">Enter your details and we'll send you a personalised quote</p>
+            
+            <form id="quoteRequestForm" class="quote-popup-form">
+                <div class="form-group">
+                    <label for="quoteName">Full Name</label>
+                    <input type="text" id="quoteName" name="name" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="quotePhone">Phone Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+44</span>
+                        <input type="tel" id="quotePhone" name="phone" placeholder="7700 900000" pattern="[0-9\s]{10,11}" inputmode="numeric" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="quoteEmail">E-mail</label>
+                    <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
+                </div>
+                <button type="submit" class="quote-popup-submit" id="quotePopupSubmitBtn">
+                    Submit Quote Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/mobile.js"></script>
+    <script src="js/customize.js"></script>
+    <script>
+        // Smooth scroll to order summary when clicking basket link
+        document.getElementById('basketNavLink')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.getElementById('orderSummary');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    </script>
+</body>
+</html>

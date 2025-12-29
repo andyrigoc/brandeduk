@@ -1,0 +1,131 @@
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f4f6;
+}
+
+/* HEADER */
+.faq-header {
+  background: #f4a340;
+  padding: 40px 20px 90px;
+  text-align: center;
+  color: #fff;
+}
+
+.faq-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.faq-header p {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+/* CATEGORY BAR */
+.faq-categories {
+  display: flex;
+  gap: 14px;
+  padding: 0 16px;
+  margin-top: -48px;
+  overflow-x: auto;
+}
+
+.faq-categories::-webkit-scrollbar {
+  display: none;
+}
+
+/* SQUARES */
+.faq-square {
+  width: 82px;
+  height: 104px;
+  background: #ededf0;
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+}
+
+.faq-square.active {
+  background: #ffffff;
+}
+
+/* ICON */
+.faq-square img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+/* LABEL */
+.faq-square span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* CONTENT */
+.faq-content {
+  padding: 20px 16px;
+}
+
+/* DROPDOWN PANELS */
+.faq-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.faq-panel.open {
+  max-height: 900px;
+}
+
+/* FAQ ROW */
+.faq-row {
+  background: #ffffff;
+  padding: 16px 54px 16px 16px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* ARROW */
+.faq-row::after {
+  content: "";
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid #f4a340;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f4a340' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
+    no-repeat center;
+}
+
+/* ARROW OPEN */
+.faq-panel.open .faq-row::after {
+  border-color: #bdbdbd;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23bdbdbd' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
+    no-repeat center;
+}

@@ -1,0 +1,41 @@
+{
+  "name": "Workwear Default",
+  "description": "Hero principale con categorie abbigliamento da lavoro",
+  "panels": [
+    {
+      "id": "apron",
+      "title": "Apron",
+      "subtitle": "Custom Apron",
+      "image": "images/apron.jpg",
+      "link": "shop-mobile.html?category=apron"
+    },
+    {
+      "id": "hoodies",
+      "title": "Hoodies",
+      "subtitle": "Custom Hoodies",
+      "image": "images/hoodies.jpg",
+      "link": "shop-mobile.html?category=hoodies"
+    },
+    {
+      "id": "polos",
+      "title": "Polos",
+      "subtitle": "Custom Polos",
+      "image": "images/polos.jpg",
+      "link": "shop-mobile.html?category=polo"
+    },
+    {
+      "id": "hiviz",
+      "title": "Hi-Viz",
+      "subtitle": "Custom Hi-Viz",
+      "image": "images/hiviz.jpg",
+      "link": "shop-mobile.html?category=hivis"
+    },
+    {
+      "id": "polo2",
+      "title": "Polo",
+      "subtitle": "Custom Polo",
+      "image": "images/polo2.jpg",
+      "link": "shop-mobile.html?category=polo"
+    }
+  ]
+}

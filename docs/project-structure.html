@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>brandeduk.com - Project Structure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        @media print {
+            body {
+                padding: 20px;
+                font-size: 11pt;
+            }
+            .no-print {
+                display: none;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #1e40af;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        
+        .header .date {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        h2 {
+            color: #1e40af;
+            border-left: 4px solid #2563eb;
+            padding-left: 15px;
+            margin: 30px 0 15px 0;
+            font-size: 1.4em;
+        }
+        
+        h3 {
+            color: #475569;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .folder-tree {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .folder-tree .folder {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        
+        .folder-tree .file {
+            color: #059669;
+        }
+        
+        .folder-tree .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+        
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #1e40af;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .status-ready {
+            background: #dcfce7;
+            color: #166534;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        
+        .status-dev {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        
+        .status-source {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        
+        .checklist {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .checklist h3 {
+            color: #166534;
+            margin-top: 0;
+        }
+        
+        .checklist ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dcfce7;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist li::before {
+            content: "☐ ";
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning strong {
+            color: #92400e;
+        }
+        
+        .code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .print-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 Stampa / Salva PDF</button>
+
+<div class="header">
+    <h1>🏷️ brandeduk.com</h1>
+    <div class="subtitle">Project Structure & Developer Documentation</div>
+    <div class="date">December 2024 - Version 15.0</div>
+</div>
+
+<h2>📁 Complete Project Structure</h2>
+
+<div class="folder-tree">
+<span class="folder">brandedukv15-child/</span> <span class="comment">← WordPress child theme (PRODUCTION)</span><br>
+├── <span class="file">style.css</span> <span class="comment">← Theme header + CSS imports</span><br>
+├── <span class="file">functions.php</span> <span class="comment">← Enqueue scripts/styles</span><br>
+├── <span class="file">header-mega.php</span> <span class="comment">← Mega menu entry point</span><br>
+├── <span class="folder">assets/</span><br>
+│   ├── <span class="folder">css/</span><br>
+│   │   ├── <span class="file">base.css</span> <span class="comment">← Variables, reset, typography</span><br>
+│   │   ├── <span class="file">layout.css</span> <span class="comment">← Layout primitives</span><br>
+│   │   ├── <span class="folder">components/</span> <span class="comment">← menu.css, buttons.css, cards.css...</span><br>
+│   │   └── <span class="folder">pages/</span> <span class="comment">← home.css, product.css, basket.css...</span><br>
+│   ├── <span class="folder">js/</span><br>
+│   │   ├── <span class="file">core.js</span> <span class="comment">← Shared utilities</span><br>
+│   │   ├── <span class="file">menu.js</span> <span class="comment">← Mega menu behavior</span><br>
+│   │   ├── <span class="file">header.js</span> <span class="comment">← Header interactions</span><br>
+│   │   ├── <span class="file">vat-toggle.js</span> <span class="comment">← VAT inc/exc toggle</span><br>
+│   │   ├── <span class="file">animations.js</span> <span class="comment">← UI animations</span><br>
+│   │   ├── <span class="folder">pages/</span> <span class="comment">← home.js, product.js, basket.js...</span><br>
+│   │   └── <span class="folder">upload/</span> <span class="comment">← File upload modules</span><br>
+│   ├── <span class="folder">images/</span> <span class="comment">← UI icons, brands, mockups</span><br>
+│   ├── <span class="folder">heroes/</span> <span class="comment">← Hero section templates</span><br>
+│   ├── <span class="folder">video/</span> <span class="comment">← Hero videos, tutorials</span><br>
+│   └── <span class="folder">fonts/</span> <span class="comment">← Custom fonts</span><br>
+├── <span class="folder">templates/</span><br>
+│   ├── <span class="folder">header/</span> <span class="comment">← header-mega.php</span><br>
+│   ├── <span class="folder">parts/</span> <span class="comment">← Reusable partials</span><br>
+│   └── <span class="folder">woocommerce/</span> <span class="comment">← WooCommerce templates</span><br>
+├── <span class="folder">woocommerce/</span> <span class="comment">← WC override entry points</span><br>
+└── <span class="folder">includes/</span> <span class="comment">← PHP helpers (send-quote.php)</span><br>
+<br>
+<span class="folder">design-assets/</span> <span class="comment">← Design source files</span><br>
+├── <span class="folder">hi-viz/</span> <span class="comment">← Hi-Viz product designs (.cdr)</span><br>
+└── <span class="folder">hoodie/</span> <span class="comment">← Hoodie designs</span><br>
+<br>
+<span class="folder">mobile/</span> <span class="comment">← Mobile prototypes (dev only)</span><br>
+├── <span class="file">home-mobile.html</span><br>
+├── <span class="file">product-mobile.html</span><br>
+├── <span class="file">shop-mobile.html</span><br>
+├── <span class="file">basket-mobile.html</span><br>
+├── <span class="file">checkout-mobile.html</span><br>
+├── <span class="file">customize-mobile.html</span><br>
+├── <span class="folder">css/</span> <span class="comment">← Mobile styles</span><br>
+├── <span class="folder">js/</span> <span class="comment">← Mobile scripts</span><br>
+├── <span class="folder">hero/</span> <span class="comment">← Hero section</span><br>
+├── <span class="folder">footer/</span> <span class="comment">← Footer component</span><br>
+├── <span class="folder">faq-demo/</span> <span class="comment">← FAQ demo</span><br>
+├── <span class="folder">social-buttons/</span> <span class="comment">← Social icons</span><br>
+└── <span class="folder">contact-form/</span> <span class="comment">← Contact form demo</span><br>
+<br>
+<span class="folder">product-bar-demo/</span> <span class="comment">← Product bar component demo</span><br>
+<span class="folder">hero/</span> <span class="comment">← Hero section assets</span><br>
+<span class="folder">tools/</span> <span class="comment">← Build scripts (export-zip.ps1)</span><br>
+<span class="folder">dist/</span> <span class="comment">← Distribution ZIP files</span><br>
+<br>
+<span class="file">home.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">product-detail.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">customization.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">customize-positions.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">customize-detail.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">basket-demo.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">quote-form.html</span> <span class="comment">← Desktop prototype</span><br>
+<span class="file">search-results.html</span> <span class="comment">← Desktop prototype</span>
+</div>
+
+<h2>📋 Folder Purpose Summary</h2>
+
+<table>
+    <tr>
+        <th>Folder</th>
+        <th>Purpose</th>
+        <th>Status</th>
+    </tr>
+    <tr>
+        <td><strong>brandedukv15-child/</strong></td>
+        <td>WordPress child theme - ZIP and upload to WP</td>
+        <td><span class="status-ready">PRODUCTION</span></td>
+    </tr>
+    <tr>
+        <td><strong>design-assets/</strong></td>
+        <td>Source design files (.cdr, .psd, etc.)</td>
+        <td><span class="status-source">SOURCE FILES</span></td>
+    </tr>
+    <tr>
+        <td><strong>mobile/</strong></td>
+        <td>Mobile HTML prototypes for Live Server</td>
+        <td><span class="status-dev">DEV ONLY</span></td>
+    </tr>
+    <tr>
+        <td><strong>product-bar-demo/</strong></td>
+        <td>Product bar component demo</td>
+        <td><span class="status-dev">DEV ONLY</span></td>
+    </tr>
+    <tr>
+        <td><strong>hero/</strong></td>
+        <td>Hero section assets and demos</td>
+        <td><span class="status-dev">DEV ONLY</span></td>
+    </tr>
+    <tr>
+        <td><strong>tools/</strong></td>
+        <td>PowerShell build/export scripts</td>
+        <td><span class="status-source">UTILITIES</span></td>
+    </tr>
+    <tr>
+        <td><strong>dist/</strong></td>
+        <td>Ready-to-upload ZIP files</td>
+        <td><span class="status-ready">DISTRIBUTION</span></td>
+    </tr>
+    <tr>
+        <td><strong>*.html (root)</strong></td>
+        <td>Desktop prototypes for Live Server</td>
+        <td><span class="status-dev">DEV ONLY</span></td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>⚙️ WordPress Installation Requirements</h2>
+
+<table>
+    <tr>
+        <th>Requirement</th>
+        <th>Version</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>WordPress</td>
+        <td>6.0+</td>
+        <td>Latest recommended</td>
+    </tr>
+    <tr>
+        <td>WooCommerce</td>
+        <td>8.0+</td>
+        <td>Required for shop functionality</td>
+    </tr>
+    <tr>
+        <td>PHP</td>
+        <td>7.4+</td>
+        <td>PHP 8.0+ recommended</td>
+    </tr>
+    <tr>
+        <td>Parent Theme</td>
+        <td>teecheap</td>
+        <td>Must be installed first</td>
+    </tr>
+</table>
+
+<div class="warning">
+    <strong>⚠️ IMPORTANT:</strong> The <code>Template: teecheap</code> in style.css must match the exact folder name of the parent theme in <code>wp-content/themes/</code>. If your parent theme has a different folder name, update this value before installation.
+</div>
+
+<h2>✅ Installation Checklist</h2>
+
+<div class="checklist">
+    <h3>Pre-Installation</h3>
+    <ul>
+        <li>WordPress 6.0+ installed and configured</li>
+        <li>WooCommerce plugin installed and activated</li>
+        <li>Parent theme "teecheap" installed in wp-content/themes/</li>
+        <li>Verify parent theme folder name matches Template: value</li>
+    </ul>
+</div>
+
+<div class="checklist">
+    <h3>Installation Steps</h3>
+    <ul>
+        <li>ZIP the brandedukv15-child/ folder</li>
+        <li>Go to Appearance → Themes → Add New → Upload Theme</li>
+        <li>Upload the ZIP file</li>
+        <li>Activate the child theme</li>
+        <li>Verify site displays correctly</li>
+    </ul>
+</div>
+
+<div class="checklist">
+    <h3>Post-Installation</h3>
+    <ul>
+        <li>Configure WooCommerce settings</li>
+        <li>Set up menus (Appearance → Menus)</li>
+        <li>Upload media files to Media Library</li>
+        <li>Configure homepage in Settings → Reading</li>
+        <li>Test all pages and customization flows</li>
+    </ul>
+</div>
+
+<h2>🔧 Key Configuration Files</h2>
+
+<table>
+    <tr>
+        <th>File</th>
+        <th>Purpose</th>
+        <th>When to Edit</th>
+    </tr>
+    <tr>
+        <td><code>style.css</code></td>
+        <td>Theme header + CSS imports</td>
+        <td>Change theme name, version, parent</td>
+    </tr>
+    <tr>
+        <td><code>functions.php</code></td>
+        <td>Enqueue scripts/styles, hooks</td>
+        <td>Add new scripts, modify loading order</td>
+    </tr>
+    <tr>
+        <td><code>assets/css/base.css</code></td>
+        <td>CSS variables, colors, fonts</td>
+        <td>Brand color changes, typography</td>
+    </tr>
+    <tr>
+        <td><code>assets/js/core.js</code></td>
+        <td>Shared utilities, storage keys</td>
+        <td>Global functionality changes</td>
+    </tr>
+</table>
+
+<h2>🎨 CSS Architecture</h2>
+
+<div class="folder-tree">
+<span class="folder">assets/css/</span><br>
+├── <span class="file">base.css</span> <span class="comment">← CSS variables, reset, typography</span><br>
+├── <span class="file">layout.css</span> <span class="comment">← Grid, containers, spacing</span><br>
+├── <span class="folder">components/</span><br>
+│   ├── <span class="file">menu.css</span> <span class="comment">← Mega menu styles</span><br>
+│   ├── <span class="file">dropdown.css</span> <span class="comment">← Dropdown menus</span><br>
+│   ├── <span class="file">buttons.css</span> <span class="comment">← Button styles</span><br>
+│   ├── <span class="file">cards.css</span> <span class="comment">← Product cards</span><br>
+│   └── <span class="file">header.css</span> <span class="comment">← Header styles</span><br>
+└── <span class="folder">pages/</span><br>
+    ├── <span class="file">home.css</span> <span class="comment">← Homepage styles</span><br>
+    ├── <span class="file">product.css</span> <span class="comment">← Product page</span><br>
+    ├── <span class="file">shop.css</span> <span class="comment">← Shop/category pages</span><br>
+    ├── <span class="file">basket.css</span> <span class="comment">← Basket/cart</span><br>
+    ├── <span class="file">quote-form.css</span> <span class="comment">← Quote request form</span><br>
+    ├── <span class="file">customization.css</span> <span class="comment">← Customization flow</span><br>
+    ├── <span class="file">customize-positions.css</span> <span class="comment">← Position selection</span><br>
+    └── <span class="file">customize-detail.css</span> <span class="comment">← Detail customization</span>
+</div>
+
+<h2>📜 JavaScript Architecture</h2>
+
+<div class="folder-tree">
+<span class="folder">assets/js/</span><br>
+├── <span class="file">core.js</span> <span class="comment">← Utilities, storage, helpers</span><br>
+├── <span class="file">menu.js</span> <span class="comment">← Mega menu behavior</span><br>
+├── <span class="file">header.js</span> <span class="comment">← Header interactions</span><br>
+├── <span class="file">vat-toggle.js</span> <span class="comment">← VAT include/exclude</span><br>
+├── <span class="file">animations.js</span> <span class="comment">← UI transitions</span><br>
+├── <span class="folder">pages/</span><br>
+│   ├── <span class="file">home.js</span><br>
+│   ├── <span class="file">product.js</span><br>
+│   ├── <span class="file">shop.js</span><br>
+│   ├── <span class="file">basket.js</span><br>
+│   ├── <span class="file">quote-form.js</span><br>
+│   ├── <span class="file">customization.js</span><br>
+│   ├── <span class="file">customize-positions.js</span><br>
+│   └── <span class="file">customize-detail.js</span><br>
+└── <span class="folder">upload/</span> <span class="comment">← File upload modules</span>
+</div>
+
+<h2>💾 State Management</h2>
+
+<p>The theme uses browser storage for state management:</p>
+
+<table>
+    <tr>
+        <th>Storage Key</th>
+        <th>Type</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td><code>quoteBasket</code></td>
+        <td>localStorage</td>
+        <td>Shopping basket/cart items</td>
+    </tr>
+    <tr>
+        <td><code>customizingProduct</code></td>
+        <td>sessionStorage</td>
+        <td>Current product being customized</td>
+    </tr>
+    <tr>
+        <td><code>selectedPositions</code></td>
+        <td>sessionStorage</td>
+        <td>Selected print/embroidery positions</td>
+    </tr>
+    <tr>
+        <td><code>positionCustomizations</code></td>
+        <td>sessionStorage</td>
+        <td>Customization details per position</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>🚀 Local Development</h2>
+
+<h3>For Prototypes (Live Server)</h3>
+<div class="code">
+1. Open project in VS Code<br>
+2. Install Live Server extension<br>
+3. Right-click any .html file → "Open with Live Server"<br>
+4. Default port: 5501 (configured in .vscode/settings.json)
+</div>
+
+<h3>Create Distribution ZIP</h3>
+<div class="code">
+cd tools<br>
+.\export-zip.ps1
+</div>
+
+<h2>📞 Support Information</h2>
+
+<table>
+    <tr>
+        <th>Item</th>
+        <th>Details</th>
+    </tr>
+    <tr>
+        <td>Theme Name</td>
+        <td>brandeduk.com</td>
+    </tr>
+    <tr>
+        <td>Version</td>
+        <td>1.0.0</td>
+    </tr>
+    <tr>
+        <td>Text Domain</td>
+        <td>brandedukv15</td>
+    </tr>
+    <tr>
+        <td>Parent Theme</td>
+        <td>teecheap</td>
+    </tr>
+    <tr>
+        <td>Website</td>
+        <td>https://brandeduk.com</td>
+    </tr>
+</table>
+
+<div class="footer">
+    <p><strong>BrandedUK</strong> © 2024 - Workwear & Custom Apparel</p>
+    <p>Document generated: December 2024</p>
+</div>
+
+</body>
+</html>

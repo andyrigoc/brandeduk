@@ -1,0 +1,94 @@
+*{
+    margin:0;
+    padding:0;
+    font-family: "Inter", sans-serif;
+    box-sizing:border-box;
+}
+
+.price-card{
+    width:420px;
+    background:white;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
+}
+
+h2{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:12px;
+    color:#222;
+}
+
+.section{
+    padding:14px 0;
+    border-bottom:1px solid #eaeaea;
+}
+
+.section:last-child{
+    border-bottom:none;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+}
+
+.label{
+    font-size:16px;
+    font-weight:600;
+    color:#222;
+}
+
+.value{
+    font-size:16px;
+    font-weight:700;
+    color:#222;
+}
+
+.detail{
+    margin-top:8px;
+    font-size:14px;
+    color:#666;
+}
+
+.embroidery{
+    margin-top:6px;
+    background: linear-gradient(90deg,#4566e9,#3a77de);
+    border-radius:12px;
+    padding:18px;
+}
+
+.white{
+    color:white!important;
+}
+
+.bold{
+    font-weight:700;
+    font-size:18px;
+}
+
+.grand{
+    font-size:26px;
+    font-weight:700;
+    color:#179c9b;
+}
+
+.vat{
+    margin-top:6px;
+    font-size:13px;
+    color:#888;
+}
+
+.footer{
+    margin-top:16px;
+    display:flex;
+    justify-content:space-between;
+    font-size:20px;
+    font-weight:700;
+    color:#2EA3F2;
+}
+
+.inclvat{
+    color:#179c9b;
+}
