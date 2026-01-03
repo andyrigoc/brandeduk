@@ -211,6 +211,15 @@
                     const pill = card.querySelector('.customization-pill');
                     if (pill) pill.hidden = false;
                     
+                    // Transform "ADD LOGO" button to green "LOGO ADDED" when logo exists
+                    if (designData.logo) {
+                        const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
+                        if (addLogoBtn) {
+                            addLogoBtn.classList.add('logo-added');
+                            addLogoBtn.innerHTML = `<span class="add-logo-text">LOGO ADDED</span>`;
+                        }
+                    }
+                    
                     console.log('✅ Restored design for position:', position);
                 }
             });
@@ -232,7 +241,6 @@
         // Update pricing
         updatePricingTiers();
         updatePricingSummary();
-        updateLogoGlowEffect();
         
         console.log('✅ UI restoration complete');
     }
@@ -628,6 +636,7 @@
         setupModals();
         setupDesignEditor();
         initDesignModal();
+        initCustomizationTypeModal(); // Initialize customization type selection modal
         // setupOrderCard(); // REMOVED - card viola eliminata
         setupSaveSelectionButton();
         setupSubmitQuoteButton();
@@ -638,6 +647,13 @@
         // updateOrderCard(); // REMOVED - card viola eliminata
         updateDeliveryDate();
         updateQuoteButtonState();
+        
+        // Update total pieces counter to show basket items at init
+        const totalSpan = document.getElementById('totalQty');
+        if (totalSpan) {
+            const basketQty = getBasketQuantityForProduct(state.product.code);
+            totalSpan.textContent = state.quantity + basketQty;
+        }
         
         // Initialize selection as saved (no items yet)
         state.selectionSaved = true;
@@ -987,15 +1003,44 @@
                     `;
                 }
                 
-                // Clear the basket completely
+                // ===== COMPLETE SESSION/STORAGE CLEAR =====
+                // FIRST: Reset in-memory state to prevent beforeunload from re-saving
+                state.positionMethods = {};
+                state.positionCustomizations = {};
+                state.positionDesigns = {};
+                state.positions = [];
+                state.sizeQuantities = {};
+                state.quantity = 0;
+                state.selectedColor = null;
+                state.selectedColorName = null;
+                state.selectedColorImage = null;
+                
+                // Clear the basket
                 localStorage.removeItem('quoteBasket');
+                
+                // Clear ALL customization state
+                sessionStorage.removeItem('brandeduk-customize-state');
+                sessionStorage.removeItem('quoteFormData');
+                sessionStorage.removeItem('selectedColorName');
+                sessionStorage.removeItem('selectedColorUrl');
+                sessionStorage.removeItem('selectedProduct');
+                sessionStorage.removeItem('selectedProductData');
+                sessionStorage.removeItem('customizingProduct');
+                sessionStorage.removeItem('selectedPositions');
+                sessionStorage.removeItem('positionCustomizations');
+                sessionStorage.removeItem('brandeduk-filters');
+                
+                // Clear any cached logo/upload data
+                sessionStorage.removeItem('uploadedLogo');
+                sessionStorage.removeItem('logoPreview');
                 
                 // Haptic feedback
                 if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
                 
-                // Navigate back to home page after delay
+                // Force full page reload to clear any in-memory state
                 setTimeout(() => {
-                    window.location.href = 'home-mobile.html';
+                    // Use replace to prevent back button returning to submitted form
+                    window.location.replace('home-mobile.html');
                 }, 1200);
             });
         }
@@ -1821,10 +1866,11 @@
             selectedSizes.innerHTML = '';
         }
         
-        // Update totals
+        // Update totals - show basket qty even when current selection is 0
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) {
-            totalSpan.textContent = '0';
+            const basketQty = getBasketQuantityForProduct(state.product.code);
+            totalSpan.textContent = basketQty;
         }
         
         // Also clear position selections when saving to quote
@@ -2115,10 +2161,12 @@
             }
         });
 
-        // Update total display
+        // Update total display - show current selection + basket items
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) {
-            totalSpan.textContent = total;
+            // Get basket qty for this product
+            const basketQty = getBasketQuantityForProduct(state.product.code);
+            totalSpan.textContent = total + basketQty;
         }
 
         // Update global quantity for pricing
@@ -2363,11 +2411,11 @@
                 const embBadge = card.querySelector('.price-emb');
                 const printBadge = card.querySelector('.price-print');
                 if (embBadge) {
-                    embBadge.classList.remove('active');
+                    embBadge.classList.remove('active', 'add-logo-btn', 'logo-added');
                     embBadge.dataset.role = 'method';
                 }
                 if (printBadge) {
-                    printBadge.classList.remove('active');
+                    printBadge.classList.remove('active', 'add-logo-btn', 'logo-added');
                     printBadge.dataset.role = 'method';
                 }
                 
@@ -2529,11 +2577,8 @@
                     // Haptic feedback
                     if (navigator.vibrate) navigator.vibrate(10);
                     
-                    // Update pricing and glow effect
+                    // Update pricing
                     updatePricingSummary();
-                    
-                    // Trigger glow effect after a small delay to allow UI to update
-                    setTimeout(() => updateLogoGlowEffect(), 50);
                 });
             });
             
@@ -3195,7 +3240,7 @@
         
         // Active badge (the selected method)
         const methodBadge = method === 'embroidery' ? embBadge : printBadge;
-        // Other badge (becomes "Add Logo")
+        // Other badge (becomes "Add Logo" with cloud animation)
         const addBadge = method === 'embroidery' ? printBadge : embBadge;
         
         if (methodBadge) {
@@ -3208,7 +3253,20 @@
             addBadge.classList.add('add-logo-btn');
             addBadge.dataset.role = 'add-logo';
             addBadge.dataset.activeMethod = method;
-            addBadge.innerHTML = `<span class="add-logo-text">ADD LOGO</span>`;
+            // Cloud upload animation SVG - unique ID per badge
+            const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            addBadge.innerHTML = `
+                <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <clipPath id="${uniqueId}">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                        </clipPath>
+                    </defs>
+                    <g clip-path="url(#${uniqueId})">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                    </g>
+                </svg>
+            `;
         }
     }
 
@@ -3216,7 +3274,7 @@
     function resetPriceBadge(badge) {
         if (!badge) return;
         
-        badge.classList.remove('active', 'add-logo-btn');
+        badge.classList.remove('active', 'add-logo-btn', 'logo-added');
         badge.dataset.role = 'method';
         delete badge.dataset.activeMethod;
         
@@ -3231,8 +3289,27 @@
         `;
     }
 
-    // === Open Customization Modal ===
-    function openCustomizationModal(position, method) {
+    // === Open Customization Type Modal (Choose Your Customization) ===
+    // Now directly opens the design modal since only logo upload option exists
+    function openCustomizationTypeModal(position, method) {
+        // Open design modal directly for logo upload
+        openDesignModal(position, method, 'logo');
+    }
+    
+    function closeCustomizationTypeModal() {
+        const modal = document.getElementById('customizationTypeModal');
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    function initCustomizationTypeModal() {
+        // No longer needed - direct logo upload now
+    }
+
+    // === Open Design Modal (with specific section focus) ===
+    function openDesignModal(position, method, section = 'all') {
         const modal = document.getElementById('designModal');
         const modalTitle = document.getElementById('designModalTitle');
         
@@ -3242,10 +3319,13 @@
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
         const positionName = card?.querySelector('.position-checkbox span')?.textContent || position.replace(/-/g, ' ');
         
-        // Update modal title
+        // Update modal title based on section
         if (modalTitle) {
-            const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-            modalTitle.textContent = `Customise ${positionName}`;
+            let titleText = `Customise ${positionName}`;
+            if (section === 'logo') titleText = `Upload Logo - ${positionName}`;
+            else if (section === 'text') titleText = `Add Text - ${positionName}`;
+            else if (section === 'artwork') titleText = `Pick Artwork - ${positionName}`;
+            modalTitle.textContent = titleText;
         }
         
         // Store current position/method for when applying design
@@ -3255,12 +3335,51 @@
         // Reset modal state
         resetDesignModal();
         
+        // Scroll to specific section based on selection
+        setTimeout(() => {
+            const modalBody = modal.querySelector('.design-modal-body');
+            if (modalBody && section !== 'all') {
+                let targetSection = null;
+                if (section === 'logo') {
+                    targetSection = document.getElementById('uploadLogoSection');
+                } else if (section === 'text') {
+                    targetSection = modal.querySelector('.design-section-title')?.closest('.design-section');
+                    // Find the "Add Text" section
+                    const sections = modal.querySelectorAll('.design-section');
+                    sections.forEach(sec => {
+                        const title = sec.querySelector('.design-section-title');
+                        if (title && title.textContent.includes('Add Text')) {
+                            targetSection = sec;
+                        }
+                    });
+                } else if (section === 'artwork') {
+                    // Find the clipart section
+                    const sections = modal.querySelectorAll('.design-section');
+                    sections.forEach(sec => {
+                        const title = sec.querySelector('.design-section-title');
+                        if (title && title.textContent.includes('Clipart')) {
+                            targetSection = sec;
+                        }
+                    });
+                }
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }, 350);
+        
         // Open modal
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
         // Haptic feedback
         if (navigator.vibrate) navigator.vibrate(10);
+    }
+
+    // === Open Customization Modal (legacy - now opens type selection first) ===
+    function openCustomizationModal(position, method) {
+        // Now opens the type selection modal first
+        openCustomizationTypeModal(position, method);
     }
     
     function closeCustomizationModal() {
@@ -3800,7 +3919,16 @@
             
             if (pill) {
                 pill.hidden = false;
-                pill.textContent = designData.logo ? 'LOGO ADDED' : (designData.text ? 'Text added' : 'Customization ready');
+                pill.textContent = 'CUSTOMIZATION READY';
+            }
+            
+            // Transform "ADD LOGO" button to green "LOGO ADDED" when logo is uploaded
+            if (designData.logo) {
+                const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
+                if (addLogoBtn) {
+                    addLogoBtn.classList.add('logo-added');
+                    addLogoBtn.innerHTML = `<span class="add-logo-text">LOGO ADDED</span>`;
+                }
             }
         }
         
@@ -4326,9 +4454,6 @@
         
         // Update order card
         updateOrderCard();
-        
-        // Update logo glow effect
-        updateLogoGlowEffect();
     }
 
     // === Update Basket Count Badge in Navigation ===
@@ -4459,50 +4584,6 @@
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
         updateBasketCount();
         updatePricingSummary();
-    }
-
-    // === Logo Glow Effect ===
-    // Shows a pulsing glow on "ADD LOGO" buttons when a method is selected but no logo uploaded
-    function updateLogoGlowEffect() {
-        const addLogoBtns = document.querySelectorAll('.price-badge.add-logo-btn');
-        
-        addLogoBtns.forEach(btn => {
-            // Find the position for this button
-            const card = btn.closest('.position-card');
-            if (!card) return;
-            
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            const position = checkbox ? checkbox.value : null;
-            
-            if (!position) return;
-            
-            // Check if this position has a logo/customization already
-            const hasCustomization = state.positionCustomizations && 
-                                      state.positionCustomizations[position] && 
-                                      (state.positionCustomizations[position].logo || 
-                                       state.positionCustomizations[position].text);
-            
-            // Also check sessionStorage for uploaded images
-            const hasUploadedLogo = sessionStorage.getItem(`uploaded_${position}`) !== null;
-            
-            // Check preview content visibility (backup check)
-            const previewContent = card.querySelector('.position-preview-content');
-            const hasVisiblePreview = previewContent && !previewContent.hidden;
-            
-            // Check if a method (embroidery/print) is selected for this position
-            const hasMethodSelected = state.positionMethods && state.positionMethods[position];
-            
-            // Enable glow if: method selected + NO logo/customization yet
-            const isPositionActive = checkbox && checkbox.checked;
-            const needsLogo = !hasCustomization && !hasUploadedLogo && !hasVisiblePreview;
-            
-            // Glow when: position is active AND method selected AND no logo yet
-            if (isPositionActive && hasMethodSelected && needsLogo) {
-                btn.classList.add('glow-pulse');
-            } else {
-                btn.classList.remove('glow-pulse');
-            }
-        });
     }
 
     // === Add to Quote Button State ===

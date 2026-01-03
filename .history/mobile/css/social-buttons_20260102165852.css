@@ -1,0 +1,193 @@
+/* =============================================
+   Dynamic 3D Hover Social Icons - Mobile
+   EXACT Original Style
+   ============================================= */
+
+/* === Variables === */
+:root {
+    --social-bg-color: #f0f2f5;
+    --social-shadow-light: #ffffff;
+    --social-shadow-dark: #b5b5b5;
+    --social-facebook-color: #3b5998;
+    --social-instagram-color: #E1306C;
+    --social-linkedin-color: #0077B5;
+    --social-youtube-color: #FF0000;
+    --social-pinterest-color: #E60023;
+    --social-icon-size: 27px;
+    --social-border-radius: 8px;
+}
+
+/* === Container === */
+.social-icons-container {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons-mobile {
+    gap: 8px;
+}
+
+/* === Social Icon Base === */
+.social-icon {
+    position: relative;
+    width: var(--social-icon-size);
+    height: var(--social-icon-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border-radius: var(--social-border-radius);
+    box-shadow: 
+        5px 5px 10px var(--social-shadow-dark),
+        -5px -5px 10px var(--social-shadow-light);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon i {
+    font-size: calc(var(--social-icon-size) / 2.2);
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+/* === Hover Effect - EXACT from original === */
+.social-icon:hover {
+    box-shadow: 
+        inset 3px 3px 6px var(--social-shadow-dark),
+        inset -3px -3px 6px var(--social-shadow-light),
+        0 12px 24px rgba(0,0,0,0.2);
+    transform: translateY(-6px) rotateX(10deg);
+}
+
+/* === Color change on hover === */
+.social-icon.facebook:hover i,
+.social-icon.facebook.active i {
+    color: var(--social-facebook-color);
+}
+.social-icon.instagram:hover i,
+.social-icon.instagram.active i {
+    color: var(--social-instagram-color);
+}
+.social-icon.linkedin:hover i,
+.social-icon.linkedin.active i {
+    color: var(--social-linkedin-color);
+}
+.social-icon.youtube:hover i,
+.social-icon.youtube.active i {
+    color: var(--social-youtube-color);
+}
+.social-icon.pinterest:hover i,
+.social-icon.pinterest.active i {
+    color: var(--social-pinterest-color);
+}
+
+/* === Pseudo-element for lift-up shadow effect === */
+.social-icon::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    width: 80%;
+    height: 8px;
+    background: rgba(0,0,0,0.1);
+    filter: blur(4px);
+    opacity: 0;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon:hover::after {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* ===== HEADER 2-ROW LAYOUT ===== */
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px 12px 12px;
+}
+
+.header-top-row .social-icons-container {
+    flex-shrink: 0;
+}
+
+.header-top-row .vat-toggle-mobile {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.header-logo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 4px 16px 10px;
+    gap: 12px;
+}
+
+.mobile-logo-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.logo-badge-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.logo-text-styled {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #a855f7;
+    letter-spacing: -0.5px;
+}
+
+/* Search inline in header */
+.header-logo-row .search-wrapper-expand {
+    position: relative;
+    flex: 1;
+    max-width: 48px;
+    transition: max-width 0.3s ease-in-out;
+}
+
+.header-logo-row .search-wrapper-expand:focus-within {
+    max-width: 100%;
+}
+
+.header-logo-row .search-input-expand {
+    display: block;
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 9999px;
+    padding: 10px 14px;
+    font-size: 14px;
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.header-logo-row .search-input-expand::placeholder {
+    color: transparent;
+    transition: color 0.2s ease;
+}
+
+.header-logo-row .search-wrapper-expand:focus-within .search-input-expand::placeholder {
+    color: #9ca3af;
+}
+
+.header-logo-row .search-icon-expand {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+}

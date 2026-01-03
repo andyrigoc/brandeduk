@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandedUK - Complete Filters Structure</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f5f5; 
+            padding: 40px; 
+            color: #333;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a1a; margin-bottom: 10px; font-size: 28px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        h2 { color: #20C997; margin: 30px 0 15px; font-size: 20px; border-bottom: 2px solid #20C997; padding-bottom: 8px; }
+        h3 { color: #7A52CC; margin: 20px 0 10px; font-size: 16px; }
+        
+        .filter-section { margin-bottom: 30px; }
+        
+        .toggle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+        .toggle-item { 
+            background: #f8f9fa; 
+            padding: 12px 16px; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            border-left: 4px solid #20C997;
+        }
+        .toggle-item.red { border-left-color: #dc3545; }
+        .toggle-item .toggle-icon { font-size: 18px; }
+        
+        .expandable-list { margin: 15px 0; }
+        .expandable-item { 
+            background: #f8f9fa; 
+            margin: 8px 0; 
+            border-radius: 8px; 
+            overflow: hidden;
+            border-left: 4px solid #7A52CC;
+        }
+        .expandable-header { 
+            padding: 12px 16px; 
+            font-weight: 600; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+        .expandable-header .arrow { color: #999; }
+        .sub-options { 
+            padding: 0 16px 12px 16px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+        .sub-options span { 
+            background: white; 
+            padding: 4px 8px; 
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .price-section { 
+            background: #e8f5e9; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 15px 0;
+        }
+        .search-section { 
+            background: #e3f2fd; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 15px 0;
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        
+        .badge { 
+            display: inline-block; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 11px; 
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-toggle { background: #d4edda; color: #155724; }
+        .badge-expand { background: #e2d9f3; color: #5a3d8a; }
+        .badge-input { background: #cce5ff; color: #004085; }
+        
+        .footer-note { 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #e0e0e0; 
+            color: #999; 
+            font-size: 12px; 
+            text-align: center;
+        }
+
+        @media print {
+            body { padding: 20px; background: white; }
+            .container { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 BrandedUK - Complete Filters Structure</h1>
+        <p class="subtitle">Document Version 8.8 | Generated: December 27, 2025</p>
+
+        <!-- SECTION 1: TOGGLE FILTERS -->
+        <section class="filter-section">
+            <h2>1. Toggle Filters (On/Off Switches)</h2>
+            <div class="toggle-grid">
+                <div class="toggle-item">
+                    <span class="toggle-icon">🔵</span>
+                    <span><strong>New In</strong></span>
+                </div>
+                <div class="toggle-item red">
+                    <span class="toggle-icon">🔴</span>
+                    <span><strong>Bradeal</strong></span>
+                </div>
+                <div class="toggle-item">
+                    <span class="toggle-icon">🔵</span>
+                    <span><strong>Offers</strong></span>
+                </div>
+                <div class="toggle-item">
+                    <span class="toggle-icon">⚪</span>
+                    <span><strong>In Stock</strong></span>
+                </div>
+                <div class="toggle-item">
+                    <span class="toggle-icon">♻️</span>
+                    <span><strong>Recycled / Organic</strong></span>
+                </div>
+                <div class="toggle-item">
+                    <span class="toggle-icon">➕</span>
+                    <span><strong>Plus Sizes</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SEARCH -->
+        <section class="filter-section">
+            <h2>2. Search Within Results</h2>
+            <div class="search-section">
+                <strong>Search products</strong><br>
+                <em>Text input field to filter within current results</em>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PRICE RANGE -->
+        <section class="filter-section">
+            <h2>3. Price Range</h2>
+            <div class="price-section">
+                <strong>Price Range Slider</strong><br>
+                <em>Dual-handle slider: £0.00 - £100.00+</em>
+            </div>
+        </section>
+
+        <!-- SECTION 4: EXPANDABLE FILTERS -->
+        <section class="filter-section">
+            <h2>4. Expandable Filters (19 Categories)</h2>
+            
+            <div class="expandable-list">
+                <!-- 1. Gender -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>1. Gender</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Men's</span>
+                        <span>Women's</span>
+                        <span>Unisex</span>
+                    </div>
+                </div>
+
+                <!-- 2. Age Group -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>2. Age Group</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Adults</span>
+                        <span>Kids</span>
+                        <span>Toddler</span>
+                        <span>Baby</span>
+                        <span>Junior</span>
+                        <span>Youth</span>
+                    </div>
+                </div>
+
+                <!-- 3. Sleeve -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>3. Sleeve</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Short Sleeve</span>
+                        <span>Long Sleeve</span>
+                        <span>3/4 Sleeve</span>
+                        <span>Sleeveless</span>
+                        <span>Cap Sleeve</span>
+                        <span>Raglan</span>
+                    </div>
+                </div>
+
+                <!-- 4. Neckline -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>4. Neckline</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Crew Neck</span>
+                        <span>V-Neck</span>
+                        <span>Polo Collar</span>
+                        <span>Hooded</span>
+                        <span>Mandarin Collar</span>
+                        <span>Scoop Neck</span>
+                        <span>Round Neck</span>
+                        <span>Zip Neck</span>
+                        <span>Button Down</span>
+                    </div>
+                </div>
+
+                <!-- 5. Accreditations -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>5. Accreditations</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>EN ISO 20471</span>
+                        <span>RIS-3279-TOM Rail</span>
+                        <span>OEKO-TEX</span>
+                        <span>GOTS Certified</span>
+                        <span>Fair Trade</span>
+                        <span>WRAP Certified</span>
+                        <span>EN343 Waterproof</span>
+                        <span>EN11612 Flame</span>
+                    </div>
+                </div>
+
+                <!-- 6. Primary Colour -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>6. Primary Colour</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Black</span>
+                        <span>White</span>
+                        <span>Navy</span>
+                        <span>Grey</span>
+                        <span>Red</span>
+                        <span>Blue</span>
+                        <span>Green</span>
+                        <span>Yellow</span>
+                        <span>Orange</span>
+                        <span>Purple</span>
+                        <span>Pink</span>
+                        <span>Brown</span>
+                        <span>Burgundy</span>
+                        <span>Khaki</span>
+                        <span>Multi</span>
+                    </div>
+                </div>
+
+                <!-- 7. Colour Shade -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>7. Colour Shade</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Light</span>
+                        <span>Dark</span>
+                        <span>Bright</span>
+                        <span>Pastel</span>
+                        <span>Neon</span>
+                        <span>Heather</span>
+                        <span>Marl</span>
+                    </div>
+                </div>
+
+                <!-- 8. CMYK -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>8. CMYK</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span><em>CMYK color values for exact color matching in print</em></span>
+                    </div>
+                </div>
+
+                <!-- 9. Pantone -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>9. Pantone</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span><em>Pantone color codes for brand color matching</em></span>
+                    </div>
+                </div>
+
+                <!-- 10. Style -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>10. Style</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Classic</span>
+                        <span>Modern</span>
+                        <span>Slim Fit</span>
+                        <span>Regular Fit</span>
+                        <span>Relaxed</span>
+                        <span>Oversized</span>
+                        <span>Athletic</span>
+                        <span>Workwear</span>
+                        <span>Casual</span>
+                        <span>Formal</span>
+                        <span>Vintage</span>
+                        <span>Streetwear</span>
+                    </div>
+                </div>
+
+                <!-- 11. Features -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>11. Features</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Pockets</span>
+                        <span>Hood</span>
+                        <span>Zip</span>
+                        <span>Buttons</span>
+                        <span>Drawstring</span>
+                        <span>Elastic Cuffs</span>
+                        <span>Reflective</span>
+                        <span>Waterproof</span>
+                        <span>Breathable</span>
+                        <span>Stretch</span>
+                        <span>Anti-bacterial</span>
+                        <span>UV Protection</span>
+                        <span>Tear-away Label</span>
+                    </div>
+                </div>
+
+                <!-- 12. Size -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>12. Size</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>XXS</span>
+                        <span>XS</span>
+                        <span>S</span>
+                        <span>M</span>
+                        <span>L</span>
+                        <span>XL</span>
+                        <span>2XL</span>
+                        <span>3XL</span>
+                        <span>4XL</span>
+                        <span>5XL</span>
+                        <span>6XL</span>
+                        <span>One Size</span>
+                    </div>
+                </div>
+
+                <!-- 13. Fabric -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>13. Fabric</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>100% Cotton</span>
+                        <span>Poly/Cotton</span>
+                        <span>100% Polyester</span>
+                        <span>Organic Cotton</span>
+                        <span>Recycled Polyester</span>
+                        <span>Fleece</span>
+                        <span>Jersey</span>
+                        <span>Pique</span>
+                        <span>French Terry</span>
+                        <span>Ripstop</span>
+                        <span>Softshell</span>
+                        <span>Nylon</span>
+                    </div>
+                </div>
+
+                <!-- 14. Weight (GSM) -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>14. Weight (GSM)</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Lightweight (&lt;150g)</span>
+                        <span>Midweight (150-200g)</span>
+                        <span>Standard (200-250g)</span>
+                        <span>Heavy (250-300g)</span>
+                        <span>Super Heavy (300g+)</span>
+                    </div>
+                </div>
+
+                <!-- 15. Fit -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>15. Fit</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Slim Fit</span>
+                        <span>Regular Fit</span>
+                        <span>Relaxed Fit</span>
+                        <span>Loose Fit</span>
+                        <span>Tailored</span>
+                        <span>Athletic Fit</span>
+                    </div>
+                </div>
+
+                <!-- 16. Related Sector -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>16. Related Sector</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Construction</span>
+                        <span>Healthcare</span>
+                        <span>Hospitality</span>
+                        <span>Retail</span>
+                        <span>Security</span>
+                        <span>Transport</span>
+                        <span>Warehouse</span>
+                        <span>Education</span>
+                        <span>Corporate</span>
+                        <span>Manufacturing</span>
+                        <span>Agriculture</span>
+                        <span>Automotive</span>
+                    </div>
+                </div>
+
+                <!-- 17. Related Sport -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>17. Related Sport</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Football</span>
+                        <span>Rugby</span>
+                        <span>Running</span>
+                        <span>Gym/Fitness</span>
+                        <span>Golf</span>
+                        <span>Tennis</span>
+                        <span>Cricket</span>
+                        <span>Basketball</span>
+                        <span>Cycling</span>
+                        <span>Swimming</span>
+                        <span>Outdoor</span>
+                        <span>Hiking</span>
+                    </div>
+                </div>
+
+                <!-- 18. Tag -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>18. Tag</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Best Seller</span>
+                        <span>New Arrival</span>
+                        <span>Staff Pick</span>
+                        <span>Eco Friendly</span>
+                        <span>Value Pick</span>
+                        <span>Premium</span>
+                        <span>Limited Edition</span>
+                    </div>
+                </div>
+
+                <!-- 19. Effect -->
+                <div class="expandable-item">
+                    <div class="expandable-header">
+                        <span>19. Effect</span>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="sub-options">
+                        <span>Plain</span>
+                        <span>Printed</span>
+                        <span>Embroidered</span>
+                        <span>Washed</span>
+                        <span>Distressed</span>
+                        <span>Tie-Dye</span>
+                        <span>Camo</span>
+                        <span>Striped</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUMMARY TABLE -->
+        <section class="filter-section">
+            <h2>5. Summary Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Filter Name</th>
+                        <th>Type</th>
+                        <th>Options Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>—</td><td>New In</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>Bradeal</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>Offers</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>In Stock</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>Recycled / Organic</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>Plus Sizes</td><td><span class="badge badge-toggle">Toggle</span></td><td>On/Off</td></tr>
+                    <tr><td>—</td><td>Search products</td><td><span class="badge badge-input">Input</span></td><td>Text</td></tr>
+                    <tr><td>—</td><td>Price Range</td><td><span class="badge badge-input">Slider</span></td><td>Range</td></tr>
+                    <tr><td>1</td><td>Gender</td><td><span class="badge badge-expand">Expand</span></td><td>3</td></tr>
+                    <tr><td>2</td><td>Age Group</td><td><span class="badge badge-expand">Expand</span></td><td>6</td></tr>
+                    <tr><td>3</td><td>Sleeve</td><td><span class="badge badge-expand">Expand</span></td><td>6</td></tr>
+                    <tr><td>4</td><td>Neckline</td><td><span class="badge badge-expand">Expand</span></td><td>9</td></tr>
+                    <tr><td>5</td><td>Accreditations</td><td><span class="badge badge-expand">Expand</span></td><td>8</td></tr>
+                    <tr><td>6</td><td>Primary Colour</td><td><span class="badge badge-expand">Expand</span></td><td>15</td></tr>
+                    <tr><td>7</td><td>Colour Shade</td><td><span class="badge badge-expand">Expand</span></td><td>7</td></tr>
+                    <tr><td>8</td><td>CMYK</td><td><span class="badge badge-expand">Expand</span></td><td>Custom</td></tr>
+                    <tr><td>9</td><td>Pantone</td><td><span class="badge badge-expand">Expand</span></td><td>Custom</td></tr>
+                    <tr><td>10</td><td>Style</td><td><span class="badge badge-expand">Expand</span></td><td>12</td></tr>
+                    <tr><td>11</td><td>Features</td><td><span class="badge badge-expand">Expand</span></td><td>13</td></tr>
+                    <tr><td>12</td><td>Size</td><td><span class="badge badge-expand">Expand</span></td><td>12</td></tr>
+                    <tr><td>13</td><td>Fabric</td><td><span class="badge badge-expand">Expand</span></td><td>12</td></tr>
+                    <tr><td>14</td><td>Weight (GSM)</td><td><span class="badge badge-expand">Expand</span></td><td>5</td></tr>
+                    <tr><td>15</td><td>Fit</td><td><span class="badge badge-expand">Expand</span></td><td>6</td></tr>
+                    <tr><td>16</td><td>Related Sector</td><td><span class="badge badge-expand">Expand</span></td><td>12</td></tr>
+                    <tr><td>17</td><td>Related Sport</td><td><span class="badge badge-expand">Expand</span></td><td>12</td></tr>
+                    <tr><td>18</td><td>Tag</td><td><span class="badge badge-expand">Expand</span></td><td>7</td></tr>
+                    <tr><td>19</td><td>Effect</td><td><span class="badge badge-expand">Expand</span></td><td>8</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="footer-note">
+            <p><strong>BrandedUK v15</strong> | Filter Structure Documentation</p>
+            <p>Total: 6 Toggles + 1 Search + 1 Price Slider + 19 Expandable Filters = <strong>27 Filter Components</strong></p>
+            <p>To save as PDF: Press Ctrl+P → Save as PDF</p>
+        </div>
+    </div>
+</body>
+</html>

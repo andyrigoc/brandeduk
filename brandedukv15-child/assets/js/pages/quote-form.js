@@ -110,7 +110,7 @@ function loadOrderSummary() {
     
     if (!productData) {
         alert('No product data found. Please start from the product page.');
-        window.location.href = 'home.html';
+        window.location.href = 'index.html';
         return;
     }
     
@@ -306,8 +306,10 @@ function setupFormSubmission(productData, positionCustomizations) {
                 hideLoading();
                 showSuccessMessage(formData.firstName);
                 setTimeout(() => {
+                    // Clear ALL storage to reset state completely
                     sessionStorage.clear();
-                    window.location.href = 'home.html';
+                    localStorage.removeItem('quoteBasket');
+                    window.location.replace('index.html');
                 }, 3000);
             } else {
                 throw new Error(result.message || 'Server error');
@@ -344,8 +346,10 @@ function setupFormSubmission(productData, positionCustomizations) {
             hideLoading();
             showSuccessMessage(formData.firstName);
             setTimeout(() => {
+                // Clear ALL storage to reset state completely
                 sessionStorage.clear();
-                window.location.href = 'home.html';
+                localStorage.removeItem('quoteBasket');
+                window.location.replace('index.html');
             }, 3000);
             
         } catch (error) {
@@ -368,8 +372,10 @@ function setupFormSubmission(productData, positionCustomizations) {
                 hideLoading();
                 showSuccessMessage(formData.firstName);
                 setTimeout(() => {
+                    // Clear ALL storage to reset state completely
                     sessionStorage.clear();
-                    window.location.href = 'home.html';
+                    localStorage.removeItem('quoteBasket');
+                    window.location.replace('index.html');
                 }, 3000);
             } else {
                 throw new Error('Server error');

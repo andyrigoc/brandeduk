@@ -1,3 +1,32 @@
+// Helper function to get the correct homepage URL based on current location
+function getHomePageUrl() {
+    const path = window.location.pathname;
+    // If we're in a subfolder (e.g., brandeduk.com/), go up one level
+    if (path.includes('/brandeduk.com/')) {
+        return '../index.html';
+    }
+    return 'index.html';
+}
+
+// Toast notification function
+function showToast(message, duration = 3000) {
+    const existingToast = document.getElementById('toastNotification');
+    const toast = existingToast || document.createElement('div');
+    
+    if (!existingToast) {
+        toast.id = 'toastNotification';
+        toast.className = 'toast-notification';
+        document.body.appendChild(toast);
+    }
+    
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
+
 // Store selected positions with their methods
 let selectedPositions = [];
 let positionMethods = {}; // Store selected method for each position (embroidery or print)
@@ -364,8 +393,10 @@ document.addEventListener('DOMContentLoaded', () => {
         restorePreviousSelections(); // Restore UI state
         initCustomUploadModal();
         initAddLogoModal();
+        initDesignModal(); // Initialize simple upload popup
         initPreviewDeleteButtons();
         initSubmitQuoteButton();
+        initDeleteLogoButtons(); // Initialize delete buttons on thumbnails
         console.log('Page initialization complete');
     } catch (e) {
         console.error('Error initializing customize-positions:', e);
@@ -800,13 +831,19 @@ function loadBasketData() {
             }
             applyPricingAndNormalize(basket);
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            
+            // Update mini basket badge
+            if (window.brandedukv15 && typeof window.brandedukv15.updateCartBadge === 'function') {
+                window.brandedukv15.updateCartBadge();
+            }
+            
             if (basket.length === 0) {
                 sessionStorage.removeItem('selectedPositions');
                 sessionStorage.removeItem('positionMethods');
                 sessionStorage.removeItem('positionCustomizations');
                 sessionStorage.removeItem('currentPositionIndex');
                 sessionStorage.removeItem('customizingProduct');
-                window.location.href = 'home.html';
+                window.location.href = getHomePageUrl();
             } else {
                 loadBasketData();
             }
@@ -915,19 +952,41 @@ function applyMethodUI(card, method) {
         addBadge.classList.add('add-logo-btn');
         addBadge.dataset.role = 'add-logo';
         addBadge.dataset.activeMethod = method;
-        addBadge.innerHTML = `
-            <span class="add-logo-text">${customization ? 'Edit Customization' : 'Add Logo'}</span>
+        
+        // Cloud upload animation SVG - unique ID per badge (SAME AS MOBILE)
+        const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        addBadge.innerHTML = customization ? `<span class="add-logo-text">Edit Customization</span>` : `
+            <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <clipPath id="${uniqueId}">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                    </clipPath>
+                </defs>
+                <g clip-path="url(#${uniqueId})">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                </g>
+            </svg>
         `;
     }
 }
 
 function updateCustomizationIndicator(card, hasCustomization) {
     if (!card) return;
-    const pill = card.querySelector('.customization-pill');
+    // Try both old and new pill selectors
+    const pill = card.querySelector('.customization-pill') || card.querySelector('.logo-added-pill');
     const previewContent = card.querySelector('.position-preview-content');
     const previewImage = previewContent ? previewContent.querySelector('.preview-image') : null;
     const previewText = previewContent ? previewContent.querySelector('.preview-text') : null;
-    if (!pill) return;
+    
+    // If using new structure (logo-added-pill inside container), just update card class
+    if (!pill) {
+        if (hasCustomization) {
+            card.classList.add('customized');
+        } else {
+            card.classList.remove('customized');
+        }
+        return;
+    }
 
     const resetPreview = () => {
         if (previewContent) {
@@ -1143,9 +1202,14 @@ function updateItemQuantity(index, delta, size) {
         sessionStorage.removeItem('positionCustomizations');
         sessionStorage.removeItem('currentPositionIndex');
         sessionStorage.removeItem('customizingProduct');
-        window.location.href = 'home.html';
+        window.location.href = getHomePageUrl();
     } else {
         loadBasketData();
+    }
+    
+    // Update mini basket badge
+    if (window.brandedukv15 && typeof window.brandedukv15.updateCartBadge === 'function') {
+        window.brandedukv15.updateCartBadge();
     }
 }
 
@@ -1183,7 +1247,7 @@ function confirmRemove() {
             sessionStorage.removeItem('positionCustomizations');
             sessionStorage.removeItem('currentPositionIndex');
             sessionStorage.removeItem('customizingProduct');
-            window.location.href = 'home.html';
+            window.location.href = getHomePageUrl();
         } else {
             loadBasketData();
         }
@@ -1207,21 +1271,25 @@ function initPositionSelection() {
             // Don't toggle if clicking on price badges
             if (e.target.closest('.price-badge')) return;
             
-            // Don't toggle if clicking on preview area (logo/text preview)
-            if (e.target.closest('.position-preview')) return;
-            
             // Don't toggle if clicking on the customization pill (informational only)
             if (e.target.closest('.customization-pill')) return;
             
-            // Check if method is selected for this position
+            // If card is selected, clicking anywhere (except badges) should deselect
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change'));
+                return;
+            }
+            
+            // Card not selected - check if method is selected for this position
             if (!positionMethods[position]) {
                 showMethodSelectionPopup();
                 return;
             }
             
-            // Method selected, toggle checkbox
+            // Method selected, select the card
             if (e.target !== checkbox) {
-                checkbox.checked = !checkbox.checked;
+                checkbox.checked = true;
                 checkbox.dispatchEvent(new Event('change'));
             }
         });
@@ -1830,23 +1898,593 @@ function startLogoUploadFlow(position, method) {
         name: existingCustomization?.name || ''
     };
 
-    const prefillLogo = existingCustomization && existingCustomization.type === 'logo' && existingCustomization.uploadedLogo
-        ? {
-            data: existingCustomization.uploadedLogo,
-            name: existingCustomization.logoName || existingCustomization.name || 'Uploaded logo'
-        }
-        : null;
-
-    const prefillText = existingCustomization && existingCustomization.type === 'text'
-        ? existingCustomization.text || ''
-        : '';
-
     if (card && checkbox && !checkbox.checked) {
         checkbox.checked = true;
         checkbox.dispatchEvent(new Event('change'));
     }
 
-    openCustomUploadModal({ existingLogo: prefillLogo, existingText: prefillText });
+    // Open designModal (simple upload popup)
+    openDesignModal(position, card);
+}
+
+// === Design Modal Functions (Simple Upload Popup) ===
+let designModalState = {
+    currentPosition: null,
+    originalLogoImage: null,
+    backgroundRemoved: false,
+    positionDesigns: {}
+};
+
+function openDesignModal(position, card) {
+    console.log('📂 Opening design modal for position:', position);
+    
+    designModalState.currentPosition = position;
+    
+    const modal = document.getElementById('designModal');
+    const title = document.getElementById('designModalTitle');
+    const uploadTitle = document.getElementById('uploadLogoTitle');
+    const dropzone = document.getElementById('designUploadZone');
+    const previewContainer = document.getElementById('designUploadPreview');
+    const previewImg = document.getElementById('designPreviewImg');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+    
+    if (title) {
+        const positionName = card?.querySelector('.position-checkbox span')?.textContent || position;
+        title.textContent = `Upload Logo - ${positionName}`;
+    }
+    
+    // Reset upload title
+    if (uploadTitle) uploadTitle.textContent = 'Drop or select your logo';
+    
+    // Reset upload state
+    if (dropzone) dropzone.style.display = '';
+    if (previewContainer) previewContainer.hidden = true;
+    if (previewImg) previewImg.src = '';
+    if (removeBgBtn) {
+        removeBgBtn.classList.remove('bg-removed', 'processing');
+        const span = removeBgBtn.querySelector('span');
+        if (span) span.textContent = 'Remove BG';
+    }
+    
+    // Reset file input
+    const fileInput = document.getElementById('designLogoUpload');
+    if (fileInput) fileInput.value = '';
+    
+    designModalState.originalLogoImage = null;
+    designModalState.backgroundRemoved = false;
+    
+    // Show modal
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+    }
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDesignModal() {
+    console.log('🚪 closeDesignModal called');
+    const modal = document.getElementById('designModal');
+    console.log('🚪 Modal element:', modal);
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none'; // Force hide
+        console.log('🚪 Modal closed - removed active class and set display none');
+    }
+    document.body.style.overflow = '';
+    designModalState.currentPosition = null;
+}
+
+let designModalInitialized = false;
+
+function initDesignModal() {
+    if (designModalInitialized) {
+        console.log('⚠️ Design modal already initialized, skipping');
+        return;
+    }
+    designModalInitialized = true;
+    
+    console.log('🔧 initDesignModal called');
+    const modal = document.getElementById('designModal');
+    const closeBtn = document.getElementById('closeDesignModal');
+    const uploadZone = document.getElementById('designUploadZone');
+    const fileInput = document.getElementById('designLogoUpload');
+    const applyBtn = document.getElementById('applyDesignBtn');
+    const removeLogoBtn = document.getElementById('removeUploadedLogo');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+    
+    console.log('🔧 Elements found:', {
+        modal: !!modal,
+        closeBtn: !!closeBtn,
+        uploadZone: !!uploadZone,
+        fileInput: !!fileInput,
+        applyBtn: !!applyBtn
+    });
+    
+    if (!modal) {
+        console.error('❌ Design modal not found!');
+        designModalInitialized = false;
+        return;
+    }
+    
+    // Close modal
+    closeBtn?.addEventListener('click', closeDesignModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeDesignModal();
+    });
+    
+    // File input change - MUST be added BEFORE upload zone click
+    fileInput?.addEventListener('change', function(e) {
+        console.log('📁 File input changed event fired');
+        const file = e.target.files[0];
+        console.log('📁 File selected:', file?.name, file?.type, file?.size);
+        if (file) {
+            handleDesignFileUpload(file);
+        }
+    });
+    
+    // Upload zone click - opens file dialog
+    if (uploadZone && fileInput) {
+        uploadZone.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log('📂 Upload zone clicked - triggering file input');
+            fileInput.value = ''; // Reset to allow same file selection
+            fileInput.click();
+        });
+    }
+    
+    // Drag and drop
+    uploadZone?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone?.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        console.log('📁 File dropped:', file?.name);
+        if (file) handleDesignFileUpload(file);
+    });
+    
+    // Remove uploaded logo
+    removeLogoBtn?.addEventListener('click', () => {
+        const previewContainer = document.getElementById('designUploadPreview');
+        const previewImg = document.getElementById('designPreviewImg');
+        const dropzone = document.getElementById('designUploadZone');
+        
+        if (previewContainer) previewContainer.hidden = true;
+        if (dropzone) dropzone.style.display = '';
+        if (previewImg) previewImg.src = '';
+        
+        designModalState.originalLogoImage = null;
+    });
+    
+    // Remove background button
+    removeBgBtn?.addEventListener('click', () => {
+        if (removeBgBtn.classList.contains('bg-removed')) {
+            restoreDesignOriginalBackground();
+        } else {
+            removeDesignImageBackground();
+        }
+    });
+    
+    // Apply design button
+    if (applyBtn) {
+        console.log('✅ Apply button found, adding click listener');
+        applyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ Apply button clicked');
+            applyDesignToCard();
+        });
+    } else {
+        console.warn('⚠️ Apply button not found!');
+    }
+}
+
+function handleDesignFileUpload(file) {
+    if (!file) {
+        console.error('❌ No file provided');
+        return;
+    }
+    
+    console.log('📁 Uploading file:', file.name, file.type, file.size);
+    
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const previewContainer = document.getElementById('designUploadPreview');
+        const previewImg = document.getElementById('designPreviewImg');
+        const dropzone = document.getElementById('designUploadZone');
+        const removeBgBtn = document.getElementById('removeBgBtn');
+        const uploadTitle = document.getElementById('uploadLogoTitle');
+        
+        if (previewImg) previewImg.src = ev.target.result;
+        if (dropzone) dropzone.style.display = 'none';
+        if (previewContainer) previewContainer.hidden = false;
+        
+        // Change title to "Your Logo"
+        if (uploadTitle) uploadTitle.textContent = 'Your Logo';
+        
+        // Reset remove BG button
+        if (removeBgBtn) {
+            removeBgBtn.classList.remove('bg-removed', 'processing');
+            const span = removeBgBtn.querySelector('span');
+            if (span) span.textContent = 'Remove BG';
+        }
+        
+        // Save original for undo
+        designModalState.originalLogoImage = ev.target.result;
+        designModalState.backgroundRemoved = false;
+        
+        // Auto-remove background for JPEG/JPG images (like mobile version)
+        const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+                       file.name.toLowerCase().endsWith('.jpg') || 
+                       file.name.toLowerCase().endsWith('.jpeg');
+        if (isJpeg) {
+            setTimeout(() => removeDesignImageBackground(), 100);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeDesignImageBackground() {
+    const previewImg = document.getElementById('designPreviewImg');
+    const canvas = document.getElementById('bgRemovalCanvas');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+    
+    if (!previewImg || !previewImg.src || !canvas) return;
+    
+    // Save original for undo
+    if (!designModalState.originalLogoImage) {
+        designModalState.originalLogoImage = previewImg.src;
+    }
+    
+    // Show processing state
+    if (removeBgBtn) {
+        removeBgBtn.classList.add('processing');
+        const span = removeBgBtn.querySelector('span');
+        if (span) span.textContent = 'Processing...';
+    }
+    
+    // Use setTimeout to allow UI to update
+    setTimeout(() => {
+        try {
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            
+            img.onload = function() {
+                // Set canvas size to match image
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Draw image to canvas
+                ctx.drawImage(img, 0, 0);
+                
+                // Get image data
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // Helper function to get pixel color at coordinates
+                function getPixelColorAt(x, y) {
+                    const idx = (y * width + x) * 4;
+                    return { r: data[idx], g: data[idx + 1], b: data[idx + 2] };
+                }
+                
+                // Helper function to check if colors are similar
+                function isColorSimilarTo(r, g, b, target, tol) {
+                    const dr = Math.abs(r - target.r);
+                    const dg = Math.abs(g - target.g);
+                    const db = Math.abs(b - target.b);
+                    return dr <= tol && dg <= tol && db <= tol;
+                }
+                
+                // Sample corner pixels to detect background color
+                const corners = [
+                    getPixelColorAt(0, 0),
+                    getPixelColorAt(width - 1, 0),
+                    getPixelColorAt(0, height - 1),
+                    getPixelColorAt(width - 1, height - 1)
+                ];
+                
+                // Find the average corner color (background)
+                const bgColor = {
+                    r: Math.round(corners.reduce((sum, c) => sum + c.r, 0) / corners.length),
+                    g: Math.round(corners.reduce((sum, c) => sum + c.g, 0) / corners.length),
+                    b: Math.round(corners.reduce((sum, c) => sum + c.b, 0) / corners.length)
+                };
+                
+                // Tolerance for color matching
+                const tolerance = 45;
+                
+                // Track visited pixels
+                const visited = new Uint8Array(width * height);
+                
+                // Flood fill from all edge pixels - THIS PRESERVES INTERNAL COLORS
+                const queue = [];
+                
+                // Add all edge pixels to queue
+                for (let x = 0; x < width; x++) {
+                    queue.push([x, 0]);           // Top edge
+                    queue.push([x, height - 1]);  // Bottom edge
+                }
+                for (let y = 1; y < height - 1; y++) {
+                    queue.push([0, y]);           // Left edge
+                    queue.push([width - 1, y]);   // Right edge
+                }
+                
+                // Process queue (Flood Fill)
+                while (queue.length > 0) {
+                    const [x, y] = queue.shift();
+                    
+                    // Check bounds
+                    if (x < 0 || x >= width || y < 0 || y >= height) continue;
+                    
+                    const idx = y * width + x;
+                    
+                    // Skip if already visited
+                    if (visited[idx]) continue;
+                    visited[idx] = 1;
+                    
+                    // Get pixel color
+                    const pixelIdx = idx * 4;
+                    const r = data[pixelIdx];
+                    const g = data[pixelIdx + 1];
+                    const b = data[pixelIdx + 2];
+                    
+                    // Check if pixel matches background color
+                    if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
+                        // Make transparent
+                        data[pixelIdx + 3] = 0;
+                        
+                        // Add neighbors to queue
+                        queue.push([x + 1, y]);
+                        queue.push([x - 1, y]);
+                        queue.push([x, y + 1]);
+                        queue.push([x, y - 1]);
+                    }
+                }
+                
+                // Put processed image data back
+                ctx.putImageData(imageData, 0, 0);
+                
+                // Convert canvas to data URL and update preview
+                const processedImageUrl = canvas.toDataURL('image/png');
+                previewImg.src = processedImageUrl;
+                
+                // Update button state - change to "Keep Background"
+                if (removeBgBtn) {
+                    removeBgBtn.classList.remove('processing');
+                    removeBgBtn.classList.add('bg-removed');
+                    const span = removeBgBtn.querySelector('span');
+                    if (span) span.textContent = 'Keep\nBackground';
+                }
+                
+                // Set state flag
+                designModalState.backgroundRemoved = true;
+            };
+            
+            img.onerror = function() {
+                console.error('Failed to load image for background removal');
+                if (removeBgBtn) {
+                    removeBgBtn.classList.remove('processing');
+                    const span = removeBgBtn.querySelector('span');
+                    if (span) span.textContent = 'Remove BG';
+                }
+            };
+            
+            img.src = designModalState.originalLogoImage;
+            
+        } catch (e) {
+            console.error('Background removal error:', e);
+            if (removeBgBtn) {
+                removeBgBtn.classList.remove('processing');
+                const span = removeBgBtn.querySelector('span');
+                if (span) span.textContent = 'Remove BG';
+            }
+        }
+    }, 50);
+}
+
+function restoreDesignOriginalBackground() {
+    const previewImg = document.getElementById('designPreviewImg');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+    
+    if (designModalState.originalLogoImage && previewImg) {
+        previewImg.src = designModalState.originalLogoImage;
+    }
+    
+    if (removeBgBtn) {
+        removeBgBtn.classList.remove('bg-removed');
+        const span = removeBgBtn.querySelector('span');
+        if (span) span.textContent = 'Remove BG';
+    }
+}
+
+function applyDesignToCard() {
+    console.log('🎯 applyDesignToCard called');
+    const position = designModalState.currentPosition;
+    const previewImg = document.getElementById('designPreviewImg');
+    
+    console.log('📍 Position:', position);
+    console.log('🖼️ Preview src exists:', !!previewImg?.src);
+    console.log('🖼️ Preview src value:', previewImg?.src?.substring(0, 100));
+    
+    if (!position) {
+        console.error('❌ No position set');
+        showToast('Please upload a logo first');
+        return;
+    }
+    
+    if (!previewImg?.src || previewImg.src === '' || previewImg.src === window.location.href) {
+        console.error('❌ No image src');
+        showToast('Please upload a logo first');
+        return;
+    }
+    
+    console.log('✅ Applying design to position:', position);
+    
+    // Save to state
+    designModalState.positionDesigns[position] = {
+        logo: previewImg.src,
+        originalLogo: designModalState.originalLogoImage
+    };
+    
+    // Also update positionCustomizationsMap for compatibility
+    const existingCustomization = positionCustomizationsMap[position] || {};
+    positionCustomizationsMap[position] = {
+        ...existingCustomization,
+        type: 'logo',
+        uploadedLogo: previewImg.src,
+        name: existingCustomization.name || 'Logo',
+        method: positionMethods[position] || existingCustomization.method || 'embroidery'
+    };
+    
+    console.log('💾 Saved customization:', position, positionCustomizationsMap[position]);
+    console.log('🖼️ uploadedLogo set to:', positionCustomizationsMap[position].uploadedLogo?.substring(0, 50));
+    
+    // Find the card
+    const card = document.querySelector(`.position-card input[value="${position}"]`)?.closest('.position-card') ||
+                 document.querySelector(`.position-card[data-position="${position}"]`);
+    
+    if (card) {
+        // Show logo on preview
+        const logoOverlay = card.querySelector('.logo-overlay-box');
+        const logoImg = card.querySelector('.logo-overlay-img');
+        if (logoOverlay && logoImg) {
+            logoImg.src = previewImg.src;
+            logoOverlay.hidden = false;
+        }
+        
+        // Show uploaded logo container with pill
+        const uploadedContainer = card.querySelector('.uploaded-logo-container');
+        const uploadedThumb = card.querySelector('.uploaded-logo-thumb');
+        if (uploadedContainer && uploadedThumb) {
+            uploadedThumb.src = previewImg.src;
+            uploadedContainer.hidden = false;
+        }
+        
+        // Transform "Add Logo" button to "LOGO ADDED"
+        const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
+        if (addLogoBtn) {
+            addLogoBtn.classList.add('logo-added');
+            addLogoBtn.innerHTML = `<span class="add-logo-text">LOGO ADDED</span>`;
+        }
+        
+        // Ensure card is selected
+        card.classList.add('selected');
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        if (checkbox && !checkbox.checked) {
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change'));
+        } else if (checkbox && checkbox.checked) {
+            // Checkbox was already checked, but we still need to ensure position is in selectedPositions
+            const existingIndex = selectedPositions.findIndex(p => p.position === position);
+            if (existingIndex === -1) {
+                // Get position data from card
+                const positionName = card.querySelector('.position-checkbox span')?.textContent?.trim() || position;
+                const priceEmb = parseFloat(card.dataset.embroidery || '0');
+                const pricePrint = parseFloat(card.dataset.print || '0');
+                selectedPositions.push({
+                    position: position,
+                    name: positionName,
+                    priceEmb: priceEmb,
+                    pricePrint: pricePrint,
+                    method: positionMethods[position] || 'embroidery'
+                });
+                console.log('✅ Added position to selectedPositions:', position);
+            }
+        }
+        
+        // Update customization indicator
+        updateCustomizationIndicator(card, true);
+    }
+
+    // Persist + refresh sidebar even when the position was already selected
+    // (so no checkbox change event fires).
+    try {
+        console.log('🔄 Calling persistSelections...');
+        persistSelections();
+        console.log('🔄 Calling refreshCardState...');
+        refreshCardState(position);
+        console.log('🔄 Calling updateSidebarCosts (1st time)...');
+        updateSidebarCosts();
+    } catch (err) {
+        console.error('❌ Error in persist/refresh:', err);
+    }
+    
+    // Close modal - ALWAYS do this
+    console.log('📍 About to close modal...');
+    closeDesignModal();
+    console.log('📍 Modal close called');
+    
+    showToast('Logo added successfully!');
+    
+    // Update step progress and force sidebar update AGAIN
+    try {
+        updateStepProgress();
+        persistSelections();
+        console.log('🔄 Calling updateSidebarCosts (FINAL)...');
+        console.log('🔄 selectedPositions:', JSON.stringify(selectedPositions.map(p => p.position)));
+        console.log('🔄 positionCustomizationsMap keys:', JSON.stringify(Object.keys(positionCustomizationsMap)));
+        updateSidebarCosts();
+    } catch (err) {
+        console.error('❌ Error in step progress:', err);
+    }
+}
+
+// Initialize delete logo buttons on thumbnails
+function initDeleteLogoButtons() {
+    document.querySelectorAll('.uploaded-logo-container .delete-logo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            const card = btn.closest('.position-card');
+            if (!card) return;
+            
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            const position = checkbox?.value || card.dataset.position;
+            
+            // Remove from state
+            delete designModalState.positionDesigns[position];
+            delete positionCustomizationsMap[position];
+            
+            // Hide logo overlay
+            const logoOverlay = card.querySelector('.logo-overlay-box');
+            if (logoOverlay) logoOverlay.hidden = true;
+            
+            // Hide thumbnail container (includes the LOGO READY pill)
+            const uploadedContainer = card.querySelector('.uploaded-logo-container');
+            if (uploadedContainer) uploadedContainer.hidden = true;
+            
+            // Reset "Add Logo" button
+            const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
+            if (addLogoBtn) {
+                addLogoBtn.classList.remove('logo-added');
+                addLogoBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    <span class="add-logo-text">Add Logo</span>
+                `;
+            }
+            
+            // Update indicator
+            updateCustomizationIndicator(card, false);
+            
+            showToast('Logo removed');
+            persistSelections();
+            updateSidebarCosts();
+        });
+    });
 }
 
 function openCustomUploadModal(options = {}) {
@@ -2875,6 +3513,10 @@ function showMethodSelectionPopup() {
 }
 
 function updateSidebarCosts() {
+    console.log('📊 updateSidebarCosts called');
+    console.log('📊 selectedPositions:', JSON.stringify(selectedPositions.map(p => p.position)));
+    console.log('📊 positionCustomizationsMap keys:', Object.keys(positionCustomizationsMap));
+    
     // Get ALL products from basket
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
     if (basket.length === 0) return;
@@ -2909,9 +3551,10 @@ function updateSidebarCosts() {
         const positionTotal = price * totalQuantity;
         totalApplicationCosts += positionTotal;
         
-        // Get position name from card
+        // Get position name from card (with null checks)
         const positionCard = document.querySelector(`[data-position="${pos.position}"]`);
-        const positionLabel = positionCard ? positionCard.querySelector('.position-checkbox span').textContent : pos.position;
+        const labelSpan = positionCard?.querySelector('.position-checkbox span');
+        const positionLabel = labelSpan?.textContent || pos.name || pos.position;
         
         // Get the customization details to show type (logo/text)
         const customization = positionCustomizationsMap[pos.position];
@@ -2924,9 +3567,9 @@ function updateSidebarCosts() {
         // Use different class for print vs embroidery
         const sectionClass = method === 'print' ? 'section print-method' : 'section embroidery';
         
-        // Create individual row for each customization - EXACT CodePen structure
+        // Create individual row for each customization
         customizationHTML += `
-            <div class="${sectionClass}" data-vat-row data-price="${price}" data-qty="${totalQuantity}">
+            <div class="${sectionClass}" data-vat-row data-price="${price}" data-qty="${totalQuantity}" data-position="${pos.position}">
                 <div class="row">
                     <span class="label white">${positionLabel} ${typeLabel}</span>
                     <span class="value white"></span>
@@ -2939,13 +3582,32 @@ function updateSidebarCosts() {
         `;
     });
     
-    const total = garmentCost + totalApplicationCosts;
+    // Check if any embroidery is selected - add Digitizing Fee
+    const hasEmbroidery = selectedPositions.some(pos => {
+        const method = positionMethods[pos.position] || 'embroidery';
+        return method === 'embroidery';
+    });
+    
+    // Add Digitizing Fee row if embroidery is selected
+    const digitizingFee = hasEmbroidery ? 25.00 : 0;
+    
+    const total = garmentCost + totalApplicationCosts + digitizingFee;
     
     // Update sidebar with individual customization rows
     const customizationList = document.getElementById('customizationCostsList');
     if (customizationList) {
         if (customizationHTML) {
-            customizationList.innerHTML = customizationHTML;
+            // Add digitizing fee row if applicable
+            let digitizingHTML = '';
+            if (hasEmbroidery) {
+                digitizingHTML = `
+                    <div class="digitizing-fee-row">
+                        <span>Digitizing Fee (one-time)</span>
+                        <span>£25.00 <small>ex VAT</small></span>
+                    </div>
+                `;
+            }
+            customizationList.innerHTML = customizationHTML + digitizingHTML;
         } else {
             customizationList.innerHTML = '';
         }

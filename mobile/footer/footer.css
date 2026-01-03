@@ -149,3 +149,122 @@
         grid-column: 1;
     }
 }
+
+/* ===== 3D Neumorphism Social Icons ===== */
+.footer-social-3d {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.social-icon-3d {
+    --icon-size: 44px;
+    --shadow-light: #ffffff;
+    --shadow-dark: #d1d5db;
+    
+    position: relative;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 14px;
+    background: #f0f2f5;
+    box-shadow: 
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon-3d i {
+    font-size: calc(var(--icon-size) / 2.2);
+    color: #9ca3af;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover effect - pressed in */
+.social-icon-3d:hover,
+.social-icon-3d:active {
+    box-shadow: 
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+    transform: translateY(-4px);
+}
+
+/* Color change on hover for each platform */
+.social-icon-3d.facebook:hover i,
+.social-icon-3d.facebook:active i {
+    color: #3b5998;
+}
+
+.social-icon-3d.instagram:hover i,
+.social-icon-3d.instagram:active i {
+    color: #E1306C;
+}
+
+.social-icon-3d.linkedin:hover i,
+.social-icon-3d.linkedin:active i {
+    color: #0077B5;
+}
+
+.social-icon-3d.youtube:hover i,
+.social-icon-3d.youtube:active i {
+    color: #FF0000;
+}
+
+.social-icon-3d.pinterest:hover i,
+.social-icon-3d.pinterest:active i {
+    color: #E60023;
+}
+
+/* Shadow under icon on hover */
+.social-icon-3d::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    width: 70%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    filter: blur(4px);
+    opacity: 0;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon-3d:hover::after,
+.social-icon-3d:active::after {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Active state - icon stays lit */
+.social-icon-3d.active {
+    box-shadow: 
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+}
+
+.social-icon-3d.active.facebook i {
+    color: #3b5998;
+}
+
+.social-icon-3d.active.instagram i {
+    color: #E1306C;
+}
+
+.social-icon-3d.active.linkedin i {
+    color: #0077B5;
+}
+
+.social-icon-3d.active.youtube i {
+    color: #FF0000;
+}
+
+.social-icon-3d.active.pinterest i {
+    color: #E60023;
+}
+
+.social-icon-3d.active::after {
+    opacity: 0.5;
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Request Quote</title>
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/checkout.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+        .social-icons-mobile {
+            gap: 3px !important;
+            margin-left: 8px !important;
+            padding-left: 0 !important;
+        }
+        .social-icons-mobile .social-icon {
+            width: 27px !important;
+            height: 27px !important;
+            min-width: 27px !important;
+            min-height: 27px !important;
+            max-width: 27px !important;
+            max-height: 27px !important;
+            border-radius: 7px !important;
+        }
+        .social-icons-mobile .social-icon i {
+            font-size: 12px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Banner -->
+    <div class="promo-banner">
+        🎁 You have 10% OFF! <span class="timer" id="promoTimer">145H : 26M : 52S</span>
+    </div>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                </a>
+            </div>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-status" id="vatStatus">ex VAT</span>
+                <button class="vat-toggle-btn" id="vatToggleBtn" type="button" aria-pressed="false" aria-label="Toggle VAT">
+                    <span class="vat-toggle-thumb"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Back + Logo + Search -->
+        <div class="header-logo-row">
+            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <a href="index.html" class="mobile-logo-center">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="checkout-container">
+        <h1 class="checkout-title">Checkout</h1>
+
+        <!-- Tabs -->
+        <div class="checkout-tabs">
+            <button class="tab-btn active" data-tab="address">ADDRESS</button>
+            <button class="tab-btn" data-tab="shipping">SHIPPING</button>
+            <button class="tab-btn" data-tab="payment">PAYMENT</button>
+            <button class="tab-btn" data-tab="products">PRODUCTS</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content active" id="address-tab">
+            <div class="section-header">
+                <h2>Address</h2>
+                <button class="change-address-btn">
+                    Change address
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="address-card" id="currentAddress">
+                <div class="address-header">
+                    <div class="address-name">Anderson Ricotta,</div>
+                    <div class="address-phone">7447348564</div>
+                    <span class="badge-default">Default</span>
+                    <button class="edit-btn" onclick="openAddressModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                </div>
+                <div class="address-details">
+                    Red Lion Business Center, Surbiton, England, United Kingdom<br>
+                    KT6 7QD
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="shipping-tab">
+            <h2>Shipping</h2>
+            <div class="shipping-info">
+                <label class="info-label">Fulfilled from</label>
+                <div class="fulfilled-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                    <span>International</span>
+                </div>
+
+                <div class="time-grid">
+                    <div class="time-item">
+                        <label>Production Time</label>
+                        <div class="time-value">1 - 3 days</div>
+                    </div>
+                    <div class="time-item">
+                        <label>Shipping Time</label>
+                        <div class="time-value">7 - 9 days</div>
+                    </div>
+                    <div class="time-item">
+                        <label>Total Fulfilment Time</label>
+                        <div class="time-value">8 - 12 days</div>
+                    </div>
+                    <div class="time-item">
+                        <label>Estimated Delivery</label>
+                        <div class="time-value">Dec 31 - Jan 04</div>
+                    </div>
+                </div>
+
+                <div class="shipping-note">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>The order shipment time is determined by the longest fulfillment time among all items in the entire order.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="payment-tab">
+            <h2>Payment</h2>
+            <p class="payment-note">No payment required. You will receive a quotation after submitting your request.</p>
+        </div>
+
+        <div class="tab-content" id="products-tab">
+            <h2>Products</h2>
+            <div class="product-summary">
+                <div class="product-item">
+                    <img src="brandedukv15-child/assets/images/products/hoodie-black.jpg" alt="Product" class="product-thumb">
+                    <div class="product-details">
+                        <h3>Snow Washed Oversized Cotton T-Shirt</h3>
+                        <div class="product-code">#R00037-C001-V9 / Black</div>
+                        <div class="product-badge">DTG</div>
+                        <div class="product-sizes">S(1) M(1) XL(1) 3XL(1)</div>
+                        <div class="product-pricing">
+                            <div class="price-row">
+                                <span>Unit Price</span>
+                                <span>£7.99</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Customization</span>
+                                <span>£2.26</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Subtotal (4 items)</span>
+                                <span>£41.00</span>
+                            </div>
+                        </div>
+                        <div class="product-time">
+                            ⏱️ Product Time: 1 - 3 days
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Summary -->
+        <div class="checkout-summary">
+            <div class="summary-row">
+                <span class="summary-label">Total</span>
+                <div class="summary-prices">
+                    <div class="vat-price">GBP 171.62</div>
+                    <div class="no-vat-price">GBP 184.86</div>
+                </div>
+            </div>
+            <button class="request-quote-btn">Request Quote</button>
+            <p class="terms-text">
+                By clicking the "Request Quote" button, you confirm that you have read, understand, and accept our 
+                <a href="#">Term of Service</a>, <a href="#">Privacy Policy</a> and <a href="#">FAQ</a>.
+            </p>
+        </div>
+    </main>
+
+    <!-- Edit Address Modal -->
+    <div class="modal-overlay" id="addressModal">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <h2>Edit address</h2>
+                <button class="close-btn" onclick="closeAddressModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-content">
+                <form id="addressForm">
+                    <div class="form-group">
+                        <label>Country/Region</label>
+                        <select class="form-select" id="country">
+                            <option value="uk" selected>United Kingdom</option>
+                            <option value="us">United States</option>
+                            <option value="ca">Canada</option>
+                            <option value="au">Australia</option>
+                            <option value="bg">Bulgaria</option>
+                            <option value="al">Albania</option>
+                            <option value="dz">Algeria</option>
+                        </select>
+                    </div>
+
+                    <div class="form-section-title">Contact information</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="First name" value="Anderson">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Last name" value="Ricotta">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="tel" class="form-input" placeholder="Phone" value="+44 7447348564">
+                    </div>
+
+                    <div class="form-section-title">Address</div>
+
+                    <div class="form-group">
+                        <div class="search-input">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" placeholder="ADDRESS FINDER: Search by postcode, street">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Address line 1" value="Red Lion Business Center">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Apartment, Suite, Unit etc. (optional)">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select class="form-select">
+                                <option value="england" selected>England</option>
+                                <option value="scotland">Scotland</option>
+                                <option value="wales">Wales</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select">
+                                <option value="surbiton" selected>Surbiton</option>
+                                <option value="london">London</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="County" value="Greater London">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Postcode" value="KT6 7QD">
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="defaultAddress" checked>
+                        <label for="defaultAddress">Set as my default address</label>
+                    </div>
+
+                    <button type="submit" class="save-btn">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Address Modal -->
+    <div class="modal-overlay" id="shippingModal">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <h2>Shipping address</h2>
+                <button class="close-btn" onclick="closeShippingModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-content">
+                <div class="address-search">
+                    <div class="search-input">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" placeholder="Search for the name">
+                    </div>
+                    <button class="add-address-btn" onclick="openAddressModal()">Add new address</button>
+                </div>
+
+                <div class="saved-addresses">
+                    <label class="address-option">
+                        <input type="radio" name="shippingAddress" checked>
+                        <div class="address-card-compact">
+                            <div class="address-header">
+                                <strong>Anderson Ricotta, 7447348564</strong>
+                                <span class="badge-default">Default</span>
+                            </div>
+                            <div class="address-text">
+                                Red Lion Business Center<br>
+                                Greater London, Surbiton, England, United Kingdom.<br>
+                                KT6 7QD
+                            </div>
+                            <button class="edit-icon" onclick="openAddressModal()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="shop.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <a href="customize.html" class="nav-item-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </a>
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+    </nav>
+
+    <script src="mobile/js/mobile.js?v=20251230"></script>
+    <script src="mobile/js/checkout.js?v=20251230"></script>
+</body>
+</html>

@@ -402,6 +402,19 @@ const colors = [
 let selectedColorName = null;
 let selectedColorURL  = null;
 
+// Check for pre-selected color from shop page BEFORE gallery init
+const shopPreSelectedUrl = sessionStorage.getItem('selectedColorUrl');
+const shopPreSelectedName = sessionStorage.getItem('selectedColorName');
+
+if (shopPreSelectedUrl && shopPreSelectedName) {
+    selectedColorName = shopPreSelectedName;
+    selectedColorURL = shopPreSelectedUrl;
+    // Update main image immediately
+    if (mainImage) {
+        mainImage.src = shopPreSelectedUrl;
+    }
+}
+
 function initStaticGallery() {
     if (!thumbButtons.length) return;
 
@@ -420,6 +433,21 @@ function initStaticGallery() {
         });
     });
 
+    // Check if we have a pre-selected color from shop page
+    const preSelectedUrl = sessionStorage.getItem('selectedColorUrl');
+    if (preSelectedUrl) {
+        // Find matching thumbnail button
+        const matchingThumb = thumbButtons.find(btn => btn.dataset.image === preSelectedUrl);
+        if (matchingThumb) {
+            setActive(matchingThumb);
+            if (mainImage) {
+                mainImage.src = preSelectedUrl;
+            }
+            return; // Don't use default
+        }
+    }
+
+    // Default behavior if no pre-selection
     const initialActive = thumbButtons.find(btn => btn.classList.contains('active')) || thumbButtons[0];
     if (initialActive) {
         setActive(initialActive);
@@ -442,6 +470,10 @@ initStaticGallery();
 
 /* BUILD COLOR GRID */
 
+// Check if coming from shop page with pre-selected color
+const preSelectedColorName = sessionStorage.getItem('selectedColorName');
+const preSelectedColorUrl = sessionStorage.getItem('selectedColorUrl');
+
 colors.forEach(([name, url], i) => {
     const div = document.createElement("div");
     div.className = "color-thumb";
@@ -449,18 +481,22 @@ colors.forEach(([name, url], i) => {
     div.setAttribute('data-color-name', name);
     div.setAttribute('title', name);
 
-    // Only restore selection if there are items in basket for this color
+    // Pre-select color from shop page OR restore from basket
     const savedColorName = sessionStorage.getItem('selectedColorName');
     const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
     const hasItemsForColor = basket.some(item => item.color === name);
     
-    if (savedColorName && savedColorName === name && hasItemsForColor) {
+    // Pre-select if: coming from shop with this color OR has items in basket for this color
+    if (savedColorName && savedColorName === name) {
         div.classList.add("active");
         selectedColorName = name;
         selectedColorURL = url;
         mainImage.src = url;
+        // Update gallery thumbnails if function exists
+        if (window.setGalleryActiveBySrc) {
+            window.setGalleryActiveBySrc(url);
+        }
     }
-    // No default selection if no saved color or no items
 
     div.onclick = () => {
         // Check if there are unsaved items

@@ -4,8 +4,628 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Positions - Branded UK</title>
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions.css">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260101">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions.css?v=20260101">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions-desktop.css?v=20260101">
+    <style>
+        /* Logo e Search expand per header uniforme */
+        .searchbar-header__brand-img { width: 40px; height: 40px; object-fit: contain; }
+        .searchbar-header__brand-text { color: #a855f7 !important; }
+        
+        .searchbar-header__search-expand {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            transition: width 0.3s ease-in-out;
+            margin-right: 8px;
+        }
+        .searchbar-header__search-expand:focus-within { width: 320px; }
+        .searchbar-header__search-expand .search-input-expand {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            border-radius: 9999px;
+            padding: 12px 44px 12px 20px;
+            font-size: 15px;
+            background: #f3f4f6;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+        .searchbar-header__search-expand .search-input-expand::placeholder { color: transparent; transition: color 0.2s ease; }
+        .searchbar-header__search-expand:focus-within .search-input-expand::placeholder { color: #9ca3af; }
+        .searchbar-header__search-expand .search-icon-expand {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+        .searchbar-header__search-expand:focus-within .search-icon-expand { color: #a855f7; }
+        
+        /* Social buttons header - 3D style like mobile */
+        .social-buttons-header { display: flex; align-items: center; gap: 10px; margin: 0; padding: 0; list-style: none; }
+        .social-buttons-header li { list-style: none; }
+        .social-buttons-header a { position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; padding: 3px; box-sizing: border-box; text-decoration: none; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); background: linear-gradient(0deg, #ddd, #fff); transition: all 0.3s ease; }
+        .social-buttons-header a:hover { transform: translateY(2px); }
+        .social-buttons-header .social-icon { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(0deg, #fff, #ddd); border-radius: 50%; transition: all 0.3s ease; }
+        .social-buttons-header .social-icon svg { width: 14px; height: 14px; transition: fill 0.3s ease; }
+        /* Facebook - always blue */
+        .social-buttons-header .social-facebook .social-icon svg { fill: #1877f2; }
+        .social-buttons-header .social-facebook:hover { box-shadow: 0 6px 20px rgba(24, 119, 242, 0.6); transform: translateY(-2px); }
+        .social-buttons-header .social-facebook:hover .social-icon { background: linear-gradient(0deg, #e7f3ff, #fff); }
+        /* Instagram - always pink */
+        .social-buttons-header .social-instagram .social-icon svg { fill: #e4405f; }
+        .social-buttons-header .social-instagram:hover { box-shadow: 0 6px 20px rgba(228, 64, 95, 0.6); transform: translateY(-2px); }
+        .social-buttons-header .social-instagram:hover .social-icon { background: linear-gradient(0deg, #fce4ec, #fff); }
+        /* LinkedIn - always blue */
+        .social-buttons-header .social-linkedin .social-icon svg { fill: #0a66c2; }
+        .social-buttons-header .social-linkedin:hover { box-shadow: 0 6px 20px rgba(10, 102, 194, 0.6); transform: translateY(-2px); }
+        .social-buttons-header .social-linkedin:hover .social-icon { background: linear-gradient(0deg, #e8f4fc, #fff); }
+        /* YouTube - always red */
+        .social-buttons-header .social-youtube .social-icon svg { fill: #ff0000; }
+        .social-buttons-header .social-youtube:hover { box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6); transform: translateY(-2px); }
+        .social-buttons-header .social-youtube:hover .social-icon { background: linear-gradient(0deg, #ffe5e5, #fff); }
+        /* Pinterest - always red */
+        .social-buttons-header .social-pinterest .social-icon svg { fill: #bd081c; }
+        .social-buttons-header .social-pinterest:hover { box-shadow: 0 6px 20px rgba(189, 8, 28, 0.6); transform: translateY(-2px); }
+        .social-buttons-header .social-pinterest:hover .social-icon { background: linear-gradient(0deg, #fce4e8, #fff); }
+        
+        /* Digitizing Fee row */
+        .digitizing-fee-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-top: 8px;
+            border-top: 1px dashed #e5e7eb;
+            font-size: 13px;
+            color: #1f2937;
+        }
+        .digitizing-fee-row small {
+            color: #6b7280;
+            font-size: 11px;
+        }
+        
+        /* Logo Status Indicator */
+        #customizationCostsList .section.embroidery,
+        #customizationCostsList .section.print-method {
+            position: relative;
+        }
+        .logo-status-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .logo-status--pending {
+            background: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+        }
+        .logo-status--ready {
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+        }
+        .logo-status-indicator svg {
+            display: block;
+        }
+        /* Header Top Basket */
+        .header-top-basket {
+            position: relative;
+            margin-left: 16px;
+        }
+        .header-top-basket-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #7c3aed;
+            transition: all 0.2s ease;
+        }
+        .header-top-basket-btn:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: #a855f7;
+        }
+        .header-top-basket-btn svg {
+            stroke: currentColor;
+            fill: none;
+        }
+        .header-top-basket-badge {
+            background: #f97316;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        .header-top-basket-badge:empty,
+        .header-top-basket-badge[data-count="0"] {
+            display: none;
+        }
+        /* Basket Dropdown */
+        .header-basket-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+        .header-top-basket:hover .header-basket-dropdown,
+        .header-basket-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(4px);
+        }
+        .header-basket-dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header-basket-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .header-basket-clear {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .header-basket-clear:hover {
+            background: #fef2f2;
+        }
+        .header-basket-items {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .header-basket-empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 24px;
+            font-size: 13px;
+        }
+        .header-basket-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .header-basket-item:hover {
+            background: #f9fafb;
+        }
+        .header-basket-item-img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+        .header-basket-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .header-basket-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .header-basket-item-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .header-basket-item-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #7c3aed;
+            margin-top: 4px;
+        }
+        .header-basket-item-remove {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+        .header-basket-item-remove:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+        .header-basket-dropdown-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .header-basket-view-btn {
+            display: block;
+            text-align: center;
+            background: #7c3aed;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .header-basket-view-btn:hover {
+            background: #6d28d9;
+        }
+        /* Account icon in searchbar - purple background like phone/whatsapp */
+        .searchbar-header__account .searchbar-header__action-ring {
+            background: #7c3aed;
+        }
+        .searchbar-header__account .searchbar-header__action-icon {
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+        /* Account Panel Overlay */
+        .account-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .account-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .account-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: transparent;
+            border-radius: 20px;
+            width: 600px;
+            max-width: 90vw;
+            height: 500px;
+            max-height: 80vh;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 9999;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+        }
+        .account-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .account-panel-header {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+        .account-close-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .account-close-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: scale(1.05);
+        }
+        .account-close-btn svg {
+            stroke: #fff;
+        }
+        .account-forms-container {
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .account-arrow {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .account-arrow.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .account-arrow:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .account-arrow svg {
+            stroke: #fff;
+        }
+        .account-forms-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+        .account-form-holder {
+            flex-basis: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            padding: 24px;
+        }
+        .account-form-holder:hover {
+            flex-basis: 55%;
+        }
+        .signin-form {
+            background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%);
+        }
+        .signup-form {
+            background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%);
+        }
+        .account-form-icon {
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .account-form-icon svg {
+            stroke: #fff;
+        }
+        .account-form-icon span {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .account-form-content {
+            position: absolute;
+            width: 85%;
+            top: 100%;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .account-form-holder.active {
+            flex-basis: 100%;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+        }
+        .account-form-holder.active .account-form-icon {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            flex-direction: row;
+            gap: 12px;
+        }
+        .account-form-holder.active .account-form-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+        .account-form-holder.active .account-form-icon span {
+            font-size: 1rem;
+        }
+        .account-form-holder.active .account-form-content {
+            top: 80px;
+            opacity: 1;
+            width: 80%;
+            max-width: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .account-form-holder.inactive {
+            flex-basis: 0%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .account-input-group {
+            position: relative;
+            margin-bottom: 28px;
+        }
+        .account-input-group.half {
+            flex: 1;
+        }
+        .account-input-row {
+            display: flex;
+            gap: 16px;
+        }
+        .account-input-group label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .account-input-group input {
+            width: 100%;
+            padding: 10px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+        .account-input-group input:focus,
+        .account-input-group input:valid {
+            border-bottom-color: #fff;
+        }
+        .account-input-group input:focus + label,
+        .account-input-group input:valid + label {
+            top: -20px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .account-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .account-submit-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .account-submit-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: scale(1.05);
+        }
+        .account-submit-btn svg {
+            stroke: #fff;
+        }
+        .account-forgot-link {
+            display: block;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .account-forgot-link:hover {
+            color: #fff;
+        }
+        .account-logged-in {
+            padding: 50px 40px;
+            text-align: center;
+            background: #fff;
+            height: 100%;
+        }
+        .account-user-avatar {
+            margin-bottom: 16px;
+        }
+        .account-user-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .account-user-email {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        .account-user-details {
+            text-align: left;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .account-user-details p {
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .account-user-details p:last-child {
+            margin-bottom: 0;
+        }
+        .account-user-details strong {
+            color: #1f2937;
+        }
+        .account-logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: #ef4444;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .account-logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -13,17 +633,23 @@
     <div class="header-top">
         <div class="header-container">
             <div class="header-top-left">
-                <p class="header-top-message">WELCOME TO BRANDEDUK, YOUR WORKWEAR EXPERTS.</p>
+                <ul class="social-buttons-header">
+                    <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook"><span class="social-icon"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span></a></li>
+                    <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram"><span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span></a></li>
+                    <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><span class="social-icon"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span></a></li>
+                    <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube"><span class="social-icon"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span></a></li>
+                    <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest"><span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg></span></a></li>
+                </ul>
             </div>
             <div class="header-top-right">
                 <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
                 <nav class="header-top-links" aria-label="utility navigation">
-                    <a href="#">Blog</a>
-                    <a href="#">Contact</a>
-                    <a href="#">My Account</a>
-                    <a href="#">Sign In</a>
-                    <span class="header-top-divider" aria-hidden="true">/</span>
-                    <a href="#">Register</a>
+                    <a href="tel:02089742722" class="header-top-phone">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        0208 974 2722
+                    </a>
                     <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
                         <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
                             <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
@@ -31,6 +657,15 @@
                             <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
                         </button>
                     </div>
+                    <a class="header-top-basket-link" href="brandeduk.com/customize-positions-pc.html" aria-label="View quote">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 6h15l-1.5 9h-12z"/>
+                            <circle cx="9" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                            <path d="M6 6L5 3H2"/>
+                        </svg>
+                        <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
+                    </a>
                 </nav>
             </div>
         </div>
@@ -39,53 +674,20 @@
     <div class="searchbar-header">
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
-                <a class="searchbar-header__brand" href="home.html" aria-label="brandedUK home">
-                    <span class="searchbar-header__brand-badge" aria-hidden="true">bd</span>
+                <a class="searchbar-header__brand" href="brandeduk.com/home-pc.html" aria-label="brandedUK home">
+                    <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
                     <span class="searchbar-header__brand-text">branded<span class="searchbar-header__brand-text-highlight">UK</span></span>
                 </a>
 
-                <form class="searchbar-header__search" role="search" method="get" action="search-results.html">
-                    <div class="searchbar-header__categories">
-                        <button class="searchbar-header__categories-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                            <span class="searchbar-header__categories-label">Categories</span>
-                            <span class="searchbar-header__categories-arrow" aria-hidden="true">&#9662;</span>
-                        </button>
-                        <ul class="searchbar-header__dropdown" role="listbox" aria-label="Product categories" hidden>
-                            <li class="searchbar-header__dropdown-item">All Categories</li>
-                            <li class="searchbar-header__dropdown-item">T-Shirts</li>
-                            <li class="searchbar-header__dropdown-item">Polo Shirts</li>
-                            <li class="searchbar-header__dropdown-item">Hoodies &amp; Sweatshirts</li>
-                            <li class="searchbar-header__dropdown-item">Jackets &amp; Softshell</li>
-                            <li class="searchbar-header__dropdown-item">Hi-Vis Clothing</li>
-                            <li class="searchbar-header__dropdown-item">Work Trousers</li>
-                            <li class="searchbar-header__dropdown-item">Fleeces</li>
-                            <li class="searchbar-header__dropdown-item">Headwear &amp; Accessories</li>
-                            <li class="searchbar-header__dropdown-item searchbar-header__dropdown-item--sustainable">Sustainable / Recycled &amp; Organic</li>
-                        </ul>
-                    </div>
-
-                    <span class="searchbar-header__divider" aria-hidden="true"></span>
-
-                    <div class="searchbar-header__input-wrap">
-                        <label class="visually-hidden" for="searchbarHeaderInput">Search products</label>
-                        <input
-                            id="searchbarHeaderInput"
-                            class="searchbar-header__input"
-                            type="search"
-                            name="s"
-                            placeholder="Search..."
-                            autocomplete="off"
-                        >
-                        <button class="searchbar-header__submit" type="submit" aria-label="Search">
-                            <svg class="searchbar-header__icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="11" cy="11" r="7"></circle>
-                                <line x1="16.5" y1="16.5" x2="22" y2="22"></line>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-
                 <div class="searchbar-header__actions">
+                    <div class="searchbar-header__search-expand">
+                        <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                        <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+
                     <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
                         <span class="searchbar-header__action-ring is-animating">
                             <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -102,13 +704,13 @@
                         </span>
                     </a>
 
-                    <a class="searchbar-header__action searchbar-header__cart" href="customize-positions.html" aria-label="View basket">
+                    <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
                         <span class="searchbar-header__action-ring is-animating">
                             <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
                             </svg>
                         </span>
-                        <span class="searchbar-header__cart-badge" id="cartBadge" style="display:none;">0</span>
                     </a>
                 </div>
             </div>
@@ -546,7 +1148,7 @@
 
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
-    <a href="home.html">Home</a> > 
+    <a href="brandeduk.com/home-pc.html">Home</a> > 
     <a href="product-detail.html">Back to product details</a> > 
     <span>Customising Slammer oversized brushed sweatshirt (STSU856)</span>
 </div>
@@ -617,7 +1219,7 @@
             </div>
         </div>
 
-        <div class="positions-grid">
+        <div class="positions-grid" id="positionOptions">
             <!-- Left Chest -->
             <div class="position-card" data-position="left-breast" data-embroidery="5.00" data-print="3.50">
                 <div class="position-card-header">
@@ -626,30 +1228,31 @@
                         <span>Left Chest</span>
                     </label>
                     <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
                             <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £5.00</span>
+                            <span class="price-value">£5.00</span>
                         </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
                             <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £3.50</span>
+                            <span class="price-value">£3.50</span>
                         </button>
                     </div>
                 </div>
                 <div class="position-preview">
                     <img class="position-placeholder" src="https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png" alt="Left Chest">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
+                    <div class="logo-overlay-box left-chest" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
                     </div>
                 </div>
-                <div class="customization-pill" hidden>Customization ready</div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
             </div>
 
             <!-- Right Chest -->
@@ -660,30 +1263,136 @@
                         <span>Right Chest</span>
                     </label>
                     <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
                             <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £5.00</span>
+                            <span class="price-value">£5.00</span>
                         </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
                             <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £3.50</span>
+                            <span class="price-value">£3.50</span>
                         </button>
                     </div>
                 </div>
                 <div class="position-preview">
                     <img class="position-placeholder" src="https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg" alt="Right Chest">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
+                    <div class="logo-overlay-box right-chest" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
                     </div>
                 </div>
-                <div class="customization-pill" hidden>Customization ready</div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
+            </div>
+
+            <!-- Front Center -->
+            <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="3.50">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="small-centre-front">
+                        <span>Front Center</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">£5.00</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£3.50</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Front Center">
+                    <div class="logo-overlay-box front-center" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
+            </div>
+
+            <!-- Large Front -->
+            <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="6.00">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="large-front-center">
+                        <span>Large Front</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">POA</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£6.00">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£6.00</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Large Front">
+                    <div class="logo-overlay-box large-front" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
+            </div>
+
+            <!-- Back Large -->
+            <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="5.00">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="large-back">
+                        <span>Back Large</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">POA</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£5.00">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£5.00</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png" alt="Back Large">
+                    <div class="logo-overlay-box large-back" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
             </div>
 
             <!-- Left Sleeve -->
@@ -694,30 +1403,31 @@
                         <span>Left Sleeve</span>
                     </label>
                     <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
                             <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £5.00</span>
+                            <span class="price-value">£5.00</span>
                         </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
                             <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £3.50</span>
+                            <span class="price-value">£3.50</span>
                         </button>
                     </div>
                 </div>
                 <div class="position-preview">
                     <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Left Sleeve">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
+                    <div class="logo-overlay-box left-sleeve" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
                     </div>
                 </div>
-                <div class="customization-pill" hidden>Customization ready</div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                    <div class="logo-added-pill">LOGO READY</div>
+                </div>
             </div>
 
             <!-- Right Sleeve -->
@@ -728,102 +1438,100 @@
                         <span>Right Sleeve</span>
                     </label>
                     <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
                             <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £5.00</span>
+                            <span class="price-value">£5.00</span>
                         </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
+                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
                             <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £3.50</span>
+                            <span class="price-value">£3.50</span>
                         </button>
                     </div>
                 </div>
                 <div class="position-preview">
                     <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Right Sleeve" style="transform: scaleX(-1);">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
+                    <div class="logo-overlay-box right-sleeve" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
                     </div>
                 </div>
-                <div class="customization-pill" hidden>Customization ready</div>
-            </div>
-
-            <!-- Center Chest -->
-            <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="3.50">
-                <div class="position-card-header">
-                    <label class="position-checkbox">
-                        <input type="checkbox" name="position" value="small-centre-front">
-                        <span>Center Chest</span>
-                    </label>
-                    <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £5.00">
-                            <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £5.00</span>
-                        </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £3.50">
-                            <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £3.50</span>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="delete-logo-btn" title="Remove logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                         </button>
                     </div>
+                    <div class="logo-added-pill">LOGO READY</div>
                 </div>
-                <div class="position-preview">
-                    <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Center Chest">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
-                    </div>
-                </div>
-                <div class="customization-pill" hidden>Customization ready</div>
-            </div>
-
-            <!-- Center Back -->
-            <div class="position-card" data-position="large-back" data-embroidery="7.00" data-print="5.00">
-                <div class="position-card-header">
-                    <label class="position-checkbox">
-                        <input type="checkbox" name="position" value="large-back">
-                        <span>Center Back</span>
-                    </label>
-                    <div class="position-prices">
-                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="+ £7.00">
-                            <span class="price-label">EMBROIDERY</span>
-                            <span class="price-value">+ £7.00</span>
-                        </button>
-                        <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="+ £5.00">
-                            <span class="price-label">PRINT</span>
-                            <span class="price-value">+ £5.00</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="position-preview">
-                    <img class="position-placeholder" src="https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png" alt="Center Back">
-                    <div class="position-preview-content" hidden>
-                        <button type="button" class="preview-delete-btn" title="Remove customization">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                        <img class="preview-image" alt="Customization preview" hidden>
-                        <div class="preview-text" hidden></div>
-                    </div>
-                </div>
-                <div class="customization-pill" hidden>Customization ready</div>
             </div>
         </div>
     </main>
 </div>
+
+<!-- DESIGN UPLOAD MODAL - Simplified from mobile -->
+<div class="design-modal-overlay" id="designModal">
+    <div class="design-modal">
+        <div class="design-modal-header">
+            <h3 id="designModalTitle">Upload Logo</h3>
+            <button class="design-modal-close" id="closeDesignModal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="design-modal-body">
+            <!-- Upload Logo Section -->
+            <div class="design-section" id="uploadLogoSection">
+                <h4 class="design-section-title" id="uploadLogoTitle">Drop or select your logo</h4>
+                <div class="upload-dropzone" id="designUploadZone">
+                    <input type="file" id="designLogoUpload" accept="image/*,.pdf,.ai,.svg,.eps" hidden>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <p class="dropzone-text">Drag & drop or <span class="browse-link">Browse image</span></p>
+                    <p class="dropzone-formats">JPG, PNG, SVG, PDF, AI, EPS • Max 5MB</p>
+                </div>
+                <div class="upload-preview-container" id="designUploadPreview" hidden>
+                    <img src="" alt="" class="upload-preview-img" id="designPreviewImg">
+                    <button class="upload-remove-btn" id="removeUploadedLogo" title="Remove logo">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                    <!-- Remove BG button -->
+                    <button class="toggle-bg-btn" id="removeBgBtn" title="Remove background">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18"/>
+                            <path d="M15 3v18"/>
+                            <path d="M3 9h18"/>
+                            <path d="M3 15h18"/>
+                        </svg>
+                        <span>Remove BG</span>
+                    </button>
+                </div>
+                <canvas id="bgRemovalCanvas" style="display: none;"></canvas>
+            </div>
+        </div>
+
+        <!-- Apply Button -->
+        <div class="design-modal-footer">
+            <button class="apply-design-btn" id="applyDesignBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Add to Product
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notification" id="toastNotification"></div>
 
 <!-- ADD LOGO MODAL -->
 <div id="addLogoModal" class="modal-overlay add-logo-overlay" style="display: none;">
@@ -879,233 +1587,6 @@
     </div>
 </div>
 
-<!-- CUSTOM UPLOAD MODAL - Personalise Your Design -->
-<div id="customUploadModal" class="modal-overlay custom-upload-overlay" style="display: none;">
-    <div class="design-popup">
-        <!-- Header -->
-        <div class="design-popup__header">
-            <button type="button" class="design-popup__back" id="designPopupBack">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
-            <h2 class="design-popup__title">Personalise Your Design</h2>
-            <button type="button" class="design-popup__close" onclick="closeCustomUploadModal()">&times;</button>
-        </div>
-
-        <!-- Content - 3 Columns -->
-        <div class="design-popup__content">
-            <!-- Column 1: Upload Logo -->
-            <div class="design-popup__column design-popup__column--logo">
-                <h3 class="design-popup__subtitle">Upload Logo</h3>
-                
-                <div class="logo-upload-area" id="customUploadDropArea">
-                    <div class="logo-upload-area__icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5">
-                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
-                            <path d="M14 8a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                            <path d="M12 16v5M12 21l-3-3M12 21l3-3" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <p class="logo-upload-area__text">Drag & drop or <span class="logo-upload-area__link">Browse image</span></p>
-                    <input type="file" id="customUploadFile" accept="image/png,image/jpeg,image/svg+xml" hidden>
-                </div>
-
-                <!-- Progress bar -->
-                <div class="logo-upload-progress hidden" id="customUploadFileInfo">
-                    <div class="logo-upload-progress__bar">
-                        <div class="logo-upload-progress__fill" id="customUploadProgressBar"></div>
-                    </div>
-                    <span class="logo-upload-progress__text" id="customUploadProgressText">0%</span>
-                </div>
-
-                <div class="upload-error hidden" id="customUploadError"></div>
-
-                <!-- Preview Box - Anteprima Logo -->
-                <div class="logo-preview-box" id="customUploadPreviewBox">
-                    <div class="logo-preview-box__placeholder" id="logoPlaceholder">
-                        <svg class="logo-preview-box__icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <path d="M21 15l-5-5L5 21"/>
-                        </svg>
-                        <span class="logo-preview-box__text">Logo Preview</span>
-                    </div>
-                    <img id="customUploadPreview" class="logo-preview-box__image hidden" alt="Upload preview">
-                </div>
-
-                <!-- Replace/Remove/RemoveBG buttons -->
-                <div class="logo-actions hidden" id="logoActions">
-                    <button type="button" class="logo-actions__btn logo-actions__btn--replace" id="logoReplaceBtn">Replace</button>
-                    <button type="button" class="logo-actions__btn logo-actions__btn--removebg" id="logoRemoveBgBtn" title="Remove white or solid color background">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                            <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
-                        </svg>
-                        Remove BG
-                    </button>
-                    <button type="button" class="logo-actions__btn logo-actions__btn--remove" id="logoRemoveBtn">Remove</button>
-                </div>
-            </div>
-
-            <!-- Column 2: Add Text -->
-            <div class="design-popup__column design-popup__column--text">
-                <h3 class="design-popup__subtitle">Add Text</h3>
-                
-                <textarea id="customUploadText" class="text-input" placeholder="Enter your custom text..."></textarea>
-
-                <!-- Font Selector Custom -->
-                <div class="font-selector-wrapper">
-                    <button type="button" id="fontSelectorBtn" class="font-selector__trigger">
-                        <span class="font-selector__preview" style="font-family: Arial;">Your Text</span>
-                        <span class="font-selector__name">Arial</span>
-                        <svg class="font-selector__arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                    <div id="fontSelectorDropdown" class="font-selector__dropdown hidden">
-                        <div class="font-selector__option" data-font="Arial">
-                            <span class="font-selector__option-preview" style="font-family: Arial;">Your Text</span>
-                            <span class="font-selector__option-name">Arial</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Bauhaus 93">
-                            <span class="font-selector__option-preview" style="font-family: 'Bauhaus 93';">Your Text</span>
-                            <span class="font-selector__option-name">Bauhaus 93</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Berlin Sans FB">
-                            <span class="font-selector__option-preview" style="font-family: 'Berlin Sans FB';">Your Text</span>
-                            <span class="font-selector__option-name">Berlin Sans FB</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Berlin Sans FB Demi">
-                            <span class="font-selector__option-preview" style="font-family: 'Berlin Sans FB Demi';">Your Text</span>
-                            <span class="font-selector__option-name">Berlin Sans FB Demi</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Broadway">
-                            <span class="font-selector__option-preview" style="font-family: 'Broadway';">Your Text</span>
-                            <span class="font-selector__option-name">Broadway</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Forte">
-                            <span class="font-selector__option-preview" style="font-family: 'Forte';">Your Text</span>
-                            <span class="font-selector__option-name">Forte</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Matura MT Script Capitals">
-                            <span class="font-selector__option-preview" style="font-family: 'Matura MT Script Capitals';">Your Text</span>
-                            <span class="font-selector__option-name">Matura Script</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Georgia">
-                            <span class="font-selector__option-preview" style="font-family: Georgia;">Your Text</span>
-                            <span class="font-selector__option-name">Georgia</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Times New Roman">
-                            <span class="font-selector__option-preview" style="font-family: 'Times New Roman';">Your Text</span>
-                            <span class="font-selector__option-name">Times New Roman</span>
-                        </div>
-                        <div class="font-selector__option" data-font="Impact">
-                            <span class="font-selector__option-preview" style="font-family: Impact;">Your Text</span>
-                            <span class="font-selector__option-name">Impact</span>
-                        </div>
-                    </div>
-                    <!-- Hidden select for form compatibility -->
-                    <select id="fontSelector" class="hidden">
-                        <option value="Arial">Arial</option>
-                    </select>
-                </div>
-
-                <!-- Text Color -->
-                <div class="text-control text-control--colors">
-                    <label class="text-control__label">Text Color</label>
-                    <div class="color-picker">
-                        <button type="button" class="color-picker__swatch color-picker__swatch--active" data-color="#1f2937" style="background:#1f2937"></button>
-                        <button type="button" class="color-picker__swatch" data-color="#9ca3af" style="background:#9ca3af"></button>
-                        <button type="button" class="color-picker__swatch" data-color="#ef4444" style="background:#ef4444"></button>
-                        <button type="button" class="color-picker__swatch" data-color="#3b82f6" style="background:#3b82f6"></button>
-                        <button type="button" class="color-picker__swatch" data-color="#22c55e" style="background:#22c55e"></button>
-                        <button type="button" class="color-picker__swatch" data-color="#eab308" style="background:#eab308"></button>
-                        <label class="color-picker__none">
-                            <input type="checkbox" id="textColorNone">
-                            None
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Stroke Color -->
-                <div class="text-control text-control--colors">
-                    <label class="text-control__label">Stroke Color</label>
-                    <div class="color-picker">
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke color-picker__swatch--active" data-color="#1f2937" style="background:#1f2937"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#9ca3af" style="background:#9ca3af"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#ef4444" style="background:#ef4444"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#3b82f6" style="background:#3b82f6"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#22c55e" style="background:#22c55e"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#eab308" style="background:#eab308"></button>
-                        <button type="button" class="color-picker__swatch color-picker__swatch--stroke" data-color="#a855f7" style="background:#a855f7"></button>
-                    </div>
-                    <select id="strokeColorSelect" class="text-control__select text-control__select--small">
-                        <option value="">Stroke Color</option>
-                        <option value="#1f2937">Dark</option>
-                        <option value="#9ca3af">Gray</option>
-                        <option value="#ef4444">Red</option>
-                        <option value="#3b82f6">Blue</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Column 3: Clipart -->
-            <div class="design-popup__column design-popup__column--clipart">
-                <h3 class="design-popup__subtitle">Clipart</h3>
-                
-                <!-- Search -->
-                <div class="clipart-search">
-                    <svg class="clipart-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="M21 21l-4.35-4.35"/>
-                    </svg>
-                    <input type="text" id="clipartSearch" class="clipart-search__input" placeholder="Search clipart...">
-                </div>
-
-                <!-- Categories -->
-                <div class="clipart-categories">
-                    <button type="button" class="clipart-categories__chip clipart-categories__chip--active" data-category="trending">Trending</button>
-                    <button type="button" class="clipart-categories__chip" data-category="sports">Sports</button>
-                    <button type="button" class="clipart-categories__chip" data-category="shapes">Shapes</button>
-                    <button type="button" class="clipart-categories__chip" data-category="icons">Icons</button>
-                </div>
-
-                <!-- Clipart Grid -->
-                <div class="clipart-grid" id="clipartGrid">
-                    <button type="button" class="clipart-grid__item" data-clipart="soccer">⚽</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="basketball">🏀</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="trophy">🏆</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="dumbbell">🏋️</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="star">⭐</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="heart">❤️</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="sparkle">✨</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="diamond">💎</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="thumbsup">👍</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="tshirt">👕</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="bag">🛍️</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="gamepad">🎮</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="coffee">☕</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="megaphone">📣</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="speaker">📢</button>
-                    <button type="button" class="clipart-grid__item" data-clipart="camera">📷</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="design-popup__footer">
-            <button type="button" class="design-popup__apply" id="customUploadContinue">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                Apply Design To Product
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- QUOTE REQUEST POPUP -->
 <div id="quoteRequestPopup" class="quote-popup-overlay" style="display:none;">
     <div class="quote-popup">
@@ -1138,9 +1619,343 @@
     </div>
 </div>
 
-<script src="brandedukv15-child/assets/js/core.js"></script>
-<script src="brandedukv15-child/assets/js/header.js"></script>
-<script src="brandedukv15-child/assets/js/vat-toggle.js"></script>
-<script src="brandedukv15-child/assets/js/pages/customize-positions.js"></script>
+<!-- Account Panel Overlay -->
+<div class="account-overlay" id="accountOverlay"></div>
+
+<!-- Account Sign In / Sign Up Panel -->
+<div class="account-panel" id="accountPanel">
+    <div class="account-panel-header">
+        <button class="account-close-btn" id="accountCloseBtn" aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="account-forms-container">
+        <!-- Arrow Back -->
+        <div class="account-arrow" id="accountArrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </div>
+        
+        <div class="account-forms-wrapper">
+            <!-- Sign In Form -->
+            <div class="account-form-holder signin-form" id="signinForm">
+                <div class="account-form-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Sign In</span>
+                </div>
+                <div class="account-form-content">
+                    <form id="signinFormData">
+                        <div class="account-input-group">
+                            <input type="email" id="signinEmail" required>
+                            <label for="signinEmail">Email</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="password" id="signinPassword" required>
+                            <label for="signinPassword">Password</label>
+                        </div>
+                        <div class="account-form-actions">
+                            <button type="submit" class="account-submit-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <a href="#" class="account-forgot-link">Forgot Password?</a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div class="account-form-holder signup-form" id="signupForm">
+                <div class="account-form-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="17" y1="11" x2="23" y2="11"></line>
+                    </svg>
+                    <span>Sign Up</span>
+                </div>
+                <div class="account-form-content">
+                    <form id="signupFormData">
+                        <div class="account-input-row">
+                            <div class="account-input-group half">
+                                <input type="text" id="signupFirstName" required>
+                                <label for="signupFirstName">First Name</label>
+                            </div>
+                            <div class="account-input-group half">
+                                <input type="text" id="signupLastName" required>
+                                <label for="signupLastName">Last Name</label>
+                            </div>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="email" id="signupEmail" required>
+                            <label for="signupEmail">Email</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="tel" id="signupPhone" required>
+                            <label for="signupPhone">Phone Number</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="text" id="signupCompany">
+                            <label for="signupCompany">Company Name (optional)</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="password" id="signupPassword" required>
+                            <label for="signupPassword">Password</label>
+                        </div>
+                        <div class="account-form-actions">
+                            <button type="submit" class="account-submit-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Logged In View -->
+    <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
+        <div class="account-user-avatar">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#8455f4" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 14c-2.5 0-4.5-2-4.5-4.5S9.5 5 12 5s4.5 2 4.5 4.5S14.5 14 12 14z"/>
+                <path d="M4.5 19.5c0-3 3.5-5 7.5-5s7.5 2 7.5 5"/>
+            </svg>
+        </div>
+        <h3 class="account-user-name" id="accountUserName">Welcome!</h3>
+        <p class="account-user-email" id="accountUserEmail"></p>
+        <div class="account-user-details" id="accountUserDetails"></div>
+        <button class="account-logout-btn" id="accountLogoutBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sign Out
+        </button>
+    </div>
+</div>
+
+<script src="brandedukv15-child/assets/js/core.js?v=20260101i"></script>
+<script src="brandedukv15-child/assets/js/header.js?v=20260101i"></script>
+<script src="brandedukv15-child/assets/js/vat-toggle.js?v=20260101i"></script>
+<script src="brandedukv15-child/assets/js/pages/customize-positions.js?v=20260101j"></script>
+<script>
+// Account Panel functionality
+(function() {
+    const accountBtn = document.getElementById('accountBtn');
+    const accountPanel = document.getElementById('accountPanel');
+    const accountOverlay = document.getElementById('accountOverlay');
+    const accountCloseBtn = document.getElementById('accountCloseBtn');
+    const accountArrow = document.getElementById('accountArrow');
+    const signinForm = document.getElementById('signinForm');
+    const signupForm = document.getElementById('signupForm');
+    const signinFormData = document.getElementById('signinFormData');
+    const signupFormData = document.getElementById('signupFormData');
+    const accountLoggedIn = document.getElementById('accountLoggedIn');
+    const accountLogoutBtn = document.getElementById('accountLogoutBtn');
+    
+    if (!accountBtn || !accountPanel) return;
+    
+    const USER_SESSION_KEY = 'brandeduk-user-session';
+    
+    function checkLoggedIn() {
+        const session = localStorage.getItem(USER_SESSION_KEY);
+        if (session) {
+            const user = JSON.parse(session);
+            showLoggedInView(user);
+            return true;
+        }
+        return false;
+    }
+    
+    function showLoggedInView(user) {
+        document.querySelector('.account-forms-container').style.display = 'none';
+        accountLoggedIn.style.display = 'block';
+        document.getElementById('accountUserName').textContent = `Welcome, ${user.firstName}!`;
+        document.getElementById('accountUserEmail').textContent = user.email;
+        const detailsHtml = `
+            <p><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>
+            <p><strong>Phone:</strong> ${user.phone || 'Not provided'}</p>
+            <p><strong>Company:</strong> ${user.company || 'Not provided'}</p>
+        `;
+        document.getElementById('accountUserDetails').innerHTML = detailsHtml;
+    }
+    
+    function showFormsView() {
+        document.querySelector('.account-forms-container').style.display = 'flex';
+        accountLoggedIn.style.display = 'none';
+    }
+    
+    function openPanel() {
+        checkLoggedIn();
+        accountPanel.classList.add('active');
+        accountOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closePanel() {
+        accountPanel.classList.remove('active');
+        accountOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        resetForms();
+    }
+    
+    function resetForms() {
+        signinForm.classList.remove('active', 'inactive');
+        signupForm.classList.remove('active', 'inactive');
+        accountArrow.classList.remove('visible');
+    }
+    
+    accountBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openPanel();
+    });
+    
+    accountCloseBtn.addEventListener('click', closePanel);
+    accountOverlay.addEventListener('click', closePanel);
+    
+    signinForm.addEventListener('click', () => {
+        if (!signinForm.classList.contains('active')) {
+            signinForm.classList.add('active');
+            signinForm.classList.remove('inactive');
+            signupForm.classList.add('inactive');
+            signupForm.classList.remove('active');
+            accountArrow.classList.add('visible');
+        }
+    });
+    
+    signupForm.addEventListener('click', () => {
+        if (!signupForm.classList.contains('active')) {
+            signupForm.classList.add('active');
+            signupForm.classList.remove('inactive');
+            signinForm.classList.add('inactive');
+            signinForm.classList.remove('active');
+            accountArrow.classList.add('visible');
+        }
+    });
+    
+    accountArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetForms();
+    });
+    
+    signinFormData.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signinEmail').value;
+        const password = document.getElementById('signinPassword').value;
+        
+        try {
+            const response = await fetch('brandedukv15-child/includes/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'signin', email, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
+                showLoggedInView(result.user);
+                showAccountToast('Welcome back, ' + result.user.firstName + '!');
+            } else {
+                showAccountToast(result.message || 'Invalid credentials');
+            }
+        } catch (error) {
+            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(user));
+                showLoggedInView(user);
+                showAccountToast('Welcome back, ' + user.firstName + '!');
+            } else {
+                showAccountToast('Invalid email or password');
+            }
+        }
+    });
+    
+    signupFormData.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userData = {
+            firstName: document.getElementById('signupFirstName').value,
+            lastName: document.getElementById('signupLastName').value,
+            email: document.getElementById('signupEmail').value,
+            phone: document.getElementById('signupPhone').value,
+            company: document.getElementById('signupCompany').value,
+            password: document.getElementById('signupPassword').value
+        };
+        
+        try {
+            const response = await fetch('brandedukv15-child/includes/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'signup', ...userData })
+            });
+            const result = await response.json();
+            if (result.success) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
+                showLoggedInView(result.user);
+                showAccountToast('Account created! Welcome, ' + result.user.firstName + '!');
+            } else {
+                showAccountToast(result.message || 'Registration failed');
+            }
+        } catch (error) {
+            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
+            if (users.some(u => u.email === userData.email)) {
+                showAccountToast('Email already registered');
+                return;
+            }
+            userData.id = Date.now();
+            users.push(userData);
+            localStorage.setItem('brandeduk-users', JSON.stringify(users));
+            localStorage.setItem(USER_SESSION_KEY, JSON.stringify(userData));
+            showLoggedInView(userData);
+            showAccountToast('Account created! Welcome, ' + userData.firstName + '!');
+        }
+    });
+    
+    accountLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem(USER_SESSION_KEY);
+        showFormsView();
+        resetForms();
+        showAccountToast('You have been signed out');
+    });
+    
+    function showAccountToast(message) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10001;
+            animation: fadeInUp 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+})();
+</script>
 </body>
 </html>

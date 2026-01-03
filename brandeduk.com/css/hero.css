@@ -1,0 +1,360 @@
+/* ============================================
+   HERO EXPANDING PANELS - DESKTOP VERSION
+   ============================================ */
+
+.hero-expanding-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.hero-cont {
+    position: relative;
+    overflow: hidden;
+    height: 500px;
+    padding: 30px 40px;
+    margin: 0;
+}
+
+.hero-cont__inner {
+    position: relative;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hero-cont__inner:hover .hero-el__bg:after {
+    opacity: 1;
+}
+
+/* Individual Panel */
+.hero-el {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 19%;
+    height: 100%;
+    background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.6s 0.7s, width 0.7s, opacity 0.6s 0.7s, z-index 0s 1.3s;
+    will-change: transform, width, opacity;
+    cursor: pointer;
+}
+
+.hero-el.s--active {
+    cursor: default;
+}
+
+.hero-el__overflow {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+}
+
+.hero-el__inner {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    transition: transform 1s;
+}
+
+.hero-cont.s--inactive .hero-el__inner {
+    transform: translate3d(0, 100%, 0);
+}
+
+/* Background Image */
+.hero-el__bg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s 0.7s, width 0.6s 0.7s;
+    will-change: transform, width;
+}
+
+.hero-el.s--active .hero-el__bg {
+    transform: scale(1.05);
+}
+
+.hero-el__bg:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transition: transform 1s;
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+.hero-cont.s--inactive .hero-el__bg:before {
+    transform: translate3d(0, -100%, 0) scale(1.2);
+}
+
+.hero-el.s--active .hero-el__bg:before {
+    transition: transform 0.8s, background-position 0.8s;
+    transform: scale(1.1);
+}
+
+/* When panels are active, shift image to show head */
+.hero-el:nth-child(1).s--active .hero-el__bg:before {
+    background-position: 0% 20%;
+}
+
+.hero-el:nth-child(2).s--active .hero-el__bg:before {
+    background-position: 0% 20%;
+}
+
+.hero-el__bg:after {
+    content: "";
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.hero-el:hover .hero-el__bg:after {
+    opacity: 1;
+}
+
+.hero-cont.s--el-active .hero-el__bg:after {
+    transition: opacity 0.5s 1.4s;
+    opacity: 0 !important;
+}
+
+/* Preview Title (collapsed state) */
+.hero-el__preview-cont {
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 20px;
+    transition: all 0.3s 1.2s;
+}
+
+.hero-cont.s--inactive .hero-el__preview-cont {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.hero-cont.s--el-active .hero-el__preview-cont {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s;
+}
+
+.hero-el__heading {
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    letter-spacing: 1px;
+}
+
+/* Expanded Content */
+.hero-el__content {
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+.hero-el.s--active .hero-el__content {
+    z-index: 2;
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0.5s 1.4s;
+}
+
+.hero-el__text {
+    text-transform: uppercase;
+    font-size: 32px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.hero-el__cta {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #fff;
+    color: #6B21A8;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    border-radius: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.hero-el__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    background: #f3f4f6;
+}
+
+/* Close Button */
+.hero-el__close-btn {
+    z-index: -1;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0s 0.45s;
+    cursor: pointer;
+}
+
+.hero-el.s--active .hero-el__close-btn {
+    z-index: 5;
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0s 1.4s;
+}
+
+.hero-el__close-btn:before,
+.hero-el__close-btn:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 3px;
+    margin-top: -1.5px;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 0s;
+    border-radius: 2px;
+}
+
+.hero-el.s--active .hero-el__close-btn:before,
+.hero-el.s--active .hero-el__close-btn:after {
+    opacity: 1;
+}
+
+.hero-el__close-btn:before {
+    transform: rotate(45deg) translateX(100%);
+}
+
+.hero-el.s--active .hero-el__close-btn:before {
+    transition: all 0.3s 1.4s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+    transform: rotate(45deg) translateX(0);
+}
+
+.hero-el__close-btn:after {
+    transform: rotate(-45deg) translateX(100%);
+}
+
+.hero-el.s--active .hero-el__close-btn:after {
+    transition: all 0.3s 1.55s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+    transform: rotate(-45deg) translateX(0);
+}
+
+/* Panel Positions - 5 panels with gaps */
+.hero-el:nth-child(1) {
+    transform: translate3d(0%, 0, 0);
+}
+.hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
+.hero-el:nth-child(1) .hero-el__bg:before { 
+    transition-delay: 0s;
+    background-image: url('../../hero/images/apron.jpg');
+    background-position: 0% 50%;
+}
+
+.hero-el:nth-child(2) {
+    transform: translate3d(calc(100% + 20px), 0, 0);
+}
+.hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.1s; }
+.hero-el:nth-child(2) .hero-el__bg:before { 
+    transition-delay: 0.1s;
+    background-image: url('../../hero/images/hoodies.jpg');
+    background-position: 0% 50%;
+}
+
+.hero-el:nth-child(3) {
+    transform: translate3d(calc(200% + 40px), 0, 0);
+}
+.hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.2s; }
+.hero-el:nth-child(3) .hero-el__bg:before { 
+    transition-delay: 0.2s;
+    background-image: url('../../hero/images/beanie.jpg');
+    background-position: center top;
+}
+
+.hero-el:nth-child(4) {
+    transform: translate3d(calc(300% + 60px), 0, 0);
+}
+.hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.3s; }
+.hero-el:nth-child(4) .hero-el__bg:before { 
+    transition-delay: 0.3s;
+    background-image: url('../../hero/images/Hi-Viz.jpg');
+    background-position: center top;
+}
+
+.hero-el:nth-child(5) {
+    transform: translate3d(calc(400% + 80px), 0, 0);
+}
+.hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.4s; }
+.hero-el:nth-child(5) .hero-el__bg:before { 
+    transition-delay: 0.4s;
+    background-image: url('../../hero/images/Polo.jpg');
+    background-position: center top;
+}
+
+/* Inactive states for non-active elements */
+.hero-cont.s--el-active .hero-el:not(.s--active) {
+    transform: scale(0.5) translate3d(0, 0, 0);
+    opacity: 0;
+    transition: transform 0.95s, opacity 0.95s;
+}
+
+/* Active element - expands to full width */
+.hero-el.s--active {
+    z-index: 1;
+    width: 100%;
+    left: 0;
+    transform: translate3d(0, 0, 0) !important;
+    transition: transform 0.6s, width 0.7s 0.7s, z-index 0s;
+    border-radius: 16px;
+}
+
+.hero-el.s--active .hero-el__bg {
+    width: 100%;
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.6s;
+}

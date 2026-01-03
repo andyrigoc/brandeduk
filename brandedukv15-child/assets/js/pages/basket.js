@@ -198,7 +198,7 @@ function showEmptyBasket() {
         <tr>
             <td colspan="6" style="text-align: center; padding: 3rem;">
                 <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">Your basket is empty</p>
-                <a href="home.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; background-color: #0033a0; color: white; text-decoration: none; border-radius: 6px;">Start Shopping</a>
+                <a href="index.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; background-color: #0033a0; color: white; text-decoration: none; border-radius: 6px;">Start Shopping</a>
             </td>
         </tr>
     `;

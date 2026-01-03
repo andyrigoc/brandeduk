@@ -163,7 +163,7 @@ function loadBasketData() {
 
     if (basket.length === 0) {
         alert('No items in basket. Please add products first.');
-        window.location.href = 'home.html';
+        window.location.href = 'home-pc.html';
         return;
     }
 
@@ -316,7 +316,7 @@ function updateItemQuantity(index, delta, size) {
         sessionStorage.removeItem('positionCustomizations');
         sessionStorage.removeItem('currentPositionIndex');
         sessionStorage.removeItem('customizingProduct');
-        window.location.href = 'home.html';
+        window.location.href = 'home-pc.html';
     } else {
         loadBasketData();
     }
@@ -384,7 +384,7 @@ function confirmRemove() {
             sessionStorage.removeItem('positionCustomizations');
             sessionStorage.removeItem('currentPositionIndex');
             sessionStorage.removeItem('customizingProduct');
-            window.location.href = 'home.html';
+            window.location.href = 'home-pc.html';
         } else {
             loadBasketData();
         }

@@ -1,0 +1,886 @@
+/* ============================================
+   BrandedUK Responsive CSS - Mobile First
+   ============================================
+   
+   APPROCCIO MOBILE-FIRST:
+   - Base styles = Mobile (< 768px)
+   - @media (min-width: 768px) = Tablet
+   - @media (min-width: 1024px) = Desktop
+   
+   ============================================ */
+
+/* ========================================
+   BREAKPOINTS REFERENCE
+   ========================================
+   
+   Mobile:  0 - 767px (default/base)
+   Tablet:  768px - 1023px
+   Desktop: 1024px+
+   
+   ======================================== */
+
+/* ========================================
+   TABLET OVERRIDES (768px+)
+   ======================================== */
+@media (min-width: 768px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 80px;
+    }
+    
+    body {
+        font-size: 15px;
+    }
+    
+    /* === Header === */
+    .mobile-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: var(--header-height);
+    }
+    
+    .header-top-row {
+        order: 2;
+        width: auto;
+        padding: 0;
+        background: transparent;
+        border: none;
+    }
+    
+    .header-logo-row {
+        order: 1;
+        padding: 0;
+        gap: 24px;
+    }
+    
+    .search-wrapper-expand {
+        width: 320px;
+    }
+    
+    /* === Hero === */
+    .hero-expanding-wrapper {
+        height: 65vh;
+        min-height: 450px;
+        max-height: 600px;
+    }
+    
+    .hero-cont {
+        height: 100%;
+    }
+    
+    .hero-el {
+        min-height: 100%;
+    }
+    
+    .hero-el__bg {
+        height: 100%;
+    }
+    
+    .hero-el__heading {
+        font-size: 1.5rem;
+    }
+    
+    .hero-el__text {
+        font-size: 1.25rem;
+    }
+    
+    /* Hero Banners - closer to hero 1 */
+    .hero-banners-wrapper {
+        margin-top: 16px;
+    }
+    
+    /* === Grid Layouts === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px;
+        padding: 20px 24px;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 24px;
+        overflow-x: visible;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+    
+    /* === Cards === */
+    .product-card {
+        padding: 16px;
+    }
+    
+    .product-card-image {
+        height: 180px;
+    }
+    
+    /* === Forms === */
+    .search-input-expand {
+        font-size: 15px;
+        padding: 12px 16px 12px 44px;
+    }
+    
+    /* === Sections === */
+    .section-header {
+        padding: 20px 24px 16px;
+    }
+    
+    .section-title {
+        font-size: 1.375rem;
+    }
+    
+    /* === Footer === */
+    .mobile-footer {
+        padding: 32px 24px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+    
+    /* === Customize Page === */
+    .customize-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .product-gallery {
+        position: sticky;
+        top: calc(var(--header-height) + 20px);
+        height: fit-content;
+    }
+    
+    .gallery-main {
+        aspect-ratio: 1;
+    }
+    
+    /* === Action Bar === */
+    .action-bar-sticky {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        padding: 16px 0;
+        margin-top: 24px;
+    }
+    
+}
+
+/* ========================================
+   DESKTOP OVERRIDES (1024px+)
+   ======================================== */
+@media (min-width: 1024px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 140px;
+        --container-max: 1280px;
+        --container-padding: 40px;
+    }
+    
+    body {
+        font-size: 16px;
+        padding-bottom: 0; /* No bottom nav on desktop */
+        background: #ffffff; /* White background */
+    }
+    
+    /* === DESKTOP HEADER SOCIAL BUTTONS === */
+    .header-top .social-buttons-header {
+        display: flex;
+        gap: 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .header-top .social-buttons-header li {
+        list-style: none;
+    }
+    .header-top .social-buttons-header a {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    .header-top .social-buttons-header .social-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .header-top .social-buttons-header .social-icon svg {
+        width: 14px;
+        height: 14px;
+        transition: fill 0.3s ease;
+    }
+    /* Facebook */
+    .header-top .social-buttons-header .social-facebook .social-icon svg { fill: #1877f2; }
+    .header-top .social-buttons-header .social-facebook:hover {
+        transform: translateY(-2px);
+    }
+    /* Instagram */
+    .header-top .social-buttons-header .social-instagram .social-icon svg { fill: #e4405f; }
+    .header-top .social-buttons-header .social-instagram:hover {
+        transform: translateY(-2px);
+    }
+    /* LinkedIn */
+    .header-top .social-buttons-header .social-linkedin .social-icon svg { fill: #0a66c2; }
+    .header-top .social-buttons-header .social-linkedin:hover {
+        transform: translateY(-2px);
+    }
+    /* YouTube */
+    .header-top .social-buttons-header .social-youtube .social-icon svg { fill: #ff0000; }
+    .header-top .social-buttons-header .social-youtube:hover {
+        transform: translateY(-2px);
+    }
+    /* Pinterest */
+    .header-top .social-buttons-header .social-pinterest .social-icon svg { fill: #bd081c; }
+    .header-top .social-buttons-header .social-pinterest:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* === Desktop Header Email/Phone === */
+    .header-top-email {
+        color: #7c3aed;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .header-top-email:hover {
+        color: #a855f7;
+    }
+    .header-top-phone {
+        color: #7c3aed;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .header-top-phone:hover {
+        color: #a855f7;
+    }
+    .header-top-phone svg {
+        stroke: currentColor;
+    }
+    
+    /* === Desktop Header Basket Badge === */
+    .header-top-basket-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        color: #7c3aed;
+        text-decoration: none;
+    }
+    .header-top-basket-link svg {
+        stroke: currentColor;
+    }
+    .header-top-basket-badge {
+        position: absolute;
+        top: -6px;
+        right: -8px;
+        background: #f97316;
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+    }
+    .header-top-basket-badge:empty,
+    .header-top-basket-badge[data-count="0"] {
+        display: none;
+    }
+    
+    /* === Searchbar Header Actions === */
+    .searchbar-header__account .searchbar-header__action-ring {
+        background: #7c3aed;
+    }
+    .searchbar-header__account .searchbar-header__action-icon {
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+    }
+    
+    /* === Search expand desktop === */
+    .searchbar-header__search-expand {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        transition: width 0.3s ease-in-out;
+        margin-right: 8px;
+    }
+    .searchbar-header__search-expand:focus-within {
+        width: 320px;
+    }
+    .searchbar-header__search-expand .search-input-expand {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        border-radius: 9999px;
+        padding: 12px 44px 12px 20px;
+        font-size: 15px;
+        background: #f3f4f6;
+        color: #1f2937;
+        box-sizing: border-box;
+    }
+    .searchbar-header__search-expand .search-input-expand::placeholder {
+        color: transparent;
+        transition: color 0.2s ease;
+    }
+    .searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
+        color: #9ca3af;
+    }
+    .searchbar-header__search-expand .search-icon-expand {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #6b7280;
+        transition: color 0.2s ease;
+    }
+    .searchbar-header__search-expand:focus-within .search-icon-expand {
+        color: #a855f7;
+    }
+    
+    /* === Brand Logo === */
+    .searchbar-header__brand-img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    }
+    .searchbar-header__brand-text {
+        color: #a855f7 !important;
+    }
+    
+    /* === MAIN CONTAINER - Boxed Layout === */
+    .mobile-main {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    }
+    
+    /* === HIDE MOBILE ELEMENTS ON DESKTOP === */
+    .bottom-nav,
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    /* === HEADER DESKTOP - Boxed === */
+    .mobile-header {
+        flex-direction: column;
+        padding: 0;
+        height: auto;
+        background: #fff;
+        max-width: var(--container-max);
+        margin: 0 auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    /* Header Top Row - Desktop style */
+    .header-top-row {
+        order: 1;
+        width: 100%;
+        padding: 10px var(--container-padding);
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        justify-content: space-between;
+        gap: 0;
+    }
+    
+    .social-buttons-header {
+        gap: 10px;
+    }
+    
+    .social-buttons-header a {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .social-buttons-header .social-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .vat-toggle-mobile {
+        gap: 12px;
+    }
+    
+    /* Header Logo Row - Desktop style */
+    .header-logo-row {
+        order: 2;
+        width: 100%;
+        padding: 16px var(--container-padding);
+        justify-content: space-between;
+        background: #fff;
+    }
+    
+    .mobile-logo-center {
+        gap: 12px;
+    }
+    
+    .logo-badge-img {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .logo-text-styled {
+        font-size: 28px;
+    }
+    
+    .search-wrapper-expand {
+        width: 360px;
+    }
+    
+    .search-input-expand {
+        font-size: 15px;
+        padding: 14px 20px 14px 48px;
+    }
+    
+    /* === HERO 1 - Expanding Panels - +60% height === */
+    .hero-expanding-wrapper {
+        height: 710px; /* 546px + 30% = 710px */
+        max-height: 800px;
+        margin: 8px 20px 20px 20px; /* Reduced top margin for less gap with header */
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .hero-cont {
+        height: 100%;
+        padding: 0;
+    }
+    
+    .hero-cont__inner {
+        padding: 0;
+    }
+    
+    .hero-el {
+        min-height: 100%;
+        border-radius: 12px;
+    }
+    
+    /* Center humans in hero panels before expansion */
+    .hero-el__bg:before {
+        background-position: center 30% !important;
+        background-size: cover !important;
+    }
+    
+    /* Individual panel adjustments for best human visibility */
+    .hero-el:nth-child(1) .hero-el__bg:before {
+        background-position: center 25% !important; /* Apron - center on face */
+    }
+    
+    .hero-el:nth-child(2) .hero-el__bg:before {
+        background-position: center 20% !important; /* Hoodies - center on face */
+    }
+    
+    .hero-el:nth-child(3) .hero-el__bg:before {
+        background-position: center 15% !important; /* Beanies - center on face */
+    }
+    
+    .hero-el:nth-child(4) .hero-el__bg:before {
+        background-position: center 30% !important; /* Hi-Viz - center on torso */
+    }
+    
+    .hero-el:nth-child(5) .hero-el__bg:before {
+        background-position: center 25% !important; /* Polo - center on face/chest */
+    }
+    
+    .hero-el__heading {
+        font-size: 1.4rem;
+        padding: 12px 20px;
+    }
+    
+    .hero-el__text {
+        font-size: 1.2rem;
+    }
+    
+    /* === Hero Banners Section (Hero 2 & 3) - +35% height === */
+    .hero-banners-wrapper {
+        margin: 24px 20px;
+    }
+    
+    .hero-banners-container {
+        height: 380px; /* 280px + 35% = 378px ~380px */
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    /* Neon Container - Fill height */
+    .hero-banner .neon-container {
+        padding: 0;
+        gap: 0;
+    }
+    
+    /* Neon Text - Get In Touch - MAX HEIGHT */
+    .neon-text {
+        font-size: 120px !important;
+        line-height: 0.85;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .flux-text {
+        font-size: 120px !important;
+        line-height: 0.85;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Hero 2 Text Container - Fill height no gaps */
+    .hero-banner .hero-text-container {
+        padding: 0;
+        gap: 0;
+    }
+    
+    /* Hero 2 Text Animation - MAX HEIGHT */
+    .hero-text-make {
+        font-size: 90px !important;
+        line-height: 0.9;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .hero-text-awesome {
+        font-size: 90px !important;
+        line-height: 0.9;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .hero-flip-wrapper {
+        height: 110px;
+        min-width: 400px;
+        margin: 0;
+    }
+    
+    .hero-flip-word {
+        font-size: 70px !important;
+        padding: 12px 40px;
+        line-height: 1;
+    }
+    
+    /* === GRID LAYOUTS - Contained === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 0 20px;
+        overflow-x: visible;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+    }
+    
+    /* Shop by Category */
+    .shop-by-category {
+        padding: 0 20px;
+    }
+    
+    .shop-by-category-scroll {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .category-item {
+        flex: 0 0 auto;
+    }
+    
+    /* === PRODUCT CARDS - Desktop hover effects === */
+    .product-card {
+        padding: 16px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    }
+    
+    .product-card-image {
+        height: 200px;
+    }
+    
+    .product-card-shop {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card-shop:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    }
+    
+    /* === SECTIONS - Contained === */
+    .section-header {
+        padding: 28px 20px 20px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    /* === CTA SECTIONS === */
+    .upload-logo-cta,
+    .cta-section {
+        margin: 24px 20px;
+    }
+    
+    /* === TRUST BADGES === */
+    .trust-badges {
+        padding: 20px;
+    }
+    
+    /* === BRANDS SECTION === */
+    .brands-section {
+        padding: 32px 20px;
+    }
+    
+    /* === SERVICES SECTION === */
+    .services-section {
+        padding: 32px 20px;
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    /* === FAQ SECTION === */
+    .faq-section {
+        padding: 32px 20px;
+    }
+    
+    /* === CUSTOMIZE PAGE === */
+    .customize-main {
+        max-width: 100%;
+        padding: 32px 20px;
+    }
+    
+    .gallery-main {
+        max-height: 450px;
+    }
+    
+    /* === FOOTER DESKTOP - Contained === */
+    .mobile-footer {
+        padding: 48px 20px 32px;
+        background: #1f2937;
+    }
+    
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(4, 1fr);
+        gap: 40px;
+    }
+    
+    .footer-section:first-child {
+        grid-column: 1;
+    }
+    
+    .footer-section-title {
+        font-size: 15px;
+        margin-bottom: 16px;
+    }
+    
+    .footer-links li {
+        margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+        font-size: 13px;
+    }
+    
+    .footer-bottom {
+        margin-top: 28px;
+        padding-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .footer-bottom-links {
+        display: flex;
+        gap: 20px;
+    }
+    
+    /* === SOCIAL ICONS FOOTER - Desktop === */
+    .footer-social-icons {
+        justify-content: flex-start;
+        gap: 12px;
+    }
+    
+    .social-icon-3d {
+        width: 44px;
+        height: 44px;
+    }
+    
+    /* === POPUP CONTACT - Desktop === */
+    .popup-contact {
+        max-width: 600px;
+        width: calc(100% - 80px);
+    }
+    
+    .popup-contact__body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+    
+    /* === FILTERS DROPUP - Desktop === */
+    .filters-dropup {
+        max-width: 400px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100%);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .filters-dropup.active {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+}
+
+/* ========================================
+   LARGE DESKTOP (1440px+)
+   ======================================== */
+@media (min-width: 1440px) {
+    
+    :root {
+        --container-max: 1400px;
+    }
+    
+    .hero-expanding-wrapper {
+        height: 736px; /* 460px + 60% */
+        margin: 24px;
+    }
+    
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .bestseller-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 24px;
+        padding: 0 24px;
+    }
+    
+    .section-header {
+        padding: 32px 24px 24px;
+    }
+    
+}
+
+/* ========================================
+   EXTRA LARGE DESKTOP (1920px+)
+   ======================================== */
+@media (min-width: 1920px) {
+    
+    :root {
+        --container-max: 1600px;
+    }
+    
+    .hero-expanding-wrapper {
+        height: 800px; /* 500px + 60% */
+        margin: 32px;
+    }
+    
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+    
+    .bestseller-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+}
+
+/* ========================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .product-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+    
+    /* Larger touch targets */
+    button, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .mobile-header,
+    .action-bar-sticky,
+    .bottom-nav,
+    .mobile-footer {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

@@ -1,0 +1,371 @@
+/* ============================================
+   BrandedUK Responsive CSS - Mobile First
+   ============================================
+   
+   APPROCCIO MOBILE-FIRST:
+   - Base styles = Mobile (< 768px)
+   - @media (min-width: 768px) = Tablet
+   - @media (min-width: 1024px) = Desktop
+   
+   ============================================ */
+
+/* ========================================
+   BREAKPOINTS REFERENCE
+   ========================================
+   
+   Mobile:  0 - 767px (default/base)
+   Tablet:  768px - 1023px
+   Desktop: 1024px+
+   
+   ======================================== */
+
+/* ========================================
+   TABLET OVERRIDES (768px+)
+   ======================================== */
+@media (min-width: 768px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 80px;
+    }
+    
+    body {
+        font-size: 15px;
+    }
+    
+    /* === Header === */
+    .mobile-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: var(--header-height);
+    }
+    
+    .header-top-row {
+        order: 2;
+        width: auto;
+        padding: 0;
+        background: transparent;
+        border: none;
+    }
+    
+    .header-logo-row {
+        order: 1;
+        padding: 0;
+        gap: 24px;
+    }
+    
+    .search-wrapper-expand {
+        width: 320px;
+    }
+    
+    /* === Hero === */
+    .hero-expanding-wrapper {
+        height: 400px;
+    }
+    
+    .hero-el__heading {
+        font-size: 1.5rem;
+    }
+    
+    .hero-el__text {
+        font-size: 1.25rem;
+    }
+    
+    /* === Grid Layouts === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px;
+        padding: 20px 24px;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 24px;
+        overflow-x: visible;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+    
+    /* === Cards === */
+    .product-card {
+        padding: 16px;
+    }
+    
+    .product-card-image {
+        height: 180px;
+    }
+    
+    /* === Forms === */
+    .search-input-expand {
+        font-size: 15px;
+        padding: 12px 16px 12px 44px;
+    }
+    
+    /* === Sections === */
+    .section-header {
+        padding: 20px 24px 16px;
+    }
+    
+    .section-title {
+        font-size: 1.375rem;
+    }
+    
+    /* === Footer === */
+    .mobile-footer {
+        padding: 32px 24px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+    
+    /* === Customize Page === */
+    .customize-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .product-gallery {
+        position: sticky;
+        top: calc(var(--header-height) + 20px);
+        height: fit-content;
+    }
+    
+    .gallery-main {
+        aspect-ratio: 1;
+    }
+    
+    /* === Action Bar === */
+    .action-bar-sticky {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        padding: 16px 0;
+        margin-top: 24px;
+    }
+    
+}
+
+/* ========================================
+   DESKTOP OVERRIDES (1024px+)
+   ======================================== */
+@media (min-width: 1024px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 90px;
+    }
+    
+    body {
+        font-size: 16px;
+    }
+    
+    /* === Header - Desktop Navigation === */
+    .mobile-header {
+        padding: 0 40px;
+    }
+    
+    .header-top-row {
+        gap: 24px;
+    }
+    
+    .search-wrapper-expand {
+        width: 400px;
+    }
+    
+    /* Show desktop navigation */
+    .desktop-nav {
+        display: flex;
+    }
+    
+    .mobile-menu-toggle {
+        display: none;
+    }
+    
+    /* === Hero === */
+    .hero-expanding-wrapper {
+        height: 500px;
+    }
+    
+    .hero-el__heading {
+        font-size: 2rem;
+    }
+    
+    .hero-el__text {
+        font-size: 1.5rem;
+    }
+    
+    /* === Grid Layouts === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px;
+        padding: 24px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 0 40px;
+        overflow-x: visible;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    /* === Cards === */
+    .product-card {
+        padding: 20px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .product-card-image {
+        height: 220px;
+    }
+    
+    /* === Sections === */
+    .section-header {
+        padding: 24px 40px 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    /* === Container === */
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+    
+    /* === Customize Page === */
+    .customize-main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px;
+    }
+    
+    .gallery-main {
+        max-height: 500px;
+    }
+    
+    /* === Footer === */
+    .mobile-footer {
+        padding: 48px 40px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 24px auto 0;
+    }
+    
+    /* === Social Buttons - Larger on Desktop === */
+    .social-buttons-header li a {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .social-buttons-header .social-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+}
+
+/* ========================================
+   LARGE DESKTOP (1440px+)
+   ======================================== */
+@media (min-width: 1440px) {
+    
+    .products-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .container {
+        max-width: 1600px;
+    }
+    
+}
+
+/* ========================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .product-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+    
+    /* Larger touch targets */
+    button, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .mobile-header,
+    .action-bar-sticky,
+    .bottom-nav,
+    .mobile-footer {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

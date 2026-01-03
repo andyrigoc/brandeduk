@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6b21a8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>BrandedUK - Custom Workwear & Embroidery</title>
+    <!-- Mobile-First CSS -->
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/hero/hero.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/faq.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260102b">
+    <!-- Desktop Header CSS -->
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260102b">
+    <!-- Responsive Breakpoints (Tablet/Desktop) -->
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Hide Shop Now buttons in hero */
+        .hero-el__cta {
+            display: none !important;
+        }
+        
+        /* Desktop Header - hidden on mobile, visible on desktop */
+        .site-header {
+            display: none;
+        }
+        @media (min-width: 1024px) {
+            .site-header {
+                display: block;
+            }
+            .mobile-header {
+                display: none !important;
+            }
+            .bottom-nav {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         DESKTOP HEADER (visible on 1024px+)
+         ======================================== -->
+    <header class="site-header">
+        <!-- Top Bar: Social + Email + Phone + VAT + Basket -->
+        <div class="header-top">
+            <div class="header-container">
+                <div class="header-top-left">
+                    <ul class="social-buttons-header">
+                        <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                            </span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="header-top-right">
+                    <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                    <nav class="header-top-links" aria-label="utility navigation">
+                        <a href="tel:02089742722" class="header-top-phone">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            0208 974 2722
+                        </a>
+                        <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
+                            <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing" id="desktopVatToggle">
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>EXC VAT</span>
+                                <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>INC VAT</span>
+                            </button>
+                        </div>
+                        <a class="header-top-basket-link" href="basket.html" aria-label="View quote">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 6h15l-1.5 9h-12z"/>
+                                <circle cx="9" cy="20" r="1"/>
+                                <circle cx="18" cy="20" r="1"/>
+                                <path d="M6 6L5 3H2"/>
+                            </svg>
+                            <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Bar: Logo + Search + Actions -->
+        <div class="searchbar-header">
+            <div class="searchbar-header__surface">
+                <div class="searchbar-header__inner">
+                    <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                        <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
+                        <span class="searchbar-header__brand-text">branded<span class="searchbar-header__brand-text-highlight">UK</span></span>
+                    </a>
+
+                    <div class="searchbar-header__actions">
+                        <div class="searchbar-header__search-expand">
+                            <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="desktopSearchInput">
+                            <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </div>
+
+                        <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                                </svg>
+                            </span>
+                        </a>
+
+                        <a class="searchbar-header__action" href="https://wa.me/447447348564" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                                </svg>
+                            </span>
+                        </a>
+
+                        <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="desktopAccountBtn">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar: Categories + Navigation -->
+        <div class="header-bottom sticky-header">
+            <div class="header-container">
+                <div class="category-dropdown has-border" data-visible="false">
+                    <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                        <span class="category-toggle-icon" aria-hidden="true"></span>
+                        <span class="category-toggle-label">Browse Categories</span>
+                        <span class="category-toggle-caret" aria-hidden="true"></span>
+                    </button>
+                    <div class="dropdown-box" role="region" aria-label="Browse categories">
+                        <ul class="menu vertical-menu category-menu">
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
+                                    <span class="category-text">T-Shirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=t-shirts&sub=crew-neck">Crew Neck</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=heavyweight">Heavyweight / Workwear</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=kids">Kids T-shirts</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=lightweight">Lightweight</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=long-sleeve">Long Sleeve T-shirts</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=performance">Performance / Sports</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=short-sleeve">Short Sleeve T-shirts</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=tank-tops">Tank Tops</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=embroidery">T-shirts for Embroidery</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=print">T-shirts for Print</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=v-neck">V-Neck</a></li>
+                                            <li><a href="shop.html?category=t-shirts&sub=womens">Women's T-shirts</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Polo Shirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=polos&sub=classic-cotton">Classic Cotton Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=kids">Kids Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=long-sleeve">Long Sleeve Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=performance">Performance Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=poly-cotton">Poly Cotton Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=embroidery">Polos for Embroidery</a></li>
+                                            <li><a href="shop.html?category=polos&sub=short-sleeve">Short Sleeve Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=slim-fit">Slim Fit Polos</a></li>
+                                            <li><a href="shop.html?category=polos&sub=womens">Women's Polos</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Hoodies &amp; Sweatshirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=hoodies&sub=heavyweight">Heavyweight Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=kids">Kids Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=lightweight">Lightweight Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=premium">Premium / Workwear Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=pullover">Pullover Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=sweatshirts">Sweatshirts (Crew Neck)</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=womens">Women's Hoodies</a></li>
+                                            <li><a href="shop.html?category=hoodies&sub=zip">Zip Hoodies</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Jackets &amp; Softshell</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=jackets&sub=bodywarmers">Bodywarmers / Gilets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=bomber">Bomber Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=fleece">Fleece Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=high-performance">High-performance Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=softshell">Softshell Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=waterproof">Waterproof Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=windbreakers">Windbreakers</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=womens">Women's Jackets</a></li>
+                                            <li><a href="shop.html?category=jackets&sub=workwear">Workwear Jackets</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Hi-Vis Clothing</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=hi-vis&sub=en-iso">EN ISO 20471 Certified</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=hoodies">Hi-vis Hoodies</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=jackets">Hi-vis Jackets</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=polos">Hi-vis Polos</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=t-shirts">Hi-vis T-shirts</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=trousers">Hi-vis Trousers</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=vests">Hi-vis Vests</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=rail">RIS-3279 Rail</a></li>
+                                            <li><a href="shop.html?category=hi-vis&sub=waterproof">Waterproof Hi-Vis</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Work Trousers</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=trousers&sub=cargo">Cargo Pants</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=ripstop">Ripstop Trousers</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=stretch">Stretch Work Trousers</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=waterproof">Waterproof / Over-trousers</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=shorts">Work Shorts</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=work">Work Trousers</a></li>
+                                            <li><a href="shop.html?category=trousers&sub=womens">Women's Work Trousers</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Work &amp; Uniforms</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=workwear&sub=trousers">Work Trousers</a></li>
+                                            <li><a href="shop.html?category=workwear&sub=jackets">Workwear Jackets</a></li>
+                                            <li><a href="shop.html?category=workwear&sub=hoodies">Workwear Hoodies</a></li>
+                                            <li><a href="shop.html?category=workwear&sub=accessories">Work Accessories</a></li>
+                                            <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Fleeces</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=fleece&sub=full-zip">Full Zip Fleece</a></li>
+                                            <li><a href="shop.html?category=fleece&sub=half-zip">Half Zip Fleece</a></li>
+                                            <li><a href="shop.html?category=fleece&sub=heavy">Heavy Fleece</a></li>
+                                            <li><a href="shop.html?category=fleece&sub=kids">Kids Fleece</a></li>
+                                            <li><a href="shop.html?category=fleece&sub=microfleece">Microfleece Jackets</a></li>
+                                            <li><a href="shop.html?category=fleece&sub=womens">Women's Fleece</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Headwear / Accessories</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="shop.html?category=headwear&sub=beanies">Beanies</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=bucket-hats">Bucket Hats</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=caps">Caps</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=gloves-scarves">Gloves &amp; Scarves</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=hi-vis">Hi-Vis Headwear</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=kids">Kids Headwear</a></li>
+                                            <li><a href="shop.html?category=headwear&sub=accessories">Work Accessories</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Sustainable / Recycled &amp; Organic</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu brand-grid">
+                                    <li class="brand-heading">0 - 9</li>
+                                    <li><a href="shop.html?brand=2786">2786</a></li>
+                                    <li class="brand-heading">A</li>
+                                    <li><a href="shop.html?brand=adidas">Adidas</a></li>
+                                    <li><a href="shop.html?brand=asquith-fox">Asquith &amp; Fox</a></li>
+                                    <li><a href="shop.html?brand=awdis-just-cool">AWDis Just Cool</a></li>
+                                    <li><a href="shop.html?brand=awdis-just-hoods">AWDis Just Hoods</a></li>
+                                    <li class="brand-heading">B</li>
+                                    <li><a href="shop.html?brand=bc-collection">B&amp;C Collection</a></li>
+                                    <li><a href="shop.html?brand=bagbase">Bagbase</a></li>
+                                    <li><a href="shop.html?brand=beechfield">Beechfield</a></li>
+                                    <li><a href="shop.html?brand=build-your-brand">Build Your Brand</a></li>
+                                    <li class="brand-heading">N</li>
+                                    <li><a href="shop.html?brand=nike">Nike</a></li>
+                                    <li><a href="shop.html?brand=nimbus">Nimbus</a></li>
+                                    <li class="brand-heading">P</li>
+                                    <li><a href="shop.html?brand=portwest">Portwest</a></li>
+                                    <li><a href="shop.html?brand=premier">Premier</a></li>
+                                    <li class="brand-heading">R</li>
+                                    <li><a href="shop.html?brand=regatta">Regatta Professional</a></li>
+                                    <li><a href="shop.html?brand=result">Result</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="shop.html" class="view-all-link">
+                                    <span class="category-text">View All Categories</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <nav class="main-nav" aria-label="primary navigation">
+                    <ul class="menu">
+                        <li class="has-megamenu">
+                            <a href="shop.html" aria-haspopup="true">
+                                All Products
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="nav-megamenu brand-grid">
+                                <li class="brand-heading">A</li>
+                                <li><a href="shop.html?category=accessories">Accessories</a></li>
+                                <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                <li><a href="shop.html?category=autumn-workwear">Autumn Workwear</a></li>
+                                <li class="brand-heading">B</li>
+                                <li><a href="shop.html?category=bags">Bags</a></li>
+                                <li><a href="shop.html?category=beanies">Beanies</a></li>
+                                <li><a href="shop.html?category=bodywarmers">Bodywarmers &amp; Gilets</a></li>
+                                <li class="brand-heading">C</li>
+                                <li><a href="shop.html?category=caps">Caps</a></li>
+                                <li><a href="shop.html?category=chefswear">Chefswear</a></li>
+                                <li><a href="shop.html?category=coats-jackets">Coats &amp; Jackets</a></li>
+                                <li><a href="shop.html?category=coveralls">Coveralls</a></li>
+                                <li class="brand-heading">F</li>
+                                <li><a href="shop.html?category=fleece">Fleece Jackets</a></li>
+                                <li><a href="shop.html?category=footwear">Footwear</a></li>
+                                <li class="brand-heading">G</li>
+                                <li><a href="shop.html?category=gilets">Gilets</a></li>
+                                <li><a href="shop.html?category=gloves">Gloves</a></li>
+                                <li class="brand-heading">H</li>
+                                <li><a href="shop.html?category=headwear">Headwear</a></li>
+                                <li><a href="shop.html?category=hi-vis">Hi-Vis</a></li>
+                                <li><a href="shop.html?category=hoodies">Hoodies</a></li>
+                                <li><a href="shop.html?category=hospitality">Hospitality</a></li>
+                                <li class="brand-heading">J</li>
+                                <li><a href="shop.html?category=jackets">Jackets</a></li>
+                                <li><a href="shop.html?category=joggers">Joggers</a></li>
+                                <li class="brand-heading">K</li>
+                                <li><a href="shop.html?category=knitwear">Knitwear</a></li>
+                                <li class="brand-heading">P</li>
+                                <li><a href="shop.html?category=polos">Polo Shirts</a></li>
+                                <li><a href="shop.html?category=ppe">PPE</a></li>
+                                <li class="brand-heading">S</li>
+                                <li><a href="shop.html?category=shirts">Shirts</a></li>
+                                <li><a href="shop.html?category=shorts">Shorts</a></li>
+                                <li><a href="shop.html?category=softshell">Softshell Jackets</a></li>
+                                <li><a href="shop.html?category=sports">Sports &amp; Teamwear</a></li>
+                                <li><a href="shop.html?category=sustainable">Sustainable</a></li>
+                                <li><a href="shop.html?category=sweatshirts">Sweatshirts</a></li>
+                                <li class="brand-heading">T</li>
+                                <li><a href="shop.html?category=t-shirts">T-Shirts</a></li>
+                                <li><a href="shop.html?category=trousers">Trousers</a></li>
+                                <li class="brand-heading">W</li>
+                                <li><a href="shop.html?category=winter-workwear">Winter Workwear</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">BrandedUK</a></li>
+                        <li class="has-megamenu promotions-menu">
+                            <a href="#" aria-haspopup="true">
+                                Promotions
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <div class="promo-dropdown" role="region" aria-label="Promotional bundles">
+                                <div class="promo-dropdown-inner">
+                                    <figure class="promo-card promo-theme-1">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 1</figcaption>
+                                        <span class="promo-card-tag">Starter</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-2">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 2</figcaption>
+                                        <span class="promo-card-tag">Teams</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-3">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 3</figcaption>
+                                        <span class="promo-card-tag">Eco</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-4">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 4</figcaption>
+                                        <span class="promo-card-tag">Season</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-5">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 5</figcaption>
+                                        <span class="promo-card-tag">Pro</span>
+                                    </figure>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a href="#">More</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================
+         MOBILE HEADER (visible below 1024px)
+         ======================================== -->
+    <!-- Mobile Header -->
+    <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
+    <div class="tablet-top-bar">
+        <div class="tablet-top-bar__left">
+            <ul class="social-buttons-header social-buttons-tablet">
+                <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                    <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+                </a></li>
+                <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                    <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>
+                </a></li>
+                <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+                </a></li>
+                <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                    <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+                </a></li>
+                <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                    <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg></span>
+                </a></li>
+            </ul>
+        </div>
+        <div class="tablet-top-bar__center">
+            <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                info@brandeduk.com
+            </a>
+            <a href="tel:02089742722" class="tablet-top-bar__phone">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                0208 974 2722
+            </a>
+        </div>
+        <div class="tablet-top-bar__right">
+            <div class="vat-toggle-tablet">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
+                <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                </a>
+            </div>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
+                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Logo Left + Search Right -->
+        <div class="header-logo-row">
+            <a href="index.html" class="mobile-logo-center">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mobile-main">
+        <!-- Hero 1 - Expanding Panels (Always visible) -->
+        <div class="hero-expanding-wrapper">
+            <div class="hero-cont s--inactive" id="hero1">
+                <div class="hero-cont__inner">
+                    <div class="hero-el" data-category="aprons">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Aprons</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Custom Aprons</div>
+                                    <a href="shop.html?category=aprons" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="hoodies">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Hoodies</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Custom Hoodies</div>
+                                    <a href="shop.html?category=hoodies" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="beanies">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Beanies</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Custom Beanies</div>
+                                    <a href="shop.html?category=beanies" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="hi-viz">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Hi-Viz</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Custom Hi-Viz</div>
+                                    <a href="shop.html?category=hi-viz" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="polo">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Polo</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Custom Polo</div>
+                                    <a href="shop.html?category=polo" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="t-shirts">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">T-Shirts</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">T-Shirts</div>
+                                    <a href="shop.html?category=t-shirts" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="jackets">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Jackets</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Jackets</div>
+                                    <a href="shop.html?category=jackets" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="trousers">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Trousers</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Trousers</div>
+                                    <a href="shop.html?category=trousers" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-el" data-category="fleeces">
+                        <div class="hero-el__overflow">
+                            <div class="hero-el__inner">
+                                <div class="hero-el__bg"></div>
+                                <div class="hero-el__preview-cont">
+                                    <h2 class="hero-el__heading">Fleeces</h2>
+                                </div>
+                                <div class="hero-el__content">
+                                    <div class="hero-el__text">Fleeces</div>
+                                    <a href="shop.html?category=fleeces" class="hero-el__cta">Shop Now</a>
+                                    <div class="hero-el__close-btn"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Banners Carousel (Separate section with dots) -->
+        <div class="hero-banners-wrapper">
+            <div class="hero-banners-container">
+                <!-- Banner 1 - Get in Touch Neon -->
+                <div class="hero-banner hero-banner--active" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
+                    <div class="neon-container">
+                        <div class="neon-text">GET IN</div>
+                        <div class="flux-text">TOUCH</div>
+                    </div>
+                </div>
+
+                <!-- Banner 2 - Text Animation -->
+                <div class="hero-banner" id="heroBanner2">
+                    <div class="hero-text-container">
+                        <div class="hero-text-make">MAKE</div>
+                        <div class="hero-flip-wrapper">
+                            <div class="hero-flip-word flip-work">WORK</div>
+                            <div class="hero-flip-word flip-lifestyle">LIFESTYLE</div>
+                            <div class="hero-flip-word flip-everything">EVERYTHING</div>
+                        </div>
+                        <div class="hero-text-awesome">AWESOME!</div>
+                    </div>
+                </div>
+
+                <!-- Banner 3 - Add more banners here -->
+            </div>
+
+            <!-- Banner Dots Navigation -->
+            <div class="hero-banner-dots">
+                <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1" style="width:12px;height:12px;border-radius:50%;border:1.5px solid #6B21A8;background:#6B21A8;"></button>
+                <button class="banner-dot" data-banner="2" aria-label="Banner 2" style="width:12px;height:12px;border-radius:50%;border:1.5px solid #6B21A8;background:transparent;"></button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <a href="customize.html" class="quick-action-card upload-card">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <h3>Upload Your Logo</h3>
+                    <p>Get instant pricing</p>
+                </div>
+                <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+            <a href="tel:02089742722" class="quick-action-card call-card">
+                <div class="quick-action-icon phone-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <h3>Call Our Team</h3>
+                    <p>020 8974 2722</p>
+                </div>
+                <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+        </section>
+
+        <!-- Categories Section -->
+        <!-- Categories Section -->
+        <section class="section-block">
+            <div class="section-header">
+                <h2 class="section-title">Shop by Category</h2>
+                <a href="shop.html?category=all" class="see-all-link">See All</a>
+            </div>
+            <div class="categories-scroll">
+                <a href="shop.html?category=tshirts" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                    </div>
+                    <span>T-Shirts</span>
+                </a>
+                <a href="shop.html?category=polo" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                    </div>
+                    <span>Polos</span>
+                </a>
+                <a href="shop.html?category=hoodies" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                    </div>
+                    <span>Hoodies</span>
+                </a>
+                <a href="shop.html?category=jackets" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                    </div>
+                    <span>Jackets</span>
+                </a>
+                <a href="shop.html?category=hivis" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                    </div>
+                    <span>Hi-Vis</span>
+                </a>
+                <a href="shop.html?category=fleeces" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                    </div>
+                    <span>Fleeces</span>
+                </a>
+                <a href="shop.html?category=bags" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                    </div>
+                    <span>Bags</span>
+                </a>
+                <a href="shop.html?category=caps" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                    </div>
+                    <span>Caps</span>
+                </a>
+                <a href="shop.html?category=aprons" class="category-card">
+                    <div class="category-icon">
+                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                    </div>
+                    <span>Aprons</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="section-block">
+            <div class="section-header">
+                <h2 class="section-title">Best Sellers</h2>
+                <a href="shop.html?sort=bestsellers" class="see-all-link">View All</a>
+            </div>
+            <div class="products-scroll bestseller-grid">
+                <div class="bestseller-card" data-product="UC101">
+                    <div class="bestseller-image">
+                        <img src="hero/images/Polo.jpg" alt="Work Polo">
+                    </div>
+                    <h4 class="bestseller-name">Work Polo</h4>
+                    <p class="bestseller-price">£8.95</p>
+                    <a href="customize.html?product=UC101" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="JH001">
+                    <div class="bestseller-image">
+                        <img src="hero/images/hoodies.jpg" alt="Grey Hoodie" style="object-position: 0% top;">
+                    </div>
+                    <h4 class="bestseller-name">Grey Hoodie</h4>
+                    <p class="bestseller-price">£14.50</p>
+                    <a href="customize.html?product=JH001" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="HV001">
+                    <div class="bestseller-image">
+                        <img src="hero/images/Hi-Viz.jpg" alt="Hi-Vis Vest">
+                    </div>
+                    <h4 class="bestseller-name">Hi-Vis Vest</h4>
+                    <p class="bestseller-price">£9.95</p>
+                    <a href="customize.html?product=HV001" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="UC301">
+                    <div class="bestseller-image">
+                        <img src="hero/images/beanie.jpg" alt="Beanie">
+                    </div>
+                    <h4 class="bestseller-name">Beanie Hat</h4>
+                    <p class="bestseller-price">£6.99</p>
+                    <a href="customize.html?product=UC301" class="bestseller-btn">Add Logo</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Section -->
+        <section class="trust-section-wrapper">
+            <!-- Truck Animation Row -->
+            <div class="trust-truck-row">
+                <div class="loop-wrapper">
+                    <div class="mountain"></div>
+                    <div class="hill"></div>
+                    <div class="tree"></div>
+                    <div class="tree"></div>
+                    <div class="tree"></div>
+                    <div class="rock"></div>
+                    <div class="truck"></div>
+                    <div class="wheels"></div>
+                </div>
+                <span class="trust-truck-label">Free UK Delivery £150+</span>
+            </div>
+            
+            <!-- Trust Badges Row -->
+            <div class="trust-badges-row">
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                    <span>Trusted Since 2001</span>
+                </div>
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>5-7 Working Days</span>
+                </div>
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span>Web Design Service</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Promo Banner -->
+        <section class="promo-banner-full">
+            <div class="promo-banner-content">
+                <h3>Need a Quote?</h3>
+                <p>Add items to your basket and get instant pricing with customization options.</p>
+                <a href="shop.html" class="promo-banner-btn">Start Building Your Order</a>
+            </div>
+        </section>
+
+        <!-- Brands Marquee -->
+        <section class="brands-section">
+            <div class="section-header">
+                <h2 class="section-title">Our Brands</h2>
+            </div>
+            
+            <!-- Row 1: A to Z -->
+            <div class="brands-marquee">
+                <div class="brands-track brands-track-right">
+                    <div class="brand-card">2786</div>
+                    <div class="brand-card">Adidas</div>
+                    <div class="brand-card">Anthem</div>
+                    <div class="brand-card">Asquith & Fox</div>
+                    <div class="brand-card">AWDis</div>
+                    <div class="brand-card">B&C Collection</div>
+                    <div class="brand-card">BabyBugz</div>
+                    <div class="brand-card">BagBase</div>
+                    <div class="brand-card">Beechfield</div>
+                    <div class="brand-card">Bella+Canvas</div>
+                    <div class="brand-card">Callaway</div>
+                    <div class="brand-card">Colortone</div>
+                    <div class="brand-card">Comfort Colors</div>
+                    <div class="brand-card">Craghoppers</div>
+                    <div class="brand-card">Finden & Hales</div>
+                    <div class="brand-card">Flexfit</div>
+                    <div class="brand-card">Front Row</div>
+                    <div class="brand-card">Fruit of the Loom</div>
+                    <div class="brand-card">Gamegear</div>
+                    <div class="brand-card">Gildan</div>
+                    <div class="brand-card">Henbury</div>
+                    <div class="brand-card">Kariban</div>
+                    <div class="brand-card">KiMood</div>
+                    <div class="brand-card">Kustom Kit</div>
+                    <div class="brand-card">Larkwood</div>
+                    <div class="brand-card">Maddins</div>
+                    <div class="brand-card">Mumbles</div>
+                    <div class="brand-card">Nike</div>
+                    <div class="brand-card">Nimbus</div>
+                    <div class="brand-card">OGIO</div>
+                    <div class="brand-card">Portwest</div>
+                    <div class="brand-card">Premier</div>
+                    <div class="brand-card">Pro RTX</div>
+                    <div class="brand-card">Quadra</div>
+                    <div class="brand-card">Regatta</div>
+                    <div class="brand-card">Result</div>
+                    <div class="brand-card">Rhino</div>
+                    <div class="brand-card">Russell</div>
+                    <div class="brand-card">Scruffs</div>
+                    <div class="brand-card">SF Clothing</div>
+                    <div class="brand-card">Spiro</div>
+                    <div class="brand-card">Stanley/Stella</div>
+                    <div class="brand-card">Stormtech</div>
+                    <div class="brand-card">Tee Jays</div>
+                    <div class="brand-card">Tombo</div>
+                    <div class="brand-card">Towel City</div>
+                    <div class="brand-card">TriDri</div>
+                    <div class="brand-card">Under Armour</div>
+                    <div class="brand-card">Westford Mill</div>
+                    <div class="brand-card">Wombat</div>
+                    <div class="brand-card">Xpres</div>
+                    <div class="brand-card">Yoko</div>
+                    <!-- Duplicate for seamless loop -->
+                    <div class="brand-card">2786</div>
+                    <div class="brand-card">Adidas</div>
+                    <div class="brand-card">Anthem</div>
+                    <div class="brand-card">Asquith & Fox</div>
+                    <div class="brand-card">AWDis</div>
+                    <div class="brand-card">B&C Collection</div>
+                    <div class="brand-card">BabyBugz</div>
+                    <div class="brand-card">BagBase</div>
+                    <div class="brand-card">Beechfield</div>
+                    <div class="brand-card">Bella+Canvas</div>
+                    <div class="brand-card">Callaway</div>
+                    <div class="brand-card">Colortone</div>
+                    <div class="brand-card">Comfort Colors</div>
+                    <div class="brand-card">Craghoppers</div>
+                    <div class="brand-card">Finden & Hales</div>
+                    <div class="brand-card">Flexfit</div>
+                    <div class="brand-card">Front Row</div>
+                    <div class="brand-card">Fruit of the Loom</div>
+                    <div class="brand-card">Gamegear</div>
+                    <div class="brand-card">Gildan</div>
+                    <div class="brand-card">Henbury</div>
+                    <div class="brand-card">Kariban</div>
+                    <div class="brand-card">KiMood</div>
+                    <div class="brand-card">Kustom Kit</div>
+                    <div class="brand-card">Larkwood</div>
+                    <div class="brand-card">Maddins</div>
+                    <div class="brand-card">Mumbles</div>
+                    <div class="brand-card">Nike</div>
+                    <div class="brand-card">Nimbus</div>
+                    <div class="brand-card">OGIO</div>
+                    <div class="brand-card">Portwest</div>
+                    <div class="brand-card">Premier</div>
+                    <div class="brand-card">Pro RTX</div>
+                    <div class="brand-card">Quadra</div>
+                    <div class="brand-card">Regatta</div>
+                    <div class="brand-card">Result</div>
+                    <div class="brand-card">Rhino</div>
+                    <div class="brand-card">Russell</div>
+                    <div class="brand-card">Scruffs</div>
+                    <div class="brand-card">SF Clothing</div>
+                    <div class="brand-card">Spiro</div>
+                    <div class="brand-card">Stanley/Stella</div>
+                    <div class="brand-card">Stormtech</div>
+                    <div class="brand-card">Tee Jays</div>
+                    <div class="brand-card">Tombo</div>
+                    <div class="brand-card">Towel City</div>
+                    <div class="brand-card">TriDri</div>
+                    <div class="brand-card">Under Armour</div>
+                    <div class="brand-card">Westford Mill</div>
+                    <div class="brand-card">Wombat</div>
+                    <div class="brand-card">Xpres</div>
+                    <div class="brand-card">Yoko</div>
+                </div>
+            </div>
+            
+            <!-- Row 2: Z to A -->
+            <div class="brands-marquee">
+                <div class="brands-track brands-track-left">
+                    <div class="brand-card">Yoko</div>
+                    <div class="brand-card">Xpres</div>
+                    <div class="brand-card">Wombat</div>
+                    <div class="brand-card">Westford Mill</div>
+                    <div class="brand-card">Under Armour</div>
+                    <div class="brand-card">TriDri</div>
+                    <div class="brand-card">Towel City</div>
+                    <div class="brand-card">Tombo</div>
+                    <div class="brand-card">Tee Jays</div>
+                    <div class="brand-card">Stormtech</div>
+                    <div class="brand-card">Stanley/Stella</div>
+                    <div class="brand-card">Spiro</div>
+                    <div class="brand-card">SF Clothing</div>
+                    <div class="brand-card">Scruffs</div>
+                    <div class="brand-card">Russell</div>
+                    <div class="brand-card">Rhino</div>
+                    <div class="brand-card">Result</div>
+                    <div class="brand-card">Regatta</div>
+                    <div class="brand-card">Quadra</div>
+                    <div class="brand-card">Pro RTX</div>
+                    <div class="brand-card">Premier</div>
+                    <div class="brand-card">Portwest</div>
+                    <div class="brand-card">OGIO</div>
+                    <div class="brand-card">Nimbus</div>
+                    <div class="brand-card">Nike</div>
+                    <div class="brand-card">Mumbles</div>
+                    <div class="brand-card">Maddins</div>
+                    <div class="brand-card">Larkwood</div>
+                    <div class="brand-card">Kustom Kit</div>
+                    <div class="brand-card">KiMood</div>
+                    <div class="brand-card">Kariban</div>
+                    <div class="brand-card">Henbury</div>
+                    <div class="brand-card">Gildan</div>
+                    <div class="brand-card">Gamegear</div>
+                    <div class="brand-card">Fruit of the Loom</div>
+                    <div class="brand-card">Front Row</div>
+                    <div class="brand-card">Flexfit</div>
+                    <div class="brand-card">Finden & Hales</div>
+                    <div class="brand-card">Craghoppers</div>
+                    <div class="brand-card">Comfort Colors</div>
+                    <div class="brand-card">Colortone</div>
+                    <div class="brand-card">Callaway</div>
+                    <div class="brand-card">Bella+Canvas</div>
+                    <div class="brand-card">Beechfield</div>
+                    <div class="brand-card">BagBase</div>
+                    <div class="brand-card">BabyBugz</div>
+                    <div class="brand-card">B&C Collection</div>
+                    <div class="brand-card">AWDis</div>
+                    <div class="brand-card">Asquith & Fox</div>
+                    <div class="brand-card">Anthem</div>
+                    <div class="brand-card">Adidas</div>
+                    <div class="brand-card">2786</div>
+                    <!-- Duplicate for seamless loop -->
+                    <div class="brand-card">Yoko</div>
+                    <div class="brand-card">Xpres</div>
+                    <div class="brand-card">Wombat</div>
+                    <div class="brand-card">Westford Mill</div>
+                    <div class="brand-card">Under Armour</div>
+                    <div class="brand-card">TriDri</div>
+                    <div class="brand-card">Towel City</div>
+                    <div class="brand-card">Tombo</div>
+                    <div class="brand-card">Tee Jays</div>
+                    <div class="brand-card">Stormtech</div>
+                    <div class="brand-card">Stanley/Stella</div>
+                    <div class="brand-card">Spiro</div>
+                    <div class="brand-card">SF Clothing</div>
+                    <div class="brand-card">Scruffs</div>
+                    <div class="brand-card">Russell</div>
+                    <div class="brand-card">Rhino</div>
+                    <div class="brand-card">Result</div>
+                    <div class="brand-card">Regatta</div>
+                    <div class="brand-card">Quadra</div>
+                    <div class="brand-card">Pro RTX</div>
+                    <div class="brand-card">Premier</div>
+                    <div class="brand-card">Portwest</div>
+                    <div class="brand-card">OGIO</div>
+                    <div class="brand-card">Nimbus</div>
+                    <div class="brand-card">Nike</div>
+                    <div class="brand-card">Mumbles</div>
+                    <div class="brand-card">Maddins</div>
+                    <div class="brand-card">Larkwood</div>
+                    <div class="brand-card">Kustom Kit</div>
+                    <div class="brand-card">KiMood</div>
+                    <div class="brand-card">Kariban</div>
+                    <div class="brand-card">Henbury</div>
+                    <div class="brand-card">Gildan</div>
+                    <div class="brand-card">Gamegear</div>
+                    <div class="brand-card">Fruit of the Loom</div>
+                    <div class="brand-card">Front Row</div>
+                    <div class="brand-card">Flexfit</div>
+                    <div class="brand-card">Finden & Hales</div>
+                    <div class="brand-card">Craghoppers</div>
+                    <div class="brand-card">Comfort Colors</div>
+                    <div class="brand-card">Colortone</div>
+                    <div class="brand-card">Callaway</div>
+                    <div class="brand-card">Bella+Canvas</div>
+                    <div class="brand-card">Beechfield</div>
+                    <div class="brand-card">BagBase</div>
+                    <div class="brand-card">BabyBugz</div>
+                    <div class="brand-card">B&C Collection</div>
+                    <div class="brand-card">AWDis</div>
+                    <div class="brand-card">Asquith & Fox</div>
+                    <div class="brand-card">Anthem</div>
+                    <div class="brand-card">Adidas</div>
+                    <div class="brand-card">2786</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section">
+            <h2 class="section-title centered">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon embroidery-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 19c-4-3-7-6-7-10a7 7 0 0114 0c0 4-3 7-7 10z"/>
+                            <path d="M12 3v16M8 7c2 2 6 2 8 0"/>
+                        </svg>
+                    </div>
+                    <h3>Embroidery</h3>
+                    <p>From £2.95 per item</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon print-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="6" y="6" width="12" height="12" rx="1"></rect>
+                            <path d="M6 18L18 6"></path>
+                            <path d="M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <h3>Print</h3>
+                    <p>DTF, Screen & Transfer</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon bulk-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1"></rect>
+                            <line x1="8" y1="10" x2="16" y2="10"></line>
+                            <line x1="8" y1="14" x2="16" y2="14"></line>
+                            <line x1="8" y1="18" x2="12" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3>Bulk Orders</h3>
+                    <p>Volume discounts</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="section-title centered">Frequently Asked Questions</h2>
+            
+            <!-- Category Squares -->
+            <div class="faq-categories">
+                <button class="faq-square" data-target="embroidery">
+                    <img src="mobile/images/faq/embroidery.png" alt="Embroidery">
+                    <span>Embroidery</span>
+                </button>
+                <button class="faq-square" data-target="dtf">
+                    <img src="mobile/images/faq/dtf.png" alt="DTF">
+                    <span>DTF</span>
+                </button>
+                <button class="faq-square" data-target="vinyl">
+                    <img src="mobile/images/faq/vinyl.png" alt="Vinyl Heat Press">
+                    <span>Vinyl Heat Press</span>
+                </button>
+                <button class="faq-square" data-target="screen">
+                    <img src="mobile/images/faq/screen.png" alt="Screen Printing">
+                    <span>Screen Printing</span>
+                </button>
+            </div>
+
+            <!-- FAQ Panels -->
+            <div class="faq-content">
+                <div class="faq-panel" id="embroidery">
+                    <div class="faq-row">
+                        <div class="faq-question">What is embroidery?</div>
+                        <div class="faq-answer">Embroidery is a decoration method where thread is stitched directly into the fabric using computerised machines. It creates a premium, textured finish that's extremely durable and professional-looking.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best garments for embroidery?</div>
+                        <div class="faq-answer">Polo shirts, hoodies, jackets, caps and fleeces work best. Thicker fabrics with a stable weave provide excellent stitch definition and durability.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Logo size limits?</div>
+                        <div class="faq-answer">Standard chest logos are typically 10-12cm wide. Larger back designs can be up to 30cm. Very small text (under 5mm) may not embroider clearly.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Stitch count explained</div>
+                        <div class="faq-answer">Stitch count determines pricing. A simple logo might be 5,000 stitches, while detailed designs can exceed 15,000. More stitches = more thread and machine time.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash durability</div>
+                        <div class="faq-answer">Embroidery is the most durable decoration method. It withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Thread colours available</div>
+                        <div class="faq-answer">We stock over 400 thread colours including metallic and neon options. We can match virtually any Pantone colour for brand accuracy.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup cost?</div>
+                        <div class="faq-answer">A one-time digitisation fee of £25-£45 converts your logo into stitch data. This file is saved for all future orders at no extra cost.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Production time</div>
+                        <div class="faq-answer">Standard turnaround is 5-7 working days. Rush services available for urgent orders - contact us for express options.</div>
+                    </div>
+                </div>
+
+                <div class="faq-panel" id="dtf">
+                    <div class="faq-row">
+                        <div class="faq-question">What is DTF printing?</div>
+                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. It produces vibrant, photo-quality results on virtually any fabric colour.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Is it suitable for cotton?</div>
+                        <div class="faq-answer">Yes! DTF works brilliantly on 100% cotton, polyester, blends and even performance fabrics. It adheres well to most textile types.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Does it crack?</div>
+                        <div class="faq-answer">Quality DTF prints are flexible and stretch with the fabric. With proper care (inside-out washing), they maintain integrity for 50+ washes.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour limitations</div>
+                        <div class="faq-answer">None! DTF prints full CMYK plus white, allowing unlimited colours, gradients and photographic images without extra cost per colour.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash resistance</div>
+                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30°C and avoid tumble drying on high heat.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Small quantities?</div>
+                        <div class="faq-answer">Perfect for small runs! No minimum order - we can print from just 1 piece, making it ideal for samples and personalised items.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup costs</div>
+                        <div class="faq-answer">No setup fees for DTF printing. You only pay per print, making it cost-effective for any quantity.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Turnaround time</div>
+                        <div class="faq-answer">Standard 3-5 working days. Express 24-48 hour service available for urgent requirements.</div>
+                    </div>
+                </div>
+
+                <div class="faq-panel" id="vinyl">
+                    <div class="faq-row">
+                        <div class="faq-question">What is vinyl heat press?</div>
+                        <div class="faq-answer">Heat Transfer Vinyl (HTV) is cut from coloured vinyl sheets and heat-pressed onto garments. It creates bold, solid-colour designs with a smooth or textured finish.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best use cases</div>
+                        <div class="faq-answer">Ideal for names, numbers, simple logos and text. Popular for sports kits, team uniforms, hen parties and personalised workwear.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Names & numbers</div>
+                        <div class="faq-answer">Perfect for individual names and numbers. Each item can be unique at no extra setup cost - great for team kits and personalisation.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour options</div>
+                        <div class="faq-answer">Available in 50+ colours including metallic, glitter, reflective, glow-in-the-dark and holographic finishes for eye-catching effects.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Durability</div>
+                        <div class="faq-answer">Commercial-grade vinyl withstands 50+ washes. It's flexible, won't crack and maintains colour vibrancy over time.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Stretch fabrics</div>
+                        <div class="faq-answer">We use stretch vinyl for sportswear and performance fabrics. It moves with the garment without peeling or cracking.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Small orders</div>
+                        <div class="faq-answer">No minimums! Order from just 1 piece. Cost-effective for personalised gifts and small team orders.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Production time</div>
+                        <div class="faq-answer">Usually 2-4 working days for standard orders. Same-day service available for simple designs.</div>
+                    </div>
+                </div>
+
+                <div class="faq-panel" id="screen">
+                    <div class="faq-row">
+                        <div class="faq-question">What is screen printing?</div>
+                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. It's the traditional method for high-volume orders, producing vibrant, long-lasting prints.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Minimum quantity</div>
+                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. For smaller quantities, consider DTF or vinyl instead.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best for bulk orders</div>
+                        <div class="faq-answer">The more you order, the cheaper per unit. Screen printing becomes very economical at 100+ pieces with significant bulk discounts.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Ink types</div>
+                        <div class="faq-answer">We offer plastisol (standard), water-based (soft hand feel), discharge (bleaches then dyes) and specialty inks like metallic and puff.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour limits</div>
+                        <div class="faq-answer">Each colour requires a separate screen. 1-4 colours is most economical. Simulated process can achieve photographic effects with 6-8 screens.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash durability</div>
+                        <div class="faq-answer">Screen prints are incredibly durable - rated for 100+ washes. The ink bonds permanently with the fabric fibres.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup costs</div>
+                        <div class="faq-answer">£25-£35 per screen (per colour). Screens are kept on file for 12 months for repeat orders at no extra setup charge.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Lead time</div>
+                        <div class="faq-answer">Standard 7-10 working days for bulk orders. Includes screen production, printing and quality checking.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter / Contact -->
+        <section class="contact-section">
+            <h2>Need Help?</h2>
+            <p>Our team is ready to assist you with your workwear needs.</p>
+            <div class="contact-buttons">
+                <a href="tel:02089742722" class="contact-btn phone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    Call Us
+                </a>
+                <a href="https://wa.me/447447348564" class="contact-btn whatsapp">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    WhatsApp
+                </a>
+                <a href="mailto:info@brandeduk.com" class="contact-btn email">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Email
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mobile-footer">
+            <div class="footer-container">
+                <div class="footer-grid">
+                    <!-- Brand Column -->
+                    <div class="footer-brand">
+                        <div class="footer-logo">brandeduk</div>
+                        <p class="footer-copyright">Copyright © 2025 BrandedUK</p>
+                        <p class="footer-rights">All rights reserved</p>
+                        <div class="footer-social footer-social-3d">
+                            <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://www.instagram.com/brandeduk" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon-3d linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon-3d youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon-3d pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                                <i class="fab fa-pinterest-p"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Company Column -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Company</h3>
+                        <a href="#" class="footer-link">About Us</a>
+                        <a href="#" class="footer-link">Blog</a>
+                        <a href="#" class="footer-link">Careers</a>
+                        <a href="#" class="footer-link">Contact Us</a>
+                        <a href="#" class="footer-link">Testimonials</a>
+                    </div>
+
+                    <!-- Support Column -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Support</h3>
+                        <a href="#" class="footer-link">FAQ</a>
+                        <a href="#" class="footer-link">Delivery Info</a>
+                        <a href="#" class="footer-link">Returns</a>
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                        <a href="#" class="footer-link">Terms of Service</a>
+                    </div>
+
+                    <!-- Shop Column -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Shop</h3>
+                        <a href="shop.html?category=tshirts" class="footer-link">T-Shirts</a>
+                        <a href="shop.html?category=hoodies" class="footer-link">Hoodies</a>
+                        <a href="shop.html?category=polo" class="footer-link">Polo Shirts</a>
+                        <a href="shop.html?category=hi-viz" class="footer-link">Hi-Viz</a>
+                        <a href="shop.html?category=workwear" class="footer-link">Workwear</a>
+                    </div>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="footer-newsletter">
+                    <label class="newsletter-label">Get updates</label>
+                    <div class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Enter your email">
+                        <button class="newsletter-btn" aria-label="Subscribe">
+                            <svg width="16" height="17" viewBox="0 0 16 17" fill="currentColor"><path d="M14.8934 7.39673L14.8884 7.39457L1.54219 1.9166C1.42993 1.87011 1.30778 1.85187 1.18666 1.86353C1.06554 1.87519 0.949225 1.91637 0.848125 1.9834C0.741311 2.05266 0.653573 2.14711 0.592805 2.25826C0.532037 2.36941 0.500145 2.49376 0.5 2.62013V6.12357C0.50006 6.29633 0.561019 6.46366 0.67237 6.59671C0.783722 6.72976 0.938491 6.82021 1.11 6.85246L8.38906 8.18438C8.41767 8.18974 8.44348 8.20482 8.46205 8.22701C8.48062 8.2492 8.49078 8.2771 8.49078 8.30591C8.49078 8.33472 8.48062 8.36263 8.46205 8.38481C8.44348 8.407 8.41767 8.42208 8.38906 8.42744L1.11031 9.75936C0.938851 9.79153 0.784092 9.88185 0.67269 10.0148C0.561288 10.1477 0.500219 10.3149 0.5 10.4876V13.9917C0.499917 14.1124 0.530111 14.2312 0.587871 14.3374C0.645632 14.4437 0.729152 14.5341 0.830938 14.6006C0.953375 14.6811 1.09706 14.7241 1.24406 14.7243C1.34626 14.7242 1.4474 14.7039 1.54156 14.6646L14.8875 9.21787L14.8934 9.21509C15.0731 9.13869 15.2262 9.01185 15.3337 8.85025C15.4413 8.68866 15.4986 8.49941 15.4986 8.30591C15.4986 8.11241 15.4413 7.92316 15.3337 7.76157C15.2262 7.59997 15.0731 7.47313 14.8934 7.39673Z" fill="currentColor"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Slide-out Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <nav class="slide-menu" id="slideMenu">
+        <div class="menu-header">
+            <div class="menu-logo">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-image" style="width: 36px; height: 36px;">
+                <span class="logo-text">branded<span class="logo-uk">UK</span></span>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="menu-content">
+            <div class="menu-section">
+                <a href="index.html" class="menu-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                    Home
+                </a>
+                <a href="shop.html" class="menu-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Shop All Products
+                </a>
+                <a href="customize.html#orderSummary" class="menu-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    Quote Summary
+                    <span class="menu-badge" id="menuCartCount">0</span>
+                </a>
+            </div>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="menu-section">
+                <p class="menu-section-title">Categories</p>
+                <a href="shop.html?category=tshirts" class="menu-item sub-item">T-Shirts</a>
+                <a href="shop.html?category=polo" class="menu-item sub-item">Polo Shirts</a>
+                <a href="shop.html?category=hoodies" class="menu-item sub-item">Hoodies & Sweatshirts</a>
+                <a href="shop.html?category=jackets" class="menu-item sub-item">Jackets & Softshell</a>
+                <a href="shop.html?category=hivis" class="menu-item sub-item">Hi-Vis Clothing</a>
+                <a href="shop.html?category=trousers" class="menu-item sub-item">Work Trousers</a>
+                <a href="shop.html?category=fleeces" class="menu-item sub-item">Fleeces</a>
+                <a href="shop.html?category=headwear" class="menu-item sub-item">Headwear & Accessories</a>
+                <a href="shop.html?category=sustainable" class="menu-item sub-item sustainable-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66S7 16 14 14l-4 5 7-9c-3-1-6-2-7-4 6-2 9 1 11-5-4 1-5 2-4-3z"/>
+                    </svg>
+                    Sustainable / Eco
+                </a>
+            </div>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="menu-section">
+                <p class="menu-section-title">Services</p>
+                <a href="customize.html" class="menu-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Embroidery
+                </a>
+                <a href="customize.html?service=print" class="menu-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Print Services
+                </a>
+            </div>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="menu-section contact-section-menu">
+                <a href="tel:02089742722" class="menu-item phone-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    020 8974 2722
+                </a>
+                <a href="https://wa.me/447447348564" class="menu-item whatsapp-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    WhatsApp
+                </a>
+                <a href="mailto:info@brandeduk.com" class="menu-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    info@brandeduk.com
+                </a>
+            </div>
+        </div>
+        <div class="menu-footer">
+            <a href="#" class="menu-footer-link">About Us</a>
+            <a href="#" class="menu-footer-link">Blog</a>
+            <a href="#" class="menu-footer-link">Sign In</a>
+        </div>
+    </nav>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="shop.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
+            <img src="brandedukv15-child/assets/images/ui/filter-icon.gif" alt="Filters" class="filter-icon-gif">
+        </button>
+        <a href="customize.html#orderSummary" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-badge" id="navCartBadge">0</span>
+            <span class="nav-item-label">Basket</span>
+        </a>
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+    </nav>
+
+    <!-- Account Panel Overlay -->
+    <div class="account-overlay" id="accountOverlay"></div>
+    
+    <!-- Account Sign In / Sign Up Panel -->
+    <div class="account-panel" id="accountPanel">
+        <div class="account-panel-header">
+            <button class="account-close-btn" id="accountCloseBtn" aria-label="Close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="account-forms-container">
+            <!-- Arrow Back -->
+            <div class="account-arrow" id="accountArrow">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            
+            <div class="account-forms-wrapper">
+                <!-- Sign In Form -->
+                <div class="account-form-holder signin-form" id="signinForm">
+                    <div class="account-form-icon">
+                        <i class="fas fa-user"></i>
+                        <span>Sign In</span>
+                    </div>
+                    <div class="account-form-content">
+                        <form id="signinFormData">
+                            <div class="account-input-group">
+                                <input type="email" id="signinEmail" required>
+                                <label for="signinEmail">Email</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="password" id="signinPassword" required>
+                                <label for="signinPassword">Password</label>
+                            </div>
+                            <div class="account-form-actions">
+                                <button type="submit" class="account-submit-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            <a href="#" class="account-forgot-link">Forgot Password?</a>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Sign Up Form -->
+                <div class="account-form-holder signup-form" id="signupForm">
+                    <div class="account-form-icon">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Sign Up</span>
+                    </div>
+                    <div class="account-form-content">
+                        <form id="signupFormData">
+                            <div class="account-input-row">
+                                <div class="account-input-group half">
+                                    <input type="text" id="signupFirstName" required>
+                                    <label for="signupFirstName">First Name</label>
+                                </div>
+                                <div class="account-input-group half">
+                                    <input type="text" id="signupLastName" required>
+                                    <label for="signupLastName">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="email" id="signupEmail" required>
+                                <label for="signupEmail">Email</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="tel" id="signupPhone" required>
+                                <label for="signupPhone">Phone Number</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="text" id="signupCompany">
+                                <label for="signupCompany">Company Name (optional)</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="password" id="signupPassword" required>
+                                <label for="signupPassword">Password</label>
+                            </div>
+                            <div class="account-form-actions">
+                                <button type="submit" class="account-submit-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logged In View -->
+        <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
+            <div class="account-user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3 class="account-user-name" id="accountUserName">Welcome!</h3>
+            <p class="account-user-email" id="accountUserEmail"></p>
+            <div class="account-user-details" id="accountUserDetails"></div>
+            <button class="account-logout-btn" id="accountLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot Floating Button -->
+    <button class="chatbot-fab" id="chatbotBtn" aria-label="Chat with us" disabled>
+        <img src="brandedukv15-child/assets/images/ui/chatbot.gif" alt="Chat with us" class="chatbot-gif">
+    </button>
+
+    <!-- FILTERS DROP-UP MENU -->
+    <div class="filters-overlay" id="filtersOverlay"></div>
+    <div class="filters-dropup" id="filtersDropup">
+        <div class="filters-dropup__header">
+            <h2 class="filters-dropup__title">Filter By</h2>
+            <button class="filters-dropup__clear" id="filtersClearAll">Clear All</button>
+            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">×</button>
+        </div>
+        <div class="filters-dropup__body">
+            <!-- TOGGLE FILTERS -->
+            <div class="filters-section filters-toggles">
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--new-in">New In</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--new-in" data-filter="newIn" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--bradeal">Bradeal</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--bradeal" data-filter="bradeal" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--offers">Offers</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--offers" data-filter="offers" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--in-stock">In Stock</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--in-stock" data-filter="inStock" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--recycled">Recycled / Organic</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--recycled" data-filter="recycled" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--plus-sizes">Plus Sizes</span>
+                    <button class="filter-toggle-btn filter-toggle-btn--plus-sizes" data-filter="plusSizes" type="button" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEARCH WITHIN RESULTS -->
+            <div class="filters-section">
+                <label class="filter-search-label">Search products</label>
+                <input type="text" class="filter-search-input" id="filterSearchInput" placeholder="Search within results...">
+            </div>
+
+            <!-- PRICE RANGE -->
+            <div class="filters-section">
+                <div class="filter-expandable" data-expanded="true">
+                    <div class="filter-expandable__header">
+                        <span>Price Range</span>
+                        <span class="filter-expandable__arrow">⌄</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <div class="price-range-display">
+                            <span id="priceMinDisplay">£0</span>
+                            <span>-</span>
+                            <span id="priceMaxDisplay">£100</span>
+                        </div>
+                        <input type="range" class="filter-price-slider" id="filterPriceRange" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPANDABLE FILTERS -->
+            <div class="filters-section filters-expandables">
+                <!-- Gender -->
+                <div class="filter-expandable" data-filter="gender">
+                    <div class="filter-expandable__header">
+                        <span>Gender</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="mens"> Men's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="womens"> Women's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="unisex"> Unisex</label>
+                    </div>
+                </div>
+
+                <!-- Age Group -->
+                <div class="filter-expandable" data-filter="ageGroup">
+                    <div class="filter-expandable__header">
+                        <span>Age Group</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="adults"> Adults</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="kids"> Kids</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="toddler"> Toddler</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="baby"> Baby</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="junior"> Junior</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="youth"> Youth</label>
+                    </div>
+                </div>
+
+                <!-- Sleeve -->
+                <div class="filter-expandable" data-filter="sleeve">
+                    <div class="filter-expandable__header">
+                        <span>Sleeve</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="short"> Short Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="long"> Long Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="34"> 3/4 Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="sleeveless"> Sleeveless</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cap"> Cap Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="raglan"> Raglan</label>
+                    </div>
+                </div>
+
+                <!-- Neckline -->
+                <div class="filter-expandable" data-filter="neckline">
+                    <div class="filter-expandable__header">
+                        <span>Neckline</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="crew"> Crew Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="vneck"> V-Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polo"> Polo Collar</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hooded"> Hooded</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="mandarin"> Mandarin</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="scoop"> Scoop Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="round"> Round Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="button"> Button Down</label>
+                    </div>
+                </div>
+
+                <!-- Accreditations -->
+                <div class="filter-expandable" data-filter="accreditations">
+                    <div class="filter-expandable__header">
+                        <span>Accreditations</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="en20471"> EN ISO 20471</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ris3279"> RIS-3279-TOM Rail</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oekotex"> OEKO-TEX</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gots"> GOTS Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fairtrade"> Fair Trade</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="wrap"> WRAP Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="en343"> EN343 Waterproof</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="en11612"> EN11612 Flame</label>
+                    </div>
+                </div>
+
+                <!-- Primary Colour -->
+                <div class="filter-expandable" data-filter="primaryColour">
+                    <div class="filter-expandable__header">
+                        <span>Primary Colour</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content filter-colors-grid">
+                        <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox" value="black"><span>Black</span></label>
+                        <label class="filter-color" style="--color: #ffffff"><input type="checkbox" value="white"><span>White</span></label>
+                        <label class="filter-color" style="--color: #000080"><input type="checkbox" value="navy"><span>Navy</span></label>
+                        <label class="filter-color" style="--color: #808080"><input type="checkbox" value="grey"><span>Grey</span></label>
+                        <label class="filter-color" style="--color: #ff0000"><input type="checkbox" value="red"><span>Red</span></label>
+                        <label class="filter-color" style="--color: #0000ff"><input type="checkbox" value="blue"><span>Blue</span></label>
+                        <label class="filter-color" style="--color: #008000"><input type="checkbox" value="green"><span>Green</span></label>
+                        <label class="filter-color" style="--color: #ffff00"><input type="checkbox" value="yellow"><span>Yellow</span></label>
+                        <label class="filter-color" style="--color: #ffa500"><input type="checkbox" value="orange"><span>Orange</span></label>
+                        <label class="filter-color" style="--color: #800080"><input type="checkbox" value="purple"><span>Purple</span></label>
+                        <label class="filter-color" style="--color: #ffc0cb"><input type="checkbox" value="pink"><span>Pink</span></label>
+                        <label class="filter-color" style="--color: #8b4513"><input type="checkbox" value="brown"><span>Brown</span></label>
+                        <label class="filter-color" style="--color: #800020"><input type="checkbox" value="burgundy"><span>Burgundy</span></label>
+                        <label class="filter-color" style="--color: #c3b091"><input type="checkbox" value="khaki"><span>Khaki</span></label>
+                        <label class="filter-color filter-color--multi" style="background: linear-gradient(135deg, red, orange, yellow, green, blue, purple)"><input type="checkbox" value="multi"><span>Multi</span></label>
+                    </div>
+                </div>
+
+                <!-- Colour Shade -->
+                <div class="filter-expandable" data-filter="colourShade">
+                    <div class="filter-expandable__header">
+                        <span>Colour Shade</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="light"> Light</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="dark"> Dark</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="bright"> Bright</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pastel"> Pastel</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="neon"> Neon</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="heather"> Heather</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="marl"> Marl</label>
+                    </div>
+                </div>
+
+                <!-- CMYK -->
+                <div class="filter-expandable" data-filter="cmyk">
+                    <div class="filter-expandable__header">
+                        <span>CMYK</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <input type="text" class="filter-text-input" placeholder="Enter CMYK values...">
+                    </div>
+                </div>
+
+                <!-- Pantone -->
+                <div class="filter-expandable" data-filter="pantone">
+                    <div class="filter-expandable__header">
+                        <span>Pantone</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <input type="text" class="filter-text-input" placeholder="Enter Pantone code...">
+                    </div>
+                </div>
+
+                <!-- Style -->
+                <div class="filter-expandable" data-filter="style">
+                    <div class="filter-expandable__header">
+                        <span>Style</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="classic"> Classic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="modern"> Modern</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oversized"> Oversized</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="workwear"> Workwear</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="casual"> Casual</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="formal"> Formal</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="vintage"> Vintage</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="streetwear"> Streetwear</label>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="filter-expandable" data-filter="features">
+                    <div class="filter-expandable__header">
+                        <span>Features</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="pockets"> Pockets</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hood"> Hood</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="buttons"> Buttons</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="drawstring"> Drawstring</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="elastic"> Elastic Cuffs</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="reflective"> Reflective</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="waterproof"> Waterproof</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="breathable"> Breathable</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="stretch"> Stretch</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="antibacterial"> Anti-bacterial</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="uv"> UV Protection</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tearaway"> Tear-away Label</label>
+                    </div>
+                </div>
+
+                <!-- Size -->
+                <div class="filter-expandable" data-filter="size">
+                    <div class="filter-expandable__header">
+                        <span>Size</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content filter-sizes-grid">
+                        <label class="filter-size"><input type="checkbox" value="xxs"><span>XXS</span></label>
+                        <label class="filter-size"><input type="checkbox" value="xs"><span>XS</span></label>
+                        <label class="filter-size"><input type="checkbox" value="s"><span>S</span></label>
+                        <label class="filter-size"><input type="checkbox" value="m"><span>M</span></label>
+                        <label class="filter-size"><input type="checkbox" value="l"><span>L</span></label>
+                        <label class="filter-size"><input type="checkbox" value="xl"><span>XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="2xl"><span>2XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="3xl"><span>3XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="4xl"><span>4XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="5xl"><span>5XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="6xl"><span>6XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="onesize"><span>One Size</span></label>
+                    </div>
+                </div>
+
+                <!-- Fabric -->
+                <div class="filter-expandable" data-filter="fabric">
+                    <div class="filter-expandable__header">
+                        <span>Fabric</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="cotton100"> 100% Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polycotton"> Poly/Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polyester100"> 100% Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="organic"> Organic Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled"> Recycled Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fleece"> Fleece</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="jersey"> Jersey</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pique"> Pique</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="frenchTerry"> French Terry</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ripstop"> Ripstop</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="softshell"> Softshell</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="nylon"> Nylon</label>
+                    </div>
+                </div>
+
+                <!-- Weight (GSM) -->
+                <div class="filter-expandable" data-filter="weight">
+                    <div class="filter-expandable__header">
+                        <span>Weight (GSM)</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="light"> Lightweight (&lt;150g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="mid"> Midweight (150-200g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="standard"> Standard (200-250g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="heavy"> Heavy (250-300g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="superheavy"> Super Heavy (300g+)</label>
+                    </div>
+                </div>
+
+                <!-- Fit -->
+                <div class="filter-expandable" data-filter="fit">
+                    <div class="filter-expandable__header">
+                        <span>Fit</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="loose"> Loose Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tailored"> Tailored</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic Fit</label>
+                    </div>
+                </div>
+
+                <!-- Related Sector -->
+                <div class="filter-expandable" data-filter="sector">
+                    <div class="filter-expandable__header">
+                        <span>Related Sector</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="construction"> Construction</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="healthcare"> Healthcare</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hospitality"> Hospitality</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="retail"> Retail</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="security"> Security</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="transport"> Transport</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="warehouse"> Warehouse</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="education"> Education</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="corporate"> Corporate</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="manufacturing"> Manufacturing</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="agriculture"> Agriculture</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="automotive"> Automotive</label>
+                    </div>
+                </div>
+
+                <!-- Related Sport -->
+                <div class="filter-expandable" data-filter="sport">
+                    <div class="filter-expandable__header">
+                        <span>Related Sport</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="football"> Football</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="rugby"> Rugby</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="running"> Running</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gym"> Gym/Fitness</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="golf"> Golf</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tennis"> Tennis</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cricket"> Cricket</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="basketball"> Basketball</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cycling"> Cycling</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="swimming"> Swimming</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="outdoor"> Outdoor</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hiking"> Hiking</label>
+                    </div>
+                </div>
+
+                <!-- Tag -->
+                <div class="filter-expandable" data-filter="tag">
+                    <div class="filter-expandable__header">
+                        <span>Tag</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="bestseller"> Best Seller</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="newarrival"> New Arrival</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="staffpick"> Staff Pick</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="eco"> Eco Friendly</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="value"> Value Pick</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="premium"> Premium</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="limited"> Limited Edition</label>
+                    </div>
+                </div>
+
+                <!-- Effect -->
+                <div class="filter-expandable" data-filter="effect">
+                    <div class="filter-expandable__header">
+                        <span>Effect</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="plain"> Plain</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="printed"> Printed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="embroidered"> Embroidered</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="washed"> Washed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="distressed"> Distressed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tiedye"> Tie-Dye</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="camo"> Camo</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="striped"> Striped</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Apply Button -->
+        <div class="filters-dropup__footer">
+            <button class="filters-apply-btn" id="filtersApplyBtn">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- Popup Contact Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+
+    <!-- Popup Contact Modal -->
+    <div class="popup-contact" id="popupContact">
+        <div class="popup-contact__header">
+            <h2 class="popup-contact__title">Get in touch</h2>
+            <button class="popup-contact__close" id="popupContactClose" aria-label="Close">×</button>
+        </div>
+        <div class="popup-contact__body">
+            <form class="popup-contact__form" id="contactQuickForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="contactName" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contactEmail" placeholder="Email address" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <select id="contactInterest" required>
+                            <option value="" disabled selected>Interested in</option>
+                            <option value="embroidery">Embroidery</option>
+                            <option value="printing">Printing</option>
+                            <option value="workwear">Workwear</option>
+                            <option value="uniforms">Uniforms</option>
+                            <option value="promotional">Promotional Items</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="contactPhone" placeholder="Phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea id="contactMessage" placeholder="Message" required></textarea>
+                </div>
+                <button type="submit" class="popup-contact__submit">Submit</button>
+            </form>
+
+            <!-- Google Map -->
+            <div class="popup-contact__map">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="mobile/js/mobile.js?v=20260102"></script>
+    <script src="mobile/hero/hero.js?v=20260102"></script>
+    <script src="mobile/js/popup-contact.js?v=20260102"></script>
+    <script src="mobile/js/faq.js?v=20260102"></script>
+    <!-- Desktop Header JS -->
+    <script src="brandedukv15-child/assets/js/header.js?v=20260102"></script>
+    
+    <!-- Tablet Social Double-Click Handler -->
+    <script>
+    (function() {
+        // Double-click to open social links on tablet
+        const tabletSocials = document.querySelectorAll('.social-buttons-tablet a');
+        
+        tabletSocials.forEach(function(link) {
+            // Prevent single click navigation
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+            
+            // Open link on double-click
+            link.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    window.open(href, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
+    })();
+    </script>
+    
+    <!-- Social Icons Click Handler: Single click = activate color, Double click = open link -->
+    <script>
+    (function() {
+        const mobileSocials = document.querySelectorAll('.social-icons-mobile .social-icon');
+        
+        mobileSocials.forEach(function(icon) {
+            // Prevent default click navigation
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Toggle active class (color on/off)
+                this.classList.toggle('active');
+            });
+            
+            // Double click opens the link
+            icon.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    window.open(href, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
+    })();
+    </script>
+    
+    <script>
+        // ========================================
+        // DESKTOP HEADER FUNCTIONALITY
+        // ========================================
+        
+        // Desktop VAT Toggle
+        (function() {
+            const desktopVatToggle = document.getElementById('desktopVatToggle');
+            if (!desktopVatToggle) return;
+            
+            const VAT_KEY = 'brandeduk-vat-mode';
+            
+            function isVatIncluded() {
+                return localStorage.getItem(VAT_KEY) === 'on';
+            }
+            
+            function updateToggleState() {
+                const isOn = isVatIncluded();
+                desktopVatToggle.setAttribute('aria-pressed', isOn);
+                desktopVatToggle.classList.toggle('is-on', isOn);
+                
+                const excLabel = desktopVatToggle.querySelector('[data-vat-exc]');
+                const incLabel = desktopVatToggle.querySelector('[data-vat-inc]');
+                if (excLabel) excLabel.classList.toggle('is-active', !isOn);
+                if (incLabel) incLabel.classList.toggle('is-active', isOn);
+            }
+            
+            updateToggleState();
+            
+            desktopVatToggle.addEventListener('click', () => {
+                const newState = !isVatIncluded();
+                localStorage.setItem(VAT_KEY, newState ? 'on' : 'off');
+                updateToggleState();
+                window.dispatchEvent(new CustomEvent('vatToggleChanged'));
+            });
+            
+            // Sync with mobile toggle
+            window.addEventListener('vatToggleChanged', updateToggleState);
+        })();
+        
+        // Desktop Header Basket Badge
+        (function() {
+            const basketBadge = document.getElementById('headerBasketBadge');
+            if (!basketBadge) return;
+            
+            function getBasket() {
+                try {
+                    return JSON.parse(localStorage.getItem('quoteBasket')) || [];
+                } catch (e) {
+                    return [];
+                }
+            }
+            
+            function updateBadge() {
+                const basket = getBasket();
+                const count = basket.reduce((total, item) => total + (parseInt(item.quantity) || parseInt(item.totalQty) || 1), 0);
+                basketBadge.textContent = count;
+                basketBadge.style.display = count > 0 ? 'flex' : 'none';
+            }
+            
+            updateBadge();
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'quoteBasket') updateBadge();
+            });
+            window.addEventListener('basketUpdated', updateBadge);
+        })();
+        
+        // Desktop Account Button (placeholder - opens contact popup for now)
+        (function() {
+            const accountBtn = document.getElementById('desktopAccountBtn');
+            if (!accountBtn) return;
+            
+            accountBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Open contact popup as placeholder
+                const contactPopup = document.querySelector('.popup-contact');
+                const overlay = document.querySelector('.popup-contact-overlay');
+                if (contactPopup && overlay) {
+                    contactPopup.classList.add('open');
+                    overlay.classList.add('visible');
+                }
+            });
+        })();
+        
+        // Search Icon Toggle
+        (function() {
+            const searchIcon = document.querySelector('.header-search-wrapper');
+            const searchBar = document.getElementById('mobileSearchBar');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchIcon && searchBar) {
+                searchIcon.addEventListener('click', function() {
+                    if (searchBar.style.display === 'none') {
+                        searchBar.style.display = 'block';
+                        searchInput.focus();
+                    } else {
+                        searchBar.style.display = 'none';
+                    }
+                });
+            }
+        })();
+        
+        // Home page VAT price updates
+        (function() {
+            const VAT_RATE = 0.20;
+            
+            function isVatIncluded() {
+                return localStorage.getItem('brandeduk-vat-mode') === 'on';
+            }
+
+            function updateProductPrices() {
+                const includeVat = isVatIncluded();
+                document.querySelectorAll('.product-price[data-base-price]').forEach(el => {
+                    const basePrice = parseFloat(el.dataset.basePrice);
+                    const displayPrice = includeVat ? basePrice * (1 + VAT_RATE) : basePrice;
+                    el.textContent = '£' + displayPrice.toFixed(2);
+                });
+            }
+
+            updateProductPrices();
+
+            window.addEventListener('vatToggleChanged', () => {
+                updateProductPrices();
+            });
+        })();
+        
+        // Social Icons 3D - Touch/Click: 1 tap toggle, double tap open link, tap outside deactivates
+        (function() {
+            const socialIcons = document.querySelectorAll('.social-icon-3d');
+            const socialContainer = document.querySelector('.footer-social-icons');
+            
+            socialIcons.forEach(icon => {
+                let lastTap = 0;
+                
+                // Handle both touch and click
+                function handleTap(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const now = Date.now();
+                    const timeDiff = now - lastTap;
+                    
+                    if (timeDiff < 300 && timeDiff > 0) {
+                        // Double tap - open link
+                        lastTap = 0;
+                        const href = icon.getAttribute('href');
+                        if (href) {
+                            window.open(href, '_blank', 'noopener,noreferrer');
+                        }
+                        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                    } else {
+                        // Single tap - toggle
+                        lastTap = now;
+                        icon.classList.toggle('active');
+                        if (navigator.vibrate) navigator.vibrate(10);
+                    }
+                }
+                
+                icon.addEventListener('touchend', handleTap, { passive: false });
+                icon.addEventListener('click', function(e) {
+                    // Only handle click if not a touch device (fallback for desktop)
+                    if (!('ontouchend' in window)) {
+                        handleTap(e);
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+            });
+            
+            // Tap/Click anywhere outside social icons - deactivate all
+            function deactivateAll(e) {
+                if (socialContainer && !socialContainer.contains(e.target)) {
+                    socialIcons.forEach(icon => icon.classList.remove('active'));
+                }
+            }
+            
+            document.addEventListener('touchstart', deactivateAll, { passive: true });
+            document.addEventListener('click', deactivateAll);
+        })();
+    </script>
+</body>
+</html>

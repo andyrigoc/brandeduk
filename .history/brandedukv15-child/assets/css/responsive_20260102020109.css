@@ -1,0 +1,588 @@
+/* ============================================
+   BrandedUK Responsive CSS - Mobile First
+   ============================================
+   
+   APPROCCIO MOBILE-FIRST:
+   - Base styles = Mobile (< 768px)
+   - @media (min-width: 768px) = Tablet
+   - @media (min-width: 1024px) = Desktop
+   
+   ============================================ */
+
+/* ========================================
+   BREAKPOINTS REFERENCE
+   ========================================
+   
+   Mobile:  0 - 767px (default/base)
+   Tablet:  768px - 1023px
+   Desktop: 1024px+
+   
+   ======================================== */
+
+/* ========================================
+   TABLET OVERRIDES (768px+)
+   ======================================== */
+@media (min-width: 768px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 80px;
+    }
+    
+    body {
+        font-size: 15px;
+    }
+    
+    /* === Header === */
+    .mobile-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: var(--header-height);
+    }
+    
+    .header-top-row {
+        order: 2;
+        width: auto;
+        padding: 0;
+        background: transparent;
+        border: none;
+    }
+    
+    .header-logo-row {
+        order: 1;
+        padding: 0;
+        gap: 24px;
+    }
+    
+    .search-wrapper-expand {
+        width: 320px;
+    }
+    
+    /* === Hero === */
+    .hero-expanding-wrapper {
+        height: 65vh;
+        min-height: 450px;
+        max-height: 600px;
+    }
+    
+    .hero-cont {
+        height: 100%;
+    }
+    
+    .hero-el {
+        min-height: 100%;
+    }
+    
+    .hero-el__bg {
+        height: 100%;
+    }
+    
+    .hero-el__heading {
+        font-size: 1.5rem;
+    }
+    
+    .hero-el__text {
+        font-size: 1.25rem;
+    }
+    
+    /* Hero Banners - closer to hero 1 */
+    .hero-banners-wrapper {
+        margin-top: 16px;
+    }
+    
+    /* === Grid Layouts === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px;
+        padding: 20px 24px;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 24px;
+        overflow-x: visible;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+    
+    /* === Cards === */
+    .product-card {
+        padding: 16px;
+    }
+    
+    .product-card-image {
+        height: 180px;
+    }
+    
+    /* === Forms === */
+    .search-input-expand {
+        font-size: 15px;
+        padding: 12px 16px 12px 44px;
+    }
+    
+    /* === Sections === */
+    .section-header {
+        padding: 20px 24px 16px;
+    }
+    
+    .section-title {
+        font-size: 1.375rem;
+    }
+    
+    /* === Footer === */
+    .mobile-footer {
+        padding: 32px 24px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+    
+    /* === Customize Page === */
+    .customize-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .product-gallery {
+        position: sticky;
+        top: calc(var(--header-height) + 20px);
+        height: fit-content;
+    }
+    
+    .gallery-main {
+        aspect-ratio: 1;
+    }
+    
+    /* === Action Bar === */
+    .action-bar-sticky {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        padding: 16px 0;
+        margin-top: 24px;
+    }
+    
+}
+
+/* ========================================
+   DESKTOP OVERRIDES (1024px+)
+   ======================================== */
+@media (min-width: 1024px) {
+    
+    /* === Layout === */
+    :root {
+        --header-height: 140px;
+    }
+    
+    body {
+        font-size: 16px;
+        padding-bottom: 0; /* No bottom nav on desktop */
+    }
+    
+    /* === HIDE MOBILE ELEMENTS ON DESKTOP === */
+    .bottom-nav,
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    /* === HEADER DESKTOP === */
+    .mobile-header {
+        flex-direction: column;
+        padding: 0;
+        height: auto;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    /* Header Top Row - Desktop style */
+    .header-top-row {
+        order: 1;
+        width: 100%;
+        padding: 8px 40px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        justify-content: space-between;
+        gap: 0;
+    }
+    
+    .social-buttons-header {
+        gap: 10px;
+    }
+    
+    .social-buttons-header a {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .social-buttons-header .social-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .vat-toggle-mobile {
+        gap: 12px;
+    }
+    
+    /* Header Logo Row - Desktop style */
+    .header-logo-row {
+        order: 2;
+        width: 100%;
+        padding: 16px 40px;
+        justify-content: space-between;
+        background: #fff;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .mobile-logo-center {
+        gap: 12px;
+    }
+    
+    .logo-badge-img {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .logo-text-styled {
+        font-size: 28px;
+    }
+    
+    .search-wrapper-expand {
+        width: 400px;
+    }
+    
+    .search-input-expand {
+        font-size: 15px;
+        padding: 14px 20px 14px 48px;
+    }
+    
+    /* === HERO - 5 Panels Horizontal === */
+    .hero-expanding-wrapper {
+        height: 480px;
+        max-height: 550px;
+        margin: 0 40px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .hero-cont {
+        height: 100%;
+    }
+    
+    .hero-cont__inner {
+        padding: 0;
+    }
+    
+    .hero-el {
+        min-height: 100%;
+        border-radius: 12px;
+    }
+    
+    .hero-el__heading {
+        font-size: 1.5rem;
+        padding: 12px 20px;
+    }
+    
+    .hero-el__text {
+        font-size: 1.25rem;
+    }
+    
+    /* === Hero Banners Section === */
+    .hero-banners-wrapper {
+        margin: 24px 40px;
+    }
+    
+    /* === GRID LAYOUTS - 4 Columns Desktop === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px;
+        padding: 24px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .bestseller-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding: 0 40px;
+        overflow-x: visible;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+    
+    /* Shop by Category - horizontal scroll on desktop too or grid */
+    .shop-by-category {
+        padding: 0 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .shop-by-category-scroll {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .category-item {
+        flex: 0 0 auto;
+    }
+    
+    /* === PRODUCT CARDS - Desktop hover effects === */
+    .product-card {
+        padding: 20px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    }
+    
+    .product-card-image {
+        height: 220px;
+    }
+    
+    .product-card-shop {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card-shop:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    }
+    
+    /* === SECTIONS === */
+    .section-header {
+        padding: 32px 40px 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    /* === CONTAINER === */
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+    
+    /* === CTA SECTIONS === */
+    .upload-logo-cta,
+    .cta-section {
+        max-width: 1400px;
+        margin: 32px auto;
+        padding: 0 40px;
+    }
+    
+    /* === TRUST BADGES === */
+    .trust-badges {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px 40px;
+    }
+    
+    /* === BRANDS SECTION === */
+    .brands-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px;
+    }
+    
+    /* === SERVICES SECTION === */
+    .services-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px;
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+    
+    /* === FAQ SECTION === */
+    .faq-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px;
+    }
+    
+    /* === CUSTOMIZE PAGE === */
+    .customize-main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px;
+    }
+    
+    .gallery-main {
+        max-height: 500px;
+    }
+    
+    /* === FOOTER DESKTOP === */
+    .mobile-footer {
+        padding: 60px 40px 40px;
+    }
+    
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr repeat(4, 1fr);
+        gap: 48px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .footer-section:first-child {
+        grid-column: 1;
+    }
+    
+    .footer-section-title {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+    
+    .footer-links a {
+        font-size: 14px;
+    }
+    
+    .footer-bottom {
+        max-width: 1400px;
+        margin: 32px auto 0;
+        padding-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .footer-bottom-links {
+        display: flex;
+        gap: 24px;
+    }
+    
+    /* === SOCIAL ICONS FOOTER - Desktop === */
+    .footer-social-icons {
+        justify-content: flex-start;
+        gap: 16px;
+    }
+    
+    .social-icon-3d {
+        width: 48px;
+        height: 48px;
+    }
+    
+    /* === POPUP CONTACT - Desktop === */
+    .popup-contact {
+        max-width: 700px;
+        width: calc(100% - 80px);
+    }
+    
+    .popup-contact__body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+    }
+    
+    /* === FILTERS DROPUP - Desktop becomes sidebar or modal === */
+    .filters-dropup {
+        max-width: 400px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100%);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .filters-dropup.active {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+}
+
+/* ========================================
+   LARGE DESKTOP (1440px+)
+   ======================================== */
+@media (min-width: 1440px) {
+    
+    .products-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .container {
+        max-width: 1600px;
+    }
+    
+}
+
+/* ========================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .product-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+    
+    /* Larger touch targets */
+    button, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .mobile-header,
+    .action-bar-sticky,
+    .bottom-nav,
+    .mobile-footer {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
