@@ -2,6 +2,8 @@
 (function() {
   var $cont = document.querySelector('.hero-cont');
   if (!$cont) return;
+
+  var lastScrollLeft = 0;
   
   var $elsArr = [].slice.call($cont.querySelectorAll('.hero-el'));
   var $closeBtnsArr = [].slice.call($cont.querySelectorAll('.hero-el__close-btn'));
@@ -28,6 +30,14 @@
         return;
       }
       $cont.classList.add('s--el-active');
+
+      // Ensure the expanded panel is centered in the visible frame
+      // (if the user scrolled the strip before opening a card)
+      lastScrollLeft = $cont.scrollLeft || 0;
+      try {
+        $cont.scrollLeft = 0;
+      } catch (err) {}
+
       this.classList.add('s--active');
     });
   });
@@ -38,6 +48,15 @@
       $cont.classList.remove('s--el-active');
       var activeEl = $cont.querySelector('.hero-el.s--active');
       if (activeEl) activeEl.classList.remove('s--active');
+
+      // Restore previous scroll position after closing
+      if (lastScrollLeft) {
+        requestAnimationFrame(function() {
+          try {
+            $cont.scrollLeft = lastScrollLeft;
+          } catch (err) {}
+        });
+      }
     });
   });
 })();

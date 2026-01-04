@@ -989,49 +989,49 @@
                 <div class="dropdown-box" role="region" aria-label="Browse categories">
                     <ul class="menu vertical-menu category-menu">
                         <li class="has-children">
-                            <a href="shop-pc.html?category=tshirts">
+                            <a href="category-tshirts.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">T-Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=polo">
+                            <a href="category-polo.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
                                 <span class="category-text">Polo Shirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=hoodies">
+                            <a href="category-hoodies.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=jackets">
+                            <a href="category-jackets.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
                                 <span class="category-text">Jackets &amp; Softshell</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=hivis">
+                            <a href="category-hivis.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
                                 <span class="category-text">Hi-Vis Clothing</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=fleeces">
+                            <a href="category-fleeces.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
                                 <span class="category-text">Fleeces</span>
                                 <span class="category-caret" aria-hidden="true"></span>
                             </a>
                         </li>
                         <li class="has-children">
-                            <a href="shop-pc.html?category=caps">
+                            <a href="category-headwear.html">
                                 <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
                                 <span class="category-text">Headwear / Accessories</span>
                                 <span class="category-caret" aria-hidden="true"></span>
@@ -1718,7 +1718,33 @@ const PRICE_BREAKS = [
 
 // Get category from URL
 const urlParams = new URLSearchParams(window.location.search);
-const categoryFilter = urlParams.get('category') || 'all';
+
+function normalizeCategory(raw) {
+    const value = String(raw || '').trim().toLowerCase();
+    if (!value) return 'all';
+
+    const aliases = {
+        't-shirt': 'tshirts',
+        't-shirts': 'tshirts',
+        'tees': 'tshirts',
+        'tee': 'tshirts',
+        'polo-shirts': 'polo',
+        'polos': 'polo',
+        'hi-viz': 'hivis',
+        'hi-vis': 'hivis',
+        'hi-vis clothing': 'hivis',
+        'hi-viz clothing': 'hivis'
+    };
+
+    return aliases[value] || value;
+}
+
+const VALID_CATEGORIES = new Set(['all', 'tshirts', 'polo', 'hoodies', 'jackets', 'hivis', 'trousers', 'fleeces', 'bags', 'caps', 'beanies', 'aprons', 'sustainable', 'workwear']);
+const demoMode = urlParams.get('demo') === '1';
+let categoryFilter = normalizeCategory(urlParams.get('category')) || 'all';
+if (!VALID_CATEGORIES.has(categoryFilter)) {
+    categoryFilter = 'all';
+}
 
 // Category titles
 const categoryTitles = {
@@ -1733,7 +1759,9 @@ const categoryTitles = {
     'caps': 'Caps',
     'aprons': 'Aprons',
     'beanies': 'Beanies',
-    'hi-viz': 'Hi-Viz'
+    'sustainable': 'Sustainable',
+    'trousers': 'Trousers',
+    'workwear': 'Workwear'
 };
 
 // VAT helpers - uses same key as vat-toggle.js
@@ -1762,7 +1790,13 @@ function getPriceRange() {
 // Render products
 function renderProducts() {
     const grid = document.getElementById('productsGrid');
-    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    let products;
+    if (demoMode) {
+        const ref = PRODUCTS_DB.find(p => p.code === 'GD067') || PRODUCTS_DB[0];
+        products = ref ? [ref] : [];
+    } else {
+        products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    }
     
     document.getElementById('categoryTitle').textContent = categoryTitles[categoryFilter] || 'Products';
     document.getElementById('productsCount').textContent = products.length + ' products';

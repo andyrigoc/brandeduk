@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hi-Viz</title>
+  <meta http-equiv="refresh" content="0; url=shop-pc.html?category=hivis&demo=1" />
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const force = (params.get('force') || '').toLowerCase();
+      const isMobile = window.innerWidth < 1024;
+
+      if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
+        window.location.replace('../category-hivis.html?force=mobile');
+        return;
+      }
+
+      window.location.replace('shop-pc.html?category=hivis&demo=1');
+    })();
+  </script>
+</head>
+<body>
+  <noscript>
+    <a href="shop-pc.html?category=hivis&demo=1">Continue to Hi-Viz</a>
+  </noscript>
+</body>
+</html>

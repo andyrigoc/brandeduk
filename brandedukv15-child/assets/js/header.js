@@ -1,7 +1,17 @@
 (function () {
+    function resetExpandedMenus(root) {
+        if (!root) {
+            return;
+        }
+        root.querySelectorAll('.category-menu > li.is-expanded').forEach((item) => {
+            item.classList.remove('is-expanded');
+        });
+    }
+
     function closeAllDropdowns() {
         document.querySelectorAll('.category-dropdown[data-visible="true"]').forEach((dropdown) => {
             dropdown.setAttribute('data-visible', 'false');
+            resetExpandedMenus(dropdown);
             const button = dropdown.querySelector('.category-toggle');
             if (button) {
                 button.setAttribute('aria-expanded', 'false');
@@ -34,6 +44,7 @@
                     return;
                 }
                 dropdown.setAttribute('data-visible', 'false');
+                resetExpandedMenus(dropdown);
                 button.setAttribute('aria-expanded', 'false');
             };
 
@@ -53,6 +64,34 @@
             if (dropdownBox) {
                 dropdownBox.addEventListener('pointerleave', closeDropdown);
             }
+
+            // Mobile/tablet behaviour: tapping the caret opens/closes subcategories,
+            // while tapping the main category text navigates to its href.
+            dropdown.querySelectorAll('.category-menu > li.has-children').forEach((item) => {
+                const link = item.querySelector(':scope > a');
+                if (!link) {
+                    return;
+                }
+
+                const caret = link.querySelector('.category-caret');
+                if (!caret) {
+                    return;
+                }
+
+                caret.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const isExpanded = item.classList.contains('is-expanded');
+                    dropdown.querySelectorAll('.category-menu > li.is-expanded').forEach((other) => {
+                        if (other !== item) {
+                            other.classList.remove('is-expanded');
+                        }
+                    });
+
+                    item.classList.toggle('is-expanded', !isExpanded);
+                });
+            });
         });
 
         document.querySelectorAll('.main-nav .menu > li > a').forEach((link) => {

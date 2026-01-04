@@ -1,11 +1,19 @@
 /* Hero Expanding Sections */
 .hero-cont {
   position: relative;
-  overflow: hidden;
-  height: 308px;
-  padding: 20px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  height: 240px;
+  padding: 12px 0;
   border-radius: 0;
   margin: 0;
+}
+
+/* When a panel is expanded, lock horizontal scroll */
+.hero-cont.s--el-active {
+  overflow-x: hidden;
+  touch-action: pan-y;
 }
 
 .hero-cont__inner {
@@ -21,12 +29,12 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 14%;
+  width: 20%;
   height: 100%;
   background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%);
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.6s 0.7s, width 0.7s, opacity 0.6s 0.7s, z-index 0s 1.3s;
+  transition: transform 0.6s 0.7s, left 0.7s, width 0.7s, opacity 0.6s 0.7s, z-index 0s 1.3s;
   will-change: transform, width, opacity;
   cursor: pointer;
 }
@@ -54,7 +62,7 @@
 
 .hero-el__bg {
   position: relative;
-  width: calc(110vw - 64px);
+  width: 100%;
   height: 100%;
   transition: transform 0.6s 0.7s, width 0.6s 0.7s;
   will-change: transform, width;
@@ -63,6 +71,7 @@
 /* Card aperta - contenitore 15%, contenuto 10% */
 .hero-el.s--active .hero-el__bg {
   transform: scale(1.15);
+  width: 100%;
 }
 
 .hero-el.s--active .hero-el__bg:before {
@@ -262,13 +271,14 @@
   transform: rotate(-45deg) translateX(0);
 }
 
-/* Element positions - 7 panels */
+/* Element positions - 9 panels (5 visible, scroll for the rest) */
 .hero-el:nth-child(1) {
-  transform: translate3d(0%, 0, 0);
+  left: 0;
+  transform: translate3d(0, 0, 0);
   transform-origin: 10% 50%;
 }
 .hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
-.hero-el:nth-child(1) .hero-el__bg { transform: translate3d(0%, 0, 0); }
+.hero-el:nth-child(1) .hero-el__bg { transform: none; }
 .hero-el:nth-child(1) .hero-el__bg:before { 
   transition-delay: 0s;
   background-image: url('../../hero/images/apron.jpg');
@@ -276,11 +286,12 @@
 }
 
 .hero-el:nth-child(2) {
-  transform: translate3d(calc(100% + 4px), 0, 0);
+  left: calc(20% + 4px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 25% 50%;
 }
 .hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.07s; }
-.hero-el:nth-child(2) .hero-el__bg { transform: translate3d(-14%, 0, 0); }
+.hero-el:nth-child(2) .hero-el__bg { transform: none; }
 .hero-el:nth-child(2) .hero-el__bg:before { 
   transition-delay: 0.07s;
   background-image: url('../../hero/images/hoodies.jpg');
@@ -288,11 +299,12 @@
 }
 
 .hero-el:nth-child(3) {
-  transform: translate3d(calc(200% + 8px), 0, 0);
+  left: calc(40% + 8px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 40% 50%;
 }
 .hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.14s; }
-.hero-el:nth-child(3) .hero-el__bg { transform: translate3d(-28%, 0, 0); }
+.hero-el:nth-child(3) .hero-el__bg { transform: none; }
 .hero-el:nth-child(3) .hero-el__bg:before { 
   transition-delay: 0.14s;
   background-image: url('../../hero/images/beanie.jpg');
@@ -300,11 +312,12 @@
 }
 
 .hero-el:nth-child(4) {
-  transform: translate3d(calc(300% + 12px), 0, 0);
+  left: calc(60% + 12px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 55% 50%;
 }
 .hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.21s; }
-.hero-el:nth-child(4) .hero-el__bg { transform: translate3d(-42%, 0, 0); }
+.hero-el:nth-child(4) .hero-el__bg { transform: none; }
 .hero-el:nth-child(4) .hero-el__bg:before { 
   transition-delay: 0.21s;
   background-image: url('../../hero/images/Hi-Viz.jpg');
@@ -312,11 +325,12 @@
 }
 
 .hero-el:nth-child(5) {
-  transform: translate3d(calc(400% + 16px), 0, 0);
+  left: calc(80% + 16px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 70% 50%;
 }
 .hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.28s; }
-.hero-el:nth-child(5) .hero-el__bg { transform: translate3d(-56%, 0, 0); }
+.hero-el:nth-child(5) .hero-el__bg { transform: none; }
 .hero-el:nth-child(5) .hero-el__bg:before { 
   transition-delay: 0.28s;
   background-image: url('../../hero/images/Polo.jpg');
@@ -324,11 +338,12 @@
 }
 
 .hero-el:nth-child(6) {
-  transform: translate3d(calc(500% + 20px), 0, 0);
+  left: calc(100% + 20px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 85% 50%;
 }
 .hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.35s; }
-.hero-el:nth-child(6) .hero-el__bg { transform: translate3d(-70%, 0, 0); }
+.hero-el:nth-child(6) .hero-el__bg { transform: none; }
 .hero-el:nth-child(6) .hero-el__bg:before { 
   transition-delay: 0.35s;
   background-image: url('../../hero/images/Jacket.jpeg');
@@ -336,14 +351,41 @@
 }
 
 .hero-el:nth-child(7) {
-  transform: translate3d(calc(600% + 24px), 0, 0);
+  left: calc(120% + 24px);
+  transform: translate3d(0, 0, 0);
   transform-origin: 100% 50%;
 }
 .hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.42s; }
-.hero-el:nth-child(7) .hero-el__bg { transform: translate3d(-84%, 0, 0); }
+.hero-el:nth-child(7) .hero-el__bg { transform: none; }
 .hero-el:nth-child(7) .hero-el__bg:before { 
   transition-delay: 0.42s;
   background-image: url('../../hero/images/Sustainable.jpg');
+  background-position: center center;
+}
+
+.hero-el:nth-child(8) {
+  left: calc(140% + 28px);
+  transform: translate3d(0, 0, 0);
+  transform-origin: 100% 50%;
+}
+.hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.49s; }
+.hero-el:nth-child(8) .hero-el__bg { transform: none; }
+.hero-el:nth-child(8) .hero-el__bg:before {
+  transition-delay: 0.49s;
+  background-image: url('../../hero/images/T-shirthero.jpg');
+  background-position: center center;
+}
+
+.hero-el:nth-child(9) {
+  left: calc(160% + 32px);
+  transform: translate3d(0, 0, 0);
+  transform-origin: 100% 50%;
+}
+.hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.56s; }
+.hero-el:nth-child(9) .hero-el__bg { transform: none; }
+.hero-el:nth-child(9) .hero-el__bg:before {
+  transition-delay: 0.56s;
+  background-image: url('../../hero/images/WorkTrousers.jpg');
   background-position: center center;
 }
 
@@ -357,7 +399,7 @@
 /* Active element - full width no padding */
 .hero-el.s--active {
   z-index: 1;
-  width: 100vw;
+  width: 100%;
   left: 0;
   transform: translate3d(0, 0, 0);
   transition: transform 0.6s, width 0.7s 0.7s, z-index 0s;
@@ -365,8 +407,8 @@
 }
 
 .hero-el.s--active .hero-el__bg {
-  width: 100vw;
-  transform: translate3d(0, 0, 0);
+  width: 100%;
+  transform: none;
   transition: transform 0.6s;
 }
 

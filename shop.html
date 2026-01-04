@@ -432,7 +432,7 @@
                     <div class="dropdown-box" role="region" aria-label="Browse categories">
                         <ul class="menu vertical-menu category-menu">
                             <li class="has-children">
-                                <a href="shop.html?category=tshirts">
+                                <a href="category-tshirts.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
                                     <span class="category-text">T-Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -457,7 +457,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=polo">
+                                <a href="category-polo.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
                                     <span class="category-text">Polo Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -479,7 +479,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=hoodies">
+                                <a href="category-hoodies.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
                                     <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -500,7 +500,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=jackets">
+                                <a href="category-jackets.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
                                     <span class="category-text">Jackets &amp; Softshell</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -522,7 +522,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=hivis">
+                                <a href="category-hivis.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
                                     <span class="category-text">Hi-Vis Clothing</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -544,7 +544,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=trousers">
+                                <a href="category-trousers.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
                                     <span class="category-text">Work Trousers</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -553,7 +553,7 @@
                                     <li>
                                         <ul>
                                             <li><a href="#">Cargo Pants</a></li>
-                                            <li><a href="#">Ripstop Trousers</a></li>
+                                            <a href="category-workwear.html">
                                             <li><a href="#">Stretch Work Trousers</a></li>
                                             <li><a href="#">Waterproof / Over-trousers</a></li>
                                             <li><a href="#">Work Shorts</a></li>
@@ -582,7 +582,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=fleeces">
+                                <a href="category-fleeces.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
                                     <span class="category-text">Fleeces</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -591,7 +591,7 @@
                                     <li>
                                         <ul>
                                             <li><a href="#">Full Zip Fleece</a></li>
-                                            <li><a href="#">Half Zip Fleece</a></li>
+                                            <a href="category-headwear.html">
                                             <li><a href="#">Heavy Fleece</a></li>
                                             <li><a href="#">Kids Fleece</a></li>
                                             <li><a href="#">Microfleece Jackets</a></li>
@@ -621,7 +621,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="shop.html?category=sustainable">
+                                <a href="category-sustainable.html">
                                     <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
                                     <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                     <span class="category-caret" aria-hidden="true"></span>
@@ -1753,8 +1753,29 @@
 
         // Get category from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const VALID_CATEGORIES = new Set(['all', 'tshirts', 'polo', 'hoodies', 'jackets', 'hivis', 'trousers', 'fleeces', 'bags', 'caps', 'beanies', 'aprons', 'sustainable']);
-        let categoryFilter = urlParams.get('category') || 'all';
+
+        function normalizeCategory(raw) {
+            const value = String(raw || '').trim().toLowerCase();
+            if (!value) return 'all';
+
+            const aliases = {
+                't-shirt': 'tshirts',
+                't-shirts': 'tshirts',
+                'tees': 'tshirts',
+                'tee': 'tshirts',
+                'polo-shirts': 'polo',
+                'polos': 'polo',
+                'hi-viz': 'hivis',
+                'hi-vis': 'hivis',
+                'hi-vis clothing': 'hivis',
+                'hi-viz clothing': 'hivis'
+            };
+
+            return aliases[value] || value;
+        }
+
+        const VALID_CATEGORIES = new Set(['all', 'tshirts', 'polo', 'hoodies', 'jackets', 'hivis', 'trousers', 'fleeces', 'bags', 'caps', 'beanies', 'aprons', 'sustainable', 'workwear']);
+        let categoryFilter = normalizeCategory(urlParams.get('category')) || 'all';
         if (!VALID_CATEGORIES.has(categoryFilter)) {
             categoryFilter = 'all';
         }
@@ -1830,7 +1851,8 @@
                 'caps': 'Caps',
                 'beanies': 'Headwear / Accessories',
                 'aprons': 'Work & Uniforms',
-                'sustainable': 'Sustainable / Recycled & Organic'
+                'sustainable': 'Sustainable / Recycled & Organic',
+                'workwear': 'Workwear'
             };
             document.getElementById('categoryTitle').textContent = titles[categoryFilter] || 'Products';
             document.getElementById('resultsCount').textContent = `${products.length} items`;

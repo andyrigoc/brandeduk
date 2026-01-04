@@ -229,15 +229,15 @@
     
     /* === Hero === */
     .hero-expanding-wrapper {
-        height: 65vh;
-        min-height: 450px;
-        max-height: 600px;
-        margin-top: -60px;
-        padding: 0 32px;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        margin-top: 0;
+        padding: 0;
     }
     
     .hero-cont {
-        height: 100%;
+        height: 240px;
     }
     
     .hero-el {
@@ -343,6 +343,40 @@
         margin-top: 24px;
     }
     
+}
+
+/* ========================================
+   TABLET HERO 1 (768px–1023px)
+   - show ALL cards, no horizontal scroll
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .hero-cont {
+        overflow-x: hidden;
+    }
+
+    .hero-el {
+        width: calc(100% / 9);
+    }
+
+    .hero-el:nth-child(1) { left: 0; }
+    .hero-el:nth-child(2) { left: calc((100% / 9) * 1); }
+    .hero-el:nth-child(3) { left: calc((100% / 9) * 2); }
+    .hero-el:nth-child(4) { left: calc((100% / 9) * 3); }
+    .hero-el:nth-child(5) { left: calc((100% / 9) * 4); }
+    .hero-el:nth-child(6) { left: calc((100% / 9) * 5); }
+    .hero-el:nth-child(7) { left: calc((100% / 9) * 6); }
+    .hero-el:nth-child(8) { left: calc((100% / 9) * 7); }
+    .hero-el:nth-child(9) { left: calc((100% / 9) * 8); }
+
+    /* When expanding a panel, force it to slide to the left edge */
+    .hero-el.s--active {
+        left: 0 !important;
+    }
+
+    .hero-el__heading {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
 }
 
 /* ========================================
@@ -715,11 +749,7 @@
         transform: none !important;
     }
     
-    /* Background images for cards 6-10 (placeholder purple) */
-    .hero-el:nth-child(6) .hero-el__bg:before,
-    .hero-el:nth-child(7) .hero-el__bg:before,
-    .hero-el:nth-child(8) .hero-el__bg:before,
-    .hero-el:nth-child(9) .hero-el__bg:before,
+    /* Background images: don't override real images on cards 6-9 */
     .hero-el:nth-child(10) .hero-el__bg:before {
         background-image: none !important;
         background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%) !important;
