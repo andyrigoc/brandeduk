@@ -4889,7 +4889,7 @@ a {
     width: 56px;
     height: 56px;
     background: transparent;
-    color: var(--white);
+    color: var(--gray-500);
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
@@ -4897,10 +4897,10 @@ a {
     box-shadow: none;
 }
 
-.nav-item-center .filter-icon-gif {
+.nav-item-center .filter-icon-svg {
     width: 30px;
     height: 30px;
-    object-fit: contain;
+    display: block;
 }
 
 /* Bottom Nav Badge */
@@ -7967,10 +7967,10 @@ a {
 
 .filter-toggle-btn {
     position: relative;
-    width: 52px;
-    height: 30px;
-    border-radius: 100px;
-    background: #e5e7eb;
+    width: 58px;
+    height: 32px;
+    border-radius: 9999px;
+    background: #ccc;
     border: none;
     cursor: pointer;
     transition: background 0.3s ease;
@@ -7982,68 +7982,72 @@ a {
 
 /* Toggle Colors - matching PC version */
 .filter-toggle-btn--new-in[aria-pressed="true"] {
-    background: #17a2b8;
+    background: #0ea5e9;
 }
 
 .filter-toggle-btn--bradeal[aria-pressed="true"] {
-    background: #e85a5a;
+    background: #dc2626;
 }
 
 .filter-toggle-btn--offers[aria-pressed="true"] {
-    background: #a78bfa;
+    background: #9333ea;
 }
 
 .filter-toggle-btn--in-stock[aria-pressed="true"] {
-    background: #1f3a5f;
+    background: #475569;
 }
 
 .filter-toggle-btn--recycled[aria-pressed="true"] {
-    background: #14b8a6;
+    background: #0d9488;
 }
 
 .filter-toggle-btn--plus-sizes[aria-pressed="true"] {
-    background: #f59e0b;
+    background: #ea580c;
 }
 
 /* Label Colors - matching PC version */
 .filter-label--new-in {
-    color: #17a2b8;
+    color: #0ea5e9;
 }
 
 .filter-label--bradeal {
-    color: #e85a5a;
+    color: #dc2626;
 }
 
 .filter-label--offers {
-    color: #7c3aed;
+    color: #9333ea;
 }
 
 .filter-label--in-stock {
-    color: #1f3a5f;
+    color: #475569;
 }
 
 .filter-label--recycled {
-    color: #14b8a6;
+    color: #0d9488;
 }
 
 .filter-label--plus-sizes {
-    color: #f59e0b;
+    color: #ea580c;
 }
 
 .filter-toggle-thumb {
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 4px;
+    left: 4px;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: var(--white);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
+    background: #fff;
+    transition: 0.3s;
 }
 
 .filter-toggle-btn[aria-pressed="true"] .filter-toggle-thumb {
-    transform: translateX(22px);
+    left: calc(100% - 4px);
+    transform: translateX(-100%);
+}
+
+.filter-toggle-btn:active .filter-toggle-thumb {
+    width: 32px;
 }
 
 /* Search Input */
@@ -8309,10 +8313,11 @@ a {
 .nav-item-center {
     background: transparent !important;
     box-shadow: none !important;
+    color: var(--gray-500) !important;
 }
 
 .nav-item-center svg {
-    stroke: var(--white);
+    stroke: currentColor;
 }
 
 /* ===== ACCOUNT PANEL - SIGN IN / SIGN UP ===== */

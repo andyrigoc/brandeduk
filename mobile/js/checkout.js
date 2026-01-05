@@ -84,6 +84,16 @@ document.querySelector('.request-quote-btn')?.addEventListener('click', () => {
     // In real app, send to backend
     // For now, show success message
     alert('Quote request submitted successfully! We will contact you soon.');
+
+    // Clear basket completely
+    localStorage.removeItem('quoteBasket');
+    localStorage.setItem('quoteBasket', '[]');
+
+    // Redirect to home (works from both root pages and /mobile pages)
+    const pathname = (window.location && window.location.pathname) ? window.location.pathname : '';
+    const isInMobileFolder = /\/mobile(\/|$)/.test(pathname);
+    const homeUrl = isInMobileFolder ? 'home-mobile.html' : 'mobile/home-mobile.html';
+    window.location.replace(homeUrl);
     
     // Redirect to confirmation or home
     // window.location.href = 'quote-confirmation-mobile.html';

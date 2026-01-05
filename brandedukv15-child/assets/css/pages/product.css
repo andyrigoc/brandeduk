@@ -1687,6 +1687,13 @@ html, body {
         margin: 0 auto;
     }
 
+    /* Tablet/touch: don't pin the main image; let it scroll normally */
+    .product-visual {
+        position: static;
+        top: auto;
+        align-self: auto;
+    }
+
     .title-box {
         flex-direction: row;
         align-items: flex-start;

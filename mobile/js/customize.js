@@ -1017,6 +1017,8 @@
                 
                 // Clear the basket
                 localStorage.removeItem('quoteBasket');
+                // Also set to empty array for code paths expecting the key
+                localStorage.setItem('quoteBasket', '[]');
                 
                 // Clear ALL customization state
                 sessionStorage.removeItem('brandeduk-customize-state');
@@ -1040,7 +1042,11 @@
                 // Force full page reload to clear any in-memory state
                 setTimeout(() => {
                     // Use replace to prevent back button returning to submitted form
-                    window.location.replace('home-mobile.html');
+                    // Redirect path must work from both root pages and /mobile pages
+                    const pathname = (window.location && window.location.pathname) ? window.location.pathname : '';
+                    const isInMobileFolder = /\/mobile(\/|$)/.test(pathname);
+                    const homeUrl = isInMobileFolder ? 'home-mobile.html' : 'mobile/home-mobile.html';
+                    window.location.replace(homeUrl);
                 }, 1200);
             });
         }

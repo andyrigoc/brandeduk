@@ -321,7 +321,8 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 24px;
-        padding: 24px;
+        /* Account for fixed tablet top bar (36px) + fixed header */
+        padding: calc(var(--header-height) + 36px + 24px) 24px 24px;
     }
     
     .product-gallery {
@@ -376,6 +377,93 @@
     .hero-el__heading {
         font-size: 10px;
         padding: 4px 6px;
+    }
+
+    /* Customize Page: allow the gallery column to scroll normally on tablet */
+    .product-gallery {
+        position: static;
+        top: auto;
+    }
+
+    /* Reduce excessive whitespace on tablet */
+    .customize-main {
+        gap: 20px;
+    }
+
+    /* Tablet columns: left stays stacked, right can grow without pushing left */
+    .customize-page .customize-left {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .customize-page .customize-right {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Tighten vertical whitespace inside the right column */
+    .customize-page .customize-right .product-info {
+        padding: 0;
+        border-bottom: 0;
+    }
+
+    .customize-page .customize-right .customize-section {
+        padding: 0;
+        border-bottom: 0;
+    }
+
+    .customize-page .customize-right .section-title {
+        margin-bottom: 8px;
+    }
+
+    /* Big sections read better full-width on tablet */
+    .customize-section.customization-options {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .order-summary-section {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+
+    /* Unit Price: shrink tier cards ~20% total (two 10% steps) */
+    .customize-page .pricing-section {
+        font-size: 0.81em;
+    }
+
+    .customize-page .pricing-section .pricing-tiers-grid {
+        gap: 4px;
+        padding: 4px 2px 6px 2px;
+    }
+
+    .customize-page .pricing-section .tier-card {
+        min-width: 55px;
+        padding: 6px 4px;
+    }
+
+    .customize-page .pricing-section .tier-qty {
+        font-size: 8px;
+    }
+
+    .customize-page .pricing-section .tier-card .tier-price {
+        font-size: 12px;
+    }
+
+    .customize-page .pricing-section .tier-card .tier-suffix {
+        font-size: 6px;
+    }
+
+    .customize-page .pricing-section .tier-save {
+        font-size: 6px;
     }
 }
 
@@ -799,7 +887,7 @@
     /* Individual panel adjustments for best human visibility - desktop 5 cards view */
     /* 1. Apron - woman with yellow apron, center on face/upper body */
     .hero-el[data-category="aprons"] .hero-el__bg:before {
-        background-position: 60% 15% !important;
+        background-position: calc(60% + 140px) 15% !important;
         background-size: 180% !important;
     }
     
@@ -807,6 +895,11 @@
     .hero-el[data-category="hoodies"] .hero-el__bg:before {
         background-position: 35% 10% !important;
         background-size: 160% !important;
+    }
+
+    /* Hoodie: shift right only when not expanded */
+    .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+        background-position: calc(35% + 145px) 10% !important;
     }
     
     /* 3. Beanies - woman with beanie and winter sweater */

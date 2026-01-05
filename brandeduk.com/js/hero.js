@@ -25,7 +25,7 @@
             if (this.classList.contains('s--active')) {
                 var category = this.getAttribute('data-category');
                 if (category) {
-                    window.location.href = 'shop-pc.html?category=' + category;
+                    window.location.href = 'shop-pc.html?category=' + encodeURIComponent(category) + '&demo=1';
                 }
                 return;
             }

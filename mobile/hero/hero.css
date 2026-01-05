@@ -282,7 +282,7 @@
 .hero-el:nth-child(1) .hero-el__bg:before { 
   transition-delay: 0s;
   background-image: url('../../hero/images/apron.jpg');
-  background-position: center center;
+  background-position: calc(50% + 140px) center;
 }
 
 .hero-el:nth-child(2) {
@@ -296,6 +296,11 @@
   transition-delay: 0.07s;
   background-image: url('../../hero/images/hoodies.jpg');
   background-position: center center;
+}
+
+/* Hoodie panel: shift image right in non-expanded state only */
+.hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+  background-position: calc(50% + 145px) center;
 }
 
 .hero-el:nth-child(3) {
@@ -359,7 +364,7 @@
 .hero-el:nth-child(7) .hero-el__bg { transform: none; }
 .hero-el:nth-child(7) .hero-el__bg:before { 
   transition-delay: 0.42s;
-  background-image: url('../../hero/images/Sustainable.jpg');
+  background-image: url('../../hero/images/T-shirthero.jpg');
   background-position: center center;
 }
 
@@ -372,7 +377,7 @@
 .hero-el:nth-child(8) .hero-el__bg { transform: none; }
 .hero-el:nth-child(8) .hero-el__bg:before {
   transition-delay: 0.49s;
-  background-image: url('../../hero/images/T-shirthero.jpg');
+  background-image: url('../../hero/images/WorkTrousers.jpg');
   background-position: center center;
 }
 
@@ -385,7 +390,7 @@
 .hero-el:nth-child(9) .hero-el__bg { transform: none; }
 .hero-el:nth-child(9) .hero-el__bg:before {
   transition-delay: 0.56s;
-  background-image: url('../../hero/images/WorkTrousers.jpg');
+  background-image: url('../../hero/images/Sustainable.jpg');
   background-position: center center;
 }
 

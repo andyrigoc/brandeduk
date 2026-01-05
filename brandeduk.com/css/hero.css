@@ -380,7 +380,7 @@
 .hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.42s; }
 .hero-el:nth-child(7) .hero-el__bg:before { 
     transition-delay: 0.42s;
-    background-image: url('../../hero/images/Sustainable.jpg');
+    background-image: url('../../hero/images/T-shirthero.jpg');
     background-position: center center;
 }
 
@@ -390,7 +390,7 @@
 .hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.49s; }
 .hero-el:nth-child(8) .hero-el__bg:before {
     transition-delay: 0.49s;
-    background-image: url('../../hero/images/T-shirthero.jpg');
+    background-image: url('../../hero/images/WorkTrousers.jpg?v=20260103');
     background-position: center center;
 }
 
@@ -400,11 +400,11 @@
 .hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.56s; }
 .hero-el:nth-child(9) .hero-el__bg:before {
     transition-delay: 0.56s;
-    background-image: url('../../hero/images/WorkTrousers.jpg?v=20260103');
+    background-image: url('../../hero/images/Sustainable.jpg');
     background-position: center center;
 }
 
-.hero-cont:not(.s--inactive) .hero-el:nth-child(7):not(.s--active) .hero-el__bg:before {
+.hero-cont:not(.s--inactive) .hero-el:nth-child(9):not(.s--active) .hero-el__bg:before {
     transform: translate3d(0, 0, 0) scale(1.3);
     background-position: calc(50% - 30px) calc(50% + 10px);
 }

@@ -83,6 +83,10 @@ dist/                    # Distribution ZIPs
 - Enqueue and hooks only (keep clean): `brandedukv15-child/functions.php`
 
 ## Guardrails for agents
+- **IMPORTANT (source of truth):** We work **only on the root `index.html`** by default (it generates PC / Tablet / Mobile).
+  - Do **not** edit other root pages (`shop.html`, `basket.html`, etc.) unless explicitly requested.
+  - Do **not** edit duplicated/prototype folders like `brandeduk.com/`, `mobile/`, `brandeduk.com-pc-OLD/` unless explicitly requested.
+  - If a change seems to belong elsewhere, ask for confirmation before touching any non-`index.html` file.
 - Prefer **small, surgical changes**: update the modular file that owns the concern (page CSS vs component CSS).
 - If modifying prototype HTML, keep it **linking to the child theme assets** (don’t reintroduce root `*.css` / `*.js`).
 - Don’t introduce build tools (npm/webpack) unless the repo adds them explicitly.

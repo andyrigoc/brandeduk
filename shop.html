@@ -268,38 +268,53 @@
         
         /* Filter Toggles - 20% bigger + custom colors */
         .filter-toggle-row .vat-toggle-mobile {
-            transform: scale(1.2);
-            transform-origin: right center;
+            transform: none;
+        }
+
+        /* Special Filters: force pill shape (tablet + mobile) */
+        #filtersDropup .filters-toggles .vat-toggle-label {
+            width: 38px;
+            height: 20px;
+            border-radius: 9999px;
+            background: #d1d5db;
+        }
+
+        #filtersDropup .filters-toggles .vat-toggle-label:after {
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 9999px;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox:checked + .vat-toggle-label:after {
+            left: calc(100% - 2px);
+            transform: translateX(-100%);
         }
         
-        /* New In - Celeste/Azzurro */
-        .filter-toggle-row:nth-child(1) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+        /* Special Filters: checked colors (use data-filter to avoid nth-child mismatches) */
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="newIn"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
         }
-        
-        /* Bradeal - Rosso */
-        .filter-toggle-row:nth-child(2) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #ef4444, #dc2626);
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="bradeal"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #ef4444, #dc2626) !important;
         }
-        
-        /* Offers - Viola */
-        .filter-toggle-row:nth-child(3) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #a855f7, #9333ea);
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="offers"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #a855f7, #9333ea) !important;
         }
-        
-        /* In Stock - Grigio */
-        .filter-toggle-row:nth-child(4) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #64748b, #475569);
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="inStock"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #64748b, #475569) !important;
         }
-        
-        /* Recycled - Verde/Teal */
-        .filter-toggle-row:nth-child(5) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #14b8a6, #0d9488);
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="recycled"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #14b8a6, #0d9488) !important;
         }
-        
-        /* Plus Sizes - Arancione */
-        .filter-toggle-row:nth-child(6) .vat-checkbox:checked + .vat-toggle-label {
-            background: linear-gradient(90deg, #f97316, #ea580c);
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="plusSizes"]:checked + .vat-toggle-label {
+            background: linear-gradient(90deg, #f97316, #ea580c) !important;
         }
         
         /* Logo spacing for back button - Tablet */
@@ -1079,7 +1094,14 @@
             <span class="nav-item-label">Shop</span>
         </a>
         <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <img src="brandedukv15-child/assets/images/ui/filter-icon.gif" alt="Filters" class="filter-icon-gif">
+            <svg class="filter-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <line x1="6" y1="21" x2="6" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="3"></line>
+                <line x1="18" y1="21" x2="18" y2="3"></line>
+                <circle cx="6" cy="8" r="2"></circle>
+                <circle cx="12" cy="14" r="2"></circle>
+                <circle cx="18" cy="10" r="2"></circle>
+            </svg>
         </button>
 
         <a href="basket.html" class="nav-item">
