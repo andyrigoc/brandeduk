@@ -90,8 +90,8 @@
     left: auto;
     top: auto;
     transform: none;
-    width: 36px;
-    height: 36px;
+    width: 29px;
+    height: 29px;
     border-radius: 10px;
     background: var(--purple);
     border: none;
@@ -111,8 +111,8 @@
 }
 
 .back-btn-header svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
 }
 
 /* Adjust VAT toggle position when back button is present */
