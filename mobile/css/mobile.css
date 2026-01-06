@@ -6589,11 +6589,18 @@ a {
     padding: 8px 16px 0;
     background: var(--white);
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.shop-breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
 }
 
 .shop-breadcrumbs__sep {

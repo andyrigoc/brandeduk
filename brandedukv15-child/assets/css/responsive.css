@@ -69,7 +69,7 @@
     }
     
     .social-icons-mobile {
-        margin-left: 38px !important;
+        margin-left: 0 !important;
     }
     
     .social-icons-mobile .social-icon {
@@ -886,6 +886,11 @@
         width: 100%;
         transform: none !important;
     }
+
+    /* Tablet: prevent active background zoom from "dropping" the subject (notably Hoodies @ 10% Y) */
+    .hero-el.s--active .hero-el__bg:before {
+        transform: translate3d(0, 0, 0) scale(1) !important;
+    }
     
     /* Hero card headings - single line for all cards */
     .hero-el__heading {
@@ -920,6 +925,12 @@
     .hero-el[data-category="hoodies"] .hero-el__bg:before {
         background-position: 35% 10% !important;
         background-size: 160% !important;
+    }
+
+    /* Hoodie (tablet): when expanded, shift image down to better show the face */
+    .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+        background-position: 35% calc(10% + 20px) !important;
+        background-size: 110% !important;
     }
 
     /* Hoodie: shift right only when not expanded */

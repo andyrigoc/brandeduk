@@ -128,10 +128,10 @@
 
     <!-- Breadcrumbs -->
     <div class="shop-breadcrumbs" aria-label="Breadcrumb">
-        <span>Home</span>
-        <span class="shop-breadcrumbs__sep">–</span>
-        <span>Categories</span>
-        <span class="shop-breadcrumbs__sep">–</span>
+        <a href="home-mobile.html" class="shop-breadcrumbs__link">Home</a>
+        <span class="shop-breadcrumbs__sep" aria-hidden="true"> - </span>
+        <span>Category</span>
+        <span class="shop-breadcrumbs__sep" aria-hidden="true"> - </span>
         <span id="breadcrumbCategory">All Products</span>
     </div>
 
@@ -355,7 +355,7 @@
             const activeTitle = titles[categoryFilter] || 'Products';
             document.getElementById('categoryTitle').textContent = activeTitle;
             const breadcrumbCategory = document.getElementById('breadcrumbCategory');
-            if (breadcrumbCategory) breadcrumbCategory.textContent = activeTitle;
+            if (breadcrumbCategory) breadcrumbCategory.textContent = String(activeTitle).toUpperCase();
             document.getElementById('resultsCount').textContent = `${products.length} items`;
 
             grid.innerHTML = '';

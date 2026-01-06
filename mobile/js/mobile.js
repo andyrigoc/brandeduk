@@ -832,6 +832,28 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
+// HERO BANNER 3 - BRANDED BOUNCING (split into chars)
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const bounceEls = document.querySelectorAll('[data-bounce-text]');
+    if (!bounceEls.length) return;
+
+    bounceEls.forEach(el => {
+        const text = (el.textContent || '').trim();
+        if (!text) return;
+
+        el.textContent = '';
+        Array.from(text).forEach((ch, idx) => {
+            const span = document.createElement('span');
+            span.className = 'hero-bounce-char';
+            span.style.setProperty('--char-index', String(idx));
+            span.textContent = ch === ' ' ? '\u00A0' : ch;
+            el.appendChild(span);
+        });
+    });
+});
+
+// ============================================
 // FILTERS DROP-UP MENU
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
