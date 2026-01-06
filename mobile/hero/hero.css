@@ -298,11 +298,6 @@
   background-position: center center;
 }
 
-/* TEMP: hide hoodie photo but keep the panel/card space */
-.hero-el[data-category="hoodies"] .hero-el__bg:before {
-  background-image: none !important;
-}
-
 /* Hoodie panel: shift image right in non-expanded state only */
 .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
   background-position: calc(50% + 145px) center;

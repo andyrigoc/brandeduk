@@ -833,7 +833,7 @@
     }
     
     /* 10 cards - each takes ~20% to show 5 visible */
-    .hero-el {
+    .main-content .hero-el {
         position: relative !important;
         left: auto !important;
         flex: 0 0 calc(20% - 6.4px);
@@ -844,37 +844,37 @@
     }
     
     /* Reset all nth-child left positions */
-    .hero-el:nth-child(1),
-    .hero-el:nth-child(2),
-    .hero-el:nth-child(3),
-    .hero-el:nth-child(4),
-    .hero-el:nth-child(5),
-    .hero-el:nth-child(6),
-    .hero-el:nth-child(7),
-    .hero-el:nth-child(8),
-    .hero-el:nth-child(9),
-    .hero-el:nth-child(10) {
+    .main-content .hero-el:nth-child(1),
+    .main-content .hero-el:nth-child(2),
+    .main-content .hero-el:nth-child(3),
+    .main-content .hero-el:nth-child(4),
+    .main-content .hero-el:nth-child(5),
+    .main-content .hero-el:nth-child(6),
+    .main-content .hero-el:nth-child(7),
+    .main-content .hero-el:nth-child(8),
+    .main-content .hero-el:nth-child(9),
+    .main-content .hero-el:nth-child(10) {
         left: auto !important;
     }
     
     /* Reset bg transform for desktop */
-    .hero-el__bg {
+    .main-content .hero-el__bg {
         transform: none !important;
     }
     
     /* Background images: don't override real images on cards 6-9 */
-    .hero-el:nth-child(10) .hero-el__bg:before {
+    .main-content .hero-el:nth-child(10) .hero-el__bg:before {
         background-image: none !important;
         background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%) !important;
     }
     
     /* Active card expansion for 10 cards desktop */
-    .hero-cont.s--el-active .hero-el:not(.s--active) {
+    .main-content .hero-cont.s--el-active .hero-el:not(.s--active) {
         transform: scale(0.5) !important;
         opacity: 0;
     }
     
-    .hero-el.s--active {
+    .main-content .hero-el.s--active {
         flex: 0 0 100% !important;
         width: 100% !important;
         left: 0 !important;
@@ -882,18 +882,18 @@
         z-index: 10;
     }
     
-    .hero-el.s--active .hero-el__bg {
+    .main-content .hero-el.s--active .hero-el__bg {
         width: 100%;
         transform: none !important;
     }
 
     /* Tablet: prevent active background zoom from "dropping" the subject (notably Hoodies @ 10% Y) */
-    .hero-el.s--active .hero-el__bg:before {
+    .main-content .hero-el.s--active .hero-el__bg:before {
         transform: translate3d(0, 0, 0) scale(1) !important;
     }
     
     /* Hero card headings - single line for all cards */
-    .hero-el__heading {
+    .main-content .hero-el__heading {
         font-size: 0.75rem;
         padding: 8px 6px;
         white-space: nowrap;
@@ -902,61 +902,61 @@
     }
     
     /* Smaller font for longer names */
-    .hero-el[data-category="t-shirts"] .hero-el__heading,
-    .hero-el[data-category="trousers"] .hero-el__heading,
-    .hero-el[data-category="sustainable"] .hero-el__heading {
+    .main-content .hero-el[data-category="t-shirts"] .hero-el__heading,
+    .main-content .hero-el[data-category="trousers"] .hero-el__heading,
+    .main-content .hero-el[data-category="sustainable"] .hero-el__heading {
         font-size: 0.65rem;
         padding: 8px 4px;
     }
     
     /* Center humans in hero panels before expansion */
-    .hero-el__bg:before {
+    .main-content .hero-el__bg:before {
         background-size: cover !important;
     }
     
     /* Individual panel adjustments for best human visibility - desktop 5 cards view */
     /* 1. Apron - woman with yellow apron, center on face/upper body */
-    .hero-el[data-category="aprons"] .hero-el__bg:before {
+    .main-content .hero-el[data-category="aprons"] .hero-el__bg:before {
         background-position: calc(60% + 140px) 15% !important;
         background-size: 180% !important;
     }
     
     /* 2. Hoodies - woman with purple hoodie and tongue out */
-    .hero-el[data-category="hoodies"] .hero-el__bg:before {
+    .main-content .hero-el[data-category="hoodies"] .hero-el__bg:before {
         background-position: 35% 10% !important;
         background-size: 160% !important;
     }
 
     /* Hoodie (tablet): when expanded, shift image down to better show the face */
-    .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+    .main-content .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
         background-position: 35% calc(10% + 20px) !important;
         background-size: 110% !important;
     }
 
     /* Hoodie: shift right only when not expanded */
-    .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+    .main-content .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
         background-position: calc(35% + 145px) 10% !important;
     }
     
     /* 3. Beanies - woman with beanie and winter sweater */
-    .hero-el[data-category="beanies"] .hero-el__bg:before {
+    .main-content .hero-el[data-category="beanies"] .hero-el__bg:before {
         background-position: 50% 5% !important;
         background-size: 170% !important;
     }
     
     /* 4. Hi-Viz - neon lights/worker */
-    .hero-el[data-category="hi-viz"] .hero-el__bg:before {
+    .main-content .hero-el[data-category="hi-viz"] .hero-el__bg:before {
         background-position: 50% 30% !important;
         background-size: 150% !important;
     }
     
     /* 5. Polo - man with white polo shirt */
-    .hero-el[data-category="polo"] .hero-el__bg:before {
+    .main-content .hero-el[data-category="polo"] .hero-el__bg:before {
         background-position: 50% 20% !important;
         background-size: 180% !important;
     }
     
-    .hero-el__text {
+    .main-content .hero-el__text {
         font-size: 1.2rem;
     }
     
