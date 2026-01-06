@@ -43,17 +43,7 @@
 
         /* Tablet breadcrumb between tabs and title */
         .shop-breadcrumbs {
-            display: none;
-            margin: 0;
-            padding: 6px 16px 0;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            display: flex;
         }
 
         .shop-breadcrumbs a {
@@ -61,11 +51,6 @@
             text-decoration: none;
         }
 
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .shop-breadcrumbs {
-                display: block;
-            }
-        }
     </style>
     <style>
         /* Desktop header (same as main page) */
@@ -983,12 +968,6 @@
 
         <!-- Bottom Row: Logo + Search -->
         <div class="header-logo-row">
-            <!-- Back Button -->
-            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); color: #fff; border: none; padding: 10px 14px; border-radius: 10px; margin-right: 8px; display: flex; align-items: center; justify-content: center; transform: scale(0.65) translateY(-112px);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
             <a href="index.html" class="mobile-logo-center">
                 <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
                 <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
@@ -1006,11 +985,6 @@
 
     <!-- Category Title -->
     <div class="shop-title-bar">
-        <button class="back-btn" onclick="window.history.back()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-        </button>
         <h1 class="shop-title" id="categoryTitle">All Products</h1>
         <span class="results-count" id="resultsCount">0 items</span>
     </div>
