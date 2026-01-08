@@ -76,13 +76,12 @@ html, body {
 --------------------------------------------------- */
 
 .page-container {
-    max-width: 1240px;
+    max-width: 1440px;
     margin: 0 auto;
-    margin-left: calc(50% - 620px - 68px);
-    padding: 32px 20px 44px;
+    padding: 32px 24px 44px;
     display: grid;
-    grid-template-columns: 64% 36%;
-    gap: 0px;
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%);
+    gap: 32px;
 }
 
 .left-column {
@@ -98,13 +97,14 @@ html, body {
     position: sticky;
     top: 20px;
     align-self: flex-start;
+    z-index: 1;
 }
 
 .thumb-column {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-left: 88px;
+    margin-left: 0;
 }
 
 .thumb-item {
@@ -145,12 +145,14 @@ html, body {
 }
 
 .product-main .main-img {
-    width: 78%;
-    max-width: 485px;
+    width: 100%;
+    max-width: 560px;
     border-radius: 14px;
     display: block;
-    margin-top: -30px;
-    margin-left: -30px;
+    margin-top: 0;
+    margin-left: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .description-box {
@@ -158,9 +160,9 @@ html, body {
     padding: 15px;
     border-radius: 9px;
     margin-top: 17px;
-    margin-left: 68px;
-    margin-right: 0px;
-    max-width: 70%;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
     font-size: 0.88rem;
     line-height: 1.55;
     text-align: justify;
@@ -174,7 +176,9 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 0;
-    margin-left: -130px;
+    margin-left: 0;
+    position: relative;
+    z-index: 3;
 }
 
 .summary-main {
@@ -342,10 +346,10 @@ html, body {
 
 .tier-pricing-compact {
     display: flex;
-    gap: 17px;
-    margin: 16px 0 24px;
+    gap: 6px;
+    margin: 10px 0 14px;
     padding: 0;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
 .tier-item {
@@ -353,14 +357,14 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4px 7px;
+    padding: 2px 4px;
     background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    min-width: 52px;
-    min-height: 64px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    min-width: 38px;
+    min-height: 46px;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     transition: all 0.2s ease;
     cursor: pointer;
 }
@@ -387,15 +391,72 @@ html, body {
 }
 
 .tier-qty {
-    font-size: 0.88rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: #6b7280;
 }
 
 .tier-price {
-    font-size: 1.22rem;
+    font-size: 0.88rem;
     font-weight: 900;
     color: #111;
+}
+
+/* ---------------------------------------------------
+   INLINE CUSTOMIZE POSITIONS (Product Detail)
+--------------------------------------------------- */
+
+#step3PositionsSection .customize-inline-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+/* When summary is mounted in the left column (green area), keep Step 3 main full-width */
+#step3PositionsSection.sidebar-external .customize-inline-layout {
+    grid-template-columns: 1fr;
+}
+
+#step3PositionsSection .customize-inline-sidebar {
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Left-column mount: make the moved sidebar behave the same */
+.step3-sidebar-left-mount {
+    width: 100%;
+}
+
+.step3-sidebar-left-mount .customize-inline-sidebar {
+    position: sticky;
+    top: 20px;
+    width: 100%;
+    max-width: 420px;
+}
+
+#step3PositionsSection .customize-inline-main {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 1100px) {
+    #step3PositionsSection .customize-inline-layout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #step3PositionsSection .customize-inline-sidebar {
+        position: relative;
+        top: 0;
+        width: 100%;
+        min-width: 0;
+        max-height: none;
+        margin-left: 0;
+    }
 }
 
 .tier-save {

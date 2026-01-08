@@ -115,6 +115,10 @@ body {
     animation-delay: 0.7s;
 }
 
+.step-item[data-step="4"] .step-num {
+    animation-delay: 1.0s;
+}
+
 @keyframes popIn {
     0% {
         transform: scale(0);
@@ -154,6 +158,10 @@ body {
 
 .step-item[data-step="3"] .step-label {
     animation-delay: 0.8s;
+}
+
+.step-item[data-step="4"] .step-label {
+    animation-delay: 1.1s;
 }
 
 @keyframes fadeIn {

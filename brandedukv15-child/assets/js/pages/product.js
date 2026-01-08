@@ -1260,8 +1260,42 @@ addCustomizeButton.onclick = () => {
         updateBasketTotalBox();
     }
     
-    // Navigate to customization positions page (works even if total === 0 but basket has items)
-    window.location.href = 'customize-positions.html';
+    // SINGLE PAGE MODE: Show inline positions section instead of redirect
+    const ctaSection = document.getElementById('step3CTASection');
+    const positionsSection = document.getElementById('step3PositionsSection');
+    
+    if (ctaSection && positionsSection) {
+        // Hide CTA buttons section
+        ctaSection.style.display = 'none';
+        
+        // Show positions grid with smooth animation
+        positionsSection.style.display = 'block';
+        positionsSection.style.opacity = '0';
+        positionsSection.style.transform = 'translateY(20px)';
+        
+        // Trigger reflow for animation
+        positionsSection.offsetHeight;
+        
+        positionsSection.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        positionsSection.style.opacity = '1';
+        positionsSection.style.transform = 'translateY(0)';
+        
+        // Scroll to positions section
+        setTimeout(() => {
+            positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
+        // Update step progress bar - mark step 3 as active
+        updateStepProgress(3);
+        
+        // Initialize positions functionality if available
+        if (typeof window.initPositionsGrid === 'function') {
+            window.initPositionsGrid();
+        }
+    } else {
+        // Fallback: Navigate to customization positions page
+        window.location.href = 'customize-positions.html';
+    }
 };
 
 function getSizesSummary() {

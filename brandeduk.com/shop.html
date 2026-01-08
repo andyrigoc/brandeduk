@@ -605,6 +605,116 @@
             margin-bottom: 24px;
         }
 
+        .products-header-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .shop-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .shop-toolbar-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .shop-toolbar-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .shop-toolbar-suffix {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .shop-select {
+            height: 34px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            border-radius: 10px;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            outline: none;
+        }
+
+        .shop-select:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.18);
+        }
+
+        .shop-pager {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .pager-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            border-radius: 10px;
+            color: #4b5563;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .pager-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .pager-btn:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .pager-pages {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 2px;
+        }
+
+        .pager-page {
+            min-width: 28px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 10px;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pager-page:hover {
+            background: #f3f4f6;
+        }
+
+        .pager-page.active {
+            background: #111827;
+            color: #fff;
+        }
+
         .products-header-left {
             display: flex;
             align-items: center;
@@ -1420,7 +1530,42 @@
                 </button>
                 <h1 id="categoryTitle">Hoodies</h1>
             </div>
-            <span class="products-count" id="productsCount">0 products</span>
+            <div class="products-header-right">
+                <span class="products-count" id="productsCount">0 products</span>
+
+                <div class="shop-toolbar" aria-label="Shop sorting and pagination">
+                    <div class="shop-toolbar-group">
+                        <label class="shop-toolbar-label" for="shopSortSelect">Sort By:</label>
+                        <select id="shopSortSelect" class="shop-select">
+                            <option value="best">Best Sellers</option>
+                            <option value="brand-az">Brand A–Z</option>
+                            <option value="brand-za">Brand Z–A</option>
+                            <option value="code-az">Product Code A–Z</option>
+                            <option value="code-za">Product Code Z–A</option>
+                            <option value="price-lh">Price Low - High</option>
+                            <option value="price-hl">Price High - Low</option>
+                        </select>
+                    </div>
+
+                    <div class="shop-toolbar-group">
+                        <label class="shop-toolbar-label" for="shopPerPageSelect">View:</label>
+                        <select id="shopPerPageSelect" class="shop-select">
+                            <option value="20">20</option>
+                            <option value="40">40</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="shop-toolbar-suffix">per page</span>
+                    </div>
+
+                    <div class="shop-pager" id="shopPager" aria-label="Pagination">
+                        <button type="button" class="pager-btn" id="pagerFirst" aria-label="First page">«</button>
+                        <button type="button" class="pager-btn" id="pagerPrev" aria-label="Previous page">‹</button>
+                        <div class="pager-pages" id="pagerPages" aria-label="Page numbers"></div>
+                        <button type="button" class="pager-btn" id="pagerNext" aria-label="Next page">›</button>
+                        <button type="button" class="pager-btn" id="pagerLast" aria-label="Last page">»</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="products-grid" id="productsGrid">
@@ -1763,13 +1908,209 @@ function getPriceRange() {
     return { min: Math.min(...prices), max: Math.max(...prices) };
 }
 
+function getCatalogProducts() {
+    return categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+}
+
+// Shop toolbar state
+let shopSortMode = localStorage.getItem('brandeduk-shop-sort') || 'best';
+let shopPerPage = parseInt(localStorage.getItem('brandeduk-shop-perpage') || '100', 10);
+if (![20, 40, 100].includes(shopPerPage)) shopPerPage = 100;
+let shopCurrentPage = 1;
+
+function getSortedProducts(products) {
+    const sorted = [...products];
+    switch (shopSortMode) {
+        case 'brand-az':
+            sorted.sort((a, b) => String(a.brand || '').localeCompare(String(b.brand || '')));
+            break;
+        case 'brand-za':
+            sorted.sort((a, b) => String(b.brand || '').localeCompare(String(a.brand || '')));
+            break;
+        case 'code-az':
+            sorted.sort((a, b) => String(a.code || '').localeCompare(String(b.code || '')));
+            break;
+        case 'code-za':
+            sorted.sort((a, b) => String(b.code || '').localeCompare(String(a.code || '')));
+            break;
+        case 'price-lh':
+            sorted.sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+            break;
+        case 'price-hl':
+            sorted.sort((a, b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0));
+            break;
+        case 'best':
+        default:
+            // Best Sellers: keep catalog order (no ranking data available)
+            break;
+    }
+    return sorted;
+}
+
+function updateProductsCount() {
+    const countEl = document.getElementById('productsCount');
+    if (!countEl) return;
+    const cards = Array.from(document.querySelectorAll('.product-card'));
+    const filterVisible = cards.filter(c => c.dataset.filterHidden !== '1').length;
+    countEl.textContent = filterVisible + ' products';
+}
+
+function applyVisibility() {
+    document.querySelectorAll('.product-card').forEach(card => {
+        const filterHidden = card.dataset.filterHidden === '1';
+        const pageHidden = card.dataset.pageHidden === '1';
+        card.style.display = (filterHidden || pageHidden) ? 'none' : '';
+    });
+}
+
+function getTotalPages() {
+    const visibleCards = Array.from(document.querySelectorAll('.product-card')).filter(c => c.dataset.filterHidden !== '1');
+    const total = visibleCards.length;
+    return Math.max(1, Math.ceil(total / shopPerPage));
+}
+
+function setPagerDisabled(totalPages) {
+    const firstBtn = document.getElementById('pagerFirst');
+    const prevBtn = document.getElementById('pagerPrev');
+    const nextBtn = document.getElementById('pagerNext');
+    const lastBtn = document.getElementById('pagerLast');
+    if (!firstBtn || !prevBtn || !nextBtn || !lastBtn) return;
+    firstBtn.disabled = shopCurrentPage <= 1;
+    prevBtn.disabled = shopCurrentPage <= 1;
+    nextBtn.disabled = shopCurrentPage >= totalPages;
+    lastBtn.disabled = shopCurrentPage >= totalPages;
+}
+
+function renderPagerPages(totalPages) {
+    const pagesEl = document.getElementById('pagerPages');
+    if (!pagesEl) return;
+
+    pagesEl.innerHTML = '';
+    const windowSize = 3;
+
+    let start = Math.max(1, shopCurrentPage - 1);
+    let end = Math.min(totalPages, start + (windowSize - 1));
+    start = Math.max(1, end - (windowSize - 1));
+
+    for (let p = start; p <= end; p++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pager-page' + (p === shopCurrentPage ? ' active' : '');
+        btn.textContent = String(p);
+        btn.addEventListener('click', () => {
+            shopCurrentPage = p;
+            applyPaging();
+        });
+        pagesEl.appendChild(btn);
+    }
+}
+
+function applyPaging() {
+    const eligibleCards = Array.from(document.querySelectorAll('.product-card')).filter(c => c.dataset.filterHidden !== '1');
+    const total = eligibleCards.length;
+    const totalPages = Math.max(1, Math.ceil(total / shopPerPage));
+    if (shopCurrentPage > totalPages) shopCurrentPage = totalPages;
+    if (shopCurrentPage < 1) shopCurrentPage = 1;
+
+    document.querySelectorAll('.product-card').forEach(c => {
+        c.dataset.pageHidden = '1';
+    });
+
+    const start = (shopCurrentPage - 1) * shopPerPage;
+    const end = start + shopPerPage;
+    eligibleCards.slice(start, end).forEach(c => {
+        c.dataset.pageHidden = '0';
+    });
+
+    applyVisibility();
+    setPagerDisabled(totalPages);
+    renderPagerPages(totalPages);
+}
+
+function applyActivePriceFilter() {
+    const sliderMin = document.getElementById('priceSliderMin');
+    const sliderMax = document.getElementById('priceSliderMax');
+    if (!sliderMin || !sliderMax) {
+        document.querySelectorAll('.product-card').forEach(c => (c.dataset.filterHidden = '0'));
+        updateProductsCount();
+        applyPaging();
+        return;
+    }
+
+    const minVal = parseInt(sliderMin.value);
+    const maxVal = parseInt(sliderMax.value);
+    if (!Number.isFinite(minVal) || !Number.isFinite(maxVal)) {
+        document.querySelectorAll('.product-card').forEach(c => (c.dataset.filterHidden = '0'));
+        updateProductsCount();
+        applyPaging();
+        return;
+    }
+    filterProductsByPrice(minVal, maxVal);
+}
+
+function initShopToolbar() {
+    const sortSelect = document.getElementById('shopSortSelect');
+    const perPageSelect = document.getElementById('shopPerPageSelect');
+
+    if (sortSelect) {
+        sortSelect.value = shopSortMode;
+        sortSelect.addEventListener('change', () => {
+            shopSortMode = sortSelect.value || 'best';
+            localStorage.setItem('brandeduk-shop-sort', shopSortMode);
+            shopCurrentPage = 1;
+            renderProducts();
+        });
+    }
+
+    if (perPageSelect) {
+        perPageSelect.value = String(shopPerPage);
+        perPageSelect.addEventListener('change', () => {
+            const next = parseInt(perPageSelect.value, 10);
+            shopPerPage = [20, 40, 100].includes(next) ? next : 100;
+            localStorage.setItem('brandeduk-shop-perpage', String(shopPerPage));
+            shopCurrentPage = 1;
+            applyPaging();
+        });
+    }
+
+    const firstBtn = document.getElementById('pagerFirst');
+    const prevBtn = document.getElementById('pagerPrev');
+    const nextBtn = document.getElementById('pagerNext');
+    const lastBtn = document.getElementById('pagerLast');
+
+    if (firstBtn) {
+        firstBtn.addEventListener('click', () => {
+            shopCurrentPage = 1;
+            applyPaging();
+        });
+    }
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            shopCurrentPage = Math.max(1, shopCurrentPage - 1);
+            applyPaging();
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            shopCurrentPage = Math.min(getTotalPages(), shopCurrentPage + 1);
+            applyPaging();
+        });
+    }
+    if (lastBtn) {
+        lastBtn.addEventListener('click', () => {
+            shopCurrentPage = getTotalPages();
+            applyPaging();
+        });
+    }
+}
+
 // Render products
 function renderProducts() {
     const grid = document.getElementById('productsGrid');
-    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    const products = getSortedProducts(getCatalogProducts());
     
     document.getElementById('categoryTitle').textContent = categoryTitles[categoryFilter] || 'Products';
-    document.getElementById('productsCount').textContent = products.length + ' products';
+    // Count is updated after filters/paging run
     
     grid.innerHTML = '';
     
@@ -1780,6 +2121,9 @@ function renderProducts() {
         
         const card = document.createElement('div');
         card.className = 'product-card';
+        card.dataset.basePrice = String(productPrice);
+        card.dataset.filterHidden = '0';
+        card.dataset.pageHidden = '0';
         
         // Generate ALL colors for this card
         const colors = product.colors.map((c, i) => 
@@ -1881,6 +2225,9 @@ function renderProducts() {
         
         grid.appendChild(card);
     });
+
+    // Apply any existing filters and paging after re-render
+    applyActivePriceFilter();
 }
 
 // Toggle switch functionality
@@ -1934,14 +2281,14 @@ document.querySelector('.clear-all-btn')?.addEventListener('click', function() {
     const specialFilters = document.querySelector('.special-filters-dropdown');
     if (specialFilters) specialFilters.classList.remove('open');
     
-    // Show all products
+    // Show all products (reset filter + paging)
+    shopCurrentPage = 1;
     document.querySelectorAll('.product-card').forEach(card => {
-        card.style.display = '';
+        card.dataset.filterHidden = '0';
+        card.dataset.pageHidden = '0';
     });
-    
-    // Update count
-    const products2 = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
-    document.getElementById('productsCount').textContent = products2.length + ' products';
+    updateProductsCount();
+    applyPaging();
 });
 
 // Listen for VAT state changes from main.js (legacy)
@@ -1968,7 +2315,7 @@ function initPriceRangeSlider() {
     if (!sliderMin || !sliderMax) return;
     
     // Calculate min/max from filtered products
-    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    const products = getCatalogProducts();
     const prices = products.map(p => parseFloat(p.price));
     const catalogMinPrice = Math.floor(Math.min(...prices));
     const catalogMaxPrice = Math.ceil(Math.max(...prices));
@@ -2053,25 +2400,19 @@ function updatePriceRangeDisplay() {
 function filterProductsByPrice(min, max) {
     const cards = document.querySelectorAll('.product-card');
     cards.forEach(card => {
-        const priceText = card.querySelector('.price-value')?.textContent || '';
-        const price = parseFloat(priceText.replace('£', ''));
-        const basePrice = isVatOn() ? price / 1.20 : price;
-        
-        if (basePrice >= min && basePrice <= max) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
+        const basePrice = parseFloat(card.dataset.basePrice || '0');
+        const visible = Number.isFinite(basePrice) && basePrice >= min && basePrice <= max;
+        card.dataset.filterHidden = visible ? '0' : '1';
     });
-    
-    // Update count
-    const visibleCards = document.querySelectorAll('.product-card:not([style*="display: none"])').length;
-    const countEl = document.getElementById('productsCount');
-    if (countEl) countEl.textContent = visibleCards + ' products';
+
+    // Update count (filter-only) and re-apply paging
+    updateProductsCount();
+    applyPaging();
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    initShopToolbar();
     renderProducts();
     initPriceRangeSlider();
 });

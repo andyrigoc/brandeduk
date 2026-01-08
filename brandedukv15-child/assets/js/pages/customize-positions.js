@@ -510,6 +510,7 @@ function initSubmitQuoteButton() {
             e.preventDefault();
             
             const submitFormBtn = document.getElementById('quoteSubmitBtn');
+            const popupEl = document.getElementById('quoteRequestPopup');
             const nameInput = document.getElementById('quoteName');
             const phoneInput = document.getElementById('quotePhone');
             const emailInput = document.getElementById('quoteEmail');
@@ -538,45 +539,61 @@ function initSubmitQuoteButton() {
             submitFormBtn.classList.add('loading');
             submitFormBtn.textContent = 'Sending...';
             
-            // Get product data from sessionStorage
-            const productData = JSON.parse(sessionStorage.getItem('customizingProduct')) || {};
-            const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-            
-            // Build quote data to send
-            const quoteData = {
-                customer: {
-                    fullName: name,
-                    phone: phone,
-                    email: email
-                },
-                product: {
-                    name: productData.name || 'Product',
-                    code: productData.code || 'N/A',
-                    selectedColorName: productData.selectedColorName || 'N/A',
-                    quantity: productData.totalQuantity || 0,
-                    price: productData.price || 0,
-                    sizes: productData.sizes || {}
-                },
-                customizations: Object.entries(positionCustomizationsMap).map(([position, data]) => ({
-                    position: position,
-                    method: data.method || 'N/A',
-                    type: data.type || 'N/A',
-                    uploadedLogo: data.uploadedLogo || null,
-                    text: data.text || ''
-                })),
-                basket: basket,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Save to localStorage as backup
-            localStorage.setItem('quoteRequest', JSON.stringify(quoteData));
-            
-            // Check if we're on localhost (dev mode) or production
-            const isLocalhost = window.location.hostname === '127.0.0.1' || 
-                               window.location.hostname === 'localhost' ||
-                               window.location.protocol === 'file:';
-            
             try {
+                const customizationsEntries =
+                    (typeof positionCustomizationsMap === 'object' && positionCustomizationsMap)
+                        ? Object.entries(positionCustomizationsMap)
+                        : [];
+
+                // Get product data from sessionStorage
+                let productData = {};
+                try {
+                    productData = JSON.parse(sessionStorage.getItem('customizingProduct')) || {};
+                } catch {
+                    productData = {};
+                }
+
+                let basket = [];
+                try {
+                    basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+                } catch {
+                    basket = [];
+                }
+                
+                // Build quote data to send
+                const quoteData = {
+                    customer: {
+                        fullName: name,
+                        phone: phone,
+                        email: email
+                    },
+                    product: {
+                        name: productData.name || 'Product',
+                        code: productData.code || 'N/A',
+                        selectedColorName: productData.selectedColorName || 'N/A',
+                        quantity: productData.totalQuantity || 0,
+                        price: productData.price || 0,
+                        sizes: productData.sizes || {}
+                    },
+                    customizations: customizationsEntries.map(([position, data]) => ({
+                        position: position,
+                        method: data?.method || 'N/A',
+                        type: data?.type || 'N/A',
+                        uploadedLogo: data?.uploadedLogo || null,
+                        text: data?.text || ''
+                    })),
+                    basket: basket,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Save to localStorage as backup
+                localStorage.setItem('quoteRequest', JSON.stringify(quoteData));
+                
+                // Check if we're on localhost (dev mode) or production
+                const isLocalhost = window.location.hostname === '127.0.0.1' || 
+                                   window.location.hostname === 'localhost' ||
+                                   window.location.protocol === 'file:';
+
                 let result = { success: false };
                 
                 if (isLocalhost) {
@@ -586,35 +603,55 @@ function initSubmitQuoteButton() {
                     result = { success: true, message: 'Quote saved (dev mode)' };
                 } else {
                     // Send to PHP server on production
-                    const response = await fetch('brandedukv15-child/includes/send-quote.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(quoteData)
-                    });
-                    result = await response.json();
+                    const abortController = new AbortController();
+                    const timeoutId = setTimeout(() => abortController.abort(), 15000);
+
+                    let response;
+                    try {
+                        response = await fetch('brandedukv15-child/includes/send-quote.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(quoteData),
+                            signal: abortController.signal
+                        });
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
+
+                    const responseText = await response.text();
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch {
+                        throw new Error('Invalid server response');
+                    }
                 }
                 
                 if (result.success) {
                     submitFormBtn.classList.remove('loading');
                     submitFormBtn.classList.add('success');
-                    submitFormBtn.textContent = '✓ Quote Sent!';
+                    submitFormBtn.textContent = 'Submitted';
                     
-                    // Close popup and show confirmation after 1.5 seconds
+                    // Success flow: close popup, clear basket, go home
                     setTimeout(() => {
-                        popup.style.display = 'none';
-                        submitFormBtn.classList.remove('success');
-                        submitFormBtn.textContent = 'Submit Quote Request';
-                        form.reset();
-                        
-                        // Show success toast
-                        if (typeof showToast === 'function') {
-                            showToast('✓ Quote request sent! We\'ll contact you shortly.');
-                        } else {
-                            alert('Quote request sent! We\'ll contact you shortly.');
-                        }
-                    }, 1500);
+                        if (popupEl) popupEl.style.display = 'none';
+
+                        try {
+                            localStorage.removeItem('quoteBasket');
+                            localStorage.removeItem('quoteRequest');
+                        } catch {}
+
+                        try {
+                            sessionStorage.removeItem('customizingProduct');
+                        } catch {}
+
+                        const homeHref =
+                            document.querySelector('.searchbar-header__brand')?.getAttribute('href') ||
+                            'brandeduk.com/home-pc.html';
+
+                        window.location.replace(homeHref);
+                    }, 600);
                 } else {
                     throw new Error(result.message || 'Failed to send quote');
                 }
@@ -1062,7 +1099,9 @@ function updateCustomizationIndicator(card, hasCustomization) {
 function updateStepProgress() {
     const hasAnyCustomization = Object.keys(positionCustomizationsMap).length > 0;
     const step3 = document.querySelector('.step-item[data-step="3"]');
+    const step4 = document.querySelector('.step-item[data-step="4"]');
     const connector23 = document.getElementById('connector-2-3');
+    const connector34 = document.getElementById('connector-3-4');
     const submitBtn = document.getElementById('submitQuoteBtn');
     
     if (step3) {
@@ -1078,6 +1117,10 @@ function updateStepProgress() {
                 step3.classList.add('completed');
                 const stepNum = step3.querySelector('.step-num');
                 if (stepNum) stepNum.textContent = '3✓';
+
+                if (step4) {
+                    step4.classList.add('active');
+                }
                 
                 // Show the submit button with animation
                 if (submitBtn) {
@@ -1089,10 +1132,19 @@ function updateStepProgress() {
             if (connector23) {
                 connector23.classList.remove('completed', 'animate-slow');
             }
+            if (connector34) {
+                connector34.classList.remove('completed', 'animate-slow', 'animate-fast');
+            }
             step3.classList.remove('completed');
             step3.classList.add('active');
             const stepNum = step3.querySelector('.step-num');
             if (stepNum) stepNum.textContent = '3';
+
+            if (step4) {
+                step4.classList.remove('active', 'completed');
+                const step4Num = step4.querySelector('.step-num');
+                if (step4Num) step4Num.textContent = '4';
+            }
             
             // Hide submit button
             if (submitBtn) {

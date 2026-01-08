@@ -5486,6 +5486,21 @@ a {
     font-weight: 600;
     color: #4b5563;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.brand-card .brand-logo-img {
+    display: block;
+    height: clamp(22px, 3.2vw, 32px);
+    width: auto;
+    max-width: clamp(120px, 28vw, 170px);
+    object-fit: contain;
+    filter: grayscale(100%) saturate(0) contrast(1.15);
+    mix-blend-mode: multiply;
+    opacity: 0.92;
 }
 
 .product-card-mini .product-card-info {

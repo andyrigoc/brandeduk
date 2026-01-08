@@ -7,9 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260106a">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260106a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260106a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -30,6 +30,21 @@
         }
         .social-icons-mobile .social-icon i {
             font-size: 12px !important;
+        }
+
+        /* Customize (mobile): shrink back button without shifting layout,
+           and keep the BrandedUK logo aligned to the left cluster. */
+        body.customize-page .header-logo-row {
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        body.customize-page .header-logo-row .search-wrapper-expand {
+            margin-left: auto;
+        }
+
+        body.customize-page .header-logo-row .back-btn-header {
+            display: none !important;
         }
     </style>
 </head>
@@ -115,11 +130,6 @@
 
         <!-- Bottom Row: Back + Logo + Search -->
         <div class="header-logo-row">
-            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
             <a href="index.html" class="mobile-logo-center">
                 <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
                 <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
