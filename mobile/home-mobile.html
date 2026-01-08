@@ -9,7 +9,7 @@
     <title>BrandedUK - Custom Workwear & Embroidery</title>
     <link rel="stylesheet" href="css/mobile.css?v=20251230">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260104A">
-    <link rel="stylesheet" href="hero/hero.css?v=20251230">
+    <link rel="stylesheet" href="hero/hero.css?v=20260108">
     <link rel="stylesheet" href="css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="css/faq.css?v=20251230">
     <link rel="stylesheet" href="css/social-buttons.css?v=20251230">
@@ -1832,6 +1832,85 @@
             
             document.addEventListener('touchstart', deactivateAll, { passive: true });
             document.addEventListener('click', deactivateAll);
+        })();
+
+        // Our Brands: replace text with logo images (forced grayscale via CSS)
+        (function() {
+            const basePrefix = window.location.pathname.replace(/\\/g, '/').includes('/mobile/') ? '../' : '';
+            const brandLogoBase = basePrefix + 'brandedukv15-child/assets/images/brands/brand-assets/';
+
+            const brandToFile = {
+                '2786': '2786_2020.webp',
+                'Adidas': 'brand-banner-2023-adidas.webp',
+                'Anthem': 'anthem_web.webp',
+                'Asquith & Fox': 'asquithfox_2020.jpg',
+                'AWDis': 'awdis-lp-headers.webp',
+                'B&C Collection': 'bc_collp_23.png',
+                'BabyBugz': 'babybugz_2020.jpg',
+                'BagBase': 'bagbase_web.jpg',
+                'Beechfield': 'beechfield_web.webp',
+                'Bella+Canvas': 'bc_20202.webp',
+                'Callaway': 'callaway_web.jpg',
+                'Colortone': 'colortone_2020.webp',
+                'Comfort Colors': 'web-logo-comfort-colors-coral-1.webp',
+                'Craghoppers': 'web-logo-craghoppers-expert-wht.jpg',
+                'Finden & Hales': 'findenhales_web.jpg',
+                'Flexfit': 'flexfit_web.jpg',
+                'Front Row': 'frontrowco_web.jpg',
+                'Fruit of the Loom': 'fotl_web.webp',
+                'Gamegear': 'gamegear_web.webp',
+                'Gildan': 'gildan_2020.webp',
+                'Henbury': 'henbury_2020.webp',
+                'Kariban': 'kariban_web.jpg',
+                'KiMood': 'kimood_2020.jpg',
+                'Kustom Kit': 'kustom-kit_2020.webp',
+                'Larkwood': 'larkwood_web.jpg',
+                'Maddins': 'maddins_web.jpg',
+                'Mumbles': 'mumbles_2020.webp',
+                'Nike': 'nike_2020.jpg',
+                'Nimbus': 'nimbus_2020.webp',
+                'OGIO': 'ogio_2020.webp',
+                'Portwest': 'portwest-logo-web-2021.webp',
+                'Premier': 'premier_2020.webp',
+                'Pro RTX': 'pro-rtx-hv_2020.jpg',
+                'Quadra': 'quadra-logo-2020.webp',
+                'Regatta': 'regatta-professional_2020.webp',
+                'Result': 'result_2020.webp',
+                'Rhino': 'rhino_2020.jpg',
+                'Russell': 'russel-athletic-2026.webp',
+                'Scruffs': 'web-logo-scruffs-2023.jpg',
+                'SF Clothing': 'sf-clothing-logo_black-150x122px.webp',
+                'Spiro': 'spiro_2022.webp',
+                'Stanley/Stella': 'stanley_stella-logo.webp',
+                'Stormtech': 'stormtech-logo.webp',
+                'Tee Jays': 'tee-jays-logo-150-x-150px.jpg',
+                'Tombo': 'tombo_mainlogo_2020_new.webp',
+                'Towel City': 'towelcity_logo_2020.jpg',
+                'TriDri': 'web-logo-tridri-2025.webp',
+                'Under Armour': 'under-armour-logo.webp',
+                'Westford Mill': 'westford-mill-logo-2020-v2.webp',
+                'Wombat': 'wombat-logo.jpg',
+                'Xpres': 'xpres_2020.jpg',
+                'Yoko': 'yokohivis_2020.webp'
+            };
+
+            document.querySelectorAll('.brand-card').forEach(card => {
+                const name = (card.getAttribute('data-brand') || card.textContent || '').trim();
+                const file = brandToFile[name];
+                if (!name || !file) return;
+
+                card.textContent = '';
+                card.setAttribute('aria-label', name);
+                card.title = name;
+
+                const img = document.createElement('img');
+                img.className = 'brand-logo-img';
+                img.alt = name;
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                img.src = brandLogoBase + file;
+                card.appendChild(img);
+            });
         })();
     </script>
 </body>
