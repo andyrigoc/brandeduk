@@ -1,0 +1,2682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandedUK - Custom Workwear & Promotional Clothing</title>
+    <script>
+        // Redirect to mobile version on smaller screens (mobile + tablet)
+        if (window.innerWidth < 1024) {
+            window.location.href = '../mobile/home-mobile.html';
+        }
+    </script>
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
+    <link rel="stylesheet" href="../mobile/css/popup-contact.css?v=20251230">
+    <link rel="stylesheet" href="css/style.css?v=20251230">
+    <link rel="stylesheet" href="css/hero.css?v=20251230">
+    <style>
+        /* Header top phone styling */
+        .header-top-phone {
+            color: #7c3aed;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.2s ease;
+        }
+        .header-top-phone:hover {
+            color: #a855f7;
+        }
+        .header-top-divider {
+            color: #d1d5db;
+            margin: 0 12px;
+        }
+        /* Header Top Basket */
+        .header-top-basket {
+            position: relative;
+            margin-left: 16px;
+        }
+        .header-top-basket-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #7c3aed;
+            transition: all 0.2s ease;
+        }
+        .header-top-basket-btn:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: #a855f7;
+        }
+        .header-top-basket-btn svg {
+            stroke: currentColor;
+            fill: none;
+        }
+        .header-top-basket-badge {
+            background: #f97316;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        .header-top-basket-badge:empty,
+        .header-top-basket-badge[data-count="0"] {
+            display: none;
+        }
+        /* Basket Dropdown */
+        .header-basket-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+        .header-top-basket:hover .header-basket-dropdown,
+        .header-basket-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(4px);
+        }
+        .header-basket-dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header-basket-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .header-basket-clear {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .header-basket-clear:hover {
+            background: #fef2f2;
+        }
+        .header-basket-items {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .header-basket-empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 24px;
+            font-size: 13px;
+        }
+        .header-basket-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .header-basket-item:hover {
+            background: #f9fafb;
+        }
+        .header-basket-item-img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+        .header-basket-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .header-basket-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .header-basket-item-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .header-basket-item-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #7c3aed;
+            margin-top: 4px;
+        }
+        .header-basket-item-remove {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+        .header-basket-item-remove:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+        .header-basket-dropdown-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .header-basket-view-btn {
+            display: block;
+            text-align: center;
+            background: #7c3aed;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .header-basket-view-btn:hover {
+            background: #6d28d9;
+        }
+        /* Account icon in searchbar - purple background like phone/whatsapp */
+        .searchbar-header__account .searchbar-header__action-ring {
+            background: #7c3aed;
+        }
+        .searchbar-header__account .searchbar-header__action-icon {
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+        /* Social buttons header desktop - override mobile sizes */
+        .header-top .social-buttons-header {
+            gap: 10px;
+        }
+        .header-top .social-buttons-header a {
+            width: 32px;
+            height: 32px;
+            transition: all 0.3s ease;
+        }
+        .header-top .social-buttons-header .social-icon svg {
+            width: 14px;
+            height: 14px;
+            transition: fill 0.3s ease;
+        }
+        /* Facebook - always blue */
+        .header-top .social-buttons-header .social-facebook .social-icon svg { fill: #1877f2; }
+        .header-top .social-buttons-header .social-facebook:hover {
+            box-shadow: 0 6px 20px rgba(24, 119, 242, 0.6);
+            transform: translateY(-2px);
+        }
+        .header-top .social-buttons-header .social-facebook:hover .social-icon {
+            background: linear-gradient(0deg, #e7f3ff, #fff);
+        }
+        /* Instagram - always pink */
+        .header-top .social-buttons-header .social-instagram .social-icon svg { fill: #e4405f; }
+        .header-top .social-buttons-header .social-instagram:hover {
+            box-shadow: 0 6px 20px rgba(228, 64, 95, 0.6);
+            transform: translateY(-2px);
+        }
+        .header-top .social-buttons-header .social-instagram:hover .social-icon {
+            background: linear-gradient(0deg, #fce4ec, #fff);
+        }
+        /* LinkedIn - always blue */
+        .header-top .social-buttons-header .social-linkedin .social-icon svg { fill: #0a66c2; }
+        .header-top .social-buttons-header .social-linkedin:hover {
+            box-shadow: 0 6px 20px rgba(10, 102, 194, 0.6);
+            transform: translateY(-2px);
+        }
+        .header-top .social-buttons-header .social-linkedin:hover .social-icon {
+            background: linear-gradient(0deg, #e8f4fc, #fff);
+        }
+        /* YouTube - always red */
+        .header-top .social-buttons-header .social-youtube .social-icon svg { fill: #ff0000; }
+        .header-top .social-buttons-header .social-youtube:hover {
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        .header-top .social-buttons-header .social-youtube:hover .social-icon {
+            background: linear-gradient(0deg, #ffe5e5, #fff);
+        }
+        /* Pinterest - always red */
+        .header-top .social-buttons-header .social-pinterest .social-icon svg { fill: #bd081c; }
+        .header-top .social-buttons-header .social-pinterest:hover {
+            box-shadow: 0 6px 20px rgba(189, 8, 28, 0.6);
+            transform: translateY(-2px);
+        }
+        .header-top .social-buttons-header .social-pinterest:hover .social-icon {
+            background: linear-gradient(0deg, #fce4e8, #fff);
+        }
+        /* Search expand desktop - espande da destra a sinistra */
+        .searchbar-header__search-expand {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            transition: width 0.3s ease-in-out;
+            margin-right: 8px;
+        }
+        .searchbar-header__search-expand:focus-within {
+            width: 320px;
+        }
+        .searchbar-header__search-expand .search-input-expand {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            border-radius: 9999px;
+            padding: 12px 44px 12px 20px;
+            font-size: 15px;
+            background: #f3f4f6;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+        .searchbar-header__search-expand .search-input-expand::placeholder {
+            color: transparent;
+            transition: color 0.2s ease;
+        }
+        .searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
+            color: #9ca3af;
+        }
+        .searchbar-header__search-expand .search-icon-expand {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+        .searchbar-header__search-expand:focus-within .search-icon-expand {
+            color: #a855f7;
+        }
+        /* Logo viola con immagine */
+        .searchbar-header__brand-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        .searchbar-header__brand-text {
+            color: #a855f7 !important;
+        }
+        /* Popup Contact Desktop - larger */
+        .popup-contact {
+            max-width: 700px;
+            width: calc(100% - 80px);
+        }
+        .popup-contact__body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            padding: 0 32px 32px;
+            max-height: calc(90vh - 100px);
+        }
+        .popup-contact__form {
+            order: 1;
+        }
+        .popup-contact__map {
+            order: 2;
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .popup-contact__map iframe {
+            height: 100%;
+            min-height: 320px;
+        }
+        .popup-contact__header {
+            padding: 32px 32px 24px;
+        }
+        .popup-contact__title {
+            font-size: 36px;
+        }
+        .neon-container {
+            cursor: pointer;
+        }
+        
+        /* ===== ACCOUNT PANEL - DESKTOP ===== */
+        .account-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9998;
+        }
+        .account-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .account-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: transparent;
+            border-radius: 20px;
+            width: 600px;
+            max-width: 90vw;
+            height: 500px;
+            max-height: 80vh;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 9999;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+        }
+        .account-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .account-panel-header {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+        .account-close-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .account-close-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: scale(1.05);
+        }
+        .account-close-btn svg {
+            stroke: #fff;
+        }
+        .account-forms-container {
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .account-arrow {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .account-arrow.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .account-arrow:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .account-arrow svg {
+            stroke: #fff;
+        }
+        .account-forms-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+        .account-form-holder {
+            flex-basis: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            padding: 24px;
+        }
+        .account-form-holder:hover {
+            flex-basis: 55%;
+        }
+        .signin-form {
+            background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%);
+        }
+        .signup-form {
+            background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%);
+        }
+        .account-form-icon {
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .account-form-icon svg {
+            stroke: #fff;
+        }
+        .account-form-icon span {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .account-form-content {
+            position: absolute;
+            width: 85%;
+            top: 100%;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .account-form-holder.active {
+            flex-basis: 100%;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+        }
+        .account-form-holder.active .account-form-icon {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            flex-direction: row;
+            gap: 12px;
+        }
+        .account-form-holder.active .account-form-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+        .account-form-holder.active .account-form-icon span {
+            font-size: 1rem;
+        }
+        .account-form-holder.active .account-form-content {
+            top: 80px;
+            opacity: 1;
+            width: 80%;
+            max-width: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .account-form-holder.inactive {
+            flex-basis: 0%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .account-input-group {
+            position: relative;
+            margin-bottom: 28px;
+        }
+        .account-input-group.half {
+            flex: 1;
+        }
+        .account-input-row {
+            display: flex;
+            gap: 16px;
+        }
+        .account-input-group label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .account-input-group input {
+            width: 100%;
+            padding: 10px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+        .account-input-group input:focus,
+        .account-input-group input:valid {
+            border-bottom-color: #fff;
+        }
+        .account-input-group input:focus + label,
+        .account-input-group input:valid + label {
+            top: -20px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .account-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .account-submit-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .account-submit-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: scale(1.05);
+        }
+        .account-submit-btn svg {
+            stroke: #fff;
+        }
+        .account-forgot-link {
+            display: block;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .account-forgot-link:hover {
+            color: #fff;
+        }
+        .account-logged-in {
+            padding: 50px 40px;
+            text-align: center;
+            background: #fff;
+            height: 100%;
+        }
+        .account-user-avatar {
+            margin-bottom: 16px;
+        }
+        .account-user-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .account-user-email {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        .account-user-details {
+            text-align: left;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .account-user-details p {
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .account-user-details p:last-child {
+            margin-bottom: 0;
+        }
+        .account-user-details strong {
+            color: #1f2937;
+        }
+        .account-logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: #ef4444;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .account-logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============================================
+     HEADER - Migrated from home.html
+     ============================================ -->
+<header class="site-header">
+    <div class="header-top">
+        <div class="header-container">
+            <div class="header-top-left">
+                <ul class="social-buttons-header">
+                    <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                        <span class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </span>
+                    </a></li>
+                    <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                        <span class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </span>
+                    </a></li>
+                    <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <span class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </span>
+                    </a></li>
+                    <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                        <span class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </span>
+                    </a></li>
+                    <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                        <span class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                        </span>
+                    </a></li>
+                </ul>
+            </div>
+            <div class="header-top-right">
+                <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                <nav class="header-top-links" aria-label="utility navigation">
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                    <a href="#" id="headerMyAccountLink">My Account</a>
+                    <a href="#" id="headerSignInLink">Sign In</a>
+                    <span class="header-top-divider" aria-hidden="true">/</span>
+                    <a href="#" id="headerRegisterLink">Register</a>
+                    <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
+                        <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                            <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
+                        </button>
+                    </div>
+                    <a class="header-top-basket-link" href="../quote-form.html" aria-label="View quote">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 6h15l-1.5 9h-12z"/>
+                            <circle cx="9" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                            <path d="M6 6L5 3H2"/>
+                        </svg>
+                        <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="searchbar-header">
+        <div class="searchbar-header__surface">
+            <div class="searchbar-header__inner">
+                <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                    <img class="searchbar-header__brand-img" src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
+                    <span class="searchbar-header__brand-text">branded<span class="searchbar-header__brand-text-highlight">UK</span></span>
+                </a>
+
+                <div class="searchbar-header__actions">
+                    <div class="searchbar-header__search-expand">
+                        <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                        <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+
+                    <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action" href="https://wa.me/447447348564" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-bottom sticky-header">
+        <div class="header-container">
+            <div class="category-dropdown has-border" data-visible="false">
+                <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                    <span class="category-toggle-icon" aria-hidden="true"></span>
+                    <span class="category-toggle-label">Browse Categories</span>
+                    <span class="category-toggle-caret" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-box" role="region" aria-label="Browse categories">
+                    <ul class="menu vertical-menu category-menu">
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
+                                <span class="category-text">T-Shirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Crew Neck</a></li>
+                                        <li><a href="#">Heavyweight / Workwear</a></li>
+                                        <li><a href="#">Kids T-shirts</a></li>
+                                        <li><a href="#">Lightweight</a></li>
+                                        <li><a href="#">Long Sleeve T-shirts</a></li>
+                                        <li><a href="#">Performance / Sports</a></li>
+                                        <li><a href="#">Short Sleeve T-shirts</a></li>
+                                        <li><a href="#">Tank Tops</a></li>
+                                        <li><a href="#">T-shirts for Embroidery</a></li>
+                                        <li><a href="#">T-shirts for Print</a></li>
+                                        <li><a href="#">V-Neck</a></li>
+                                        <li><a href="#">Women's T-shirts</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
+                                <span class="category-text">Polo Shirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Classic Cotton Polos</a></li>
+                                        <li><a href="#">Kids Polos</a></li>
+                                        <li><a href="#">Long Sleeve Polos</a></li>
+                                        <li><a href="#">Performance Polos</a></li>
+                                        <li><a href="#">Poly Cotton Polos</a></li>
+                                        <li><a href="#">Polos for Embroidery</a></li>
+                                        <li><a href="#">Short Sleeve Polos</a></li>
+                                        <li><a href="#">Slim Fit Polos</a></li>
+                                        <li><a href="#">Women's Polos</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
+                                <span class="category-text">Hoodies &amp; Sweatshirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Heavyweight Hoodies</a></li>
+                                        <li><a href="#">Kids Hoodies</a></li>
+                                        <li><a href="#">Lightweight Hoodies</a></li>
+                                        <li><a href="#">Premium / Workwear Hoodies</a></li>
+                                        <li><a href="#">Pullover Hoodies</a></li>
+                                        <li><a href="#">Sweatshirts (Crew Neck)</a></li>
+                                        <li><a href="#">Women's Hoodies</a></li>
+                                        <li><a href="#">Zip Hoodies</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
+                                <span class="category-text">Jackets &amp; Softshell</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Bodywarmers / Gilets</a></li>
+                                        <li><a href="#">Bomber Jackets</a></li>
+                                        <li><a href="#">Fleece Jackets</a></li>
+                                        <li><a href="#">High-performance Jackets</a></li>
+                                        <li><a href="#">Softshell Jackets</a></li>
+                                        <li><a href="#">Waterproof Jackets</a></li>
+                                        <li><a href="#">Windbreakers</a></li>
+                                        <li><a href="#">Women's Jackets</a></li>
+                                        <li><a href="#">Workwear Jackets</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
+                                <span class="category-text">Hi-Vis Clothing</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">EN ISO 20471 Certified</a></li>
+                                        <li><a href="#">Hi-vis Hoodies</a></li>
+                                        <li><a href="#">Hi-vis Jackets</a></li>
+                                        <li><a href="#">Hi-vis Polos</a></li>
+                                        <li><a href="#">Hi-vis T-shirts</a></li>
+                                        <li><a href="#">Hi-vis Trousers</a></li>
+                                        <li><a href="#">Hi-vis Vests</a></li>
+                                        <li><a href="#">RIS-3279 Rail</a></li>
+                                        <li><a href="#">Waterproof Hi-Vis</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
+                                <span class="category-text">Work Trousers</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Cargo Pants</a></li>
+                                        <li><a href="#">Ripstop Trousers</a></li>
+                                        <li><a href="#">Stretch Work Trousers</a></li>
+                                        <li><a href="#">Waterproof / Over-trousers</a></li>
+                                        <li><a href="#">Work Shorts</a></li>
+                                        <li><a href="#">Work Trousers</a></li>
+                                        <li><a href="#">Women's Work Trousers</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
+                                <span class="category-text">Work &amp; Uniforms</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Work Trousers</a></li>
+                                        <li><a href="#">Workwear Jackets</a></li>
+                                        <li><a href="#">Workwear Hoodies</a></li>
+                                        <li><a href="#">Work Accessories</a></li>
+                                        <li><a href="#">Aprons</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
+                                <span class="category-text">Fleeces</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Full Zip Fleece</a></li>
+                                        <li><a href="#">Half Zip Fleece</a></li>
+                                        <li><a href="#">Heavy Fleece</a></li>
+                                        <li><a href="#">Kids Fleece</a></li>
+                                        <li><a href="#">Microfleece Jackets</a></li>
+                                        <li><a href="#">Women's Fleece</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
+                                <span class="category-text">Headwear / Accessories</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu">
+                                <li>
+                                    <ul>
+                                        <li><a href="#">Beanies</a></li>
+                                        <li><a href="#">Bucket Hats</a></li>
+                                        <li><a href="#">Caps</a></li>
+                                        <li><a href="#">Gloves &amp; Scarves</a></li>
+                                        <li><a href="#">Hi-Vis Headwear</a></li>
+                                        <li><a href="#">Kids Headwear</a></li>
+                                        <li><a href="#">Work Accessories</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
+                                <span class="category-text">Sustainable / Recycled &amp; Organic</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="megamenu brand-grid">
+                                <li class="brand-heading">0 - 9</li>
+                                <li><a href="#">2786</a></li>
+                                <li class="brand-heading">A</li>
+                                <li><a href="#">Adidas</a></li>
+                                <li><a href="#">Asquith &amp; Fox</a></li>
+                                <li><a href="#">AWDis Just Cool</a></li>
+                                <li><a href="#">AWDis Just Hoods</a></li>
+                                <li class="brand-heading">B</li>
+                                <li><a href="#">B&amp;C Collection</a></li>
+                                <li><a href="#">Bagbase</a></li>
+                                <li><a href="#">Beechfield</a></li>
+                                <li><a href="#">Build Your Brand</a></li>
+                                <li class="brand-heading">C</li>
+                                <li><a href="#">Callaway</a></li>
+                                <li><a href="#">Craghoppers</a></li>
+                                <li class="brand-heading">F</li>
+                                <li><a href="#">Finden &amp; Hales</a></li>
+                                <li><a href="#">Flexfit by Yupoong</a></li>
+                                <li><a href="#">Front Row</a></li>
+                                <li class="brand-heading">H</li>
+                                <li><a href="#">Henbury</a></li>
+                                <li><a href="#">Home &amp; Living</a></li>
+                                <li class="brand-heading">K</li>
+                                <li><a href="#">Kariban</a></li>
+                                <li><a href="#">KiMood</a></li>
+                                <li class="brand-heading">L</li>
+                                <li><a href="#">Larkwood</a></li>
+                                <li class="brand-heading">M</li>
+                                <li><a href="#">Madeira</a></li>
+                                <li><a href="#">Mumbles</a></li>
+                                <li class="brand-heading">N</li>
+                                <li><a href="#">New Morning Studios</a></li>
+                                <li><a href="#">Nike</a></li>
+                                <li><a href="#">Nimbus</a></li>
+                                <li><a href="#">Nutshell</a></li>
+                                <li class="brand-heading">P</li>
+                                <li><a href="#">Portwest</a></li>
+                                <li><a href="#">Premier</a></li>
+                                <li><a href="#">Pro RTX</a></li>
+                                <li class="brand-heading">Q</li>
+                                <li><a href="#">Quadra</a></li>
+                                <li class="brand-heading">R</li>
+                                <li><a href="#">RalaFlex</a></li>
+                                <li><a href="#">Regatta Junior</a></li>
+                                <li><a href="#">Regatta Professional</a></li>
+                                <li><a href="#">Result</a></li>
+                                <li><a href="#">Russell Athletic&reg;</a></li>
+                                <li class="brand-heading">S</li>
+                                <li><a href="#">Scruffs</a></li>
+                                <li><a href="#">SF</a></li>
+                                <li class="brand-heading">T</li>
+                                <li><a href="#">Stormtech</a></li>
+                                <li><a href="#">Tee Jays</a></li>
+                                <li><a href="#">Tombo</a></li>
+                                <li><a href="#">TriDri</a></li>
+                                <li class="brand-heading">W</li>
+                                <li><a href="#">Westford Mill</a></li>
+                                <li><a href="#">Wombat</a></li>
+                                <li class="brand-heading">Y</li>
+                                <li><a href="#">Yoko</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="view-all-link">
+                                <span class="category-text">View All Categories</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="primary navigation">
+                <ul class="menu">
+                    <li class="has-megamenu">
+                        <a href="#" aria-haspopup="true">
+                            All Products
+                            <span class="nav-caret" aria-hidden="true"></span>
+                        </a>
+                        <ul class="nav-megamenu brand-grid">
+                            <li class="brand-heading">A</li>
+                            <li><a href="#">Accessories</a></li>
+                            <li><a href="#">Anti Static / ESD</a></li>
+                            <li><a href="#">Aprons</a></li>
+                            <li><a href="#">Arc Flash</a></li>
+                            <li><a href="#">Autumn Workwear</a></li>
+                            <li class="brand-heading">B</li>
+                            <li><a href="#">Bags</a></li>
+                            <li><a href="#">Beanies</a></li>
+                            <li><a href="#">Bib &amp; Brace Overalls</a></li>
+                            <li><a href="#">Blouses</a></li>
+                            <li><a href="#">Bodywarmers &amp; Gilets</a></li>
+                            <li class="brand-heading">C</li>
+                            <li><a href="#">Caps</a></li>
+                            <li><a href="#">Chainsaw and Forestry</a></li>
+                            <li><a href="#">Chefswear</a></li>
+                            <li><a href="#">Chem Splash</a></li>
+                            <li><a href="#">Coats &amp; Jackets</a></li>
+                            <li><a href="#">Coldstore</a></li>
+                            <li><a href="#">Construction</a></li>
+                            <li><a href="#">Coveralls</a></li>
+                            <li><a href="#">Covid Test Kit</a></li>
+                            <li class="brand-heading">D</li>
+                            <li><a href="#">Disposable</a></li>
+                            <li><a href="#">Dresses</a></li>
+                            <li><a href="#">DTF Supplies</a></li>
+                            <li class="brand-heading">F</li>
+                            <li><a href="#">Face Masks &amp; Covers</a></li>
+                            <li><a href="#">Flame Retardant</a></li>
+                            <li><a href="#">Fleece Jackets</a></li>
+                            <li><a href="#">Footwear</a></li>
+                            <li class="brand-heading">G</li>
+                            <li><a href="#">Gilets</a></li>
+                            <li><a href="#">Golf</a></li>
+                            <li><a href="#">Gloves PPE</a></li>
+                            <li><a href="#">Gloves Winter</a></li>
+                            <li class="brand-heading">H</li>
+                            <li><a href="#">Headwear</a></li>
+                            <li><a href="#">Healthcare</a></li>
+                            <li><a href="#">Helmets</a></li>
+                            <li><a href="#">Hi-Vis</a></li>
+                            <li><a href="#">Hoodies</a></li>
+                            <li><a href="#">Hospitality</a></li>
+                            <li class="brand-heading">J</li>
+                            <li><a href="#">Jackets</a></li>
+                            <li><a href="#">Joggers</a></li>
+                            <li class="brand-heading">K</li>
+                            <li><a href="#">Knitwear</a></li>
+                            <li class="brand-heading">L</li>
+                            <li><a href="#">Lab / Medical Coats</a></li>
+                            <li><a href="#">Lateral Flow Tests</a></li>
+                            <li><a href="#">Lounge &amp; Underwear</a></li>
+                            <li class="brand-heading">M</li>
+                            <li><a href="#">Maternity</a></li>
+                            <li class="brand-heading">O</li>
+                            <li><a href="#">Offshore Clothing</a></li>
+                            <li><a href="#">Overalls</a></li>
+                            <li class="brand-heading">P</li>
+                            <li><a href="#">Painter &amp; Decorator Clothing</a></li>
+                            <li><a href="#">Plus Size</a></li>
+                            <li><a href="#">Polo Shirts</a></li>
+                            <li><a href="#">PPE</a></li>
+                            <li class="brand-heading">R</li>
+                            <li><a href="#">Rail Spec</a></li>
+                            <li class="brand-heading">S</li>
+                            <li><a href="#">Scarves</a></li>
+                            <li><a href="#">Schoolwear</a></li>
+                            <li><a href="#">Scrubs</a></li>
+                            <li><a href="#">Security</a></li>
+                            <li><a href="#">Shirts</a></li>
+                            <li><a href="#">Shorts</a></li>
+                            <li><a href="#">Skirts</a></li>
+                            <li><a href="#">Socks</a></li>
+                            <li><a href="#">Softshell Jackets</a></li>
+                            <li><a href="#">Sports &amp; Teamwear</a></li>
+                            <li><a href="#">Spring Workwear</a></li>
+                            <li><a href="#">Suits &amp; Tailoring</a></li>
+                            <li><a href="#">Summer Workwear</a></li>
+                            <li><a href="#">Sustainable</a></li>
+                            <li><a href="#">Sweatshirts</a></li>
+                            <li class="brand-heading">T</li>
+                            <li><a href="#">Tabards</a></li>
+                            <li><a href="#">Thermals &amp; Base Layers</a></li>
+                            <li><a href="#">Ties</a></li>
+                            <li><a href="#">Tote Bags</a></li>
+                            <li><a href="#">Towelling</a></li>
+                            <li><a href="#">Trades</a></li>
+                            <li><a href="#">Trousers</a></li>
+                            <li><a href="#">T-Shirts</a></li>
+                            <li><a href="#">Tunics</a></li>
+                            <li class="brand-heading">U</li>
+                            <li><a href="#">Umbrellas</a></li>
+                            <li class="brand-heading">W</li>
+                            <li><a href="#">Waistcoats</a></li>
+                            <li><a href="#">Welding Workwear</a></li>
+                            <li><a href="#">Winter Workwear</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">BrandedUK</a></li>
+                    <li class="has-megamenu promotions-menu">
+                        <a href="#" aria-haspopup="true">
+                            Promotions
+                            <span class="nav-caret" aria-hidden="true"></span>
+                        </a>
+                        <div class="promo-dropdown" role="region" aria-label="Promotional bundles">
+                            <div class="promo-dropdown-inner">
+                                <figure class="promo-card promo-theme-1">
+                                    <div class="promo-card-thumb" aria-hidden="true"></div>
+                                    <figcaption class="promo-card-title">Bundle 1</figcaption>
+                                    <span class="promo-card-tag">Starter</span>
+                                </figure>
+                                <figure class="promo-card promo-theme-2">
+                                    <div class="promo-card-thumb" aria-hidden="true"></div>
+                                    <figcaption class="promo-card-title">Bundle 2</figcaption>
+                                    <span class="promo-card-tag">Teams</span>
+                                </figure>
+                                <figure class="promo-card promo-theme-3">
+                                    <div class="promo-card-thumb" aria-hidden="true"></div>
+                                    <figcaption class="promo-card-title">Bundle 3</figcaption>
+                                    <span class="promo-card-tag">Eco</span>
+                                </figure>
+                                <figure class="promo-card promo-theme-4">
+                                    <div class="promo-card-thumb" aria-hidden="true"></div>
+                                    <figcaption class="promo-card-title">Bundle 4</figcaption>
+                                    <span class="promo-card-tag">Season</span>
+                                </figure>
+                                <figure class="promo-card promo-theme-5">
+                                    <div class="promo-card-thumb" aria-hidden="true"></div>
+                                    <figcaption class="promo-card-title">Bundle 5</figcaption>
+                                    <span class="promo-card-tag">Pro</span>
+                                </figure>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="#">More</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    
+    <!-- HERO - Expanding Panels -->
+    <div class="hero-expanding-wrapper">
+        <div class="hero-cont s--inactive" id="hero1">
+            <div class="hero-cont__inner">
+                <div class="hero-el" data-category="aprons">
+                    <div class="hero-el__overflow">
+                        <div class="hero-el__inner">
+                            <div class="hero-el__bg"></div>
+                            <div class="hero-el__preview-cont">
+                                <h2 class="hero-el__heading">Aprons</h2>
+                            </div>
+                            <div class="hero-el__content">
+                                <div class="hero-el__text">Custom Aprons</div>
+                                <a href="shop.html?category=aprons" class="hero-el__cta">Shop Now</a>
+                                <div class="hero-el__close-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-el" data-category="hoodies">
+                    <div class="hero-el__overflow">
+                        <div class="hero-el__inner">
+                            <div class="hero-el__bg"></div>
+                            <div class="hero-el__preview-cont">
+                                <h2 class="hero-el__heading">Hoodies</h2>
+                            </div>
+                            <div class="hero-el__content">
+                                <div class="hero-el__text">Custom Hoodies</div>
+                                <a href="shop.html?category=hoodies" class="hero-el__cta">Shop Now</a>
+                                <div class="hero-el__close-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-el" data-category="beanies">
+                    <div class="hero-el__overflow">
+                        <div class="hero-el__inner">
+                            <div class="hero-el__bg"></div>
+                            <div class="hero-el__preview-cont">
+                                <h2 class="hero-el__heading">Beanies</h2>
+                            </div>
+                            <div class="hero-el__content">
+                                <div class="hero-el__text">Custom Beanies</div>
+                                <a href="shop.html?category=beanies" class="hero-el__cta">Shop Now</a>
+                                <div class="hero-el__close-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-el" data-category="hi-viz">
+                    <div class="hero-el__overflow">
+                        <div class="hero-el__inner">
+                            <div class="hero-el__bg"></div>
+                            <div class="hero-el__preview-cont">
+                                <h2 class="hero-el__heading">Hi-Viz</h2>
+                            </div>
+                            <div class="hero-el__content">
+                                <div class="hero-el__text">Custom Hi-Viz</div>
+                                <a href="shop.html?category=hi-viz" class="hero-el__cta">Shop Now</a>
+                                <div class="hero-el__close-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-el" data-category="polo">
+                    <div class="hero-el__overflow">
+                        <div class="hero-el__inner">
+                            <div class="hero-el__bg"></div>
+                            <div class="hero-el__preview-cont">
+                                <h2 class="hero-el__heading">Polo</h2>
+                            </div>
+                            <div class="hero-el__content">
+                                <div class="hero-el__text">Custom Polo</div>
+                                <a href="shop.html?category=polo" class="hero-el__cta">Shop Now</a>
+                                <div class="hero-el__close-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO 2 - Get in Touch Neon Banner -->
+    <section class="hero-banners-section">
+        <div class="hero-banners-container">
+            <!-- Banner 1 - Get in Touch Neon -->
+            <div class="hero-banner hero-banner--active" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
+                <div class="neon-container">
+                    <div class="neon-text">GET IN</div>
+                    <div class="flux-text">TOUCH</div>
+                </div>
+            </div>
+
+            <!-- Banner 2 - Make Awesome Animation -->
+            <div class="hero-banner" id="heroBanner2">
+                <div class="hero-text-container">
+                    <div class="hero-text-make">MAKE</div>
+                    <div class="hero-flip-wrapper">
+                        <div class="hero-flip-word flip-work">WORK</div>
+                        <div class="hero-flip-word flip-lifestyle">LIFESTYLE</div>
+                        <div class="hero-flip-word flip-everything">EVERYTHING</div>
+                    </div>
+                    <div class="hero-text-awesome">AWESOME!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Dots Navigation -->
+        <div class="hero-banner-dots">
+            <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1"></button>
+            <button class="banner-dot" data-banner="2" aria-label="Banner 2"></button>
+        </div>
+    </section>
+
+    <!-- Quick Actions - Desktop -->
+    <section class="quick-actions-desktop">
+        <div class="quick-actions-inner">
+            <a href="customize.html" class="quick-action-card upload-card">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <h3>Upload Your Logo</h3>
+                    <p>Get instant pricing for custom workwear</p>
+                </div>
+                <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+            <a href="tel:02089742722" class="quick-action-card call-card">
+                <div class="quick-action-icon phone-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <h3>Call Our Team</h3>
+                    <p>020 8974 2722 • Mon-Fri 9am-5pm</p>
+                </div>
+                <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Shop by Category</h2>
+                <a href="shop.html" class="see-all-link">View All Categories →</a>
+            </div>
+        </div>
+        <div class="categories-marquee">
+            <div class="categories-track">
+                <a href="shop.html?category=tshirts" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                    </div>
+                    <span>T-Shirts</span>
+                </a>
+                <a href="shop.html?category=polo" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                    </div>
+                    <span>Polos</span>
+                </a>
+                <a href="shop.html?category=hoodies" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                    </div>
+                    <span>Hoodies</span>
+                </a>
+                <a href="shop.html?category=jackets" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                    </div>
+                    <span>Jackets</span>
+                </a>
+                <a href="shop.html?category=hivis" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                    </div>
+                    <span>Hi-Vis</span>
+                </a>
+                <a href="shop.html?category=fleeces" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                    </div>
+                    <span>Fleeces</span>
+                </a>
+                <a href="shop.html?category=bags" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                    </div>
+                    <span>Bags</span>
+                </a>
+                <a href="shop.html?category=caps" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                    </div>
+                    <span>Caps</span>
+                </a>
+                <a href="shop.html?category=aprons" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                    </div>
+                    <span>Aprons</span>
+                </a>
+                <!-- Duplicate for seamless loop -->
+                <a href="shop.html?category=tshirts" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                    </div>
+                    <span>T-Shirts</span>
+                </a>
+                <a href="shop.html?category=polo" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                    </div>
+                    <span>Polos</span>
+                </a>
+                <a href="shop.html?category=hoodies" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                    </div>
+                    <span>Hoodies</span>
+                </a>
+                <a href="shop.html?category=jackets" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                    </div>
+                    <span>Jackets</span>
+                </a>
+                <a href="shop.html?category=hivis" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                    </div>
+                    <span>Hi-Vis</span>
+                </a>
+                <a href="shop.html?category=fleeces" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                    </div>
+                    <span>Fleeces</span>
+                </a>
+                <a href="shop.html?category=bags" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                    </div>
+                    <span>Bags</span>
+                </a>
+                <a href="shop.html?category=caps" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                    </div>
+                    <span>Caps</span>
+                </a>
+                <a href="shop.html?category=aprons" class="category-card">
+                    <div class="category-icon">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                    </div>
+                    <span>Aprons</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Section -->
+    <section class="bestsellers-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Best Sellers</h2>
+                <a href="shop.html?sort=bestsellers" class="see-all-link">View All →</a>
+            </div>
+            <div class="products-grid">
+                <div class="product-card" data-product="UC101">
+                    <div class="product-image">
+                        <img src="../hero/images/Polo.jpg" alt="Work Polo">
+                        <span class="product-badge bestseller">Best Seller</span>
+                    </div>
+                    <div class="product-info">
+                        <h4 class="product-name">Work Polo</h4>
+                        <p class="product-price" data-price-exc="8.95">£8.95</p>
+                        <a href="customize.html?product=UC101" class="product-btn">Add Logo</a>
+                    </div>
+                </div>
+                <div class="product-card" data-product="JH001">
+                    <div class="product-image">
+                        <img src="../hero/images/hoodies.jpg" alt="Grey Hoodie" style="object-position: 0% top;">
+                        <span class="product-badge bestseller">Best Seller</span>
+                    </div>
+                    <div class="product-info">
+                        <h4 class="product-name">Grey Hoodie</h4>
+                        <p class="product-price" data-price-exc="14.50">£14.50</p>
+                        <a href="customize.html?product=JH001" class="product-btn">Add Logo</a>
+                    </div>
+                </div>
+                <div class="product-card" data-product="HV001">
+                    <div class="product-image">
+                        <img src="../hero/images/Hi-Viz.jpg" alt="Hi-Vis Vest">
+                        <span class="product-badge new">New</span>
+                    </div>
+                    <div class="product-info">
+                        <h4 class="product-name">Hi-Vis Vest</h4>
+                        <p class="product-price" data-price-exc="9.95">£9.95</p>
+                        <a href="customize.html?product=HV001" class="product-btn">Add Logo</a>
+                    </div>
+                </div>
+                <div class="product-card" data-product="UC301">
+                    <div class="product-image">
+                        <img src="../hero/images/beanie.jpg" alt="Beanie">
+                    </div>
+                    <div class="product-info">
+                        <h4 class="product-name">Beanie Hat</h4>
+                        <p class="product-price" data-price-exc="6.99">£6.99</p>
+                        <a href="customize.html?product=UC301" class="product-btn">Add Logo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="trust-section">
+        <div class="trust-truck-row">
+            <div class="loop-wrapper">
+                <div class="mountain"></div>
+                <div class="hill"></div>
+                <div class="tree"></div>
+                <div class="tree"></div>
+                <div class="tree"></div>
+                <div class="rock"></div>
+                <div class="truck"></div>
+                <div class="wheels"></div>
+            </div>
+            <span class="trust-truck-label">Free UK Delivery on Orders Over £150</span>
+        </div>
+        
+        <div class="trust-badges-row">
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+                <span>Trusted Since 2001</span>
+            </div>
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>5-7 Working Days</span>
+            </div>
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Free Design Service</span>
+            </div>
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Dedicated Account Manager</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="promo-banner">
+        <div class="promo-banner-content">
+            <h3>Need a Custom Quote?</h3>
+            <p>Add items to your basket and get instant pricing with customization options. Volume discounts available.</p>
+            <a href="shop.html" class="promo-banner-btn">Start Building Your Order</a>
+        </div>
+    </section>
+
+    <!-- Brands Marquee -->
+    <section class="brands-section">
+        <div class="section-container">
+            <div class="section-header centered">
+                <h2 class="section-title">Our Trusted Brands</h2>
+            </div>
+        </div>
+        
+        <!-- Row 1: Left to Right -->
+        <div class="brands-marquee">
+            <div class="brands-track brands-track-right">
+                <div class="brand-card">2786</div>
+                <div class="brand-card">Adidas</div>
+                <div class="brand-card">Anthem</div>
+                <div class="brand-card">Asquith & Fox</div>
+                <div class="brand-card">AWDis</div>
+                <div class="brand-card">B&C Collection</div>
+                <div class="brand-card">BabyBugz</div>
+                <div class="brand-card">BagBase</div>
+                <div class="brand-card">Beechfield</div>
+                <div class="brand-card">Bella+Canvas</div>
+                <div class="brand-card">Callaway</div>
+                <div class="brand-card">Colortone</div>
+                <div class="brand-card">Comfort Colors</div>
+                <div class="brand-card">Craghoppers</div>
+                <div class="brand-card">Finden & Hales</div>
+                <div class="brand-card">Flexfit</div>
+                <div class="brand-card">Front Row</div>
+                <div class="brand-card">Fruit of the Loom</div>
+                <div class="brand-card">Gamegear</div>
+                <div class="brand-card">Gildan</div>
+                <div class="brand-card">Henbury</div>
+                <div class="brand-card">Kariban</div>
+                <div class="brand-card">KiMood</div>
+                <div class="brand-card">Kustom Kit</div>
+                <div class="brand-card">Nike</div>
+                <div class="brand-card">Nimbus</div>
+                <div class="brand-card">Portwest</div>
+                <div class="brand-card">Premier</div>
+                <div class="brand-card">Pro RTX</div>
+                <div class="brand-card">Regatta</div>
+                <div class="brand-card">Result</div>
+                <div class="brand-card">Russell</div>
+                <div class="brand-card">Scruffs</div>
+                <div class="brand-card">Stanley/Stella</div>
+                <div class="brand-card">Stormtech</div>
+                <div class="brand-card">Tee Jays</div>
+                <div class="brand-card">TriDri</div>
+                <div class="brand-card">Under Armour</div>
+                <!-- Duplicate for seamless loop -->
+                <div class="brand-card">2786</div>
+                <div class="brand-card">Adidas</div>
+                <div class="brand-card">Anthem</div>
+                <div class="brand-card">Asquith & Fox</div>
+                <div class="brand-card">AWDis</div>
+                <div class="brand-card">B&C Collection</div>
+                <div class="brand-card">BabyBugz</div>
+                <div class="brand-card">BagBase</div>
+                <div class="brand-card">Beechfield</div>
+                <div class="brand-card">Bella+Canvas</div>
+                <div class="brand-card">Callaway</div>
+                <div class="brand-card">Colortone</div>
+                <div class="brand-card">Comfort Colors</div>
+                <div class="brand-card">Craghoppers</div>
+                <div class="brand-card">Finden & Hales</div>
+                <div class="brand-card">Flexfit</div>
+                <div class="brand-card">Front Row</div>
+                <div class="brand-card">Fruit of the Loom</div>
+                <div class="brand-card">Gamegear</div>
+                <div class="brand-card">Gildan</div>
+                <div class="brand-card">Henbury</div>
+                <div class="brand-card">Kariban</div>
+                <div class="brand-card">KiMood</div>
+                <div class="brand-card">Kustom Kit</div>
+                <div class="brand-card">Nike</div>
+                <div class="brand-card">Nimbus</div>
+                <div class="brand-card">Portwest</div>
+                <div class="brand-card">Premier</div>
+                <div class="brand-card">Pro RTX</div>
+                <div class="brand-card">Regatta</div>
+                <div class="brand-card">Result</div>
+                <div class="brand-card">Russell</div>
+                <div class="brand-card">Scruffs</div>
+                <div class="brand-card">Stanley/Stella</div>
+                <div class="brand-card">Stormtech</div>
+                <div class="brand-card">Tee Jays</div>
+                <div class="brand-card">TriDri</div>
+                <div class="brand-card">Under Armour</div>
+            </div>
+        </div>
+        
+        <!-- Row 2: Right to Left -->
+        <div class="brands-marquee">
+            <div class="brands-track brands-track-left">
+                <div class="brand-card">Yoko</div>
+                <div class="brand-card">Xpres</div>
+                <div class="brand-card">Wombat</div>
+                <div class="brand-card">Westford Mill</div>
+                <div class="brand-card">Towel City</div>
+                <div class="brand-card">Tombo</div>
+                <div class="brand-card">Spiro</div>
+                <div class="brand-card">SF Clothing</div>
+                <div class="brand-card">Rhino</div>
+                <div class="brand-card">Quadra</div>
+                <div class="brand-card">OGIO</div>
+                <div class="brand-card">Mumbles</div>
+                <div class="brand-card">Maddins</div>
+                <div class="brand-card">Larkwood</div>
+                <div class="brand-card">Fruit of the Loom</div>
+                <div class="brand-card">Craghoppers</div>
+                <div class="brand-card">Comfort Colors</div>
+                <div class="brand-card">Colortone</div>
+                <div class="brand-card">Callaway</div>
+                <div class="brand-card">Bella+Canvas</div>
+                <div class="brand-card">Beechfield</div>
+                <div class="brand-card">BagBase</div>
+                <div class="brand-card">BabyBugz</div>
+                <div class="brand-card">B&C Collection</div>
+                <div class="brand-card">AWDis</div>
+                <div class="brand-card">Asquith & Fox</div>
+                <div class="brand-card">Anthem</div>
+                <div class="brand-card">Adidas</div>
+                <div class="brand-card">2786</div>
+                <!-- Duplicate for seamless loop -->
+                <div class="brand-card">Yoko</div>
+                <div class="brand-card">Xpres</div>
+                <div class="brand-card">Wombat</div>
+                <div class="brand-card">Westford Mill</div>
+                <div class="brand-card">Towel City</div>
+                <div class="brand-card">Tombo</div>
+                <div class="brand-card">Spiro</div>
+                <div class="brand-card">SF Clothing</div>
+                <div class="brand-card">Rhino</div>
+                <div class="brand-card">Quadra</div>
+                <div class="brand-card">OGIO</div>
+                <div class="brand-card">Mumbles</div>
+                <div class="brand-card">Maddins</div>
+                <div class="brand-card">Larkwood</div>
+                <div class="brand-card">Fruit of the Loom</div>
+                <div class="brand-card">Craghoppers</div>
+                <div class="brand-card">Comfort Colors</div>
+                <div class="brand-card">Colortone</div>
+                <div class="brand-card">Callaway</div>
+                <div class="brand-card">Bella+Canvas</div>
+                <div class="brand-card">Beechfield</div>
+                <div class="brand-card">BagBase</div>
+                <div class="brand-card">BabyBugz</div>
+                <div class="brand-card">B&C Collection</div>
+                <div class="brand-card">AWDis</div>
+                <div class="brand-card">Asquith & Fox</div>
+                <div class="brand-card">Anthem</div>
+                <div class="brand-card">Adidas</div>
+                <div class="brand-card">2786</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+        <div class="section-container">
+            <div class="section-header centered">
+                <h2 class="section-title">Our Services</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon embroidery-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 19c-4-3-7-6-7-10a7 7 0 0114 0c0 4-3 7-7 10z"/>
+                            <path d="M12 3v16M8 7c2 2 6 2 8 0"/>
+                        </svg>
+                    </div>
+                    <h3>Embroidery</h3>
+                    <p>Premium stitched logos from £2.95 per item. Durable and professional finish.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon print-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="6" y="6" width="12" height="12" rx="1"></rect>
+                            <path d="M6 18L18 6"></path>
+                            <path d="M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <h3>Print</h3>
+                    <p>DTF, Screen & Transfer printing. Full-colour designs with no minimum order.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon bulk-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1"></rect>
+                            <line x1="8" y1="10" x2="16" y2="10"></line>
+                            <line x1="8" y1="14" x2="16" y2="14"></line>
+                            <line x1="8" y1="18" x2="12" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3>Bulk Orders</h3>
+                    <p>Volume discounts available. Dedicated account management for large orders.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon design-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                            <path d="M2 2l7.586 7.586"></path>
+                            <circle cx="11" cy="11" r="2"></circle>
+                        </svg>
+                    </div>
+                    <h3>Free Design</h3>
+                    <p>Our in-house designers can help create or refine your logo at no extra cost.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="section-container">
+            <div class="section-header centered">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            
+            <!-- Category Squares -->
+            <div class="faq-categories">
+                <button class="faq-square" data-target="embroidery">
+                    <img src="../mobile/images/faq/embroidery.png" alt="Embroidery">
+                    <span>Embroidery</span>
+                </button>
+                <button class="faq-square" data-target="dtf">
+                    <img src="../mobile/images/faq/dtf.png" alt="DTF">
+                    <span>DTF Printing</span>
+                </button>
+                <button class="faq-square" data-target="vinyl">
+                    <img src="../mobile/images/faq/vinyl.png" alt="Vinyl">
+                    <span>Vinyl Heat Press</span>
+                </button>
+                <button class="faq-square" data-target="screen">
+                    <img src="../mobile/images/faq/screen.png" alt="Screen">
+                    <span>Screen Printing</span>
+                </button>
+            </div>
+
+            <!-- FAQ Panels -->
+            <div class="faq-content">
+                <!-- Embroidery Panel -->
+                <div class="faq-panel" id="embroidery">
+                    <div class="faq-row">
+                        <div class="faq-question">What is embroidery?</div>
+                        <div class="faq-answer">Embroidery is a decoration method where thread is stitched directly into the fabric using computerised machines. It creates a premium, textured finish that's extremely durable and professional-looking.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best garments for embroidery?</div>
+                        <div class="faq-answer">Polo shirts, hoodies, jackets, caps and fleeces work best. Thicker fabrics with a stable weave provide excellent stitch definition and durability.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Logo size limits?</div>
+                        <div class="faq-answer">Standard chest logos are typically 10-12cm wide. Larger back designs can be up to 30cm. Very small text (under 5mm) may not embroider clearly.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Stitch count explained</div>
+                        <div class="faq-answer">Stitch count determines pricing. A simple logo might be 5,000 stitches, while detailed designs can exceed 15,000. More stitches = more thread and machine time.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash durability</div>
+                        <div class="faq-answer">Embroidery is the most durable decoration method. It withstands industrial washing, tumble drying and years of heavy use without fading or peeling.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Thread colours available</div>
+                        <div class="faq-answer">We stock over 400 thread colours including metallic and neon options. We can match virtually any Pantone colour for brand accuracy.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup cost?</div>
+                        <div class="faq-answer">A one-time digitisation fee of £25-£45 converts your logo into stitch data. This file is saved for all future orders at no extra cost.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Production time</div>
+                        <div class="faq-answer">Standard turnaround is 5-7 working days. Rush services available for urgent orders - contact us for express options.</div>
+                    </div>
+                </div>
+
+                <!-- DTF Panel -->
+                <div class="faq-panel" id="dtf">
+                    <div class="faq-row">
+                        <div class="faq-question">What is DTF printing?</div>
+                        <div class="faq-answer">Direct-to-Film (DTF) printing creates full-colour transfers that are heat-pressed onto garments. It produces vibrant, photo-quality results on virtually any fabric colour.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Is it suitable for cotton?</div>
+                        <div class="faq-answer">Yes! DTF works brilliantly on 100% cotton, polyester, blends and even performance fabrics. It adheres well to most textile types.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Does it crack?</div>
+                        <div class="faq-answer">Quality DTF prints are flexible and stretch with the fabric. With proper care (inside-out washing), they maintain integrity for 50+ washes.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour limitations</div>
+                        <div class="faq-answer">None! DTF prints full CMYK plus white, allowing unlimited colours, gradients and photographic images without extra cost per colour.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash resistance</div>
+                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30°C and avoid tumble drying on high heat.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Small quantities?</div>
+                        <div class="faq-answer">Perfect for small runs! No minimum order - we can print from just 1 piece, making it ideal for samples and personalised items.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup costs</div>
+                        <div class="faq-answer">No setup fees for DTF printing. You only pay per print, making it cost-effective for any quantity.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Turnaround time</div>
+                        <div class="faq-answer">Standard 3-5 working days. Express 24-48 hour service available for urgent requirements.</div>
+                    </div>
+                </div>
+
+                <!-- Vinyl Panel -->
+                <div class="faq-panel" id="vinyl">
+                    <div class="faq-row">
+                        <div class="faq-question">What is vinyl heat press?</div>
+                        <div class="faq-answer">Heat Transfer Vinyl (HTV) is cut from coloured vinyl sheets and heat-pressed onto garments. It creates bold, solid-colour designs with a smooth or textured finish.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best use cases</div>
+                        <div class="faq-answer">Ideal for names, numbers, simple logos and text. Popular for sports kits, team uniforms, hen parties and personalised workwear.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Names & numbers</div>
+                        <div class="faq-answer">Perfect for individual names and numbers. Each item can be unique at no extra setup cost - great for team kits and personalisation.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour options</div>
+                        <div class="faq-answer">Available in 50+ colours including metallic, glitter, reflective, glow-in-the-dark and holographic finishes for eye-catching effects.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Durability</div>
+                        <div class="faq-answer">Commercial-grade vinyl withstands 50+ washes. It's flexible, won't crack and maintains colour vibrancy over time.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Stretch fabrics</div>
+                        <div class="faq-answer">We use stretch vinyl for sportswear and performance fabrics. It moves with the garment without peeling or cracking.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Small orders</div>
+                        <div class="faq-answer">No minimums! Order from just 1 piece. Cost-effective for personalised gifts and small team orders.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Production time</div>
+                        <div class="faq-answer">Usually 2-4 working days for standard orders. Same-day service available for simple designs.</div>
+                    </div>
+                </div>
+
+                <!-- Screen Printing Panel -->
+                <div class="faq-panel" id="screen">
+                    <div class="faq-row">
+                        <div class="faq-question">What is screen printing?</div>
+                        <div class="faq-answer">Screen printing pushes ink through mesh screens onto fabric. It's the traditional method for high-volume orders, producing vibrant, long-lasting prints.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Minimum quantity</div>
+                        <div class="faq-answer">We recommend 25+ pieces to be cost-effective due to screen setup. For smaller quantities, consider DTF or vinyl instead.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Best for bulk orders</div>
+                        <div class="faq-answer">The more you order, the cheaper per unit. Screen printing becomes very economical at 100+ pieces with significant bulk discounts.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Ink types</div>
+                        <div class="faq-answer">We offer plastisol (standard), water-based (soft hand feel), discharge (bleaches then dyes) and specialty inks like metallic and puff.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Colour limits</div>
+                        <div class="faq-answer">Each colour requires a separate screen. 1-4 colours is most economical. Simulated process can achieve photographic effects with 6-8 screens.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Wash durability</div>
+                        <div class="faq-answer">Screen prints are incredibly durable - rated for 100+ washes. The ink bonds permanently with the fabric fibres.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Setup costs</div>
+                        <div class="faq-answer">£25-£35 per screen (per colour). Screens are kept on file for 12 months for repeat orders at no extra setup charge.</div>
+                    </div>
+                    <div class="faq-row">
+                        <div class="faq-question">Lead time</div>
+                        <div class="faq-answer">Standard 7-10 working days for bulk orders. Includes screen production, printing and quality checking.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="section-container">
+            <div class="contact-content">
+                <h2>Need Help With Your Order?</h2>
+                <p>Our expert team is ready to assist you with custom workwear solutions.</p>
+                <div class="contact-buttons">
+                    <a href="tel:02089742722" class="contact-btn phone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        Call Us
+                    </a>
+                    <a href="https://wa.me/447447348564" class="contact-btn whatsapp">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        WhatsApp
+                    </a>
+                    <a href="mailto:sales@brandeduk.com" class="contact-btn email">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-main">
+        <div class="footer-container">
+            <div class="footer-col footer-about">
+                <h4>BrandedUK</h4>
+                <p>Premium custom workwear and promotional clothing since 2001. Embroidery, printing and branding services for businesses across the UK.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+                    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 2a2 2 0 110 4 2 2 0 010-4z"/></svg></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="shop.html">All Products</a></li>
+                    <li><a href="#">Embroidery</a></li>
+                    <li><a href="#">Printing</a></li>
+                    <li><a href="#">Bulk Orders</a></li>
+                    <li><a href="#">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="shop.html?category=polo">Polo Shirts</a></li>
+                    <li><a href="shop.html?category=hoodies">Hoodies</a></li>
+                    <li><a href="shop.html?category=jackets">Jackets</a></li>
+                    <li><a href="shop.html?category=hivis">Hi-Vis</a></li>
+                    <li><a href="shop.html?category=workwear">Workwear</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Delivery Info</a></li>
+                    <li><a href="#">Returns Policy</a></li>
+                    <li><a href="#">Size Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-col footer-contact">
+                <h4>Contact</h4>
+                <p><strong>Phone:</strong> 020 8974 2722</p>
+                <p><strong>Email:</strong> sales@brandeduk.com</p>
+                <p><strong>Hours:</strong> Mon-Fri 9am-5pm</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="footer-container">
+            <p>&copy; 2024 BrandedUK. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Popup Contact Overlay -->
+<div class="popup-overlay" id="popupOverlay"></div>
+
+<!-- Popup Contact Modal -->
+<div class="popup-contact" id="popupContact">
+    <div class="popup-contact__header">
+        <h2 class="popup-contact__title">Get in touch</h2>
+        <button class="popup-contact__close" id="popupContactClose" aria-label="Close">×</button>
+    </div>
+    <div class="popup-contact__body">
+        <form class="popup-contact__form" id="contactQuickForm">
+            <div class="form-group">
+                <input type="text" id="contactName" placeholder="Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="contactEmail" placeholder="Email address" required>
+            </div>
+            <div class="form-group">
+                <select id="contactInterest" required>
+                    <option value="" disabled selected>Interested in</option>
+                    <option value="embroidery">Embroidery</option>
+                    <option value="printing">Printing</option>
+                    <option value="workwear">Workwear</option>
+                    <option value="uniforms">Uniforms</option>
+                    <option value="promotional">Promotional Items</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="tel" id="contactPhone" placeholder="Phone number">
+            </div>
+            <div class="form-group">
+                <textarea id="contactMessage" placeholder="Message" required></textarea>
+            </div>
+            <button type="submit" class="popup-contact__submit">Submit</button>
+        </form>
+
+        <!-- Google Map -->
+        <div class="popup-contact__map">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<!-- Account Panel Overlay -->
+<div class="account-overlay" id="accountOverlay"></div>
+
+<!-- Account Sign In / Sign Up Panel -->
+<div class="account-panel" id="accountPanel">
+    <div class="account-panel-header">
+        <button class="account-close-btn" id="accountCloseBtn" aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="account-forms-container">
+        <!-- Arrow Back -->
+        <div class="account-arrow" id="accountArrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </div>
+        
+        <div class="account-forms-wrapper">
+            <!-- Sign In Form -->
+            <div class="account-form-holder signin-form" id="signinForm">
+                <div class="account-form-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Sign In</span>
+                </div>
+                <div class="account-form-content">
+                    <form id="signinFormData">
+                        <div class="account-input-group">
+                            <input type="email" id="signinEmail" required>
+                            <label for="signinEmail">Email</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="password" id="signinPassword" required>
+                            <label for="signinPassword">Password</label>
+                        </div>
+                        <div class="account-form-actions">
+                            <button type="submit" class="account-submit-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <a href="#" class="account-forgot-link">Forgot Password?</a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div class="account-form-holder signup-form" id="signupForm">
+                <div class="account-form-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="17" y1="11" x2="23" y2="11"></line>
+                    </svg>
+                    <span>Sign Up</span>
+                </div>
+                <div class="account-form-content">
+                    <form id="signupFormData">
+                        <div class="account-input-row">
+                            <div class="account-input-group half">
+                                <input type="text" id="signupFirstName" required>
+                                <label for="signupFirstName">First Name</label>
+                            </div>
+                            <div class="account-input-group half">
+                                <input type="text" id="signupLastName" required>
+                                <label for="signupLastName">Last Name</label>
+                            </div>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="email" id="signupEmail" required>
+                            <label for="signupEmail">Email</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="tel" id="signupPhone" required>
+                            <label for="signupPhone">Phone Number</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="text" id="signupCompany">
+                            <label for="signupCompany">Company Name (optional)</label>
+                        </div>
+                        <div class="account-input-group">
+                            <input type="password" id="signupPassword" required>
+                            <label for="signupPassword">Password</label>
+                        </div>
+                        <div class="account-form-actions">
+                            <button type="submit" class="account-submit-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Logged In View -->
+    <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
+        <div class="account-user-avatar">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#8455f4" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 14c-2.5 0-4.5-2-4.5-4.5S9.5 5 12 5s4.5 2 4.5 4.5S14.5 14 12 14z"/>
+                <path d="M4.5 19.5c0-3 3.5-5 7.5-5s7.5 2 7.5 5"/>
+            </svg>
+        </div>
+        <h3 class="account-user-name" id="accountUserName">Welcome!</h3>
+        <p class="account-user-email" id="accountUserEmail"></p>
+        <div class="account-user-details" id="accountUserDetails"></div>
+        <button class="account-logout-btn" id="accountLogoutBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sign Out
+        </button>
+    </div>
+</div>
+
+<script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
+<script src="js/hero.js?v=20251230"></script>
+<script src="js/main.js?v=20251230"></script>
+<script src="../mobile/js/popup-contact.js?v=20251230"></script>
+<script>
+// Header Top Basket functionality
+(function() {
+    const basketBtn = document.getElementById('headerBasketBtn');
+    const basketDropdown = document.getElementById('headerBasketDropdown');
+    const basketBadge = document.getElementById('headerBasketBadge');
+    const cartBadge = document.getElementById('cartBadge'); // Searchbar cart badge
+    const basketItems = document.getElementById('headerBasketItems');
+    const clearAllBtn = document.getElementById('headerBasketClear');
+    
+    function getBasket() {
+        try {
+            return JSON.parse(localStorage.getItem('quoteBasket')) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+    
+    function saveBasket(basket) {
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        renderBasket();
+    }
+    
+    function renderBasket() {
+        const basket = getBasket();
+        const count = basket.length;
+        
+        // Update badge (header-top version)
+        if (basketBadge) {
+            basketBadge.textContent = count;
+            basketBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+        
+        // Update cart badge (searchbar version)
+        if (cartBadge) {
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+        
+        // Render items
+        if (basketItems) {
+            if (count === 0) {
+                basketItems.innerHTML = '<p class="header-basket-empty">Your basket is empty</p>';
+            } else {
+                basketItems.innerHTML = basket.map((item, index) => `
+                    <div class="header-basket-item" data-index="${index}">
+                        <img class="header-basket-item-img" src="${item.image || item.mainImage || 'https://via.placeholder.com/48'}" alt="">
+                        <div class="header-basket-item-info">
+                            <div class="header-basket-item-name">${item.name || item.productName || 'Product'}</div>
+                            <div class="header-basket-item-meta">Qty: ${item.quantity || item.totalQty || 1}</div>
+                            <div class="header-basket-item-price">${item.totalPrice || item.price || ''}</div>
+                        </div>
+                        <button type="button" class="header-basket-item-remove" data-index="${index}" title="Remove">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+                
+                // Add remove handlers
+                basketItems.querySelectorAll('.header-basket-item-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = parseInt(btn.dataset.index);
+                        const basket = getBasket();
+                        basket.splice(idx, 1);
+                        saveBasket(basket);
+                    });
+                });
+            }
+        }
+    }
+    
+    // Clear all
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            localStorage.removeItem('quoteBasket');
+            renderBasket();
+        });
+    }
+    
+    // Listen for storage changes (sync across tabs)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'quoteBasket') renderBasket();
+    });
+    
+    // Initial render
+    renderBasket();
+    
+    // Also update on custom event
+    window.addEventListener('basketUpdated', renderBasket);
+})();
+
+// Account Panel functionality
+(function() {
+    const accountBtn = document.getElementById('accountBtn');
+    const accountPanel = document.getElementById('accountPanel');
+    const accountOverlay = document.getElementById('accountOverlay');
+    const accountCloseBtn = document.getElementById('accountCloseBtn');
+    const accountArrow = document.getElementById('accountArrow');
+    const signinForm = document.getElementById('signinForm');
+    const signupForm = document.getElementById('signupForm');
+    const signinFormData = document.getElementById('signinFormData');
+    const signupFormData = document.getElementById('signupFormData');
+    const accountLoggedIn = document.getElementById('accountLoggedIn');
+    const accountLogoutBtn = document.getElementById('accountLogoutBtn');
+    
+    if (!accountBtn || !accountPanel) return;
+    
+    const USER_SESSION_KEY = 'brandeduk-user-session';
+    
+    function checkLoggedIn() {
+        const session = localStorage.getItem(USER_SESSION_KEY);
+        if (session) {
+            const user = JSON.parse(session);
+            showLoggedInView(user);
+            return true;
+        }
+        return false;
+    }
+    
+    function showLoggedInView(user) {
+        document.querySelector('.account-forms-container').style.display = 'none';
+        accountLoggedIn.style.display = 'block';
+        document.getElementById('accountUserName').textContent = `Welcome, ${user.firstName}!`;
+        document.getElementById('accountUserEmail').textContent = user.email;
+        const detailsHtml = `
+            <p><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>
+            <p><strong>Phone:</strong> ${user.phone || 'Not provided'}</p>
+            <p><strong>Company:</strong> ${user.company || 'Not provided'}</p>
+        `;
+        document.getElementById('accountUserDetails').innerHTML = detailsHtml;
+    }
+    
+    function showFormsView() {
+        document.querySelector('.account-forms-container').style.display = 'flex';
+        accountLoggedIn.style.display = 'none';
+    }
+    
+    function openPanel() {
+        checkLoggedIn();
+        accountPanel.classList.add('active');
+        accountOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closePanel() {
+        accountPanel.classList.remove('active');
+        accountOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        resetForms();
+    }
+    
+    function resetForms() {
+        signinForm.classList.remove('active', 'inactive');
+        signupForm.classList.remove('active', 'inactive');
+        accountArrow.classList.remove('visible');
+    }
+    
+    accountBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openPanel();
+    });
+
+    // Header top links - open account panel with specific form
+    const headerSignInLink = document.getElementById('headerSignInLink');
+    const headerRegisterLink = document.getElementById('headerRegisterLink');
+    const headerMyAccountLink = document.getElementById('headerMyAccountLink');
+
+    if (headerSignInLink) {
+        headerSignInLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPanel();
+            // Auto-expand Sign In form
+            setTimeout(() => {
+                if (!signinForm.classList.contains('active')) {
+                    signinForm.classList.add('active');
+                    signinForm.classList.remove('inactive');
+                    signupForm.classList.add('inactive');
+                    signupForm.classList.remove('active');
+                    accountArrow.classList.add('visible');
+                }
+            }, 100);
+        });
+    }
+
+    if (headerRegisterLink) {
+        headerRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPanel();
+            // Auto-expand Register form
+            setTimeout(() => {
+                if (!signupForm.classList.contains('active')) {
+                    signupForm.classList.add('active');
+                    signupForm.classList.remove('inactive');
+                    signinForm.classList.add('inactive');
+                    signinForm.classList.remove('active');
+                    accountArrow.classList.add('visible');
+                }
+            }, 100);
+        });
+    }
+
+    if (headerMyAccountLink) {
+        headerMyAccountLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPanel();
+        });
+    }
+    
+    accountCloseBtn.addEventListener('click', closePanel);
+    accountOverlay.addEventListener('click', closePanel);
+    
+    signinForm.addEventListener('click', () => {
+        if (!signinForm.classList.contains('active')) {
+            signinForm.classList.add('active');
+            signinForm.classList.remove('inactive');
+            signupForm.classList.add('inactive');
+            signupForm.classList.remove('active');
+            accountArrow.classList.add('visible');
+        }
+    });
+    
+    signupForm.addEventListener('click', () => {
+        if (!signupForm.classList.contains('active')) {
+            signupForm.classList.add('active');
+            signupForm.classList.remove('inactive');
+            signinForm.classList.add('inactive');
+            signinForm.classList.remove('active');
+            accountArrow.classList.add('visible');
+        }
+    });
+    
+    accountArrow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetForms();
+    });
+    
+    signinFormData.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signinEmail').value;
+        const password = document.getElementById('signinPassword').value;
+        
+        try {
+            const response = await fetch('../brandedukv15-child/includes/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'signin', email, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
+                showLoggedInView(result.user);
+                showAccountToast('Welcome back, ' + result.user.firstName + '!');
+            } else {
+                showAccountToast(result.message || 'Invalid credentials');
+            }
+        } catch (error) {
+            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(user));
+                showLoggedInView(user);
+                showAccountToast('Welcome back, ' + user.firstName + '!');
+            } else {
+                showAccountToast('Invalid email or password');
+            }
+        }
+    });
+    
+    signupFormData.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userData = {
+            firstName: document.getElementById('signupFirstName').value,
+            lastName: document.getElementById('signupLastName').value,
+            email: document.getElementById('signupEmail').value,
+            phone: document.getElementById('signupPhone').value,
+            company: document.getElementById('signupCompany').value,
+            password: document.getElementById('signupPassword').value
+        };
+        
+        try {
+            const response = await fetch('../brandedukv15-child/includes/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'signup', ...userData })
+            });
+            const result = await response.json();
+            if (result.success) {
+                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
+                showLoggedInView(result.user);
+                showAccountToast('Account created! Welcome, ' + result.user.firstName + '!');
+            } else {
+                showAccountToast(result.message || 'Registration failed');
+            }
+        } catch (error) {
+            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
+            if (users.some(u => u.email === userData.email)) {
+                showAccountToast('Email already registered');
+                return;
+            }
+            userData.id = Date.now();
+            users.push(userData);
+            localStorage.setItem('brandeduk-users', JSON.stringify(users));
+            localStorage.setItem(USER_SESSION_KEY, JSON.stringify(userData));
+            showLoggedInView(userData);
+            showAccountToast('Account created! Welcome, ' + userData.firstName + '!');
+        }
+    });
+    
+    accountLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem(USER_SESSION_KEY);
+        showFormsView();
+        resetForms();
+        showAccountToast('You have been signed out');
+    });
+    
+    function showAccountToast(message) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10001;
+            animation: fadeInUp 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+})();
+
+// FAQ Section - Toggle panels and questions
+(function() {
+    var squares = document.querySelectorAll('.faq-square');
+    var panels = document.querySelectorAll('.faq-panel');
+
+    if (squares.length === 0) return;
+
+    // Category square click - toggle panels
+    squares.forEach(function(square) {
+        square.addEventListener('click', function() {
+            var targetId = this.getAttribute('data-target');
+            var panel = document.getElementById(targetId);
+            var isOpen = panel && panel.classList.contains('open');
+
+            // Close all panels and deactivate all squares
+            panels.forEach(function(p) { p.classList.remove('open'); });
+            squares.forEach(function(s) { s.classList.remove('active'); });
+
+            // Toggle - if wasn't open, open it
+            if (!isOpen && panel) {
+                panel.classList.add('open');
+                this.classList.add('active');
+            }
+        });
+    });
+
+    // FAQ question click - toggle individual answers (only one open at a time)
+    document.querySelectorAll('.faq-question').forEach(function(question) {
+        question.addEventListener('click', function() {
+            var row = this.parentElement;
+            var panel = row.parentElement;
+            var wasOpen = row.classList.contains('open');
+            
+            // Close all other open rows in the same panel
+            panel.querySelectorAll('.faq-row.open').forEach(function(openRow) {
+                openRow.classList.remove('open');
+            });
+            
+            // Toggle current row (open if it wasn't already open)
+            if (!wasOpen) {
+                row.classList.add('open');
+            }
+        });
+    });
+})();
+</script>
+</body>
+</html>

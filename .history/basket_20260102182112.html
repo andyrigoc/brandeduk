@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Your Quote Basket - BrandedUK</title>
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+        .social-icons-mobile {
+            gap: 3px !important;
+            margin-left: 8px !important;
+            padding-left: 0 !important;
+        }
+        .social-icons-mobile .social-icon {
+            width: 27px !important;
+            height: 27px !important;
+            min-width: 27px !important;
+            min-height: 27px !important;
+            max-width: 27px !important;
+            max-height: 27px !important;
+            border-radius: 7px !important;
+        }
+        .social-icons-mobile .social-icon i {
+            font-size: 12px !important;
+        }
+        
+        /* Basket Page Specific Styles */
+        .basket-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .basket-header .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #374151;
+            cursor: pointer;
+        }
+        
+        .basket-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            flex: 1;
+        }
+        
+        .basket-header .clear-btn {
+            font-size: 14px;
+            color: #ef4444;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .basket-content {
+            padding: 20px;
+            padding-bottom: 180px;
+        }
+        
+        .empty-basket {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-basket-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .empty-basket-icon svg {
+            width: 60px;
+            height: 60px;
+            color: #9ca3af;
+        }
+        
+        .empty-basket h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 8px;
+        }
+        
+        .empty-basket p {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0 0 24px;
+        }
+        
+        .empty-basket .start-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        /* Order Summary Section - PC Style */
+        .basket-order-summary {
+            background: #fff;
+            border-radius: 16px;
+            border: 2px solid #7c3aed;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .basket-order-summary .summary-header {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .basket-order-summary .summary-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .basket-order-summary .summary-header .item-count {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        /* Basket Items List */
+        .basket-items {
+            padding: 16px;
+        }
+        
+        .basket-item-card {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .basket-item-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .basket-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            flex-shrink: 0;
+        }
+        
+        .basket-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .basket-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .basket-item-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 30px;
+        }
+        
+        .basket-item-info .item-color {
+            font-size: 13px;
+            color: #6b7280;
+            margin: 0 0 10px;
+        }
+        
+        .item-sizes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .basket-size-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .size-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            min-width: 32px;
+        }
+        
+        .basket-qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: #1f2937;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .basket-qty-controls .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .basket-qty-controls .qty-btn:active {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .basket-qty-controls .qty-value {
+            min-width: 32px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .basket-item-remove {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #fee2e2;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Customization Cards - Colored */
+        .customization-breakdown {
+            padding: 0 16px 16px;
+        }
+        
+        .customization-breakdown h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            margin: 0 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section.embroidery {
+            background: linear-gradient(90deg, #4566e9, #3a77de);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        
+        .section.print-method {
+            background: linear-gradient(145deg, #f5c542, #e6b229);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        
+        .section .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section .row.detail {
+            margin-top: 6px;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .section .label,
+        .section .value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .section .white {
+            color: #fff;
+        }
+        
+        /* Total Row */
+        .basket-totals {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .total-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 2px dashed #e5e7eb;
+        }
+        
+        .total-row .label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .total-row .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .total-row.grand-total .label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .total-row.grand-total .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #14b8a6;
+        }
+        
+        .vat-suffix {
+            font-size: 12px;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+        
+        /* Bottom Action Bar */
+        .basket-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 16px 20px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+        
+        .action-bar-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .action-bar-summary .total-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .action-bar-summary .total-amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: #14b8a6;
+        }
+        
+        .basket-action-bar .quote-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .basket-action-bar .quote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* VAT Toggle in Basket */
+        .vat-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f9fafb;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .vat-toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .vat-toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .vat-toggle-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d1d5db;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        
+        .vat-toggle-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        
+        .vat-toggle-switch input:checked + .slider {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+        
+        .vat-toggle-switch input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        
+        /* Item Selection Checkbox */
+        .item-select-checkbox {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 24px;
+            height: 24px;
+            z-index: 5;
+        }
+        
+        .item-select-checkbox input {
+            display: none;
+        }
+        
+        .item-select-checkbox .checkmark {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .item-select-checkbox input:checked + .checkmark {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            border-color: #7c3aed;
+        }
+        
+        .item-select-checkbox .checkmark svg {
+            opacity: 0;
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+        
+        .item-select-checkbox input:checked + .checkmark svg {
+            opacity: 1;
+        }
+        
+        /* Basket item card - adjusted for checkbox */
+        .basket-item-card {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            padding-left: 48px;
+            background: #f9fafb;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .basket-item-card:hover {
+            background: #f3f4f6;
+        }
+        
+        .basket-item-card.selected {
+            background: #ede9fe;
+            border: 2px solid #7c3aed;
+        }
+        
+        /* Customize badge on item */
+        .item-customize-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+        
+        .item-customize-badge.has-customization {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        /* Customize Selected Button (floating) */
+        .customize-selected-bar {
+            position: fixed;
+            bottom: 140px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+            z-index: 99;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .customize-selected-bar.visible {
+            display: flex;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .customize-selected-bar .selected-count {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .customize-selected-bar .customize-btn {
+            background: #fff;
+            color: #7c3aed;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Select All Row */
+        .select-all-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f3f4f6;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .select-all-row label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+        }
+        
+        .select-all-row .checkmark {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .select-all-row input:checked + .checkmark {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            border-color: #7c3aed;
+        }
+        
+        .select-all-row input {
+            display: none;
+        }
+        
+        .select-all-row .checkmark svg {
+            opacity: 0;
+            color: #fff;
+            width: 14px;
+            height: 14px;
+        }
+        
+        .select-all-row input:checked + .checkmark svg {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                </a>
+            </div>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-status" id="vatStatus">ex VAT</span>
+                <button class="vat-toggle-btn" id="vatToggleBtn" type="button" aria-pressed="false" aria-label="Toggle VAT">
+                    <span class="vat-toggle-thumb"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Back + Logo + Search -->
+        <div class="header-logo-row">
+            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <a href="index.html" class="mobile-logo-center">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Basket Header -->
+    <header class="basket-header">
+        <button class="back-btn" onclick="history.back()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <h1>Your Quote Basket</h1>
+        <button class="clear-btn" id="clearBasketBtn">Clear All</button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="basket-content">
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-basket" id="emptyBasket" style="display: none;">
+            <div class="empty-basket-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z"/>
+                    <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z"/>
+                    <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6"/>
+                </svg>
+            </div>
+            <h2>Your basket is empty</h2>
+            <p>Add some products to get started with your quote</p>
+            <a href="index.html" class="start-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                </svg>
+                Browse Products
+            </a>
+        </div>
+        
+        <!-- Order Summary (visible when items exist) -->
+        <div class="basket-order-summary" id="basketOrderSummary">
+            <div class="summary-header">
+                <h3>YOUR ORDER SUMMARY</h3>
+                <span class="item-count" id="basketItemCount">0 items</span>
+            </div>
+            
+            <!-- VAT Toggle -->
+            <div class="vat-toggle-row">
+                <span>Show prices including VAT</span>
+                <label class="vat-toggle-switch">
+                    <input type="checkbox" id="vatToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <!-- Select All Row -->
+            <div class="select-all-row">
+                <label>
+                    <input type="checkbox" id="selectAllItems">
+                    <span class="checkmark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </span>
+                    Select All Items
+                </label>
+            </div>
+            
+            <!-- Basket Items -->
+            <div class="basket-items" id="basketItemsList">
+                <!-- Items will be populated by JS -->
+            </div>
+            
+            <!-- Customization Breakdown -->
+            <div class="customization-breakdown" id="customizationBreakdown">
+                <h4>Customization Costs</h4>
+                <div id="customizationCardsList">
+                    <!-- Colored cards will be populated by JS -->
+                </div>
+            </div>
+            
+            <!-- Totals -->
+            <div class="basket-totals">
+                <div class="total-row">
+                    <span class="label">Garments Subtotal</span>
+                    <span class="value" id="garmentsSubtotal">£0.00</span>
+                </div>
+                <div class="total-row">
+                    <span class="label">Customization Subtotal</span>
+                    <span class="value" id="customSubtotal">£0.00</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="label">Order Total</span>
+                    <span class="value" id="grandTotal">£0.00 <span class="vat-suffix">ex VAT</span></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Customize Selected Bar (floating) -->
+    <div class="customize-selected-bar" id="customizeSelectedBar">
+        <span class="selected-count"><span id="selectedCount">0</span> items selected</span>
+        <button class="customize-btn" id="customizeSelectedBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Customize
+        </button>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="basket-action-bar">
+        <div class="action-bar-summary">
+            <span class="total-label">Total</span>
+            <span class="total-amount" id="actionBarTotal">£0.00</span>
+        </div>
+        <button class="quote-btn" id="requestQuoteBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+            </svg>
+            Request Quote
+        </button>
+    </div>
+
+    <script>
+        // === Basket Page Logic ===
+        
+        // State
+        let includeVAT = localStorage.getItem('includeVAT') === 'true';
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            initVATToggle();
+            renderBasket();
+            initEventListeners();
+        });
+        
+        // VAT Toggle
+        function initVATToggle() {
+            const toggle = document.getElementById('vatToggle');
+            if (toggle) {
+                toggle.checked = includeVAT;
+                toggle.addEventListener('change', () => {
+                    includeVAT = toggle.checked;
+                    localStorage.setItem('includeVAT', includeVAT);
+                    renderBasket();
+                });
+            }
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            const displayAmount = includeVAT ? amount * 1.2 : amount;
+            return '£' + displayAmount.toFixed(2);
+        }
+        
+        function vatSuffix() {
+            return includeVAT ? 'inc VAT' : 'ex VAT';
+        }
+        
+        // Get basket from localStorage
+        function getBasket() {
+            try {
+                return JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        // Save basket to localStorage
+        function saveBasket(basket) {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        }
+        
+        // Render entire basket
+        function renderBasket() {
+            const basket = getBasket();
+            const emptyState = document.getElementById('emptyBasket');
+            const orderSummary = document.getElementById('basketOrderSummary');
+            const actionBar = document.querySelector('.basket-action-bar');
+            const clearBtn = document.getElementById('clearBasketBtn');
+            
+            if (basket.length === 0) {
+                emptyState.style.display = 'block';
+                orderSummary.style.display = 'none';
+                actionBar.style.display = 'none';
+                clearBtn.style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            orderSummary.style.display = 'block';
+            actionBar.style.display = 'block';
+            clearBtn.style.display = 'block';
+            
+            renderBasketItems(basket);
+            renderCustomizations(basket);
+            renderTotals(basket);
+            updateItemCount(basket);
+        }
+        
+        // Render basket items
+        function renderBasketItems(basket) {
+            const container = document.getElementById('basketItemsList');
+            if (!container) return;
+            
+            let html = '';
+            
+            basket.forEach((item, index) => {
+                const itemImage = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
+                const itemColor = item.color || 'Black';
+                const hasCustomization = (item.customizations && item.customizations.length > 0) || 
+                                          (item.positions && Object.keys(item.positions).length > 0);
+                const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
+                const customBadgeText = hasCustomization ? '✓ Customized' : '+ Add Logo';
+                
+                // Support both 'sizes' and 'quantities' keys
+                const sizes = item.sizes || item.quantities || {};
+                
+                let sizesHtml = '';
+                if (Object.keys(sizes).length > 0) {
+                    Object.entries(sizes).forEach(([size, qty]) => {
+                        if (qty > 0) {
+                            sizesHtml += `
+                                <div class="basket-size-row">
+                                    <span class="size-label">${size}</span>
+                                    <div class="basket-qty-controls">
+                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
+                                        <span class="qty-value">${qty}</span>
+                                        <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                
+                html += `
+                    <div class="basket-item-card" data-index="${index}">
+                        <label class="item-select-checkbox" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="item-checkbox" data-index="${index}">
+                            <span class="checkmark">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                            </span>
+                        </label>
+                        <div class="basket-item-image" onclick="openCustomizeForItem(${index})">
+                            <img src="${itemImage}" alt="${item.productName || item.name || 'Product'}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                        </div>
+                        <div class="basket-item-info" onclick="openCustomizeForItem(${index})">
+                            <h4>${item.productName || item.name || 'Custom Product'}</h4>
+                            <p class="item-color">Color: ${itemColor}</p>
+                            <div class="item-sizes">
+                                ${sizesHtml}
+                            </div>
+                            <span class="${customBadgeClass}">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                </svg>
+                                ${customBadgeText}
+                            </span>
+                        </div>
+                        <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Attach event listeners
+            attachQtyListeners();
+            attachRemoveListeners();
+            attachCheckboxListeners();
+        }
+        
+        // Render customization cards with colors
+        function renderCustomizations(basket) {
+            const container = document.getElementById('customizationCardsList');
+            if (!container) return;
+            
+            console.log('🧺 BASKET renderCustomizations called with', basket.length, 'items');
+            
+            // Collect all customizations from basket items
+            let allCustomizations = [];
+            
+            basket.forEach((item, idx) => {
+                console.log('🧺 Item', idx, '- customizations:', item.customizations);
+                console.log('🧺 Item', idx, '- positions:', item.positions);
+                
+                // Check customizations array (preferred format)
+                if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
+                    item.customizations.forEach(custom => {
+                        console.log('🧺 Found customization:', custom);
+                        allCustomizations.push({
+                            position: custom.position || 'Unknown',
+                            method: custom.method || 'Print',
+                            qty: custom.qty || item.totalQty || 1,
+                            unitPrice: custom.unitPrice || 0,
+                            total: custom.total || 0
+                        });
+                    });
+                }
+                // ONLY use positions if customizations array is empty
+                else if (item.positions && typeof item.positions === 'object' && Object.keys(item.positions).length > 0) {
+                    const totalQty = item.totalQty || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
+                    
+                    Object.entries(item.positions).forEach(([posName, posData]) => {
+                        if (posData.method) {
+                            allCustomizations.push({
+                                position: posName,
+                                method: posData.method,
+                                qty: totalQty,
+                                unitPrice: posData.unitPrice || 0,
+                                total: posData.totalPrice || 0
+                            });
+                        }
+                    });
+                }
+            });
+            
+            if (allCustomizations.length === 0) {
+                container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 12px 0; font-size: 13px;">No customizations yet - tap an item to add your logo</p>';
+                return;
+            }
+            
+            let html = '';
+            allCustomizations.forEach(item => {
+                const sectionClass = item.method === 'Print' ? 'section print-method' : 'section embroidery';
+                const methodLabel = item.method === 'Embroidery' ? 'Embroidery' : 'Print';
+                
+                html += `
+                    <div class="${sectionClass}">
+                        <div class="row">
+                            <span class="label white">${item.position} ${methodLabel}</span>
+                            <span class="value white">${formatCurrency(item.total)}</span>
+                        </div>
+                        <div class="row detail white">
+                            <span>Unit: ${formatCurrency(item.unitPrice)}</span>
+                            <span>Qty: ${item.qty}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Render totals
+        function renderTotals(basket) {
+            let garmentsTotal = 0;
+            let customTotal = 0;
+            
+            basket.forEach(item => {
+                // Support both 'sizes' and 'quantities' keys
+                const sizes = item.sizes || item.quantities || {};
+                const unitPrice = item.unitPrice || item.price || 0;
+                
+                // Calculate garment total
+                if (Object.keys(sizes).length > 0 && unitPrice) {
+                    const qty = Object.values(sizes).reduce((sum, q) => sum + q, 0);
+                    garmentsTotal += qty * unitPrice;
+                }
+                
+                // Calculate customization total from customizations array
+                if (item.customizations && Array.isArray(item.customizations)) {
+                    item.customizations.forEach(custom => {
+                        customTotal += custom.total || 0;
+                    });
+                }
+                
+                // Also check positions object for branding costs
+                if (item.positions && typeof item.positions === 'object') {
+                    Object.values(item.positions).forEach(pos => {
+                        if (pos.totalPrice) {
+                            customTotal += pos.totalPrice;
+                        }
+                    });
+                }
+            });
+            
+            const grandTotal = garmentsTotal + customTotal;
+            
+            // Update DOM
+            const garmentsSubtotal = document.getElementById('garmentsSubtotal');
+            const customSubtotal = document.getElementById('customSubtotal');
+            const grandTotalEl = document.getElementById('grandTotal');
+            const actionBarTotal = document.getElementById('actionBarTotal');
+            
+            if (garmentsSubtotal) garmentsSubtotal.textContent = formatCurrency(garmentsTotal);
+            if (customSubtotal) customSubtotal.textContent = formatCurrency(customTotal);
+            if (grandTotalEl) grandTotalEl.innerHTML = `${formatCurrency(grandTotal)} <span class="vat-suffix">${vatSuffix()}</span>`;
+            if (actionBarTotal) actionBarTotal.textContent = formatCurrency(grandTotal);
+        }
+        
+        // Update item count
+        function updateItemCount(basket) {
+            const countEl = document.getElementById('basketItemCount');
+            if (!countEl) return;
+            
+            let totalQty = 0;
+            basket.forEach(item => {
+                // Support both 'sizes' and 'quantities' keys
+                const sizes = item.sizes || item.quantities || {};
+                totalQty += Object.values(sizes).reduce((sum, q) => sum + q, 0);
+            });
+            
+            countEl.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+        }
+        
+        // Attach quantity button listeners
+        function attachQtyListeners() {
+            document.querySelectorAll('.basket-qty-controls .qty-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const index = parseInt(btn.dataset.index);
+                    const size = btn.dataset.size;
+                    const isPlus = btn.classList.contains('plus');
+                    
+                    handleQtyChange(index, size, isPlus);
+                });
+            });
+        }
+        
+        // Attach remove button listeners
+        function attachRemoveListeners() {
+            document.querySelectorAll('.basket-item-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const index = parseInt(btn.dataset.index);
+                    removeItem(index);
+                });
+            });
+        }
+        
+        // Handle quantity change
+        function handleQtyChange(itemIndex, size, isIncrement) {
+            let basket = getBasket();
+            
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            const item = basket[itemIndex];
+            
+            // Support both 'sizes' and 'quantities' keys
+            const sizesKey = item.sizes ? 'sizes' : 'quantities';
+            if (!item[sizesKey]) item[sizesKey] = {};
+            if (!item[sizesKey][size]) return;
+            
+            if (isIncrement) {
+                item[sizesKey][size]++;
+            } else {
+                item[sizesKey][size]--;
+                if (item[sizesKey][size] <= 0) {
+                    delete item[sizesKey][size];
+                }
+            }
+            
+            // Update totalQty if it exists
+            if (typeof item.totalQty !== 'undefined') {
+                item.totalQty = Object.values(item[sizesKey]).reduce((sum, q) => sum + q, 0);
+            }
+            
+            // Remove item if no sizes left
+            if (Object.keys(item[sizesKey]).length === 0) {
+                basket.splice(itemIndex, 1);
+            }
+            
+            saveBasket(basket);
+            renderBasket();
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+        
+        // Remove item from basket
+        function removeItem(itemIndex) {
+            let basket = getBasket();
+            
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            basket.splice(itemIndex, 1);
+            saveBasket(basket);
+            renderBasket();
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+        }
+        
+        // Init event listeners
+        function initEventListeners() {
+            // Clear all button
+            const clearBtn = document.getElementById('clearBasketBtn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (confirm('Clear all items and reset everything?')) {
+                        // Clear ALL storage - complete reset
+                        localStorage.removeItem('quoteBasket');
+                        localStorage.setItem('quoteBasket', '[]');
+                        
+                        // Clear ALL sessionStorage items
+                        sessionStorage.clear();
+                        
+                        // Clear any other localStorage items related to customization
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && (key.startsWith('uploaded_') || key.startsWith('brandeduk-'))) {
+                                keysToRemove.push(key);
+                            }
+                        }
+                        keysToRemove.forEach(key => localStorage.removeItem(key));
+                        
+                        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                        
+                        // Force hard refresh to reset everything
+                        window.location.href = 'customize.html';
+                    }
+                });
+            }
+            
+            // Request quote button
+            const quoteBtn = document.getElementById('requestQuoteBtn');
+            if (quoteBtn) {
+                quoteBtn.addEventListener('click', () => {
+                    const basket = getBasket();
+                    if (basket.length === 0) {
+                        alert('Please add items to your basket first');
+                        return;
+                    }
+                    
+                    // Navigate to quote form
+                    window.location.href = 'quote-form-mobile.html';
+                });
+            }
+            
+            // Select All checkbox
+            const selectAllCheckbox = document.getElementById('selectAllItems');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', () => {
+                    const allCheckboxes = document.querySelectorAll('.item-checkbox');
+                    allCheckboxes.forEach(cb => {
+                        cb.checked = selectAllCheckbox.checked;
+                        updateCardSelection(cb);
+                    });
+                    updateCustomizeBar();
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            }
+            
+            // Customize Selected button
+            const customizeBtn = document.getElementById('customizeSelectedBtn');
+            if (customizeBtn) {
+                customizeBtn.addEventListener('click', () => {
+                    customizeSelectedItems();
+                });
+            }
+        }
+        
+        // Attach checkbox listeners
+        function attachCheckboxListeners() {
+            document.querySelectorAll('.item-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    updateCardSelection(cb);
+                    updateCustomizeBar();
+                    updateSelectAllState();
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            });
+        }
+        
+        // Update card visual selection state
+        function updateCardSelection(checkbox) {
+            const card = checkbox.closest('.basket-item-card');
+            if (card) {
+                if (checkbox.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            }
+        }
+        
+        // Update the floating customize bar visibility
+        function updateCustomizeBar() {
+            const selectedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            const bar = document.getElementById('customizeSelectedBar');
+            const countEl = document.getElementById('selectedCount');
+            
+            if (bar && countEl) {
+                const count = selectedCheckboxes.length;
+                countEl.textContent = count;
+                
+                if (count > 0) {
+                    bar.classList.add('visible');
+                } else {
+                    bar.classList.remove('visible');
+                }
+            }
+        }
+        
+        // Update Select All checkbox state
+        function updateSelectAllState() {
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            const selectAllCheckbox = document.getElementById('selectAllItems');
+            
+            if (selectAllCheckbox && allCheckboxes.length > 0) {
+                selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+            }
+        }
+        
+        // Open customize page for a single item
+        function openCustomizeForItem(itemIndex) {
+            const basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            const item = basket[itemIndex];
+            
+            // Store the item info for customization
+            sessionStorage.setItem('customizingFromBasket', 'true');
+            sessionStorage.setItem('customizingBasketIndices', JSON.stringify([itemIndex]));
+            sessionStorage.setItem('customizingProduct', JSON.stringify({
+                code: item.code || 'CUSTOM',
+                name: item.name || 'Custom Product',
+                color: item.color || 'Black',
+                image: item.image || '',
+                sizes: item.sizes || {},
+                unitPrice: item.unitPrice || 0
+            }));
+            
+            // Navigate to customize positions page
+            window.location.href = 'customize.html';
+        }
+        
+        // Customize multiple selected items with the same logo
+        function customizeSelectedItems() {
+            const selectedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            if (selectedCheckboxes.length === 0) return;
+            
+            const basket = getBasket();
+            const selectedIndices = [];
+            let totalQty = 0;
+            
+            selectedCheckboxes.forEach(cb => {
+                const index = parseInt(cb.dataset.index);
+                if (index >= 0 && index < basket.length) {
+                    selectedIndices.push(index);
+                    const item = basket[index];
+                    if (item.sizes) {
+                        totalQty += Object.values(item.sizes).reduce((sum, q) => sum + q, 0);
+                    }
+                }
+            });
+            
+            // Get first item as reference for customization
+            const firstItem = basket[selectedIndices[0]];
+            
+            // Store for customization page
+            sessionStorage.setItem('customizingFromBasket', 'true');
+            sessionStorage.setItem('customizingBasketIndices', JSON.stringify(selectedIndices));
+            sessionStorage.setItem('customizingMultipleItems', 'true');
+            sessionStorage.setItem('customizingProduct', JSON.stringify({
+                code: firstItem.code || 'CUSTOM',
+                name: selectedIndices.length > 1 ? `${selectedIndices.length} Items Selected` : (firstItem.name || 'Custom Product'),
+                color: selectedIndices.length > 1 ? 'Multiple' : (firstItem.color || 'Black'),
+                image: firstItem.image || '',
+                sizes: firstItem.sizes || {},
+                unitPrice: firstItem.unitPrice || 0,
+                totalQty: totalQty
+            }));
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+            
+            // Navigate to customize positions page
+            window.location.href = 'customize.html';
+        }
+    </script>
+</body>
+</html>

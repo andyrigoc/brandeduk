@@ -1,0 +1,27 @@
+{
+  "name": "Christmas Promo",
+  "description": "Hero promozionale per le festività natalizie",
+  "panels": [
+    {
+      "id": "gift1",
+      "title": "Gift Ideas",
+      "subtitle": "Perfect Corporate Gifts",
+      "image": "images/gifts.jpg",
+      "link": "shop-mobile.html?category=gifts"
+    },
+    {
+      "id": "sale",
+      "title": "SALE",
+      "subtitle": "Up to 30% Off",
+      "image": "images/sale.jpg",
+      "link": "shop-mobile.html?sale=true"
+    },
+    {
+      "id": "custom",
+      "title": "Custom",
+      "subtitle": "Personalised Gifts",
+      "image": "images/custom.jpg",
+      "link": "customize-mobile.html"
+    }
+  ]
+}

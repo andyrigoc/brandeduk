@@ -1,0 +1,343 @@
+/* Account Panel Overlay */
+.account-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 9998;
+}
+.account-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Account Panel */
+.account-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: transparent;
+    border-radius: 20px;
+    width: 600px;
+    max-width: 90vw;
+    height: 500px;
+    max-height: 80vh;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+}
+.account-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.account-panel-header {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+}
+
+.account-close-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.account-close-btn:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+.account-close-btn svg {
+    stroke: #fff;
+}
+
+/* Forms Container */
+.account-forms-container {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.account-arrow {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+}
+.account-arrow.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.account-arrow:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+.account-arrow svg {
+    stroke: #fff;
+}
+
+.account-forms-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.account-form-holder {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    padding: 24px;
+}
+.account-form-holder:hover {
+    flex-basis: 55%;
+}
+
+.signin-form {
+    background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%);
+}
+.signup-form {
+    background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%);
+}
+
+.account-form-icon {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+.account-form-icon svg {
+    stroke: #fff;
+}
+.account-form-icon span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.account-form-content {
+    position: absolute;
+    width: 85%;
+    top: 100%;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.account-form-holder.active {
+    flex-basis: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+.account-form-holder.active .account-form-icon {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    flex-direction: row;
+    gap: 12px;
+}
+.account-form-holder.active .account-form-icon svg {
+    width: 28px;
+    height: 28px;
+}
+.account-form-holder.active .account-form-icon span {
+    font-size: 1rem;
+}
+.account-form-holder.active .account-form-content {
+    top: 80px;
+    opacity: 1;
+    width: 80%;
+    max-width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.account-form-holder.inactive {
+    flex-basis: 0%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Input Groups */
+.account-input-group {
+    position: relative;
+    margin-bottom: 28px;
+}
+.account-input-group.half {
+    flex: 1;
+}
+.account-input-row {
+    display: flex;
+    gap: 16px;
+}
+.account-input-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+.account-input-group input {
+    width: 100%;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+.account-input-group input:focus,
+.account-input-group input:valid {
+    border-bottom-color: #fff;
+}
+.account-input-group input:focus + label,
+.account-input-group input:valid + label {
+    top: -20px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Form Actions */
+.account-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+.account-submit-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.account-submit-btn:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+.account-submit-btn svg {
+    stroke: #fff;
+}
+
+.account-forgot-link {
+    display: block;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.account-forgot-link:hover {
+    color: #fff;
+}
+
+/* Logged In View */
+.account-logged-in {
+    padding: 50px 40px;
+    text-align: center;
+    background: #fff;
+    height: 100%;
+}
+.account-user-avatar {
+    margin-bottom: 16px;
+}
+.account-user-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+.account-user-email {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+.account-user-details {
+    text-align: left;
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+.account-user-details p {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+.account-user-details p:last-child {
+    margin-bottom: 0;
+}
+.account-user-details strong {
+    color: #1f2937;
+}
+.account-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: #ef4444;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.account-logout-btn:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

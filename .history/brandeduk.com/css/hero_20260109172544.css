@@ -1,0 +1,521 @@
+/* ============================================
+   HERO EXPANDING PANELS - DESKTOP VERSION
+   ============================================ */
+
+.hero-expanding-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.hero-cont {
+    position: relative;
+    overflow: hidden;
+    height: 500px;
+    padding: 30px 40px;
+    margin: 0;
+}
+
+.hero-cont__inner {
+    position: relative;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hero-cont__inner:hover .hero-el__bg:after {
+    opacity: 1;
+}
+
+/* Individual Panel - 9 panels */
+.hero-el {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /* 9 panels with 8 gaps of 12px */
+    width: calc((100% - 96px) / 9);
+    height: 100%;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.6s 0.7s, width 0.7s, opacity 0.6s 0.7s, z-index 0s 1.3s;
+    will-change: transform, width, opacity;
+    cursor: pointer;
+}
+
+.hero-el.s--active {
+    cursor: default;
+}
+
+.hero-el__overflow {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+}
+
+.hero-el__inner {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    transition: transform 1s;
+}
+
+.hero-cont.s--inactive .hero-el__inner {
+    transform: translate3d(0, 100%, 0);
+}
+
+/* Background Image */
+.hero-el__bg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+    transition: transform 0.6s 0.7s, width 0.6s 0.7s;
+    will-change: transform, width;
+}
+
+.hero-el.s--active .hero-el__bg {
+    transform: scale(1.05);
+}
+
+.hero-el__bg:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transition: transform 1s;
+    transform: translate3d(0, 0, 0) scale(1);
+    border-radius: inherit;
+}
+
+.hero-cont.s--inactive .hero-el__bg:before {
+    transform: translate3d(0, -100%, 0) scale(1.2);
+}
+
+.hero-el.s--active .hero-el__bg:before {
+    transition: transform 0.8s, background-position 0.8s;
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* When panels are active, shift image to show head */
+.hero-el:nth-child(1).s--active .hero-el__bg:before {
+    background-position: 0% 20%;
+}
+
+.hero-el:nth-child(2).s--active .hero-el__bg:before {
+    background-position: 0% calc(20% + 29px);
+}
+
+/* Expanded panels (hero1): shift image down further, exclude Apron + Hoodie + Hi-Viz + Polo */
+#hero1 .hero-el.s--active:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(4)):not(:nth-child(5)) .hero-el__bg:before {
+    background-position-y: calc(50% + 160px);
+}
+
+/* Polo: hero1 expanded image position (keep box fixed, move image down) */
+#hero1 .hero-el[data-category="polo"].s--active .hero-el__bg:before {
+    background-position: center calc(50% + 115px);
+}
+
+/* T-Shirts: hero1 expanded – fill the entire card */
+#hero1 .hero-el[data-category="tshirts"].s--active .hero-el__bg {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+}
+#hero1 .hero-el[data-category="tshirts"].s--active .hero-el__bg:before {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: scale(1.2);
+    background-size: cover;
+    background-position: center calc(50% - 100px);
+}
+
+/* Hi-Viz: hero1 expanded – fill the entire card */
+#hero1 .hero-el[data-category="hivis"].s--active .hero-el__bg {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+}
+#hero1 .hero-el[data-category="hivis"].s--active .hero-el__bg:before {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: scale(1.15);
+    background-size: cover;
+    background-position: 30% calc(50% + 30px);
+}
+
+/* Close button (X) white for: Hi-Viz, Polo, Jackets, T-shirts */
+#hero1 .hero-el[data-category="hivis"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="hivis"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="polo"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="polo"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="jackets"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="jackets"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="tshirts"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="tshirts"] .hero-el__close-btn:after {
+    background: #fff !important;
+}
+
+.hero-el__bg:after {
+    content: "";
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.5s;
+    border-radius: inherit;
+}
+
+.hero-el:hover .hero-el__bg:after {
+    opacity: 1;
+}
+
+.hero-cont.s--el-active .hero-el__bg:after {
+    transition: opacity 0.5s 1.4s;
+    opacity: 0 !important;
+}
+
+/* Preview Title (collapsed state) */
+.hero-el__preview-cont {
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 20px;
+    transition: all 0.3s 1.2s;
+}
+
+.hero-cont.s--inactive .hero-el__preview-cont {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.hero-cont.s--el-active .hero-el__preview-cont {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s;
+}
+
+.hero-el__heading {
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    letter-spacing: 1px;
+}
+
+/* Expanded Content */
+.hero-el__content {
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+.hero-el.s--active .hero-el__content {
+    z-index: 2;
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0.5s 1.4s;
+}
+
+/* Hero 1: move expanded copy/CTA to the right (keep same fonts/sizes) */
+#hero1 .hero-el.s--active .hero-el__content {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 14px;
+    text-align: right;
+}
+
+#hero1 .hero-el.s--active .hero-el__text {
+    text-align: right;
+    margin-bottom: 0;
+}
+
+/* Hero 1: smaller, less intrusive CTA next to title */
+#hero1 .hero-el.s--active .hero-el__cta {
+    padding: 10px 16px;
+    font-size: 12px;
+    box-shadow: none;
+}
+
+.hero-el__text {
+    text-transform: uppercase;
+    font-size: 32px;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+/* Apron: move expanded title to bottom-right (keep same font) */
+.hero-el:nth-child(1).s--active .hero-el__text {
+    margin-left: auto;
+    text-align: right;
+    color: #000;
+}
+
+/* Hoodies: move expanded title to bottom-right like Apron (keep white) */
+.hero-el:nth-child(2).s--active .hero-el__text {
+    margin-left: auto;
+    text-align: right;
+    color: #fff;
+    position: relative;
+    top: 20px;
+}
+
+
+
+.hero-el__cta {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #fff;
+    color: #6B21A8;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    border-radius: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.hero-el__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    background: #f3f4f6;
+}
+
+/* Close Button */
+.hero-el__close-btn {
+    z-index: -1;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0s 0.45s;
+    cursor: pointer;
+}
+
+.hero-el.s--active .hero-el__close-btn {
+    z-index: 5;
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0s 1.4s;
+}
+
+.hero-el__close-btn:before,
+.hero-el__close-btn:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 3px;
+    margin-top: -1.5px;
+    background: #000;
+    opacity: 0;
+    transition: opacity 0s;
+    border-radius: 2px;
+}
+
+/* Ensure Hoodies close X is black (avoid any external overrides) */
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn {
+    filter: none !important;
+}
+
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn:after {
+    background: #fff !important;
+}
+
+.hero-el.s--active .hero-el__close-btn:before,
+.hero-el.s--active .hero-el__close-btn:after {
+    opacity: 1;
+}
+
+.hero-el__close-btn:before {
+    transform: rotate(45deg) translateX(100%);
+}
+
+.hero-el.s--active .hero-el__close-btn:before {
+    transition: all 0.3s 1.4s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+    transform: rotate(45deg) translateX(0);
+}
+
+.hero-el__close-btn:after {
+    transform: rotate(-45deg) translateX(100%);
+}
+
+.hero-el.s--active .hero-el__close-btn:after {
+    transition: all 0.3s 1.55s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+    transform: rotate(-45deg) translateX(0);
+}
+
+/* Panel Positions - 9 panels with gaps */
+.hero-el:nth-child(1) {
+    transform: translate3d(0%, 0, 0);
+}
+.hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
+.hero-el:nth-child(1) .hero-el__bg:before { 
+    transition-delay: 0s;
+    background-image: url('../../hero/images/apron.jpg');
+    background-position: calc(50% + 250px) center;
+}
+
+.hero-el:nth-child(2) {
+    transform: translate3d(calc(100% + 12px), 0, 0);
+}
+.hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.07s; }
+.hero-el:nth-child(2) .hero-el__bg:before { 
+    transition-delay: 0.07s;
+    background-image: url('../../hero/images/hoodies.jpg');
+    background-position: calc(50% + 262px) center;
+}
+
+.hero-el:nth-child(3) {
+    transform: translate3d(calc(200% + 24px), 0, 0);
+}
+.hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.14s; }
+.hero-el:nth-child(3) .hero-el__bg:before { 
+    transition-delay: 0.14s;
+    background-image: url('../../hero/images/beanie.jpg');
+    background-position: center top;
+}
+
+.hero-el:nth-child(4) {
+    transform: translate3d(calc(300% + 36px), 0, 0);
+}
+.hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.21s; }
+.hero-el:nth-child(4) .hero-el__bg:before { 
+    transition-delay: 0.21s;
+    background-image: url('../../hero/images/Hi-Viz.jpg');
+    background-position: calc(50% + 40px) calc(50% - 10px);
+}
+
+.hero-cont:not(.s--inactive) .hero-el:nth-child(4):not(.s--active) .hero-el__bg:before {
+    transform: translate3d(0, 0, 0) scale(1.2);
+}
+
+.hero-el:nth-child(5) {
+    transform: translate3d(calc(400% + 48px), 0, 0);
+}
+.hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.28s; }
+.hero-el:nth-child(5) .hero-el__bg:before { 
+    transition-delay: 0.28s;
+    background-image: url('../../hero/images/Polo.jpg');
+    background-position: center center;
+}
+
+.hero-el:nth-child(6) {
+    transform: translate3d(calc(500% + 60px), 0, 0);
+}
+.hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.35s; }
+.hero-el:nth-child(6) .hero-el__bg:before { 
+    transition-delay: 0.35s;
+    background-image: url('../../hero/images/Jacket.jpeg');
+    background-position: center center;
+}
+
+.hero-el:nth-child(7) {
+    transform: translate3d(calc(600% + 72px), 0, 0);
+}
+.hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.42s; }
+.hero-el:nth-child(7) .hero-el__bg:before { 
+    transition-delay: 0.42s;
+    background-image: url('../../hero/images/T-shirthero.jpg');
+    background-position: center center;
+}
+
+.hero-el:nth-child(8) {
+    transform: translate3d(calc(700% + 84px), 0, 0);
+}
+.hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.49s; }
+.hero-el:nth-child(8) .hero-el__bg:before {
+    transition-delay: 0.49s;
+    background-image: url('../../hero/images/WorkTrousers.jpg?v=20260103');
+    background-position: center center;
+}
+
+.hero-el:nth-child(9) {
+    transform: translate3d(calc(800% + 96px), 0, 0);
+}
+.hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.56s; }
+.hero-el:nth-child(9) .hero-el__bg:before {
+    transition-delay: 0.56s;
+    background-image: url('../../hero/images/Sustainable.jpg');
+    background-position: center center;
+}
+
+.hero-cont:not(.s--inactive) .hero-el:nth-child(9):not(.s--active) .hero-el__bg:before {
+    transform: translate3d(0, 0, 0) scale(1.3);
+    background-position: calc(50% - 30px) calc(50% + 10px);
+}
+
+/* Inactive states for non-active elements */
+.hero-cont.s--el-active .hero-el:not(.s--active) {
+    transform: scale(0.5) translate3d(0, 0, 0);
+    opacity: 0;
+    transition: transform 0.95s, opacity 0.95s;
+}
+
+/* Active element - expands to full width */
+.hero-el.s--active {
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    transform: translate3d(0, 0, 0) !important;
+    transition: transform 0.6s, width 0.7s 0.7s, z-index 0s;
+    border-radius: 16px;
+}
+
+.hero-el.s--active .hero-el__bg {
+    width: 100%;
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.6s;
+}

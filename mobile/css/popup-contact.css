@@ -1,0 +1,195 @@
+/* ========================================
+   POPUP CONTACT - GET IN TOUCH
+   ======================================== */
+
+/* Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 9998;
+}
+
+.popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Popup Container */
+.popup-contact {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.popup-contact.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Popup Header */
+.popup-contact__header {
+  background: #fff;
+  padding: 24px 20px 16px;
+  position: relative;
+}
+
+.popup-contact__title {
+  color: #000;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Close Button */
+.popup-contact__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  color: #374151;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.popup-contact__close:hover {
+  background: #e5e7eb;
+}
+
+/* Popup Body */
+.popup-contact__body {
+  padding: 0 20px 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 100px);
+}
+
+/* Form */
+.popup-contact__form {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 1px solid #d1d5db;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  color: #111827;
+  background: transparent;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-bottom-color: #000;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Submit Button */
+.popup-contact__submit {
+  float: right;
+  padding: 14px 32px;
+  background: #000;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 8px;
+}
+
+.popup-contact__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Map Section */
+.popup-contact__map {
+  margin-top: 24px;
+  clear: both;
+  padding-top: 16px;
+}
+
+.popup-contact__map iframe {
+  width: 100%;
+  height: 200px;
+  border: none;
+  border-radius: 12px;
+  filter: grayscale(100%) contrast(1.1) brightness(0.95);
+}
+
+.popup-contact__map iframe:hover {
+  filter: grayscale(100%) contrast(1.1) brightness(0.95);
+}
+
+/* Make hero3 clickable */
+.hero-get-in-touch {
+  cursor: pointer;
+}

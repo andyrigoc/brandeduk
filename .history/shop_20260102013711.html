@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6B21A8">
+    <title>Shop - BrandedUK</title>
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20251230">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Category Filter Styles */
+        .categories-filter-scroll {
+            position: sticky;
+            top: 100px;
+            background: #fff;
+            z-index: 50;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .categories-filter-scroll .categories-scroll {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .categories-filter-scroll .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-filter-card {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-snap-align: start;
+            min-width: 70px;
+        }
+        
+        .category-filter-card:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .category-filter-card.active {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border-color: #7c3aed;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        
+        .category-filter-card.active .category-icon svg {
+            stroke: #fff;
+        }
+        
+        .category-filter-card.active .category-icon img {
+            filter: brightness(0) invert(1);
+        }
+        
+        .category-filter-card .category-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .category-filter-card .category-icon img,
+        .category-filter-card .category-icon svg {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            transition: filter 0.3s ease;
+        }
+        
+        .category-filter-card span {
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        /* Products fade animation */
+        .products-grid-shop.filtering .product-card-shop {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .product-card-shop {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .product-card-shop.fade-in {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <ul class="social-buttons-header">
+                <li><a href="https://www.facebook.com/brandeduk" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.linkedin.com/company/brandeduk" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.youtube.com/@brandeduk" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </span>
+                </a></li>
+                <li><a href="https://www.pinterest.com/brandeduk" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                    </span>
+                </a></li>
+            </ul>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-status" id="vatStatus">ex VAT</span>
+                <button class="vat-toggle-btn" id="vatToggleBtn" type="button" aria-pressed="false" aria-label="Toggle VAT">
+                    <span class="vat-toggle-thumb"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Back + Logo + Search -->
+        <div class="header-logo-row">
+            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <a href="index.html" class="mobile-logo-center">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Title -->
+    <div class="shop-title-bar">
+        <button class="back-btn" onclick="window.history.back()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <h1 class="shop-title" id="categoryTitle">All Products</h1>
+        <span class="results-count" id="resultsCount">0 items</span>
+    </div>
+
+    <!-- Category Filters (Scrollable with Animation) -->
+    <div class="categories-filter-scroll">
+        <div class="categories-scroll">
+            <button class="category-filter-card active" data-category="all">
+                <div class="category-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                </div>
+                <span>All</span>
+            </button>
+            <button class="category-filter-card" data-category="tshirts">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                </div>
+                <span>T-Shirts</span>
+            </button>
+            <button class="category-filter-card" data-category="polo">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                </div>
+                <span>Polos</span>
+            </button>
+            <button class="category-filter-card" data-category="hoodies">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                </div>
+                <span>Hoodies</span>
+            </button>
+            <button class="category-filter-card" data-category="jackets">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                </div>
+                <span>Jackets</span>
+            </button>
+            <button class="category-filter-card" data-category="hivis">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                </div>
+                <span>Hi-Vis</span>
+            </button>
+            <button class="category-filter-card" data-category="fleeces">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                </div>
+                <span>Fleeces</span>
+            </button>
+            <button class="category-filter-card" data-category="bags">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                </div>
+                <span>Bags</span>
+            </button>
+            <button class="category-filter-card" data-category="caps">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                </div>
+                <span>Caps</span>
+            </button>
+            <button class="category-filter-card" data-category="aprons">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                </div>
+                <span>Aprons</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <main class="shop-products-container">
+        <div class="products-grid-shop" id="productsGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="shop.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <a href="customize.html" class="nav-item-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </a>
+
+        <a href="basket.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-badge" id="navBasketBadge" style="display: none;">0</span>
+            <span class="nav-item-label">Basket</span>
+        </a>
+
+        <a href="#" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+    </nav>
+
+    <script>
+        console.log('=== SHOP SCRIPT STARTED ===');
+        
+        // Products Database
+        const PRODUCTS_DB = [
+            {
+                code: "GD067",
+                name: "Softstyle™ midweight fleece adult hoodie",
+                price: "17.58",
+                category: "hoodies",
+                image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+                colors: [
+                    {name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg"},
+                    {name: "Ash Grey", main: "https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg"},
+                    {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+                    {name: "Blue Dusk", main: "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg"},
+                    {name: "Brown Savana", main: "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg"},
+                    {name: "Cardinal Red", main: "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg"},
+                    {name: "Carolina Blue", main: "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg"},
+                    {name: "Cement", main: "https://i.postimg.cc/fLbHR2Z2/GD067-Cement-FT.jpg"},
+                    {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"},
+                    {name: "Cobalt", main: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"},
+                    {name: "Cocoa", main: "https://i.postimg.cc/d10WVHvb/GD067-Cocoa-FT.jpg"},
+                    {name: "Daisy", main: "https://i.postimg.cc/1tzW3Cs1/GD067-Daisy-FT.jpg"},
+                    {name: "Dark Heather", main: "https://i.postimg.cc/j5kMwHdk/GD067-Dark-Heather-FT.jpg"},
+                    {name: "Dusty Rose", main: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"},
+                    {name: "Forest Green", main: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"},
+                    {name: "Light Pink", main: "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg"},
+                    {name: "Maroon", main: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"},
+                    {name: "Military Green", main: "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"},
+                    {name: "Mustard", main: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"},
+                    {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+                    {name: "Off-White", main: "https://i.postimg.cc/nzw3j4hz/GD067-Off-White-FT.jpg"},
+                    {name: "Paragon", main: "https://i.postimg.cc/j5kMwHSL/GD067-Paragon-FT.jpg"},
+                    {name: "Pink Lemonade", main: "https://i.postimg.cc/zBPxbCGy/GD067-Pink-Lemonade-FT.jpg"},
+                    {name: "Pistachio", main: "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"},
+                    {name: "Purple", main: "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"},
+                    {name: "Red", main: "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"},
+                    {name: "Sport Grey", main: "https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg"},
+                    {name: "Royal", main: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"},
+                    {name: "Sage", main: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"},
+                    {name: "Sand", main: "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"},
+                    {name: "Sky", main: "https://i.postimg.cc/YSMnJ2Pc/GD067-Sky-FT.jpg"},
+                    {name: "Smoke", main: "https://i.postimg.cc/Xv4HTNPb/GD067-Smoke-FT.jpg"},
+                    {name: "Stone Blue", main: "https://i.postimg.cc/g0mSfc72/GD067-Stone-Blue-FT.jpg"},
+                    {name: "Tangerine", main: "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"},
+                    {name: "Texas Orange", main: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"},
+                    {name: "White", main: "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"},
+                    {name: "Yellow Haze", main: "https://i.postimg.cc/W48WjLRN/GD067-Yellow-Haze-FT.jpg"}
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            }
+        ];
+
+        // Duplicate for multiple cards (deep copy)
+        const originalProduct = PRODUCTS_DB[0];
+        while (PRODUCTS_DB.length < 8) {
+            PRODUCTS_DB.push(JSON.parse(JSON.stringify(originalProduct)));
+        }
+
+        const PRICE_BREAKS_BY_CODE = {
+            GD067: [
+                { min: 1, max: 9, price: 17.58 },
+                { min: 10, max: 24, price: 16.54 },
+                { min: 25, max: 49, price: 16.18 },
+                { min: 50, max: 99, price: 14.94 },
+                { min: 100, max: 249, price: 13.49 },
+                { min: 250, max: 99999, price: 12.59 }
+            ]
+        };
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFilter = urlParams.get('category') || 'all';
+        console.log('Category filter:', categoryFilter);
+        console.log('Products in DB:', PRODUCTS_DB.length);
+
+        // VAT Functions - will be loaded from mobile.js
+        function formatCurrency(baseAmount) {
+            const VAT_RATE = 0.20;
+            let value = Number(baseAmount) || 0;
+            const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            if (vatOn) {
+                value = value * (1 + VAT_RATE);
+            }
+            return '£' + value.toFixed(2);
+        }
+
+        function vatSuffix() {
+            const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            return vatOn ? 'inc VAT' : 'ex VAT';
+        }
+
+        function formatPriceRange(minPrice, maxPrice) {
+            const minVal = Number(minPrice) || 0;
+            const maxVal = Number(maxPrice) || 0;
+            if (Math.abs(minVal - maxVal) < 0.005) {
+                return formatCurrency(minVal);
+            }
+            return formatCurrency(minVal) + ' - ' + formatCurrency(maxVal);
+        }
+
+        function getProductPriceRange(product) {
+            const breaks = PRICE_BREAKS_BY_CODE[product.code];
+            if (!breaks || !breaks.length) {
+                const base = Number(product.price) || 0;
+                return { min: base, max: base };
+            }
+            const values = breaks.map(step => Number(step.price)).filter(price => price > 0);
+            return {
+                min: Math.min(...values),
+                max: Math.max(...values)
+            };
+        }
+
+        // Filter products
+        function getFilteredProducts() {
+            if (categoryFilter === 'all') {
+                return PRODUCTS_DB;
+            }
+            return PRODUCTS_DB.filter(p => p.category === categoryFilter);
+        }
+
+        // Render Products
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            if (!grid) {
+                console.error('Grid element not found!');
+                return;
+            }
+            
+            const products = getFilteredProducts();
+            console.log('Rendering products:', products.length);
+            
+            // Update title
+            const titles = {
+                'all': 'All Products',
+                'hoodies': 'Hoodies',
+                'tshirts': 'T-Shirts',
+                'polos': 'Polo Shirts',
+                'jackets': 'Jackets'
+            };
+            document.getElementById('categoryTitle').textContent = titles[categoryFilter] || 'Products';
+            document.getElementById('resultsCount').textContent = `${products.length} items`;
+
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card-shop';
+
+                const badgesLeft = product.customization.filter(c => c === 'print').map(() =>
+                    `<span class="badge print">PRINT</span>`
+                ).join('');
+                
+                const badgesRight = product.customization.filter(c => c === 'embroidery').map(() =>
+                    `<span class="badge embroidery">EMBROIDERY</span>`
+                ).join('');
+
+                const colorIndex = index % product.colors.length;
+                const displayColor = product.colors[colorIndex];
+                
+                const colors = product.colors.map(c => {
+                    return `<button type="button" class="color-dot" data-color="${c.name}" data-main="${c.main}" style="background-image: url('${c.main}'); background-size: cover; background-position: center;" title="${c.name}"></button>`;
+                }).join('');
+
+                const { min: minPrice, max: maxPrice } = getProductPriceRange(product);
+
+                card.innerHTML = `
+                    <div class="product-media">
+                        <div class="product-badges-top">
+                            ${badgesRight}
+                            ${badgesLeft}
+                        </div>
+                        <div class="product-figure">
+                            <img src="${displayColor.main}" alt="${product.name}" class="product-main-img">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-code">
+                            ${product.code}
+                            <img src="https://i.postimg.cc/3WpCDK5M/gildan-logo.png" alt="Gildan" class="brand-logo" title="Gildan">
+                        </div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
+                            <span class="product-price-label">Start From</span>
+                            <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>
+                            <span class="product-price-suffix">${vatSuffix()}</span>
+                        </div>
+                        <div class="product-colors">${colors}</div>
+                    </div>
+                `;
+
+                let selectedColor = null;
+                
+                card.querySelectorAll('.color-dot').forEach(dot => {
+                    dot.addEventListener('mouseenter', () => {
+                        if (!selectedColor) {
+                            const img = card.querySelector('.product-main-img');
+                            if (img) img.src = dot.dataset.main;
+                        }
+                    });
+                    
+                    dot.addEventListener('mouseleave', () => {
+                        if (selectedColor) {
+                            const img = card.querySelector('.product-main-img');
+                            const activeDot = card.querySelector('.color-dot.active');
+                            if (img && activeDot) img.src = activeDot.dataset.main;
+                        }
+                    });
+                    
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const img = card.querySelector('.product-main-img');
+                        if (img) img.src = dot.dataset.main;
+                        card.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                        dot.classList.add('active');
+                        selectedColor = {
+                            name: dot.dataset.color,
+                            url: dot.dataset.main
+                        };
+                    });
+                });
+
+                card.addEventListener('click', () => {
+                    console.log('Card clicked, going directly to customize:', product.code);
+                    sessionStorage.setItem('selectedProduct', product.code);
+                    sessionStorage.setItem('selectedProductData', JSON.stringify(product));
+                    const activeColorDot = card.querySelector('.color-dot.active');
+                    if (activeColorDot) {
+                        sessionStorage.setItem('selectedColorName', activeColorDot.dataset.color);
+                        sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
+                        console.log('Selected color:', activeColorDot.dataset.color);
+                    }
+                    console.log('Navigating to customize.html');
+                    window.location.href = 'customize.html';
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Update prices on VAT change
+        function updatePrices() {
+            document.querySelectorAll('.product-price').forEach(priceEl => {
+                const min = Number(priceEl.dataset.priceMin);
+                const max = Number(priceEl.dataset.priceMax);
+                const valueEl = priceEl.querySelector('.product-price-value');
+                if (valueEl && Number.isFinite(min) && Number.isFinite(max)) {
+                    valueEl.textContent = formatPriceRange(min, max);
+                }
+                const suffixEl = priceEl.querySelector('.product-price-suffix');
+                if (suffixEl) {
+                    suffixEl.textContent = vatSuffix();
+                }
+            });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOMContentLoaded - rendering products...');
+                renderProducts();
+                updateBasketBadge();
+            });
+        } else {
+            console.log('DOM already ready - rendering products immediately...');
+            setTimeout(() => {
+                renderProducts();
+                updateBasketBadge();
+            }, 0);
+        }
+
+        window.addEventListener('vatToggleChanged', () => {
+            console.log('VAT toggle changed - updating prices');
+            updatePrices();
+        });
+
+        // Initialize VAT toggle from mobile.js when it loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for mobile.js to initialize, then sync
+            setTimeout(() => {
+                updatePrices();
+            }, 100);
+        });
+        
+        // Update basket badge count
+        function updateBasketBadge() {
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            let totalItems = 0;
+            
+            basket.forEach(item => {
+                const sizes = item.sizes || item.quantities || {};
+                totalItems += Object.values(sizes).reduce((sum, q) => sum + q, 0);
+            });
+            
+            const badge = document.getElementById('navBasketBadge');
+            if (badge) {
+                if (totalItems > 0) {
+                    badge.textContent = totalItems > 99 ? '99+' : totalItems;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+    </script>
+    <script src="mobile/js/mobile.js?v=20251230"></script>
+</body>
+</html>

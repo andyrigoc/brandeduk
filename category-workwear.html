@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workwear</title>
+  <meta http-equiv="refresh" content="0; url=shop.html?category=workwear" />
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const force = (params.get('force') || '').toLowerCase();
+      const isDesktop = window.innerWidth >= 1024;
+
+      if (force === 'desktop' || (force !== 'mobile' && isDesktop)) {
+        window.location.replace('brandeduk.com/category-workwear.html?force=desktop');
+        return;
+      }
+
+      window.location.replace('shop.html?category=workwear');
+    })();
+  </script>
+</head>
+<body>
+  <noscript>
+    <a href="shop.html?category=workwear">Continue to Workwear</a>
+  </noscript>
+</body>
+</html>

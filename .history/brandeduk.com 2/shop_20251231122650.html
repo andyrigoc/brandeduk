@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - BrandedUK</title>
+    <script>
+        // Redirect to mobile version on smaller screens
+        if (window.innerWidth < 1024) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'all';
+            window.location.href = '../mobile/shop-mobile.html?category=' + category;
+        }
+    </script>
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
+    <link rel="stylesheet" href="css/style.css?v=20251230">
+    <style>
+        /* Social buttons header desktop */
+        .header-top .social-buttons-header { gap: 10px; }
+        .header-top .social-buttons-header a { width: 32px; height: 32px; }
+        .header-top .social-buttons-header .social-icon svg { width: 14px; height: 14px; }
+        
+        /* Search expand desktop */
+        .searchbar-header__search-expand {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            transition: width 0.3s ease-in-out;
+            margin-right: 8px;
+        }
+        .searchbar-header__search-expand:focus-within { width: 320px; }
+        .searchbar-header__search-expand .search-input-expand {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            border-radius: 9999px;
+            padding: 12px 44px 12px 20px;
+            font-size: 15px;
+            background: #f3f4f6;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+        .searchbar-header__search-expand .search-input-expand::placeholder { color: transparent; transition: color 0.2s ease; }
+        .searchbar-header__search-expand:focus-within .search-input-expand::placeholder { color: #9ca3af; }
+        .searchbar-header__search-expand .search-icon-expand {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+        .searchbar-header__search-expand:focus-within .search-icon-expand { color: #a855f7; }
+        
+        /* Logo viola */
+        .searchbar-header__brand-img { width: 40px; height: 40px; object-fit: contain; }
+        .searchbar-header__brand-text { color: #a855f7 !important; }
+
+        /* Shop Page Styles */
+        .shop-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 30px;
+            padding: 30px 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Filters Sidebar */
+        .filters-sidebar {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filters-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .clear-all-btn {
+            font-size: 13px;
+            color: #06b6d4;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .filter-group:last-child { border-bottom: none; }
+
+        .filter-group h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .filter-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .filter-toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #d1d5db;
+            border-radius: 999px;
+            transition: background 0.2s ease;
+        }
+
+        .filter-toggle-switch.active { background: #8b5cf6; }
+        .filter-toggle-switch.active-blue { background: #3b82f6; }
+        .filter-toggle-switch.active-green { background: #10b981; }
+
+        .filter-toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+
+        .filter-toggle-switch.active::after,
+        .filter-toggle-switch.active-blue::after,
+        .filter-toggle-switch.active-green::after {
+            transform: translateX(20px);
+        }
+
+        .filter-search {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .filter-search::placeholder { color: #9ca3af; }
+
+        /* ========================================
+           FILTERS - Matching PC Version Style
+        ======================================== */
+        
+        /* Toggle Switches */
+        .filter-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .filter-toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-toggle-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .filter-toggle-label.label-new-in { color: #17a2b8; }
+        .filter-toggle-label.label-bradeal { color: #e85a5a; }
+        .filter-toggle-label.label-offers { color: #7c3aed; }
+
+        /* Special Filters Dropdown */
+        .special-filters-dropdown {
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+        }
+
+        .special-filters-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .special-filters-btn:hover {
+            background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+        }
+
+        .special-filters-icon {
+            font-size: 16px;
+        }
+
+        .special-filters-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .special-filters-arrow {
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .special-filters-dropdown.open .special-filters-arrow {
+            transform: rotate(90deg);
+        }
+
+        .special-filters-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 16px;
+        }
+
+        .special-filters-dropdown.open .special-filters-content {
+            max-height: 400px;
+            padding: 16px;
+        }
+
+        .special-filters-content .filter-toggle-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .special-filters-content .filter-toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-toggle-btn {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            border-radius: 14px;
+            background: #d1d5db;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .filter-toggle-btn[aria-pressed="true"] { background: #14b8a6; }
+        .filter-toggle-btn.toggle-new-in[aria-pressed="true"] { background: #17a2b8; }
+        .filter-toggle-btn.toggle-bradeal[aria-pressed="true"] { background: #e85a5a; }
+        .filter-toggle-btn.toggle-offers[aria-pressed="true"] { background: #7c3aed; }
+
+        .filter-toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .filter-toggle-btn[aria-pressed="true"] .filter-toggle-thumb {
+            transform: translateX(24px);
+        }
+
+        /* Price Range Section */
+        .price-range-section {
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .price-range-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .price-range-header h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .price-range-arrow {
+            color: #7c3aed;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .price-range-section.expanded .price-range-arrow {
+            transform: rotate(180deg);
+        }
+
+        .price-range-display {
+            font-size: 14px;
+            font-weight: 600;
+            color: #17a2b8;
+            margin: 12px 0;
+        }
+
+        .price-range-slider-container {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            margin: 20px 0;
+        }
+
+        .price-range-track {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+        }
+
+        .price-range-selected {
+            position: absolute;
+            height: 6px;
+            background: #1f2937;
+            border-radius: 3px;
+        }
+
+        .price-slider {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: transparent;
+            pointer-events: none;
+            outline: none;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: #17a2b8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: all;
+            border: 3px solid white;
+        }
+
+        .price-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            background: #17a2b8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: all;
+            border: 3px solid white;
+        }
+
+        .price-range-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .price-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .price-input-group label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .price-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: #17a2b8;
+        }
+
+        /* Expandable Filter Rows */
+        .filter-expandable-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .filter-expandable-row:hover {
+            background: #fafafa;
+            margin: 0 -24px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .filter-expandable-row h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .filter-expandable-arrow {
+            color: #9ca3af;
+            font-size: 18px;
+            font-weight: 300;
+            transition: transform 0.2s ease;
+        }
+
+        .filter-expandable-row.expanded .filter-expandable-arrow {
+            transform: rotate(90deg);
+            color: #7c3aed;
+        }
+
+        .filter-expandable-content {
+            display: none;
+            padding: 12px 0;
+        }
+
+        .filter-expandable-row.expanded + .filter-expandable-content {
+            display: block;
+        }
+
+        /* Filter Checkbox List */
+        .filter-checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        .filter-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .filter-checkbox-item:hover {
+            background: #f3f4f6;
+        }
+
+        .filter-checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7c3aed;
+            cursor: pointer;
+        }
+
+        .filter-checkbox-item label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .filter-checkbox-item .count {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* Products Section */
+        .products-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .products-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+            border-color: #d1d5db;
+        }
+
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .products-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .products-count {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #f3f4f6;
+            max-width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .product-media {
+            position: relative;
+            padding: 16px;
+            background: #f9fafb;
+            overflow: hidden;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .badge.embroidery { background: #3b82f6; color: white; }
+        .badge.print { background: #eab308; color: white; }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-height: 180px; /* Fixed minimum height */
+        }
+
+        .product-code-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            height: 20px; /* Fixed height */
+        }
+
+        .product-code {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .brand-logo {
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .brand-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 40px; /* Fixed height for 2 lines */
+            height: 40px;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: baseline;
+            gap: 3px;
+            margin-bottom: 12px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            height: 20px; /* Fixed height */
+        }
+
+        .price-label {
+            font-size: 10px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .price-suffix {
+            font-size: 9px;
+            color: #9ca3af;
+        }
+
+        .product-colors-wrapper {
+            position: relative;
+            margin-top: auto; /* Push to bottom */
+            padding-top: 12px;
+        }
+
+        .product-colors {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 4px 0;
+            height: 40px; /* Fixed height */
+        }
+
+        .product-colors::-webkit-scrollbar {
+            display: none;
+        }
+
+        .color-dot {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .color-dot:hover { transform: scale(1.1); }
+        .color-dot.active { border-color: #8b5cf6; }
+
+        .color-slider-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .color-arrow {
+            width: 24px;
+            height: 24px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .color-arrow:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        .color-progress {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin: 0 8px;
+            overflow: hidden;
+        }
+
+        .color-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #17a2b8, #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Footer */
+        .shop-footer {
+            background: #1f2937;
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-top">
+        <div class="header-container">
+            <div class="header-top-left">
+                <ul class="social-buttons-header">
+                    <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                        <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+                    </a></li>
+                    <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                        <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>
+                    </a></li>
+                    <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+                    </a></li>
+                    <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                        <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+                    </a></li>
+                    <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                        <span class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg></span>
+                    </a></li>
+                </ul>
+            </div>
+            <div class="header-top-right">
+                <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                <nav class="header-top-links" aria-label="utility navigation">
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                    <a href="#" id="headerMyAccountLink">My Account</a>
+                    <a href="#" id="headerSignInLink">Sign In</a>
+                    <span class="header-top-divider" aria-hidden="true">/</span>
+                    <a href="#" id="headerRegisterLink">Register</a>
+                    <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
+                        <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                            <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="searchbar-header">
+        <div class="searchbar-header__surface">
+            <div class="searchbar-header__inner">
+                <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                    <img class="searchbar-header__brand-img" src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
+                    <span class="searchbar-header__brand-text">branded<span class="searchbar-header__brand-text-highlight">UK</span></span>
+                </a>
+
+                <div class="searchbar-header__actions">
+                    <div class="searchbar-header__search-expand">
+                        <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                        <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+
+                    <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action" href="https://wa.me/447447348564" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action searchbar-header__cart" href="basket.html" aria-label="View basket">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </span>
+                        <span class="searchbar-header__cart-badge" id="cartBadge" style="display:none;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-bottom sticky-header">
+        <div class="header-container">
+            <div class="category-dropdown has-border" data-visible="false">
+                <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                    <span class="category-toggle-icon" aria-hidden="true"></span>
+                    <span class="category-toggle-label">Browse Categories</span>
+                    <span class="category-toggle-caret" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-box" role="region" aria-label="Browse categories">
+                    <ul class="menu vertical-menu category-menu">
+                        <li class="has-children">
+                            <a href="shop.html?category=tshirts">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
+                                <span class="category-text">T-Shirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=polo">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
+                                <span class="category-text">Polo Shirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=hoodies">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
+                                <span class="category-text">Hoodies &amp; Sweatshirts</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=jackets">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
+                                <span class="category-text">Jackets &amp; Softshell</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=hivis">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
+                                <span class="category-text">Hi-Vis Clothing</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=fleeces">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
+                                <span class="category-text">Fleeces</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="shop.html?category=caps">
+                                <img class="category-icon" src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
+                                <span class="category-text">Headwear / Accessories</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="shop.html?category=all" class="view-all-link">
+                                <span class="category-text">View All Categories</span>
+                                <span class="category-caret" aria-hidden="true"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="primary navigation">
+                <ul class="menu">
+                    <li><a href="shop.html?category=all">All Products</a></li>
+                    <li><a href="index.html">BrandedUK</a></li>
+                    <li><a href="#">Promotions</a></li>
+                    <li><a href="#">More</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- SHOP CONTENT -->
+<div class="shop-wrapper">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar">
+        <div class="filters-header">
+            <h3>Filter By</h3>
+            <button class="clear-all-btn">Clear All</button>
+        </div>
+
+        <!-- Special Filters Dropdown -->
+        <div class="special-filters-dropdown">
+            <button type="button" class="special-filters-btn" onclick="this.parentElement.classList.toggle('open')">
+                <span class="special-filters-icon">✨</span>
+                <span class="special-filters-text">Special Filters</span>
+                <span class="special-filters-arrow">›</span>
+            </button>
+            <div class="special-filters-content">
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label label-new-in">New In</span>
+                    <button type="button" class="filter-toggle-btn toggle-new-in" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label label-bradeal">Brandedeal</span>
+                    <button type="button" class="filter-toggle-btn toggle-bradeal" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label label-offers">Offers</span>
+                    <button type="button" class="filter-toggle-btn toggle-offers" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label">In Stock</span>
+                    <button type="button" class="filter-toggle-btn" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label">Recycled / Organic</span>
+                    <button type="button" class="filter-toggle-btn" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label">Plus Sizes</span>
+                    <button type="button" class="filter-toggle-btn" aria-pressed="false">
+                        <span class="filter-toggle-thumb"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search within results -->
+        <div class="filter-group">
+            <h4>Search products</h4>
+            <input type="text" class="filter-search" placeholder="Search within results">
+        </div>
+
+        <!-- Price Range -->
+        <div class="price-range-section expanded">
+            <div class="price-range-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <h4>Price Range</h4>
+                <span class="price-range-arrow">ˇ</span>
+            </div>
+            <div class="price-range-display" id="priceRangeDisplay">£14.25 - £64.95</div>
+            <div class="price-range-slider-container">
+                <div class="price-range-track"></div>
+                <div class="price-range-selected" id="priceRangeSelected"></div>
+                <input type="range" min="14" max="65" value="14" class="price-slider" id="priceSliderMin">
+                <input type="range" min="14" max="65" value="65" class="price-slider" id="priceSliderMax">
+            </div>
+            <div class="price-range-inputs">
+                <div class="price-input-group">
+                    <label>Min</label>
+                    <input type="text" class="price-input" id="priceInputMin" value="£14">
+                </div>
+                <div class="price-input-group">
+                    <label>Max</label>
+                    <input type="text" class="price-input" id="priceInputMax" value="£65">
+                </div>
+            </div>
+        </div>
+
+        <!-- Expandable Filter Rows -->
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Gender</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="unisex"><span>Unisex</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="mens"><span>Mens</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="womens"><span>Womens</span><span class="count">(72)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Age Group</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="adult"><span>Adult</span><span class="count">(156)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="junior"><span>Junior / Youth</span><span class="count">(48)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="kids"><span>Kids</span><span class="count">(32)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="baby"><span>Baby / Toddler</span><span class="count">(18)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Sleeve</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="long"><span>Long Sleeve</span><span class="count">(89)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="short"><span>Short Sleeve</span><span class="count">(67)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="sleeveless"><span>Sleeveless</span><span class="count">(24)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="three-quarter"><span>3/4 Sleeve</span><span class="count">(12)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Neckline</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="crew"><span>Crew Neck</span><span class="count">(95)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="v-neck"><span>V-Neck</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="polo"><span>Polo Collar</span><span class="count">(38)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="hooded"><span>Hooded</span><span class="count">(56)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="scoop"><span>Scoop Neck</span><span class="count">(18)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="zip"><span>Zip Neck</span><span class="count">(14)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Accreditations</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="oeko-tex"><span>OEKO-TEX®</span><span class="count">(78)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="gots"><span>GOTS Certified</span><span class="count">(34)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="fair-trade"><span>Fair Trade</span><span class="count">(28)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="bci"><span>BCI Cotton</span><span class="count">(45)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="grs"><span>GRS Recycled</span><span class="count">(22)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Primary Colour</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="black"><span>Black</span><span class="count">(142)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="white"><span>White</span><span class="count">(128)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="navy"><span>Navy</span><span class="count">(98)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="grey"><span>Grey</span><span class="count">(76)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="red"><span>Red</span><span class="count">(54)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="royal-blue"><span>Royal Blue</span><span class="count">(48)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="green"><span>Green</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="yellow"><span>Yellow</span><span class="count">(28)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="orange"><span>Orange</span><span class="count">(24)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="pink"><span>Pink</span><span class="count">(32)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="purple"><span>Purple</span><span class="count">(26)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="brown"><span>Brown</span><span class="count">(18)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Colour Shade</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="light"><span>Light</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="medium"><span>Medium</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="dark"><span>Dark</span><span class="count">(98)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="bright"><span>Bright / Vibrant</span><span class="count">(45)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="pastel"><span>Pastel</span><span class="count">(32)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="heather"><span>Heather / Marl</span><span class="count">(28)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Style</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="classic"><span>Classic / Regular</span><span class="count">(156)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="slim"><span>Slim Fit</span><span class="count">(68)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="oversized"><span>Oversized</span><span class="count">(34)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="cropped"><span>Cropped</span><span class="count">(18)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="longline"><span>Longline</span><span class="count">(22)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Features</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="pocket"><span>With Pocket</span><span class="count">(78)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="zip"><span>With Zip</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="hood"><span>With Hood</span><span class="count">(56)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="reflective"><span>Reflective</span><span class="count">(24)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="waterproof"><span>Waterproof</span><span class="count">(18)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="breathable"><span>Breathable</span><span class="count">(32)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="stretch"><span>Stretch</span><span class="count">(28)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Size</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="xxs"><span>XXS</span><span class="count">(45)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="xs"><span>XS</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="s"><span>S</span><span class="count">(142)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="m"><span>M</span><span class="count">(156)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="l"><span>L</span><span class="count">(156)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="xl"><span>XL</span><span class="count">(142)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="2xl"><span>2XL</span><span class="count">(128)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="3xl"><span>3XL</span><span class="count">(98)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="4xl"><span>4XL</span><span class="count">(68)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="5xl"><span>5XL</span><span class="count">(42)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Fabric</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="cotton"><span>100% Cotton</span><span class="count">(128)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="cotton-poly"><span>Cotton / Polyester</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="polyester"><span>100% Polyester</span><span class="count">(54)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="organic"><span>Organic Cotton</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="recycled"><span>Recycled Polyester</span><span class="count">(28)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="fleece"><span>Fleece</span><span class="count">(38)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="softshell"><span>Softshell</span><span class="count">(24)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Weight (GSM)</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="light"><span>Lightweight (< 180gsm)</span><span class="count">(78)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="medium"><span>Medium (180-250gsm)</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="heavy"><span>Heavyweight (250-320gsm)</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="extra-heavy"><span>Extra Heavy (320gsm+)</span><span class="count">(32)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Fit</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="regular"><span>Regular Fit</span><span class="count">(142)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="slim"><span>Slim Fit</span><span class="count">(68)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="relaxed"><span>Relaxed Fit</span><span class="count">(54)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="fitted"><span>Fitted</span><span class="count">(38)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="loose"><span>Loose Fit</span><span class="count">(28)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Related Sector</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="hospitality"><span>Hospitality</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="construction"><span>Construction</span><span class="count">(54)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="healthcare"><span>Healthcare</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="education"><span>Education</span><span class="count">(68)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="retail"><span>Retail</span><span class="count">(76)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="corporate"><span>Corporate</span><span class="count">(98)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="events"><span>Events / Promotional</span><span class="count">(124)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Related Sport</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="football"><span>Football</span><span class="count">(42)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="rugby"><span>Rugby</span><span class="count">(28)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="cricket"><span>Cricket</span><span class="count">(18)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="running"><span>Running</span><span class="count">(56)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="gym"><span>Gym / Fitness</span><span class="count">(68)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="golf"><span>Golf</span><span class="count">(24)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="tennis"><span>Tennis</span><span class="count">(16)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Tag</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="tear-away"><span>Tear-Away Label</span><span class="count">(142)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="printed"><span>Printed Label</span><span class="count">(98)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="woven"><span>Woven Label</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="tagless"><span>Tagless</span><span class="count">(54)</span></label>
+            </div>
+        </div>
+
+        <div class="filter-expandable-row" onclick="this.classList.toggle('expanded')">
+            <h4>Effect</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">
+            <div class="filter-checkbox-list">
+                <label class="filter-checkbox-item"><input type="checkbox" value="plain"><span>Plain</span><span class="count">(186)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="vintage"><span>Vintage / Washed</span><span class="count">(32)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="tie-dye"><span>Tie Dye</span><span class="count">(18)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="camo"><span>Camouflage</span><span class="count">(12)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="contrast"><span>Contrast Details</span><span class="count">(28)</span></label>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="products-header">
+            <div class="products-header-left">
+                <button type="button" class="back-btn" onclick="window.history.back()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    Back
+                </button>
+                <h1 id="categoryTitle">Hoodies</h1>
+            </div>
+            <span class="products-count" id="productsCount">0 products</span>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be rendered by JavaScript -->
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer class="shop-footer">
+    <p>&copy; 2024 BrandedUK. All rights reserved.</p>
+</footer>
+
+<script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
+<script src="js/main.js?v=20251230"></script>
+<script>
+// Products Database (same as mobile)
+const PRODUCTS_DB = [
+    {
+        code: "GD067",
+        name: "Softstyle™ midweight fleece adult hoodie",
+        price: "17.58",
+        category: "hoodies",
+        image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+        colors: [
+            {name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg"},
+            {name: "Ash Grey", main: "https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg"},
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+            {name: "Blue Dusk", main: "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg"},
+            {name: "Brown Savana", main: "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg"},
+            {name: "Cardinal Red", main: "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg"},
+            {name: "Carolina Blue", main: "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg"},
+            {name: "Cement", main: "https://i.postimg.cc/fLbHR2Z2/GD067-Cement-FT.jpg"},
+            {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"},
+            {name: "Cobalt", main: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"},
+            {name: "Cocoa", main: "https://i.postimg.cc/d10WVHvb/GD067-Cocoa-FT.jpg"},
+            {name: "Daisy", main: "https://i.postimg.cc/1tzW3Cs1/GD067-Daisy-FT.jpg"},
+            {name: "Dark Heather", main: "https://i.postimg.cc/j5kMwHdk/GD067-Dark-Heather-FT.jpg"},
+            {name: "Dusty Rose", main: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"},
+            {name: "Forest Green", main: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"},
+            {name: "Light Pink", main: "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg"},
+            {name: "Maroon", main: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"},
+            {name: "Military Green", main: "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"},
+            {name: "Mustard", main: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"},
+            {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+            {name: "Off-White", main: "https://i.postimg.cc/nzw3j4hz/GD067-Off-White-FT.jpg"},
+            {name: "Paragon", main: "https://i.postimg.cc/j5kMwHSL/GD067-Paragon-FT.jpg"},
+            {name: "Pink Lemonade", main: "https://i.postimg.cc/zBPxbCGy/GD067-Pink-Lemonade-FT.jpg"},
+            {name: "Pistachio", main: "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"},
+            {name: "Purple", main: "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"},
+            {name: "Red", main: "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"},
+            {name: "Sport Grey", main: "https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg"},
+            {name: "Royal", main: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"},
+            {name: "Sage", main: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"},
+            {name: "Sand", main: "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"},
+            {name: "Sky", main: "https://i.postimg.cc/YSMnJ2Pc/GD067-Sky-FT.jpg"},
+            {name: "Smoke", main: "https://i.postimg.cc/Xv4HTNPb/GD067-Smoke-FT.jpg"},
+            {name: "Stone Blue", main: "https://i.postimg.cc/g0mSfc72/GD067-Stone-Blue-FT.jpg"},
+            {name: "Tangerine", main: "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"},
+            {name: "Texas Orange", main: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"},
+            {name: "White", main: "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"},
+            {name: "Yellow Haze", main: "https://i.postimg.cc/W48WjLRN/GD067-Yellow-Haze-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Gildan"
+    },
+    {
+        code: "GD057",
+        name: "Heavy Blend™ adult full zip hooded sweatshirt",
+        price: "42.50",
+        category: "hoodies",
+        image: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg",
+        colors: [
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+            {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+            {name: "Sport Grey", main: "https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg"},
+            {name: "Red", main: "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"},
+            {name: "Royal", main: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"},
+            {name: "Forest Green", main: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Gildan"
+    },
+    {
+        code: "JH001",
+        name: "College hoodie",
+        price: "28.99",
+        category: "hoodies",
+        image: "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg",
+        colors: [
+            {name: "Blue Dusk", main: "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg"},
+            {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"},
+            {name: "White", main: "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"},
+            {name: "Purple", main: "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"},
+            {name: "Mustard", main: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "AWDis"
+    },
+    {
+        code: "JH050",
+        name: "Zoodie",
+        price: "55.00",
+        category: "hoodies",
+        image: "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg",
+        colors: [
+            {name: "Brown Savana", main: "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg"},
+            {name: "Sage", main: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"},
+            {name: "Sand", main: "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"},
+            {name: "Cobalt", main: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"},
+            {name: "Dusty Rose", main: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"},
+            {name: "Pistachio", main: "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "AWDis"
+    },
+    {
+        code: "B301",
+        name: "Organic pullover hoodie",
+        price: "64.95",
+        category: "hoodies",
+        image: "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg",
+        colors: [
+            {name: "Cardinal Red", main: "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg"},
+            {name: "Maroon", main: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"},
+            {name: "Military Green", main: "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"},
+            {name: "Texas Orange", main: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"},
+            {name: "Tangerine", main: "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"}
+        ],
+        customization: ["embroidery"],
+        brand: "B&C"
+    },
+    {
+        code: "RX350",
+        name: "Pro RTX hoodie",
+        price: "14.25",
+        category: "hoodies",
+        image: "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg",
+        colors: [
+            {name: "Carolina Blue", main: "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg"},
+            {name: "Sky", main: "https://i.postimg.cc/YSMnJ2Pc/GD067-Sky-FT.jpg"},
+            {name: "Stone Blue", main: "https://i.postimg.cc/g0mSfc72/GD067-Stone-Blue-FT.jpg"},
+            {name: "Cement", main: "https://i.postimg.cc/fLbHR2Z2/GD067-Cement-FT.jpg"},
+            {name: "Ash Grey", main: "https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg"},
+            {name: "Smoke", main: "https://i.postimg.cc/Xv4HTNPb/GD067-Smoke-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Pro RTX"
+    },
+    {
+        code: "SS14",
+        name: "Classic 80/20 hooded sweat",
+        price: "22.75",
+        category: "hoodies",
+        image: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg",
+        colors: [
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+            {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+            {name: "Red", main: "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Fruit of the Loom"
+    },
+    {
+        code: "JH003",
+        name: "Sports polyester hoodie",
+        price: "35.50",
+        category: "hoodies",
+        image: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg",
+        colors: [
+            {name: "Royal", main: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"},
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+            {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "AWDis"
+    },
+    {
+        code: "UC502",
+        name: "Classic hooded sweatshirt",
+        price: "18.99",
+        category: "hoodies",
+        image: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg",
+        colors: [
+            {name: "Dusty Rose", main: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"},
+            {name: "Purple", main: "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"},
+            {name: "White", main: "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"}
+        ],
+        customization: ["embroidery"],
+        brand: "Uneek"
+    },
+    {
+        code: "RG045",
+        name: "Pro hoodie",
+        price: "48.25",
+        category: "hoodies",
+        image: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg",
+        colors: [
+            {name: "Forest Green", main: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"},
+            {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"},
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Regatta"
+    },
+    {
+        code: "SG27",
+        name: "Contrast hoodie",
+        price: "26.50",
+        category: "hoodies",
+        image: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg",
+        colors: [
+            {name: "Cobalt", main: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"},
+            {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "SG"
+    },
+    {
+        code: "ST5600",
+        name: "Active bonded fleece hoody",
+        price: "59.95",
+        category: "hoodies",
+        image: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg",
+        colors: [
+            {name: "Mustard", main: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"},
+            {name: "Tangerine", main: "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"}
+        ],
+        customization: ["embroidery"],
+        brand: "Stedman"
+    },
+    {
+        code: "K443",
+        name: "Hooded sweatshirt",
+        price: "31.75",
+        category: "hoodies",
+        image: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg",
+        colors: [
+            {name: "Sage", main: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"},
+            {name: "Sand", main: "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"},
+            {name: "Off-White", main: "https://i.postimg.cc/nzw3j4hz/GD067-Off-White-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Kariban"
+    },
+    {
+        code: "RX101",
+        name: "Pro hoody",
+        price: "39.99",
+        category: "hoodies",
+        image: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg",
+        colors: [
+            {name: "Maroon", main: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"},
+            {name: "Military Green", main: "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "Pro RTX"
+    },
+    {
+        code: "WD072",
+        name: "Workwear hoodie",
+        price: "45.00",
+        category: "hoodies",
+        image: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg",
+        colors: [
+            {name: "Texas Orange", main: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"},
+            {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+            {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"}
+        ],
+        customization: ["embroidery"],
+        brand: "Dickies"
+    },
+    {
+        code: "FH002",
+        name: "Premium zip hoodie",
+        price: "52.50",
+        category: "hoodies",
+        image: "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg",
+        colors: [
+            {name: "Light Pink", main: "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg"},
+            {name: "Daisy", main: "https://i.postimg.cc/1tzW3Cs1/GD067-Daisy-FT.jpg"},
+            {name: "Pistachio", main: "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"}
+        ],
+        customization: ["embroidery", "print"],
+        brand: "FDM"
+    }
+];
+
+// Price breaks
+const PRICE_BREAKS = [
+    { min: 1, max: 9, price: 17.58 },
+    { min: 10, max: 24, price: 16.54 },
+    { min: 25, max: 49, price: 16.18 },
+    { min: 50, max: 99, price: 14.94 },
+    { min: 100, max: 249, price: 13.49 },
+    { min: 250, max: 99999, price: 12.59 }
+];
+
+// Get category from URL
+const urlParams = new URLSearchParams(window.location.search);
+const categoryFilter = urlParams.get('category') || 'all';
+
+// Category titles
+const categoryTitles = {
+    'all': 'All Products',
+    'hoodies': 'Hoodies',
+    'tshirts': 'T-Shirts',
+    'polo': 'Polo Shirts',
+    'jackets': 'Jackets',
+    'hivis': 'Hi-Vis',
+    'fleeces': 'Fleeces',
+    'bags': 'Bags',
+    'caps': 'Caps',
+    'aprons': 'Aprons',
+    'beanies': 'Beanies',
+    'hi-viz': 'Hi-Viz'
+};
+
+// VAT helpers - uses same key as main.js
+function isVatOn() {
+    return localStorage.getItem('brandeduk-vat') === 'inc';
+}
+
+function formatCurrency(amount) {
+    let value = Number(amount) || 0;
+    if (isVatOn()) {
+        value = value * 1.20;
+    }
+    return '£' + value.toFixed(2);
+}
+
+function vatSuffix() {
+    return isVatOn() ? 'inc VAT' : 'ex VAT';
+}
+
+function getPriceRange() {
+    const prices = PRICE_BREAKS.map(b => b.price);
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+// Render products
+function renderProducts() {
+    const grid = document.getElementById('productsGrid');
+    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    
+    document.getElementById('categoryTitle').textContent = categoryTitles[categoryFilter] || 'Products';
+    document.getElementById('productsCount').textContent = products.length + ' products';
+    
+    grid.innerHTML = '';
+    
+    products.forEach((product, index) => {
+        const colorIndex = index % product.colors.length;
+        const displayColor = product.colors[colorIndex];
+        const productPrice = parseFloat(product.price);
+        
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        // Generate ALL colors for this card
+        const colors = product.colors.map((c, i) => 
+            `<button type="button" class="color-dot ${i === colorIndex ? 'active' : ''}" data-color="${c.name}" data-main="${c.main}" style="background-image: url('${c.main}');" title="${c.name}"></button>`
+        ).join('');
+        
+        const visibleColors = 7;
+        const progressPercent = Math.min(100, (visibleColors / product.colors.length) * 100);
+        
+        // Build badges based on customization types
+        let badgesHtml = '';
+        if (product.customization && product.customization.includes('embroidery')) {
+            badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
+        }
+        if (product.customization && product.customization.includes('print')) {
+            badgesHtml += '<span class="badge print">PRINT</span>';
+        }
+        
+        card.innerHTML = `
+            <div class="product-media">
+                <div class="product-badges">
+                    ${badgesHtml}
+                </div>
+                <img src="${displayColor.main}" alt="${product.name}" class="product-image">
+            </div>
+            <div class="product-info">
+                <div class="product-code-row">
+                    <span class="product-code">${product.code}</span>
+                    <span class="brand-name">${product.brand}</span>
+                </div>
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">
+                    <span class="price-label">From</span>
+                    <span class="price-value">${formatCurrency(productPrice)}</span>
+                    <span class="price-suffix">${vatSuffix()}</span>
+                </div>
+                <div class="product-colors-wrapper">
+                    <div class="product-colors">${colors}</div>
+                    <div class="color-slider-controls">
+                        <button type="button" class="color-arrow color-prev" aria-label="Previous colors">‹</button>
+                        <div class="color-progress">
+                            <div class="color-progress-bar" style="width: ${progressPercent}%;"></div>
+                        </div>
+                        <button type="button" class="color-arrow color-next" aria-label="Next colors">›</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Color dot interactions
+        card.querySelectorAll('.color-dot').forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const img = card.querySelector('.product-image');
+                if (img) img.src = dot.dataset.main;
+                card.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+            });
+        });
+        
+        // Color slider scroll controls
+        const colorsContainer = card.querySelector('.product-colors');
+        const prevBtn = card.querySelector('.color-prev');
+        const nextBtn = card.querySelector('.color-next');
+        const progressBar = card.querySelector('.color-progress-bar');
+        const scrollAmount = 120;
+        
+        if (prevBtn && nextBtn && colorsContainer) {
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                colorsContainer.scrollLeft -= scrollAmount;
+            });
+            
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                colorsContainer.scrollLeft += scrollAmount;
+            });
+            
+            // Update progress bar on scroll
+            colorsContainer.addEventListener('scroll', () => {
+                const maxScroll = colorsContainer.scrollWidth - colorsContainer.clientWidth;
+                const progress = maxScroll > 0 ? ((colorsContainer.scrollLeft + colorsContainer.clientWidth) / colorsContainer.scrollWidth) * 100 : 100;
+                if (progressBar) progressBar.style.width = progress + '%';
+            });
+        }
+        
+        // Card click - go to product detail
+        card.addEventListener('click', () => {
+            sessionStorage.setItem('selectedProduct', product.code);
+            sessionStorage.setItem('selectedProductData', JSON.stringify(product));
+            const activeColor = card.querySelector('.color-dot.active');
+            if (activeColor) {
+                sessionStorage.setItem('selectedColorName', activeColor.dataset.color);
+                sessionStorage.setItem('selectedColorUrl', activeColor.dataset.main);
+            }
+            // Navigate to product detail page
+            window.location.href = '../product-detail.html';
+        });
+        
+        grid.appendChild(card);
+    });
+}
+
+// Toggle switch functionality
+document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const isPressed = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', !isPressed);
+    });
+});
+
+// Clear All button functionality
+document.querySelector('.clear-all-btn')?.addEventListener('click', function() {
+    // Reset all toggle switches to OFF
+    document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
+        btn.setAttribute('aria-pressed', 'false');
+    });
+    
+    // Reset price range slider to full range
+    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    const prices = products.map(p => parseFloat(p.price));
+    const catalogMinPrice = Math.floor(Math.min(...prices));
+    const catalogMaxPrice = Math.ceil(Math.max(...prices));
+    
+    const sliderMin = document.getElementById('priceSliderMin');
+    const sliderMax = document.getElementById('priceSliderMax');
+    const rangeSelected = document.getElementById('priceRangeSelected');
+    const rangeDisplay = document.getElementById('priceRangeDisplay');
+    const inputMin = document.getElementById('priceInputMin');
+    const inputMax = document.getElementById('priceInputMax');
+    
+    if (sliderMin && sliderMax) {
+        sliderMin.value = catalogMinPrice;
+        sliderMax.value = catalogMaxPrice;
+        
+        // Update display
+        rangeSelected.style.left = '0%';
+        rangeSelected.style.width = '100%';
+        
+        const vatMultiplier = isVatOn() ? 1.20 : 1;
+        rangeDisplay.textContent = '£' + (catalogMinPrice * vatMultiplier).toFixed(2) + ' - £' + (catalogMaxPrice * vatMultiplier).toFixed(2);
+        
+        inputMin.value = '£' + catalogMinPrice;
+        inputMax.value = '£' + catalogMaxPrice;
+    }
+    
+    // Clear search input
+    const searchInput = document.querySelector('.filter-search');
+    if (searchInput) searchInput.value = '';
+    
+    // Close Special Filters dropdown
+    const specialFilters = document.querySelector('.special-filters-dropdown');
+    if (specialFilters) specialFilters.classList.remove('open');
+    
+    // Show all products
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = '';
+    });
+    
+    // Update count
+    const products2 = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    document.getElementById('productsCount').textContent = products2.length + ' products';
+});
+
+// Listen for VAT state changes from main.js
+document.addEventListener('vatStateChanged', function(e) {
+    renderProducts(); // Re-render products with new VAT prices
+    updatePriceRangeDisplay();
+});
+
+// Dual Price Range Slider
+function initPriceRangeSlider() {
+    const sliderMin = document.getElementById('priceSliderMin');
+    const sliderMax = document.getElementById('priceSliderMax');
+    const rangeSelected = document.getElementById('priceRangeSelected');
+    const rangeDisplay = document.getElementById('priceRangeDisplay');
+    const inputMin = document.getElementById('priceInputMin');
+    const inputMax = document.getElementById('priceInputMax');
+    
+    if (!sliderMin || !sliderMax) return;
+    
+    // Calculate min/max from filtered products
+    const products = categoryFilter === 'all' ? PRODUCTS_DB : PRODUCTS_DB.filter(p => p.category === categoryFilter);
+    const prices = products.map(p => parseFloat(p.price));
+    const catalogMinPrice = Math.floor(Math.min(...prices));
+    const catalogMaxPrice = Math.ceil(Math.max(...prices));
+    
+    // Update slider attributes dynamically
+    sliderMin.min = catalogMinPrice;
+    sliderMin.max = catalogMaxPrice;
+    sliderMin.value = catalogMinPrice;
+    
+    sliderMax.min = catalogMinPrice;
+    sliderMax.max = catalogMaxPrice;
+    sliderMax.value = catalogMaxPrice;
+    
+    function updateSlider() {
+        let minVal = parseInt(sliderMin.value);
+        let maxVal = parseInt(sliderMax.value);
+        
+        // Prevent crossing
+        if (minVal > maxVal) {
+            const temp = minVal;
+            minVal = maxVal;
+            maxVal = temp;
+        }
+        
+        // Update selected range bar
+        const percentMin = ((minVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
+        const percentMax = ((maxVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
+        rangeSelected.style.left = percentMin + '%';
+        rangeSelected.style.width = (percentMax - percentMin) + '%';
+        
+        // Update display with VAT
+        const vatMultiplier = isVatOn() ? 1.20 : 1;
+        const displayMin = (minVal * vatMultiplier).toFixed(2);
+        const displayMax = (maxVal * vatMultiplier).toFixed(2);
+        rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+        
+        // Update inputs
+        inputMin.value = '£' + minVal;
+        inputMax.value = '£' + maxVal;
+        
+        // Filter products
+        filterProductsByPrice(minVal, maxVal);
+    }
+    
+    sliderMin.addEventListener('input', updateSlider);
+    sliderMax.addEventListener('input', updateSlider);
+    
+    // Input field handlers
+    inputMin.addEventListener('change', function() {
+        let val = parseInt(this.value.replace('£', ''));
+        if (isNaN(val)) val = catalogMinPrice;
+        val = Math.max(catalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
+        sliderMin.value = val;
+        updateSlider();
+    });
+    
+    inputMax.addEventListener('change', function() {
+        let val = parseInt(this.value.replace('£', ''));
+        if (isNaN(val)) val = catalogMaxPrice;
+        val = Math.min(catalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
+        sliderMax.value = val;
+        updateSlider();
+    });
+    
+    // Initialize
+    updateSlider();
+}
+
+function updatePriceRangeDisplay() {
+    const sliderMin = document.getElementById('priceSliderMin');
+    const sliderMax = document.getElementById('priceSliderMax');
+    const rangeDisplay = document.getElementById('priceRangeDisplay');
+    
+    if (!sliderMin || !sliderMax || !rangeDisplay) return;
+    
+    const vatMultiplier = isVatOn() ? 1.20 : 1;
+    const displayMin = (parseInt(sliderMin.value) * vatMultiplier).toFixed(2);
+    const displayMax = (parseInt(sliderMax.value) * vatMultiplier).toFixed(2);
+    rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+}
+
+function filterProductsByPrice(min, max) {
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+        const priceText = card.querySelector('.price-value')?.textContent || '';
+        const price = parseFloat(priceText.replace('£', ''));
+        const basePrice = isVatOn() ? price / 1.20 : price;
+        
+        if (basePrice >= min && basePrice <= max) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Update count
+    const visibleCards = document.querySelectorAll('.product-card:not([style*="display: none"])').length;
+    const countEl = document.getElementById('productsCount');
+    if (countEl) countEl.textContent = visibleCards + ' products';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    renderProducts();
+    initPriceRangeSlider();
+});
+</script>
+</body>
+</html>

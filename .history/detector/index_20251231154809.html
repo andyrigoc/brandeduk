@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandedUK - Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+        }
+        .loader {
+            text-align: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <p>Detecting your device...</p>
+        <noscript>
+            <p>JavaScript is required. Choose your version:</p>
+            <p><a href="../brandeduk.com/home-pc.html">Desktop Version</a> | <a href="../mobile/home-mobile.html">Mobile Version</a></p>
+        </noscript>
+    </div>
+    
+    <script>
+        (function() {
+            // Breakpoint: 1024px (tablets go to mobile, desktops go to PC)
+            var BREAKPOINT = 1024;
+            var isMobile = window.innerWidth < BREAKPOINT;
+            
+            // Redirect based on screen width
+            if (isMobile) {
+                window.location.replace('../mobile/home-mobile.html');
+            } else {
+                window.location.replace('../brandeduk.com/home-pc.html');
+            }
+        })();
+    </script>
+</body>
+</html>

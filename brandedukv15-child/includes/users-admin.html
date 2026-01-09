@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandedUK - User Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #8455f4;
+        }
+        
+        .users-table {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #8455f4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            background: #6b21a8;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-email {
+            color: #6b7280;
+        }
+        
+        .user-company {
+            background: #e5e7eb;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .no-company {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👥 User Management</h1>
+        <p class="subtitle">BrandedUK registered users database</p>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">With Company</div>
+                <div class="stat-value" id="withCompany">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last 7 Days</div>
+                <div class="stat-value" id="recentUsers">-</div>
+            </div>
+        </div>
+        
+        <div id="errorContainer"></div>
+        
+        <div class="users-table">
+            <div class="table-header">
+                <span class="table-title">Registered Users</span>
+                <button class="refresh-btn" onclick="loadUsers()">↻ Refresh</button>
+            </div>
+            <div id="tableContent">
+                <div class="loading">Loading users...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function loadUsers() {
+            const tableContent = document.getElementById('tableContent');
+            const errorContainer = document.getElementById('errorContainer');
+            
+            tableContent.innerHTML = '<div class="loading">Loading users...</div>';
+            errorContainer.innerHTML = '';
+            
+            try {
+                const response = await fetch('auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'listUsers' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderUsers(result.users);
+                    updateStats(result.users);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                // Fallback: try localStorage demo data
+                const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
+                if (users.length > 0) {
+                    renderUsers(users);
+                    updateStats(users);
+                } else {
+                    errorContainer.innerHTML = `<div class="error">⚠️ ${error.message || 'Failed to load users. Make sure the server is running PHP.'}</div>`;
+                    tableContent.innerHTML = '<div class="loading">No users found. Register some users first!</div>';
+                }
+            }
+        }
+        
+        function renderUsers(users) {
+            if (users.length === 0) {
+                document.getElementById('tableContent').innerHTML = '<div class="loading">No users registered yet.</div>';
+                return;
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Company</th>
+                            <th>Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            users.forEach(user => {
+                const name = `${user.firstName} ${user.lastName}`;
+                const company = user.company 
+                    ? `<span class="user-company">${user.company}</span>` 
+                    : '<span class="no-company">-</span>';
+                const date = user.createdAt 
+                    ? new Date(user.createdAt).toLocaleDateString() 
+                    : (user.id ? new Date(user.id).toLocaleDateString() : '-');
+                
+                html += `
+                    <tr>
+                        <td>${user.id || '-'}</td>
+                        <td class="user-name">${name}</td>
+                        <td class="user-email">${user.email}</td>
+                        <td>${user.phone || '-'}</td>
+                        <td>${company}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('tableContent').innerHTML = html;
+        }
+        
+        function updateStats(users) {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('withCompany').textContent = users.filter(u => u.company).length;
+            
+            // Count users from last 7 days
+            const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const recentCount = users.filter(u => {
+                const created = u.createdAt ? new Date(u.createdAt).getTime() : (u.id || 0);
+                return created > weekAgo;
+            }).length;
+            document.getElementById('recentUsers').textContent = recentCount;
+        }
+        
+        // Load on page load
+        loadUsers();
+    </script>
+</body>
+</html>
