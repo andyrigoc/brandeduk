@@ -1,0 +1,2351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6B21A8">
+    <title>Shop - BrandedUK</title>
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102AB">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102X">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102X">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+        .social-icons-mobile {
+            gap: 3px !important;
+            margin-left: 8px !important;
+            padding-left: 0 !important;
+        }
+        .social-icons-mobile .social-icon {
+            width: 27px !important;
+            height: 27px !important;
+            min-width: 27px !important;
+            min-height: 27px !important;
+            max-width: 27px !important;
+            max-height: 27px !important;
+            border-radius: 7px !important;
+        }
+        .social-icons-mobile .social-icon i {
+            font-size: 12px !important;
+        }
+
+        /* Category heading under category tabs */
+        .shop-category-heading {
+            margin: 0;
+            padding: 10px 16px 0;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gray-900);
+            letter-spacing: -0.01em;
+        }
+
+        /* Tablet breadcrumb between tabs and title */
+        .shop-breadcrumbs {
+            display: flex;
+        }
+
+        .shop-breadcrumbs a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Shop Toolbar - Sort & Pagination */
+        .shop-toolbar-mobile {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            padding: 10px 16px;
+            margin-top: 20px;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .shop-toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .shop-toolbar-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+
+        .shop-select-mobile {
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1f2937;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .shop-select-mobile.shop-select-small {
+            min-width: 55px;
+        }
+
+        .shop-select-mobile:focus {
+            outline: none;
+            border-color: #7c3aed;
+        }
+
+        .shop-toolbar-suffix {
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .shop-pager-mobile {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .pager-btn-mobile {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pager-btn-mobile:hover {
+            background: #f3f4f6;
+        }
+
+        .pager-btn-mobile:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pager-current {
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #7c3aed;
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+    </style>
+    <style>
+        /* Desktop header (same as main page) */
+        .desktop-site-header {
+            display: none;
+        }
+
+        /* Reuse main-page header overrides where needed */
+        .desktop-site-header .searchbar-header__account .searchbar-header__action-ring {
+            background: #7c3aed;
+        }
+        .desktop-site-header .searchbar-header__account .searchbar-header__action-icon {
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .desktop-site-header .header-top .social-buttons-header {
+            gap: 10px;
+        }
+        .desktop-site-header .header-top .social-buttons-header a {
+            width: 32px;
+            height: 32px;
+            transition: all 0.3s ease;
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-icon svg {
+            width: 14px;
+            height: 14px;
+            transition: fill 0.3s ease;
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-facebook .social-icon svg { fill: #1877f2; }
+        .desktop-site-header .header-top .social-buttons-header .social-facebook:hover {
+            box-shadow: 0 6px 20px rgba(24, 119, 242, 0.6);
+            transform: translateY(-2px);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-facebook:hover .social-icon {
+            background: linear-gradient(0deg, #e7f3ff, #fff);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-instagram .social-icon svg { fill: #e4405f; }
+        .desktop-site-header .header-top .social-buttons-header .social-instagram:hover {
+            box-shadow: 0 6px 20px rgba(228, 64, 95, 0.6);
+            transform: translateY(-2px);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-instagram:hover .social-icon {
+            background: linear-gradient(0deg, #fce4ec, #fff);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-linkedin .social-icon svg { fill: #0a66c2; }
+        .desktop-site-header .header-top .social-buttons-header .social-linkedin:hover {
+            box-shadow: 0 6px 20px rgba(10, 102, 194, 0.6);
+            transform: translateY(-2px);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-linkedin:hover .social-icon {
+            background: linear-gradient(0deg, #e8f4fc, #fff);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-youtube .social-icon svg { fill: #ff0000; }
+        .desktop-site-header .header-top .social-buttons-header .social-youtube:hover {
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-youtube:hover .social-icon {
+            background: linear-gradient(0deg, #ffe5e5, #fff);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-pinterest .social-icon svg { fill: #bd081c; }
+        .desktop-site-header .header-top .social-buttons-header .social-pinterest:hover {
+            box-shadow: 0 6px 20px rgba(189, 8, 28, 0.6);
+            transform: translateY(-2px);
+        }
+        .desktop-site-header .header-top .social-buttons-header .social-pinterest:hover .social-icon {
+            background: linear-gradient(0deg, #fce4e8, #fff);
+        }
+
+        /* Search expand desktop - expand from right to left */
+        .desktop-site-header .searchbar-header__search-expand {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            transition: width 0.3s ease-in-out;
+            margin-right: 8px;
+        }
+        .desktop-site-header .searchbar-header__search-expand:focus-within {
+            width: 320px;
+        }
+        .desktop-site-header .searchbar-header__search-expand .search-input-expand {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            border-radius: 9999px;
+            padding: 12px 44px 12px 20px;
+        }
+        .desktop-site-header .searchbar-header__search-expand .search-input-expand::placeholder {
+            color: transparent;
+            transition: color 0.2s ease;
+        }
+        .desktop-site-header .searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
+            color: #9ca3af;
+        }
+        .desktop-site-header .searchbar-header__search-expand .search-icon-expand {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        @media (min-width: 1024px) {
+            .desktop-site-header {
+                display: block;
+            }
+
+            /* Hide mobile/tablet headers when desktop header is active */
+            .tablet-top-bar,
+            header.mobile-header {
+                display: none !important;
+            }
+
+            /* Keep the category scroller below the taller desktop header */
+            .categories-filter-scroll {
+                display: none;
+            }
+        }
+    </style>
+    <style>
+        /* Category Filter Styles - HIDDEN on mobile/tablet */
+        .categories-filter-scroll {
+            display: none !important;
+        }
+        
+        .categories-filter-scroll .categories-scroll {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .categories-filter-scroll .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-filter-card {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-snap-align: start;
+            min-width: 70px;
+        }
+        
+        .category-filter-card:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .category-filter-card.active {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border-color: #7c3aed;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        
+        .category-filter-card.active .category-icon svg {
+            stroke: #fff;
+        }
+        
+        .category-filter-card.active .category-icon img {
+            filter: brightness(0) invert(1);
+        }
+        
+        .category-filter-card .category-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .category-filter-card .category-icon img,
+        .category-filter-card .category-icon svg {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            transition: filter 0.3s ease;
+        }
+        
+        .category-filter-card span {
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        /* Products fade animation */
+        .products-grid-shop.filtering .product-card-shop {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .product-card-shop {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .product-card-shop.fade-in {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Filter Toggles - Clean pill switch design */
+        .filter-toggle-row .vat-toggle-mobile {
+            transform: none;
+        }
+
+        /* Toggle Switch - New clean design */
+        #filtersDropup .filters-toggles .vat-checkbox {
+            height: 0;
+            width: 0;
+            visibility: hidden;
+            position: absolute;
+        }
+
+        #filtersDropup .filters-toggles .vat-toggle-label {
+            cursor: pointer;
+            text-indent: -9999px;
+            width: 50px;
+            height: 26px;
+            background: #d1d5db;
+            display: block;
+            border-radius: 100px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        #filtersDropup .filters-toggles .vat-toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox:checked + .vat-toggle-label:after {
+            left: calc(100% - 3px);
+            transform: translateX(-100%);
+        }
+
+        #filtersDropup .filters-toggles .vat-toggle-label:active:after {
+            width: 26px;
+        }
+        
+        /* Toggle checked colors */
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="newIn"]:checked + .vat-toggle-label {
+            background: #3b82f6 !important;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="bradeal"]:checked + .vat-toggle-label {
+            background: #ef4444 !important;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="offers"]:checked + .vat-toggle-label {
+            background: #8b5cf6 !important;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="inStock"]:checked + .vat-toggle-label {
+            background: #64748b !important;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="recycled"]:checked + .vat-toggle-label {
+            background: #10b981 !important;
+        }
+
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="plusSizes"]:checked + .vat-toggle-label {
+            background: #f97316 !important;
+        }
+        
+        /* Logo spacing for back button - Tablet */
+        @media (min-width: 768px) {
+            .mobile-logo-center {
+                margin-left: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Desktop Header (from main page) -->
+    <header class="site-header desktop-site-header">
+        <div class="header-top">
+            <div class="header-container">
+                <div class="header-top-left">
+                    <ul class="social-buttons-header">
+                        <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            </span>
+                        </a></li>
+                        <li><a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                            <span class="social-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                            </span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="header-top-right">
+                    <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                    <nav class="header-top-links" aria-label="utility navigation">
+                        <a href="tel:02089742722" class="header-top-phone">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            0208 974 2722
+                        </a>
+                        <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
+                            <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                                <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
+                            </button>
+                        </div>
+                        <a class="header-top-basket-link" href="customize-positions-pc.html" aria-label="View quote">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 6h15l-1.5 9h-12z"/>
+                                <circle cx="9" cy="20" r="1"/>
+                                <circle cx="18" cy="20" r="1"/>
+                                <path d="M6 6L5 3H2"/>
+                            </svg>
+                            <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="searchbar-header">
+            <div class="searchbar-header__surface">
+                <div class="searchbar-header__inner">
+                    <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                        <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
+                        <span class="searchbar-header__brand-text">branded<span class="searchbar-header__brand-text-highlight">UK</span></span>
+                    </a>
+
+                    <div class="searchbar-header__actions">
+                        <div class="searchbar-header__search-expand">
+                            <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                            <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </div>
+
+                        <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                                </svg>
+                            </span>
+                        </a>
+
+                        <a class="searchbar-header__action" href="https://wa.me/447447348564" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                                </svg>
+                            </span>
+                        </a>
+
+                        <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
+                            <span class="searchbar-header__action-ring is-animating">
+                                <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-bottom sticky-header">
+            <div class="header-container">
+                <div class="category-dropdown has-border" data-visible="false">
+                    <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                        <span class="category-toggle-icon" aria-hidden="true"></span>
+                        <span class="category-toggle-label">Browse Categories</span>
+                        <span class="category-toggle-caret" aria-hidden="true"></span>
+                    </button>
+                    <div class="dropdown-box" role="region" aria-label="Browse categories">
+                        <ul class="menu vertical-menu category-menu">
+                            <li class="has-children">
+                                <a href="category-tshirts.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
+                                    <span class="category-text">T-Shirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Crew Neck</a></li>
+                                            <li><a href="#">Heavyweight / Workwear</a></li>
+                                            <li><a href="#">Kids T-shirts</a></li>
+                                            <li><a href="#">Lightweight</a></li>
+                                            <li><a href="#">Long Sleeve T-shirts</a></li>
+                                            <li><a href="#">Performance / Sports</a></li>
+                                            <li><a href="#">Short Sleeve T-shirts</a></li>
+                                            <li><a href="#">Tank Tops</a></li>
+                                            <li><a href="#">T-shirts for Embroidery</a></li>
+                                            <li><a href="#">T-shirts for Print</a></li>
+                                            <li><a href="#">V-Neck</a></li>
+                                            <li><a href="#">Women's T-shirts</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-polo.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Polo Shirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Classic Cotton Polos</a></li>
+                                            <li><a href="#">Kids Polos</a></li>
+                                            <li><a href="#">Long Sleeve Polos</a></li>
+                                            <li><a href="#">Performance Polos</a></li>
+                                            <li><a href="#">Poly Cotton Polos</a></li>
+                                            <li><a href="#">Polos for Embroidery</a></li>
+                                            <li><a href="#">Short Sleeve Polos</a></li>
+                                            <li><a href="#">Slim Fit Polos</a></li>
+                                            <li><a href="#">Women's Polos</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-hoodies.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Hoodies &amp; Sweatshirts</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Heavyweight Hoodies</a></li>
+                                            <li><a href="#">Kids Hoodies</a></li>
+                                            <li><a href="#">Lightweight Hoodies</a></li>
+                                            <li><a href="#">Premium / Workwear Hoodies</a></li>
+                                            <li><a href="#">Pullover Hoodies</a></li>
+                                            <li><a href="#">Sweatshirts (Crew Neck)</a></li>
+                                            <li><a href="#">Women's Hoodies</a></li>
+                                            <li><a href="#">Zip Hoodies</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-jackets.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Jackets &amp; Softshell</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Bodywarmers / Gilets</a></li>
+                                            <li><a href="#">Bomber Jackets</a></li>
+                                            <li><a href="#">Fleece Jackets</a></li>
+                                            <li><a href="#">High-performance Jackets</a></li>
+                                            <li><a href="#">Softshell Jackets</a></li>
+                                            <li><a href="#">Waterproof Jackets</a></li>
+                                            <li><a href="#">Windbreakers</a></li>
+                                            <li><a href="#">Women's Jackets</a></li>
+                                            <li><a href="#">Workwear Jackets</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-hivis.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Hi-Vis Clothing</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">EN ISO 20471 Certified</a></li>
+                                            <li><a href="#">Hi-vis Hoodies</a></li>
+                                            <li><a href="#">Hi-vis Jackets</a></li>
+                                            <li><a href="#">Hi-vis Polos</a></li>
+                                            <li><a href="#">Hi-vis T-shirts</a></li>
+                                            <li><a href="#">Hi-vis Trousers</a></li>
+                                            <li><a href="#">Hi-vis Vests</a></li>
+                                            <li><a href="#">RIS-3279 Rail</a></li>
+                                            <li><a href="#">Waterproof Hi-Vis</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-trousers.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Work Trousers</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Cargo Pants</a></li>
+                                            <a href="category-workwear.html">
+                                            <li><a href="#">Stretch Work Trousers</a></li>
+                                            <li><a href="#">Waterproof / Over-trousers</a></li>
+                                            <li><a href="#">Work Shorts</a></li>
+                                            <li><a href="#">Work Trousers</a></li>
+                                            <li><a href="#">Women's Work Trousers</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="shop.html?category=aprons">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Work &amp; Uniforms</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Work Trousers</a></li>
+                                            <li><a href="#">Workwear Jackets</a></li>
+                                            <li><a href="#">Workwear Hoodies</a></li>
+                                            <li><a href="#">Work Accessories</a></li>
+                                            <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-fleeces.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Fleeces</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Full Zip Fleece</a></li>
+                                            <a href="category-headwear.html">
+                                            <li><a href="#">Heavy Fleece</a></li>
+                                            <li><a href="#">Kids Fleece</a></li>
+                                            <li><a href="#">Microfleece Jackets</a></li>
+                                            <li><a href="#">Women's Fleece</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="shop.html?category=beanies">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Headwear / Accessories</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu">
+                                    <li>
+                                        <ul>
+                                            <li><a href="#">Beanies</a></li>
+                                            <li><a href="#">Bucket Hats</a></li>
+                                            <li><a href="#">Caps</a></li>
+                                            <li><a href="#">Gloves &amp; Scarves</a></li>
+                                            <li><a href="#">Hi-Vis Headwear</a></li>
+                                            <li><a href="#">Kids Headwear</a></li>
+                                            <li><a href="#">Work Accessories</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="category-sustainable.html">
+                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
+                                    <span class="category-text">Sustainable / Recycled &amp; Organic</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="megamenu brand-grid">
+                                    <li class="brand-heading">0 - 9</li>
+                                    <li><a href="#">2786</a></li>
+                                    <li class="brand-heading">A</li>
+                                    <li><a href="#">Adidas</a></li>
+                                    <li><a href="#">Asquith &amp; Fox</a></li>
+                                    <li><a href="#">AWDis Just Cool</a></li>
+                                    <li><a href="#">AWDis Just Hoods</a></li>
+                                    <li class="brand-heading">B</li>
+                                    <li><a href="#">B&amp;C Collection</a></li>
+                                    <li><a href="#">Bagbase</a></li>
+                                    <li><a href="#">Beechfield</a></li>
+                                    <li><a href="#">Build Your Brand</a></li>
+                                    <li class="brand-heading">C</li>
+                                    <li><a href="#">Callaway</a></li>
+                                    <li><a href="#">Craghoppers</a></li>
+                                    <li class="brand-heading">F</li>
+                                    <li><a href="#">Finden &amp; Hales</a></li>
+                                    <li><a href="#">Flexfit by Yupoong</a></li>
+                                    <li><a href="#">Front Row</a></li>
+                                    <li class="brand-heading">H</li>
+                                    <li><a href="#">Henbury</a></li>
+                                    <li><a href="#">Home &amp; Living</a></li>
+                                    <li class="brand-heading">K</li>
+                                    <li><a href="#">Kariban</a></li>
+                                    <li><a href="#">KiMood</a></li>
+                                    <li class="brand-heading">L</li>
+                                    <li><a href="#">Larkwood</a></li>
+                                    <li class="brand-heading">M</li>
+                                    <li><a href="#">Madeira</a></li>
+                                    <li><a href="#">Mumbles</a></li>
+                                    <li class="brand-heading">N</li>
+                                    <li><a href="#">New Morning Studios</a></li>
+                                    <li><a href="#">Nike</a></li>
+                                    <li><a href="#">Nimbus</a></li>
+                                    <li><a href="#">Nutshell</a></li>
+                                    <li class="brand-heading">P</li>
+                                    <li><a href="#">Portwest</a></li>
+                                    <li><a href="#">Premier</a></li>
+                                    <li><a href="#">Pro RTX</a></li>
+                                    <li class="brand-heading">Q</li>
+                                    <li><a href="#">Quadra</a></li>
+                                    <li class="brand-heading">R</li>
+                                    <li><a href="#">RalaFlex</a></li>
+                                    <li><a href="#">Regatta Junior</a></li>
+                                    <li><a href="#">Regatta Professional</a></li>
+                                    <li><a href="#">Result</a></li>
+                                    <li><a href="#">Russell Athletic&reg;</a></li>
+                                    <li class="brand-heading">S</li>
+                                    <li><a href="#">Scruffs</a></li>
+                                    <li><a href="#">SF</a></li>
+                                    <li class="brand-heading">T</li>
+                                    <li><a href="#">Stormtech</a></li>
+                                    <li><a href="#">Tee Jays</a></li>
+                                    <li><a href="#">Tombo</a></li>
+                                    <li><a href="#">TriDri</a></li>
+                                    <li class="brand-heading">W</li>
+                                    <li><a href="#">Westford Mill</a></li>
+                                    <li><a href="#">Wombat</a></li>
+                                    <li class="brand-heading">Y</li>
+                                    <li><a href="#">Yoko</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="shop.html?category=all" class="view-all-link">
+                                    <span class="category-text">View All Categories</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <nav class="main-nav" aria-label="primary navigation">
+                    <ul class="menu">
+                        <li class="has-megamenu">
+                            <a href="#" aria-haspopup="true">
+                                All Products
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <ul class="nav-megamenu brand-grid">
+                                <li class="brand-heading">A</li>
+                                <li><a href="#">Accessories</a></li>
+                                <li><a href="#">Anti Static / ESD</a></li>
+                                <li><a href="shop.html?category=aprons">Aprons</a></li>
+                                <li><a href="#">Arc Flash</a></li>
+                                <li><a href="#">Autumn Workwear</a></li>
+                                <li class="brand-heading">B</li>
+                                <li><a href="#">Bags</a></li>
+                                <li><a href="#">Beanies</a></li>
+                                <li><a href="#">Bib &amp; Brace Overalls</a></li>
+                                <li><a href="#">Blouses</a></li>
+                                <li><a href="#">Bodywarmers &amp; Gilets</a></li>
+                                <li class="brand-heading">C</li>
+                                <li><a href="#">Caps</a></li>
+                                <li><a href="#">Chainsaw and Forestry</a></li>
+                                <li><a href="#">Chefswear</a></li>
+                                <li><a href="#">Chem Splash</a></li>
+                                <li><a href="#">Coats &amp; Jackets</a></li>
+                                <li><a href="#">Coldstore</a></li>
+                                <li><a href="#">Construction</a></li>
+                                <li><a href="#">Coveralls</a></li>
+                                <li><a href="#">Covid Test Kit</a></li>
+                                <li class="brand-heading">D</li>
+                                <li><a href="#">Disposable</a></li>
+                                <li><a href="#">Dresses</a></li>
+                                <li><a href="#">DTF Supplies</a></li>
+                                <li class="brand-heading">F</li>
+                                <li><a href="#">Face Masks &amp; Covers</a></li>
+                                <li><a href="#">Flame Retardant</a></li>
+                                <li><a href="#">Fleece Jackets</a></li>
+                                <li><a href="#">Footwear</a></li>
+                                <li class="brand-heading">G</li>
+                                <li><a href="#">Gilets</a></li>
+                                <li><a href="#">Golf</a></li>
+                                <li><a href="#">Gloves PPE</a></li>
+                                <li><a href="#">Gloves Winter</a></li>
+                                <li class="brand-heading">H</li>
+                                <li><a href="#">Headwear</a></li>
+                                <li><a href="#">Healthcare</a></li>
+                                <li><a href="#">Helmets</a></li>
+                                <li><a href="#">Hi-Vis</a></li>
+                                <li><a href="#">Hoodies</a></li>
+                                <li><a href="#">Hospitality</a></li>
+                                <li class="brand-heading">J</li>
+                                <li><a href="#">Jackets</a></li>
+                                <li><a href="#">Joggers</a></li>
+                                <li class="brand-heading">K</li>
+                                <li><a href="#">Knitwear</a></li>
+                                <li class="brand-heading">L</li>
+                                <li><a href="#">Lab / Medical Coats</a></li>
+                                <li><a href="#">Lateral Flow Tests</a></li>
+                                <li><a href="#">Lounge &amp; Underwear</a></li>
+                                <li class="brand-heading">M</li>
+                                <li><a href="#">Maternity</a></li>
+                                <li class="brand-heading">O</li>
+                                <li><a href="#">Offshore Clothing</a></li>
+                                <li><a href="#">Overalls</a></li>
+                                <li class="brand-heading">P</li>
+                                <li><a href="#">Painter &amp; Decorator Clothing</a></li>
+                                <li><a href="#">Plus Size</a></li>
+                                <li><a href="#">Polo Shirts</a></li>
+                                <li><a href="#">PPE</a></li>
+                                <li class="brand-heading">R</li>
+                                <li><a href="#">Rail Spec</a></li>
+                                <li class="brand-heading">S</li>
+                                <li><a href="#">Scarves</a></li>
+                                <li><a href="#">Schoolwear</a></li>
+                                <li><a href="#">Scrubs</a></li>
+                                <li><a href="#">Security</a></li>
+                                <li><a href="#">Shirts</a></li>
+                                <li><a href="#">Shorts</a></li>
+                                <li><a href="#">Skirts</a></li>
+                                <li><a href="#">Socks</a></li>
+                                <li><a href="#">Softshell Jackets</a></li>
+                                <li><a href="#">Sports &amp; Teamwear</a></li>
+                                <li><a href="#">Spring Workwear</a></li>
+                                <li><a href="#">Suits &amp; Tailoring</a></li>
+                                <li><a href="#">Summer Workwear</a></li>
+                                <li><a href="#">Sustainable</a></li>
+                                <li><a href="#">Sweatshirts</a></li>
+                                <li class="brand-heading">T</li>
+                                <li><a href="#">Tabards</a></li>
+                                <li><a href="#">Thermals &amp; Base Layers</a></li>
+                                <li><a href="#">Ties</a></li>
+                                <li><a href="#">Tote Bags</a></li>
+                                <li><a href="#">Towelling</a></li>
+                                <li><a href="#">Trades</a></li>
+                                <li><a href="#">Trousers</a></li>
+                                <li><a href="#">T-Shirts</a></li>
+                                <li><a href="#">Tunics</a></li>
+                                <li class="brand-heading">U</li>
+                                <li><a href="#">Umbrellas</a></li>
+                                <li class="brand-heading">W</li>
+                                <li><a href="#">Waistcoats</a></li>
+                                <li><a href="#">Welding Workwear</a></li>
+                                <li><a href="#">Winter Workwear</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">BrandedUK</a></li>
+                        <li class="has-megamenu promotions-menu">
+                            <a href="#" aria-haspopup="true">
+                                Promotions
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <div class="promo-dropdown" role="region" aria-label="Promotional bundles">
+                                <div class="promo-dropdown-inner">
+                                    <figure class="promo-card promo-theme-1">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 1</figcaption>
+                                        <span class="promo-card-tag">Starter</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-2">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 2</figcaption>
+                                        <span class="promo-card-tag">Teams</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-3">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 3</figcaption>
+                                        <span class="promo-card-tag">Eco</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-4">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 4</figcaption>
+                                        <span class="promo-card-tag">Season</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-5">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 5</figcaption>
+                                        <span class="promo-card-tag">Pro</span>
+                                    </figure>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a href="#">More</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Tablet Top Bar (768px+) -->
+    <div class="tablet-top-bar">
+        <div class="tablet-top-bar__left">
+            <div class="social-icons-container">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener">
+                    <i class="fab fa-pinterest-p"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="tablet-top-bar__center">
+            <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m2 7 10 7 10-7"/>
+                </svg>
+                info@brandeduk.com
+            </a>
+            <a href="tel:02089742722" class="tablet-top-bar__phone">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                0208 974 2722
+            </a>
+        </div>
+        
+        <div class="tablet-top-bar__right">
+            <div class="vat-toggle-tablet">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
+                <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                </a>
+                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
+                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                </a>
+            </div>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-label vat-label--exc">EX VAT</span>
+                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
+                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Logo + Search -->
+        <div class="header-logo-row">
+            <a href="index.html" class="mobile-logo-center">
+                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
+                <span class="logo-text-styled">branded<span class="logo-uk">uk</span></span>
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    
+
+    <!-- Category Filters (Scrollable with Animation) -->
+    <div class="categories-filter-scroll">
+        <div class="categories-scroll">
+            <button class="category-filter-card active" data-category="all">
+                <div class="category-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                </div>
+                <span>All</span>
+            </button>
+            <button class="category-filter-card" data-category="tshirts">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                </div>
+                <span>T-Shirts</span>
+            </button>
+            <button class="category-filter-card" data-category="polo">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                </div>
+                <span>Polo Shirts</span>
+            </button>
+            <button class="category-filter-card" data-category="hoodies">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                </div>
+                <span>Hoodies &amp; Sweatshirts</span>
+            </button>
+            <button class="category-filter-card" data-category="jackets">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                </div>
+                <span>Jackets &amp; Softshell</span>
+            </button>
+            <button class="category-filter-card" data-category="hivis">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                </div>
+                <span>Hi-Viz Clothing</span>
+            </button>
+            <button class="category-filter-card" data-category="trousers">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="">
+                </div>
+                <span>Work Trousers</span>
+            </button>
+            <button class="category-filter-card" data-category="fleeces">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                </div>
+                <span>Fleeces</span>
+            </button>
+            <button class="category-filter-card" data-category="bags">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                </div>
+                <span>Bags</span>
+            </button>
+            <button class="category-filter-card" data-category="caps">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                </div>
+                <span>Caps</span>
+            </button>
+            <button class="category-filter-card" data-category="beanies">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                </div>
+                <span>Headwear / Accessories</span>
+            </button>
+            <button class="category-filter-card" data-category="aprons">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                </div>
+                <span>Work &amp; Uniforms</span>
+            </button>
+            <button class="category-filter-card" data-category="sustainable">
+                <div class="category-icon">
+                    <img src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="">
+                </div>
+                <span>Sustainable / Recycled &amp; Organic</span>
+            </button>
+        </div>
+    </div>
+
+    <p class="shop-breadcrumbs" aria-label="Breadcrumb">
+        <a href="index.html" id="shopBreadcrumbHome">Home</a>
+        <span aria-hidden="true"> - </span>
+        <span>Category</span>
+        <span aria-hidden="true"> - </span>
+        <span id="shopBreadcrumbCategory">All Products</span>
+    </p>
+
+    <!-- Shop Toolbar - Sort & Pagination (compact single row) -->
+    <div class="shop-toolbar-mobile">
+        <div class="shop-toolbar-group">
+            <span class="shop-toolbar-label">Sort:</span>
+            <select id="shopSortSelectMobile" class="shop-select-mobile">
+                <option value="best">Best Sellers</option>
+                <option value="brand-az">Brand A–Z</option>
+                <option value="brand-za">Brand Z–A</option>
+                <option value="code-az">Code A–Z</option>
+                <option value="code-za">Code Z–A</option>
+                <option value="price-lh">Price ↑</option>
+                <option value="price-hl">Price ↓</option>
+            </select>
+        </div>
+        <div class="shop-toolbar-group">
+            <select id="shopPerPageSelectMobile" class="shop-select-mobile shop-select-small">
+                <option value="20">20</option>
+                <option value="40">40</option>
+                <option value="100" selected>100</option>
+            </select>
+            <span class="shop-toolbar-suffix">per page</span>
+        </div>
+        <div class="shop-pager-mobile" id="shopPagerMobile">
+            <button type="button" class="pager-btn-mobile">«</button>
+            <button type="button" class="pager-btn-mobile">‹</button>
+            <span class="pager-current">1</span>
+            <button type="button" class="pager-btn-mobile">›</button>
+        </div>
+    </div>
+
+    <h2 class="shop-category-heading" id="shopCategoryHeading">All Products</h2>
+
+    <!-- Products Grid -->
+    <main class="shop-products-container">
+        <div class="products-grid-shop" id="productsGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="shop.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
+            <svg class="filter-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <line x1="6" y1="21" x2="6" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="3"></line>
+                <line x1="18" y1="21" x2="18" y2="3"></line>
+                <circle cx="6" cy="8" r="2"></circle>
+                <circle cx="12" cy="14" r="2"></circle>
+                <circle cx="18" cy="10" r="2"></circle>
+            </svg>
+        </button>
+
+        <a href="basket.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="nav-badge" id="navBasketBadge" style="display: none;">0</span>
+            <span class="nav-item-label">Basket</span>
+        </a>
+
+        <a href="#" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+    </nav>
+
+    <!-- FILTERS DROP-UP MENU -->
+    <div class="filters-overlay" id="filtersOverlay"></div>
+    <div class="filters-dropup" id="filtersDropup">
+        <div class="filters-dropup__header">
+            <h2 class="filters-dropup__title">Filter By</h2>
+            <button class="filters-dropup__clear" id="filtersClearAll">Clear All</button>
+            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">×</button>
+        </div>
+        <div class="filters-dropup__body">
+            <!-- TOGGLE FILTERS -->
+            <div class="filters-section filters-toggles">
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--new-in">New In</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterNewIn" class="vat-checkbox" data-filter="newIn" />
+                        <label for="filterNewIn" class="vat-toggle-label">Toggle New In</label>
+                    </div>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--bradeal">Bradeal</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterBradeal" class="vat-checkbox" data-filter="bradeal" checked />
+                        <label for="filterBradeal" class="vat-toggle-label">Toggle Bradeal</label>
+                    </div>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--offers">Offers</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterOffers" class="vat-checkbox" data-filter="offers" />
+                        <label for="filterOffers" class="vat-toggle-label">Toggle Offers</label>
+                    </div>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--in-stock">In Stock</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterInStock" class="vat-checkbox" data-filter="inStock" />
+                        <label for="filterInStock" class="vat-toggle-label">Toggle In Stock</label>
+                    </div>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--recycled">Recycled / Organic</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterRecycled" class="vat-checkbox" data-filter="recycled" />
+                        <label for="filterRecycled" class="vat-toggle-label">Toggle Recycled</label>
+                    </div>
+                </div>
+                <div class="filter-toggle-row">
+                    <span class="filter-toggle-label filter-label--plus-sizes">Plus Sizes</span>
+                    <div class="vat-toggle-mobile">
+                        <input type="checkbox" id="filterPlusSizes" class="vat-checkbox" data-filter="plusSizes" />
+                        <label for="filterPlusSizes" class="vat-toggle-label">Toggle Plus Sizes</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH WITHIN RESULTS -->
+            <div class="filters-section">
+                <label class="filter-search-label">Search products</label>
+                <input type="text" class="filter-search-input" id="filterSearchInput" placeholder="Search within results...">
+            </div>
+
+            <!-- PRICE RANGE -->
+            <div class="filters-section">
+                <div class="filter-expandable" data-expanded="true">
+                    <div class="filter-expandable__header">
+                        <span>Price Range</span>
+                        <span class="filter-expandable__arrow">⌄</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <div class="price-range-display">
+                            <span id="priceMinDisplay">£0</span>
+                            <span>-</span>
+                            <span id="priceMaxDisplay">£100</span>
+                        </div>
+                        <input type="range" class="filter-price-slider" id="filterPriceRange" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPANDABLE FILTERS -->
+            <div class="filters-section filters-expandables">
+                <!-- Gender -->
+                <div class="filter-expandable" data-filter="gender">
+                    <div class="filter-expandable__header">
+                        <span>Gender</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="mens"> Men's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="womens"> Women's</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="unisex"> Unisex</label>
+                    </div>
+                </div>
+
+                <!-- Age Group -->
+                <div class="filter-expandable" data-filter="ageGroup">
+                    <div class="filter-expandable__header">
+                        <span>Age Group</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="adults"> Adults</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="kids"> Kids</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="toddler"> Toddler</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="baby"> Baby</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="junior"> Junior</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="youth"> Youth</label>
+                    </div>
+                </div>
+
+                <!-- Sleeve -->
+                <div class="filter-expandable" data-filter="sleeve">
+                    <div class="filter-expandable__header">
+                        <span>Sleeve</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="short"> Short Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="long"> Long Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="34"> 3/4 Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="sleeveless"> Sleeveless</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cap"> Cap Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="raglan"> Raglan</label>
+                    </div>
+                </div>
+
+                <!-- Neckline -->
+                <div class="filter-expandable" data-filter="neckline">
+                    <div class="filter-expandable__header">
+                        <span>Neckline</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="crew"> Crew Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="vneck"> V-Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polo"> Polo Collar</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hooded"> Hooded</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="mandarin"> Mandarin</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="scoop"> Scoop Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="round"> Round Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip Neck</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="button"> Button Down</label>
+                    </div>
+                </div>
+
+                <!-- Accreditations -->
+                <div class="filter-expandable" data-filter="accreditations">
+                    <div class="filter-expandable__header">
+                        <span>Accreditations</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="en20471"> EN ISO 20471</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ris3279"> RIS-3279-TOM Rail</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oekotex"> OEKO-TEX</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gots"> GOTS Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fairtrade"> Fair Trade</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="wrap"> WRAP Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="en343"> EN343 Waterproof</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="en11612"> EN11612 Flame</label>
+                    </div>
+                </div>
+
+                <!-- Primary Colour -->
+                <div class="filter-expandable" data-filter="primaryColour">
+                    <div class="filter-expandable__header">
+                        <span>Primary Colour</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content filter-colors-grid">
+                        <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox" value="black"><span>Black</span></label>
+                        <label class="filter-color" style="--color: #ffffff"><input type="checkbox" value="white"><span>White</span></label>
+                        <label class="filter-color" style="--color: #000080"><input type="checkbox" value="navy"><span>Navy</span></label>
+                        <label class="filter-color" style="--color: #808080"><input type="checkbox" value="grey"><span>Grey</span></label>
+                        <label class="filter-color" style="--color: #ff0000"><input type="checkbox" value="red"><span>Red</span></label>
+                        <label class="filter-color" style="--color: #0000ff"><input type="checkbox" value="blue"><span>Blue</span></label>
+                        <label class="filter-color" style="--color: #008000"><input type="checkbox" value="green"><span>Green</span></label>
+                        <label class="filter-color" style="--color: #ffff00"><input type="checkbox" value="yellow"><span>Yellow</span></label>
+                        <label class="filter-color" style="--color: #ffa500"><input type="checkbox" value="orange"><span>Orange</span></label>
+                        <label class="filter-color" style="--color: #800080"><input type="checkbox" value="purple"><span>Purple</span></label>
+                        <label class="filter-color" style="--color: #ffc0cb"><input type="checkbox" value="pink"><span>Pink</span></label>
+                        <label class="filter-color" style="--color: #8b4513"><input type="checkbox" value="brown"><span>Brown</span></label>
+                        <label class="filter-color" style="--color: #800020"><input type="checkbox" value="burgundy"><span>Burgundy</span></label>
+                        <label class="filter-color" style="--color: #c3b091"><input type="checkbox" value="khaki"><span>Khaki</span></label>
+                        <label class="filter-color filter-color--multi" style="background: linear-gradient(135deg, red, orange, yellow, green, blue, purple)"><input type="checkbox" value="multi"><span>Multi</span></label>
+                    </div>
+                </div>
+
+                <!-- Colour Shade -->
+                <div class="filter-expandable" data-filter="colourShade">
+                    <div class="filter-expandable__header">
+                        <span>Colour Shade</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="light"> Light</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="dark"> Dark</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="bright"> Bright</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pastel"> Pastel</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="neon"> Neon</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="heather"> Heather</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="marl"> Marl</label>
+                    </div>
+                </div>
+
+                <!-- CMYK -->
+                <div class="filter-expandable" data-filter="cmyk">
+                    <div class="filter-expandable__header">
+                        <span>CMYK</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <input type="text" class="filter-text-input" placeholder="Enter CMYK values...">
+                    </div>
+                </div>
+
+                <!-- Pantone -->
+                <div class="filter-expandable" data-filter="pantone">
+                    <div class="filter-expandable__header">
+                        <span>Pantone</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <input type="text" class="filter-text-input" placeholder="Enter Pantone code...">
+                    </div>
+                </div>
+
+                <!-- Style -->
+                <div class="filter-expandable" data-filter="style">
+                    <div class="filter-expandable__header">
+                        <span>Style</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="classic"> Classic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="modern"> Modern</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="oversized"> Oversized</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="workwear"> Workwear</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="casual"> Casual</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="formal"> Formal</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="vintage"> Vintage</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="streetwear"> Streetwear</label>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="filter-expandable" data-filter="features">
+                    <div class="filter-expandable__header">
+                        <span>Features</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="pockets"> Pockets</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hood"> Hood</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="zip"> Zip</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="buttons"> Buttons</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="drawstring"> Drawstring</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="elastic"> Elastic Cuffs</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="reflective"> Reflective</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="waterproof"> Waterproof</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="breathable"> Breathable</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="stretch"> Stretch</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="antibacterial"> Anti-bacterial</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="uv"> UV Protection</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tearaway"> Tear-away Label</label>
+                    </div>
+                </div>
+
+                <!-- Size -->
+                <div class="filter-expandable" data-filter="size">
+                    <div class="filter-expandable__header">
+                        <span>Size</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content filter-sizes-grid">
+                        <label class="filter-size"><input type="checkbox" value="xxs"><span>XXS</span></label>
+                        <label class="filter-size"><input type="checkbox" value="xs"><span>XS</span></label>
+                        <label class="filter-size"><input type="checkbox" value="s"><span>S</span></label>
+                        <label class="filter-size"><input type="checkbox" value="m"><span>M</span></label>
+                        <label class="filter-size"><input type="checkbox" value="l"><span>L</span></label>
+                        <label class="filter-size"><input type="checkbox" value="xl"><span>XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="2xl"><span>2XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="3xl"><span>3XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="4xl"><span>4XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="5xl"><span>5XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="6xl"><span>6XL</span></label>
+                        <label class="filter-size"><input type="checkbox" value="onesize"><span>One Size</span></label>
+                    </div>
+                </div>
+
+                <!-- Fabric -->
+                <div class="filter-expandable" data-filter="fabric">
+                    <div class="filter-expandable__header">
+                        <span>Fabric</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="cotton100"> 100% Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polycotton"> Poly/Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polyester100"> 100% Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="organic"> Organic Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled"> Recycled Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="fleece"> Fleece</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="jersey"> Jersey</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="pique"> Pique</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="frenchTerry"> French Terry</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ripstop"> Ripstop</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="softshell"> Softshell</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="nylon"> Nylon</label>
+                    </div>
+                </div>
+
+                <!-- Weight (GSM) -->
+                <div class="filter-expandable" data-filter="weight">
+                    <div class="filter-expandable__header">
+                        <span>Weight (GSM)</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="light"> Lightweight (&lt;150g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="mid"> Midweight (150-200g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="standard"> Standard (200-250g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="heavy"> Heavy (250-300g)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="superheavy"> Super Heavy (300g+)</label>
+                    </div>
+                </div>
+
+                <!-- Fit -->
+                <div class="filter-expandable" data-filter="fit">
+                    <div class="filter-expandable__header">
+                        <span>Fit</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="regular"> Regular Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="relaxed"> Relaxed Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="loose"> Loose Fit</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tailored"> Tailored</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="athletic"> Athletic Fit</label>
+                    </div>
+                </div>
+
+                <!-- Related Sector -->
+                <div class="filter-expandable" data-filter="sector">
+                    <div class="filter-expandable__header">
+                        <span>Related Sector</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="construction"> Construction</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="healthcare"> Healthcare</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hospitality"> Hospitality</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="retail"> Retail</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="security"> Security</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="transport"> Transport</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="warehouse"> Warehouse</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="education"> Education</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="corporate"> Corporate</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="manufacturing"> Manufacturing</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="agriculture"> Agriculture</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="automotive"> Automotive</label>
+                    </div>
+                </div>
+
+                <!-- Related Sport -->
+                <div class="filter-expandable" data-filter="sport">
+                    <div class="filter-expandable__header">
+                        <span>Related Sport</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="football"> Football</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="rugby"> Rugby</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="running"> Running</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gym"> Gym/Fitness</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="golf"> Golf</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tennis"> Tennis</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cricket"> Cricket</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="basketball"> Basketball</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cycling"> Cycling</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="swimming"> Swimming</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="outdoor"> Outdoor</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="hiking"> Hiking</label>
+                    </div>
+                </div>
+
+                <!-- Tag -->
+                <div class="filter-expandable" data-filter="tag">
+                    <div class="filter-expandable__header">
+                        <span>Tag</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="bestseller"> Best Seller</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="newarrival"> New Arrival</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="staffpick"> Staff Pick</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="eco"> Eco Friendly</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="value"> Value Pick</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="premium"> Premium</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="limited"> Limited Edition</label>
+                    </div>
+                </div>
+
+                <!-- Effect -->
+                <div class="filter-expandable" data-filter="effect">
+                    <div class="filter-expandable__header">
+                        <span>Effect</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content">
+                        <label class="filter-checkbox"><input type="checkbox" value="plain"> Plain</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="printed"> Printed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="embroidered"> Embroidered</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="washed"> Washed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="distressed"> Distressed</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tiedye"> Tie-Dye</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="camo"> Camo</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="striped"> Striped</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Apply Button -->
+        <div class="filters-dropup__footer">
+            <button class="filters-apply-btn" id="filtersApplyBtn">Apply Filters</button>
+        </div>
+    </div>
+
+    <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
+    <script>
+        console.log('=== SHOP SCRIPT STARTED ===');
+        
+        // Products Database
+        const PRODUCTS_DB = [
+            {
+                code: "GD067",
+                name: "HOODIES & SWEATSHIRTS",
+                price: "17.58",
+                category: "hoodies",
+                image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+                colors: [
+                    {name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg"},
+                    {name: "Ash Grey", main: "https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg"},
+                    {name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"},
+                    {name: "Blue Dusk", main: "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg"},
+                    {name: "Brown Savana", main: "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg"},
+                    {name: "Cardinal Red", main: "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg"},
+                    {name: "Carolina Blue", main: "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg"},
+                    {name: "Cement", main: "https://i.postimg.cc/fLbHR2Z2/GD067-Cement-FT.jpg"},
+                    {name: "Charcoal", main: "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"},
+                    {name: "Cobalt", main: "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"},
+                    {name: "Cocoa", main: "https://i.postimg.cc/d10WVHvb/GD067-Cocoa-FT.jpg"},
+                    {name: "Daisy", main: "https://i.postimg.cc/1tzW3Cs1/GD067-Daisy-FT.jpg"},
+                    {name: "Dark Heather", main: "https://i.postimg.cc/j5kMwHdk/GD067-Dark-Heather-FT.jpg"},
+                    {name: "Dusty Rose", main: "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"},
+                    {name: "Forest Green", main: "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"},
+                    {name: "Light Pink", main: "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg"},
+                    {name: "Maroon", main: "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"},
+                    {name: "Military Green", main: "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"},
+                    {name: "Mustard", main: "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"},
+                    {name: "Navy", main: "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"},
+                    {name: "Off-White", main: "https://i.postimg.cc/nzw3j4hz/GD067-Off-White-FT.jpg"},
+                    {name: "Paragon", main: "https://i.postimg.cc/j5kMwHSL/GD067-Paragon-FT.jpg"},
+                    {name: "Pink Lemonade", main: "https://i.postimg.cc/zBPxbCGy/GD067-Pink-Lemonade-FT.jpg"},
+                    {name: "Pistachio", main: "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"},
+                    {name: "Purple", main: "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"},
+                    {name: "Red", main: "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"},
+                    {name: "Sport Grey", main: "https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg"},
+                    {name: "Royal", main: "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"},
+                    {name: "Sage", main: "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"},
+                    {name: "Sand", main: "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"},
+                    {name: "Sky", main: "https://i.postimg.cc/YSMnJ2Pc/GD067-Sky-FT.jpg"},
+                    {name: "Smoke", main: "https://i.postimg.cc/Xv4HTNPb/GD067-Smoke-FT.jpg"},
+                    {name: "Stone Blue", main: "https://i.postimg.cc/g0mSfc72/GD067-Stone-Blue-FT.jpg"},
+                    {name: "Tangerine", main: "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"},
+                    {name: "Texas Orange", main: "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"},
+                    {name: "White", main: "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"},
+                    {name: "Yellow Haze", main: "https://i.postimg.cc/W48WjLRN/GD067-Yellow-Haze-FT.jpg"}
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            },
+            {
+                code: "AP001",
+                name: "APRON",
+                price: "9.95",
+                category: "aprons",
+                image: "hero/images/apron.jpg",
+                colors: [
+                    { name: "Black", main: "hero/images/apron.jpg" },
+                    { name: "Navy", main: "hero/images/apron.jpg" },
+                    { name: "White", main: "hero/images/apron.jpg" }
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Premier"
+            },
+            {
+                code: "PO001",
+                name: "Classic Polo Shirt",
+                price: "11.50",
+                category: "polo",
+                image: "hero/images/Polo.jpg",
+                colors: [
+                    { name: "Black", main: "hero/images/Polo.jpg" },
+                    { name: "Navy", main: "hero/images/Polo.jpg" },
+                    { name: "White", main: "hero/images/Polo.jpg" }
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            },
+            {
+                code: "JK001",
+                name: "Softshell Jacket",
+                price: "29.99",
+                category: "jackets",
+                image: "hero/images/Jacket.jpg",
+                colors: [
+                    { name: "Black", main: "hero/images/Jacket.jpg" },
+                    { name: "Grey", main: "hero/images/Jacket.jpg" },
+                    { name: "Navy", main: "hero/images/Jacket.jpg" }
+                ],
+                customization: ["embroidery"],
+                brand: "Regatta"
+            },
+            {
+                code: "HV001",
+                name: "Hi-Vis Vest",
+                price: "6.25",
+                category: "hivis",
+                image: "hero/images/Hi-Viz.jpg",
+                colors: [
+                    { name: "Yellow", main: "hero/images/Hi-Viz.jpg" },
+                    { name: "Orange", main: "hero/images/Hi-Viz.jpg" }
+                ],
+                customization: ["print"],
+                brand: "Result"
+            },
+            {
+                code: "FL001",
+                name: "Full Zip Fleece",
+                price: "18.95",
+                category: "fleeces",
+                image: "brandedukv15-child/assets/images/ui/icons/categories/Fleece.png",
+                colors: [
+                    { name: "Black", main: "brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" },
+                    { name: "Navy", main: "brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" }
+                ],
+                customization: ["embroidery"],
+                brand: "Westford Mill"
+            },
+            {
+                code: "BG001",
+                name: "Everyday Tote Bag",
+                price: "4.99",
+                category: "bags",
+                image: "brandedukv15-child/assets/images/ui/icons/categories/Bags.png",
+                colors: [
+                    { name: "Natural", main: "brandedukv15-child/assets/images/ui/icons/categories/Bags.png" },
+                    { name: "Black", main: "brandedukv15-child/assets/images/ui/icons/categories/Bags.png" }
+                ],
+                customization: ["print"],
+                brand: "Beechfield"
+            },
+            {
+                code: "CP001",
+                name: "Classic Cap",
+                price: "7.49",
+                category: "caps",
+                image: "hero/images/Hats Beanie.jpg",
+                colors: [
+                    { name: "Black", main: "hero/images/Hats Beanie.jpg" },
+                    { name: "Navy", main: "hero/images/Hats Beanie.jpg" },
+                    { name: "Grey", main: "hero/images/Hats Beanie.jpg" }
+                ],
+                customization: ["embroidery"],
+                brand: "Beechfield"
+            },
+            {
+                code: "TS001",
+                name: "T-SHIRT",
+                price: "6.99",
+                category: "tshirts",
+                image: "brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png",
+                colors: [
+                    { name: "Black", main: "brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" },
+                    { name: "White", main: "brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" }
+                ],
+                customization: ["print"],
+                brand: "Gildan"
+            },
+            {
+                code: "BN001",
+                name: "HEADWEAR / ACCESSORIES",
+                price: "4.99",
+                category: "beanies",
+                image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+                colors: [
+                    { name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" },
+                    { name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg" }
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            },
+            {
+                code: "SU001",
+                name: "SUSTAINABLE / RECYCLED & ORGANIC",
+                price: "17.58",
+                category: "sustainable",
+                image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+                colors: [
+                    { name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" },
+                    { name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg" }
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            },
+            {
+                code: "TR001",
+                name: "WORK TROUSERS",
+                price: "17.58",
+                category: "trousers",
+                image: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg",
+                colors: [
+                    { name: "Aquatic", main: "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" },
+                    { name: "Black", main: "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg" }
+                ],
+                customization: ["embroidery", "print"],
+                brand: "Gildan"
+            }
+        ];
+
+        // Demo behaviour: no matter which category you open, we show the same reference product card.
+
+        const PRICE_BREAKS_BY_CODE = {
+            GD067: [
+                { min: 1, max: 9, price: 17.58 },
+                { min: 10, max: 24, price: 16.54 },
+                { min: 25, max: 49, price: 16.18 },
+                { min: 50, max: 99, price: 14.94 },
+                { min: 100, max: 249, price: 13.49 },
+                { min: 250, max: 99999, price: 12.59 }
+            ]
+        };
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+
+        function normalizeCategory(raw) {
+            const value = String(raw || '').trim().toLowerCase();
+            if (!value) return 'all';
+
+            const aliases = {
+                't-shirt': 'tshirts',
+                't-shirts': 'tshirts',
+                'tees': 'tshirts',
+                'tee': 'tshirts',
+                'polo-shirts': 'polo',
+                'polos': 'polo',
+                'hi-viz': 'hivis',
+                'hi-vis': 'hivis',
+                'hi-vis clothing': 'hivis',
+                'hi-viz clothing': 'hivis'
+            };
+
+            return aliases[value] || value;
+        }
+
+        const VALID_CATEGORIES = new Set(['all', 'tshirts', 'polo', 'hoodies', 'jackets', 'hivis', 'trousers', 'fleeces', 'bags', 'caps', 'beanies', 'aprons', 'sustainable', 'workwear']);
+        let categoryFilter = normalizeCategory(urlParams.get('category')) || 'all';
+        if (!VALID_CATEGORIES.has(categoryFilter)) {
+            categoryFilter = 'all';
+        }
+        console.log('Category filter:', categoryFilter);
+        console.log('Products in DB:', PRODUCTS_DB.length);
+
+        // VAT Functions - will be loaded from mobile.js
+        function formatCurrency(baseAmount) {
+            const VAT_RATE = 0.20;
+            let value = Number(baseAmount) || 0;
+            const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            if (vatOn) {
+                value = value * (1 + VAT_RATE);
+            }
+            return '£' + value.toFixed(2);
+        }
+
+        function vatSuffix() {
+            const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            return vatOn ? 'inc VAT' : 'ex VAT';
+        }
+
+        function formatPriceRange(minPrice, maxPrice) {
+            const minVal = Number(minPrice) || 0;
+            const maxVal = Number(maxPrice) || 0;
+            if (Math.abs(minVal - maxVal) < 0.005) {
+                return formatCurrency(minVal);
+            }
+            return formatCurrency(minVal) + ' - ' + formatCurrency(maxVal);
+        }
+
+        function getProductPriceRange(product) {
+            const breaks = PRICE_BREAKS_BY_CODE[product.code];
+            if (!breaks || !breaks.length) {
+                const base = Number(product.price) || 0;
+                return { min: base, max: base };
+            }
+            const values = breaks.map(step => Number(step.price)).filter(price => price > 0);
+            return {
+                min: Math.min(...values),
+                max: Math.max(...values)
+            };
+        }
+
+        // Filter products
+        function getFilteredProducts() {
+            const hoodie = PRODUCTS_DB.find(p => p.code === 'GD067') || PRODUCTS_DB.find(p => p.category === 'hoodies') || PRODUCTS_DB[0];
+            return hoodie ? [hoodie] : [];
+        }
+
+        // Render Products
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            if (!grid) {
+                console.error('Grid element not found!');
+                return;
+            }
+            
+            const products = getFilteredProducts();
+            console.log('Rendering products:', products.length);
+            
+            // Update title
+            const titles = {
+                'all': 'All Products',
+                'tshirts': 'T-Shirts',
+                'polo': 'Polo Shirts',
+                'hoodies': 'Hoodies & Sweatshirts',
+                'jackets': 'Jackets & Softshell',
+                'hivis': 'Hi-Viz',
+                'trousers': 'Work Trousers',
+                'fleeces': 'Fleeces',
+                'bags': 'Bags',
+                'caps': 'Caps',
+                'beanies': 'Headwear / Accessories',
+                'aprons': 'Work & Uniforms',
+                'sustainable': 'Sustainable / Recycled & Organic',
+                'workwear': 'Workwear'
+            };
+            const pageTitle = titles[categoryFilter] || 'Products';
+            const categoryTitleEl = document.getElementById('categoryTitle');
+            if (categoryTitleEl) {
+                categoryTitleEl.textContent = pageTitle;
+            }
+            const categoryHeadingEl = document.getElementById('shopCategoryHeading');
+            if (categoryHeadingEl) {
+                categoryHeadingEl.textContent = pageTitle;
+            }
+            const breadcrumbCategoryEl = document.getElementById('shopBreadcrumbCategory');
+            if (breadcrumbCategoryEl) {
+                breadcrumbCategoryEl.textContent = String(pageTitle).toUpperCase();
+            }
+            const resultsCountEl = document.getElementById('resultsCount');
+            if (resultsCountEl) {
+                resultsCountEl.textContent = `${products.length} items`;
+            }
+
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card-shop';
+
+                const badgesLeft = product.customization.filter(c => c === 'print').map(() =>
+                    `<span class="badge print">PRINT</span>`
+                ).join('');
+                
+                const badgesRight = product.customization.filter(c => c === 'embroidery').map(() =>
+                    `<span class="badge embroidery">EMBROIDERY</span>`
+                ).join('');
+
+                const colorIndex = index % product.colors.length;
+                const displayColor = product.colors[colorIndex];
+                
+                const colors = product.colors.map(c => {
+                    return `<button type="button" class="color-dot" data-color="${c.name}" data-main="${c.main}" style="background-image: url('${c.main}'); background-size: cover; background-position: center;" title="${c.name}"></button>`;
+                }).join('');
+
+                const { min: minPrice, max: maxPrice } = getProductPriceRange(product);
+
+                card.innerHTML = `
+                    <div class="product-media">
+                        <div class="product-badges-top">
+                            ${badgesRight}
+                            ${badgesLeft}
+                        </div>
+                        <div class="product-figure">
+                            <img src="${displayColor.main}" alt="${product.name}" class="product-main-img">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-code">
+                            ${product.code}
+                            <img src="https://i.postimg.cc/3WpCDK5M/gildan-logo.png" alt="Gildan" class="brand-logo" title="Gildan">
+                        </div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
+                            <span class="product-price-label">Start From</span>
+                            <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>
+                            <span class="product-price-suffix">${vatSuffix()}</span>
+                        </div>
+                        <div class="product-colors">${colors}</div>
+                    </div>
+                `;
+
+                let selectedColor = null;
+                
+                card.querySelectorAll('.color-dot').forEach(dot => {
+                    dot.addEventListener('mouseenter', () => {
+                        if (!selectedColor) {
+                            const img = card.querySelector('.product-main-img');
+                            if (img) img.src = dot.dataset.main;
+                        }
+                    });
+                    
+                    dot.addEventListener('mouseleave', () => {
+                        if (selectedColor) {
+                            const img = card.querySelector('.product-main-img');
+                            const activeDot = card.querySelector('.color-dot.active');
+                            if (img && activeDot) img.src = activeDot.dataset.main;
+                        }
+                    });
+                    
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const img = card.querySelector('.product-main-img');
+                        if (img) img.src = dot.dataset.main;
+                        card.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                        dot.classList.add('active');
+                        selectedColor = {
+                            name: dot.dataset.color,
+                            url: dot.dataset.main
+                        };
+                    });
+                });
+
+                card.addEventListener('click', () => {
+                    console.log('Card clicked, going directly to customize:', product.code);
+                    sessionStorage.setItem('selectedProduct', product.code);
+                    sessionStorage.setItem('selectedProductData', JSON.stringify(product));
+                    const activeColorDot = card.querySelector('.color-dot.active');
+                    if (activeColorDot) {
+                        sessionStorage.setItem('selectedColorName', activeColorDot.dataset.color);
+                        sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
+                        console.log('Selected color:', activeColorDot.dataset.color);
+                    }
+                    console.log('Navigating to customize.html');
+                    window.location.href = 'customize.html';
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Update prices on VAT change
+        function updatePrices() {
+            document.querySelectorAll('.product-price').forEach(priceEl => {
+                const min = Number(priceEl.dataset.priceMin);
+                const max = Number(priceEl.dataset.priceMax);
+                const valueEl = priceEl.querySelector('.product-price-value');
+                if (valueEl && Number.isFinite(min) && Number.isFinite(max)) {
+                    valueEl.textContent = formatPriceRange(min, max);
+                }
+                const suffixEl = priceEl.querySelector('.product-price-suffix');
+                if (suffixEl) {
+                    suffixEl.textContent = vatSuffix();
+                }
+            });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOMContentLoaded - rendering products...');
+                renderProducts();
+                updateBasketBadge();
+            });
+        } else {
+            console.log('DOM already ready - rendering products immediately...');
+            setTimeout(() => {
+                renderProducts();
+                updateBasketBadge();
+            }, 0);
+        }
+
+        window.addEventListener('vatToggleChanged', () => {
+            console.log('VAT toggle changed - updating prices');
+            updatePrices();
+        });
+
+        // Initialize VAT toggle from mobile.js when it loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for mobile.js to initialize, then sync
+            setTimeout(() => {
+                updatePrices();
+            }, 100);
+        });
+        
+        // Update basket badge count
+        function updateBasketBadge() {
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            let totalItems = 0;
+            
+            basket.forEach(item => {
+                const sizes = item.sizes || item.quantities || {};
+                totalItems += Object.values(sizes).reduce((sum, q) => sum + q, 0);
+            });
+            
+            const badge = document.getElementById('navBasketBadge');
+            if (badge) {
+                if (totalItems > 0) {
+                    badge.textContent = totalItems > 99 ? '99+' : totalItems;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Category Filter Functionality
+        (function() {
+            const filterButtons = document.querySelectorAll('.category-filter-card');
+            const productsGrid = document.getElementById('productsGrid');
+            const categoryTitleEl = document.getElementById('categoryTitle');
+            const resultsCountEl = document.getElementById('resultsCount');
+            
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    
+                    // Animate button press
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => { this.style.transform = ''; }, 150);
+                    
+                    // Update active state with animation
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update URL without reload
+                    const url = new URL(window.location);
+                    url.searchParams.set('category', category);
+                    window.history.replaceState({}, '', url);
+                    
+                    // Update global filter and re-render
+                    categoryFilter = category;
+                    
+                    // Fade out current products
+                    const currentCards = productsGrid.querySelectorAll('.product-card-shop');
+                    currentCards.forEach(card => {
+                        card.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(-10px)';
+                    });
+                    
+                    // Re-render after fade out
+                    setTimeout(() => {
+                        renderProducts();
+                        
+                        // Animate new cards in
+                        const newCards = productsGrid.querySelectorAll('.product-card-shop');
+                        newCards.forEach((card, i) => {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, i * 50);
+                        });
+                    }, 250);
+                    
+                    // Scroll to position selected category right after "All"
+                    const scrollContainer = document.querySelector('.categories-filter-scroll .categories-scroll');
+                    if (scrollContainer && this.dataset.category !== 'all') {
+                        // Get button's offset from start of scroll container
+                        const buttonOffsetLeft = this.offsetLeft;
+                        // Scroll so this button appears at start (after some padding)
+                        scrollContainer.scrollTo({ left: buttonOffsetLeft - 16, behavior: 'smooth' });
+                    } else if (scrollContainer) {
+                        // If "All" clicked, scroll to start
+                        scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            // Check URL for initial category and set filter
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialCategory = urlParams.get('category') || 'all';
+            if (!VALID_CATEGORIES.has(initialCategory)) {
+                initialCategory = 'all';
+            }
+            categoryFilter = initialCategory;
+            
+            // Set active button
+            filterButtons.forEach(b => {
+                b.classList.remove('active');
+                if (b.dataset.category === initialCategory) {
+                    b.classList.add('active');
+                }
+            });
+        })();
+        
+        // Tablet Social Icons - Single/Double Click
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabletSocialIcons = document.querySelectorAll('.tablet-top-bar .social-icon');
+            let clickTimer = null;
+            let clickCount = 0;
+            let lastClickedIcon = null;
+            
+            tabletSocialIcons.forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (lastClickedIcon !== icon) {
+                        clickCount = 0;
+                        lastClickedIcon = icon;
+                    }
+                    
+                    clickCount++;
+                    
+                    if (clickCount === 1) {
+                        // Single click - toggle active
+                        clickTimer = setTimeout(() => {
+                            icon.classList.toggle('active');
+                            clickCount = 0;
+                        }, 300);
+                    } else if (clickCount === 2) {
+                        // Double click - open link
+                        clearTimeout(clickTimer);
+                        clickCount = 0;
+                        const href = icon.getAttribute('href');
+                        if (href) {
+                            window.open(href, '_blank', 'noopener,noreferrer');
+                        }
+                    }
+                });
+            });
+            
+            // Click outside to deactivate
+            document.addEventListener('click', function(e) {
+                const topBar = document.querySelector('.tablet-top-bar');
+                if (topBar && !topBar.contains(e.target)) {
+                    tabletSocialIcons.forEach(icon => icon.classList.remove('active'));
+                }
+            });
+        });
+    </script>
+    <script src="mobile/js/mobile.js?v=20251230"></script>
+</body>
+</html>
