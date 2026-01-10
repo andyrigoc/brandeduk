@@ -573,23 +573,43 @@ a {
     gap: 8px;
     padding: 12px 16px;
     overflow-x: auto;
-    scrollbar-width: none;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
 }
 
 .gallery-thumbs::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+    display: block;
+}
+
+.gallery-thumbs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.gallery-thumbs::-webkit-scrollbar-thumb {
+    background: rgba(124, 58, 237, 0.3);
+    border-radius: 2px;
+}
+
+.gallery-thumbs::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 58, 237, 0.5);
 }
 
 .thumb {
     flex: 0 0 60px;
     width: 60px;
     height: 60px;
+    min-width: 60px;
     border: 2px solid transparent;
     border-radius: var(--radius);
     overflow: hidden;
     background: var(--white);
     transition: border-color var(--transition-fast);
+    scroll-snap-align: start;
+    cursor: pointer;
 }
 
 .thumb.active {
@@ -599,8 +619,9 @@ a {
 .thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 4px;
+    object-fit: cover;
+    padding: 0;
+    display: block;
 }
 
 /* === Product Info === */

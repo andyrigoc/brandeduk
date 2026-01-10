@@ -159,12 +159,11 @@ async function loadProductData() {
     PRODUCT_DATA = productData;
     PRODUCT_CODE = productData.code;
     PRODUCT_NAME = productData.name;
-    BASE_PRICE = productData.price;
     
     // Convert priceBreaks to DISCOUNTS format
     if (productData.priceBreaks && productData.priceBreaks.length > 0) {
         DISCOUNTS = productData.priceBreaks.map((breakItem, index) => {
-            const prevPrice = index > 0 ? productData.priceBreaks[index - 1].price : BASE_PRICE;
+            const prevPrice = index > 0 ? productData.priceBreaks[index - 1].price : productData.price;
             const save = prevPrice > 0 ? Math.round(((prevPrice - breakItem.price) / prevPrice) * 100) : 0;
             return {
                 min: breakItem.min,
@@ -173,10 +172,17 @@ async function loadProductData() {
                 save: save
             };
         });
+        
+        // Set BASE_PRICE to the first tier's price (1-9 tier) so main price matches
+        BASE_PRICE = DISCOUNTS[0].price;
     } else {
         // Fallback: single price tier
+        BASE_PRICE = productData.price;
         DISCOUNTS = [{ min: 1, max: 99999, price: BASE_PRICE, save: 0 }];
     }
+    
+    // Log available fields for debugging
+    console.log('📋 Available product fields:', Object.keys(productData));
     
     console.log('✅ Product initialized:', {
         code: PRODUCT_CODE,
@@ -240,9 +246,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         // Update product name and code in the page (if elements exist)
-        const productNameEl = document.querySelector('.product-name, h1, [data-product-name], .garment-main-title');
+        // Use ID selector first to avoid conflicts with productTypeTitle h1
+        const productNameEl = document.getElementById('productTitle');
         if (productNameEl && PRODUCT_NAME) {
             productNameEl.textContent = PRODUCT_NAME;
+            console.log('✅ Product name updated:', PRODUCT_NAME, 'in element:', productNameEl);
+        } else if (!productNameEl) {
+            console.warn('⚠️ Product name element (#productTitle) not found');
+        } else if (!PRODUCT_NAME) {
+            console.warn('⚠️ PRODUCT_NAME is missing. Product data:', PRODUCT_DATA);
         }
         
         const productCodeEl = document.querySelector('.product-code, [data-product-code], .prod-code-value');
@@ -251,9 +263,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         // Update description box title (h2)
-        const descTitleEl = document.querySelector('.description-box h2');
+        const descTitleEl = document.getElementById('productDescriptionTitle') || document.querySelector('.description-box h2');
         if (descTitleEl && PRODUCT_NAME) {
             descTitleEl.textContent = PRODUCT_NAME;
+        }
+        
+        // Update description text
+        const descTextEl = document.getElementById('productDescriptionText');
+        if (descTextEl && PRODUCT_DATA && PRODUCT_DATA.description) {
+            descTextEl.innerHTML = PRODUCT_DATA.description;
         }
         
         // Update sidebar product name and code
@@ -267,37 +285,129 @@ document.addEventListener('DOMContentLoaded', async function() {
             sidebarProductCode.textContent = 'EE-' + PRODUCT_CODE;
         }
         
+        // Update brand logo and link
+        if (PRODUCT_DATA && PRODUCT_DATA.brand) {
+            const brandLink = document.getElementById('brandLink');
+            const brandLogo = document.getElementById('brandLogo');
+            if (brandLink && brandLogo) {
+                const brandName = PRODUCT_DATA.brand.toLowerCase();
+                brandLink.href = `/shop/?brand=${brandName}`;
+                brandLink.title = `View all ${PRODUCT_DATA.brand} products`;
+                brandLogo.alt = PRODUCT_DATA.brand;
+                // Try to construct brand logo URL (common pattern)
+                // If brand logo exists in API, use it; otherwise use a default pattern
+                if (PRODUCT_DATA.brandLogo) {
+                    brandLogo.src = PRODUCT_DATA.brandLogo;
+                } else {
+                    // Default brand logo pattern - you may need to adjust this based on your actual brand logo URLs
+                    brandLogo.src = `https://i.postimg.cc/tRvrwTBg/${brandName}-logo.jpg`;
+                }
+                brandLink.style.display = 'block';
+            }
+        }
+        
+        // Update customization badges from API
+        if (PRODUCT_DATA && PRODUCT_DATA.customization && Array.isArray(PRODUCT_DATA.customization)) {
+            const customizationBadge = document.getElementById('customizationBadge');
+            if (customizationBadge) {
+                customizationBadge.innerHTML = '';
+                PRODUCT_DATA.customization.forEach(customType => {
+                    const badge = document.createElement('span');
+                    badge.className = `cust-badge ${customType}`;
+                    badge.textContent = customType.toUpperCase();
+                    customizationBadge.appendChild(badge);
+                });
+            }
+        }
+        
+        // Update product type title - check multiple possible field names
+        const productTypeTitle = document.getElementById('productTypeTitle');
+        
+        if (productTypeTitle) {
+            // Try productType first, then category, then try to extract from name
+            let productType = PRODUCT_DATA?.productType || 
+                            PRODUCT_DATA?.category || 
+                            PRODUCT_DATA?.ProductType ||
+                            PRODUCT_DATA?.Category;
+            
+            // If still empty, try to extract from product name (e.g., "Colours bib apron" -> "Aprons")
+            if (!productType || productType.trim() === '') {
+                const name = PRODUCT_DATA?.name || '';
+                // Check if name contains common product types
+                const productTypeKeywords = {
+                    'apron': 'Aprons',
+                    'hoodie': 'Hoodies',
+                    't-shirt': 'T-Shirts',
+                    'tshirt': 'T-Shirts',
+                    'polo': 'Polo Shirts',
+                    'jacket': 'Jackets',
+                    'trouser': 'Trousers',
+                    'fleece': 'Fleeces',
+                    'cap': 'Caps',
+                    'beanie': 'Beanies'
+                };
+                
+                const nameLower = name.toLowerCase();
+                for (const [keyword, type] of Object.entries(productTypeKeywords)) {
+                    if (nameLower.includes(keyword)) {
+                        productType = type;
+                        break;
+                    }
+                }
+            }
+            
+            if (productType && productType.trim() !== '') {
+                productTypeTitle.textContent = productType;
+                productTypeTitle.style.display = 'block';
+                console.log('✅ Product type title updated:', productType);
+            } else {
+                console.log('ℹ️ No productType/category found. Available fields:', Object.keys(PRODUCT_DATA || {}));
+                console.log('ℹ️ Product name:', PRODUCT_DATA?.name);
+                productTypeTitle.style.display = 'none';
+            }
+        } else {
+            console.warn('⚠️ Product type title element not found');
+        }
+        
         // Set initial main image from images array or top-level image field
         if (mainImage && PRODUCT_DATA) {
             if (PRODUCT_DATA.images && Array.isArray(PRODUCT_DATA.images)) {
                 const mainImageData = PRODUCT_DATA.images.find(img => img.type === 'main');
                 if (mainImageData && mainImageData.url) {
                     mainImage.src = mainImageData.url;
+                    mainImage.alt = PRODUCT_NAME || 'Product';
                 } else if (PRODUCT_DATA.colors && PRODUCT_DATA.colors.length > 0) {
                     // Fallback to first color's main image
                     mainImage.src = PRODUCT_DATA.colors[0].main;
+                    mainImage.alt = PRODUCT_NAME || 'Product';
                 }
             } else if (PRODUCT_DATA.image) {
                 // Use top-level image field if images array is not available
                 mainImage.src = PRODUCT_DATA.image;
+                mainImage.alt = PRODUCT_NAME || 'Product';
             } else if (PRODUCT_DATA.colors && PRODUCT_DATA.colors.length > 0) {
                 // Final fallback to first color's main image
                 mainImage.src = PRODUCT_DATA.colors[0].main;
+                mainImage.alt = PRODUCT_NAME || 'Product';
             }
         }
         
-        // Update description if available
+        // Update description if available (already handled above, but keeping for backward compatibility)
         if (PRODUCT_DATA && PRODUCT_DATA.description) {
-            const descEl = document.querySelector('.description-box');
-            if (descEl) {
-                // Find or create paragraph element
-                let descText = descEl.querySelector('p');
-                if (!descText) {
-                    descText = document.createElement('p');
-                    descEl.appendChild(descText);
+            const descTextEl = document.getElementById('productDescriptionText');
+            if (descTextEl) {
+                descTextEl.innerHTML = PRODUCT_DATA.description;
+            } else {
+                // Fallback for old structure
+                const descEl = document.querySelector('.description-box');
+                if (descEl) {
+                    let descText = descEl.querySelector('p');
+                    if (!descText) {
+                        descText = document.createElement('p');
+                        descEl.appendChild(descText);
+                    }
+                    descText.innerHTML = PRODUCT_DATA.description;
                 }
-                // Use innerHTML to preserve any HTML formatting from API
-                descText.innerHTML = PRODUCT_DATA.description;
             }
         }
         
@@ -312,16 +422,28 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (details.care) detailsHTML.push(`<b>Care:</b> ${details.care}`);
             
             if (detailsHTML.length > 0) {
-                const detailsEl = document.querySelector('.description-box, [data-details]');
-                if (detailsEl) {
-                    // Find or create details section
-                    let detailsSection = detailsEl.querySelector('.product-details');
-                    if (!detailsSection) {
-                        detailsSection = document.createElement('div');
-                        detailsSection.className = 'product-details';
-                        detailsEl.appendChild(detailsSection);
+                const descTextEl = document.getElementById('productDescriptionText');
+                if (descTextEl) {
+                    // Append details to description text
+                    const existingContent = descTextEl.innerHTML.trim();
+                    const detailsContent = detailsHTML.join('<br>');
+                    if (existingContent) {
+                        descTextEl.innerHTML = existingContent + '<br><br>' + detailsContent;
+                    } else {
+                        descTextEl.innerHTML = detailsContent;
                     }
-                    detailsSection.innerHTML = detailsHTML.join('<br>');
+                } else {
+                    // Fallback for old structure
+                    const detailsEl = document.querySelector('.description-box, [data-details]');
+                    if (detailsEl) {
+                        let detailsSection = detailsEl.querySelector('.product-details');
+                        if (!detailsSection) {
+                            detailsSection = document.createElement('div');
+                            detailsSection.className = 'product-details';
+                            detailsEl.appendChild(detailsSection);
+                        }
+                        detailsSection.innerHTML = detailsHTML.join('<br>');
+                    }
                 }
             }
         }
@@ -1847,8 +1969,25 @@ addCustomizeButton.onclick = () => {
         updateBasketTotalBox();
     }
     
-    // Navigate to customization positions page (works even if total === 0 but basket has items)
-    window.location.href = 'customize-positions.html';
+    // Show inline customization section instead of navigating
+    const ctaSection = document.getElementById('step3CTASection');
+    const positionsSection = document.getElementById('step3PositionsSection');
+    
+    if (ctaSection && positionsSection) {
+        // Hide CTA buttons
+        ctaSection.style.display = 'none';
+        // Show positions section
+        positionsSection.style.display = 'block';
+        
+        // Scroll to positions section
+        positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Update step progress to step 3
+        updateStepProgress(3);
+    } else {
+        // Fallback: navigate to customization page if inline section not found
+        window.location.href = 'customize-positions.html';
+    }
 };
 
 function getSizesSummary() {

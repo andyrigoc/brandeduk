@@ -6,7 +6,7 @@
 /* ================================
    Position Cards Grid - Desktop
    ================================ */
-.positions-grid {
+   .positions-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
@@ -337,6 +337,78 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+/* ================================
+   Inline (Product Detail) overrides
+   Match tablet/mobile logo placement
+   ================================ */
+#step3PositionsSection .position-preview {
+    position: relative;
+}
+
+#step3PositionsSection .logo-overlay-box {
+    user-select: none;
+    pointer-events: none;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+}
+
+/* Use tablet/mobile sizing for overlays in the inline grid */
+#step3PositionsSection .logo-overlay-box.left-chest {
+    top: calc(22% + 25px);
+    left: 62%;
+    width: 28px;
+    height: 28px;
+}
+
+#step3PositionsSection .logo-overlay-box.right-chest {
+    top: calc(22% + 25px);
+    left: 38%;
+    width: 28px;
+    height: 28px;
+}
+
+#step3PositionsSection .logo-overlay-box.front-center {
+    top: calc(25% + 25px);
+    left: 50%;
+    width: 35px;
+    height: 35px;
+}
+
+#step3PositionsSection .logo-overlay-box.large-front {
+    top: calc(29% + 25px);
+    left: 50%;
+    width: 48px;
+    height: 48px;
+}
+
+#step3PositionsSection .logo-overlay-box.large-back {
+    top: calc(28% + 25px);
+    left: 50%;
+    width: 55px;
+    height: 55px;
+}
+
+#step3PositionsSection .logo-overlay-box.left-sleeve {
+    top: calc(22% + 25px);
+    left: calc(58% - 8px);
+    width: 35px;
+    height: 35px;
+}
+
+#step3PositionsSection .logo-overlay-box.right-sleeve {
+    top: calc(22% + 25px);
+    left: 42%;
+    width: 35px;
+    height: 35px;
+}
+
+#step3PositionsSection .logo-overlay-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 /* ================================

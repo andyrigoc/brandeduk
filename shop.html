@@ -2362,7 +2362,7 @@
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code || '');
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
-                    window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code || '');
+                    window.location.href = 'customize.html?code=' + encodeURIComponent(product.code || '');
                 });
 
                 grid.appendChild(card);

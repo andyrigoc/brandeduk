@@ -267,12 +267,60 @@
                 }
             };
 
+            // Search functionality
+            const performSearch = () => {
+                const query = input.value.trim();
+                if (!query) return;
+                
+                // Determine the correct shop page path based on current location
+                const currentPath = window.location.pathname;
+                let shopPage;
+                
+                // Check if we're already in brandeduk.com folder
+                // If path contains /brandeduk.com/, we're already there - use relative path
+                if (currentPath.includes('/brandeduk.com/')) {
+                    // Already in brandeduk.com folder, use relative path
+                    shopPage = 'shop-pc.html';
+                } else {
+                    // Not in brandeduk.com folder, navigate to it
+                    shopPage = 'brandeduk.com/shop-pc.html';
+                }
+                
+                // Navigate to shop page with search query
+                window.location.href = `${shopPage}?q=${encodeURIComponent(query)}`;
+            };
+
+            // Handle Enter key on input
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+
+            // Handle search icon click - perform search instead of just toggle
             icon.setAttribute('role', 'button');
             icon.setAttribute('tabindex', '0');
-            icon.addEventListener('pointerdown', toggle);
+            icon.addEventListener('pointerdown', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const isOpen = document.activeElement === input;
+                if (isOpen && input.value.trim()) {
+                    // If input is focused and has text, perform search
+                    performSearch();
+                } else {
+                    // Otherwise, toggle focus
+                    toggle(event);
+                }
+            });
             icon.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
-                    toggle(event);
+                    event.preventDefault();
+                    if (input.value.trim()) {
+                        performSearch();
+                    } else {
+                        toggle(event);
+                    }
                 }
             });
         });

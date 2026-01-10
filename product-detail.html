@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GD067 Premium Hoodie - Branded UK</title>
+    <title>Product - Branded UK</title>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions.css">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions-desktop.css">
     <style>
         /* Logo e Search expand per header uniforme */
         .searchbar-header__brand-img { width: 40px; height: 40px; object-fit: contain; }
@@ -71,6 +73,14 @@
             max-width: 1440px;
             margin: 0 auto;
             padding: 0 24px;
+        }
+
+        .shop-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            line-height: 1.2;
         }
 
         .back-btn:hover {
@@ -919,12 +929,15 @@
 <!-- Back Button Bar -->
 <div class="back-bar">
     <div class="header-container">
-        <button type="button" class="back-btn" onclick="window.history.back()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-            Back
-        </button>
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <button type="button" class="back-btn" onclick="window.history.back()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back
+            </button>
+            <h1 class="shop-title" id="productTypeTitle" style="display: none; margin: 0; font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1.2;">Product Type</h1>
+        </div>
     </div>
 </div>
 
@@ -934,39 +947,22 @@
     <div class="left-column">
         <div class="product-visual">
             <div class="thumb-column" id="productThumbColumn">
-                <button type="button" class="thumb-item active" data-image="https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" aria-label="View Aquatic hoodie">
-                    <img src="https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" alt="Aquatic hoodie thumbnail">
-                </button>
-                <button type="button" class="thumb-item" data-image="https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg" aria-label="View Ash Grey hoodie">
-                    <img src="https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg" alt="Ash Grey hoodie thumbnail">
-                </button>
-                <button type="button" class="thumb-item" data-image="https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg" aria-label="View Black hoodie">
-                    <img src="https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg" alt="Black hoodie thumbnail">
-                </button>
-                <button type="button" class="thumb-item" data-image="https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg" aria-label="View Royal hoodie">
-                    <img src="https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg" alt="Royal hoodie thumbnail">
-                </button>
-                <button type="button" class="thumb-item" data-image="https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg" aria-label="View Red hoodie">
-                    <img src="https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg" alt="Red hoodie thumbnail">
-                </button>
+                <!-- Thumbnail images will be populated dynamically from API -->
             </div>
             <div class="product-main">
-                <img id="mainImage" class="main-img" src="https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" alt="GD067 Hoodie">
+                <img id="mainImage" class="main-img" src="" alt="Product">
             </div>
         </div>
 
         <div class="description-box">
-            <h2>GD067 Premium Hoodie</h2>
-            <p>
-                A perfect combination of stylish design and practical detail. This amazing 80/20 cotton blend hoodie has a 100% cotton face so that it prints perfectly every time. Ideal for DTG, screen printing, discharge and embroidery.
-                <br><br>
-                Two-end ringspun cotton face fleece. Two-piece Jersey-lined hood. Dropped shoulder. Pouch pocket. 1x1 rib with Spandex cuffs and waistband for enhanced stretch and recovery. Classic fit, tubular body. Tear-away label.
-                <br><br>
-                <b>Fabric:</b> 80% Ringspun Cotton / 20% Polyester<br>
-                <b>Weight:</b> 285gsm (White 278gsm)<br>
-                <b>Washing:</b> Machine wash 30°C. Do not bleach. Low tumble. Do not iron. No dry clean.
+            <h2 id="productDescriptionTitle">Product</h2>
+            <p id="productDescriptionText">
+                <!-- Description will be populated dynamically from API -->
             </p>
         </div>
+
+        <!-- Step 3 Order Summary Mount (Desktop: left column) -->
+        <div id="step3SidebarLeftMount" class="step3-sidebar-left-mount" style="display:none;"></div>
 
     </div>
 
@@ -977,60 +973,31 @@
             <!-- PRODUCT TITLE BOX -->
             <div class="title-box">
                 <div class="title-left">
-                    <h1 class="garment-main-title">
-                        Softstyle™ midweight fleece adult hoodie
+                    <h1 class="garment-main-title" id="productTitle">
+                        Product Name
                     </h1>
                     
                     <div class="prod-code-line">
                         <span class="prod-label">Product code:</span>
-                        <span class="prod-code-value">GD067</span>
+                        <span class="prod-code-value" id="productCode">-</span>
                     </div>
                 </div>
-                <a href="/shop/?brand=gildan" title="View all Gildan products" class="brand-link">
-                    <img src="https://i.postimg.cc/tRvrwTBg/Gildan-logo.jpg" class="title-gildan-logo" alt="Gildan">
+                <a href="#" id="brandLink" class="brand-link" title="" style="display:none;">
+                    <img id="brandLogo" src="" class="title-gildan-logo" alt="">
                 </a>
             </div>
 
             <!-- CUSTOMIZATION BADGE -->
-            <div class="customization-badge">
-                <span class="cust-badge embroidery">EMBROIDERY</span>
-                <span class="cust-badge print">PRINT</span>
+            <div class="customization-badge" id="customizationBadge">
+                <!-- Customization badges will be populated dynamically from API -->
             </div>
 
             <!-- MAIN PRICE -->
-            <div id="mainPrice" class="main-price">£17.58 <span>each ex VAT</span></div>
+            <div id="mainPrice" class="main-price">£0.00 <span>each ex VAT</span></div>
             
             <!-- TIER PRICING - Compact -->
-            <div class="tier-pricing-compact">
-                <div class="tier-item" data-min="1" data-max="9" data-base-price="17.58">
-                    <span class="tier-qty">1-9</span>
-                    <span class="tier-price">£17.58</span>
-                </div>
-                <div class="tier-item" data-min="10" data-max="24" data-base-price="16.54">
-                    <span class="tier-qty">10+</span>
-                    <span class="tier-price">£16.54</span>
-                    <span class="tier-save">-8%</span>
-                </div>
-                <div class="tier-item" data-min="25" data-max="49" data-base-price="16.18">
-                    <span class="tier-qty">25+</span>
-                    <span class="tier-price">£16.18</span>
-                    <span class="tier-save">-10%</span>
-                </div>
-                <div class="tier-item" data-min="50" data-max="99" data-base-price="14.94">
-                    <span class="tier-qty">50+</span>
-                    <span class="tier-price">£14.94</span>
-                    <span class="tier-save">-15%</span>
-                </div>
-                <div class="tier-item" data-min="100" data-max="249" data-base-price="13.49">
-                    <span class="tier-qty">100+</span>
-                    <span class="tier-price">£13.49</span>
-                    <span class="tier-save">-25%</span>
-                </div>
-                <div class="tier-item" data-min="250" data-max="99999" data-base-price="12.59">
-                    <span class="tier-qty">250+</span>
-                    <span class="tier-price">£12.59</span>
-                    <span class="tier-save">-30%</span>
-                </div>
+            <div id="tierPricingContainer" class="tier-pricing-compact">
+                <!-- Tier items will be populated dynamically from API -->
             </div>
 
             <!-- STEP PROGRESS BAR -->
@@ -1048,6 +1015,11 @@
                 <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
                     <span id="stepNum3" style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,0.3);">3</span>
                     <span id="stepLabel3" style="font-size:0.9rem; font-weight:600; color:#7c3aed;">Customize</span>
+                </div>
+                <div id="connector-3-4" style="width:60px; height:4px; background:#e5e7eb; margin:0 16px; margin-bottom:28px; border-radius:2px;"></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                    <span id="stepNum4" style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,0.3);">4</span>
+                    <span id="stepLabel4" style="font-size:0.9rem; font-weight:600; color:#7c3aed;">Submit quote</span>
                 </div>
             </div>
 
@@ -1067,7 +1039,7 @@
             <div id="belowBtnSummary" class="below-summary"></div>
 
             <!-- STEP 3: CTA BUTTONS -->
-            <div class="step-section cta-section" data-step="3">
+            <div class="step-section cta-section" data-step="3" id="step3CTASection">
                 <div class="cta-buttons">
                     <button id="addContinueButton" class="cta-btn secondary" disabled>
                         <span class="cta-icon">➕</span>
@@ -1076,6 +1048,305 @@
                     <button id="addCustomizeButton" class="cta-btn primary" disabled>
                         <span class="cta-icon">✨</span>
                         <span class="cta-text">Add Logo & Proceed</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: CUSTOMIZE POSITIONS (inline) -->
+            <div class="step-section customize-positions-inline" data-step="3" id="step3PositionsSection" style="display:none;">
+                <h3 class="step-title"><span class="step-badge">3</span> Choose Customization Position(s)</h3>
+                <div class="customize-inline-layout">
+                    <aside class="sidebar customize-inline-sidebar">
+                        <h3>Your Order Summary:</h3>
+                        
+                        <div class="sidebar-costs">
+                            <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+                            <div class="section garment-section">
+                                <div class="row">
+                                    <span class="label">Garment Cost</span>
+                                    <span class="value" id="sidebarGarmentCost">£0.00</span>
+                                </div>
+                                <div class="row detail">
+                                    <span>Unit Price:</span>
+                                    <span class="detail-values">
+                                        <span id="garmentUnitPrice">£0.00</span>
+                                        <span id="garmentQty">Qty: 0</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="customizationCostsList">
+                                <!-- Populated by JavaScript with individual customization rows -->
+                            </div>
+                            <div class="cost-row total-row">
+                                <strong>Total Cost</strong>
+                                <strong id="sidebarTotalCost" class="total-amount">£0.00</strong>
+                            </div>
+                        </div>
+
+                        <div id="basketItemsList" class="basket-items-scroll">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </aside>
+
+                    <div class="customize-inline-main">
+                        <div class="customize-key" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+                            <span style="font-size:13px; color:#6b7280;">Key:</span>
+                            <span class="key-badge embroidery" style="background:#10b981; color:white; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600;">🧵 Embroidery</span>
+                            <span class="key-badge print" style="background:#3b82f6; color:white; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600;">🖨️ Print</span>
+                        </div>
+
+                        <div class="positions-grid" id="positionOptions" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px;">
+                    <!-- Left Chest -->
+                    <div class="position-card" data-position="left-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-breast">
+                                <span>Left Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png" alt="Left Chest">
+                            <div class="logo-overlay-box left-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Chest -->
+                    <div class="position-card" data-position="right-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-breast">
+                                <span>Right Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg" alt="Right Chest">
+                            <div class="logo-overlay-box right-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Front Center -->
+                    <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="small-centre-front">
+                                <span>Front Center</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Front Center">
+                            <div class="logo-overlay-box front-center" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Large Front -->
+                    <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="6.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-front-center">
+                                <span>Large Front</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£6.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£6.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Large Front">
+                            <div class="logo-overlay-box large-front" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Back Large -->
+                    <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="5.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-back">
+                                <span>Back Large</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£5.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png" alt="Back Large">
+                            <div class="logo-overlay-box large-back" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Left Sleeve -->
+                    <div class="position-card" data-position="left-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-arm">
+                                <span>Left Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Left Sleeve">
+                            <div class="logo-overlay-box left-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Sleeve -->
+                    <div class="position-card" data-position="right-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-arm">
+                                <span>Right Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">£5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">£3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Right Sleeve" style="transform: scaleX(-1);">
+                            <div class="logo-overlay-box right-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                        </div>
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                            <button type="button" class="logo-added-pill logo-ready-quote-btn">REQUEST QUOTE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Quote Button for Step 4 -->
+                <div class="step4-submit-cta" style="margin-top:24px; text-align:center;">
+                    <button id="submitQuoteBtnInline" class="cta-btn primary" style="min-width:280px;" disabled>
+                        <span class="cta-icon">📩</span>
+                        <span class="cta-text">Submit Your Quote</span>
                     </button>
                 </div>
             </div>
@@ -1452,15 +1723,17 @@
                         <a href="#" class="account-forgot-link">Forgot Password?</a>
                     </form>
                 </div>
-            </div>
-            
-            <div class="account-form-holder signup-form" id="signupForm">
-                <div class="account-form-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                        <line x1="20" y1="8" x2="20" y2="14"></line>
-                        <line x1="17" y1="11" x2="23" y2="11"></line>
+
+                        <!-- Submit Quote Button for Step 4 -->
+                        <div class="step4-submit-cta" style="margin-top:24px; text-align:center;">
+                            <button id="submitQuoteBtnInline" class="cta-btn primary" style="min-width:280px;" disabled>
+                                <span class="cta-icon">📩</span>
+                                <span class="cta-text">Submit Your Quote</span>
+                            </button>
+                            <p style="margin-top:8px; font-size:13px; color:#6b7280;">Complete at least one logo upload to continue</p>
+                        </div>
+                    </div>
+                </div>
                     </svg>
                     <span>Sign Up</span>
                 </div>
@@ -1528,10 +1801,11 @@
     </div>
 </div>
 
-<script src="brandedukv15-child/assets/js/core.js?v=20251230"></script>
-<script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
-<script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-<script src="brandedukv15-child/assets/js/pages/product.js?v=20251230"></script>
+<script src="brandedukv15-child/assets/js/core.js"></script>
+<script src="brandedukv15-child/assets/js/header.js"></script>
+<script src="brandedukv15-child/assets/js/vat-toggle.js"></script>
+<script src="brandedukv15-child/assets/js/pages/product.js"></script>
+<script src="brandedukv15-child/assets/js/pages/customize-positions-inline.js"></script>
 <!-- Color Change Confirmation Modal -->
 <div id="colorChangeModal" class="modal" style="display: none;">
     <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px;">
@@ -1545,7 +1819,7 @@
 </div>
 
 <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
-<script src="brandeduk.com 2/js/main.js?v=20251230"></script>
+<script src="brandeduk.com/js/main.js?v=20251230"></script>
 
 <!-- Account Panel Script -->
 <script>
@@ -1630,15 +1904,19 @@
         }
     });
     
-    signupForm.addEventListener('click', function() {
-        if (!signupForm.classList.contains('active')) {
-            signupForm.classList.add('active');
-            signupForm.classList.remove('inactive');
-            signinForm.classList.add('inactive');
-            signinForm.classList.remove('active');
-            accountArrow.classList.add('visible');
-        }
-    });
+    if (signupForm) {
+        signupForm.addEventListener('click', function() {
+            if (!signupForm.classList.contains('active')) {
+                signupForm.classList.add('active');
+                signupForm.classList.remove('inactive');
+                if (signinForm) {
+                    signinForm.classList.add('inactive');
+                    signinForm.classList.remove('active');
+                }
+                if (accountArrow) accountArrow.classList.add('visible');
+            }
+        });
+    }
     
     accountArrow.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -1704,5 +1982,155 @@
     }
 })();
 </script>
+
+<!-- ==================== CUSTOMIZE POSITIONS MODALS ==================== -->
+
+<!-- DESIGN UPLOAD MODAL -->
+<div class="design-modal-overlay" id="designModal">
+    <div class="design-modal">
+        <div class="design-modal-header">
+            <h3 id="designModalTitle">Upload Logo</h3>
+            <button class="design-modal-close" id="closeDesignModal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="design-modal-body">
+            <div class="design-section" id="uploadLogoSection">
+                <h4 class="design-section-title" id="uploadLogoTitle">Drop or select your logo</h4>
+                <div class="upload-dropzone" id="designUploadZone">
+                    <input type="file" id="designLogoUpload" accept="image/*,.pdf,.ai,.svg,.eps" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;" tabindex="-1" aria-hidden="true">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <p class="dropzone-text">Drag & drop or <label class="browse-link" for="designLogoUpload">Browse image</label></p>
+                    <p class="dropzone-formats">JPG, PNG, SVG, PDF, AI, EPS • Max 5MB</p>
+                </div>
+                <div class="upload-preview-container" id="designUploadPreview" hidden>
+                    <img src="" alt="" class="upload-preview-img" id="designPreviewImg">
+                    <button class="upload-remove-btn" id="removeUploadedLogo" title="Remove logo">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                    <button class="toggle-bg-btn" id="removeBgBtn" title="Remove background">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18"/>
+                            <path d="M15 3v18"/>
+                            <path d="M3 9h18"/>
+                            <path d="M3 15h18"/>
+                        </svg>
+                        <span>Remove BG</span>
+                    </button>
+                </div>
+                <canvas id="bgRemovalCanvas" style="display: none;"></canvas>
+            </div>
+        </div>
+        <div class="design-modal-footer">
+            <button class="apply-design-btn" id="applyDesignBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Add to Product
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notification" id="toastNotification"></div>
+
+<!-- ADD LOGO MODAL -->
+<div id="addLogoModal" class="modal-overlay add-logo-overlay" style="display: none;">
+    <div class="modal-box add-logo-modal">
+        <button class="modal-close" type="button" onclick="closeAddLogoModal()">&times;</button>
+        <h3 id="addLogoModalTitle">Add Customization</h3>
+        <p id="addLogoModalSubtitle" class="add-logo-subtitle">Left Breast · Embroidery</p>
+
+        <div class="add-logo-form">
+            <label for="addLogoName">Customization Name</label>
+            <input type="text" id="addLogoName" class="form-input" placeholder="e.g. Company logo">
+            <div class="method-summary">Method: <span id="addLogoMethod">Embroidery</span></div>
+
+            <div class="type-buttons add-logo-type-buttons">
+                <button type="button" class="type-btn active" data-type="logo">Logo</button>
+                <button type="button" class="type-btn" data-type="text">Text</button>
+            </div>
+
+            <div id="addLogoUploadSection" class="upload-section">
+                <div class="upload-dropzone" id="addLogoDropzone">
+                    <div class="dropzone-content" id="addLogoDropzoneContent">
+                        <strong>Upload your logo</strong>
+                        <span>Click to launch upload popup</span>
+                        <span class="max-size">Max 5MB • JPG, PNG, PDF, AI, EPS</span>
+                    </div>
+                    <img id="addLogoPreview" alt="Logo preview" style="display: none;">
+                </div>
+            </div>
+
+            <div id="addLogoTextSection" class="text-section" style="display: none;">
+                <label for="addLogoText">Enter Text</label>
+                <textarea id="addLogoText" rows="3" class="form-input" placeholder="Add your custom text"></textarea>
+            </div>
+
+            <div id="addLogoError" class="add-logo-error" style="display: none;">Please provide a customization name.</div>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" type="button" onclick="closeAddLogoModal()">Cancel</button>
+            <button class="modal-btn modal-btn-ok" type="button" onclick="saveAddLogoCustomization()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRM REMOVE MODAL -->
+<div id="confirmRemoveModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3>Remove this item from basket?</h3>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeRemoveModal()">Cancel</button>
+            <button class="modal-btn modal-btn-ok" onclick="confirmRemove()">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- QUOTE REQUEST POPUP -->
+<div id="quoteRequestPopup" class="quote-popup-overlay" style="display:none;">
+    <div class="quote-popup">
+        <button class="quote-popup__close" id="closeQuotePopup">&times;</button>
+        <h2 class="quote-popup__title">Request Your Quote</h2>
+        <p class="quote-popup__subtitle">Enter your details and we'll send you a personalised quote</p>
+        
+        <form id="quoteRequestForm" class="quote-popup__form">
+            <div class="quote-popup__field">
+                <label for="quoteName">Full Name</label>
+                <input type="text" id="quoteName" name="name" placeholder="John Smith" required>
+            </div>
+            
+            <div class="quote-popup__field">
+                <label for="quotePhone">Phone Number</label>
+                <input type="tel" id="quotePhone" name="phone" placeholder="+44 7700 900000" required inputmode="tel">
+                <span class="quote-popup__error" id="phoneError">Only numbers allowed</span>
+            </div>
+            
+            <div class="quote-popup__field">
+                <label for="quoteEmail">E-mail</label>
+                <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
+                <span class="quote-popup__error" id="emailError">Please enter a valid email address</span>
+            </div>
+            
+            <button type="submit" class="quote-popup__submit" id="quoteSubmitBtn">
+                Submit Quote Request
+            </button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>

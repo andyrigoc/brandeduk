@@ -522,6 +522,64 @@ const BrandedAPI = (function() {
         productTypesCache = null;
     }
 
+    /**
+     * Submit quote request
+     * @param {Object} quoteData - Quote data object
+     * @param {Object} quoteData.customer - Customer details { fullName, phone, email }
+     * @param {Object} quoteData.product - Product details { name, code, selectedColorName, quantity, price, sizes }
+     * @param {Array} quoteData.basket - Basket items array
+     * @param {Array} quoteData.customizations - Customizations array
+     * @returns {Promise<Object>} - { success: boolean, message: string }
+     */
+    async function submitQuote(quoteData) {
+        const url = `${BASE_URL}/api/quotes`;
+        
+        console.log('📧 [BrandedAPI] Submitting quote:', {
+            endpoint: '/api/quotes',
+            fullUrl: url,
+            customer: quoteData.customer?.fullName || 'N/A',
+            timestamp: new Date().toISOString()
+        });
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(quoteData)
+            });
+            
+            console.log('📡 [BrandedAPI] Quote response:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok,
+                timestamp: new Date().toISOString()
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            
+            const data = await response.json();
+            console.log('✅ [BrandedAPI] Quote submitted successfully:', {
+                success: data.success,
+                message: data.message,
+                timestamp: new Date().toISOString()
+            });
+            
+            return data;
+        } catch (error) {
+            console.error('❌ [BrandedAPI] Quote submission error:', {
+                message: error.message,
+                url: url,
+                timestamp: new Date().toISOString()
+            });
+            throw error;
+        }
+    }
+
     // ==========================================================================
     // EXPOSE PUBLIC API
     // ==========================================================================
@@ -543,6 +601,9 @@ const BrandedAPI = (function() {
         clearCache,
         mapCategoryToProductType,
         transformProduct,
+
+        // Quote submission
+        submitQuote,
 
         // Constants
         BASE_URL,

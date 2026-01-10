@@ -151,9 +151,24 @@
             if (savedState.positionCustomizations) state.positionCustomizations = savedState.positionCustomizations;
             if (savedState.positionDesigns) state.positionDesigns = savedState.positionDesigns;
             if (savedState.positions) state.positions = savedState.positions;
-            if (savedState.selectedColor) state.selectedColor = savedState.selectedColor;
-            if (savedState.selectedColorName) state.selectedColorName = savedState.selectedColorName;
-            if (savedState.selectedColorImage) state.selectedColorImage = savedState.selectedColorImage;
+            
+            // CRITICAL FIX: Don't restore selectedColorImage from sessionStorage
+            // It will be set from the new product's colors in loadProductFromSessionOrApi()
+            // Only restore selectedColor if it matches a color in the current product
+            // This prevents showing the previous product's image
+            if (savedState.selectedColor && PRODUCT_COLORS.length > 0) {
+                const matchingColor = PRODUCT_COLORS.find(c => c.id === savedState.selectedColor);
+                if (matchingColor) {
+                    state.selectedColor = matchingColor.id;
+                    state.selectedColorName = matchingColor.name;
+                    state.selectedColorImage = matchingColor.image;
+                    console.log('✅ Restored color from saved state:', matchingColor.name);
+                } else {
+                    console.log('⚠️ Saved color not found in current product, will use first color');
+                }
+            }
+            // Note: selectedColorImage is NOT restored here - it's set from new product data
+            
             if (savedState.sizeQuantities) state.sizeQuantities = savedState.sizeQuantities;
             if (savedState.quantity !== undefined) state.quantity = savedState.quantity;
             if (savedState.technique) state.technique = savedState.technique;
@@ -268,7 +283,19 @@
             if (savedProductData) {
                 try {
                     productData = JSON.parse(savedProductData);
-                    console.log('Loaded product data from sessionStorage', productData.code || productData);
+                    const savedCode = productData.code || productData.productCode || productData.sku;
+                    const requestedCode = savedProductCode;
+                    
+                    // Verify the saved product matches the requested product code
+                    if (requestedCode && savedCode && savedCode !== requestedCode) {
+                        console.warn('⚠️ Product code mismatch! Saved:', savedCode, 'Requested:', requestedCode);
+                        console.warn('⚠️ Clearing cached data and fetching fresh...');
+                        productData = null; // Clear mismatched data
+                        sessionStorage.removeItem('selectedProductData'); // Remove stale cache
+                    } else {
+                        console.log('✅ Loaded product data from sessionStorage:', savedCode || productData);
+                        console.log('📦 Product colors count:', (productData.colors || []).length);
+                    }
                 } catch (e) {
                     console.warn('Failed to parse selectedProductData from sessionStorage', e);
                     productData = null;
@@ -281,7 +308,8 @@
                     const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(savedProductCode)}`);
                     if (res.ok) {
                         productData = await res.json();
-                        console.log('Fetched product from API:', productData.code || savedProductCode);
+                        console.log('✅ Fetched product from API:', productData.code || savedProductCode);
+                        console.log('📦 Product colors count:', (productData.colors || []).length);
                         // cache for next time
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
@@ -294,8 +322,20 @@
 
             if (!productData) {
                 // No product data available — leave default state (fallback product)
+                console.warn('⚠️ No product data available, using fallback');
                 return false;
             }
+
+            // IMPORTANT: Clear old PRODUCT_COLORS before loading new product
+            // This prevents showing images from previous products
+            PRODUCT_COLORS = [];
+
+            // CRITICAL: Clear old selectedColorImage to prevent showing previous product's image
+            // This is the root cause of the issue - old image persists until color is clicked
+            state.selectedColor = null;
+            state.selectedColorName = null;
+            state.selectedColorImage = null;
+            console.log('🧹 Cleared old color selection to prevent showing previous product image');
 
             // Map productData into our state
             state.product = state.product || {};
@@ -303,19 +343,59 @@
             state.product.sku = productData.sku || productData.code || productData.productCode || productData.id || state.product.sku;
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
+            state.product.brand = productData.brand || productData.brand_name || state.product.brand;
+            state.product.sizes = productData.sizes || [];
+            state.product.weight = productData.weight || '';
+            state.product.fabric = productData.fabric || '';
+            state.product.rawData = productData; // Store full product data for reference
 
             // Map colors (if present) into PRODUCT_COLORS format
             const colorsSource = productData.colors || productData.colorOptions || productData.variants || [];
             if (Array.isArray(colorsSource) && colorsSource.length > 0) {
-                PRODUCT_COLORS = colorsSource.map(c => {
-                    const name = c.name || c.displayName || c.label || c.id || '';
+                console.log('🎨 Mapping', colorsSource.length, 'colors from product data...');
+                PRODUCT_COLORS = colorsSource.map((c, index) => {
+                    const name = c.name || c.displayName || c.label || c.id || `Color ${index + 1}`;
+                    // Prioritize main image, then thumb, then fallback to product image
+                    const colorImage = c.main || c.image || c.thumb || c.imageUrl || c.url || productData.image || '';
+                    const colorThumb = c.thumb || c.thumbnail || c.main || c.image || colorImage;
+                    
+                    console.log(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '✅' : '❌'}`);
+                    
                     return {
-                        id: slugify(name) || slugify(c.code || c.id || name),
+                        id: slugify(name) || slugify(c.code || c.id || name) || `color-${index}`,
                         name: name,
                         hex: c.hex || c.color || '#cccccc',
-                        image: c.main || c.image || c.thumb || c.imageUrl || c.url || productData.image || ''
+                        image: colorImage,
+                        thumb: colorThumb // Store thumb separately for thumbnails
                     };
                 });
+                console.log('✅ PRODUCT_COLORS updated with', PRODUCT_COLORS.length, 'colors');
+                
+                // CRITICAL FIX: Set the first color as default for the new product
+                // This ensures the main image shows the correct product immediately
+                if (PRODUCT_COLORS.length > 0) {
+                    state.selectedColor = PRODUCT_COLORS[0].id;
+                    state.selectedColorName = PRODUCT_COLORS[0].name;
+                    state.selectedColorImage = PRODUCT_COLORS[0].image;
+                    console.log('✅ Set default color to first available:', PRODUCT_COLORS[0].name, 'Image:', PRODUCT_COLORS[0].image);
+                }
+            } else {
+                console.warn('⚠️ No colors found in product data, using fallback');
+                // If no colors, create a single color from the main product image
+                if (productData.image) {
+                    PRODUCT_COLORS = [{
+                        id: 'default',
+                        name: 'Default',
+                        hex: '#cccccc',
+                        image: productData.image,
+                        thumb: productData.image
+                    }];
+                    // Set default color
+                    state.selectedColor = 'default';
+                    state.selectedColorName = 'Default';
+                    state.selectedColorImage = productData.image;
+                    console.log('✅ Set default color from product image:', productData.image);
+                }
             }
 
             // Map pricing tiers if present
@@ -342,18 +422,104 @@
             const titleEl = document.querySelector('.product-title');
             const skuEl = document.querySelector('.product-sku');
             if (titleEl) titleEl.textContent = state.product?.name || titleEl.textContent;
-            if (skuEl) skuEl.textContent = `#${state.product?.code || ''}` + (state.product?.brand ? ` ${state.product.brand}` : ` ${state.product?.name?.split(' ')[0] || ''}`);
+            if (skuEl) {
+                const brandName = state.product?.brand || state.product?.name?.split(' ')[0] || '';
+                skuEl.textContent = `#${state.product?.code || ''} ${brandName}`;
+            }
 
-            // Main image
+            // Main image - clear cache by adding timestamp or replacing src
             const mainImg = document.getElementById('mainImage');
             if (mainImg) {
                 const imgSrc = state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || state.product?.image || state.product?.photo || '';
-                if (imgSrc) mainImg.src = imgSrc;
+                if (imgSrc) {
+                    // Force reload by clearing src first, then setting new src with cache buster
+                    mainImg.src = '';
+                    mainImg.src = imgSrc + (imgSrc.includes('?') ? '&' : '?') + '_t=' + Date.now();
+                    // Also update alt text
+                    if (state.product?.name) {
+                        mainImg.alt = state.product.name;
+                    }
+                }
             }
+            
+            // CRITICAL: Ensure main logo overlay is hidden when loading a new product
+            // Logos should only appear in customization section, not on main product thumbnail
+            const mainLogoOverlayBox = document.getElementById('logoOverlayBox');
+            const mainLogoOverlayImg = document.getElementById('logoOverlayImg');
+            if (mainLogoOverlayBox) {
+                mainLogoOverlayBox.hidden = true;
+                mainLogoOverlayBox.classList.remove('active');
+            }
+            if (mainLogoOverlayImg) {
+                mainLogoOverlayImg.src = '';
+            }
+            
+            // Update gallery thumbnails - show different color images
+            renderColorThumbnails();
 
             // Color count
             const colorCount = document.querySelector('.color-count');
             if (colorCount) colorCount.textContent = `${PRODUCT_COLORS.length} colors`;
+
+            // Product specs (S-5XL, Colors, Weight, etc.)
+            const specsContainer = document.querySelector('.product-specs');
+            if (specsContainer && state.product) {
+                const specs = [];
+                
+                // Sizes
+                if (state.product.sizes && Array.isArray(state.product.sizes) && state.product.sizes.length > 0) {
+                    const sizes = state.product.sizes;
+                    if (sizes.length === 1) {
+                        specs.push(sizes[0]);
+                    } else if (sizes.length === 2) {
+                        specs.push(`${sizes[0]}-${sizes[1]}`);
+                    } else {
+                        // Format as "S-5XL" or list first and last
+                        const first = sizes[0];
+                        const last = sizes[sizes.length - 1];
+                        specs.push(`${first}-${last}`);
+                    }
+                } else {
+                    specs.push('S-5XL'); // Fallback
+                }
+                
+                // Colors count
+                specs.push(`${PRODUCT_COLORS.length} Colors`);
+                
+                // Weight/GSM - try to extract numeric value and format
+                if (state.product.weight) {
+                    const weightStr = String(state.product.weight);
+                    // Try to extract number from weight string (e.g., "251-300gsm" -> "251-300gsm" or "276" -> "276 gsm")
+                    if (weightStr.match(/\d/)) {
+                        specs.push(weightStr.includes('gsm') ? weightStr : `${weightStr} gsm`);
+                    } else {
+                        specs.push(weightStr);
+                    }
+                } else {
+                    specs.push('276 gsm'); // Fallback
+                }
+                
+                // Convert GSM to oz (approximate: 1 oz ≈ 28.35 g)
+                // Try to extract numeric GSM value for conversion
+                const weightValue = state.product.weight || '276';
+                const gsmMatch = String(weightValue).match(/(\d+)/);
+                if (gsmMatch) {
+                    const gsm = parseFloat(gsmMatch[1]);
+                    if (!isNaN(gsm)) {
+                        const oz = (gsm / 28.35).toFixed(1);
+                        specs.push(`${oz} oz`);
+                    } else {
+                        specs.push('8.0 oz'); // Fallback
+                    }
+                } else {
+                    specs.push('8.0 oz'); // Fallback
+                }
+                
+                // Update the specs HTML
+                specsContainer.innerHTML = specs.map((spec, index) => {
+                    return `<span class="spec">${spec}</span>${index < specs.length - 1 ? '<span class="spec-divider">|</span>' : ''}`;
+                }).join('');
+            }
 
             // Pricing tiers UI will be rebuilt elsewhere, but update title
             if (state.product && state.product.name) {
@@ -686,20 +852,32 @@
         console.log('🚀 INIT STARTED');
         console.log('DOM Ready State:', document.readyState);
         
-        // Restore state from sessionStorage (before anything else)
-        const hasRestoredState = restoreCustomizationState();
+        // CRITICAL FIX: Clear selectedColorImage first to prevent showing old product's image
+        // This ensures we don't show the previous product's image while loading new product
+        state.selectedColorImage = null;
+        state.selectedColor = null;
+        state.selectedColorName = null;
+        console.log('🧹 Cleared color selection state before loading new product');
 
-        // Load product data from sessionStorage or API early so product-specific
-        // data like colours and pricing are available before we apply any
-        // shop-provided selected color or render UI.
+        // CRITICAL FIX: Load product data FIRST, then restore customization state
+        // This ensures PRODUCT_COLORS is populated before we try to match saved colors
         try {
             const loadedEarly = await loadProductFromSessionOrApi();
             if (loadedEarly) {
-                console.log('Product loaded early during init:', state.product.code, state.product.name);
+                console.log('✅ Product loaded early during init:', state.product.code, state.product.name);
+                
+                // Now restore customization state (colors will be matched against new product's colors)
+                restoreCustomizationState();
+                
+                // Refresh DOM with correct product data
                 refreshProductDOM();
+            } else {
+                // If product didn't load, still try to restore state (will use fallback)
+                restoreCustomizationState();
             }
         } catch (e) {
             console.warn('Early product load failed, continuing with fallback', e);
+            restoreCustomizationState();
         }
 
         // Check if coming from shop page with selected color (apply after loading product)
@@ -2063,10 +2241,31 @@
             state.selectedColorName = colorData.name;
             state.selectedColorImage = colorData.image;
             
-            // Update main gallery image
-            const mainImage = document.querySelector('.gallery-main img');
+            // Update main gallery image with cache buster
+            const mainImage = document.getElementById('mainImage') || document.querySelector('.gallery-main img');
             if (mainImage) {
-                mainImage.src = colorData.image;
+                mainImage.src = '';
+                const cacheBuster = '_t=' + Date.now();
+                mainImage.src = colorData.image + (colorData.image.includes('?') ? '&' : '?') + cacheBuster;
+                if (state.product?.name) {
+                    mainImage.alt = state.product.name;
+                }
+            }
+            
+            // Update gallery thumbnails with new color
+            const galleryThumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+            if (galleryThumbs.length > 0) {
+                const thumbImage = colorData.thumb || colorData.image;
+                galleryThumbs.forEach((thumb) => {
+                    const thumbImg = thumb.querySelector('img');
+                    if (thumbImg && thumbImage) {
+                        thumbImg.src = '';
+                        const cacheBuster = '_t=' + Date.now();
+                        thumbImg.src = thumbImage + (thumbImage.includes('?') ? '&' : '?') + cacheBuster;
+                        const view = thumb.getAttribute('data-view') || 'product';
+                        thumbImg.alt = `${state.product?.name || 'Product'} - ${view.charAt(0).toUpperCase() + view.slice(1)}`;
+                    }
+                });
             }
         }
         
@@ -2096,17 +2295,31 @@
         }
         
         console.log('🎨 Rendering', PRODUCT_COLORS.length, 'colors...');
+        console.log('🎨 First color image:', PRODUCT_COLORS[0]?.image);
         
-        colorOptions.innerHTML = PRODUCT_COLORS.map((color, index) => `
+        if (PRODUCT_COLORS.length === 0) {
+            console.warn('⚠️ No colors to render!');
+            colorOptions.innerHTML = '<p style="color: #6b7280; padding: 16px;">No colors available</p>';
+            return;
+        }
+        
+        colorOptions.innerHTML = PRODUCT_COLORS.map((color, index) => {
+            // Use color image with cache buster to prevent showing cached images from other products
+            const imageUrl = color.image || '';
+            const cacheBuster = imageUrl ? (imageUrl.includes('?') ? '&' : '?') + '_t=' + Date.now() + '_' + index : '';
+            const fullImageUrl = imageUrl + cacheBuster;
+            
+            return `
             <button class="color-btn ${color.id === state.selectedColor ? 'active' : ''}" 
                     data-color="${color.id}" 
                     data-name="${color.name}"
-                    style="background-image: url('${color.image}'); background-size: cover; background-position: center;">
+                    style="background-image: url('${fullImageUrl}'); background-size: cover; background-position: center;">
                 <svg class="color-check" width="14" height="14" viewBox="0 0 24 24" fill="white">
                     <polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" fill="none"/>
                 </svg>
             </button>
-        `).join('');
+        `;
+        }).join('');
 
         // Update color count
         const colorCount = document.querySelector('.color-count');
@@ -2114,7 +2327,97 @@
             colorCount.textContent = `${PRODUCT_COLORS.length} colors`;
         }
         
+        // Re-render color thumbnails in gallery when colors are updated
+        renderColorThumbnails();
+        
         console.log('✅ Colors rendered successfully!');
+    }
+
+    // Render color thumbnails in gallery (showing different color variants)
+    function renderColorThumbnails() {
+        const galleryThumbsContainer = document.getElementById('galleryThumbsContainer') || document.querySelector('.gallery-thumbs');
+        if (!galleryThumbsContainer) {
+            console.warn('⚠️ Gallery thumbs container not found');
+            return;
+        }
+
+        if (!PRODUCT_COLORS || PRODUCT_COLORS.length === 0) {
+            console.warn('⚠️ No colors available for thumbnails');
+            return;
+        }
+
+        console.log('🎨 Rendering', PRODUCT_COLORS.length, 'color thumbnails in gallery...');
+
+        // Clear existing thumbnails
+        galleryThumbsContainer.innerHTML = '';
+
+        // Create thumbnails for each color
+        PRODUCT_COLORS.forEach((color, index) => {
+            const isActive = color.id === state.selectedColor;
+            const thumbButton = document.createElement('button');
+            thumbButton.className = `thumb ${isActive ? 'active' : ''}`;
+            thumbButton.setAttribute('data-color-id', color.id);
+            thumbButton.setAttribute('data-color-index', index);
+            
+            const thumbPlaceholder = document.createElement('div');
+            thumbPlaceholder.className = 'thumb-placeholder';
+            
+            const thumbImg = document.createElement('img');
+            const imageUrl = color.thumb || color.image || '';
+            if (imageUrl) {
+                const cacheBuster = '_t=' + Date.now() + '_' + index;
+                thumbImg.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + cacheBuster;
+            }
+            thumbImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
+            
+            thumbPlaceholder.appendChild(thumbImg);
+            thumbButton.appendChild(thumbPlaceholder);
+            
+            // Add click handler to change main image and selected color
+            thumbButton.addEventListener('click', () => {
+                // Update active state
+                galleryThumbsContainer.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                thumbButton.classList.add('active');
+                
+                // Update selected color state
+                state.selectedColor = color.id;
+                state.selectedColorName = color.name;
+                state.selectedColorImage = color.image;
+                
+                // Update main image
+                const mainImg = document.getElementById('mainImage');
+                if (mainImg && color.image) {
+                    mainImg.src = '';
+                    const cacheBuster = '_t=' + Date.now();
+                    mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
+                    mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
+                }
+                
+                // Update selected color label
+                const selectedColorEl = document.getElementById('selectedColor');
+                if (selectedColorEl) {
+                    selectedColorEl.textContent = color.name;
+                }
+                
+                // Update active color button in color options
+                const colorOptions = document.getElementById('colorOptions');
+                if (colorOptions) {
+                    colorOptions.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.color === color.id);
+                    });
+                }
+                
+                // Haptic feedback
+                if (navigator.vibrate) navigator.vibrate(10);
+                
+                // Update pricing summary
+                updatePricingSummary();
+            });
+            
+            galleryThumbsContainer.appendChild(thumbButton);
+        });
+
+        console.log('✅ Color thumbnails rendered:', PRODUCT_COLORS.length);
     }
 
     // === Size/Qty Compact Selection ===
@@ -3683,13 +3986,14 @@
                         const uploadTitle = document.getElementById('uploadLogoTitle');
                         if (uploadTitle) uploadTitle.textContent = 'Your Logo';
                         
-                        // Mostra il logo anche sulla preview del prodotto
-                        const logoOverlayBox = document.getElementById('logoOverlayBox');
-                        const logoOverlayImg = document.getElementById('logoOverlayImg');
-                        if (logoOverlayBox && logoOverlayImg) {
-                            logoOverlayImg.src = ev.target.result;
-                            logoOverlayBox.classList.add('active');
-                        }
+                        // REMOVED: Don't show logo on main product preview - only in customization section
+                        // The logo should only appear in the position cards, not on the main product thumbnail
+                        // const logoOverlayBox = document.getElementById('logoOverlayBox');
+                        // const logoOverlayImg = document.getElementById('logoOverlayImg');
+                        // if (logoOverlayBox && logoOverlayImg) {
+                        //     logoOverlayImg.src = ev.target.result;
+                        //     logoOverlayBox.classList.add('active');
+                        // }
                         
                         // Auto-remove background per immagini JPEG/JPG
                         const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || 
@@ -3929,11 +4233,12 @@
                     const processedImageUrl = canvas.toDataURL('image/png');
                     previewImg.src = processedImageUrl;
                     
-                    // Aggiorna anche il logo overlay sul prodotto con l'immagine senza background
-                    const logoOverlayImg = document.getElementById('logoOverlayImg');
-                    if (logoOverlayImg) {
-                        logoOverlayImg.src = processedImageUrl;
-                    }
+                    // REMOVED: Don't update main product preview - only customization section
+                    // The logo should only appear in the position cards, not on the main product thumbnail
+                    // const logoOverlayImg = document.getElementById('logoOverlayImg');
+                    // if (logoOverlayImg) {
+                    //     logoOverlayImg.src = processedImageUrl;
+                    // }
                     
                     // Update button state - cambia in "Keep Background"
                     if (removeBgBtn) {
@@ -4014,10 +4319,11 @@
         // Restore original image
         previewImg.src = state.originalLogoImage;
         
-        // Aggiorna anche il logo overlay sul prodotto
-        if (logoOverlayImg) {
-            logoOverlayImg.src = state.originalLogoImage;
-        }
+        // REMOVED: Don't update main product preview - only customization section
+        // The logo should only appear in the position cards, not on the main product thumbnail
+        // if (logoOverlayImg) {
+        //     logoOverlayImg.src = state.originalLogoImage;
+        // }
         
         // Reset Remove BG button - torna a "Remove BG"
         if (removeBgBtn) {
@@ -4834,22 +5140,10 @@
 
     // === Gallery ===
     function setupGallery() {
-        if (!elements.galleryThumbs.length) return;
-
-        elements.galleryThumbs.forEach(thumb => {
-            thumb.addEventListener('click', () => {
-                // Update active state
-                elements.galleryThumbs.forEach(t => t.classList.remove('active'));
-                thumb.classList.add('active');
-
-                // Update main image
-                const img = thumb.querySelector('img');
-                if (img && elements.mainImage) {
-                    elements.mainImage.src = img.src;
-                    elements.mainImage.alt = img.alt;
-                }
-            });
-        });
+        // Gallery thumbnails are now dynamically rendered by renderColorThumbnails()
+        // This function is kept for backward compatibility
+        // Thumbnails will be rendered when colors are loaded via refreshProductDOM()
+        console.log('✅ Gallery setup complete (thumbnails rendered dynamically)');
     }
 
     // === Modals ===

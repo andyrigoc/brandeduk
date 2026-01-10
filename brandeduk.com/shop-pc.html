@@ -620,6 +620,7 @@
         .filter-checkbox-item .count {
             font-size: 12px;
             color: #9ca3af;
+            display: none; /* Hide static filter counts */
         }
 
         /* Products Section */
@@ -1337,9 +1338,9 @@
         </div>
         <div class="filter-expandable-content">
             <div class="filter-checkbox-list">
-                <label class="filter-checkbox-item"><input type="checkbox" value="female"><span>Female</span><span class="count">(72)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="male"><span>Male</span><span class="count">(86)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="unisex"><span>Unisex</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="female"><span>Female</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="male"><span>Male</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="unisex"><span>Unisex</span></label>
             </div>
         </div>
 
@@ -1443,7 +1444,7 @@
         </div>
         <div class="filter-expandable-content">
             <div class="filter-checkbox-list">
-                <label class="filter-checkbox-item"><input type="checkbox" value="black - black"><span>Black - Black</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="black - black"><span>Black - Black</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="blue - navy"><span>Blue - Navy</span><span class="count">(98)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="grey - dark grey"><span>Grey - Dark Grey</span><span class="count">(76)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="white - white"><span>White - White</span><span class="count">(128)</span></label>
@@ -1497,7 +1498,7 @@
                 <label class="filter-checkbox-item"><input type="checkbox" value="xl"><span>XL</span><span class="count">(142)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="2xl"><span>2XL</span><span class="count">(128)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="3xl"><span>3XL</span><span class="count">(98)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="xs"><span>XS</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="xs"><span>XS</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="one-size"><span>One Size</span><span class="count">(24)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="4xl"><span>4XL</span><span class="count">(68)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="5xl"><span>5XL</span><span class="count">(42)</span></label>
@@ -1528,8 +1529,8 @@
                 <label class="filter-checkbox-item"><input type="checkbox" value="0-50gsm"><span>0 - 50gsm</span><span class="count">(24)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="051-100gsm"><span>051 - 100gsm</span><span class="count">(32)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="101-150gsm"><span>101 - 150gsm</span><span class="count">(48)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="151-200gsm"><span>151 - 200gsm</span><span class="count">(124)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="201-250gsm"><span>201 - 250gsm</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="151-200gsm"><span>151 - 200gsm</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="201-250gsm"><span>201 - 250gsm</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="251-300gsm"><span>251 - 300gsm</span><span class="count">(76)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="over-300gsm"><span>Over 300gsm</span><span class="count">(32)</span></label>
             </div>
@@ -1558,11 +1559,11 @@
         </div>
         <div class="filter-expandable-content">
             <div class="filter-checkbox-list">
-                <label class="filter-checkbox-item"><input type="checkbox" value="sport"><span>Sport</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="sport"><span>Sport</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="corporate"><span>Corporate</span><span class="count">(98)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="hospitality"><span>Hospitality</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="hospitality"><span>Hospitality</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="travel"><span>Travel</span><span class="count">(32)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="fashion"><span>Fashion</span><span class="count">(124)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="fashion"><span>Fashion</span></label>
             </div>
         </div>
 
@@ -1586,7 +1587,7 @@
         <div class="filter-expandable-content">
             <div class="filter-checkbox-list">
                 <label class="filter-checkbox-item"><input type="checkbox" value="adhesives"><span>Adhesives</span><span class="count">(12)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="cut-away-inner-label"><span>Cut-away inner label</span><span class="count">(86)</span></label>
+                <label class="filter-checkbox-item"><input type="checkbox" value="cut-away-inner-label"><span>Cut-away inner label</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="sewn-tag"><span>Sewn Tag</span><span class="count">(98)</span></label>
                 <label class="filter-checkbox-item"><input type="checkbox" value="tagless"><span>Tagless</span><span class="count">(54)</span></label>
             </div>
@@ -1680,6 +1681,7 @@
 </footer>
 
 <script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
+<script src="../brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
 <script src="../brandedukv15-child/assets/js/api.js?v=20260107"></script>
 <script src="js/main.js?v=20251230"></script>
 <script>
@@ -2557,9 +2559,20 @@ const categoryTitles = {
 };
 
 // VAT helpers - uses same key as vat-toggle.js
-// NOTA: 'on' nel localStorage = toggle viola = INC VAT = prezzi +20%
+// Expected behavior:
+// - Toggle OFF (left/grey) → show "ex VAT" → no VAT added
+// - Toggle ON (right/purple) → show "inc VAT" → add 20% VAT
+// The toggle stores 'on' when VAT is included, 'off' or null when excluded
 function isVatOn() {
-    return localStorage.getItem('brandeduk-vat-mode') !== 'on';
+    const stored = localStorage.getItem('brandeduk-vat-mode');
+    // When toggle is visually ON (purple/right), localStorage should be 'on' → return true → show "inc VAT"
+    // When toggle is visually OFF (left), localStorage should be 'off' or null → return false → show "ex VAT"
+    // FIX: Toggle stores backwards - when visually ON (purple/right) it stores 'off' or null
+    // When visually OFF (left) it stores 'on'
+    // So we invert: return true when stored is NOT 'on'
+    const result = stored !== 'on';
+    console.log('🔍 isVatOn() - stored:', stored, '→ returning:', result, '→ will show:', result ? 'inc VAT' : 'ex VAT');
+    return result;
 }
 
 function formatCurrency(amount) {
@@ -2864,8 +2877,10 @@ document.addEventListener('vatStateChanged', function(e) {
 
 // Listen for VAT state changes from vat-toggle.js
 document.addEventListener('brandeduk:vat-change', function(e) {
-    renderProducts(); // Re-render products with new VAT prices
-    updatePriceRangeDisplay();
+    console.log('💰 VAT toggle changed, updating prices...');
+    updatePrices(); // Update existing prices immediately (fast)
+    updatePriceRangeDisplay(); // Update price range display
+    renderProducts(); // Re-render products with new VAT prices (async, slower)
 });
 
 // Dual Price Range Slider
@@ -3450,8 +3465,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     // #endregion
     await initPriceRangeSlider();
     
+    // Ensure prices match current VAT state on initial load
+    console.log('💰 Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });
+    updatePrices(); // Update prices to match current VAT state
+    updatePriceRangeDisplay();
+    
     // Update prices when VAT changes
     window.addEventListener('vatToggleChanged', () => {
+        console.log('💰 vatToggleChanged event received');
         updatePrices();
         updatePriceRangeDisplay();
     });
@@ -3461,18 +3482,36 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Update prices on VAT change
 function updatePrices() {
-    document.querySelectorAll('.product-price').forEach(priceEl => {
+    console.log('💰 updatePrices() called, isVatOn():', isVatOn(), 'localStorage:', localStorage.getItem('brandeduk-vat-mode'));
+    const priceElements = document.querySelectorAll('.product-price');
+    console.log(`💰 Found ${priceElements.length} product price elements to update`);
+    
+    priceElements.forEach((priceEl, index) => {
         const min = Number(priceEl.dataset.priceMin);
         const max = Number(priceEl.dataset.priceMax);
         const valueEl = priceEl.querySelector('.price-value');
-        if (valueEl && Number.isFinite(min)) {
-            valueEl.textContent = formatCurrency(min);
-        }
         const suffixEl = priceEl.querySelector('.price-suffix');
+        
+        if (valueEl && Number.isFinite(min)) {
+            const oldValue = valueEl.textContent;
+            const newValue = formatCurrency(min);
+            valueEl.textContent = newValue;
+            if (index < 3) { // Log first 3 for debugging
+                console.log(`💰 Product ${index + 1}: ${oldValue} → ${newValue} (base: £${min})`);
+            }
+        }
+        
         if (suffixEl) {
-            suffixEl.textContent = vatSuffix();
+            const oldSuffix = suffixEl.textContent;
+            const newSuffix = vatSuffix();
+            suffixEl.textContent = newSuffix;
+            if (index < 3) { // Log first 3 for debugging
+                console.log(`💰 Product ${index + 1} suffix: "${oldSuffix}" → "${newSuffix}"`);
+            }
         }
     });
+    
+    console.log('✅ updatePrices() completed');
 }
 
 // Pagination functions
