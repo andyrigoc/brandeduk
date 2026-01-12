@@ -68,6 +68,8 @@
     position: relative;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
     transition: transform 0.6s 0.7s, width 0.6s 0.7s;
     will-change: transform, width;
 }
@@ -88,6 +90,7 @@
     background-repeat: no-repeat;
     transition: transform 1s;
     transform: translate3d(0, 0, 0) scale(1);
+    border-radius: inherit;
 }
 
 .hero-cont.s--inactive .hero-el__bg:before {
@@ -108,6 +111,64 @@
     background-position: 0% calc(20% + 29px);
 }
 
+/* Expanded panels (hero1): shift image down further, exclude Apron + Hoodie + Hi-Viz + Polo */
+#hero1 .hero-el.s--active:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(4)):not(:nth-child(5)) .hero-el__bg:before {
+    background-position-y: calc(50% + 160px);
+}
+
+/* Polo: hero1 expanded image position (keep box fixed, move image down) */
+#hero1 .hero-el[data-category="polo"].s--active .hero-el__bg:before {
+    background-position: center calc(50% + 115px);
+}
+
+/* T-Shirts: hero1 expanded – fill the entire card */
+#hero1 .hero-el[data-category="tshirts"].s--active .hero-el__bg {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+}
+#hero1 .hero-el[data-category="tshirts"].s--active .hero-el__bg:before {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: scale(1.2);
+    background-size: cover;
+    background-position: center calc(50% - 180px); /* Spostata 30px più in alto */
+}
+
+/* Hi-Viz: hero1 expanded – fill the entire card */
+#hero1 .hero-el[data-category="hivis"].s--active .hero-el__bg {
+    width: 100% !important;
+    left: 0;
+    right: 0;
+}
+#hero1 .hero-el[data-category="hivis"].s--active .hero-el__bg:before {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transform: scale(1.15);
+    background-size: cover;
+    background-position: 30% calc(50% + 30px);
+}
+
+/* Close button (X) white for: Hi-Viz, Polo, Jackets, T-shirts */
+#hero1 .hero-el[data-category="hivis"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="hivis"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="polo"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="polo"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="jackets"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="jackets"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="tshirts"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="tshirts"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="trousers"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="trousers"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="sustainable"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="sustainable"] .hero-el__close-btn:after {
+    background: #fff !important;
+}
+
 .hero-el__bg:after {
     content: "";
     z-index: 1;
@@ -119,6 +180,7 @@
     background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
     opacity: 0;
     transition: opacity 0.5s;
+    border-radius: inherit;
 }
 
 .hero-el:hover .hero-el__bg:after {
@@ -194,6 +256,27 @@
     transition: all 0.5s 1.4s;
 }
 
+/* Hero 1: move expanded copy/CTA to the right (keep same fonts/sizes) */
+#hero1 .hero-el.s--active .hero-el__content {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 14px;
+    text-align: right;
+}
+
+#hero1 .hero-el.s--active .hero-el__text {
+    text-align: right;
+    margin-bottom: 0;
+}
+
+/* Hero 1: smaller, less intrusive CTA next to title */
+#hero1 .hero-el.s--active .hero-el__cta {
+    padding: 10px 16px;
+    font-size: 12px;
+    box-shadow: none;
+}
+
 .hero-el__text {
     text-transform: uppercase;
     font-size: 32px;
@@ -209,9 +292,7 @@
 .hero-el:nth-child(1).s--active .hero-el__text {
     margin-left: auto;
     text-align: right;
-    color: #9ca3af;
-    position: relative;
-    top: 20px;
+    color: #000;
 }
 
 /* Hoodies: move expanded title to bottom-right like Apron (keep white) */
@@ -223,10 +304,7 @@
     top: 20px;
 }
 
-/* Apron: push expanded content lower */
-.hero-el:nth-child(1).s--active .hero-el__content {
-    padding-bottom: 20px;
-}
+
 
 .hero-el__cta {
     display: inline-block;
@@ -280,10 +358,23 @@
     width: 100%;
     height: 3px;
     margin-top: -1.5px;
-    background: #9ca3af;
+    background: #000;
     opacity: 0;
     transition: opacity 0s;
     border-radius: 2px;
+}
+
+/* Ensure Hoodies close X is black (avoid any external overrides) */
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn {
+    filter: none !important;
+}
+
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="hoodies"] .hero-el__close-btn:after,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn:before,
+#hero1 .hero-el[data-category="beanies"] .hero-el__close-btn:after {
+    background: #fff !important;
 }
 
 .hero-el.s--active .hero-el__close-btn:before,

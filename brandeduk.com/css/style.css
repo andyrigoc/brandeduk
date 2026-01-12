@@ -188,14 +188,63 @@ img {
     z-index: 0;
 }
 
-/* Banner 1 - Neon Get in Touch */
-#heroBanner1 {
+/* Banner 2 - Neon Get in Touch */
+#heroBanner2 {
     background: #000;
 }
 
-/* Banner 2 - Make Awesome */
-#heroBanner2 {
+/* Banner 3 - Make Awesome */
+#heroBanner3 {
     background: #fff;
+}
+
+/* Banner 4 - Branded Yellow/Black Bouncing */
+#heroBanner4 {
+    background: #f9ca24;
+}
+
+.hero-bounce-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9ca24;
+}
+
+.hero-bounce-headline {
+    font-family: 'Lexend Deca', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(56px, 10vw, 160px);
+    line-height: 1;
+    color: #000;
+}
+
+.hero-bounce-char {
+    display: inline-block;
+    transform-origin: 100% 100%;
+    animation: heroBrandedBounce 2.5s cubic-bezier(0, 0.56, 0.64, 1) infinite;
+    animation-delay: calc(var(--char-index) * 0.15s);
+    will-change: transform;
+}
+
+@keyframes heroBrandedBounce {
+    0%,
+    20% {
+        transform: translateY(0) scaleY(1);
+    }
+    45% {
+        transform: translateY(-20%) scaleY(1);
+    }
+    60% {
+        transform: translateY(0) scaleY(0.95);
+    }
+    75% {
+        transform: translateY(-35%) scaleY(1);
+    }
+    100% {
+        transform: translateY(0) scaleY(1);
+    }
 }
 
 /* Neon Font */
@@ -354,26 +403,31 @@ img {
     justify-content: center;
     gap: 12px;
     padding: 24px 0 0;
+    position: relative;
+    z-index: 5;
 }
 
 .banner-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
+    background: transparent;
+    border: 2px solid var(--purple);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .banner-dot:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(124, 58, 237, 0.15);
 }
 
 .banner-dot--active {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
     background: var(--purple);
-    width: 36px;
-    border-radius: 6px;
+    border: 2px solid var(--purple);
+    transform: scale(1.1);
 }
 
 /* ============================================
@@ -670,18 +724,20 @@ img {
     overflow: hidden;
 }
 
+.trust-truck-label-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
 .trust-truck-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     background: rgba(255,255,255,0.95);
     padding: 10px 28px;
     border-radius: var(--radius-full);
     font-size: 14px;
     font-weight: 600;
     color: var(--gray-800);
-    z-index: 10;
     white-space: nowrap;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }

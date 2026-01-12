@@ -246,8 +246,7 @@
     }
 
     function initSearchExpandToggle() {
-        // Handle both desktop (.searchbar-header__search-expand) and mobile (.search-wrapper-expand) search containers
-        const containers = document.querySelectorAll('.searchbar-header__search-expand, .search-wrapper-expand');
+        const containers = document.querySelectorAll('.searchbar-header__search-expand');
         if (!containers.length) return;
 
         containers.forEach((container) => {
@@ -268,75 +267,12 @@
                 }
             };
 
-            // Search functionality
-            const performSearch = () => {
-                const query = input.value.trim();
-                if (!query) return;
-                
-                // Detect if user is on mobile/tablet (screen width < 1024px)
-                const isMobile = window.innerWidth < 1024;
-                
-                // Determine the correct shop page path based on current location and device
-                const currentPath = window.location.pathname;
-                let shopPage;
-                
-                if (isMobile) {
-                    // Mobile/tablet: navigate to shop.html
-                    // Check if we're already in the root or in a subdirectory
-                    if (currentPath.includes('/brandeduk.com/')) {
-                        // Already in brandeduk.com folder, go up one level to root
-                        shopPage = '../shop.html';
-                    } else {
-                        // At root level, use relative path
-                        shopPage = 'shop.html';
-                    }
-                } else {
-                    // Desktop: navigate to shop-pc.html
-                    // Check if we're already in brandeduk.com folder
-                    if (currentPath.includes('/brandeduk.com/')) {
-                        // Already in brandeduk.com folder, use relative path
-                        shopPage = 'shop-pc.html';
-                    } else {
-                        // Not in brandeduk.com folder, navigate to it
-                        shopPage = 'brandeduk.com/shop-pc.html';
-                    }
-                }
-                
-                // Navigate to shop page with search query (using 'q' parameter)
-                window.location.href = `${shopPage}?q=${encodeURIComponent(query)}`;
-            };
-
-            // Handle Enter key on input
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    performSearch();
-                }
-            });
-
-            // Handle search icon click - perform search instead of just toggle
             icon.setAttribute('role', 'button');
             icon.setAttribute('tabindex', '0');
-            icon.addEventListener('pointerdown', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                const isOpen = document.activeElement === input;
-                if (isOpen && input.value.trim()) {
-                    // If input is focused and has text, perform search
-                    performSearch();
-                } else {
-                    // Otherwise, toggle focus
-                    toggle(event);
-                }
-            });
+            icon.addEventListener('pointerdown', toggle);
             icon.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    if (input.value.trim()) {
-                        performSearch();
-                    } else {
-                        toggle(event);
-                    }
+                    toggle(event);
                 }
             });
         });
