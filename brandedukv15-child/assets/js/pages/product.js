@@ -69,7 +69,7 @@ function vatAmount(baseAmount) {
 function updateAllPricing() {
     // Update main price
     const mainPriceEl = document.getElementById('mainPrice');
-    if (mainPriceEl) {
+    if (mainPriceEl && BASE_PRICE !== null) {
         const priceValue = formatCurrency(BASE_PRICE);
         const suffix = ' <span>each ' + vatSuffix() + '</span>';
         mainPriceEl.innerHTML = priceValue + suffix;
@@ -107,6 +107,7 @@ function updateAllPricing() {
 
 // Listen for VAT toggle changes
 document.addEventListener('brandeduk:vat-change', function(event) {
+    console.log('💰 VAT changed, updating prices. isVatOn():', isVatOn(), 'suffix:', vatSuffix());
     updateAllPricing();
     updateBasketTotalBox(); // Refresh basket box on VAT change
 });
@@ -115,24 +116,12 @@ document.addEventListener('brandeduk:vat-change', function(event) {
 async function loadProductData() {
     // Try to get product code from sessionStorage first
     const savedProductCode = sessionStorage.getItem('selectedProduct');
-    const savedProductData = sessionStorage.getItem('selectedProductData');
     
     let productData = null;
+    const productCode = savedProductCode;
     
-    // Try to parse saved product data
-    if (savedProductData) {
-        try {
-            productData = JSON.parse(savedProductData);
-            console.log('✅ Loaded product from sessionStorage:', productData);
-        } catch (e) {
-            console.warn('Failed to parse saved product data:', e);
-        }
-    }
-    
-    // If we have a product code but no data, or data doesn't match, fetch from API
-    const productCode = savedProductCode || (productData && productData.code);
-    
-    if (productCode && (!productData || productData.code !== productCode)) {
+    // ALWAYS fetch fresh data from API to ensure prices are up-to-date
+    if (productCode) {
         console.log('Fetching product from API...', productCode);
         try {
             const response = await fetch(`${API_BASE_URL}/products/${productCode}`);
@@ -143,9 +132,29 @@ async function loadProductData() {
                 sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
             } else {
                 console.error('❌ API returned error:', response.status);
+                // Fallback to cached data only if API fails
+                const savedProductData = sessionStorage.getItem('selectedProductData');
+                if (savedProductData) {
+                    try {
+                        productData = JSON.parse(savedProductData);
+                        console.warn('⚠️ Using cached data due to API error');
+                    } catch (e) {
+                        console.warn('Failed to parse saved product data:', e);
+                    }
+                }
             }
         } catch (error) {
             console.error('❌ Failed to fetch product from API:', error);
+            // Fallback to cached data only if API fails
+            const savedProductData = sessionStorage.getItem('selectedProductData');
+            if (savedProductData) {
+                try {
+                    productData = JSON.parse(savedProductData);
+                    console.warn('⚠️ Using cached data due to API error');
+                } catch (e) {
+                    console.warn('Failed to parse saved product data:', e);
+                }
+            }
         }
     }
     
@@ -226,9 +235,12 @@ function initTierPricing() {
             ? Math.round(((firstTierPrice - tier.price) / firstTierPrice) * 100) 
             : 0;
         
+        // Use formatCurrency to respect VAT toggle state
+        const formattedPrice = formatCurrency(tier.price);
+        
         tierItem.innerHTML = `
             <span class="tier-qty">${qtyText}</span>
-            <span class="tier-price">£${tier.price.toFixed(2)}</span>
+            <span class="tier-price">${formattedPrice}</span>
             ${savePercent > 0 ? `<span class="tier-save">-${savePercent}%</span>` : ''}
         `;
         
@@ -467,8 +479,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         initTierPricing();
     }
     
-    updateAllPricing();
-    updateBasketTotalBox(); // Load basket total box
+    // Wait a tick to ensure VAT toggle has initialized
+    setTimeout(() => {
+        updateAllPricing();
+        updateBasketTotalBox(); // Load basket total box
+    }, 0);
 });
 
 // Update the Basket Total Box showing all basket items

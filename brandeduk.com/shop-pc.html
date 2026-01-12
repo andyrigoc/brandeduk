@@ -2768,17 +2768,12 @@ async function renderProducts() {
         const colorIndex = index % colors.length;
         const displayColor = colors[colorIndex];
         
-        // Get price range from priceBreaks or use base price
-        let minPrice = parseFloat(product.price) || 0;
-        let maxPrice = minPrice;
-        if (product.priceBreaks && product.priceBreaks.length > 0) {
-            const prices = product.priceBreaks.map(pb => parseFloat(pb.price)).filter(p => !isNaN(p));
-            if (prices.length > 0) {
-                minPrice = Math.min(...prices);
-                maxPrice = Math.max(...prices);
-            }
-        }
-        const productPrice = minPrice;
+        // Use product.price directly (ignore priceBreaks for shop page)
+        const productPrice = parseFloat(product.price) || parseFloat(product.basePrice) || 0;
+        
+        // For display purposes, we only need the single price
+        const minPrice = productPrice;
+        const maxPrice = productPrice;
         
         const card = document.createElement('div');
         card.className = 'product-card';
