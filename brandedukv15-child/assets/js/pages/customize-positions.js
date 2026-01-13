@@ -511,12 +511,16 @@ function initSubmitQuoteButton() {
             
             const submitFormBtn = document.getElementById('quoteSubmitBtn');
             const nameInput = document.getElementById('quoteName');
+            const companyInput = document.getElementById('quoteCompany');
             const phoneInput = document.getElementById('quotePhone');
             const emailInput = document.getElementById('quoteEmail');
+            const addressInput = document.getElementById('quoteAddress');
             
             const name = nameInput.value;
+            const company = companyInput?.value || '';
             const phone = phoneInput.value;
             const email = emailInput.value;
+            const address = addressInput?.value || '';
             
             // Validate phone (numbers only, min 6 chars)
             const phoneRegex = /^[\d\s\+\-\(\)]{6,}$/;
@@ -546,8 +550,10 @@ function initSubmitQuoteButton() {
             const quoteData = {
                 customer: {
                     fullName: name,
+                    company: company,
                     phone: phone,
-                    email: email
+                    email: email,
+                    address: address
                 },
                 product: {
                     name: productData.name || 'Product',

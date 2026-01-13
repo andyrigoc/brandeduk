@@ -1269,8 +1269,10 @@
                 
                 // Get form data
                 const name = document.getElementById('quoteName').value.trim();
+                const company = document.getElementById('quoteCompany')?.value.trim() || '';
                 const phone = document.getElementById('quotePhone').value.trim();
                 const emailValue = document.getElementById('quoteEmail').value.trim();
+                const address = document.getElementById('quoteAddress')?.value.trim() || '';
                 
                 // Validate email
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1430,8 +1432,10 @@
                     const quoteData = {
                         customer: {
                             fullName: name,
+                            company: company,
                             phone: phone,
-                            email: emailValue
+                            email: emailValue,
+                            address: address
                         },
                         summary: {
                             totalQuantity: totalQuantity,

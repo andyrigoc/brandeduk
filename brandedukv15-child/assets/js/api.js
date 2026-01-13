@@ -525,7 +525,7 @@ const BrandedAPI = (function() {
     /**
      * Submit quote request
      * @param {Object} quoteData - Quote data object
-     * @param {Object} quoteData.customer - Customer details { fullName, phone, email }
+     * @param {Object} quoteData.customer - Customer details { fullName, company, phone, email, address }
      * @param {Object} quoteData.product - Product details { name, code, selectedColorName, quantity, price, sizes }
      * @param {Array} quoteData.basket - Basket items array
      * @param {Array} quoteData.customizations - Customizations array

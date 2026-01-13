@@ -876,8 +876,10 @@
                 const submitFormBtn = document.getElementById('quoteSubmitBtn');
                 const popupEl = document.getElementById('quoteRequestPopup');
                 const name = document.getElementById('quoteName').value;
+                const company = document.getElementById('quoteCompany')?.value || '';
                 const phone = document.getElementById('quotePhone').value;
                 const email = document.getElementById('quoteEmail').value;
+                const address = document.getElementById('quoteAddress')?.value || '';
 
                 // Basic validation
                 if (!name || !phone || !email) {
@@ -1002,8 +1004,10 @@
                     const quoteData = {
                         customer: {
                             fullName: name,
+                            company: company,
                             phone: phone,
-                            email: email
+                            email: email,
+                            address: address
                         },
                         // Summary section
                         summary: {

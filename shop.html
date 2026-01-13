@@ -2112,6 +2112,14 @@
             if (currentState.search) url.searchParams.set('q', currentState.search); else url.searchParams.delete('q');
             if (currentState.priceMin !== null) url.searchParams.set('priceMin', currentState.priceMin); else url.searchParams.delete('priceMin');
             if (currentState.priceMax !== null) url.searchParams.set('priceMax', currentState.priceMax); else url.searchParams.delete('priceMax');
+            
+            // Preserve accreditation=recycled URL parameter if recycled is in quickFilters
+            if (currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled')) {
+                url.searchParams.set('accreditation', 'recycled');
+            } else {
+                url.searchParams.delete('accreditation');
+            }
+            
             window.history.replaceState({}, '', url);
         }
 
@@ -2164,25 +2172,61 @@
                 const catalogMax = Math.ceil(range.max || 65);
                 slider.min = catalogMin;
                 slider.max = catalogMax;
-                slider.value = currentState.priceMax !== null ? currentState.priceMax : catalogMax;
+                
+                // Initialize slider value from URL or use full range (but don't set state unless in URL)
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlPriceMax = urlParams.get('priceMax');
+                
+                if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
+                    const priceMax = Math.max(catalogMin, Math.min(catalogMax, parseFloat(urlPriceMax)));
+                    slider.value = priceMax;
+                    currentState.priceMax = priceMax;
+                } else {
+                    slider.value = catalogMax;
+                    currentState.priceMax = null; // Keep null so API doesn't filter by price
+                }
+                
+                // Initialize display without setting state
+                const initialMaxVal = parseInt(slider.value);
+                minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
+                maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (initialMaxVal * 1.2).toFixed(2) : initialMaxVal.toFixed(2)));
 
-                function update() {
+                function update(triggerAPI = false) {
                     let maxVal = parseInt(slider.value);
                     if (!Number.isFinite(maxVal)) maxVal = catalogMax;
-                    currentState.priceMin = catalogMin;
-                    currentState.priceMax = maxVal;
+                    
+                    // Only set price state if values are different from full catalog range
+                    // If they match the full range, set to null so API doesn't filter by price
+                    if (maxVal === catalogMax) {
+                        // Full range selected - don't filter by price
+                        currentState.priceMin = null;
+                        currentState.priceMax = null;
+                    } else {
+                        // Partial range selected - filter by price
+                        currentState.priceMin = catalogMin;
+                        currentState.priceMax = maxVal;
+                    }
+                    
                     minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
                     maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2)));
-                    currentState.page = 1;
-                    updateURL();
-                    renderProducts();
-                    fetchFilterCounts();
+                    
+                    // Only trigger API call and URL update if user actually changed the slider
+                    if (triggerAPI) {
+                        currentState.page = 1;
+                        updateURL();
+                        renderProducts();
+                        fetchFilterCounts();
+                    }
                 }
 
-                slider.addEventListener('input', update);
-                update();
+                // Only trigger API on user input, not on initialization
+                slider.addEventListener('input', () => update(true));
+                // Don't call update() on initialization - just set display values above
             } catch (err) {
                 console.error('Error init price slider (mobile):', err);
+                // On error, don't set price state - keep null
+                currentState.priceMin = null;
+                currentState.priceMax = null;
             }
         }
 
@@ -2428,6 +2472,14 @@
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
+            
+            // Handle accreditation=recycled URL parameter (adds to quickFilters, which maps to flag[]=['recycled-organic'])
+            const accreditationParam = urlParams.get('accreditation');
+            if (accreditationParam === 'recycled') {
+                if (!currentState.filters.quickFilters.includes('recycled')) {
+                    currentState.filters.quickFilters.push('recycled');
+                }
+            }
 
             // Setup all handlers
             setupCategoryFilters();

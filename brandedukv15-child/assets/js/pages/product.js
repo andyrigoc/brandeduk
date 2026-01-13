@@ -222,11 +222,14 @@ function initTierPricing() {
         tierItem.setAttribute('data-base-price', tier.price);
         
         // Format quantity range
+        // First tier shows range (e.g., "1-9"), all others show min+ (e.g., "10+", "25+")
         let qtyText = '';
-        if (tier.max >= 99999) {
-            qtyText = `${tier.min}+`;
-        } else {
+        if (index === 0 && tier.max < 99999) {
+            // First tier: show full range
             qtyText = `${tier.min}-${tier.max}`;
+        } else {
+            // All other tiers: show min+
+            qtyText = `${tier.min}+`;
         }
         
         // Calculate save percentage (compared to first tier/base price)
@@ -248,6 +251,69 @@ function initTierPricing() {
     });
 }
 
+// Initialize breadcrumb navigation from API data
+function initBreadcrumb() {
+    const breadcrumbCategoryLink = document.getElementById('breadcrumbCategoryLink');
+    const breadcrumbProduct = document.getElementById('breadcrumbProduct');
+    
+    if (!breadcrumbCategoryLink || !breadcrumbProduct) {
+        return;
+    }
+    
+    // Get productType from API data
+    let productType = PRODUCT_DATA?.productType || PRODUCT_DATA?.category || '';
+    
+    // Map API productType to URL slug for shop link
+    function productTypeToSlug(apiProductType) {
+        if (!apiProductType) return null;
+        
+        const typeToSlug = {
+            'T-shirts': 'tshirts',
+            'T-Shirts': 'tshirts',
+            'Polos': 'polos',
+            'Polo Shirts': 'polos',
+            'Hoodies': 'hoodies',
+            'Hoodies & Sweatshirts': 'hoodies',
+            'Jackets': 'jackets',
+            'Jackets & Softshell': 'jackets',
+            'Hi-Vis': 'safety-vests',
+            'Hi-Vis Clothing': 'safety-vests',
+            'Trousers': 'trousers',
+            'Work Trousers': 'trousers',
+            'Aprons': 'aprons',
+            'Fleeces': 'fleece',
+            'Caps': 'caps',
+            'Headwear / Accessories': 'caps',
+            'Beanies': 'beanies'
+        };
+        
+        return typeToSlug[apiProductType] || apiProductType.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+    
+    // Update category link
+    if (productType) {
+        const categorySlug = productTypeToSlug(productType);
+        if (categorySlug) {
+            breadcrumbCategoryLink.href = `brandeduk.com/shop-pc.html?productType=${categorySlug}`;
+            breadcrumbCategoryLink.textContent = productType;
+        } else {
+            breadcrumbCategoryLink.href = 'brandeduk.com/shop-pc.html';
+            breadcrumbCategoryLink.textContent = productType;
+        }
+    } else {
+        breadcrumbCategoryLink.href = 'brandeduk.com/shop-pc.html';
+        breadcrumbCategoryLink.textContent = 'All Products';
+    }
+    
+    // Update product name from API data
+    if (PRODUCT_DATA && PRODUCT_DATA.name) {
+        breadcrumbProduct.textContent = PRODUCT_DATA.name.toUpperCase();
+    } else if (PRODUCT_NAME) {
+        // Fallback to PRODUCT_NAME if PRODUCT_DATA.name is not available
+        breadcrumbProduct.textContent = PRODUCT_NAME.toUpperCase();
+    }
+}
+
 // Initialize product data and then update page
 document.addEventListener('DOMContentLoaded', async function() {
     const loaded = await loadProductData();
@@ -267,6 +333,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.warn('⚠️ Product name element (#productTitle) not found');
         } else if (!PRODUCT_NAME) {
             console.warn('⚠️ PRODUCT_NAME is missing. Product data:', PRODUCT_DATA);
+        }
+        
+        // Update garment-main-title (main product title above price tier)
+        const garmentMainTitle = document.querySelector('.garment-main-title');
+        if (garmentMainTitle && PRODUCT_DATA && PRODUCT_DATA.name) {
+            garmentMainTitle.textContent = PRODUCT_DATA.name;
+            console.log('✅ Garment main title updated:', PRODUCT_DATA.name);
+        } else if (!garmentMainTitle) {
+            console.warn('⚠️ Garment main title element (.garment-main-title) not found');
         }
         
         const productCodeEl = document.querySelector('.product-code, [data-product-code], .prod-code-value');
@@ -477,6 +552,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Initialize tier pricing from API data
         initTierPricing();
+        
+        // Initialize breadcrumb navigation
+        initBreadcrumb();
     }
     
     // Wait a tick to ensure VAT toggle has initialized
@@ -1831,11 +1909,18 @@ function updateTotals() {
 // Update tier pricing highlight
 function updateTierPricing(total) {
     const tierItems = document.querySelectorAll('.tier-item');
+    if (tierItems.length === 0) return;
+    
     tierItems.forEach(item => {
         const min = parseInt(item.dataset.min);
         const max = parseInt(item.dataset.max);
         item.classList.remove('active');
-        if (total >= min && total <= max) {
+        // If total is 0 or within this tier's range, highlight it
+        if (total === 0 && min === 1) {
+            // Default: highlight first tier when no quantity selected
+            item.classList.add('active');
+        } else if (total >= min && (max >= 99999 || total <= max)) {
+            // Highlight tier that matches the total quantity
             item.classList.add('active');
         }
     });
