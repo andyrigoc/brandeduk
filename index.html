@@ -3,21 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandedUK - Coming Soon</title>
-    <script>
-        // DEV MODE: Add ?dev=1 to URL to bypass coming soon redirect
-        // Example: http://127.0.0.1:5501/index.html?dev=1
-        (function() {
-            var params = new URLSearchParams(window.location.search);
-            var isDevMode = params.get('dev') === '1' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            
-            if (!isDevMode) {
-                // Production: redirect to coming soon
-                window.location.replace('indexcomingsoon.html');
-            }
-            // Dev mode: continue to normal site detection below
-        })();
-    </script>
+    <title>BrandedUK</title>
     <style>
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -48,29 +34,17 @@
         }
         a { color: #7c3aed; text-decoration: none; }
         a:hover { text-decoration: underline; }
-        .dev-notice {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #92400e;
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
     <div class="loader">
-        <div class="dev-notice">🛠️ DEV MODE - Coming soon redirect bypassed</div>
         <div class="spinner"></div>
-        <p>Detecting your device...</p>
+        <p>Loading…</p>
         <p id="debugInfo" style="font-size:12px; color:#666; margin:6px 0 10px;"></p>
         <p style="margin:0; font-size:13px;">
             <a href="index-mobile.html" id="mobileLink">Mobile/Tablet</a>
             &nbsp;|&nbsp;
             <a href="brandeduk.com/home-pc.html" id="desktopLink">Desktop</a>
-            &nbsp;|&nbsp;
-            <a href="indexcomingsoon.html">Coming Soon Page</a>
         </p>
         <noscript>
             <p>
@@ -127,11 +101,6 @@
             function redirectIfNeeded() {
                 var forced = getForcedTarget();
                 var target = forced || computeTargetByDevice();
-                // Preserve dev=1 param when redirecting
-                var params = new URLSearchParams(window.location.search);
-                if (params.get('dev') === '1') {
-                    target += (target.indexOf('?') === -1 ? '?' : '&') + 'dev=1';
-                }
                 updateDebug(forced ? ('forced:' + forced) : (target.indexOf('mobile') !== -1 ? 'auto:mobile' : 'auto:desktop'));
                 if (target && target !== lastTarget) {
                     lastTarget = target;
