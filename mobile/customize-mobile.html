@@ -12,6 +12,22 @@
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260104A">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Apron-specific logo positioning for low-left and low-right */
+        .logo-overlay-box.apron-low-left {
+            top: 70%;
+            left: 28%;
+            width: 28px;
+            height: 28px;
+        }
+        
+        .logo-overlay-box.apron-low-right {
+            top: 70%;
+            left: 72%;
+            width: 28px;
+            height: 28px;
+        }
+    </style>
 </head>
 <body class="customize-page">
 
@@ -957,8 +973,8 @@
         </div>
     </div>
 
-    <script src="js/mobile.js?v=20251230"></script>
-    <script src="js/customize.js?v=20251230"></script>
+    <script src="js/mobile.js?v=20260114a"></script>
+    <script src="js/customize.js?v=20260114b"></script>
     <script>
         // Smooth scroll to order summary when clicking basket link
         document.getElementById('basketNavLink')?.addEventListener('click', function(e) {
@@ -968,6 +984,604 @@
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
+    </script>
+
+    <!-- Dynamic Position Image Loading (same as product-detail.html) -->
+    <script>
+    (function() {
+        'use strict';
+
+        function isZipProduct(productData) {
+            if (!productData) return false;
+            const name = (productData.name ? String(productData.name) : '').toLowerCase();
+            const code = (productData.code ? String(productData.code) : '').toLowerCase();
+            const haystack = (name + ' ' + code).trim();
+            if (!haystack) return false;
+            return /(\bzip\b|\bzipped\b|\bfull\s*zip\b)/i.test(haystack);
+        }
+        
+        // ===== DYNAMIC POSITION MAPPING SYSTEM =====
+        
+        // Default fallback images
+        const DEFAULT_POSITION_IMAGES = {
+            'left-breast': 'https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png',
+            'right-breast': 'https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg',
+            'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+            'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+            'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+            'large-back': 'https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png',
+            'left-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png',
+            'right-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png'
+        };
+        
+        // Default prices per position type
+        const DEFAULT_POSITION_PRICES = {
+            'left-breast': { embroidery: '5.00', print: '3.50' },
+            'right-breast': { embroidery: '5.00', print: '3.50' },
+            'small-centre-front': { embroidery: '5.00', print: '3.50' },
+            'large-front-center': { embroidery: 'POA', print: '6.00' },
+            'large-centre-front': { embroidery: 'POA', print: '6.00' },
+            'large-back': { embroidery: 'POA', print: '5.00' },
+            'left-arm': { embroidery: '5.00', print: '3.50' },
+            'right-arm': { embroidery: '5.00', print: '3.50' }
+        };
+        
+        // Position code to CSS class mapping (for logo overlay positioning)
+        const POSITION_TO_CSS_CLASS = {
+            'left-breast': 'left-chest',
+            'right-breast': 'right-chest',
+            'small-centre-front': 'front-center',
+            'large-front-center': 'large-front',
+            'large-centre-front': 'large-front',
+            'large-back': 'large-back',
+            'left-arm': 'left-sleeve',
+            'right-arm': 'right-sleeve'
+        };
+        
+        // ProductType → Folder Path Mapping
+        const PRODUCT_TYPE_TO_FOLDER = {
+            'Aprons': 'aprons/bib-apron',
+            'Safety Vests': 'adult-tops/hivis-jacket',
+            'Hoodies': 'adult-tops/hoodies',
+            'Sweatshirts': 'adult-tops/hoodies',
+            'Polos': 'adult-tops/long-sleeve-polo',
+            'T-shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Jackets': 'adult-tops/soft-shell-jacket',
+            'Softshells': 'adult-tops/soft-shell-jacket',
+            'Caps': 'headwear/baseball-cap',
+            'Beanies': 'headwear/beanie',
+            'Trousers': 'pants/workwear-long-trousers',
+            'Shorts': 'pants/workwear-shorts',
+            'Bags': 'bags/gym-bag',
+            'Fleece': 'adult-tops/hoodies',
+            'Gilets & Body Warmers': 'adult-tops/soft-shell-jacket',
+            'Knitted Jumpers': 'adult-tops/hoodies',
+            'Cardigans': 'adult-tops/hoodies',
+            'Blouses': 'adult-tops/short-sleeve-crew-neck',
+            'Rugby Shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Chinos': 'pants/workwear-long-trousers',
+            'Sweatpants': 'pants/workwear-shorts',
+            'Trackwear': 'adult-tops/short-sleeve-crew-neck'
+        };
+        
+        // Filename → Position Code Mapping
+        const FILENAME_TO_POSITION = {
+            // Aprons
+            'center-front.png': { code: 'small-centre-front', label: 'Center Front', cssClass: 'front-center' },
+            'low-left.png': { code: 'left-breast', label: 'Low Left', cssClass: 'apron-low-left' },
+            'low-right.png': { code: 'right-breast', label: 'Low Right', cssClass: 'apron-low-right' },
+            
+            // Adult Tops
+            'front.png': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+            'front.jpg': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+            'front-right.png': { code: 'right-breast', label: 'Front Right', cssClass: 'right-chest' },
+            'back.png': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+            'back.jpg': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+            'left-chest.png': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+            'left-chest.jpg': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+            'right-chest.png': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+            'right-chest.jpg': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+            'left-sleeve.png': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+            'left-sleeve.jpg': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+            'right-sleeve.png': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+            'right-sleeve.jpg': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+            
+            // Headwear
+            'front-logo.png': { code: 'small-centre-front', label: 'Front Centre', cssClass: 'front-center' },
+            'left-side.jpg': { code: 'left-breast', label: 'Left Side', cssClass: 'left-chest' },
+            'right-side.jpg': { code: 'right-breast', label: 'Right Side', cssClass: 'right-chest' },
+            
+            // Bags
+            'Gym Bag Centered.png': { code: 'small-centre-front', label: 'Centered', cssClass: 'front-center' },
+            'Gym Bag Left.png': { code: 'left-breast', label: 'Left', cssClass: 'left-chest' },
+            'Gym Bag Right.png': { code: 'right-breast', label: 'Right', cssClass: 'right-chest' },
+            'Gym Bag Side.png': { code: 'large-back', label: 'Side', cssClass: 'large-back' },
+            
+            // Pants
+            'Blank Work Trouser.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' },
+            'Blank Work short.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' }
+        };
+        
+        // Folder Image Inventory
+        const FOLDER_IMAGE_MAP = {
+            'aprons/bib-apron': ['center-front.png', 'low-left.png', 'low-right.png'],
+            'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
+            'adult-tops/hoodies': ['back.jpg', 'front.jpg', 'left-chest.jpg', 'left-sleeve.jpg', 'right-chest.jpg', 'right-sleeve.jpg'],
+            'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+            'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+            'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
+            'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
+            'headwear/beanie': ['front-logo.png'],
+            'pants/workwear-long-trousers': ['Blank Work Trouser.png'],
+            'pants/workwear-shorts': ['Blank Work short.png'],
+            'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
+        };
+        
+        // Build positions dynamically from productType
+        function buildPositionsFromProductType(productType) {
+            if (!productType) {
+                console.warn('⚠️ No productType provided, using default');
+                return null;
+            }
+            
+            const productTypeStr = String(productType).trim();
+            const folderPath = PRODUCT_TYPE_TO_FOLDER[productTypeStr];
+            if (!folderPath) {
+                console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}", using default`);
+                return null;
+            }
+            
+            const imageFiles = FOLDER_IMAGE_MAP[folderPath];
+            if (!imageFiles || imageFiles.length === 0) {
+                console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+                return null;
+            }
+            
+            const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+            const positions = {};
+            
+            imageFiles.forEach(filename => {
+                const positionInfo = FILENAME_TO_POSITION[filename];
+                if (positionInfo) {
+                    const positionCode = positionInfo.code;
+                    const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                    
+                    positions[positionCode] = {
+                        label: positionInfo.label,
+                        image: `${basePath}/${filename}`,
+                        embroidery: prices.embroidery,
+                        print: prices.print,
+                        cssClass: positionInfo.cssClass
+                    };
+                } else {
+                    console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+                }
+            });
+            
+            if (Object.keys(positions).length === 0) {
+                console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+                return null;
+            }
+            
+            const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
+            const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
+            
+            return {
+                imagePath: basePath,
+                positions: positions,
+                hidePositions: hidePositions
+            };
+        }
+        
+        // Map API productType OR category to category key
+        // Handles both 'productType' (desktop API) and 'category' (mobile API)
+        function productTypeToCategory(productTypeOrCategory) {
+            if (!productTypeOrCategory) return null;
+            const typeStr = String(productTypeOrCategory).trim();
+            const typeToCategory = {
+                // Product types (from desktop API)
+                'T-shirts': 'tshirts',
+                'T-Shirts': 'tshirts',
+                'Tshirts': 'tshirts',
+                'Polos': 'polo',
+                'Polo Shirts': 'polo',
+                'Polo': 'polo',
+                'Hoodies': 'hoodies',
+                'Hoodies & Sweatshirts': 'hoodies',
+                'Sweatshirts': 'hoodies',
+                'Jackets': 'jackets',
+                'Jackets & Softshell': 'jackets',
+                'Softshells': 'jackets',
+                'Hi-Vis': 'hivis',
+                'Hi-Vis Clothing': 'hivis',
+                'Safety Vests': 'hivis',
+                'Trousers': 'trousers',
+                'Work Trousers': 'trousers',
+                'Aprons': 'aprons',
+                'Fleeces': 'fleeces',
+                'Fleece': 'fleeces',
+                'Caps': 'caps',
+                'Headwear / Accessories': 'caps',
+                'Beanies': 'beanies',
+                'Bags': 'bags',
+                'Shorts': 'trousers',
+                // Category slugs (from mobile API - lowercase, hyphenated)
+                'aprons': 'aprons',
+                'tshirts': 'tshirts',
+                'polos': 'polo',
+                'hoodies': 'hoodies',
+                'jackets': 'jackets',
+                'safety-vests': 'hivis',
+                'trousers': 'trousers',
+                'caps': 'caps',
+                'beanies': 'beanies',
+                'bags': 'bags'
+            };
+            
+            if (typeToCategory[typeStr]) {
+                return typeToCategory[typeStr];
+            }
+            
+            const lowerType = typeStr.toLowerCase();
+            for (const [key, value] of Object.entries(typeToCategory)) {
+                if (key.toLowerCase() === lowerType) {
+                    return value;
+                }
+            }
+            
+            return lowerType.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || null;
+        }
+        
+        // Category Position Configuration (Fallback)
+        const CATEGORY_POSITION_CONFIG = {
+            'polo': {
+                useExternalImages: true,
+                images: {
+                    front: 'https://i.postimg.cc/prXBRhc0/Chat-GPT-Image-Jan-12-2026-07-13-29-PM.png',
+                    leftSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                    rightSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                    back: 'https://i.postimg.cc/D0ycnJpB/Chat-GPT-Image-Jan-12-2026-07-13-36-PM.png'
+                },
+                positions: {
+                    'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                    'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
+                    'large-back': { label: 'Center Back', imageKey: 'back', embroidery: '5.00', print: '5.00' },
+                    'large-centre-front': { label: 'Nape of Neck', imageKey: 'back', embroidery: '5.00', print: '3.50' }
+                },
+                hidePositions: ['small-centre-front', 'large-front-center']
+            },
+            'tshirts': {
+                useExternalImages: true,
+                images: {
+                    front: 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+                    back: 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
+                    leftSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
+                    rightSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
+                },
+                positions: {
+                    'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'small-centre-front': { label: 'Centre of Chest', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                    'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
+                    'large-front-center': { label: 'Big Front (Print Only)', imageKey: 'front', embroidery: null, print: '6.00' },
+                    'large-back': { label: 'Big Back (Print Only)', imageKey: 'back', embroidery: null, print: '5.00' }
+                },
+                hidePositions: ['large-centre-front']
+            },
+            'default': {
+                imagePath: '../brandedukv15-child/assets/images/customization/positions/adult-tops/hoodies',
+                positions: {
+                    'left-breast': { label: 'Left Chest', image: 'left-chest.jpg' },
+                    'right-breast': { label: 'Right Chest', image: 'right-chest.jpg' },
+                    'small-centre-front': { label: 'Front Center', image: 'front.jpg' },
+                    'large-front-center': { label: 'Large Front', image: 'front.jpg' },
+                    'large-centre-front': { label: 'Large Front', image: 'front.jpg' },
+                    'large-back': { label: 'Back Large', image: 'back.jpg' },
+                    'left-arm': { label: 'Left Sleeve', image: 'left-sleeve.jpg' },
+                    'right-arm': { label: 'Right Sleeve', image: 'right-sleeve.jpg' }
+                },
+                hidePositions: []
+            }
+        };
+        
+        function updatePositionCardsForCategory(category, productData) {
+            // Try to build positions dynamically from productType first
+            let config = null;
+            if (productData && productData.productType) {
+                const dynamicConfig = buildPositionsFromProductType(productData.productType);
+                if (dynamicConfig) {
+                    config = dynamicConfig;
+                }
+            }
+            
+            // Fallback to hardcoded config if dynamic failed
+            if (!config) {
+                config = CATEGORY_POSITION_CONFIG[category] || CATEGORY_POSITION_CONFIG['default'];
+            }
+            
+            const isZip = isZipProduct(productData);
+            const normalizedCategory = (category || '').toString().trim().toLowerCase();
+            const extraHide = new Set();
+            
+            if (normalizedCategory === 'jackets') {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            if (normalizedCategory === 'fleeces' && isZip) {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            if (normalizedCategory === 'hoodies' && isZip) {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            
+            const positionGrids = document.querySelectorAll('#positionOptions, .positions-grid');
+            
+            function updatePriceButtons(card, positionConfig) {
+                const pricesWrap = card.querySelector('.position-prices');
+                if (!pricesWrap || !positionConfig) return;
+                
+                const embBtn = pricesWrap.querySelector('.price-badge[data-method="embroidery"], .price-badge.price-emb');
+                const printBtn = pricesWrap.querySelector('.price-badge[data-method="print"], .price-badge.price-print');
+                
+                const embroidery = Object.prototype.hasOwnProperty.call(positionConfig, 'embroidery')
+                    ? positionConfig.embroidery
+                    : card.dataset.embroidery;
+                const print = Object.prototype.hasOwnProperty.call(positionConfig, 'print')
+                    ? positionConfig.print
+                    : card.dataset.print;
+                
+                if (embroidery === null) {
+                    card.dataset.embroidery = '';
+                } else if (typeof embroidery !== 'undefined') {
+                    card.dataset.embroidery = String(embroidery);
+                }
+                
+                if (print === null) {
+                    card.dataset.print = '';
+                } else if (typeof print !== 'undefined') {
+                    card.dataset.print = String(print);
+                }
+                
+                if (embBtn) {
+                    if (embroidery === null) {
+                        embBtn.style.display = 'none';
+                    } else {
+                        embBtn.style.display = '';
+                        const isPOA = String(embroidery).toUpperCase() === 'POA';
+                        embBtn.classList.toggle('poa-badge', isPOA);
+                        const value = isPOA ? 'POA' : ('£' + String(embroidery));
+                        embBtn.setAttribute('data-default-price', value);
+                        const valueEl = embBtn.querySelector('.price-value');
+                        if (valueEl) valueEl.textContent = value;
+                    }
+                }
+                
+                if (printBtn) {
+                    if (print === null) {
+                        printBtn.style.display = 'none';
+                    } else {
+                        printBtn.style.display = '';
+                        const value = '£' + String(print);
+                        printBtn.setAttribute('data-default-price', value);
+                        const valueEl = printBtn.querySelector('.price-value');
+                        if (valueEl) valueEl.textContent = value;
+                    }
+                }
+            }
+            
+            positionGrids.forEach(grid => {
+                const allCards = grid.querySelectorAll('.position-card');
+                
+                allCards.forEach(card => {
+                    const position = card.dataset.position;
+                    
+                    if ((config.hidePositions && config.hidePositions.includes(position)) || extraHide.has(position)) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    
+                    const positionConfig = config.positions[position];
+                    if (positionConfig) {
+                        card.style.display = '';
+                        
+                        // Update the image
+                        const img = card.querySelector('.position-placeholder, .position-image, img');
+                        if (img) {
+                            let newSrc = null;
+                            
+                            if (config.useExternalImages && positionConfig.imageKey && config.images) {
+                                newSrc = config.images[positionConfig.imageKey];
+                            } else if (positionConfig.image) {
+                                if (positionConfig.image.startsWith('../brandedukv15-child/') || positionConfig.image.startsWith('/') || positionConfig.image.startsWith('http')) {
+                                    newSrc = positionConfig.image;
+                                } else if (config.imagePath) {
+                                    newSrc = config.imagePath + '/' + positionConfig.image;
+                                } else {
+                                    newSrc = positionConfig.image;
+                                }
+                            }
+                            
+                            if (newSrc) {
+                                img.src = newSrc;
+                                img.alt = positionConfig.label;
+                                
+                                const testImg = new Image();
+                                testImg.onload = function() {
+                                    // Image loaded successfully
+                                };
+                                testImg.onerror = function() {
+                                    const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                    if (defaultImg) {
+                                        img.src = defaultImg;
+                                        img.alt = positionConfig.label || position;
+                                    }
+                                };
+                                testImg.src = newSrc;
+                            } else {
+                                const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                if (defaultImg) {
+                                    img.src = defaultImg;
+                                    img.alt = positionConfig.label || position;
+                                }
+                            }
+                        }
+                        
+                        // Update logo overlay CSS class
+                        const logoOverlay = card.querySelector('.logo-overlay-box');
+                        if (logoOverlay) {
+                            let cssClass = null;
+                            if (positionConfig.cssClass) {
+                                cssClass = positionConfig.cssClass;
+                            } else if (POSITION_TO_CSS_CLASS[position]) {
+                                cssClass = POSITION_TO_CSS_CLASS[position];
+                            }
+                            
+                            if (cssClass) {
+                                const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                                allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                                logoOverlay.classList.add(cssClass);
+                            }
+                        }
+                        
+                        // Update prices and labels
+                        updatePriceButtons(card, positionConfig);
+                        
+                        if (positionConfig.label) {
+                            const labelSpan = card.querySelector('.position-checkbox span, .position-title, .position-name');
+                            if (labelSpan) {
+                                labelSpan.textContent = positionConfig.label;
+                            }
+                        }
+                    } else {
+                        if (config.hidePositions && config.hidePositions.includes(position)) {
+                            card.style.display = 'none';
+                        } else {
+                            card.style.display = '';
+                            const img = card.querySelector('.position-placeholder, .position-image, img');
+                            if (img) {
+                                const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                if (defaultImg) {
+                                    img.src = defaultImg;
+                                }
+                            }
+                            
+                            const logoOverlay = card.querySelector('.logo-overlay-box');
+                            if (logoOverlay && POSITION_TO_CSS_CLASS[position]) {
+                                const cssClass = POSITION_TO_CSS_CLASS[position];
+                                const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                                allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                                logoOverlay.classList.add(cssClass);
+                            }
+                            
+                            const defaultPrices = DEFAULT_POSITION_PRICES[position] || { embroidery: '5.00', print: '3.50' };
+                            updatePriceButtons(card, defaultPrices);
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Fetch product data DIRECTLY from API (same as product-detail.html)
+        const API_BASE_URL = 'https://brandeduk-backend.onrender.com/api';
+        let cachedProductData = null; // Cache to avoid multiple API calls
+        
+        async function fetchProductFromAPI(productCode) {
+            if (!productCode) return null;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
+                if (response.ok) {
+                    const productData = await response.json();
+                    cachedProductData = productData; // Cache it
+                    return productData;
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        // SIMPLIFIED: Initialize position cards using productType directly from API
+        async function updatePositionCardsFromAPI() {
+            // Get product code from sessionStorage (same as product.js)
+            const productCode = sessionStorage.getItem('selectedProduct');
+            
+            if (!productCode) {
+                return false;
+            }
+            
+            // Fetch directly from API (same as product-detail.html)
+            let productData = cachedProductData;
+            if (!productData) {
+                productData = await fetchProductFromAPI(productCode);
+            }
+            
+            if (!productData) {
+                return false;
+            }
+            
+            // Use productType directly from API (same as product-detail.html)
+            const productType = productData.productType;
+            
+            if (productType) {
+                const mappedCategory = productTypeToCategory(productType) || 'default';
+                updatePositionCardsForCategory(mappedCategory, productData);
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Try multiple times with increasing delays (same as product-detail.html)
+        let attempts = 0;
+        const maxAttempts = 5;
+        const delays = [0, 200, 500, 1000, 2000];
+        
+        async function tryUpdateWithDelay() {
+            attempts++;
+            const success = await updatePositionCardsFromAPI();
+            if (success) {
+                return; // Success
+            }
+            
+            if (attempts < maxAttempts) {
+                const delay = delays[attempts] || 2000;
+                setTimeout(tryUpdateWithDelay, delay);
+            } else {
+                // All attempts failed, use fallback
+                updatePositionCardsForCategory('default', null);
+            }
+        }
+        
+        // Start trying when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryUpdateWithDelay);
+        } else {
+            tryUpdateWithDelay();
+        }
+        
+        // Listen for when product code is set in sessionStorage
+        // This ensures we fetch from API immediately when product code becomes available
+        const originalSetItem = sessionStorage.setItem;
+        sessionStorage.setItem = function(key, value) {
+            originalSetItem.apply(sessionStorage, arguments);
+            if (key === 'selectedProduct') {
+                // Clear cache and fetch fresh from API
+                cachedProductData = null;
+                // Wait a bit for DOM to be ready, then update
+                setTimeout(function() {
+                    updatePositionCardsFromAPI();
+                }, 200);
+            }
+        };
+    })();
     </script>
 </body>
 </html>

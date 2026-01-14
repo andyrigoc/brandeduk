@@ -567,6 +567,36 @@
                 right: 12px;
             }
         }
+        /* Apron-specific logo positioning for low-left and low-right */
+        /* These positions are lower on the apron (near the bottom of the bib area, around pocket level) */
+        .logo-overlay-box.apron-low-left {
+            top: 70%;
+            left: 28%;
+            width: 28px;
+            height: 28px;
+        }
+        
+        .logo-overlay-box.apron-low-right {
+            top: 70%;
+            left: 72%;
+            width: 28px;
+            height: 28px;
+        }
+        
+        /* Inline section (product detail page) apron positioning */
+        #step3PositionsSection .logo-overlay-box.apron-low-left {
+            top: calc(70% + 25px);
+            left: 28%;
+            width: 28px;
+            height: 28px;
+        }
+        
+        #step3PositionsSection .logo-overlay-box.apron-low-right {
+            top: calc(70% + 25px);
+            left: 72%;
+            width: 28px;
+            height: 28px;
+        }
     </style>
 </head>
 <body>
@@ -2432,7 +2462,190 @@
         return /(\bzip\b|\bzipped\b|\bfull\s*zip\b)/i.test(haystack);
     }
     
-    // Map API productType to category key (for use in CATEGORY_POSITION_CONFIG)
+    // ===== DYNAMIC POSITION MAPPING SYSTEM =====
+    
+    // Default fallback images (from HTML)
+    const DEFAULT_POSITION_IMAGES = {
+        'left-breast': 'https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png',
+        'right-breast': 'https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg',
+        'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-back': 'https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png',
+        'left-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png',
+        'right-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png'
+    };
+    
+    // Default prices per position type
+    const DEFAULT_POSITION_PRICES = {
+        'left-breast': { embroidery: '5.00', print: '3.50' },
+        'right-breast': { embroidery: '5.00', print: '3.50' },
+        'small-centre-front': { embroidery: '5.00', print: '3.50' },
+        'large-front-center': { embroidery: 'POA', print: '6.00' },
+        'large-centre-front': { embroidery: 'POA', print: '6.00' },
+        'large-back': { embroidery: 'POA', print: '5.00' },
+        'left-arm': { embroidery: '5.00', print: '3.50' },
+        'right-arm': { embroidery: '5.00', print: '3.50' }
+    };
+    
+    // Position code to CSS class mapping (for logo overlay positioning)
+    const POSITION_TO_CSS_CLASS = {
+        'left-breast': 'left-chest',
+        'right-breast': 'right-chest',
+        'small-centre-front': 'front-center',
+        'large-front-center': 'large-front',
+        'large-centre-front': 'large-front',
+        'large-back': 'large-back',
+        'left-arm': 'left-sleeve',
+        'right-arm': 'right-sleeve'
+    };
+    
+    // ProductType → Folder Path Mapping (based on database product types)
+    const PRODUCT_TYPE_TO_FOLDER = {
+        // Direct mappings (confirmed folders exist)
+        'Aprons': 'aprons/bib-apron',
+        'Safety Vests': 'adult-tops/hivis-jacket',
+        'Hoodies': 'adult-tops/hoodies',
+        'Sweatshirts': 'adult-tops/hoodies',
+        'Polos': 'adult-tops/long-sleeve-polo',
+        'T-shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Jackets': 'adult-tops/soft-shell-jacket',
+        'Softshells': 'adult-tops/soft-shell-jacket',
+        'Caps': 'headwear/baseball-cap',
+        'Beanies': 'headwear/beanie',
+        'Trousers': 'pants/workwear-long-trousers',
+        'Shorts': 'pants/workwear-shorts',
+        'Bags': 'bags/gym-bag',
+        
+        // Fallbacks (use similar product structure)
+        'Fleece': 'adult-tops/hoodies',
+        'Gilets & Body Warmers': 'adult-tops/soft-shell-jacket',
+        'Knitted Jumpers': 'adult-tops/hoodies',
+        'Cardigans': 'adult-tops/hoodies',
+        'Blouses': 'adult-tops/short-sleeve-crew-neck',
+        'Rugby Shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Chinos': 'pants/workwear-long-trousers',
+        'Sweatpants': 'pants/workwear-shorts',
+        'Trackwear': 'adult-tops/short-sleeve-crew-neck'
+    };
+    
+    // Filename → Position Code Mapping
+    const FILENAME_TO_POSITION = {
+        // Aprons - use special low-position classes
+        'center-front.png': { code: 'small-centre-front', label: 'Center Front', cssClass: 'front-center' },
+        'low-left.png': { code: 'left-breast', label: 'Low Left', cssClass: 'apron-low-left' },
+        'low-right.png': { code: 'right-breast', label: 'Low Right', cssClass: 'apron-low-right' },
+        
+        // Adult Tops - Standard positions
+        'front.png': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+        'front.jpg': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+        'front-right.png': { code: 'right-breast', label: 'Front Right', cssClass: 'right-chest' },
+        'back.png': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+        'back.jpg': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+        'left-chest.png': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+        'left-chest.jpg': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+        'right-chest.png': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+        'right-chest.jpg': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+        'left-sleeve.png': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+        'left-sleeve.jpg': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+        'right-sleeve.png': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+        'right-sleeve.jpg': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+        
+        // Headwear
+        'front-logo.png': { code: 'small-centre-front', label: 'Front Centre', cssClass: 'front-center' },
+        'left-side.jpg': { code: 'left-breast', label: 'Left Side', cssClass: 'left-chest' },
+        'right-side.jpg': { code: 'right-breast', label: 'Right Side', cssClass: 'right-chest' },
+        
+        // Bags
+        'Gym Bag Centered.png': { code: 'small-centre-front', label: 'Centered', cssClass: 'front-center' },
+        'Gym Bag Left.png': { code: 'left-breast', label: 'Left', cssClass: 'left-chest' },
+        'Gym Bag Right.png': { code: 'right-breast', label: 'Right', cssClass: 'right-chest' },
+        'Gym Bag Side.png': { code: 'large-back', label: 'Side', cssClass: 'large-back' },
+        
+        // Pants
+        'Blank Work Trouser.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' },
+        'Blank Work short.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' }
+    };
+    
+    // Folder Image Inventory (predefined list of images per folder)
+    const FOLDER_IMAGE_MAP = {
+        'aprons/bib-apron': ['center-front.png', 'low-left.png', 'low-right.png'],
+        'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
+        'adult-tops/hoodies': ['back.jpg', 'front.jpg', 'left-chest.jpg', 'left-sleeve.jpg', 'right-chest.jpg', 'right-sleeve.jpg'],
+        'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
+        'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
+        'headwear/beanie': ['front-logo.png'],
+        'pants/workwear-long-trousers': ['Blank Work Trouser.png'],
+        'pants/workwear-shorts': ['Blank Work short.png'],
+        'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
+    };
+    
+    // Build positions dynamically from productType
+    function buildPositionsFromProductType(productType) {
+        if (!productType) {
+            console.warn('⚠️ No productType provided, using default');
+            return null;
+        }
+        
+        const productTypeStr = String(productType).trim();
+        
+        // Get folder path
+        const folderPath = PRODUCT_TYPE_TO_FOLDER[productTypeStr];
+        if (!folderPath) {
+            console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}", using default`);
+            return null;
+        }
+        
+        // Get available images for this folder
+        const imageFiles = FOLDER_IMAGE_MAP[folderPath];
+        if (!imageFiles || imageFiles.length === 0) {
+            console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+            return null;
+        }
+        
+        // Build base path
+        const basePath = `brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+        
+        // Map images to positions
+        const positions = {};
+        imageFiles.forEach(filename => {
+            const positionInfo = FILENAME_TO_POSITION[filename];
+            if (positionInfo) {
+                const positionCode = positionInfo.code;
+                const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                
+                positions[positionCode] = {
+                    label: positionInfo.label,
+                    image: `${basePath}/${filename}`,
+                    embroidery: prices.embroidery,
+                    print: prices.print,
+                    cssClass: positionInfo.cssClass
+                };
+            } else {
+                console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+            }
+        });
+        
+        if (Object.keys(positions).length === 0) {
+            console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+            return null;
+        }
+        
+        // Determine which positions to hide (all standard positions not in our list)
+        const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
+        const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
+        
+        return {
+            imagePath: basePath,
+            positions: positions,
+            hidePositions: hidePositions
+        };
+    }
+    
+    // Map API productType to category key (for backward compatibility and fallback)
     function productTypeToCategory(productType) {
         if (!productType) return null;
         
@@ -2446,17 +2659,23 @@
             'Polo': 'polo',
             'Hoodies': 'hoodies',
             'Hoodies & Sweatshirts': 'hoodies',
+            'Sweatshirts': 'hoodies',
             'Jackets': 'jackets',
             'Jackets & Softshell': 'jackets',
+            'Softshells': 'jackets',
             'Hi-Vis': 'hivis',
             'Hi-Vis Clothing': 'hivis',
+            'Safety Vests': 'hivis',
             'Trousers': 'trousers',
             'Work Trousers': 'trousers',
             'Aprons': 'aprons',
             'Fleeces': 'fleeces',
+            'Fleece': 'fleeces',
             'Caps': 'caps',
             'Headwear / Accessories': 'caps',
-            'Beanies': 'beanies'
+            'Beanies': 'beanies',
+            'Bags': 'bags',
+            'Shorts': 'trousers'  // Similar to trousers
         };
         
         // Check exact match first
@@ -2476,100 +2695,44 @@
         return lowerType.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || null;
     }
     
-    // Category Position Configuration
+    // Category Position Configuration (Fallback - used when dynamic mapping fails)
     const CATEGORY_POSITION_CONFIG = {
-        'aprons': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron',
-            positions: {
-                'left-breast': { label: 'Low Left', image: 'center-front.png' },
-                'right-breast': { label: 'Low Right', image: 'center-front.png' },
-                'small-centre-front': { label: 'Center Front', image: 'center-front.png' },
-                'large-front-center': { label: 'Big Centre', image: 'center-front.png' }
-            },
-            hidePositions: ['large-back', 'left-arm', 'right-arm', 'large-centre-front']
-        },
-        'beanies': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/headwear/beanie',
-            positions: {
-                'small-centre-front': { label: 'Front Centre', image: 'front-logo.png' },
-                'left-breast': { label: 'Front Left', image: 'front-logo.png' },
-                'right-breast': { label: 'Front Right', image: 'front-logo.png' }
-            },
-            hidePositions: ['large-front-center', 'large-back', 'left-arm', 'right-arm', 'large-centre-front']
-        },
-        'caps': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/headwear/baseball-cap',
-            positions: {
-                'small-centre-front': { label: 'Front', image: 'front.png' },
-                'large-back': { label: 'Back', image: 'back.png' },
-                'left-breast': { label: 'Left Side', image: 'left-side.jpg' },
-                'right-breast': { label: 'Right Side', image: 'right-side.jpg' }
-            },
-            hidePositions: ['large-front-center', 'left-arm', 'right-arm', 'large-centre-front']
-        },
         'polo': {
             useExternalImages: true,
             images: {
                 front: 'https://i.postimg.cc/prXBRhc0/Chat-GPT-Image-Jan-12-2026-07-13-29-PM.png',
-                sleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                leftSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                rightSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
                 back: 'https://i.postimg.cc/D0ycnJpB/Chat-GPT-Image-Jan-12-2026-07-13-36-PM.png'
             },
             positions: {
                 'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
                 'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
-                'left-arm': { label: 'Left Sleeve', imageKey: 'sleeve', embroidery: '5.00', print: '3.50' },
-                'right-arm': { label: 'Right Sleeve', imageKey: 'sleeve', embroidery: '5.00', print: '3.50' },
+                'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
                 'large-back': { label: 'Center Back', imageKey: 'back', embroidery: '5.00', print: '5.00' },
                 'large-centre-front': { label: 'Nape of Neck', imageKey: 'back', embroidery: '5.00', print: '3.50' }
             },
             hidePositions: ['small-centre-front', 'large-front-center']
-        },
-        'hoodies': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/adult-tops/hoodies',
-            positions: {
-                'left-breast': { label: 'Left Chest', image: 'left-chest.jpg' },
-                'right-breast': { label: 'Right Chest', image: 'right-chest.jpg' },
-                'small-centre-front': { label: 'Front Center', image: 'front.jpg' },
-                'large-front-center': { label: 'Large Front', image: 'front.jpg' },
-                'large-centre-front': { label: 'Large Front', image: 'front.jpg' },
-                'large-back': { label: 'Back Large', image: 'back.jpg' },
-                'left-arm': { label: 'Left Sleeve', image: 'left-sleeve.jpg' },
-                'right-arm': { label: 'Right Sleeve', image: 'right-sleeve.jpg' }
-            },
-            hidePositions: []
         },
         'tshirts': {
             useExternalImages: true,
             images: {
                 front: 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
                 back: 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
-                sleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
+                leftSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
+                rightSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
             },
             positions: {
-                // Map to existing HTML card IDs
                 'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
                 'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
                 'small-centre-front': { label: 'Centre of Chest', imageKey: 'front', embroidery: '5.00', print: '3.50' },
-                'left-arm': { label: 'Left Sleeve', imageKey: 'sleeve', embroidery: '5.00', print: '3.50' },
-                'right-arm': { label: 'Right Sleeve', imageKey: 'sleeve', embroidery: '5.00', print: '3.50' },
+                'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
                 'large-front-center': { label: 'Big Front (Print Only)', imageKey: 'front', embroidery: null, print: '6.00' },
                 'large-back': { label: 'Big Back (Print Only)', imageKey: 'back', embroidery: null, print: '5.00' }
             },
             hidePositions: ['large-centre-front']
-        },
-        'hivis': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/adult-tops/hivis-jacket',
-            positions: {
-                'left-breast': { label: 'Left Chest', image: 'left-chest.png' },
-                'right-breast': { label: 'Right Chest', image: 'right-chest.png' },
-                'small-centre-front': { label: 'Front', image: 'front.png' },
-                'large-front-center': { label: 'Large Front', image: 'front.png' },
-                'large-centre-front': { label: 'Large Front', image: 'front.png' },
-                'large-back': { label: 'Back Large', image: 'back.jpg' },
-                'left-arm': { label: 'Left Sleeve', image: 'left-sleeve.jpg' },
-                'right-arm': { label: 'Right Sleeve', image: 'right-sleeve.jpg' }
-            },
-            hidePositions: []
         },
         'default': {
             imagePath: 'brandedukv15-child/assets/images/customization/positions/adult-tops/hoodies',
@@ -2600,15 +2763,28 @@
         'tshirts': 'T-Shirts',
         'bags': 'Bags',
         'trousers': 'Trousers',
+        'shorts': 'Shorts',
         'sustainable': 'Sustainable',
         'workwear': 'Workwear',
-        'headwear': 'Headwear'
+        'headwear': 'Headwear',
+        'default': 'All Products'
     };
     
     function updatePositionCardsForCategory(category, productData) {
-        console.log('🔄 Updating position cards for category:', category);
+        // Try to build positions dynamically from productType first
+        let config = null;
+        if (productData && productData.productType) {
+            const dynamicConfig = buildPositionsFromProductType(productData.productType);
+            if (dynamicConfig) {
+                config = dynamicConfig;
+            }
+        }
         
-        const config = CATEGORY_POSITION_CONFIG[category] || CATEGORY_POSITION_CONFIG['default'];
+        // Fallback to hardcoded config if dynamic failed or productType not available
+        if (!config) {
+            config = CATEGORY_POSITION_CONFIG[category] || CATEGORY_POSITION_CONFIG['default'];
+        }
+        
         const isZip = isZipProduct(productData);
         const normalizedCategory = (category || '').toString().trim().toLowerCase();
         const extraHide = new Set();
@@ -2710,20 +2886,92 @@
                     // Update the image - handle both local and external images
                     const img = card.querySelector('.position-placeholder, .position-image, img');
                     if (img) {
-                        let newSrc;
+                        let newSrc = null;
                         
                         // Check if using external images (like tshirts)
                         if (config.useExternalImages && positionConfig.imageKey && config.images) {
                             newSrc = config.images[positionConfig.imageKey];
-                        } else if (positionConfig.image && config.imagePath) {
-                            // Local image path
+                            // #region agent log
+                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2892',message:'Setting sleeve image from external config',data:{position:position,imageKey:positionConfig.imageKey,newSrc:newSrc,hasLeftSleeve:!!config.images.leftSleeve,hasRightSleeve:!!config.images.rightSleeve},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
+                            // #endregion
+                        } else if (positionConfig.image) {
+                            // #region agent log
+                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2894',message:'Setting image from dynamic/local config',data:{position:position,imagePath:positionConfig.image,configImagePath:config.imagePath},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
+                            // #endregion
+                            // Check if image is already a full path (from dynamic config)
+                            // Dynamic config sets full paths like "brandedukv15-child/assets/images/..."
+                            if (positionConfig.image.startsWith('brandedukv15-child/') || positionConfig.image.startsWith('/') || positionConfig.image.startsWith('http')) {
+                                // Already a full path, use directly
+                                newSrc = positionConfig.image;
+                            } else if (config.imagePath) {
+                                // Relative path, prepend imagePath
                             newSrc = config.imagePath + '/' + positionConfig.image;
+                            } else {
+                                // Direct image path (fallback)
+                                newSrc = positionConfig.image;
+                            }
                         }
                         
                         if (newSrc) {
+                            // Set image immediately
                             img.src = newSrc;
                             img.alt = positionConfig.label;
-                            console.log('  ✅ Updated:', position, '→', newSrc);
+                            
+                            // Try to load the image, fallback to default if it fails
+                            const testImg = new Image();
+                            testImg.onload = function() {
+                                // Image loaded successfully
+                            };
+                            testImg.onerror = function() {
+                                // Fallback to default image
+                                const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                if (defaultImg) {
+                                    img.src = defaultImg;
+                                    img.alt = positionConfig.label || position;
+                                    console.warn('  ⚠️ Image failed to load, using default:', position, '→', defaultImg);
+                                } else {
+                                    console.error('  ❌ No default image for position:', position);
+                                }
+                            };
+                            testImg.src = newSrc;
+                        } else {
+                            // No image configured, use default
+                            const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                            if (defaultImg) {
+                                img.src = defaultImg;
+                                img.alt = positionConfig.label || position;
+                                console.warn('  ⚠️ No image configured, using default:', position);
+                            } else {
+                                console.error('  ❌ No image source and no default for position:', position);
+                            }
+                        }
+                    }
+                    
+                    // Update logo overlay CSS class to match position code (CRITICAL for logo positioning)
+                    const logoOverlay = card.querySelector('.logo-overlay-box');
+                    if (logoOverlay) {
+                        // Get the correct CSS class for this position
+                        let cssClass = null;
+                        if (positionConfig.cssClass) {
+                            cssClass = positionConfig.cssClass;
+                        } else if (POSITION_TO_CSS_CLASS[position]) {
+                            cssClass = POSITION_TO_CSS_CLASS[position];
+                        }
+                        
+                        if (cssClass) {
+                            // Remove all position classes (including apron-specific)
+                            const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                            allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                            // Add the correct class
+                            logoOverlay.classList.add(cssClass);
+                            // #region agent log
+                            setTimeout(() => {
+                                const computed = window.getComputedStyle(logoOverlay);
+                                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2958',message:'Logo overlay positioning applied',data:{position:position,cssClass:cssClass,computedTop:computed.top,computedLeft:computed.left,computedWidth:computed.width,computedHeight:computed.height,hasClass:logoOverlay.classList.contains(cssClass)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
+                            }, 100);
+                            // #endregion
+                        } else {
+                            console.warn('  ⚠️ No CSS class mapping for position:', position);
                         }
                     }
 
@@ -2738,7 +2986,35 @@
                         }
                     }
                 } else {
+                    // Position not in config - check if we should show it with defaults
+                    // Only hide if it's explicitly in hidePositions list
+                    if (config.hidePositions && config.hidePositions.includes(position)) {
                     card.style.display = 'none';
+                    } else {
+                        // Show with default image and prices
+                        card.style.display = '';
+                        const img = card.querySelector('.position-placeholder, .position-image, img');
+                        if (img) {
+                            const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                            if (defaultImg) {
+                                img.src = defaultImg;
+                                console.log('  ℹ️ Using default image for unmapped position:', position);
+                            }
+                        }
+                        
+                        // Update logo overlay CSS class
+                        const logoOverlay = card.querySelector('.logo-overlay-box');
+                        if (logoOverlay && POSITION_TO_CSS_CLASS[position]) {
+                            const cssClass = POSITION_TO_CSS_CLASS[position];
+                            const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                            allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                            logoOverlay.classList.add(cssClass);
+                        }
+                        
+                        // Use default prices
+                        const defaultPrices = DEFAULT_POSITION_PRICES[position] || { embroidery: '5.00', print: '3.50' };
+                        updatePriceButtons(card, defaultPrices);
+                    }
                 }
             });
 
@@ -2850,7 +3126,6 @@
             document.title = productData.name + ' - Branded UK';
         }
         
-        console.log('✅ Updated product display for:', productData.name);
     }
     
     // Initialize when DOM is ready
@@ -2867,56 +3142,85 @@
             if (safeCategory) document.body.classList.add('category-' + safeCategory);
         }
 
-        // Get product data from sessionStorage (set by product.js after API call)
-        const productDataStr = sessionStorage.getItem('selectedProductData');
-        let category = 'hoodies'; // default
+        // Get product data from API (PRODUCT_DATA set by product.js)
+        let category = 'default';
         let productName = 'Product';
-        let productData = null;
         
-        if (productDataStr) {
-            try {
-                productData = JSON.parse(productDataStr);
-                console.log('📦 Loaded product data:', productData);
-                
-                // Use productType from API, map it to category key
-                if (productData.productType) {
-                    const mappedCategory = productTypeToCategory(productData.productType);
-                    if (mappedCategory) {
-                        category = mappedCategory;
-                        console.log('🎯 Mapped productType "' + productData.productType + '" to category "' + category + '"');
-                    } else {
-                        console.warn('⚠️ Could not map productType:', productData.productType);
-                    }
-                } else if (productData.category) {
-                    // Fallback to category if productType not available
-                    category = productData.category;
-                }
-                
-                if (productData.name) {
-                    productName = productData.name;
-                }
-                
-                // Update product display (image, title, etc.)
-                updateProductDisplay(productData);
-            } catch (e) {
-                console.warn('Could not parse product data:', e);
+        if (typeof PRODUCT_DATA !== 'undefined' && PRODUCT_DATA) {
+            if (PRODUCT_DATA.name) {
+                productName = PRODUCT_DATA.name;
             }
+            // Update product display (image, title, etc.)
+            updateProductDisplay(PRODUCT_DATA);
         }
 
         // Expose zip as a CSS hook (for future tweaks)
-        const isZip = isZipProduct(productData);
+        const isZip = isZipProduct(PRODUCT_DATA);
         document.body.classList.toggle('product-zip', !!isZip);
 
-        // Expose category as a CSS hook
+        // Expose category as a CSS hook (will be updated when productType is available)
         applyCategoryBodyClass(category);
         
         // Update breadcrumbs
         updateBreadcrumbs(category, productName);
         
-        // Update position cards after a short delay (DOM needs to be ready)
-        setTimeout(() => {
-            updatePositionCardsForCategory(category, productData);
-        }, 300);
+        // Update position cards when productType is available from API
+        // More robust: Check multiple times and use sessionStorage as fallback
+        function updatePositionCardsFromAPI() {
+        let productData = null;
+            let productType = null;
+            
+            // First try: Check PRODUCT_DATA global (set by product.js)
+            if (typeof PRODUCT_DATA !== 'undefined' && PRODUCT_DATA && PRODUCT_DATA.productType) {
+                productData = PRODUCT_DATA;
+                productType = PRODUCT_DATA.productType;
+            } else {
+                // Fallback: Check sessionStorage (product.js saves it there)
+                const productDataStr = sessionStorage.getItem('selectedProductData');
+        if (productDataStr) {
+            try {
+                productData = JSON.parse(productDataStr);
+                        if (productData && productData.productType) {
+                            productType = productData.productType;
+                        }
+                    } catch (e) {
+                        // Silent fail, will retry
+                    }
+                }
+            }
+            
+            if (productType && productData) {
+                const mappedCategory = productTypeToCategory(productType) || 'default';
+                updatePositionCardsForCategory(mappedCategory, productData);
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Try multiple times with increasing delays to handle race conditions
+        let attempts = 0;
+        const maxAttempts = 5;
+        const delays = [0, 200, 500, 1000, 2000]; // Try immediately, then 200ms, 500ms, 1s, 2s
+        
+        function tryUpdateWithDelay() {
+            attempts++;
+            
+            if (updatePositionCardsFromAPI()) {
+                return; // Success, stop trying
+            }
+            
+            if (attempts < maxAttempts) {
+                const delay = delays[attempts] || 2000;
+                setTimeout(tryUpdateWithDelay, delay);
+            } else {
+                // All attempts failed, use fallback
+                updatePositionCardsForCategory('default', null);
+            }
+        }
+        
+        // Start trying
+        tryUpdateWithDelay();
     }
     
     // Header searchbar handler - redirects to shop page with search query

@@ -398,14 +398,20 @@
                 }
             }
 
-            // Map pricing tiers if present
-            const breaks = productData.priceBreaks || productData.tiers || productData.discounts || [];
+            // Store priceBreaks DIRECTLY from API - no modifications
+            state.product.priceBreaks = productData.priceBreaks || productData.tiers || productData.discounts || [];
+            
+            // Map pricing tiers if present (for backward compatibility)
+            const breaks = state.product.priceBreaks;
             if (Array.isArray(breaks) && breaks.length > 0) {
                 PRICING_RULES = PRICING_RULES || {};
                 PRICING_RULES[state.product.code] = {
                     basePrice: state.product.basePrice,
                     tiers: breaks.slice().sort((a,b) => (b.min || 0) - (a.min || 0)).map(pb => ({ min: pb.min || pb.from || 0, price: pb.price || pb.unitPrice || pb.rate || 0 }))
                 };
+                // #region agent log
+                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'mobile/js/customize.js:407',message:'PRICING_RULES populated from API',data:{productCode:state.product.code,basePrice:state.product.basePrice,priceBreaksFromAPI:breaks,tiersMapped:PRICING_RULES[state.product.code].tiers},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+                // #endregion
             }
 
             return true;
@@ -571,7 +577,8 @@
     }
 
     function formatCurrency(baseAmount, options = {}) {
-        const includeVat = options.includeVat !== false;
+        // Default to current VAT toggle state unless explicitly overridden
+        const includeVat = options.includeVat !== undefined ? options.includeVat : isVatOn();
         let value = Number(baseAmount) || 0;
         
         if (includeVat && isVatOn()) {
@@ -2136,16 +2143,37 @@
         const basketQty = getBasketQuantityForProduct(state.product.code);
         const totalQty = state.quantity + basketQty;
 
+        // Get priceBreaks DIRECTLY from API - no sessionStorage, no modifications
+        const priceBreaks = state.product.priceBreaks || [];
+        const vatOn = isVatOn();
+        const basePrice = state.product.basePrice || state.product.price || 0;
+
         tiersContainer.innerHTML = tiers.map(tier => {
-            const price = getDiscountedUnitPrice(tier.min);
-            const discount = getDiscountPercentage(tier.min);
+            // Find matching priceBreak from API by matching min value exactly
+            let rawPrice = basePrice; // fallback to basePrice
+            const matchingBreak = priceBreaks.find(pb => pb.min === tier.min);
+            
+            if (matchingBreak) {
+                rawPrice = Number(matchingBreak.price || matchingBreak.unitPrice || matchingBreak.rate || basePrice);
+            }
+            
+            // Apply VAT ONLY if VAT toggle is ON, otherwise use raw price
+            const displayPrice = vatOn ? rawPrice * (1 + VAT_RATE) : rawPrice;
+            
+            // Calculate discount percentage compared to first tier (1-9)
+            const firstTierBreak = priceBreaks.find(pb => pb.min === 1) || priceBreaks[0];
+            const firstTierPrice = firstTierBreak ? Number(firstTierBreak.price || firstTierBreak.unitPrice || firstTierBreak.rate || basePrice) : basePrice;
+            const discount = firstTierPrice > 0 && rawPrice < firstTierPrice 
+                ? Math.round(((firstTierPrice - rawPrice) / firstTierPrice) * 100) 
+                : 0;
+            
             // Highlight tier based on TOTAL quantity (current + basket)
             const isActive = totalQty >= tier.min && (tier.max === Infinity || totalQty <= tier.max);
             
             return `
                 <div class="tier-card ${isActive ? 'active' : ''}" data-min="${tier.min}" data-max="${tier.max === Infinity ? '999999' : tier.max}">
                     <div class="tier-qty">${tier.label}</div>
-                    <div class="tier-price">${formatCurrency(price)}</div>
+                    <div class="tier-price">£${displayPrice.toFixed(2)}</div>
                     <div class="tier-suffix">${vatSuffix()}</div>
                     ${discount > 0 ? `<div class="tier-save">SAVE ${discount}%</div>` : ''}
                 </div>
