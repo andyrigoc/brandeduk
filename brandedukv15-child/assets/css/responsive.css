@@ -63,9 +63,15 @@
     }
     
     /* === Dynamic 3D Hover Social Icons (EXACT ORIGINAL) === */
-    .tablet-top-bar .social-icons-container {
-        display: flex;
+    .tablet-top-bar .social-icons-container,
+    .tablet-top-bar .social-icons-mobile {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
         gap: 4px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
     }
     
     .social-icons-mobile {
@@ -73,8 +79,10 @@
     }
     
     .social-icons-mobile .social-icon {
-        width: 20px !important;
-        height: 20px !important;
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
         border-radius: 5px !important;
     }
     
@@ -348,6 +356,54 @@
         box-shadow: none;
         padding: 16px 0;
         margin-top: 24px;
+    }
+
+    /* === Uploaded Logo Preview Box (Tablet) === */
+    .uploaded-logo-box {
+        min-height: 100px;
+        padding: 20px;
+    }
+
+    /* BOX 2 - Tablet */
+    .uploaded-logo-inner {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+    }
+
+    .uploaded-logo-thumb {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+        object-fit: contain !important;
+    }
+
+    /* Delete logo bin - small grey icon, top-right */
+    .delete-logo-btn {
+        width: 22px;
+        height: 22px;
+        top: 8px;
+        right: 8px;
+        background: transparent;
+        color: #9ca3af;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .delete-logo-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .delete-logo-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #6b7280;
     }
     
 }

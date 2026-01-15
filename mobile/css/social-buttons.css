@@ -19,19 +19,32 @@
 
 /* === Container === */
 .social-icons-container {
-    display: flex;
-    gap: 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none !important;
 }
 
 .social-icons-mobile {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
     gap: 4px;
+    margin: 0;
     margin-left: 8px;
+    padding: 0;
+    list-style: none !important;
 }
 
 /* Mobile specific size override - 20% smaller */
 .social-icons-mobile .social-icon {
-    width: 22px !important;
-    height: 22px !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
     border-radius: 6px !important;
 }
 
@@ -141,8 +154,77 @@
     align-items: center;
     gap: 6px;
     margin: 0;
+    margin-left: -8px;
     padding: 0;
     list-style: none;
+}
+
+/* === Flat Social Buttons - Header Mobile (Original White Style) === */
+.social-buttons-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.social-buttons-header li {
+    list-style: none;
+}
+
+.social-buttons-header a {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-sizing: border-box;
+    text-decoration: none;
+    background: #fff;
+    box-shadow: 
+        6px 6px 12px rgba(0, 0, 0, 0.08),
+        -4px -4px 10px rgba(255, 255, 255, 0.9),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+.social-buttons-header a:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.1),
+        -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+
+.social-buttons-header a:active {
+    transform: translateY(1px);
+    box-shadow: 
+        3px 3px 6px rgba(0, 0, 0, 0.08),
+        -2px -2px 5px rgba(255, 255, 255, 0.9);
+}
+
+.social-buttons-header .social-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* SVG icon sizing - gray color */
+.social-buttons-header .social-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: #374151 !important;
+    transition: transform 0.2s ease;
+}
+
+/* Force gray color on all social icon paths */
+.social-buttons-header .social-icon svg path {
+    fill: #374151 !important;
 }
 
 .header-top-row .social-icons-container {

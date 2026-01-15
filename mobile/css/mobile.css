@@ -1564,22 +1564,66 @@ a {
     margin-top: 16px;
 }
 
-/* Submit Quote Button - Purple with green effect on submit */
-.submit-quote-btn {
-    width: 100%;
-    padding: 16px 24px;
+/* Quote Action Buttons Container */
+.quote-action-buttons {
+    display: flex;
+    gap: 12px;
     margin-top: 16px;
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    color: #fff;
-    border: none;
+}
+
+/* Continue Shopping Button */
+.continue-shopping-btn {
+    flex: 1;
+    padding: 16px 20px;
+    background: #fff;
+    color: #7c3aed;
+    border: 2px solid #7c3aed;
     border-radius: 14px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.15);
+}
+
+.continue-shopping-btn:hover {
+    background: #f5f3ff;
+    border-color: #6d28d9;
+}
+
+.continue-shopping-btn:active {
+    transform: scale(0.98);
+}
+
+.continue-shopping-btn svg {
+    stroke: #7c3aed;
+    transition: transform 0.3s ease;
+}
+
+.continue-shopping-btn:hover svg {
+    transform: translateX(-3px);
+}
+
+/* Submit Quote Button - Purple with green effect on submit */
+.submit-quote-btn {
+    flex: 1;
+    padding: 16px 20px;
+    margin-top: 0;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     transition: all 0.4s ease;
     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
 }
@@ -3075,7 +3119,8 @@ a {
 .uploaded-logo-box {
     position: relative;
     width: 100%;
-    padding: 12px;
+    min-height: 120px;
+    padding: 24px;
     border: 2px dashed #d1d5db;
     border-radius: 12px;
     display: flex;
@@ -3084,32 +3129,76 @@ a {
     background: #fafafa;
 }
 
-.uploaded-logo-thumb {
-    max-width: 80px;
-    max-height: 80px;
-    object-fit: contain;
+/* BOX 2 - Inner box fissa centrata - COMPLETAMENTE INDIPENDENTE */
+.uploaded-logo-container .uploaded-logo-box > .uploaded-logo-inner {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 2px solid red !important;
 }
 
-.delete-logo-btn {
+/* Logo DENTRO la box 2 - riempie tutta la box */
+.uploaded-logo-container .uploaded-logo-box > .uploaded-logo-inner > .uploaded-logo-thumb {
+    display: block !important;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Box per il cestino - in alto a destra */
+.delete-logo-box {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
+    top: -8px;
+    right: -8px;
+}
+
+/* Delete Logo Button - small grey bin icon */
+.delete-logo-btn {
+    width: 20px;
+    height: 20px;
     border: none;
-    background: #fee2e2;
-    border-radius: 8px;
+    background: transparent;
+    border-radius: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ef4444;
-    transition: all 0.2s;
+    color: #9ca3af;
+    padding: 0;
+    transition: color 0.2s, background 0.2s;
+}
+
+.delete-logo-btn svg {
+    width: 14px;
+    height: 14px;
 }
 
 .delete-logo-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: rgba(0, 0, 0, 0.05);
+    color: #6b7280;
+}
+
+.delete-logo-btn:active {
+    color: #ef4444;
 }
 
 .logo-added-pill,
@@ -5311,6 +5400,8 @@ a {
 .logo-overlay-img {
     max-width: 100%;
     max-height: 100%;
+    width: auto;
+    height: auto;
     object-fit: contain;
     pointer-events: none;
 }

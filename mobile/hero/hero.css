@@ -193,6 +193,16 @@
   letter-spacing: 0.5px;
 }
 
+/* Hoodie panel: white text for visibility */
+.hero-el[data-category="hoodies"] .hero-el__text {
+  color: #fff;
+}
+
+/* Beanie panel: white text for visibility */
+.hero-el[data-category="beanies"] .hero-el__text {
+  color: #fff;
+}
+
 .hero-el__cta {
   display: inline-block;
   margin-top: 12px;
@@ -272,18 +282,33 @@
   transform: rotate(-45deg) translateX(0);
 }
 
+/* Apron panel: black X button for visibility on yellow background */
+.hero-el:nth-child(1) .hero-el__close-btn:before,
+.hero-el:nth-child(1) .hero-el__close-btn:after {
+  background: #000;
+}
+
 /* Element positions - 9 panels (5 visible, scroll for the rest) */
 .hero-el:nth-child(1) {
   left: 0;
   transform: translate3d(0, 0, 0);
   transform-origin: 10% 50%;
 }
+
 .hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
 .hero-el:nth-child(1) .hero-el__bg { transform: none; }
+
+/* Apron panel: shift image right when NOT active to show model better */
 .hero-el:nth-child(1) .hero-el__bg:before { 
   transition-delay: 0s;
   background-image: url('../../hero/images/apron.jpg');
-  background-position: calc(50% + 140px) center;
+  background-position: calc(50% + 145px) center;
+  background-size: cover;
+}
+
+/* Apron panel: center image when active */
+.hero-el:nth-child(1).s--active .hero-el__bg:before {
+  background-position: calc(50% + 55px) calc(50% + 5px);
 }
 
 .hero-el:nth-child(2) {
@@ -304,10 +329,15 @@
   background-position: calc(50% + 145px) center;
 }
 
+/* Hoodie panel: shift image right when active */
+.hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+  background-position: calc(50% + 35px) calc(50% + 15px);
+}
+
 /* Tablet (incl. 1024px): when expanded, shift image down ~20px to show more face */
 @media (min-width: 768px) and (max-width: 1024px) {
   .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
-    background-position: 35% calc(10% + 20px) !important;
+    background-position: calc(50% + 35px) calc(10% + 35px) !important;
   }
 }
 
@@ -321,7 +351,12 @@
 .hero-el:nth-child(3) .hero-el__bg:before { 
   transition-delay: 0.14s;
   background-image: url('../../hero/images/beanie.jpg');
-  background-position: center center;
+  background-position: center calc(50% + 10px);
+}
+
+/* Beanie panel: shift image down more when active */
+.hero-el:nth-child(3).s--active .hero-el__bg:before {
+  background-position: center calc(50% + 40px);
 }
 
 .hero-el:nth-child(4) {
@@ -334,6 +369,11 @@
 .hero-el:nth-child(4) .hero-el__bg:before { 
   transition-delay: 0.21s;
   background-image: url('../../hero/images/Hi-Viz.jpg');
+  background-position: calc(50% + 20px) calc(50% - 11px);
+}
+
+/* Hi-Viz panel: center image when active */
+.hero-el:nth-child(4).s--active .hero-el__bg:before {
   background-position: center center;
 }
 

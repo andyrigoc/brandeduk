@@ -878,6 +878,12 @@
                 
                 // Refresh DOM with correct product data
                 refreshProductDOM();
+                
+                // Re-setup size selection now that product data is available
+                // This ensures One Size products show the correct UI
+                setTimeout(() => {
+                    setupSizeSelection();
+                }, 100);
             } else {
                 // If product didn't load, still try to restore state (will use fallback)
                 restoreCustomizationState();
@@ -2661,37 +2667,166 @@
         console.log('✅ Color thumbnails rendered:', PRODUCT_COLORS.length);
     }
 
+    // === Helper: Check if product is ONE SIZE (no size selection needed) ===
+    function isOneSizeProduct() {
+        // FIRST: Check API sizes - if API returns multiple valid sizes, NOT a one-size product
+        const sizes = state.product?.sizes || [];
+        console.log('📏 isOneSizeProduct check - API sizes:', sizes);
+        
+        // If API returns multiple sizes (more than 1), it's NOT a one-size product
+        if (sizes.length > 1) {
+            console.log('📏 Product has multiple sizes from API - NOT one-size');
+            return false;
+        }
+        
+        // If API returns exactly one size and it's NOT "one size", it's a regular sized product
+        if (sizes.length === 1) {
+            const singleSize = sizes[0].toLowerCase().replace(/\s/g, '');
+            if (singleSize !== 'onesize' && singleSize !== 'os') {
+                console.log('📏 Product has single non-onesize value:', sizes[0], '- NOT one-size');
+                return false;
+            }
+        }
+        
+        // Now check other indicators for one-size products
+        const productName = (state.product?.name || '').toLowerCase();
+        const productCategory = (state.product?.category || '').toLowerCase();
+        const productType = (state.product?.type || '').toLowerCase();
+        
+        // Also check from HTML title element as fallback
+        const htmlTitle = document.querySelector('.product-title')?.textContent?.toLowerCase() || '';
+        const htmlSpecs = document.querySelector('.product-specs')?.textContent?.toLowerCase() || '';
+        
+        // Check if specs say "one size"
+        const specsHasOneSize = htmlSpecs.includes('one size');
+        
+        // Check by sizes array - if only "ONE SIZE" or "One Size" or empty
+        const hasOnlyOneSize = sizes.length === 0 || 
+            (sizes.length === 1 && sizes[0].toLowerCase().replace(/\s/g, '') === 'onesize');
+        
+        // Keywords for one-size products (including apron)
+        const oneSizeKeywords = ['apron', 'beanie', 'cap', 'hat', 'scarf', 'bandana', 'woolly', 'ski hat'];
+        const matchesName = oneSizeKeywords.some(keyword => 
+            productName.includes(keyword) || htmlTitle.includes(keyword)
+        );
+        
+        const oneSizeCategories = ['aprons', 'beanies', 'caps', 'hats', 'headwear', 'accessories'];
+        const matchesCategory = oneSizeCategories.some(cat => productCategory.includes(cat) || productType.includes(cat));
+        
+        // Return true if matches name/category AND has only one size or no sizes from API
+        if (hasOnlyOneSize && (matchesName || matchesCategory)) {
+            console.log('📏 ONE SIZE product detected by name/category');
+            return true;
+        }
+        
+        return hasOnlyOneSize || specsHasOneSize;
+    }
+
     // === Size/Qty Compact Selection ===
     function setupSizeSelection() {
+        console.log('=== setupSizeSelection() CALLED ===');
         const container = document.querySelector('.size-qty-compact');
-        if (!container) return;
+        if (!container) {
+            console.error('❌ .size-qty-compact container NOT FOUND!');
+            return;
+        }
+        console.log('✅ Container found');
 
+        // Get sizes from API data (state.product.sizes)
+        const apiSizes = state.product?.sizes || [];
+        console.log('📏 API Sizes from state.product.sizes:', apiSizes, 'Length:', apiSizes.length);
+        
         // Initialize state for size quantities
         state.sizeQuantities = {};
 
-        // Clear any existing rows (in case browser cached them)
+        // Clear any existing rows
         const selectedSizes = container.querySelector('.selected-sizes');
         if (selectedSizes) {
             selectedSizes.innerHTML = '';
         }
-
-        // Add size button
+        
+        const addSizeBtn = document.getElementById('addSizeBtn');
+        
+        // Check if ONE SIZE product (apron, cap, beanie, etc.)
+        const isOneSize = isOneSizeProduct();
+        console.log('📏 Is One Size product:', isOneSize);
+        
+        if (isOneSize) {
+            // ONE SIZE product - Show "Add Size" button that adds ONE SIZE row when clicked
+            if (addSizeBtn) {
+                addSizeBtn.style.display = '';
+                addSizeBtn.textContent = 'Add Size';
+                addSizeBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Size
+                `;
+                
+                // Remove any existing listener to prevent duplicates
+                const newBtn = addSizeBtn.cloneNode(true);
+                addSizeBtn.parentNode.replaceChild(newBtn, addSizeBtn);
+                
+                newBtn.addEventListener('click', () => {
+                    console.log('🔘 Add Size button clicked for ONE SIZE product');
+                    // Check if ONE SIZE row already exists
+                    const existingRow = container.querySelector('.one-size-item');
+                    if (!existingRow) {
+                        addOneSizeRow(container);
+                        newBtn.style.display = 'none'; // Hide button after adding
+                        console.log('✅ ONE SIZE row added');
+                    }
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            }
+            console.log('✅ ONE SIZE product - showing Add Size button');
+            
+            // IMPORTANT: Setup event delegation for +/- buttons even for ONE SIZE products
+            setupSizeQtyEventDelegation(container);
+            return;
+        }
+        
+        // Regular product with multiple sizes from API
+        // Store available sizes for the dropdown
+        state.availableSizes = apiSizes.length > 0 ? apiSizes : ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        console.log('📏 Available sizes for dropdown:', state.availableSizes);
+        
+        // Show the "Add Size" button for regular products
         const addBtn = container.querySelector('.add-size-btn');
         if (addBtn) {
+            addBtn.style.display = '';
+            
             // Remove any existing listener to prevent duplicates
             const newBtn = addBtn.cloneNode(true);
             addBtn.parentNode.replaceChild(newBtn, addBtn);
             
             newBtn.addEventListener('click', () => {
+                console.log('🔘 Add Size button clicked for regular product');
                 addSizeRow(container);
                 if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
+        // Setup event delegation for +/- buttons
+        setupSizeQtyEventDelegation(container);
+    }
+    
+    // Separate function for event delegation to avoid duplication
+    function setupSizeQtyEventDelegation(container) {
+        // Remove old listeners by cloning container content approach won't work here
+        // Instead, use a flag to prevent duplicate listeners
+        if (container.dataset.eventsAttached === 'true') {
+            console.log('📌 Event delegation already attached, skipping');
+            return;
+        }
+        container.dataset.eventsAttached = 'true';
+        
         // Event delegation for size/qty items
         container.addEventListener('click', (e) => {
             const btn = e.target.closest('.item-qty-btn');
             if (btn) {
+                console.log('🔘 Qty button clicked:', btn.classList.contains('plus') ? '+' : '-');
                 const row = btn.closest('.size-qty-item');
                 const input = row.querySelector('.item-qty-input');
                 const isPlus = btn.classList.contains('plus');
@@ -2704,13 +2839,18 @@
                 }
                 
                 input.value = value;
+                console.log('📊 New qty value:', value);
                 updateSizeQuantities();
                 if (navigator.vibrate) navigator.vibrate(10);
             }
 
             const removeBtn = e.target.closest('.remove-size-btn');
             if (removeBtn) {
+                // Don't allow removing ONE SIZE row
                 const row = removeBtn.closest('.size-qty-item');
+                if (row && row.classList.contains('one-size-item')) {
+                    return; // Can't remove ONE SIZE
+                }
                 row.remove();
                 updateAvailableSizes(container);
                 updateSizeQuantities();
@@ -2718,11 +2858,8 @@
             }
         });
 
-    // Extra listeners to ensure any direct input/change triggers a quantities recalculation
-    container.addEventListener('input', () => updateSizeQuantities());
-    container.addEventListener('change', () => updateSizeQuantities());
-
-        // Event delegation for select and input changes
+        // Extra listeners to ensure any direct input/change triggers a quantities recalculation
+        container.addEventListener('input', () => updateSizeQuantities());
         container.addEventListener('change', (e) => {
             if (e.target.classList.contains('size-select') || e.target.classList.contains('item-qty-input')) {
                 updateSizeQuantities();
@@ -2768,9 +2905,9 @@
         const newRow = document.createElement('div');
         newRow.className = 'size-qty-item';
         
-        // Build options excluding already selected sizes
+        // Build options excluding already selected sizes - use API sizes from state
         let optionsHTML = '<option value="">Size</option>';
-        const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const allSizes = state.availableSizes || ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
         allSizes.forEach(size => {
             if (!alreadySelected.has(size)) {
                 optionsHTML += `<option value="${size}">${size}</option>`;
@@ -2799,11 +2936,34 @@
         updateSizeQuantities();
     }
 
+    // === Add ONE SIZE row for products like Aprons, Beanies, Caps ===
+    function addOneSizeRow(container) {
+        const selectedSizes = container.querySelector('.selected-sizes');
+        if (!selectedSizes) return;
+        
+        const newRow = document.createElement('div');
+        newRow.className = 'size-qty-item one-size-item';
+        
+        newRow.innerHTML = `
+            <div class="one-size-label" style="flex: 1; font-weight: 600; color: #1f2937; padding: 8px 12px; background: #f3f4f6; border-radius: 8px; text-align: center;">ONE SIZE</div>
+            <input type="hidden" class="size-select" value="ONE SIZE">
+            <div class="item-qty-control">
+                <button type="button" class="item-qty-btn minus">−</button>
+                <input type="number" class="item-qty-input" value="0" min="0" max="999">
+                <button type="button" class="item-qty-btn plus">+</button>
+            </div>
+        `;
+        
+        selectedSizes.appendChild(newRow);
+        updateSizeQuantities();
+    }
+
     // New function to update available sizes across all dropdowns
     function updateAvailableSizes(container) {
         const selectedSizes = container.querySelector('.selected-sizes');
         const allSelects = selectedSizes.querySelectorAll('.size-select');
-        const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        // Use sizes from API stored in state
+        const allSizes = state.availableSizes || ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
         
         // Collect all selected sizes
         const selected = new Set();

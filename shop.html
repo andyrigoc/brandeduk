@@ -5,32 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#6B21A8">
     <title>Shop - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102AB">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102X">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102X">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260107">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260114a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260114a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260114a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260114a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+        /* ===== SOCIAL ICONS FIX - Mobile & Tablet ===== */
+        .social-icons-container,
         .social-icons-mobile {
-            gap: 3px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 4px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        .social-icons-mobile {
             margin-left: 8px !important;
-            padding-left: 0 !important;
         }
+        .social-icons-container .social-icon,
         .social-icons-mobile .social-icon {
-            width: 27px !important;
-            height: 27px !important;
-            min-width: 27px !important;
-            min-height: 27px !important;
-            max-width: 27px !important;
-            max-height: 27px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
+            min-height: 28px !important;
             border-radius: 7px !important;
+            background: #f0f2f5 !important;
+            box-shadow: 3px 3px 6px #b5b5b5, -3px -3px 6px #ffffff !important;
+            text-decoration: none !important;
         }
+        .social-icons-container .social-icon i,
         .social-icons-mobile .social-icon i {
-            font-size: 12px !important;
+            font-size: 13px !important;
+            color: #666 !important;
         }
+        .social-icon.facebook:hover i { color: #1877f2 !important; }
+        .social-icon.instagram:hover i { color: #E1306C !important; }
+        .social-icon.linkedin:hover i { color: #0077B5 !important; }
+        .social-icon.youtube:hover i { color: #FF0000 !important; }
+        .social-icon.pinterest:hover i { color: #E60023 !important; }
 
         /* Category heading under category tabs */
         .shop-category-heading {
@@ -404,11 +424,17 @@
         /* Mobile Pagination */
         .shop-pagination-mobile {
             display: flex;
+            flex-direction: row;
             justify-content: center;
             align-items: center;
             gap: 6px;
             padding: 16px;
-            flex-wrap: wrap;
+        }
+        
+        #mobilePaginationPageNumbers {
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
         }
 
         .shop-pagination-button {
@@ -458,10 +484,137 @@
         }
 
         .shop-pagination-page.active {
-            background: #1f2937;
-            border-color: #1f2937;
+            background: #7c3aed;
+            border-color: #7c3aed;
             color: white;
             font-weight: 600;
+        }
+
+        /* ===== PRICE RANGE STYLES ===== */
+        .price-range-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .price-range-display span:first-child,
+        .price-range-display span:last-child {
+            font-size: 16px;
+            color: #7c3aed;
+            font-weight: 700;
+        }
+
+        .price-range-slider-container {
+            position: relative;
+            height: 40px;
+            margin-bottom: 16px;
+        }
+
+        .price-range-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            transform: translateY(-50%);
+        }
+
+        .price-range-selected {
+            position: absolute;
+            top: 50%;
+            height: 6px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+            border-radius: 3px;
+            transform: translateY(-50%);
+            left: 0;
+            width: 100%;
+        }
+
+        .price-slider {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            pointer-events: none;
+            height: 6px;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #7c3aed;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .price-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+        }
+
+        .price-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #7c3aed;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+        }
+
+        .price-range-inputs {
+            display: flex;
+            gap: 16px;
+        }
+
+        .price-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .price-input-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .price-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            text-align: center;
+            background: #fff;
+            transition: border-color 0.2s ease;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
     </style>
 </head>
@@ -1213,13 +1366,11 @@
             <div class="shop-control-group">
                 <label for="mobileSortSelect">Sort:</label>
                 <select id="mobileSortSelect" class="shop-control-select">
+                    <option value="price-lh" selected>Price: Low to High</option>
+                    <option value="price-hl">Price: High to Low</option>
                     <option value="best">Best Sellers</option>
                     <option value="brand-az">Brand A-Z</option>
                     <option value="brand-za">Brand Z-A</option>
-                    <option value="code-az">Code A-Z</option>
-                    <option value="code-za">Code Z-A</option>
-                    <option value="price-lh">Price: Low to High</option>
-                    <option value="price-hl">Price: High to Low</option>
                 </select>
             </div>
             <div class="shop-control-group">
@@ -1234,11 +1385,9 @@
         </div>
         <!-- Pagination -->
         <div class="shop-pagination-mobile" id="mobilePagination" style="display: none;">
-            <button type="button" class="shop-pagination-button" id="mobilePaginationFirst" title="First page">«</button>
             <button type="button" class="shop-pagination-button" id="mobilePaginationPrev" title="Previous page">&lt;</button>
             <span id="mobilePaginationPageNumbers"></span>
             <button type="button" class="shop-pagination-button" id="mobilePaginationNext" title="Next page">&gt;</button>
-            <button type="button" class="shop-pagination-button" id="mobilePaginationLast" title="Last page">»</button>
         </div>
     </div>
 
@@ -1366,12 +1515,32 @@
                         <span class="filter-expandable__arrow">⌄</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <div class="price-range-display">
-                            <span id="priceMinDisplay">£0</span>
+                        <!-- Price Display -->
+                        <div class="price-range-display" id="priceRangeDisplayBox">
+                            <span id="priceMinDisplay">£0.00</span>
                             <span>-</span>
-                            <span id="priceMaxDisplay">£100</span>
+                            <span id="priceMaxDisplay">£100.00</span>
                         </div>
-                        <input type="range" class="filter-price-slider" id="filterPriceRange" min="0" max="100" value="100">
+                        
+                        <!-- Dual Range Slider on Single Track -->
+                        <div class="price-range-slider-container">
+                            <div class="price-range-track"></div>
+                            <div class="price-range-selected" id="priceRangeSelected"></div>
+                            <input type="range" min="0" max="100" value="0" class="price-slider" id="priceSliderMin">
+                            <input type="range" min="0" max="100" value="100" class="price-slider" id="priceSliderMax">
+                        </div>
+                        
+                        <!-- Min/Max Input Fields -->
+                        <div class="price-range-inputs">
+                            <div class="price-input-group">
+                                <label>Min</label>
+                                <input type="text" class="price-input" id="priceInputMin" value="£0">
+                            </div>
+                            <div class="price-input-group">
+                                <label>Max</label>
+                                <input type="text" class="price-input" id="priceInputMax" value="£100">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1893,6 +2062,24 @@
             }
         };
 
+        // Best Sellers priority list by category - these products appear first when sorting by "Best Sellers"
+        // Add product codes in order of priority for each category
+        const BESTSELLER_PRIORITY = {
+            'beanies': ['B45', 'B450', 'RC033', 'B44', 'B443', 'RG297', 'RC73X', 'B426'],
+            'tshirts': [],      // Add T-Shirt best seller codes here
+            'polo': [],         // Add Polo best seller codes here
+            'hoodies': [],      // Add Hoodie best seller codes here
+            'sweatshirts': [],  // Add Sweatshirt best seller codes here
+            'jackets': [],      // Add Jacket best seller codes here
+            'fleeces': [],      // Add Fleece best seller codes here
+            'caps': [],         // Add Cap best seller codes here
+            'hivis': [],        // Add Hi-Vis best seller codes here
+            'workwear': [],     // Add Workwear best seller codes here
+            'trousers': [],     // Add Trouser best seller codes here
+            'bags': [],         // Add Bag best seller codes here
+            'aprons': []        // Add Apron best seller codes here
+        };
+
         // State (EXACT PC COPY)
         let currentState = {
             page: 1,
@@ -1902,7 +2089,7 @@
             search: '',
             priceMin: null,
             priceMax: null,
-            sort: 'best',
+            sort: 'price-lh',
             filters: {
                 gender: [],
                 ageGroup: [],
@@ -2050,12 +2237,138 @@
             return params;
         }
 
+        // Helper function to extract the minimum price from a product
+        function getProductMinPrice(product) {
+            // Try multiple price sources to find the minimum price
+            let minPrice = Infinity;
+            
+            // Check priceBreaks array (could have different structures)
+            if (product.priceBreaks && Array.isArray(product.priceBreaks) && product.priceBreaks.length > 0) {
+                product.priceBreaks.forEach(pb => {
+                    const price = parseFloat(pb.price || pb.unitPrice || pb.unit_price || pb.minPrice || pb.min_price || 0);
+                    if (!isNaN(price) && price > 0 && price < minPrice) {
+                        minPrice = price;
+                    }
+                });
+            }
+            
+            // Check price_breaks array (underscore version)
+            if (product.price_breaks && Array.isArray(product.price_breaks) && product.price_breaks.length > 0) {
+                product.price_breaks.forEach(pb => {
+                    const price = parseFloat(pb.price || pb.unitPrice || pb.unit_price || 0);
+                    if (!isNaN(price) && price > 0 && price < minPrice) {
+                        minPrice = price;
+                    }
+                });
+            }
+            
+            // Check direct price fields
+            const directPrice = parseFloat(product.price || product.minPrice || product.min_price || product.startPrice || product.start_price || 0);
+            if (!isNaN(directPrice) && directPrice > 0 && directPrice < minPrice) {
+                minPrice = directPrice;
+            }
+            
+            // If still Infinity, return 0
+            return minPrice === Infinity ? 0 : minPrice;
+        }
+
+        // Helper function to extract the maximum price from a product
+        function getProductMaxPrice(product) {
+            let maxPrice = 0;
+            
+            if (product.priceBreaks && Array.isArray(product.priceBreaks) && product.priceBreaks.length > 0) {
+                product.priceBreaks.forEach(pb => {
+                    const price = parseFloat(pb.price || pb.unitPrice || pb.unit_price || 0);
+                    if (!isNaN(price) && price > maxPrice) {
+                        maxPrice = price;
+                    }
+                });
+            }
+            
+            if (product.price_breaks && Array.isArray(product.price_breaks) && product.price_breaks.length > 0) {
+                product.price_breaks.forEach(pb => {
+                    const price = parseFloat(pb.price || pb.unitPrice || pb.unit_price || 0);
+                    if (!isNaN(price) && price > maxPrice) {
+                        maxPrice = price;
+                    }
+                });
+            }
+            
+            const directPrice = parseFloat(product.price || product.maxPrice || product.max_price || 0);
+            if (!isNaN(directPrice) && directPrice > maxPrice) {
+                maxPrice = directPrice;
+            }
+            
+            return maxPrice;
+        }
+
         async function fetchProducts() {
             try {
                 const params = buildApiParams();
                 const data = await BrandedAPI.getProducts(params);
                 currentState.total = data.total || 0;
-                return data.items || [];
+                let items = data.items || [];
+                
+                // ALWAYS apply client-side sorting to ensure correct order
+                if (currentState.sort === 'price-lh' || !currentState.sort) {
+                    // Sort by price: Low to High (DEFAULT)
+                    items.sort((a, b) => {
+                        const priceA = getProductMinPrice(a);
+                        const priceB = getProductMinPrice(b);
+                        return priceA - priceB;
+                    });
+                } else if (currentState.sort === 'price-hl') {
+                    // Sort by price: High to Low
+                    items.sort((a, b) => {
+                        const priceA = getProductMaxPrice(a);
+                        const priceB = getProductMaxPrice(b);
+                        return priceB - priceA;
+                    });
+                } else if (currentState.sort === 'brand-az') {
+                    // Sort by brand: A to Z
+                    items.sort((a, b) => {
+                        const brandA = (a.brand || a.manufacturer || '').toLowerCase();
+                        const brandB = (b.brand || b.manufacturer || '').toLowerCase();
+                        return brandA.localeCompare(brandB);
+                    });
+                } else if (currentState.sort === 'brand-za') {
+                    // Sort by brand: Z to A
+                    items.sort((a, b) => {
+                        const brandA = (a.brand || a.manufacturer || '').toLowerCase();
+                        const brandB = (b.brand || b.manufacturer || '').toLowerCase();
+                        return brandB.localeCompare(brandA);
+                    });
+                }
+                
+                // Apply best seller priority sorting when sort is 'best' and on first page
+                if (currentState.sort === 'best' && currentState.page === 1) {
+                    const categorySlug = currentState.category.toLowerCase();
+                    const priorityList = BESTSELLER_PRIORITY[categorySlug];
+                    
+                    if (priorityList && priorityList.length > 0) {
+                        // Separate priority items from the rest
+                        const priorityItems = [];
+                        const otherItems = [];
+                        
+                        items.forEach(item => {
+                            const code = (item.code || '').toUpperCase();
+                            const priorityIndex = priorityList.findIndex(p => p.toUpperCase() === code);
+                            if (priorityIndex !== -1) {
+                                priorityItems.push({ item, index: priorityIndex });
+                            } else {
+                                otherItems.push(item);
+                            }
+                        });
+                        
+                        // Sort priority items by their order in the priority list
+                        priorityItems.sort((a, b) => a.index - b.index);
+                        
+                        // Combine: priority items first, then the rest
+                        items = [...priorityItems.map(p => p.item), ...otherItems];
+                    }
+                }
+                
+                return items;
             } catch (err) {
                 console.error('Error fetching products (mobile):', err);
                 return [];
@@ -2065,8 +2378,13 @@
         async function fetchFilterCounts() {
             try {
                 const params = buildApiParams();
-                const counts = await BrandedAPI.getFilterAggregations(params);
-                updateFilterCounts(counts);
+                // Use getFilterCounts instead of getFilterAggregations (which doesn't exist)
+                if (typeof BrandedAPI.getFilterCounts === 'function') {
+                    const counts = await BrandedAPI.getFilterCounts(params);
+                    updateFilterCounts(counts);
+                } else {
+                    console.log('Filter counts API not available, skipping');
+                }
             } catch (err) {
                 console.error('Error fetching filter counts (mobile):', err);
             }
@@ -2104,7 +2422,7 @@
             } else {
                 url.searchParams.delete('limit');
             }
-            if (currentState.sort && currentState.sort !== 'best') {
+            if (currentState.sort && currentState.sort !== 'price-lh') {
                 url.searchParams.set('sort', currentState.sort);
             } else {
                 url.searchParams.delete('sort');
@@ -2136,97 +2454,196 @@
             
             paginationContainer.style.display = 'flex';
             
-            const firstBtn = document.getElementById('mobilePaginationFirst');
             const prevBtn = document.getElementById('mobilePaginationPrev');
             const nextBtn = document.getElementById('mobilePaginationNext');
-            const lastBtn = document.getElementById('mobilePaginationLast');
             const pageNumbersContainer = document.getElementById('mobilePaginationPageNumbers');
             
-            if (firstBtn) firstBtn.disabled = currentState.page === 1;
             if (prevBtn) prevBtn.disabled = currentState.page === 1;
             if (nextBtn) nextBtn.disabled = currentState.page === totalPages;
-            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
             
             if (pageNumbersContainer) {
                 pageNumbersContainer.innerHTML = '';
-                const currentPageBtn = document.createElement('button');
-                currentPageBtn.type = 'button';
-                currentPageBtn.className = 'shop-pagination-page active';
-                currentPageBtn.textContent = currentState.page;
-                currentPageBtn.setAttribute('aria-current', 'page');
-                pageNumbersContainer.appendChild(currentPageBtn);
+                
+                // Show page numbers like: 1 2 3 (max 3 visible)
+                const maxVisible = 3;
+                let startPage = Math.max(1, currentState.page - Math.floor(maxVisible / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                
+                // Adjust start if we're near the end
+                if (endPage - startPage + 1 < maxVisible) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.type = 'button';
+                    pageBtn.className = 'shop-pagination-page' + (i === currentState.page ? ' active' : '');
+                    pageBtn.textContent = i;
+                    if (i === currentState.page) {
+                        pageBtn.setAttribute('aria-current', 'page');
+                    }
+                    pageBtn.addEventListener('click', () => {
+                        currentState.page = i;
+                        updateURL();
+                        renderProducts();
+                    });
+                    pageNumbersContainer.appendChild(pageBtn);
+                }
             }
         }
 
-        // Price range init adapted for mobile UI
+        // Price range init adapted for mobile UI - Dual Slider + Budget Buttons
         async function initPriceRangeSlider() {
-            const slider = document.getElementById('filterPriceRange');
+            const sliderMin = document.getElementById('filterPriceMin');
+            const sliderMax = document.getElementById('filterPriceMax');
             const minDisplay = document.getElementById('priceMinDisplay');
             const maxDisplay = document.getElementById('priceMaxDisplay');
-            if (!slider) return;
+            const budgetBtns = document.querySelectorAll('.budget-btn');
+            const resetBtn = document.getElementById('priceResetBtn');
+            
+            if (!sliderMin || !sliderMax) return;
+
+            let catalogMin = 0;
+            let catalogMax = 100;
 
             try {
                 const data = await BrandedAPI.getProducts({ limit: 1 });
-                const range = data.priceRange || { min: 14, max: 65 };
-                const catalogMin = Math.floor(range.min || 14);
-                const catalogMax = Math.ceil(range.max || 65);
-                slider.min = catalogMin;
-                slider.max = catalogMax;
+                const range = data.priceRange || { min: 0, max: 100 };
+                catalogMin = Math.floor(range.min || 0);
+                catalogMax = Math.ceil(range.max || 100);
                 
-                // Initialize slider value from URL or use full range (but don't set state unless in URL)
+                // Set slider ranges
+                sliderMin.min = catalogMin;
+                sliderMin.max = catalogMax;
+                sliderMax.min = catalogMin;
+                sliderMax.max = catalogMax;
+                
+                // Initialize from URL or use full range
                 const urlParams = new URLSearchParams(window.location.search);
+                const urlPriceMin = urlParams.get('priceMin');
                 const urlPriceMax = urlParams.get('priceMax');
                 
-                if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
-                    const priceMax = Math.max(catalogMin, Math.min(catalogMax, parseFloat(urlPriceMax)));
-                    slider.value = priceMax;
-                    currentState.priceMax = priceMax;
+                if (urlPriceMin && !isNaN(parseFloat(urlPriceMin))) {
+                    sliderMin.value = Math.max(catalogMin, Math.min(catalogMax, parseFloat(urlPriceMin)));
+                    currentState.priceMin = parseFloat(urlPriceMin);
                 } else {
-                    slider.value = catalogMax;
-                    currentState.priceMax = null; // Keep null so API doesn't filter by price
+                    sliderMin.value = catalogMin;
+                    currentState.priceMin = null;
                 }
                 
-                // Initialize display without setting state
-                const initialMaxVal = parseInt(slider.value);
-                minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
-                maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (initialMaxVal * 1.2).toFixed(2) : initialMaxVal.toFixed(2)));
+                if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
+                    sliderMax.value = Math.max(catalogMin, Math.min(catalogMax, parseFloat(urlPriceMax)));
+                    currentState.priceMax = parseFloat(urlPriceMax);
+                } else {
+                    sliderMax.value = catalogMax;
+                    currentState.priceMax = null;
+                }
+                
+                updateDisplay();
+                
+            } catch (err) {
+                console.error('Error init price slider (mobile):', err);
+                sliderMin.value = 0;
+                sliderMax.value = 100;
+            }
 
-                function update(triggerAPI = false) {
-                    let maxVal = parseInt(slider.value);
-                    if (!Number.isFinite(maxVal)) maxVal = catalogMax;
+            function updateDisplay() {
+                const minVal = parseInt(sliderMin.value);
+                const maxVal = parseInt(sliderMax.value);
+                const vatMultiplier = isVatOn() ? 1.2 : 1;
+                
+                minDisplay && (minDisplay.textContent = '£' + (minVal * vatMultiplier).toFixed(2));
+                maxDisplay && (maxDisplay.textContent = '£' + (maxVal * vatMultiplier).toFixed(2));
+            }
+
+            function updatePriceFilter(triggerAPI = false) {
+                let minVal = parseInt(sliderMin.value);
+                let maxVal = parseInt(sliderMax.value);
+                
+                // Prevent min from exceeding max
+                if (minVal > maxVal) {
+                    if (this === sliderMin) {
+                        sliderMin.value = maxVal;
+                        minVal = maxVal;
+                    } else {
+                        sliderMax.value = minVal;
+                        maxVal = minVal;
+                    }
+                }
+                
+                // Set state
+                if (minVal === catalogMin && maxVal === catalogMax) {
+                    currentState.priceMin = null;
+                    currentState.priceMax = null;
+                } else {
+                    currentState.priceMin = minVal > catalogMin ? minVal : null;
+                    currentState.priceMax = maxVal < catalogMax ? maxVal : null;
+                }
+                
+                updateDisplay();
+                clearActiveBudgetBtn();
+                
+                if (triggerAPI) {
+                    currentState.page = 1;
+                    updateURL();
+                    renderProducts();
+                    fetchFilterCounts();
+                }
+            }
+
+            function clearActiveBudgetBtn() {
+                budgetBtns.forEach(btn => btn.classList.remove('active'));
+            }
+
+            // Slider events
+            sliderMin.addEventListener('input', function() { updatePriceFilter.call(this, true); });
+            sliderMax.addEventListener('input', function() { updatePriceFilter.call(this, true); });
+
+            // Budget button events
+            budgetBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const min = parseInt(btn.dataset.min);
+                    const max = parseInt(btn.dataset.max);
                     
-                    // Only set price state if values are different from full catalog range
-                    // If they match the full range, set to null so API doesn't filter by price
-                    if (maxVal === catalogMax) {
-                        // Full range selected - don't filter by price
+                    // Toggle off if already active
+                    if (btn.classList.contains('active')) {
+                        btn.classList.remove('active');
+                        sliderMin.value = catalogMin;
+                        sliderMax.value = catalogMax;
                         currentState.priceMin = null;
                         currentState.priceMax = null;
                     } else {
-                        // Partial range selected - filter by price
-                        currentState.priceMin = catalogMin;
-                        currentState.priceMax = maxVal;
+                        clearActiveBudgetBtn();
+                        btn.classList.add('active');
+                        
+                        sliderMin.value = Math.max(catalogMin, min);
+                        sliderMax.value = Math.min(catalogMax, max);
+                        currentState.priceMin = min > 0 ? min : null;
+                        currentState.priceMax = max < 999 ? max : null;
                     }
                     
-                    minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
-                    maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2)));
-                    
-                    // Only trigger API call and URL update if user actually changed the slider
-                    if (triggerAPI) {
-                        currentState.page = 1;
-                        updateURL();
-                        renderProducts();
-                        fetchFilterCounts();
-                    }
-                }
+                    updateDisplay();
+                    currentState.page = 1;
+                    updateURL();
+                    renderProducts();
+                    fetchFilterCounts();
+                });
+            });
 
-                // Only trigger API on user input, not on initialization
-                slider.addEventListener('input', () => update(true));
-                // Don't call update() on initialization - just set display values above
-            } catch (err) {
-                console.error('Error init price slider (mobile):', err);
-                // On error, don't set price state - keep null
-                currentState.priceMin = null;
-                currentState.priceMax = null;
+            // Reset button
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    sliderMin.value = catalogMin;
+                    sliderMax.value = catalogMax;
+                    currentState.priceMin = null;
+                    currentState.priceMax = null;
+                    clearActiveBudgetBtn();
+                    updateDisplay();
+                    currentState.page = 1;
+                    updateURL();
+                    renderProducts();
+                    fetchFilterCounts();
+                });
             }
         }
 
@@ -2372,10 +2789,26 @@
 
         // Render products using API (delegates to BrandedAPI)
         async function renderProducts() {
+            console.log('=== SHOP renderProducts() CALLED ===');
             const grid = document.getElementById('productsGrid');
-            if (!grid) return;
+            if (!grid) {
+                console.error('❌ productsGrid element NOT FOUND!');
+                return;
+            }
+            console.log('✅ productsGrid found, showing loading...');
             grid.innerHTML = '<div style="text-align:center; padding:40px;">Loading...</div>';
-            const products = await fetchProducts();
+            
+            let products = [];
+            try {
+                console.log('📡 Calling fetchProducts()...');
+                products = await fetchProducts();
+                console.log('📦 fetchProducts returned:', products?.length || 0, 'products');
+            } catch (err) {
+                console.error('❌ Error fetching products:', err);
+                grid.innerHTML = '<div style="text-align:center; padding:40px; color:#ef4444;">Error loading products. Please refresh.</div>';
+                return;
+            }
+            
             // Update title/count
             const titleEl = document.getElementById('categoryTitle');
             const resultsEl = document.getElementById('resultsCount');
@@ -2384,11 +2817,13 @@
 
             grid.innerHTML = '';
             if (!products || products.length === 0) {
+                console.warn('⚠️ No products to render');
                 grid.innerHTML = '<div style="text-align:center; padding:40px; color:#6b7280;">No products found.</div>';
                 updateMobilePagination();
                 return;
             }
 
+            console.log('🎨 Rendering', products.length, 'product cards...');
             products.forEach((product, idx) => {
                 const card = document.createElement('div');
                 card.className = 'product-card-shop';
@@ -2463,26 +2898,31 @@
 
         // Initialize filters and product rendering on mobile
         document.addEventListener('DOMContentLoaded', async function() {
-            // Read initial URL params
-            const urlParams = new URLSearchParams(window.location.search);
-            currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
-            currentState.page = parseInt(urlParams.get('page')) || 1;
-            currentState.limit = parseInt(urlParams.get('limit')) || 24;
-            currentState.sort = urlParams.get('sort') || 'best';
-            currentState.search = urlParams.get('q') || '';
-            currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
-            currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
-            
-            // Handle accreditation=recycled URL parameter (adds to quickFilters, which maps to flag[]=['recycled-organic'])
-            const accreditationParam = urlParams.get('accreditation');
-            if (accreditationParam === 'recycled') {
-                if (!currentState.filters.quickFilters.includes('recycled')) {
-                    currentState.filters.quickFilters.push('recycled');
+            console.log('=== SHOP DOMContentLoaded START ===');
+            try {
+                // Read initial URL params
+                const urlParams = new URLSearchParams(window.location.search);
+                currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
+                currentState.page = parseInt(urlParams.get('page')) || 1;
+                currentState.limit = parseInt(urlParams.get('limit')) || 24;
+                currentState.sort = urlParams.get('sort') || 'price-lh';
+                currentState.search = urlParams.get('q') || '';
+                currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
+                currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
+                
+                console.log('📌 Initial state:', { category: currentState.category, page: currentState.page, sort: currentState.sort });
+                
+                // Handle accreditation=recycled URL parameter (adds to quickFilters, which maps to flag[]=['recycled-organic'])
+                const accreditationParam = urlParams.get('accreditation');
+                if (accreditationParam === 'recycled') {
+                    if (!currentState.filters.quickFilters.includes('recycled')) {
+                        currentState.filters.quickFilters.push('recycled');
+                    }
                 }
-            }
 
-            // Setup all handlers
-            setupCategoryFilters();
+                // Setup all handlers
+                console.log('⚙️ Setting up handlers...');
+                setupCategoryFilters();
             setupFilterCheckboxes();
             setupQuickFilterToggles();
             setupSearchInput();
@@ -2492,7 +2932,7 @@
             const viewSelect = document.getElementById('mobileViewSelect');
             
             if (sortSelect) {
-                sortSelect.value = currentState.sort || 'best';
+                sortSelect.value = currentState.sort || 'price-lh';
                 sortSelect.addEventListener('change', async (e) => {
                     currentState.sort = e.target.value;
                     currentState.page = 1;
@@ -2556,10 +2996,16 @@
                 });
             }
 
+            console.log('🚀 Calling renderProducts()...');
             await renderProducts();
+            console.log('✅ renderProducts() completed');
             await fetchFilterCounts();
             await initPriceRangeSlider();
             updateMobilePagination();
+            console.log('=== SHOP DOMContentLoaded COMPLETE ===');
+            } catch (initError) {
+                console.error('❌ CRITICAL ERROR in DOMContentLoaded:', initError);
+            }
         });
     </script>
     <script src="mobile/js/mobile.js?v=20251230"></script>

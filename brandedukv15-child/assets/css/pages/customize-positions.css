@@ -2254,6 +2254,56 @@ body {
 }
 
 /* ---------------------------------------------------
+   STEP ACTION BUTTONS CONTAINER
+--------------------------------------------------- */
+.step-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 20px;
+    margin-bottom: 28px;
+}
+
+/* Continue Shopping Button */
+.continue-shopping-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 40px;
+    background: #fff;
+    border: 2px solid #7c3aed;
+    color: #7c3aed;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.continue-shopping-btn:hover {
+    background: #7c3aed;
+    color: #fff;
+}
+
+.continue-shopping-btn:hover svg {
+    stroke: #fff;
+    transform: translateX(-3px);
+}
+
+.continue-shopping-btn svg {
+    stroke: #7c3aed;
+    transition: all 0.25s ease;
+}
+
+.continue-shopping-btn:active {
+    transform: scale(0.98);
+}
+
+/* ---------------------------------------------------
    SUBMIT QUOTE BUTTON (Animated)
 --------------------------------------------------- */
 .submit-quote-btn {
@@ -2270,8 +2320,8 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: width 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
-    margin-left: 20px;
-    margin-bottom: 28px;
+    margin-left: 0;
+    margin-bottom: 0;
 }
 
 .submit-quote-btn:after {

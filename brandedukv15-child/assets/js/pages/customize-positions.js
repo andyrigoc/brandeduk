@@ -1070,6 +1070,7 @@ function updateStepProgress() {
     const step3 = document.querySelector('.step-item[data-step="3"]');
     const connector23 = document.getElementById('connector-2-3');
     const submitBtn = document.getElementById('submitQuoteBtn');
+    const stepActionButtons = document.getElementById('stepActionButtons');
     
     if (step3) {
         if (hasAnyCustomization) {
@@ -1085,8 +1086,10 @@ function updateStepProgress() {
                 const stepNum = step3.querySelector('.step-num');
                 if (stepNum) stepNum.textContent = '3✓';
                 
-                // Show the submit button with animation
-                if (submitBtn) {
+                // Show the action buttons container with animation
+                if (stepActionButtons) {
+                    stepActionButtons.style.display = 'flex';
+                } else if (submitBtn) {
                     submitBtn.style.display = 'block';
                 }
             }, 1800); // Wait for 1.8s animation to complete
@@ -1100,7 +1103,10 @@ function updateStepProgress() {
             const stepNum = step3.querySelector('.step-num');
             if (stepNum) stepNum.textContent = '3';
             
-            // Hide submit button
+            // Hide action buttons container
+            if (stepActionButtons) {
+                stepActionButtons.style.display = 'none';
+            }
             if (submitBtn) {
                 submitBtn.style.display = 'none';
                 submitBtn.classList.remove('onclic', 'validate');

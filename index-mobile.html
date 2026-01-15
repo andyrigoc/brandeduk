@@ -8,17 +8,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BrandedUK - Custom Workwear & Embroidery</title>
     <!-- Mobile-First CSS -->
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102R">
-    <link rel="stylesheet" href="mobile/hero/hero.css?v=20260104B">
-    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260102j">
-    <link rel="stylesheet" href="mobile/css/faq.css?v=20260102j">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102j">
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260102j">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/hero/hero.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/css/faq.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260114a">
     <!-- Desktop Header CSS -->
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260102j">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260114a">
     <!-- Responsive Breakpoints (Tablet/Desktop) -->
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260104A">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260114a">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
@@ -28,23 +28,68 @@
             display: none !important;
         }
         
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only) */
+        /* ===== SOCIAL ICONS FIX - Mobile & Tablet ===== */
+        /* Remove bullet points and display horizontally */
+        .social-icons-container,
+        .social-icons-mobile {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 4px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        
+        /* Mobile header social icons */
         .mobile-header .social-icons-mobile {
-            gap: 3px !important;
+            gap: 4px !important;
             margin-left: 8px !important;
             padding-left: 0 !important;
         }
-        .mobile-header .social-icons-mobile .social-icon {
-            width: 27px !important;
-            height: 27px !important;
-            min-width: 27px !important;
-            min-height: 27px !important;
-            max-width: 27px !important;
-            max-height: 27px !important;
+        
+        /* Social icon base - 3D neumorphic style */
+        .social-icons-container .social-icon,
+        .social-icons-mobile .social-icon {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
+            min-height: 28px !important;
             border-radius: 7px !important;
+            background: #f0f2f5 !important;
+            box-shadow: 3px 3px 6px #b5b5b5, -3px -3px 6px #ffffff !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
         }
-        .mobile-header .social-icons-mobile .social-icon i {
-            font-size: 12px !important;
+        
+        /* Icon inside */
+        .social-icons-container .social-icon i,
+        .social-icons-mobile .social-icon i {
+            font-size: 13px !important;
+            color: #666 !important;
+            transition: color 0.3s ease !important;
+        }
+        
+        /* Hover colors */
+        .social-icon.facebook:hover i { color: #1877f2 !important; }
+        .social-icon.instagram:hover i { color: #E1306C !important; }
+        .social-icon.linkedin:hover i { color: #0077B5 !important; }
+        .social-icon.youtube:hover i { color: #FF0000 !important; }
+        .social-icon.pinterest:hover i { color: #E60023 !important; }
+        
+        /* Tablet top bar social icons (smaller) */
+        .tablet-top-bar .social-icons-container .social-icon {
+            width: 22px !important;
+            height: 22px !important;
+            min-width: 22px !important;
+            min-height: 22px !important;
+            border-radius: 5px !important;
+        }
+        .tablet-top-bar .social-icons-container .social-icon i {
+            font-size: 10px !important;
         }
         
         /* Note: responsive.css handles showing desktop header on wider screens */
@@ -646,10 +691,10 @@
                             <div class="hero-el__inner">
                                 <div class="hero-el__bg"></div>
                                 <div class="hero-el__preview-cont">
-                                    <h2 class="hero-el__heading">Beanies</h2>
+                                    <h2 class="hero-el__heading">Headwear</h2>
                                 </div>
                                 <div class="hero-el__content">
-                                    <div class="hero-el__text">Custom Beanies</div>
+                                    <div class="hero-el__text">Custom Headwear</div>
                                     <a href="category-beanies.html" class="hero-el__cta">Shop Now</a>
                                     <div class="hero-el__close-btn"></div>
                                 </div>
@@ -896,37 +941,77 @@
                 <a href="shop.html?sort=bestsellers" class="see-all-link">View All</a>
             </div>
             <div class="products-scroll bestseller-grid">
-                <div class="bestseller-card" data-product="UC101">
+                <div class="bestseller-card" data-product="B45">
+                    <span class="product-badge bestseller">Best Seller</span>
                     <div class="bestseller-image">
-                        <img src="hero/images/Polo.jpg" alt="Work Polo">
+                        <img src="https://rfrm.imgix.net/beechfield/b45/black/dt_std-1.jpg?w=400" alt="Original Cuffed Beanie">
                     </div>
-                    <h4 class="bestseller-name">Work Polo</h4>
-                    <p class="bestseller-price">£8.95</p>
-                    <a href="customize.html?product=UC101" class="bestseller-btn">Add Logo</a>
+                    <h4 class="bestseller-name">Original Cuffed Beanie</h4>
+                    <p class="bestseller-price">From £2.71</p>
+                    <a href="customize.html?product=B45" class="bestseller-btn">Add Logo</a>
                 </div>
-                <div class="bestseller-card" data-product="JH001">
+                <div class="bestseller-card" data-product="B450">
+                    <span class="product-badge bestseller">Best Seller</span>
                     <div class="bestseller-image">
-                        <img src="hero/images/hoodies.jpg" alt="Grey Hoodie" style="object-position: 0% top;">
+                        <img src="https://rfrm.imgix.net/beechfield/b450/black/dt_std-1.jpg?w=400" alt="Snowstar Beanie">
                     </div>
-                    <h4 class="bestseller-name">Grey Hoodie</h4>
-                    <p class="bestseller-price">£14.50</p>
-                    <a href="customize.html?product=JH001" class="bestseller-btn">Add Logo</a>
+                    <h4 class="bestseller-name">Snowstar Beanie</h4>
+                    <p class="bestseller-price">From £3.55</p>
+                    <a href="customize.html?product=B450" class="bestseller-btn">Add Logo</a>
                 </div>
-                <div class="bestseller-card" data-product="HV001">
+                <div class="bestseller-card" data-product="RC033">
+                    <span class="product-badge bestseller">Best Seller</span>
                     <div class="bestseller-image">
-                        <img src="hero/images/Hi-Viz.jpg" alt="Hi-Vis Vest">
+                        <img src="https://rfrm.imgix.net/result/rc033x/black/dt_std-1.jpg?w=400" alt="Wooly Ski Hat">
                     </div>
-                    <h4 class="bestseller-name">Hi-Vis Vest</h4>
-                    <p class="bestseller-price">£9.95</p>
-                    <a href="customize.html?product=HV001" class="bestseller-btn">Add Logo</a>
+                    <h4 class="bestseller-name">Wooly Ski Hat</h4>
+                    <p class="bestseller-price">From £2.12</p>
+                    <a href="customize.html?product=RC033" class="bestseller-btn">Add Logo</a>
                 </div>
-                <div class="bestseller-card" data-product="UC301">
+                <div class="bestseller-card" data-product="B44">
+                    <span class="product-badge bestseller">Best Seller</span>
                     <div class="bestseller-image">
-                        <img src="hero/images/beanie.jpg" alt="Beanie">
+                        <img src="https://rfrm.imgix.net/beechfield/b44/charcoal/dt_std-1.jpg?w=400" alt="Original Pull-On Beanie">
                     </div>
-                    <h4 class="bestseller-name">Beanie Hat</h4>
-                    <p class="bestseller-price">£6.99</p>
-                    <a href="customize.html?product=UC301" class="bestseller-btn">Add Logo</a>
+                    <h4 class="bestseller-name">Original Pull-On Beanie</h4>
+                    <p class="bestseller-price">From £2.12</p>
+                    <a href="customize.html?product=B44" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="B443">
+                    <span class="product-badge bestseller">Best Seller</span>
+                    <div class="bestseller-image">
+                        <img src="https://rfrm.imgix.net/beechfield/b443/black/dt_std-1.jpg?w=400" alt="Snowstar Printers Beanie">
+                    </div>
+                    <h4 class="bestseller-name">Snowstar Printers Beanie</h4>
+                    <p class="bestseller-price">From £3.50</p>
+                    <a href="customize.html?product=B443" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="RG297">
+                    <span class="product-badge bestseller">Best Seller</span>
+                    <div class="bestseller-image">
+                        <img src="https://rfrm.imgix.net/regatta/rg297/navy/dt_std-1.jpg?w=400" alt="Watch Hat">
+                    </div>
+                    <h4 class="bestseller-name">Watch Hat</h4>
+                    <p class="bestseller-price">From £2.25</p>
+                    <a href="customize.html?product=RG297" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="RC73X">
+                    <span class="product-badge bestseller">Best Seller</span>
+                    <div class="bestseller-image">
+                        <img src="https://rfrm.imgix.net/result/rc73x/ocean-blue/dt_std-1.jpg?w=400" alt="Core Softex Beanie">
+                    </div>
+                    <h4 class="bestseller-name">Core Softex Beanie</h4>
+                    <p class="bestseller-price">From £0.97</p>
+                    <a href="customize.html?product=RC73X" class="bestseller-btn">Add Logo</a>
+                </div>
+                <div class="bestseller-card" data-product="B426">
+                    <span class="product-badge bestseller">Best Seller</span>
+                    <div class="bestseller-image">
+                        <img src="https://rfrm.imgix.net/beechfield/b426/black/dt_std-1.jpg?w=400" alt="Original Pom Pom Beanie">
+                    </div>
+                    <h4 class="bestseller-name">Original Pom Pom Beanie</h4>
+                    <p class="bestseller-price">From £3.05</p>
+                    <a href="customize.html?product=B426" class="bestseller-btn">Add Logo</a>
                 </div>
             </div>
         </section>

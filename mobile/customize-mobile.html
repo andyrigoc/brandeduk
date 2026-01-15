@@ -17,15 +17,172 @@
         .logo-overlay-box.apron-low-left {
             top: 70%;
             left: 28%;
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
         }
         
         .logo-overlay-box.apron-low-right {
             top: 70%;
             left: 72%;
+            width: 22px;
+            height: 22px;
+        }
+        
+        /* Reduce logo size on position cards by 20% */
+        .position-card .logo-overlay-box {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        .position-card .logo-overlay-box.front-center {
             width: 28px;
             height: 28px;
+        }
+        .position-card .logo-overlay-box.left-chest,
+        .position-card .logo-overlay-box.right-chest {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Uploaded logo preview box: enlarge logo +20% (and box if needed) */
+        .position-card .uploaded-logo-box {
+            min-height: 144px;
+            padding: 28px;
+        }
+
+        .position-card .uploaded-logo-thumb {
+            width: 84px;
+            height: 84px;
+            max-width: 84px;
+            max-height: 84px;
+            object-fit: contain;
+        }
+
+        /* Support the alternative inner-wrapper structure defined in mobile.css */
+        .position-card .uploaded-logo-box > .uploaded-logo-inner {
+            width: 84px !important;
+            height: 84px !important;
+            min-width: 84px !important;
+            min-height: 84px !important;
+            max-width: 84px !important;
+            max-height: 84px !important;
+            border: none !important;
+        }
+
+        .position-card .uploaded-logo-box > .uploaded-logo-inner > .uploaded-logo-thumb {
+            width: 84px !important;
+            height: 84px !important;
+            min-width: 84px !important;
+            min-height: 84px !important;
+        }
+
+        /* Avoid flashing legacy placeholder mockups before API mockups load */
+        #positionOptions {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        body.positions-ready #positionOptions {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Remove red square/outline around the bin button */
+        .position-card .delete-logo-btn,
+        .position-card .delete-logo-btn:focus,
+        .position-card .delete-logo-btn:focus-visible,
+        .position-card .delete-logo-btn:active {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .position-card .delete-logo-btn {
+            color: #9ca3af;
+        }
+
+        .position-card .delete-logo-btn:hover {
+            background: transparent !important;
+            color: #ef4444;
+        }
+        
+        /* Secondary Gray Navigation Bar */
+        .header-secondary-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            gap: 8px;
+            width: 100%;
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+            box-sizing: border-box;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+        .secondary-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .secondary-nav-link:hover,
+        .secondary-nav-link:active {
+            background: #e5e7eb;
+            color: #7c3aed;
+        }
+        
+        .secondary-nav-link svg {
+            flex-shrink: 0;
+        }
+        
+        .secondary-nav-link.phone-link {
+            color: #16a34a;
+            font-weight: 600;
+        }
+        
+        .secondary-nav-link.phone-link:hover {
+            background: #dcfce7;
+        }
+        
+        /* Hide bestseller badge */
+        .gallery-badge.bestseller {
+            display: none !important;
+        }
+        
+        /* Fix header background - must be solid white, not transparent */
+        .mobile-header {
+            background: #ffffff !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-top-row {
+            background: #ffffff;
+        }
+        
+        .header-logo-row {
+            background: #ffffff;
+            padding-bottom: 0;
+        }
+        
+        .header-secondary-bar {
+            background: #f3f4f6;
         }
     </style>
 </head>
@@ -87,35 +244,6 @@
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
-
-                <!-- Social Buttons Left -->
-                <ul class="social-buttons-header">
-                <li><a href="https://www.facebook.com/brandeduk" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
-                    <span class="social-icon">
-                        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    </span>
-                </a></li>
-                <li><a href="https://www.instagram.com/brandeduk" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
-                    <span class="social-icon">
-                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    </span>
-                </a></li>
-                <li><a href="https://www.linkedin.com/company/brandeduk" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
-                    <span class="social-icon">
-                        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                    </span>
-                </a></li>
-                <li><a href="https://www.youtube.com/@brandeduk" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
-                    <span class="social-icon">
-                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                    </span>
-                </a></li>
-                <li><a href="https://www.pinterest.com/brandeduk" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
-                    <span class="social-icon">
-                        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
-                    </span>
-                </a></li>
-                </ul>
             </div>
 
             <!-- VAT Toggle Right -->
@@ -141,6 +269,39 @@
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
             </div>
+        </div>
+        
+        <!-- Secondary Gray Bar -->
+        <div class="header-secondary-bar">
+            <a href="home-mobile.html" class="secondary-nav-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                </svg>
+                Home
+            </a>
+            <a href="shop.html" class="secondary-nav-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Shop
+            </a>
+            <a href="basket-mobile.html" class="secondary-nav-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                Basket
+            </a>
+            <a href="tel:02089742722" class="secondary-nav-link phone-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                Call Us
+            </a>
         </div>
     </header>
 
@@ -309,33 +470,6 @@
 
         <!-- Customization Options - Simplified -->
         <section class="customize-section customization-options">
-            <!-- Technique Selection - Compact -->
-            <div class="technique-group compact">
-                <h3 class="subsection-title">Technique</h3>
-                <div class="technique-pills" id="techniqueOptions">
-                    <button class="technique-pill active" data-technique="embroidery">
-                        <span class="pill-icon" aria-hidden="true"></span>
-                        <span class="pill-name">Embroidery</span>
-                    </button>
-                    <button class="technique-pill" data-technique="dtg">
-                        <span class="pill-icon" aria-hidden="true"></span>
-                        <span class="pill-name">DTG Print</span>
-                    </button>
-                    <button class="technique-pill" data-technique="screen">
-                        <span class="pill-icon" aria-hidden="true"></span>
-                        <span class="pill-name">Screen Printing</span>
-                    </button>
-                    <button class="technique-pill" data-technique="dtf">
-                        <span class="pill-icon" aria-hidden="true"></span>
-                        <span class="pill-name">DTF</span>
-                    </button>
-                    <button class="technique-pill" data-technique="vinyl">
-                        <span class="pill-icon" aria-hidden="true"></span>
-                        <span class="pill-name">Vinyl Print</span>
-                    </button>
-                </div>
-            </div>
-
             <!-- Position Selection - Full Cards -->
             <div class="position-group">
                 <h3 class="subsection-title">Position(s)</h3>
@@ -364,7 +498,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png" alt="Left Chest">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Left Chest">
                             <div class="logo-overlay-box left-chest" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -410,7 +544,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg" alt="Right Chest">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Right Chest">
                             <div class="logo-overlay-box right-chest" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -456,7 +590,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Front Center">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Front Center">
                             <div class="logo-overlay-box front-center" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -502,7 +636,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Large Front">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Large Front">
                             <div class="logo-overlay-box large-front" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -548,7 +682,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png" alt="Large Back">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Large Back">
                             <div class="logo-overlay-box large-back" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -594,7 +728,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Left Arm">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Left Arm">
                             <div class="logo-overlay-box left-sleeve" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -640,7 +774,7 @@
                             </div>
                         </div>
                         <div class="position-preview">
-                            <img class="position-placeholder" src="https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png" alt="Right Arm" style="transform: scaleX(-1);">
+                                <img class="position-placeholder" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Right Arm" style="transform: scaleX(-1);">
                             <div class="logo-overlay-box right-sleeve" hidden>
                                 <img class="logo-overlay-img" src="" alt="">
                             </div>
@@ -760,14 +894,22 @@
             
             <p class="summary-note">Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.</p>
             
-            <!-- Submit Quote Button -->
-            <button class="submit-quote-btn" id="submitQuoteBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 2L11 13"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
-                </svg>
-                Submit your QUOTE
-            </button>
+            <!-- Quote Action Buttons -->
+            <div class="quote-action-buttons">
+                <button class="continue-shopping-btn" id="continueShoppingBtn" onclick="window.location.href='shop-mobile.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Continue Shopping
+                </button>
+                <button class="submit-quote-btn" id="submitQuoteBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    Submit your QUOTE
+                </button>
+            </div>
         </section>
 
     </main>
@@ -991,6 +1133,12 @@
     (function() {
         'use strict';
 
+        // Prevent showing legacy placeholder mockups before real mockups are applied
+        document.body.classList.remove('positions-ready');
+        document.body.classList.add('positions-loading');
+
+        const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
         function isZipProduct(productData) {
             if (!productData) return false;
             const name = (productData.name ? String(productData.name) : '').toLowerCase();
@@ -1004,14 +1152,14 @@
         
         // Default fallback images
         const DEFAULT_POSITION_IMAGES = {
-            'left-breast': 'https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png',
-            'right-breast': 'https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg',
-            'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-            'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-            'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-            'large-back': 'https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png',
-            'left-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png',
-            'right-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png'
+            'left-breast': TRANSPARENT_PIXEL,
+            'right-breast': TRANSPARENT_PIXEL,
+            'small-centre-front': TRANSPARENT_PIXEL,
+            'large-front-center': TRANSPARENT_PIXEL,
+            'large-centre-front': TRANSPARENT_PIXEL,
+            'large-back': TRANSPARENT_PIXEL,
+            'left-arm': TRANSPARENT_PIXEL,
+            'right-arm': TRANSPARENT_PIXEL
         };
         
         // Default prices per position type
@@ -1484,6 +1632,28 @@
                         }
                     }
                 });
+                
+                // Reorder cards for aprons: Center Front, Low Right, Low Left
+                if (normalizedCategory === 'aprons') {
+                    const positionOrder = ['small-centre-front', 'right-breast', 'left-breast'];
+                    const visibleCards = Array.from(grid.querySelectorAll('.position-card')).filter(card => card.style.display !== 'none');
+                    
+                    // Sort visible cards based on desired order
+                    visibleCards.sort((a, b) => {
+                        const posA = a.dataset.position;
+                        const posB = b.dataset.position;
+                        const indexA = positionOrder.indexOf(posA);
+                        const indexB = positionOrder.indexOf(posB);
+                        // Cards not in the order list go to the end
+                        const orderA = indexA === -1 ? 999 : indexA;
+                        const orderB = indexB === -1 ? 999 : indexB;
+                        return orderA - orderB;
+                    });
+                    
+                    // Re-append cards in new order
+                    visibleCards.forEach(card => grid.appendChild(card));
+                    console.log('📦 Apron cards reordered: Center Front, Low Right, Low Left');
+                }
             });
         }
         
@@ -1533,6 +1703,9 @@
             if (productType) {
                 const mappedCategory = productTypeToCategory(productType) || 'default';
                 updatePositionCardsForCategory(mappedCategory, productData);
+
+                document.body.classList.add('positions-ready');
+                document.body.classList.remove('positions-loading');
                 return true;
             }
             
@@ -1557,6 +1730,8 @@
             } else {
                 // All attempts failed, use fallback
                 updatePositionCardsForCategory('default', null);
+                document.body.classList.add('positions-ready');
+                document.body.classList.remove('positions-loading');
             }
         }
         

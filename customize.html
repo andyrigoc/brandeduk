@@ -7,30 +7,50 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260106a">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260106a">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260106a">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260114a">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260114a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260114a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+        /* ===== SOCIAL ICONS FIX - Mobile & Tablet ===== */
+        .social-icons-container,
         .social-icons-mobile {
-            gap: 3px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 4px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        .social-icons-mobile {
             margin-left: 8px !important;
-            padding-left: 0 !important;
         }
+        .social-icons-container .social-icon,
         .social-icons-mobile .social-icon {
-            width: 27px !important;
-            height: 27px !important;
-            min-width: 27px !important;
-            min-height: 27px !important;
-            max-width: 27px !important;
-            max-height: 27px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
+            min-height: 28px !important;
             border-radius: 7px !important;
+            background: #f0f2f5 !important;
+            box-shadow: 3px 3px 6px #b5b5b5, -3px -3px 6px #ffffff !important;
+            text-decoration: none !important;
         }
+        .social-icons-container .social-icon i,
         .social-icons-mobile .social-icon i {
-            font-size: 12px !important;
+            font-size: 13px !important;
+            color: #666 !important;
         }
+        .social-icon.facebook:hover i { color: #1877f2 !important; }
+        .social-icon.instagram:hover i { color: #E1306C !important; }
+        .social-icon.linkedin:hover i { color: #0077B5 !important; }
+        .social-icon.youtube:hover i { color: #FF0000 !important; }
+        .social-icon.pinterest:hover i { color: #E60023 !important; }
 
         /* Customize (mobile): shrink back button without shifting layout,
            and keep the BrandedUK logo aligned to the left cluster. */
@@ -422,33 +442,6 @@
 
         <!-- Customization Options - Simplified -->
         <section class="customize-section customization-options">
-            <!-- Technique Selection - Compact -->
-            <div class="technique-group compact">
-                <h3 class="subsection-title">Technique</h3>
-                <div class="technique-pills" id="techniqueOptions">
-                    <button class="technique-pill active" data-technique="embroidery">
-                        <span class="pill-icon">??</span>
-                        <span class="pill-name">Embroidery</span>
-                    </button>
-                    <button class="technique-pill" data-technique="dtg">
-                        <span class="pill-icon">???</span>
-                        <span class="pill-name">DTG Print</span>
-                    </button>
-                    <button class="technique-pill" data-technique="screen">
-                        <span class="pill-icon">??</span>
-                        <span class="pill-name">Screen Printing</span>
-                    </button>
-                    <button class="technique-pill" data-technique="dtf">
-                        <span class="pill-icon">??</span>
-                        <span class="pill-name">DTF</span>
-                    </button>
-                    <button class="technique-pill" data-technique="vinyl">
-                        <span class="pill-icon">??</span>
-                        <span class="pill-name">Vinyl Print</span>
-                    </button>
-                </div>
-            </div>
-
             <!-- Position Selection - Full Cards -->
             <div class="position-group">
                 <h3 class="subsection-title">Position(s)</h3>
