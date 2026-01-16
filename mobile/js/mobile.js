@@ -789,7 +789,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (banners.length === 0 || dots.length === 0) return;
     
     let currentBanner = 0;
-    let autoSlideInterval;
+    let autoSlideTimeout;
+
+    function getBannerDurationMs(index) {
+        const raw = banners[index]?.getAttribute('data-duration');
+        const ms = Number(raw);
+        return Number.isFinite(ms) && ms > 0 ? ms : 12000;
+    }
     
     function showBanner(index) {
         // Hide all banners
@@ -808,11 +814,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function startAutoSlide() {
-        autoSlideInterval = setInterval(nextBanner, 12000); // 12 seconds
+        stopAutoSlide();
+        autoSlideTimeout = setTimeout(() => {
+            nextBanner();
+            startAutoSlide();
+        }, getBannerDurationMs(currentBanner));
     }
     
     function stopAutoSlide() {
-        clearInterval(autoSlideInterval);
+        clearTimeout(autoSlideTimeout);
+        autoSlideTimeout = undefined;
     }
     
     // Dot click handlers
@@ -825,6 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Start auto slide
+    showBanner(currentBanner);
     startAutoSlide();
     
     // Swipe support

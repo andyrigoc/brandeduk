@@ -193,6 +193,46 @@
   letter-spacing: 0.5px;
 }
 
+/* Hoodies panel: make text white */
+.hero-el[data-category="hoodies"] .hero-el__text {
+  color: #fff;
+}
+
+/* Beanies panel: make text white */
+.hero-el[data-category="beanies"] .hero-el__text {
+  color: #fff;
+}
+
+/* Hi-Viz panel: make text white */
+.hero-el[data-category="hi-viz"] .hero-el__text {
+  color: #fff;
+}
+
+/* Polo panel: make text white */
+.hero-el[data-category="polo"] .hero-el__text {
+  color: #fff;
+}
+
+/* Jackets panel: make text white */
+.hero-el[data-category="jackets"] .hero-el__text {
+  color: #fff;
+}
+
+/* T-Shirts panel: make text white */
+.hero-el[data-category="tshirts"] .hero-el__text {
+  color: #fff;
+}
+
+/* Work Trousers panel: make text white */
+.hero-el[data-category="trousers"] .hero-el__text {
+  color: #fff;
+}
+
+/* Sustainable panel: make text white */
+.hero-el[data-category="sustainable"] .hero-el__text {
+  color: #fff;
+}
+
 .hero-el__cta {
   display: inline-block;
   margin-top: 12px;
@@ -286,6 +326,22 @@
   background-position: calc(50% + 140px) center;
 }
 
+/* Sustainable panel (expanded): move image 5px down */
+.hero-el[data-category="sustainable"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 5px);
+}
+
+/* Apron panel (expanded): shift image 70px left */
+.hero-el:nth-child(1).s--active .hero-el__bg:before {
+  background-position: calc(50% + 55px) center;
+}
+
+/* Apron panel (expanded): close X should be black */
+.hero-el:nth-child(1).s--active .hero-el__close-btn:before,
+.hero-el:nth-child(1).s--active .hero-el__close-btn:after {
+  background: #000;
+}
+
 .hero-el:nth-child(2) {
   left: calc(20% + 4px);
   transform: translate3d(0, 0, 0);
@@ -302,6 +358,11 @@
 /* Hoodie panel: shift image right in non-expanded state only */
 .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
   background-position: calc(50% + 145px) center;
+}
+
+/* Hoodie panel: when expanded, shift image 30px right */
+.hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+  background-position: calc(50% + 30px) calc(50% + 12px);
 }
 
 /* Tablet (incl. 1024px): when expanded, shift image down ~20px to show more face */
@@ -324,6 +385,11 @@
   background-position: center center;
 }
 
+/* Beanies panel (expanded): move image 20px down */
+.hero-el[data-category="beanies"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 40px);
+}
+
 .hero-el:nth-child(4) {
   left: calc(60% + 12px);
   transform: translate3d(0, 0, 0);
@@ -335,6 +401,11 @@
   transition-delay: 0.21s;
   background-image: url('../../hero/images/Hi-Viz.jpg');
   background-position: center center;
+}
+
+/* Hi-Viz panel: shift image 10px right in non-expanded state */
+.hero-el[data-category="hi-viz"]:not(.s--active) .hero-el__bg:before {
+  background-position: calc(50% + 20px) center;
 }
 
 .hero-el:nth-child(5) {
@@ -350,6 +421,11 @@
   background-position: center center;
 }
 
+/* Polo panel (expanded): move image 20px down */
+.hero-el[data-category="polo"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 20px);
+}
+
 .hero-el:nth-child(6) {
   left: calc(100% + 20px);
   transform: translate3d(0, 0, 0);
@@ -361,6 +437,11 @@
   transition-delay: 0.35s;
   background-image: url('../../hero/images/Jacket.jpeg');
   background-position: center center;
+}
+
+/* Jackets panel (expanded): move image 25px down */
+.hero-el[data-category="jackets"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 38px);
 }
 
 .hero-el:nth-child(7) {
@@ -376,6 +457,11 @@
   background-position: center center;
 }
 
+/* T-Shirts panel (expanded): move image 10px down */
+.hero-el[data-category="tshirts"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 10px);
+}
+
 .hero-el:nth-child(8) {
   left: calc(140% + 28px);
   transform: translate3d(0, 0, 0);
@@ -387,6 +473,11 @@
   transition-delay: 0.49s;
   background-image: url('../../hero/images/WorkTrousers.jpg');
   background-position: center center;
+}
+
+/* Work Trousers panel (expanded): move image 30px down */
+.hero-el[data-category="trousers"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 60px);
 }
 
 .hero-el:nth-child(9) {

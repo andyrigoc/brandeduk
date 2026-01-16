@@ -753,16 +753,23 @@
         <!-- Hero Banners Carousel (Separate section with dots) -->
         <div class="hero-banners-wrapper">
             <div class="hero-banners-container">
-                <!-- Banner 1 - Get in Touch Neon -->
-                <div class="hero-banner hero-banner--active" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
+                <!-- Banner 1 - Branded Bouncing (20s) -->
+                <div class="hero-banner hero-banner--active" id="heroBanner1" data-duration="20000">
+                    <div class="hero-bounce-container">
+                        <div class="hero-bounce-headline" data-bounce-text>branded</div>
+                    </div>
+                </div>
+
+                <!-- Banner 2 - Get in Touch Neon (15s) -->
+                <div class="hero-banner" id="heroBanner2" data-duration="15000" onclick="openContactPopup()" style="cursor: pointer;">
                     <div class="neon-container">
                         <div class="neon-text">GET IN</div>
                         <div class="flux-text">TOUCH</div>
                     </div>
                 </div>
 
-                <!-- Banner 2 - Text Animation -->
-                <div class="hero-banner" id="heroBanner2">
+                <!-- Banner 3 - Text Animation (10s) -->
+                <div class="hero-banner" id="heroBanner3" data-duration="10000">
                     <div class="hero-text-container">
                         <div class="hero-text-make">MAKE</div>
                         <div class="hero-flip-wrapper">
@@ -771,13 +778,6 @@
                             <div class="hero-flip-word flip-everything">EVERYTHING</div>
                         </div>
                         <div class="hero-text-awesome">AWESOME!</div>
-                    </div>
-                </div>
-
-                <!-- Banner 3 - Branded Bouncing -->
-                <div class="hero-banner" id="heroBanner3">
-                    <div class="hero-bounce-container">
-                        <div class="hero-bounce-headline" data-bounce-text>branded</div>
                     </div>
                 </div>
             </div>
