@@ -405,16 +405,16 @@ function addToQuote() {
         .map(([size, qty]) => ({ size, qty }));
     
     const entry = {
-        code: 'GD067',
-        name: 'Gildan Softstyle Hoodie',
+        code: currentProduct?.code || '',
+        name: currentProduct?.name || '',
         color: selectedColor[0],
         colorImage: selectedColor[1],
         sizes: activeSizes,
         totalQuantity: total,
         logos: uploadedLogos,
         customText: customText,
-        unitPrice: 17.58,
-        totalPrice: (total * 17.58).toFixed(2)
+        unitPrice: currentProduct?.price || 0,
+        totalPrice: (total * (currentProduct?.price || 0)).toFixed(2)
     };
     
     quoteBasket.push(entry);

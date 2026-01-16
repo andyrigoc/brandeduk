@@ -48,6 +48,7 @@
     justify-content: center;
     align-items: center;
     text-decoration: none;
+    background: var(--social-bg-color);
     border-radius: var(--social-border-radius);
     box-shadow: 
         5px 5px 10px var(--social-shadow-dark),

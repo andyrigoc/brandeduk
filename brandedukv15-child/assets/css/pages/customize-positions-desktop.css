@@ -304,6 +304,23 @@
     object-fit: contain;
 }
 
+/* Aprons - 20% larger images */
+body.category-aprons .position-placeholder,
+body.category-apron .position-placeholder,
+.positions-grid.aprons-grid .position-placeholder {
+    max-height: 264px; /* 220px + 20% */
+    transform: scale(1.2);
+    transform-origin: center center;
+}
+
+/* Aprons - ensure Center Front scales even if labels change */
+body.category-aprons .position-card[data-position="small-centre-front"] .position-placeholder,
+body.category-apron .position-card[data-position="small-centre-front"] .position-placeholder {
+    max-height: 264px;
+    transform: scale(1.2);
+    transform-origin: center center;
+}
+
 .logo-overlay-box {
     position: absolute;
     display: none;

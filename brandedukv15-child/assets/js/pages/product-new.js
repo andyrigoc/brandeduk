@@ -2,50 +2,13 @@
    PRODUCT DETAIL - COMPLETE REWRITE
    =================================== */
 
-const PRODUCT_CODE = "GD067";
-const PRODUCT_NAME = "Gildan Softstyle midweight fleece adult hoodie";
-const BASE_PRICE = 17.58;
+// Product data loaded dynamically from API
+let PRODUCT_CODE = "";
+let PRODUCT_NAME = "";
+let BASE_PRICE = 0;
 
-// ALL 37 COLORS
-const colors = [
-    ["Aquatic", "https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg"],
-    ["Ash Grey", "https://i.postimg.cc/fbC2Zn4t/GD067-Ash-Grey-FT.jpg"],
-    ["Black", "https://i.postimg.cc/R0ds95rf/GD067-Black-FT.jpg"],
-    ["Blue Dusk", "https://i.postimg.cc/QMm4sGLJ/GD067-Blue-Dusk-FT.jpg"],
-    ["Brown Savana", "https://i.postimg.cc/wvBWjfHL/GD067-Brown-Savana-FT.jpg"],
-    ["Cardinal Red", "https://i.postimg.cc/SsKZxTqV/GD067-Cardinal-Red-FT.jpg"],
-    ["Carolina Blue", "https://i.postimg.cc/V6N7kG1D/GD067-Carolina-Blue-FT.jpg"],
-    ["Cement", "https://i.postimg.cc/fLbHR2Z2/GD067-Cement-FT.jpg"],
-    ["Charcoal", "https://i.postimg.cc/4d38xLZF/GD067-Charcoal-FT.jpg"],
-    ["Cobalt", "https://i.postimg.cc/sX2ng6yL/GD067-Cobalt-FT.jpg"],
-    ["Cocoa", "https://i.postimg.cc/d10WVHvb/GD067-Cocoa-FT.jpg"],
-    ["Daisy", "https://i.postimg.cc/1tzW3Cs1/GD067-Daisy-FT.jpg"],
-    ["Dark Heather", "https://i.postimg.cc/j5kMwHdk/GD067-Dark-Heather-FT.jpg"],
-    ["Dusty Rose", "https://i.postimg.cc/fLg8tcTP/GD067-Dusty-Rose-FT.jpg"],
-    ["Forest Green", "https://i.postimg.cc/FRnTdys8/GD067-Forest-Green-FT.jpg"],
-    ["Light Pink", "https://i.postimg.cc/G2SX8FhW/GD067-Light-Pink-FT.jpg"],
-    ["Maroon", "https://i.postimg.cc/zBPxbCG1/GD067-Maroon-FT.jpg"],
-    ["Military Green", "https://i.postimg.cc/TwHtLV3f/GD067-Military-Green-FT.jpg"],
-    ["Mustard", "https://i.postimg.cc/MTr9M7pZ/GD067-Mustard-FT.jpg"],
-    ["Navy", "https://i.postimg.cc/MTr9M7pp/GD067-Navy-FT.jpg"],
-    ["Off-White", "https://i.postimg.cc/nzw3j4hz/GD067-Off-White-FT.jpg"],
-    ["Paragon", "https://i.postimg.cc/j5kMwHSL/GD067-Paragon-FT.jpg"],
-    ["Pink Lemonade", "https://i.postimg.cc/zBPxbCGy/GD067-Pink-Lemonade-FT.jpg"],
-    ["Pistachio", "https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg"],
-    ["Purple", "https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg"],
-    ["Red", "https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg"],
-    ["Sport Grey", "https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg"],
-    ["Royal", "https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg"],
-    ["Sage", "https://i.postimg.cc/tgpSLRcy/GD067-Sage-FT.jpg"],
-    ["Sand", "https://i.postimg.cc/Bv4YdZz3/GD067-Sand-FT.jpg"],
-    ["Sky", "https://i.postimg.cc/YSMnJ2Pc/GD067-Sky-FT.jpg"],
-    ["Smoke", "https://i.postimg.cc/Xv4HTNPb/GD067-Smoke-FT.jpg"],
-    ["Stone Blue", "https://i.postimg.cc/g0mSfc72/GD067-Stone-Blue-FT.jpg"],
-    ["Tangerine", "https://i.postimg.cc/25GcmRpr/GD067-Tangerine-FT.jpg"],
-    ["Texas Orange", "https://i.postimg.cc/TP07GM8x/GD067-Texas-Orange-FT.jpg"],
-    ["White", "https://i.postimg.cc/1zBCPhxQ/GD067-White-FT.jpg"],
-    ["Yellow Haze", "https://i.postimg.cc/W48WjLRN/GD067-Yellow-Haze-FT.jpg"]
-];
+// Colors loaded dynamically from API
+let colors = [];
 
 const DISCOUNTS = [
     { min: 1,   max: 9,     price: BASE_PRICE, save: 0  },

@@ -48,10 +48,27 @@
       // Here you would send the form data to your server
       console.log('Form submitted:', { name, email, message });
       
-      // Show success feedback
-      alert('Thanks for your message! We\'ll get back to you soon.');
-      closePopup();
-      form.reset();
+      // Show success feedback - change button to green "Submitted"
+      var submitBtn = form.querySelector('.popup-contact__submit');
+      if (submitBtn) {
+        submitBtn.textContent = 'Submitted';
+        submitBtn.style.backgroundColor = '#22c55e';
+        submitBtn.style.cursor = 'default';
+        submitBtn.disabled = true;
+      }
+      
+      // Reset after delay and close popup
+      setTimeout(function() {
+        closePopup();
+        form.reset();
+        // Reset button state
+        if (submitBtn) {
+          submitBtn.textContent = 'Submit';
+          submitBtn.style.backgroundColor = '#000';
+          submitBtn.style.cursor = 'pointer';
+          submitBtn.disabled = false;
+        }
+      }, 2000);
     });
   }
 })();

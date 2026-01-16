@@ -1,0 +1,46 @@
+{
+  "backend": {
+    "baseUrl": "https://brandeduk-backend.onrender.com",
+    "endpoints": [
+      {"method": "GET", "path": "/health", "usedBy": ["BrandedAPI.healthCheck"], "purpose": "Backend health check"},
+
+      {"method": "GET", "path": "/api/products", "usedBy": ["BrandedAPI.getProducts", "BrandedAPI.getFilterCounts"], "purpose": "List/search products with filters"},
+      {"method": "GET", "path": "/api/products/{code}", "usedBy": ["BrandedAPI.getProductByCode", "pages/product.js"], "purpose": "Fetch a single product"},
+      {"method": "GET", "path": "/api/products/{code}/related", "usedBy": ["BrandedAPI.getRelatedProducts"], "purpose": "Fetch related products"},
+      {"method": "GET", "path": "/api/products/types", "usedBy": ["BrandedAPI.getProductTypes"], "purpose": "Fetch product types (with counts)"},
+
+      {"method": "GET", "path": "/api/filters/price-range", "usedBy": ["BrandedAPI.getPriceRange"], "purpose": "Min/max price range"},
+      {"method": "GET", "path": "/api/filters/genders", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Gender filter options"},
+      {"method": "GET", "path": "/api/filters/age-groups", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Age group filter options"},
+      {"method": "GET", "path": "/api/filters/sleeves", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Sleeve filter options"},
+      {"method": "GET", "path": "/api/filters/necklines", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Neckline filter options"},
+      {"method": "GET", "path": "/api/filters/fabrics", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Fabric filter options"},
+      {"method": "GET", "path": "/api/filters/sizes", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Size filter options"},
+      {"method": "GET", "path": "/api/filters/primary-colors", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Primary color filter options"},
+      {"method": "GET", "path": "/api/filters/styles", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Style filter options"},
+      {"method": "GET", "path": "/api/filters/tags", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Tag filter options"},
+      {"method": "GET", "path": "/api/filters/weights", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Weight filter options"},
+      {"method": "GET", "path": "/api/filters/fits", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Fit filter options"},
+      {"method": "GET", "path": "/api/filters/sectors", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Sector filter options"},
+      {"method": "GET", "path": "/api/filters/sports", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Sport filter options"},
+      {"method": "GET", "path": "/api/filters/effects", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Effect filter options"},
+      {"method": "GET", "path": "/api/filters/accreditations", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Accreditation filter options"},
+      {"method": "GET", "path": "/api/filters/colour-shades", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Colour shade filter options"},
+      {"method": "GET", "path": "/api/filters/brands", "usedBy": ["BrandedAPI.getAllFilterOptions"], "purpose": "Brand filter options"},
+
+      {"method": "GET", "path": "/api/filters/product-types", "usedBy": ["brandeduk.com/js/product-types-menu.js"], "purpose": "Legacy product types for mega menu"},
+
+      {"method": "POST", "path": "/api/quotes", "usedBy": ["BrandedAPI.submitQuote", "mobile/js/customize.js", "customize-positions-inline.js"], "purpose": "Submit quote request"}
+    ]
+  },
+  "theme": {
+    "endpoints": [
+      {"method": "POST", "path": "/brandedukv15-child/includes/send-quote.php", "usedBy": ["pages/customize-positions.js"], "purpose": "Send quote via PHP mail (WordPress/theme)"}
+    ]
+  },
+  "vercel": {
+    "endpoints": [
+      {"method": "POST", "path": "/api/upload-logo", "usedBy": ["customize-positions-inline.js"], "purpose": "Logo upload/processing (currently returns data URL)"}
+    ]
+  }
+}

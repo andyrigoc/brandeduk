@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BrandedUK Mobile - Customize Page JavaScript
  * TapStitch-inspired interactions
  */
@@ -68,8 +68,286 @@
     };
 
     // === API ===
-    // Minimal API base used by desktop product.js — reuse here for mobile fetches
+    // Minimal API base used by desktop product.js � reuse here for mobile fetches
     const API_BASE_URL = 'https://brandeduk-backend.onrender.com/api';
+
+    // === DYNAMIC POSITION MAPPING SYSTEM ===
+    
+    // Default fallback images (hoodie images)
+    const DEFAULT_POSITION_IMAGES = {
+        'left-breast': 'https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png',
+        'right-breast': 'https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg',
+        'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
+        'large-back': 'https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png',
+        'left-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png',
+        'right-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png'
+    };
+    
+    // Default prices per position type
+    const DEFAULT_POSITION_PRICES = {
+        'left-breast': { embroidery: '5.00', print: '3.50' },
+        'right-breast': { embroidery: '5.00', print: '3.50' },
+        'small-centre-front': { embroidery: '5.00', print: '3.50' },
+        'large-front-center': { embroidery: 'POA', print: '6.00' },
+        'large-centre-front': { embroidery: 'POA', print: '6.00' },
+        'large-back': { embroidery: 'POA', print: '5.00' },
+        'left-arm': { embroidery: '5.00', print: '3.50' },
+        'right-arm': { embroidery: '5.00', print: '3.50' }
+    };
+    
+    // Position code to CSS class mapping
+    const POSITION_TO_CSS_CLASS = {
+        'left-breast': 'left-chest',
+        'right-breast': 'right-chest',
+        'small-centre-front': 'front-center',
+        'large-front-center': 'large-front',
+        'large-centre-front': 'large-front',
+        'large-back': 'large-back',
+        'left-arm': 'left-sleeve',
+        'right-arm': 'right-sleeve'
+    };
+    
+    // ProductType → Folder Path Mapping
+    const PRODUCT_TYPE_TO_FOLDER = {
+        'Aprons': 'aprons/bib-apron',
+        'Safety Vests': 'adult-tops/hivis-jacket',
+        'Hoodies': 'adult-tops/hoodies',
+        'Sweatshirts': 'adult-tops/hoodies',
+        'Polos': 'adult-tops/long-sleeve-polo',
+        'T-shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Jackets': 'adult-tops/soft-shell-jacket',
+        'Softshells': 'adult-tops/soft-shell-jacket',
+        'Caps': 'headwear/baseball-cap',
+        'Beanies': 'headwear/beanie',
+        'Trousers': 'pants/workwear-long-trousers',
+        'Shorts': 'pants/workwear-shorts',
+        'Bags': 'bags/gym-bag',
+        'Fleece': 'adult-tops/hoodies',
+        'Gilets & Body Warmers': 'adult-tops/soft-shell-jacket',
+        'Knitted Jumpers': 'adult-tops/hoodies',
+        'Cardigans': 'adult-tops/hoodies',
+        'Blouses': 'adult-tops/short-sleeve-crew-neck',
+        'Rugby Shirts': 'adult-tops/short-sleeve-crew-neck',
+        'Chinos': 'pants/workwear-long-trousers',
+        'Sweatpants': 'pants/workwear-shorts',
+        'Trackwear': 'adult-tops/short-sleeve-crew-neck'
+    };
+    
+    // Filename → Position Code Mapping
+    const FILENAME_TO_POSITION = {
+        // Aprons
+        'center-front.png': { code: 'small-centre-front', label: 'Center Front', cssClass: 'front-center' },
+        'low-left.png': { code: 'left-breast', label: 'Low Left', cssClass: 'apron-low-left' },
+        'low-right.png': { code: 'right-breast', label: 'Low Right', cssClass: 'apron-low-right' },
+        
+        // Adult Tops
+        'front.png': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+        'front.jpg': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+        'front-right.png': { code: 'right-breast', label: 'Front Right', cssClass: 'right-chest' },
+        'back.png': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+        'back.jpg': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+        'left-chest.png': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+        'left-chest.jpg': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+        'right-chest.png': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+        'right-chest.jpg': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+        'left-sleeve.png': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+        'left-sleeve.jpg': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+        'right-sleeve.png': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+        'right-sleeve.jpg': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+        
+        // Headwear
+        'front-logo.png': { code: 'small-centre-front', label: 'Front Centre', cssClass: 'front-center' },
+        'left-side.jpg': { code: 'left-breast', label: 'Left Side', cssClass: 'left-chest' },
+        'right-side.jpg': { code: 'right-breast', label: 'Right Side', cssClass: 'right-chest' },
+        
+        // Bags
+        'Gym Bag Centered.png': { code: 'small-centre-front', label: 'Centered', cssClass: 'front-center' },
+        'Gym Bag Left.png': { code: 'left-breast', label: 'Left', cssClass: 'left-chest' },
+        'Gym Bag Right.png': { code: 'right-breast', label: 'Right', cssClass: 'right-chest' },
+        'Gym Bag Side.png': { code: 'large-back', label: 'Side', cssClass: 'large-back' },
+        
+        // Pants
+        'Blank Work Trouser.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' },
+        'Blank Work short.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' }
+    };
+    
+    // Folder Image Inventory
+    const FOLDER_IMAGE_MAP = {
+        'aprons/bib-apron': ['center-front.png', 'low-left.png', 'low-right.png'],
+        'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
+        'adult-tops/hoodies': ['back.jpg', 'front.jpg', 'left-chest.jpg', 'left-sleeve.jpg', 'right-chest.jpg', 'right-sleeve.jpg'],
+        'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
+        'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
+        'headwear/beanie': ['front-logo.png'],
+        'pants/workwear-long-trousers': ['Blank Work Trouser.png'],
+        'pants/workwear-shorts': ['Blank Work short.png'],
+        'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
+    };
+    
+    // Build positions dynamically from productType
+    function buildPositionsFromProductType(productType) {
+        if (!productType) {
+            console.warn('⚠️ No productType provided, using default');
+            return null;
+        }
+        
+        const productTypeStr = String(productType).trim();
+        const folderPath = PRODUCT_TYPE_TO_FOLDER[productTypeStr];
+        if (!folderPath) {
+            console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}", using default`);
+            return null;
+        }
+        
+        const imageFiles = FOLDER_IMAGE_MAP[folderPath];
+        if (!imageFiles || imageFiles.length === 0) {
+            console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+            return null;
+        }
+        
+        const basePath = `brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+        const positions = {};
+        
+        imageFiles.forEach(filename => {
+            const positionInfo = FILENAME_TO_POSITION[filename];
+            if (positionInfo) {
+                const positionCode = positionInfo.code;
+                const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                
+                positions[positionCode] = {
+                    label: positionInfo.label,
+                    image: `${basePath}/${filename}`,
+                    embroidery: prices.embroidery,
+                    print: prices.print,
+                    cssClass: positionInfo.cssClass
+                };
+            } else {
+                console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+            }
+        });
+        
+        if (Object.keys(positions).length === 0) {
+            console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+            return null;
+        }
+        
+        const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
+        const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
+        
+        console.log(`✅ Built positions from productType "${productTypeStr}":`, Object.keys(positions));
+        console.log(`🙈 Will hide positions:`, hidePositions);
+        
+        return {
+            imagePath: basePath,
+            positions: positions,
+            hidePositions: hidePositions
+        };
+    }
+    
+    // Update position cards based on product type
+    function updatePositionCardsForProductType(productData) {
+        if (!productData) {
+            console.warn('⚠️ No product data for position update');
+            return;
+        }
+        
+        const productType = productData.productType || productData.category || productData.type;
+        console.log('🎯 Updating position cards for productType:', productType);
+        
+        // Try to build positions dynamically from productType
+        const config = buildPositionsFromProductType(productType);
+        
+        if (!config) {
+            console.log('📌 Using default position images (no dynamic config available)');
+            return; // Keep default hoodie images
+        }
+        
+        const positionGrids = document.querySelectorAll('#positionOptions, .positions-grid');
+        
+        positionGrids.forEach(grid => {
+            const allCards = grid.querySelectorAll('.position-card');
+            
+            allCards.forEach(card => {
+                const position = card.dataset.position;
+                
+                // Hide positions not available for this product type
+                if (config.hidePositions && config.hidePositions.includes(position)) {
+                    card.style.display = 'none';
+                    return;
+                }
+                
+                const positionConfig = config.positions[position];
+                if (positionConfig) {
+                    card.style.display = '';
+                    
+                    // Update the image
+                    const img = card.querySelector('.position-placeholder');
+                    if (img && positionConfig.image) {
+                        const newSrc = positionConfig.image;
+                        img.src = newSrc;
+                        img.alt = positionConfig.label;
+                        
+                        // Handle image load error - fallback to default
+                        img.onerror = function() {
+                            const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                            if (defaultImg) {
+                                img.src = defaultImg;
+                                img.alt = positionConfig.label || position;
+                            }
+                        };
+                    }
+                    
+                    // Update logo overlay CSS class for aprons
+                    const logoOverlay = card.querySelector('.logo-overlay-box');
+                    if (logoOverlay && positionConfig.cssClass) {
+                        const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                        allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                        logoOverlay.classList.add(positionConfig.cssClass);
+                    }
+                    
+                    // Update label
+                    if (positionConfig.label) {
+                        const labelSpan = card.querySelector('.position-checkbox span');
+                        if (labelSpan) {
+                            labelSpan.textContent = positionConfig.label;
+                        }
+                    }
+                    
+                    // Update prices if different
+                    if (positionConfig.embroidery) {
+                        card.dataset.embroidery = positionConfig.embroidery;
+                        const embBtn = card.querySelector('.price-emb');
+                        if (embBtn) {
+                            const isPOA = String(positionConfig.embroidery).toUpperCase() === 'POA';
+                            const value = isPOA ? 'POA' : ('£' + positionConfig.embroidery);
+                            embBtn.setAttribute('data-default-price', value);
+                            const valueEl = embBtn.querySelector('.price-value');
+                            if (valueEl) valueEl.textContent = value;
+                        }
+                    }
+                    if (positionConfig.print) {
+                        card.dataset.print = positionConfig.print;
+                        const printBtn = card.querySelector('.price-print');
+                        if (printBtn) {
+                            const value = '£' + positionConfig.print;
+                            printBtn.setAttribute('data-default-price', value);
+                            const valueEl = printBtn.querySelector('.price-value');
+                            if (valueEl) valueEl.textContent = value;
+                        }
+                    }
+                } else {
+                    // Show with default image if not in hide list
+                    card.style.display = '';
+                }
+            });
+        });
+        
+        console.log('✅ Position cards updated for productType:', productType);
+    }
 
     // === State ===
     const state = {
@@ -128,7 +406,7 @@
                 technique: state.technique
             };
             sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(stateToSave));
-            console.log('💾 Saved customization state to sessionStorage:', stateToSave);
+            console.log('?? Saved customization state to sessionStorage:', stateToSave);
         } catch (e) {
             console.warn('Unable to save customization state:', e);
         }
@@ -139,12 +417,12 @@
         try {
             const saved = sessionStorage.getItem(STATE_STORAGE_KEY);
             if (!saved) {
-                console.log('📭 No saved customization state found');
+                console.log('?? No saved customization state found');
                 return false;
             }
             
             const savedState = JSON.parse(saved);
-            console.log('📬 Restoring customization state:', savedState);
+            console.log('?? Restoring customization state:', savedState);
             
             // Restore state properties
             if (savedState.positionMethods) state.positionMethods = savedState.positionMethods;
@@ -162,9 +440,9 @@
                     state.selectedColor = matchingColor.id;
                     state.selectedColorName = matchingColor.name;
                     state.selectedColorImage = matchingColor.image;
-                    console.log('✅ Restored color from saved state:', matchingColor.name);
+                    console.log('? Restored color from saved state:', matchingColor.name);
                 } else {
-                    console.log('⚠️ Saved color not found in current product, will use first color');
+                    console.log('?? Saved color not found in current product, will use first color');
                 }
             }
             // Note: selectedColorImage is NOT restored here - it's set from new product data
@@ -182,13 +460,13 @@
 
     // === Restore UI from State (call after DOM is ready) ===
     function restoreUIFromState() {
-        console.log('🔄 Restoring UI from state...');
-        console.log('🔄 state.positionMethods:', JSON.stringify(state.positionMethods));
-        console.log('🔄 state.positionDesigns:', JSON.stringify(state.positionDesigns));
+        console.log('?? Restoring UI from state...');
+        console.log('?? state.positionMethods:', JSON.stringify(state.positionMethods));
+        console.log('?? state.positionDesigns:', JSON.stringify(state.positionDesigns));
         
         // Restore position methods UI
         if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-            console.log('🔄 Found', Object.keys(state.positionMethods).length, 'positions to restore');
+            console.log('?? Found', Object.keys(state.positionMethods).length, 'positions to restore');
             Object.entries(state.positionMethods).forEach(([position, method]) => {
                 const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
                 if (card) {
@@ -201,7 +479,7 @@
                     // Apply method UI
                     applyMethodUI(card, method);
                     
-                    console.log('✅ Restored position:', position, 'with method:', method);
+                    console.log('? Restored position:', position, 'with method:', method);
                 }
             });
         }
@@ -241,7 +519,7 @@
                         }
                     }
                     
-                    console.log('✅ Restored design for position:', position);
+                    console.log('? Restored design for position:', position);
                 }
             });
         }
@@ -263,7 +541,7 @@
         updatePricingTiers();
         updatePricingSummary();
         
-        console.log('✅ UI restoration complete');
+        console.log('? UI restoration complete');
     }
 
     // === HELPERS: load product from sessionStorage or API ===
@@ -288,13 +566,13 @@
                     
                     // Verify the saved product matches the requested product code
                     if (requestedCode && savedCode && savedCode !== requestedCode) {
-                        console.warn('⚠️ Product code mismatch! Saved:', savedCode, 'Requested:', requestedCode);
-                        console.warn('⚠️ Clearing cached data and fetching fresh...');
+                        console.warn('?? Product code mismatch! Saved:', savedCode, 'Requested:', requestedCode);
+                        console.warn('?? Clearing cached data and fetching fresh...');
                         productData = null; // Clear mismatched data
                         sessionStorage.removeItem('selectedProductData'); // Remove stale cache
                     } else {
-                        console.log('✅ Loaded product data from sessionStorage:', savedCode || productData);
-                        console.log('📦 Product colors count:', (productData.colors || []).length);
+                        console.log('? Loaded product data from sessionStorage:', savedCode || productData);
+                        console.log('?? Product colors count:', (productData.colors || []).length);
                     }
                 } catch (e) {
                     console.warn('Failed to parse selectedProductData from sessionStorage', e);
@@ -308,8 +586,8 @@
                     const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(savedProductCode)}`);
                     if (res.ok) {
                         productData = await res.json();
-                        console.log('✅ Fetched product from API:', productData.code || savedProductCode);
-                        console.log('📦 Product colors count:', (productData.colors || []).length);
+                        console.log('? Fetched product from API:', productData.code || savedProductCode);
+                        console.log('?? Product colors count:', (productData.colors || []).length);
                         // cache for next time
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
@@ -321,8 +599,8 @@
             }
 
             if (!productData) {
-                // No product data available — leave default state (fallback product)
-                console.warn('⚠️ No product data available, using fallback');
+                // No product data available � leave default state (fallback product)
+                console.warn('?? No product data available, using fallback');
                 return false;
             }
 
@@ -335,7 +613,7 @@
             state.selectedColor = null;
             state.selectedColorName = null;
             state.selectedColorImage = null;
-            console.log('🧹 Cleared old color selection to prevent showing previous product image');
+            console.log('?? Cleared old color selection to prevent showing previous product image');
 
             // Map productData into our state
             state.product = state.product || {};
@@ -352,14 +630,14 @@
             // Map colors (if present) into PRODUCT_COLORS format
             const colorsSource = productData.colors || productData.colorOptions || productData.variants || [];
             if (Array.isArray(colorsSource) && colorsSource.length > 0) {
-                console.log('🎨 Mapping', colorsSource.length, 'colors from product data...');
+                console.log('?? Mapping', colorsSource.length, 'colors from product data...');
                 PRODUCT_COLORS = colorsSource.map((c, index) => {
                     const name = c.name || c.displayName || c.label || c.id || `Color ${index + 1}`;
                     // Prioritize main image, then thumb, then fallback to product image
                     const colorImage = c.main || c.image || c.thumb || c.imageUrl || c.url || productData.image || '';
                     const colorThumb = c.thumb || c.thumbnail || c.main || c.image || colorImage;
                     
-                    console.log(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '✅' : '❌'}`);
+                    console.log(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '?' : '?'}`);
                     
                     return {
                         id: slugify(name) || slugify(c.code || c.id || name) || `color-${index}`,
@@ -369,7 +647,7 @@
                         thumb: colorThumb // Store thumb separately for thumbnails
                     };
                 });
-                console.log('✅ PRODUCT_COLORS updated with', PRODUCT_COLORS.length, 'colors');
+                console.log('? PRODUCT_COLORS updated with', PRODUCT_COLORS.length, 'colors');
                 
                 // CRITICAL FIX: Set the first color as default for the new product
                 // This ensures the main image shows the correct product immediately
@@ -377,10 +655,10 @@
                     state.selectedColor = PRODUCT_COLORS[0].id;
                     state.selectedColorName = PRODUCT_COLORS[0].name;
                     state.selectedColorImage = PRODUCT_COLORS[0].image;
-                    console.log('✅ Set default color to first available:', PRODUCT_COLORS[0].name, 'Image:', PRODUCT_COLORS[0].image);
+                    console.log('? Set default color to first available:', PRODUCT_COLORS[0].name, 'Image:', PRODUCT_COLORS[0].image);
                 }
             } else {
-                console.warn('⚠️ No colors found in product data, using fallback');
+                console.warn('?? No colors found in product data, using fallback');
                 // If no colors, create a single color from the main product image
                 if (productData.image) {
                     PRODUCT_COLORS = [{
@@ -394,7 +672,7 @@
                     state.selectedColor = 'default';
                     state.selectedColorName = 'Default';
                     state.selectedColorImage = productData.image;
-                    console.log('✅ Set default color from product image:', productData.image);
+                    console.log('? Set default color from product image:', productData.image);
                 }
             }
 
@@ -505,7 +783,7 @@
                     specs.push('276 gsm'); // Fallback
                 }
                 
-                // Convert GSM to oz (approximate: 1 oz ≈ 28.35 g)
+                // Convert GSM to oz (approximate: 1 oz � 28.35 g)
                 // Try to extract numeric GSM value for conversion
                 const weightValue = state.product.weight || '276';
                 const gsmMatch = String(weightValue).match(/(\d+)/);
@@ -548,7 +826,7 @@
         });
         
         // Also save periodically when state changes (debounced)
-        console.log('📍 State persistence setup complete');
+        console.log('?? State persistence setup complete');
     }
 
     // === VAT Helper Functions ===
@@ -585,7 +863,7 @@
             value = value * (1 + VAT_RATE);
         }
         
-        const currency = options.currency || '£';
+        const currency = options.currency || '�';
         const decimals = options.decimals !== undefined ? options.decimals : 2;
         return currency + value.toFixed(decimals);
     }
@@ -831,18 +1109,18 @@
         const sizeBytes = getLocalStorageSize();
         const sizeMB = sizeBytes / 1024 / 1024;
         
-        console.log(`📦 LocalStorage size: ${sizeMB.toFixed(2)} MB`);
+        console.log(`?? LocalStorage size: ${sizeMB.toFixed(2)} MB`);
         
         // If over 1MB, compress basket images
         if (sizeMB > 1) {
-            console.log('⚠️ LocalStorage over 1MB, compressing basket images...');
+            console.log('?? LocalStorage over 1MB, compressing basket images...');
             try {
                 let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
                 for (let i = 0; i < basket.length; i++) {
                     basket[i] = await compressItemImages(basket[i]);
                 }
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                console.log('✅ Basket images compressed');
+                console.log('? Basket images compressed');
             } catch (e) {
                 console.error('Failed to compress basket:', e);
             }
@@ -856,7 +1134,7 @@
 
     // === Initialize ===
     async function init() {
-        console.log('🚀 INIT STARTED');
+        console.log('?? INIT STARTED');
         console.log('DOM Ready State:', document.readyState);
         
         // CRITICAL FIX: Clear selectedColorImage first to prevent showing old product's image
@@ -864,20 +1142,23 @@
         state.selectedColorImage = null;
         state.selectedColor = null;
         state.selectedColorName = null;
-        console.log('🧹 Cleared color selection state before loading new product');
+        console.log('?? Cleared color selection state before loading new product');
 
         // CRITICAL FIX: Load product data FIRST, then restore customization state
         // This ensures PRODUCT_COLORS is populated before we try to match saved colors
         try {
             const loadedEarly = await loadProductFromSessionOrApi();
             if (loadedEarly) {
-                console.log('✅ Product loaded early during init:', state.product.code, state.product.name);
+                console.log('? Product loaded early during init:', state.product.code, state.product.name);
                 
                 // Now restore customization state (colors will be matched against new product's colors)
                 restoreCustomizationState();
                 
                 // Refresh DOM with correct product data
                 refreshProductDOM();
+                
+                // Update position cards with product-specific images (apron, hoodie, etc.)
+                updatePositionCardsForProductType(state.product.rawData);
             } else {
                 // If product didn't load, still try to restore state (will use fallback)
                 restoreCustomizationState();
@@ -891,7 +1172,7 @@
         const shopSelectedColorName = sessionStorage.getItem('selectedColorName');
         const shopSelectedColorUrl = sessionStorage.getItem('selectedColorUrl');
         if (shopSelectedColorName && shopSelectedColorUrl) {
-            console.log('🛒 Found color from shop:', shopSelectedColorName);
+            console.log('?? Found color from shop:', shopSelectedColorName);
             // Find matching color in PRODUCT_COLORS
             const matchingColor = PRODUCT_COLORS.find(c => 
                 c.name.toLowerCase() === shopSelectedColorName.toLowerCase() ||
@@ -901,14 +1182,14 @@
                 state.selectedColor = matchingColor.id;
                 state.selectedColorName = matchingColor.name;
                 state.selectedColorImage = matchingColor.image;
-                console.log('✅ Applied shop color:', matchingColor.name);
+                console.log('? Applied shop color:', matchingColor.name);
                 
                 // Update main image immediately
                 setTimeout(() => {
                     const mainImage = document.querySelector('.gallery-main img');
                     if (mainImage) {
                         mainImage.src = matchingColor.image;
-                        console.log('🖼️ Updated main image to:', matchingColor.image);
+                        console.log('??? Updated main image to:', matchingColor.image);
                     }
                     // Update color label
                     const selectedColorEl = document.getElementById('selectedColor');
@@ -979,11 +1260,11 @@
         
         // Restore UI from state if we had saved state (after all UI is rendered)
         setTimeout(() => {
-            console.log('⏰ Running restoreUIFromState after timeout...');
+            console.log('? Running restoreUIFromState after timeout...');
             restoreUIFromState();
         }, 300);
         
-        console.log('✅ INIT COMPLETE');
+        console.log('? INIT COMPLETE');
         
         // Force clear size rows after everything is loaded (only if no restored state)
         setTimeout(() => {
@@ -1044,9 +1325,9 @@
         if (!saveBtn) return;
         
         saveBtn.addEventListener('click', () => {
-            console.log('🛑 SAVE BUTTON CLICKED!');
-            console.log('🛑 state.positionMethods BEFORE save:', JSON.stringify(state.positionMethods));
-            console.log('🛑 state.quantity:', state.quantity);
+            console.log('?? SAVE BUTTON CLICKED!');
+            console.log('?? state.positionMethods BEFORE save:', JSON.stringify(state.positionMethods));
+            console.log('?? state.quantity:', state.quantity);
             
             // Check if there's anything to save
             if (state.quantity <= 0) {
@@ -1177,7 +1458,7 @@
         const newItem = {
             id: Date.now().toString(),
             productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
+            productName: state.product?.name || 'Gildan Softstyle� Midweight Hoodie',
             color: state.selectedColorName || state.selectedColor || 'Black',
             colorId: state.selectedColor,
             colorImage: state.selectedColorImage,
@@ -1190,22 +1471,22 @@
             addedAt: new Date().toISOString()
         };
         
-        console.log('💾 New Item to save:', JSON.stringify(newItem, null, 2));
-        console.log('📦 positions object:', JSON.stringify(positions));
-        console.log('📦 customizations array:', JSON.stringify(customizations));
+        console.log('?? New Item to save:', JSON.stringify(newItem, null, 2));
+        console.log('?? positions object:', JSON.stringify(positions));
+        console.log('?? customizations array:', JSON.stringify(customizations));
         
         // Add to basket
         basket.push(newItem);
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
         
-        console.log('✅ Basket saved! Total items:', basket.length);
+        console.log('? Basket saved! Total items:', basket.length);
         
         // Update UI
         updateCartBadge();
         updateBasketCount();
         updatePricingSummary();
         
-        console.log('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
+        console.log('? Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
     }
     
     // Reset size selection form (but keep color)
@@ -1507,12 +1788,12 @@
                     }
 
                     if (result.success) {
-                        console.log('✅ Quote submitted successfully');
+                        console.log('? Quote submitted successfully');
                         
                         // Update button to submitted state
                         if (popupSubmitBtn) {
                             popupSubmitBtn.classList.add('submitted');
-                            popupSubmitBtn.textContent = 'Quote Submitted! ✓';
+                            popupSubmitBtn.textContent = 'Quote Submitted! ?';
                         }
                         
                         // Also update the main Submit Quote button
@@ -1761,7 +2042,7 @@
         if (row2) {
             const sizes = Object.entries(state.sizeQuantities || {})
                 .filter(([_, qty]) => qty > 0)
-                .map(([size, qty]) => `${qty}×${size}`)
+                .map(([size, qty]) => `${qty}�${size}`)
                 .join(', ');
             
             if (sizes) {
@@ -1813,9 +2094,9 @@
                     const custTotal = custQty * custPrice;
                     customizationsHtml += `
                         <div class="customization-badge-mini">
-                            <span class="badge-icon">${methodName === 'Embroidery' ? '🧵' : '🖨️'}</span>
+                            <span class="badge-icon">${methodName === 'Embroidery' ? '??' : '???'}</span>
                             <span class="badge-text">${posName} - ${methodName}</span>
-                            <span class="badge-price">${custQty} × ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
+                            <span class="badge-price">${custQty} � ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
                         </div>
                     `;
                 });
@@ -1835,14 +2116,14 @@
                             <div class="order-item-details">
                                 <div class="order-item-name">${productName}</div>
                                 <div class="order-item-meta">${itemCode} - ${colorName}</div>
-                                <div class="order-item-size">${sizeQty}×${size}</div>
+                                <div class="order-item-size">${sizeQty}�${size}</div>
                                 ${customizationsHtml}
                                 <div class="order-item-qty-control">
-                                    <button class="order-item-qty-btn basket-qty-btn" data-action="decrease" data-basket-index="${basketIndex}" data-size="${size}">−</button>
+                                    <button class="order-item-qty-btn basket-qty-btn" data-action="decrease" data-basket-index="${basketIndex}" data-size="${size}">-</button>
                                     <span class="order-item-qty-value">${sizeQty}</span>
                                     <button class="order-item-qty-btn basket-qty-btn" data-action="increase" data-basket-index="${basketIndex}" data-size="${size}">+</button>
                                 </div>
-                                <div class="order-item-price">${sizeQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(sizeTotal)}</strong> ${vatSuffix()}</div>
+                                <div class="order-item-price">${sizeQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(sizeTotal)}</strong> ${vatSuffix()}</div>
                             </div>
                             <button class="order-item-delete basket-delete" data-basket-index="${basketIndex}" data-size="${size}" title="Remove size">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1855,7 +2136,7 @@
                 });
             } else {
                 // Single size item (legacy format)
-                const sizesStr = item.size ? `${itemQty}×${item.size}` : `${itemQty} pcs`;
+                const sizesStr = item.size ? `${itemQty}�${item.size}` : `${itemQty} pcs`;
                 const itemTotal = itemQty * unitPrice;
                 
                 itemsHtml += `
@@ -1866,7 +2147,7 @@
                             <div class="order-item-meta">${itemCode} - ${colorName}</div>
                             <div class="order-item-size">${sizesStr}</div>
                             ${customizationsHtml}
-                            <div class="order-item-price">${itemQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
+                            <div class="order-item-price">${itemQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
                         </div>
                         <button class="order-item-delete basket-delete" data-basket-index="${basketIndex}" title="Remove from basket">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1898,9 +2179,9 @@
                 const custTotal = currentQty * custPrice;
                 currentCustomizationsHtml += `
                     <div class="customization-badge-mini">
-                        <span class="badge-icon">${methodName === 'Embroidery' ? '🧵' : '🖨️'}</span>
+                        <span class="badge-icon">${methodName === 'Embroidery' ? '??' : '???'}</span>
                         <span class="badge-text">${posName} - ${methodName}</span>
-                        <span class="badge-price">${currentQty} × ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
+                        <span class="badge-price">${currentQty} � ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
                     </div>
                 `;
             });
@@ -1919,14 +2200,14 @@
                     <div class="order-item-details">
                         <div class="order-item-name">${productName}</div>
                         <div class="order-item-meta">${productCode} - ${colorName}</div>
-                        <div class="order-item-size">${qty}×${size}</div>
+                        <div class="order-item-size">${qty}�${size}</div>
                         ${currentCustomizationsHtml}
                         <div class="order-item-qty-control">
-                            <button class="order-item-qty-btn" data-action="decrease" data-size="${size}">−</button>
+                            <button class="order-item-qty-btn" data-action="decrease" data-size="${size}">-</button>
                             <span class="order-item-qty-value">${qty}</span>
                             <button class="order-item-qty-btn" data-action="increase" data-size="${size}">+</button>
                         </div>
-                        <div class="order-item-price">${qty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
+                        <div class="order-item-price">${qty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
                     </div>
                     <button class="order-item-delete" data-size="${size}" title="Remove">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2000,7 +2281,7 @@
                 // Save back to localStorage
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
                 
-                console.log('🔄 Basket updated, recalculating totals...');
+                console.log('?? Basket updated, recalculating totals...');
                 
                 // Update UI - DON'T recreate entire list, just update the specific row
                 const row = btn.closest('.order-item-card');
@@ -2014,7 +2295,7 @@
                     const unitPrice = parseFloat(item.unitPrice || item.price) || 0;
                     const newTotal = newQty * unitPrice;
                     if (priceEl) {
-                        priceEl.innerHTML = `${newQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(newTotal)}</strong> ${vatSuffix()}`;
+                        priceEl.innerHTML = `${newQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(newTotal)}</strong> ${vatSuffix()}`;
                     }
                 }
                 
@@ -2025,7 +2306,7 @@
                 updateLiveBadge();
                 updateCartBadge();
                 
-                console.log('✅ All updates complete');
+                console.log('? All updates complete');
                 
                 if (navigator.vibrate) navigator.vibrate(5);
             });
@@ -2173,7 +2454,7 @@
             return `
                 <div class="tier-card ${isActive ? 'active' : ''}" data-min="${tier.min}" data-max="${tier.max === Infinity ? '999999' : tier.max}">
                     <div class="tier-qty">${tier.label}</div>
-                    <div class="tier-price">£${displayPrice.toFixed(2)}</div>
+                    <div class="tier-price">�${displayPrice.toFixed(2)}</div>
                     <div class="tier-suffix">${vatSuffix()}</div>
                     ${discount > 0 ? `<div class="tier-save">SAVE ${discount}%</div>` : ''}
                 </div>
@@ -2215,7 +2496,7 @@
     function setupColorSelection() {
         const colorOptions = document.getElementById('colorOptions');
         if (!colorOptions) {
-            console.error('❌ colorOptions not found in setupColorSelection');
+            console.error('? colorOptions not found in setupColorSelection');
             return;
         }
 
@@ -2256,7 +2537,7 @@
         modal.className = 'modal-overlay';
         modal.innerHTML = `
             <div class="modal-content confirm-modal">
-                <div class="confirm-icon">🎨</div>
+                <div class="confirm-icon">??</div>
                 <h3>Save Your Selection?</h3>
                 <p>You have <strong id="modalQtyCount">0</strong> items selected in <strong id="modalColorName">this colour</strong>.</p>
                 <p class="confirm-subtitle">What would you like to do?</p>
@@ -2531,15 +2812,15 @@
     function renderColorButtons() {
         const colorOptions = document.getElementById('colorOptions');
         if (!colorOptions) {
-            console.error('❌ colorOptions element not found!');
+            console.error('? colorOptions element not found!');
             return;
         }
         
-        console.log('🎨 Rendering', PRODUCT_COLORS.length, 'colors...');
-        console.log('🎨 First color image:', PRODUCT_COLORS[0]?.image);
+        console.log('?? Rendering', PRODUCT_COLORS.length, 'colors...');
+        console.log('?? First color image:', PRODUCT_COLORS[0]?.image);
         
         if (PRODUCT_COLORS.length === 0) {
-            console.warn('⚠️ No colors to render!');
+            console.warn('?? No colors to render!');
             colorOptions.innerHTML = '<p style="color: #6b7280; padding: 16px;">No colors available</p>';
             return;
         }
@@ -2571,23 +2852,23 @@
         // Re-render color thumbnails in gallery when colors are updated
         renderColorThumbnails();
         
-        console.log('✅ Colors rendered successfully!');
+        console.log('? Colors rendered successfully!');
     }
 
     // Render color thumbnails in gallery (showing different color variants)
     function renderColorThumbnails() {
         const galleryThumbsContainer = document.getElementById('galleryThumbsContainer') || document.querySelector('.gallery-thumbs');
         if (!galleryThumbsContainer) {
-            console.warn('⚠️ Gallery thumbs container not found');
+            console.warn('?? Gallery thumbs container not found');
             return;
         }
 
         if (!PRODUCT_COLORS || PRODUCT_COLORS.length === 0) {
-            console.warn('⚠️ No colors available for thumbnails');
+            console.warn('?? No colors available for thumbnails');
             return;
         }
 
-        console.log('🎨 Rendering', PRODUCT_COLORS.length, 'color thumbnails in gallery...');
+        console.log('?? Rendering', PRODUCT_COLORS.length, 'color thumbnails in gallery...');
 
         // Clear existing thumbnails
         galleryThumbsContainer.innerHTML = '';
@@ -2658,7 +2939,48 @@
             galleryThumbsContainer.appendChild(thumbButton);
         });
 
-        console.log('✅ Color thumbnails rendered:', PRODUCT_COLORS.length);
+        console.log('? Color thumbnails rendered:', PRODUCT_COLORS.length);
+    }
+
+    // === Get product sizes from API or fallback ===
+    function getProductSizes() {
+        // Get sizes from product data
+        let sizes = state.product?.sizes || [];
+        
+        // Normalize: if it's a string, convert to array
+        if (typeof sizes === 'string') {
+            sizes = [sizes];
+        }
+        
+        // If no sizes from API, use default sizes
+        if (!sizes || sizes.length === 0) {
+            sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        }
+        
+        return sizes;
+    }
+
+    // === Add "One size" row with plus/minus quantity selector ===
+    function addOneSizeRow(container) {
+        const selectedSizes = container.querySelector('.selected-sizes');
+        if (!selectedSizes) return;
+        
+        const newRow = document.createElement('div');
+        newRow.className = 'size-qty-item one-size-item';
+        newRow.innerHTML = `
+            <div class="one-size-label">One Size</div>
+            <div class="item-qty-control">
+                <button type="button" class="item-qty-btn minus">-</button>
+                <input type="number" class="item-qty-input" value="0" min="0" max="999" data-size="One size">
+                <button type="button" class="item-qty-btn plus">+</button>
+            </div>
+        `;
+        
+        // Store the size value for quantity tracking
+        newRow.dataset.size = 'One size';
+        
+        selectedSizes.appendChild(newRow);
+        updateSizeQuantities();
     }
 
     // === Size/Qty Compact Selection ===
@@ -2675,17 +2997,37 @@
             selectedSizes.innerHTML = '';
         }
 
+        // Get product sizes from API - fallback to default if not available
+        const productSizes = getProductSizes();
+        const isOneSize = productSizes.length === 1 && 
+            (productSizes[0].toLowerCase() === 'one size' || 
+             productSizes[0].toLowerCase() === 'onesize' ||
+             productSizes[0].toLowerCase() === 'os');
+
         // Add size button
         const addBtn = container.querySelector('.add-size-btn');
-        if (addBtn) {
-            // Remove any existing listener to prevent duplicates
-            const newBtn = addBtn.cloneNode(true);
-            addBtn.parentNode.replaceChild(newBtn, addBtn);
-            
-            newBtn.addEventListener('click', () => {
-                addSizeRow(container);
-                if (navigator.vibrate) navigator.vibrate(10);
-            });
+        
+        if (isOneSize) {
+            // For "One size" products: hide "Add Size" button and auto-create a row
+            if (addBtn) {
+                addBtn.style.display = 'none';
+            }
+            // Auto-add a "One size" row
+            addOneSizeRow(container);
+            console.log('📐 Product is "One size" - auto-added row with quantity selector');
+        } else {
+            // For multi-size products: show "Add Size" button
+            if (addBtn) {
+                addBtn.style.display = '';
+                // Remove any existing listener to prevent duplicates
+                const newBtn = addBtn.cloneNode(true);
+                addBtn.parentNode.replaceChild(newBtn, addBtn);
+                
+                newBtn.addEventListener('click', () => {
+                    addSizeRow(container);
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            }
         }
 
         // Event delegation for size/qty items
@@ -2768,9 +3110,9 @@
         const newRow = document.createElement('div');
         newRow.className = 'size-qty-item';
         
-        // Build options excluding already selected sizes
+        // Build options excluding already selected sizes - use product sizes from API
         let optionsHTML = '<option value="">Size</option>';
-        const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const allSizes = getProductSizes();
         allSizes.forEach(size => {
             if (!alreadySelected.has(size)) {
                 optionsHTML += `<option value="${size}">${size}</option>`;
@@ -2782,7 +3124,7 @@
                 ${optionsHTML}
             </select>
             <div class="item-qty-control">
-                <button type="button" class="item-qty-btn minus">−</button>
+                <button type="button" class="item-qty-btn minus">-</button>
                 <input type="number" class="item-qty-input" value="0" min="0" max="999">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
@@ -2803,7 +3145,7 @@
     function updateAvailableSizes(container) {
         const selectedSizes = container.querySelector('.selected-sizes');
         const allSelects = selectedSizes.querySelectorAll('.size-select');
-        const allSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const allSizes = getProductSizes(); // Use product sizes from API
         
         // Collect all selected sizes
         const selected = new Set();
@@ -2843,7 +3185,17 @@
         container.querySelectorAll('.size-qty-item').forEach(row => {
             const select = row.querySelector('.size-select');
             const input = row.querySelector('.item-qty-input');
-            const size = select ? select.value : '';
+            
+            // Get size from select OR from data attribute (for "One size" rows)
+            let size = '';
+            if (select) {
+                size = select.value;
+            } else if (row.dataset.size) {
+                size = row.dataset.size;
+            } else if (input && input.dataset.size) {
+                size = input.dataset.size;
+            }
+            
             // Primary: read from input.value
             let qty = 0;
             try {
@@ -3168,18 +3520,18 @@
     // === Position Selection ===
     function setupPositionSelection() {
         const cards = document.querySelectorAll('.position-card');
-        console.log('🔧 setupPositionSelection called. Found', cards.length, 'position cards');
+        console.log('?? setupPositionSelection called. Found', cards.length, 'position cards');
         
         cards.forEach(card => {
             const checkbox = card.querySelector('input[type="checkbox"]');
             const position = checkbox ? checkbox.value : null;
             
             if (!position) {
-                console.warn('⚠️ Card missing checkbox or position value:', card);
+                console.warn('?? Card missing checkbox or position value:', card);
                 return;
             }
             
-            console.log('✅ Setting up position:', position);
+            console.log('? Setting up position:', position);
             
             // Initialize position method storage
             if (!state.positionMethods) {
@@ -3188,9 +3540,9 @@
             
             // Click handler for price badges (EMBROIDERY/PRINT buttons)
             card.querySelectorAll('.price-badge').forEach(badge => {
-                console.log('📍 Attaching click handler to badge:', badge.dataset.method, 'for position:', position);
+                console.log('?? Attaching click handler to badge:', badge.dataset.method, 'for position:', position);
                 badge.addEventListener('click', (e) => {
-                    console.log('🖱️ BADGE CLICKED!', badge.dataset.method, 'for position:', position);
+                    console.log('??? BADGE CLICKED!', badge.dataset.method, 'for position:', position);
                     e.stopPropagation();
                     
                     const role = badge.dataset.role || 'method';
@@ -3292,8 +3644,8 @@
                     
                     // Store selected method for this position
                     state.positionMethods[position] = method;
-                    console.log('🎯 METHOD SELECTED!', position, '=', method);
-                    console.log('📊 Current positionMethods:', JSON.stringify(state.positionMethods));
+                    console.log('?? METHOD SELECTED!', position, '=', method);
+                    console.log('?? Current positionMethods:', JSON.stringify(state.positionMethods));
                     
                     // Save state immediately for persistence
                     saveCustomizationState();
@@ -3926,7 +4278,7 @@
             }
         });
         
-        console.log('✅ POA badges initialized');
+        console.log('? POA badges initialized');
     }
 
     // === Quantity Adjusters in Order Summary ===
@@ -4014,7 +4366,7 @@
         // Restore original content
         const method = badge.dataset.method;
         const defaultLabel = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
-        const defaultPrice = badge.dataset.defaultPrice || '+ £0.00';
+        const defaultPrice = badge.dataset.defaultPrice || '+ �0.00';
         
         badge.innerHTML = `
             <span class="price-label">${defaultLabel}</span>
@@ -4130,7 +4482,7 @@
         const previewImg = document.getElementById('designPreviewImg');
         const fileInput = document.getElementById('designLogoUpload');
         
-        // Ripristina la dropzone (visibilità e display)
+        // Ripristina la dropzone (visibilit� e display)
         if (uploadZone) {
             uploadZone.hidden = false;
             uploadZone.style.display = '';
@@ -4282,7 +4634,7 @@
                     removeBgBtn.classList.remove('processing', 'done');
                     const btnText = removeBgBtn.querySelector('span');
                     if (btnText) btnText.textContent = 'Remove BG';
-                    // Ripristina funzionalità originale
+                    // Ripristina funzionalit� originale
                     removeBgBtn.onclick = function() {
                         removeImageBackground();
                     };
@@ -4491,7 +4843,7 @@
                     // Set state flag to track background was removed
                     state.backgroundRemoved = true;
                     
-                    // Nascondi Undo button (non più necessario, usa il pulsante principale)
+                    // Nascondi Undo button (non pi� necessario, usa il pulsante principale)
                     if (undoBgBtn) {
                         undoBgBtn.hidden = true;
                     }
@@ -4612,7 +4964,7 @@
         // CRITICAL: Ensure positionMethods is updated for basket saving
         if (!state.positionMethods) state.positionMethods = {};
         state.positionMethods[position] = method;
-        console.log('📍 applyDesignToPosition - Updated positionMethods:', state.positionMethods);
+        console.log('?? applyDesignToPosition - Updated positionMethods:', state.positionMethods);
         
         // Store in state (both positionDesigns and positionCustomizations for compatibility)
         if (!state.positionDesigns) state.positionDesigns = {};
@@ -4788,7 +5140,7 @@
         const currentQty = state.quantity || 0;
         const totalQty = basketQty + currentQty;
         
-        console.log('📊 PRICING SUMMARY:', { currentQty, basketQty, totalQty, basketLength: basket.length });
+        console.log('?? PRICING SUMMARY:', { currentQty, basketQty, totalQty, basketLength: basket.length });
         
         // Get unit price based on TOTAL quantity (cumulative tier)
         const basePrice = PRICING_RULES[state.product.code]?.basePrice || state.product.basePrice;
@@ -4803,7 +5155,7 @@
             }
         }
         
-        console.log('📊 UNIT PRICE:', unitPrice, 'for', totalQty, 'items');
+        console.log('?? UNIT PRICE:', unitPrice, 'for', totalQty, 'items');
         
         const currentTier = getCurrentTier();
         
@@ -4843,7 +5195,7 @@
                 itemUnitPrice = parseFloat(item.unitPrice || item.price) || 17.58;
             }
             
-            console.log('📦 BASKET ITEM:', itemCode, 'qty:', itemQty, 'unitPrice:', itemUnitPrice, 'total:', itemUnitPrice * itemQty);
+            console.log('?? BASKET ITEM:', itemCode, 'qty:', itemQty, 'unitPrice:', itemUnitPrice, 'total:', itemUnitPrice * itemQty);
             
             totalBasketGarmentCost += itemUnitPrice * itemQty;
             
@@ -4916,7 +5268,7 @@
         
         // Get all checked position cards
         const checkedCards = document.querySelectorAll('.position-card input[type="checkbox"]:checked');
-        console.log('🎯 Checked position cards:', checkedCards.length);
+        console.log('?? Checked position cards:', checkedCards.length);
         
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
@@ -4924,12 +5276,12 @@
             const positionName = checkbox.parentElement.querySelector('span').textContent.trim();
             const method = state.positionMethods && state.positionMethods[position];
             
-            console.log('🔍 Analyzing position:', { position, positionName, method, totalQtyForCustomizations });
+            console.log('?? Analyzing position:', { position, positionName, method, totalQtyForCustomizations });
             
             if (method && totalQtyForCustomizations > 0) {
                 // Get price from active badge
                 const activeBadge = card.querySelector(`.price-badge.price-${method === 'embroidery' ? 'emb' : 'print'}.active`);
-                console.log('💎 Active badge found:', activeBadge, 'for method:', method);
+                console.log('?? Active badge found:', activeBadge, 'for method:', method);
                 
                 if (activeBadge) {
                     const priceText = activeBadge.querySelector('.price-value').textContent;
@@ -4939,7 +5291,7 @@
                         const totalForPosition = pricePerItem * totalQtyForCustomizations;
                         currentCustomTotal += totalForPosition;
                         
-                        console.log('💰 Adding customization cost:', { position, method, pricePerItem, totalQtyForCustomizations, totalForPosition });
+                        console.log('?? Adding customization cost:', { position, method, pricePerItem, totalQtyForCustomizations, totalForPosition });
                         
                         if (method === 'embroidery') hasEmbroidery = true;
                         
@@ -4961,13 +5313,13 @@
         let grandCustomTotal = 0;
         allCustomizations.forEach(c => grandCustomTotal += c.total);
         
-        // Setup fee (£25 one-time for embroidery only)
+        // Setup fee (�25 one-time for embroidery only)
         const setupFeeBase = hasEmbroidery ? 25.00 : 0;
         
         // GRAND TOTAL (ex VAT)
         const grandTotal = grandGarmentTotal + grandCustomTotal + setupFeeBase;
         
-        console.log('💰 GRAND TOTALS:', {
+        console.log('?? GRAND TOTALS:', {
             basketGarment: totalBasketGarmentCost,
             currentGarment: currentGarmentTotal,
             grandGarment: grandGarmentTotal,
@@ -4989,7 +5341,7 @@
             if (state.sizeQuantities && Object.keys(state.sizeQuantities).length > 0) {
                 Object.entries(state.sizeQuantities).forEach(([size, sizeQty]) => {
                     if (sizeQty > 0) {
-                        sizesHtml += `<div class="size-row"><span>${size}</span><span>×${sizeQty}</span></div>`;
+                        sizesHtml += `<div class="size-row"><span>${size}</span><span>�${sizeQty}</span></div>`;
                     }
                 });
             } else {
@@ -5020,7 +5372,7 @@
         });
         const displayQty = totalItemsInBasket + currentQty;
         
-        console.log('📊 DISPLAY QTY:', { totalItemsInBasket, currentQty, displayQty, basketLength: basket.length });
+        console.log('?? DISPLAY QTY:', { totalItemsInBasket, currentQty, displayQty, basketLength: basket.length });
 
         // Update quantity and prices
         const summaryQty = document.getElementById('summaryQty');
@@ -5063,7 +5415,7 @@
                         <div class="customization-card ${methodClass}">
                             <div class="customization-card-header">
                                 <span class="customization-position">${item.position} ${item.method}</span>
-                                <span class="customization-total">${item.qty} × ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.total)} <span class="vat-suffix">${vatSuffix()}</span></span>
+                                <span class="customization-total">${item.qty} � ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.total)} <span class="vat-suffix">${vatSuffix()}</span></span>
                             </div>
                         </div>
                     `;
@@ -5120,7 +5472,7 @@
                     costsHtml += `
                         <div class="row detail" style="padding: 10px 0; border-top: 1px dashed #e5e7eb; margin-top: 8px;">
                             <span style="color: #666;">Digitizing Fee (one-time)</span>
-                            <span style="color: #666;">£25.00 ${vatSuffix()}</span>
+                            <span style="color: #666;">�25.00 ${vatSuffix()}</span>
                         </div>
                     `;
                 }
@@ -5384,7 +5736,7 @@
         // Gallery thumbnails are now dynamically rendered by renderColorThumbnails()
         // This function is kept for backward compatibility
         // Thumbnails will be rendered when colors are loaded via refreshProductDOM()
-        console.log('✅ Gallery setup complete (thumbnails rendered dynamically)');
+        console.log('? Gallery setup complete (thumbnails rendered dynamically)');
     }
 
     // === Modals ===
@@ -5749,7 +6101,7 @@
         const newItem = {
             id: Date.now().toString(),
             productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
+            productName: state.product?.name || 'Gildan Softstyle� Midweight Hoodie',
             color: state.selectedColorName || state.selectedColor,
             colorId: state.selectedColor,
             colorImage: state.selectedColorImage,
@@ -5764,7 +6116,7 @@
             addedAt: new Date().toISOString()
         };
         
-        console.log('📦 Adding to basket:', {
+        console.log('?? Adding to basket:', {
             quantities: newItem.quantities,
             totalQty: newItem.totalQty,
             color: newItem.color,
@@ -5774,14 +6126,14 @@
         // Add to basket
         basket.push(newItem);
         
-        console.log('✅ Basket after push:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
+        console.log('? Basket after push:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
         
         // Save to localStorage with error handling
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
         } catch (e) {
             if (e.name === 'QuotaExceededError') {
-                console.error('⚠️ LocalStorage quota exceeded!');
+                console.error('?? LocalStorage quota exceeded!');
                 
                 // Try to compress and save again
                 compressItemImages(newItem).then(compressedItem => {
@@ -5860,7 +6212,7 @@
                 </div>
                 <h3>Added to Quote!</h3>
                 <p class="quote-added-summary">
-                    ${item.totalQty}× ${item.productName}<br>
+                    ${item.totalQty}� ${item.productName}<br>
                     <span class="text-muted">${item.color}</span>
                 </p>
                 <div class="quote-added-actions">

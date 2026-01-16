@@ -14,6 +14,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20251230">
     <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="css/style.css?v=20251230">
     <style>
@@ -791,91 +792,7 @@
             transition: opacity 0.3s ease;
         }
 
-        /* Beautiful Animated Loader */
-        .products-loader {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            min-height: 400px;
-        }
-
-        .loader-container {
-            position: relative;
-            width: 80px;
-            height: 80px;
-        }
-
-        .loader-spinner {
-            width: 80px;
-            height: 80px;
-            border: 4px solid #f3f4f6;
-            border-top-color: #7c3aed;
-            border-right-color: #a855f7;
-            border-radius: 50%;
-            animation: loader-spin 1s linear infinite;
-        }
-
-        .loader-inner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            border: 3px solid transparent;
-            border-top-color: #8b5cf6;
-            border-radius: 50%;
-            animation: loader-spin-reverse 0.8s linear infinite;
-        }
-
-        .loader-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px;
-            height: 12px;
-            background: #7c3aed;
-            border-radius: 50%;
-            animation: loader-pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loader-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes loader-spin-reverse {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(-360deg); }
-        }
-
-        @keyframes loader-pulse {
-            0%, 100% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.5);
-                opacity: 0.6;
-            }
-        }
-
-        .loader-text {
-            margin-top: 24px;
-            font-size: 15px;
-            font-weight: 500;
-            color: #6b7280;
-            animation: loader-fade 2s ease-in-out infinite;
-        }
-
-        @keyframes loader-fade {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
+        /* Loader styles are now in loader.css */
 
         /* Product Card */
         .product-card {
@@ -1204,7 +1121,7 @@
                     <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="https://www.instagram.com/brandeduk" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
                     <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon-3d linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -1213,7 +1130,7 @@
                     <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon-3d youtube" target="_blank" rel="noopener" aria-label="YouTube">
                         <i class="fab fa-youtube"></i>
                     </a>
-                    <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon-3d pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                    <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon-3d pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
                         <i class="fab fa-pinterest-p"></i>
                     </a>
                 </div>
@@ -3006,11 +2923,13 @@ function showLoader() {
     
     grid.innerHTML = `
         <div class="products-loader">
-            <div class="loader-container">
-                <div class="loader-spinner"></div>
-                <div class="loader-inner"></div>
-                <div class="loader-dot"></div>
-            </div>
+            <section class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </section>
             <div class="loader-text">Loading products...</div>
         </div>
     `;

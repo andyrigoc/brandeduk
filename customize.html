@@ -7,19 +7,20 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260106a">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260106a">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260106a">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260116a">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260116a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
-        .social-icons-mobile {
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only) */
+        .mobile-header .social-icons-mobile {
             gap: 3px !important;
             margin-left: 8px !important;
             padding-left: 0 !important;
         }
-        .social-icons-mobile .social-icon {
+        .mobile-header .social-icons-mobile .social-icon {
             width: 27px !important;
             height: 27px !important;
             min-width: 27px !important;
@@ -28,7 +29,7 @@
             max-height: 27px !important;
             border-radius: 7px !important;
         }
-        .social-icons-mobile .social-icon i {
+        .mobile-header .social-icons-mobile .social-icon i {
             font-size: 12px !important;
         }
 
@@ -95,42 +96,44 @@
 </head>
 <body class="customize-page">
 
-    <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
+    <!-- Tablet Top Bar (768px+) -->
     <div class="tablet-top-bar">
         <div class="tablet-top-bar__left">
-            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+            <div class="social-icons-container">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
                 </a>
-                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                    <i class="fab fa-pinterest-p"></i>
                 </a>
             </div>
         </div>
+        
         <div class="tablet-top-bar__center">
             <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m2 7 10 7 10-7"/>
                 </svg>
                 info@brandeduk.com
             </a>
             <a href="tel:02089742722" class="tablet-top-bar__phone">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
                 0208 974 2722
             </a>
         </div>
+        
         <div class="tablet-top-bar__right">
             <div class="vat-toggle-tablet">
                 <span class="vat-label vat-label--exc">EXC VAT</span>
@@ -146,21 +149,21 @@
         <!-- Top Row: Social + VAT Toggle -->
         <div class="header-top-row">
             <!-- Social Buttons Left -->
-            <div class="social-icons-container social-icons-mobile" style="gap: 2px; margin-left: 8px; padding-left: 0; flex-shrink: 0;">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-facebook-f" style="font-size: 9px;"></i>
+            <div class="social-icons-container social-icons-mobile">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://www.instagram.com/brandeduk" class="social-icon instagram" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-instagram" style="font-size: 9px;"></i>
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-linkedin-in" style="font-size: 9px;"></i>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-youtube" style="font-size: 9px;"></i>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
                 </a>
-                <a href="https://uk.pinterest.com/pin/7459155629343965/" class="social-icon pinterest" target="_blank" rel="noopener" style="width: 20px; height: 20px; border-radius: 5px;">
-                    <i class="fab fa-pinterest-p" style="font-size: 9px;"></i>
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                    <i class="fab fa-pinterest-p"></i>
                 </a>
             </div>
 
@@ -173,7 +176,7 @@
             </div>
         </div>
 
-        <!-- Bottom Row: Back + Logo + Search -->
+        <!-- Bottom Row: Logo + Search -->
         <div class="header-logo-row">
             <a href="index.html" class="mobile-logo-center">
                 <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" class="logo-badge-img">
@@ -207,9 +210,9 @@
             </button>
             
             <div class="gallery-main">
-                <div class="gallery-badge bestseller">BESTSELLER</div>
+                <div class="gallery-badge bestseller" style="display:none;">BESTSELLER</div>
                 <div class="product-img-placeholder large" id="productPreviewContainer">
-                    <img src="https://i.postimg.cc/fbC2Zn4L/GD067-Aquatic-FT.jpg" alt="Gildan Softstyle Hoodie" id="mainImage" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="" alt="Loading..." id="mainImage" style="width: 100%; height: 100%; object-fit: contain; min-height: 300px; background: #f3f4f6;">
                     <!-- Logo Overlay Box - posizioni predefinite -->
                     <div class="logo-overlay-box" id="logoOverlayBox" hidden>
                         <img src="" alt="Your Logo" id="logoOverlayImg" class="logo-overlay-img">
@@ -315,8 +318,8 @@
 
         <!-- Product Info -->
         <section class="product-info">
-            <div class="product-sku">#GD067 � Gildan Softstyle</div>
-            <h1 class="product-title">Gildan Softstyle Hoodie</h1>
+            <div class="product-sku" id="productSku">Loading...</div>
+            <h1 class="product-title" id="productTitle">Loading...</h1>
             <div class="product-specs">
                 <span class="spec">S-5XL</span>
                 <span class="spec-divider">|</span>
@@ -1045,8 +1048,8 @@
         </div>
     </div>
 
-    <script src="mobile/js/mobile.js?v=20260114a"></script>
-    <script src="mobile/js/customize.js?v=20260114a"></script>
+    <script src="mobile/js/mobile.js?v=20260116b"></script>
+    <script src="mobile/js/customize.js?v=20260116b"></script>
     <script>
         // Smooth scroll to order summary when clicking basket link
         document.getElementById('basketNavLink')?.addEventListener('click', function(e) {
