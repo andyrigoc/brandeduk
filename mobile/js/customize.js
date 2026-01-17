@@ -188,6 +188,20 @@
         'pants/workwear-shorts': ['Blank Work short.png'],
         'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
     };
+
+    function normalizeProductTypeForFolder(productType) {
+        const raw = String(productType || '').trim();
+        if (!raw) return '';
+
+        const lower = raw.toLowerCase();
+
+        // Ensure ALL apron products (e.g. "Colours Bib Apron", "apron", "aprons") use bib apron images
+        if (lower === 'apron' || lower === 'aprons' || lower.includes('apron')) {
+            return 'Aprons';
+        }
+
+        return raw;
+    }
     
     // Build positions dynamically from productType
     function buildPositionsFromProductType(productType) {
@@ -197,9 +211,10 @@
         }
         
         const productTypeStr = String(productType).trim();
-        const folderPath = PRODUCT_TYPE_TO_FOLDER[productTypeStr];
+        const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
+        const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
         if (!folderPath) {
-            console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}", using default`);
+            console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
             return null;
         }
         
@@ -238,7 +253,7 @@
         const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
         const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
         
-        console.log(`✅ Built positions from productType "${productTypeStr}":`, Object.keys(positions));
+        console.log(`✅ Built positions from productType "${productTypeStr}" (normalized: "${normalizedProductType}") :`, Object.keys(positions));
         console.log(`🙈 Will hide positions:`, hidePositions);
         
         return {
@@ -254,8 +269,14 @@
             console.warn('⚠️ No product data for position update');
             return;
         }
-        
-        const productType = productData.productType || productData.category || productData.type;
+
+        let productType = productData.productType || productData.category || productData.type;
+        // Last-resort inference from product name (fixes cases like "Colours Bib Apron")
+        if ((!productType || String(productType).trim() === '') && productData.name) {
+            if (String(productData.name).toLowerCase().includes('apron')) {
+                productType = 'Aprons';
+            }
+        }
         console.log('🎯 Updating position cards for productType:', productType);
         
         // Try to build positions dynamically from productType

@@ -1115,6 +1115,20 @@
             'pants/workwear-shorts': ['Blank Work short.png'],
             'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
         };
+
+        function normalizeProductTypeForFolder(productType) {
+            const raw = String(productType || '').trim();
+            if (!raw) return '';
+
+            const lower = raw.toLowerCase();
+
+            // Ensure ALL apron products (e.g. "Colours Bib Apron", "apron", "aprons") use bib apron images
+            if (lower === 'apron' || lower === 'aprons' || lower.includes('apron')) {
+                return 'Aprons';
+            }
+
+            return raw;
+        }
         
         // Build positions dynamically from productType
         function buildPositionsFromProductType(productType) {
@@ -1124,9 +1138,10 @@
             }
             
             const productTypeStr = String(productType).trim();
-            const folderPath = PRODUCT_TYPE_TO_FOLDER[productTypeStr];
+            const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
+            const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
             if (!folderPath) {
-                console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}", using default`);
+                console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
                 return null;
             }
             
@@ -1177,6 +1192,12 @@
         function productTypeToCategory(productTypeOrCategory) {
             if (!productTypeOrCategory) return null;
             const typeStr = String(productTypeOrCategory).trim();
+
+            // Handle product names/types like "Colours Bib Apron" reliably
+            if (typeStr.toLowerCase().includes('apron')) {
+                return 'aprons';
+            }
+
             const typeToCategory = {
                 // Product types (from desktop API)
                 'T-shirts': 'tshirts',
