@@ -8,7 +8,81 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBasketCount();
     initFaqTabs();
     initHeroBanners();
+    initBrandsMarqueeLogos();
 });
+
+// ============================================
+// BRANDS MARQUEE LOGOS (PC)
+// ============================================
+function initBrandsMarqueeLogos() {
+    const brandCards = document.querySelectorAll('.brands-section .brand-card');
+    if (!brandCards.length) return;
+
+    const slugifyBrand = (name) => {
+        return (name || '')
+            .toLowerCase()
+            .trim()
+            .replace(/&/g, 'and')
+            .replace(/\+/g, 'plus')
+            .replace(/\//g, '-')
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-');
+    };
+
+    brandCards.forEach((card) => {
+        if (!(card instanceof HTMLElement)) return;
+        if (card.querySelector('img')) return;
+
+        const brandName = (card.textContent || '').trim();
+        if (!brandName) return;
+
+        const slug = slugifyBrand(brandName);
+        if (!slug) return;
+
+        // PC pages live in /brandeduk.com/, so we go up one level to reach the shared assets.
+        const candidates = [
+            `../brandedukv15-child/assets/images/brands/${slug}.svg`,
+            `../brandedukv15-child/assets/images/brands/${slug}.webp`,
+            `../brandedukv15-child/assets/images/brands/${slug}.png`,
+            `../brandedukv15-child/assets/images/brands/${slug}.jpg`,
+            `../brandedukv15-child/assets/images/brands/${slug}.jpeg`,
+
+            `../brandedukv15-child/assets/images/brands/${slug}2020.webp`,
+            `../brandedukv15-child/assets/images/brands/${slug}2020.jpg`,
+            `../brandedukv15-child/assets/images/brands/${slug}_2020.webp`,
+            `../brandedukv15-child/assets/images/brands/${slug}_2020.jpg`,
+            `../brandedukv15-child/assets/images/brands/${slug}-2020.webp`,
+            `../brandedukv15-child/assets/images/brands/${slug}-2020.jpg`
+        ];
+
+        const img = document.createElement('img');
+        img.className = 'brand-logo-img';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.alt = brandName;
+
+        const fallbackToText = () => {
+            if (!card.isConnected) return;
+            card.innerHTML = '';
+            card.textContent = brandName;
+        };
+
+        let idx = 0;
+        const tryNext = () => {
+            const nextSrc = candidates[idx++];
+            if (!nextSrc) return fallbackToText();
+            img.src = nextSrc;
+        };
+
+        img.addEventListener('error', tryNext);
+
+        card.title = brandName;
+        card.innerHTML = '';
+        card.appendChild(img);
+        tryNext();
+    });
+}
 
 // ============================================
 // VAT TOGGLE

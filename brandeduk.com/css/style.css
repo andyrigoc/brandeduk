@@ -1016,23 +1016,38 @@ img {
     100% { transform: translateX(0); }
 }
 
-.brand-card {
+.brands-section .brand-card {
     flex-shrink: 0;
     padding: 12px 24px;
-    background: var(--gray-50);
-    border: 1px solid var(--gray-200);
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border: 1px solid rgba(17, 24, 39, 0.08);
     border-radius: var(--radius);
     font-size: 14px;
     font-weight: 500;
     color: var(--gray-700);
     white-space: nowrap;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.brand-card:hover {
-    background: var(--purple);
-    color: var(--white);
-    border-color: var(--purple);
+.brands-section .brand-card:hover {
+    background: linear-gradient(135deg, #eef0f3 0%, #dfe3ea 100%);
+    border-color: rgba(17, 24, 39, 0.14);
+    color: var(--gray-800);
+}
+
+.brands-section .brand-card .brand-logo-img {
+    display: block;
+    height: 28px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    filter: grayscale(100%) saturate(0) contrast(1.2) brightness(0.92);
+    mix-blend-mode: multiply;
+    opacity: 0.92;
 }
 
 /* ============================================
