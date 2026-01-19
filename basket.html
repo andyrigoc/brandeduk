@@ -75,6 +75,76 @@
             font-weight: 600;
             cursor: pointer;
         }
+        /* Clear All confirmation modal */
+        .confirm-modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(17, 24, 39, 0.55);
+            z-index: 10000;
+            padding: 16px;
+        }
+
+        .confirm-modal-overlay.active {
+            display: flex;
+        }
+
+        .confirm-modal {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .confirm-modal__header {
+            padding: 18px 18px 10px;
+        }
+
+        .confirm-modal__title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .confirm-modal__body {
+            padding: 0 18px 18px;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .confirm-modal__actions {
+            display: flex;
+            gap: 10px;
+            padding: 14px 18px 18px;
+            border-top: 1px solid #eef2f7;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .confirm-btn--danger {
+            border: none;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
         
         .basket-content {
             padding: 20px;
@@ -711,6 +781,21 @@
                         <i class="fab fa-pinterest-p"></i>
                     </a>
                 </div>
+                <!-- Clear All confirmation modal (replaces browser confirm) -->
+                <div class="confirm-modal-overlay" id="clearConfirmModal" aria-hidden="true">
+                    <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle">
+                        <div class="confirm-modal__header">
+                            <h3 class="confirm-modal__title" id="clearConfirmTitle">Clear basket?</h3>
+                        </div>
+                        <div class="confirm-modal__body" id="clearConfirmBody">
+                            This will remove all items and reset everything.
+                        </div>
+                        <div class="confirm-modal__actions">
+                            <button type="button" class="confirm-btn" id="clearConfirmCancel">Cancel</button>
+                            <button type="button" class="confirm-btn confirm-btn--danger" id="clearConfirmOk">Clear All</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tablet-top-bar__center">
                 <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
@@ -1285,33 +1370,65 @@
         
         // Init event listeners
         function initEventListeners() {
+            const clearConfirmModal = document.getElementById('clearConfirmModal');
+            const clearConfirmCancel = document.getElementById('clearConfirmCancel');
+            const clearConfirmOk = document.getElementById('clearConfirmOk');
+
+            function openClearConfirmModal() {
+                if (!clearConfirmModal) return;
+                clearConfirmModal.classList.add('active');
+                clearConfirmModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeClearConfirmModal() {
+                if (!clearConfirmModal) return;
+                clearConfirmModal.classList.remove('active');
+                clearConfirmModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+
+            async function performFullResetAndGoHome() {
+                if (clearConfirmOk) clearConfirmOk.disabled = true;
+                if (clearConfirmCancel) clearConfirmCancel.disabled = true;
+
+                // Complete reset for this origin
+                try { localStorage.clear(); } catch (e) {}
+                try { sessionStorage.clear(); } catch (e) {}
+
+                // Best-effort: clear Cache Storage (PWA/service worker)
+                try {
+                    if (window.caches && typeof caches.keys === 'function') {
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(k => caches.delete(k)));
+                    }
+                } catch (e) {}
+
+                if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+
+                // Go to home (not customization)
+                window.location.replace('index.html?reset=' + Date.now());
+            }
+
+            clearConfirmCancel?.addEventListener('click', closeClearConfirmModal);
+            clearConfirmModal?.addEventListener('click', (e) => {
+                if (e.target === clearConfirmModal) closeClearConfirmModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && clearConfirmModal?.classList.contains('active')) {
+                    closeClearConfirmModal();
+                }
+            });
+
+            clearConfirmOk?.addEventListener('click', () => {
+                performFullResetAndGoHome();
+            });
+
             // Clear all button
             const clearBtn = document.getElementById('clearBasketBtn');
             if (clearBtn) {
                 clearBtn.addEventListener('click', () => {
-                    if (confirm('Clear all items and reset everything?')) {
-                        // Clear ALL storage - complete reset
-                        localStorage.removeItem('quoteBasket');
-                        localStorage.setItem('quoteBasket', '[]');
-                        
-                        // Clear ALL sessionStorage items
-                        sessionStorage.clear();
-                        
-                        // Clear any other localStorage items related to customization
-                        const keysToRemove = [];
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const key = localStorage.key(i);
-                            if (key && (key.startsWith('uploaded_') || key.startsWith('brandeduk-'))) {
-                                keysToRemove.push(key);
-                            }
-                        }
-                        keysToRemove.forEach(key => localStorage.removeItem(key));
-                        
-                        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-                        
-                        // Force hard refresh to reset everything
-                        window.location.href = 'customize.html';
-                    }
+                    openClearConfirmModal();
                 });
             }
             

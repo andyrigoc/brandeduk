@@ -203,33 +203,54 @@
 
                 const position = checkbox.value;
 
-                // If a method was chosen but the user hasn't uploaded/applied any logo yet,
-                // allow clicking the card to reset the card back to the initial state so
-                // they can pick a different method (e.g. switch from embroidery to print).
-                const hasCustomization = !!positionCustomizationsMap[position] || !!designModalState.positionDesigns[position] || card.classList.contains('customized');
-                if (!hasCustomization && checkbox.checked && positionMethods[position]) {
+                // If the card is already selected (has method or is checked), reset it completely
+                // This allows the user to change their mind between embroidery/print
+                if (checkbox.checked || positionMethods[position]) {
+                    // Full reset like mobile behavior
+                    checkbox.checked = false;
+                    card.classList.remove('selected', 'customized');
+
+                    // Reset both badges to default state
+                    resetPriceBadge(card.querySelector('.price-emb'));
+                    resetPriceBadge(card.querySelector('.price-print'));
+
+                    // Clear position method and customization
                     delete positionMethods[position];
-                    applyMethodUI(card, null);
+                    delete positionCustomizationsMap[position];
+                    delete designModalState.positionDesigns[position];
+
+                    // Clear logo overlay on card
+                    const logoOverlay = card.querySelector('.logo-overlay-box');
+                    const logoImg = card.querySelector('.logo-overlay-img');
+                    if (logoOverlay) logoOverlay.hidden = true;
+                    if (logoImg) logoImg.src = '';
+
+                    // Clear uploaded logo container
+                    const uploadedContainer = card.querySelector('.uploaded-logo-container');
+                    const thumbImg = card.querySelector('.uploaded-logo-thumb');
+                    if (uploadedContainer) uploadedContainer.hidden = true;
+                    if (thumbImg) thumbImg.src = '';
+
+                    // Update positions array
+                    selectedPositions = selectedPositions.filter(p => p !== position);
+
+                    // Update UI
                     updateSubmitButton();
                     updateSummarySidebar();
                     syncCustomizationsToBasket();
+
+                    // Show toast for user feedback
+                    if (typeof showToast === 'function') {
+                        showToast('Choose Embroidery or Print');
+                    }
                     return;
                 }
 
-                if (checkbox.checked) {
-                    checkbox.checked = false;
-                    checkbox.dispatchEvent(new Event('change'));
-                    return;
+                // Card not selected yet - user must click a badge (Embroidery/Print) to select
+                // Show a subtle hint
+                if (typeof showToast === 'function') {
+                    showToast('Choose Embroidery or Print');
                 }
-
-                // If no method chosen yet, default to embroidery (no extra UI)
-                if (!positionMethods[position]) {
-                    positionMethods[position] = 'embroidery';
-                    applyMethodUI(card, 'embroidery');
-                }
-
-                checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
             });
 
             // Checkbox change handler
@@ -293,6 +314,50 @@
 
                     const method = badge.dataset.method;
                     if (!method) return;
+
+                    // Check if this badge is already active (allow toggle off - like mobile)
+                    const isCurrentlyActive = badge.classList.contains('active');
+
+                    if (isCurrentlyActive) {
+                        // Toggle OFF: Reset the position completely (like mobile behavior)
+                        checkbox.checked = false;
+                        card.classList.remove('selected', 'customized');
+
+                        // Reset both badges to default state
+                        resetPriceBadge(card.querySelector('.price-emb'));
+                        resetPriceBadge(card.querySelector('.price-print'));
+
+                        // Clear position method and customization
+                        delete positionMethods[position];
+                        delete positionCustomizationsMap[position];
+                        delete designModalState.positionDesigns[position];
+
+                        // Clear logo overlay on card
+                        const logoOverlay = card.querySelector('.logo-overlay-box');
+                        const logoImg = card.querySelector('.logo-overlay-img');
+                        if (logoOverlay) logoOverlay.hidden = true;
+                        if (logoImg) logoImg.src = '';
+
+                        // Clear uploaded logo container
+                        const uploadedContainer = card.querySelector('.uploaded-logo-container');
+                        const thumbImg = card.querySelector('.uploaded-logo-thumb');
+                        if (uploadedContainer) uploadedContainer.hidden = true;
+                        if (thumbImg) thumbImg.src = '';
+
+                        // Update positions array
+                        selectedPositions = selectedPositions.filter(p => p !== position);
+
+                        // Update UI
+                        updateSubmitButton();
+                        updateSummarySidebar();
+                        syncCustomizationsToBasket();
+
+                        // Show toast for user feedback
+                        if (typeof showToast === 'function') {
+                            showToast('Choose Embroidery or Print');
+                        }
+                        return;
+                    }
 
                     const previousMethod = positionMethods[position];
                     positionMethods[position] = method;
@@ -612,29 +677,47 @@
     }
 
     function removeDesignImageBackground() {
+        console.log('🎨 removeDesignImageBackground called');
         const previewImg = document.getElementById('designPreviewImg');
         const canvas = document.getElementById('bgRemovalCanvas');
         const removeBgBtn = document.getElementById('removeBgBtn');
 
-        if (!previewImg || !previewImg.src || !canvas) return;
+        console.log('🎨 Elements:', { previewImg: !!previewImg, previewImgSrc: previewImg?.src?.substring(0, 50), canvas: !!canvas, removeBgBtn: !!removeBgBtn });
 
+        if (!previewImg || !previewImg.src || !canvas) {
+            console.error('🎨 Missing required elements for background removal');
+            return;
+        }
+
+        // Save original image for undo functionality (like mobile)
         if (!designModalState.originalLogoImage) {
             designModalState.originalLogoImage = previewImg.src;
         }
 
+        // Show processing state
         if (removeBgBtn) {
             removeBgBtn.classList.add('processing');
             const span = removeBgBtn.querySelector('span');
-            if (span) span.textContent = 'Processing...';
+            if (span) span.textContent = 'Processing';
         }
 
+        // Use setTimeout to allow UI to update (like mobile)
         setTimeout(() => {
+            console.log('🎨 Starting background removal process...');
             try {
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
                 const img = new Image();
-                img.crossOrigin = 'Anonymous';
+                
+                // Don't set crossOrigin for data URLs - it causes CORS issues
+                const imgSrc = previewImg.src;
+                console.log('🎨 Image source type:', imgSrc.startsWith('data:') ? 'data URL' : 'external URL');
+                
+                if (!imgSrc.startsWith('data:')) {
+                    img.crossOrigin = 'Anonymous';
+                }
 
                 img.onload = function() {
+                    console.log('🎨 Image loaded, dimensions:', img.width, 'x', img.height);
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
@@ -662,12 +745,16 @@
                         getPixelColorAt(0, height - 1),
                         getPixelColorAt(width - 1, height - 1)
                     ];
+                    
+                    console.log('🎨 Corner colors:', corners);
 
                     const bgColor = {
                         r: Math.round(corners.reduce((sum, c) => sum + c.r, 0) / corners.length),
                         g: Math.round(corners.reduce((sum, c) => sum + c.g, 0) / corners.length),
                         b: Math.round(corners.reduce((sum, c) => sum + c.b, 0) / corners.length)
                     };
+                    
+                    console.log('🎨 Detected background color:', bgColor);
 
                     const tolerance = 45;
                     const visited = new Uint8Array(width * height);
@@ -704,21 +791,25 @@
                         }
                     }
 
+                    console.log('🎨 Flood fill complete, updating image...');
                     ctx.putImageData(imageData, 0, 0);
                     const processedImageUrl = canvas.toDataURL('image/png');
                     previewImg.src = processedImageUrl;
+                    console.log('🎨 Background removal SUCCESS!');
 
+                    // Update button state - change to "Keep Background" (like mobile)
                     if (removeBgBtn) {
                         removeBgBtn.classList.remove('processing');
                         removeBgBtn.classList.add('bg-removed');
                         const span = removeBgBtn.querySelector('span');
-                        if (span) span.textContent = 'Keep\nBackground';
+                        if (span) span.textContent = 'Keep Background';
                     }
 
                     designModalState.backgroundRemoved = true;
                 };
 
-                img.onerror = function() {
+                img.onerror = function(e) {
+                    console.error('🎨 FAILED to load image for background removal:', e);
                     if (removeBgBtn) {
                         removeBgBtn.classList.remove('processing');
                         const span = removeBgBtn.querySelector('span');
@@ -726,9 +817,12 @@
                     }
                 };
 
-                img.src = designModalState.originalLogoImage;
+                // Use current preview image src (like mobile) - NOT originalLogoImage
+                console.log('🎨 Setting img.src to load image...');
+                img.src = imgSrc;
 
             } catch (e) {
+                console.error('🎨 Background removal CATCH error:', e);
                 if (removeBgBtn) {
                     removeBgBtn.classList.remove('processing');
                     const span = removeBgBtn.querySelector('span');

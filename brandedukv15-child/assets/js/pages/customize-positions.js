@@ -1276,28 +1276,15 @@ function initPositionSelection() {
         card.addEventListener('click', (e) => {
             // Don't toggle if clicking on price badges
             if (e.target.closest('.price-badge')) return;
-            
-            // Don't toggle if clicking on the customization pill (informational only)
-            if (e.target.closest('.customization-pill')) return;
-            
-            // If card is selected, clicking anywhere (except badges) should deselect
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                checkbox.dispatchEvent(new Event('change'));
-                return;
-            }
-            
-            // Card not selected - check if method is selected for this position
-            if (!positionMethods[position]) {
-                showMethodSelectionPopup();
-                return;
-            }
-            
-            // Method selected, select the card
-            if (e.target !== checkbox) {
-                checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
-            }
+
+            // If the user clicked the actual checkbox/label, let the native checkbox toggle happen.
+            // We enforce method selection inside the checkbox change handler.
+            if (e.target === checkbox || e.target.closest('.position-checkbox')) return;
+
+            // MOBILE-LIKE UX: clicking the card resets the position so the user can
+            // choose Embroidery or Print again by tapping the badges.
+            resetPositionChoice(position, card, checkbox);
+            showToast('Choose Embroidery or Print');
         });
         
         // Checkbox change updates card state
@@ -1305,6 +1292,14 @@ function initPositionSelection() {
             const positionName = card.querySelector('.position-checkbox span').textContent.trim();
             const priceEmb = parseFloat(card.dataset.embroidery || '0');
             const pricePrint = parseFloat(card.dataset.print || '0');
+
+            // Enforce method selection: do not allow selecting a position without first choosing
+            // Embroidery/Print via the badges.
+            if (checkbox.checked && !positionMethods[position]) {
+                checkbox.checked = false;
+                showToast('Select Embroidery or Print first');
+                return;
+            }
             
             if (checkbox.checked) {
                 card.classList.add('selected');
@@ -1335,6 +1330,52 @@ function initPositionSelection() {
             updateSidebarCosts();
         });
     });
+}
+
+function resetPositionChoice(position, card, checkbox) {
+    if (!card || !position) return;
+
+    // Clear state
+    delete positionMethods[position];
+    delete positionCustomizationsMap[position];
+    if (typeof designModalState === 'object' && designModalState?.positionDesigns) {
+        delete designModalState.positionDesigns[position];
+    }
+
+    // Reset UI
+    try {
+        card.querySelectorAll('.price-badge').forEach(resetPriceBadge);
+    } catch (e) {
+        // ignore
+    }
+
+    const logoOverlay = card.querySelector('.logo-overlay-box');
+    if (logoOverlay) logoOverlay.hidden = true;
+    const logoImg = card.querySelector('.logo-overlay-img');
+    if (logoImg) logoImg.removeAttribute('src');
+    const uploadedContainer = card.querySelector('.uploaded-logo-container');
+    if (uploadedContainer) uploadedContainer.hidden = true;
+
+    // Reset any special "logo added" button state if present
+    card.querySelectorAll('.price-badge.logo-added').forEach((btn) => {
+        btn.classList.remove('logo-added');
+    });
+
+    updateCustomizationIndicator(card, false);
+
+    // If selected, deselect via change handler (also clears sidebar costs)
+    if (checkbox && checkbox.checked) {
+        checkbox.checked = false;
+        checkbox.dispatchEvent(new Event('change'));
+    } else {
+        // Ensure persistence still updates when card wasn't selected
+        try {
+            persistSelections();
+            updateSidebarCosts();
+        } catch (e) {
+            // ignore
+        }
+    }
 }
 
 function initMethodSelection() {
@@ -1368,6 +1409,14 @@ function initMethodSelection() {
 
                 const method = badge.dataset.method;
                 if (!method) {
+                    return;
+                }
+
+                // Mobile-like toggle: clicking the currently active method resets the choice
+                // so the user can pick again.
+                if (badge.classList.contains('active')) {
+                    resetPositionChoice(position, card, checkbox);
+                    showToast('Choose Embroidery or Print');
                     return;
                 }
 
@@ -2061,12 +2110,20 @@ function initDesignModal() {
         const previewContainer = document.getElementById('designUploadPreview');
         const previewImg = document.getElementById('designPreviewImg');
         const dropzone = document.getElementById('designUploadZone');
+        const removeBgBtn = document.getElementById('removeBgBtn');
         
         if (previewContainer) previewContainer.hidden = true;
         if (dropzone) dropzone.style.display = '';
         if (previewImg) previewImg.src = '';
+
+        if (removeBgBtn) {
+            removeBgBtn.classList.remove('bg-removed', 'processing');
+            const span = removeBgBtn.querySelector('span');
+            if (span) span.textContent = 'Remove BG';
+        }
         
         designModalState.originalLogoImage = null;
+        designModalState.backgroundRemoved = false;
     });
     
     // Remove background button
@@ -2149,20 +2206,34 @@ function removeDesignImageBackground() {
         designModalState.originalLogoImage = previewImg.src;
     }
     
+    const btnSpan = removeBgBtn ? removeBgBtn.querySelector('span') : null;
+
     // Show processing state
     if (removeBgBtn) {
         removeBgBtn.classList.add('processing');
-        const span = removeBgBtn.querySelector('span');
-        if (span) span.textContent = 'Processing...';
+        if (btnSpan) btnSpan.textContent = 'Processing';
     }
+
+    // Safety net: never leave the UI stuck in processing
+    const processingWatchdog = setTimeout(() => {
+        if (removeBgBtn && removeBgBtn.classList.contains('processing')) {
+            removeBgBtn.classList.remove('processing');
+            if (btnSpan) btnSpan.textContent = 'Remove BG';
+            console.warn('⏱️ Background removal timed out; reset UI');
+        }
+    }, 15000);
     
     // Use setTimeout to allow UI to update
     setTimeout(() => {
         try {
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (!ctx) {
+                throw new Error('Canvas 2D context not available');
+            }
+
             const img = new Image();
             img.crossOrigin = 'Anonymous';
-            
+
             img.onload = function() {
                 // Set canvas size to match image
                 canvas.width = img.width;
@@ -2182,7 +2253,7 @@ function removeDesignImageBackground() {
                     const idx = (y * width + x) * 4;
                     return { r: data[idx], g: data[idx + 1], b: data[idx + 2] };
                 }
-                
+
                 // Helper function to check if colors are similar
                 function isColorSimilarTo(r, g, b, target, tol) {
                     const dr = Math.abs(r - target.r);
@@ -2212,8 +2283,10 @@ function removeDesignImageBackground() {
                 // Track visited pixels
                 const visited = new Uint8Array(width * height);
                 
-                // Flood fill from all edge pixels - THIS PRESERVES INTERNAL COLORS
+                // Flood fill from all edge pixels - preserves internal colors
+                // Use a head index to avoid O(n^2) queue.shift()
                 const queue = [];
+                let head = 0;
                 
                 // Add all edge pixels to queue
                 for (let x = 0; x < width; x++) {
@@ -2226,8 +2299,8 @@ function removeDesignImageBackground() {
                 }
                 
                 // Process queue (Flood Fill)
-                while (queue.length > 0) {
-                    const [x, y] = queue.shift();
+                while (head < queue.length) {
+                    const [x, y] = queue[head++];
                     
                     // Check bounds
                     if (x < 0 || x >= width || y < 0 || y >= height) continue;
@@ -2268,32 +2341,37 @@ function removeDesignImageBackground() {
                 if (removeBgBtn) {
                     removeBgBtn.classList.remove('processing');
                     removeBgBtn.classList.add('bg-removed');
-                    const span = removeBgBtn.querySelector('span');
-                    if (span) span.textContent = 'Keep\nBackground';
+                    if (btnSpan) btnSpan.textContent = 'Keep Background';
                 }
                 
                 // Set state flag
                 designModalState.backgroundRemoved = true;
+
+                clearTimeout(processingWatchdog);
             };
             
             img.onerror = function() {
                 console.error('Failed to load image for background removal');
                 if (removeBgBtn) {
                     removeBgBtn.classList.remove('processing');
-                    const span = removeBgBtn.querySelector('span');
-                    if (span) span.textContent = 'Remove BG';
+                    if (btnSpan) btnSpan.textContent = 'Remove BG';
                 }
+
+                clearTimeout(processingWatchdog);
             };
-            
-            img.src = designModalState.originalLogoImage;
+
+            // Use the currently shown preview as the source (mobile behavior),
+            // with a fallback to the saved original.
+            img.src = previewImg.src || designModalState.originalLogoImage;
             
         } catch (e) {
             console.error('Background removal error:', e);
             if (removeBgBtn) {
                 removeBgBtn.classList.remove('processing');
-                const span = removeBgBtn.querySelector('span');
-                if (span) span.textContent = 'Remove BG';
+                if (btnSpan) btnSpan.textContent = 'Remove BG';
             }
+
+            clearTimeout(processingWatchdog);
         }
     }, 50);
 }
