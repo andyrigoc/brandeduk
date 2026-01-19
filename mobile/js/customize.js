@@ -4609,16 +4609,11 @@
                         //     logoOverlayBox.classList.add('active');
                         // }
                         
-                        // Auto-remove background per immagini JPEG/JPG
-                        const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || 
-                                       file.name.toLowerCase().endsWith('.jpg') || 
-                                       file.name.toLowerCase().endsWith('.jpeg');
-                        if (isJpeg) {
-                            // Salva l'immagine originale prima della rimozione automatica
-                            state.originalLogoImage = ev.target.result;
-                            // Rimuovi automaticamente lo sfondo
-                            setTimeout(() => removeImageBackground(), 100);
-                        }
+                        // Auto-remove background for ALL images (not just JPEG)
+                        // Salva l'immagine originale prima della rimozione automatica
+                        state.originalLogoImage = ev.target.result;
+                        // Rimuovi automaticamente lo sfondo per tutte le immagini
+                        setTimeout(() => removeImageBackground(), 150);
                     };
                     reader.readAsDataURL(file);
                 }
@@ -4762,7 +4757,12 @@
             try {
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
                 const img = new Image();
-                img.crossOrigin = 'Anonymous';
+                
+                // Don't set crossOrigin for data URLs - it causes CORS issues
+                const imgSrc = previewImg.src;
+                if (!imgSrc.startsWith('data:')) {
+                    img.crossOrigin = 'Anonymous';
+                }
                 
                 img.onload = function() {
                     // Set canvas size to match image
@@ -4881,7 +4881,8 @@
                     }
                 };
                 
-                img.src = previewImg.src;
+                // Use the imgSrc variable we defined above
+                img.src = imgSrc;
                 
             } catch (e) {
                 console.error('Background removal error:', e);

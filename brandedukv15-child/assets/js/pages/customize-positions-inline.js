@@ -665,13 +665,8 @@
             designModalState.originalLogoImage = ev.target.result;
             designModalState.backgroundRemoved = false;
 
-            // Auto-remove background for JPEG/JPG images (like mobile version)
-            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' ||
-                           file.name.toLowerCase().endsWith('.jpg') ||
-                           file.name.toLowerCase().endsWith('.jpeg');
-            if (isJpeg) {
-                setTimeout(() => removeDesignImageBackground(), 100);
-            }
+            // Auto-remove background for ALL images (not just JPEG)
+            setTimeout(() => removeDesignImageBackground(), 150);
         };
         reader.readAsDataURL(file);
     }
