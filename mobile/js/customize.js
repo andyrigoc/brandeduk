@@ -1246,7 +1246,6 @@
         setupColorSelection();
         setupSizeSelection();
         setupQuantityControl();
-        setupTechniqueSelection();
         setupQuickUpload();
         setupPositionSelection();
         setupDeleteLogoButtons(); // Handle delete logo buttons in position cards
