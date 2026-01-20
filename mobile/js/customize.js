@@ -643,7 +643,7 @@
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
             state.product.brand = productData.brand || productData.brand_name || state.product.brand;
-            state.product.sizes = productData.sizes || [];
+            state.product.sizes = normalizeProductSizesFromApi(productData);
             state.product.weight = productData.weight || '';
             state.product.fabric = productData.fabric || '';
             state.product.rawData = productData; // Store full product data for reference
@@ -2964,6 +2964,71 @@
     }
 
     // === Get product sizes from API or fallback ===
+    function normalizeProductSizesFromApi(productData) {
+        const raw = productData || {};
+
+        const normalizeList = (value) => {
+            if (!value) return [];
+            if (Array.isArray(value)) {
+                return value
+                    .map(v => String(v || '').trim())
+                    .filter(Boolean);
+            }
+            if (typeof value === 'string') {
+                // Split on commas/semicolons/pipes; keep single tokens intact (e.g. "ONESIZE")
+                const parts = value.split(/[;,|]/g);
+                const cleaned = parts.map(p => p.trim()).filter(Boolean);
+                return cleaned.length ? cleaned : [value.trim()].filter(Boolean);
+            }
+            return [String(value).trim()].filter(Boolean);
+        };
+
+        const uniq = (arr) => {
+            const out = [];
+            const seen = new Set();
+            arr.forEach(v => {
+                const key = String(v).trim();
+                if (!key) return;
+                if (seen.has(key)) return;
+                seen.add(key);
+                out.push(key);
+            });
+            return out;
+        };
+
+        // Pull sizes from multiple possible fields.
+        // NOTE: Some feeds use a misspelled "SIEZE" field.
+        let sizes = [];
+        sizes = sizes.concat(normalizeList(raw.sizes));
+        sizes = sizes.concat(normalizeList(raw.SIZES));
+        sizes = sizes.concat(normalizeList(raw.size));
+        sizes = sizes.concat(normalizeList(raw.SIZE));
+        sizes = sizes.concat(normalizeList(raw.SIEZE));
+        sizes = sizes.concat(normalizeList(raw.sieze));
+
+        // Some APIs store size info per variant/color.
+        const variantList = Array.isArray(raw.variants) ? raw.variants : (Array.isArray(raw.colors) ? raw.colors : []);
+        if (variantList && variantList.length) {
+            variantList.forEach(v => {
+                sizes = sizes.concat(normalizeList(v?.sizes));
+                sizes = sizes.concat(normalizeList(v?.SIEZE));
+                sizes = sizes.concat(normalizeList(v?.sieze));
+                sizes = sizes.concat(normalizeList(v?.size));
+            });
+        }
+
+        sizes = uniq(sizes);
+
+        // If sizes are missing for one-size product types, force a single ONESIZE.
+        const productType = String(raw.productType || raw.category || raw.type || '').trim().toLowerCase();
+        const isOneSizeType = ['beanies', 'caps', 'aprons'].some(t => productType.includes(t));
+        if ((!sizes || sizes.length === 0) && isOneSizeType) {
+            return ['ONESIZE'];
+        }
+
+        return sizes || [];
+    }
+
     function getProductSizes() {
         // Get sizes from product data
         let sizes = state.product?.sizes || [];
@@ -2973,9 +3038,13 @@
             sizes = [sizes];
         }
         
-        // If no sizes from API, use default sizes
+        // If no sizes from API, try to detect one-size product types before falling back
         if (!sizes || sizes.length === 0) {
-            sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+            const rawType = String(state.product?.rawData?.productType || state.product?.rawData?.category || state.product?.rawData?.type || '').trim().toLowerCase();
+            const isOneSizeType = ['beanies', 'caps', 'aprons'].some(t => rawType.includes(t));
+            sizes = isOneSizeType
+                ? ['ONESIZE']
+                : ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
         }
         
         return sizes;
@@ -2985,20 +3054,25 @@
     function addOneSizeRow(container) {
         const selectedSizes = container.querySelector('.selected-sizes');
         if (!selectedSizes) return;
+
+        // Prefer whatever the API provided (e.g. ONESIZE/One Size/OS)
+        const productSizes = getProductSizes();
+        const sizeKey = (productSizes && productSizes[0]) ? String(productSizes[0]) : 'ONESIZE';
+        const displayLabel = 'One Size';
         
         const newRow = document.createElement('div');
         newRow.className = 'size-qty-item one-size-item';
         newRow.innerHTML = `
-            <div class="one-size-label">One Size</div>
+            <div class="one-size-label">${displayLabel}</div>
             <div class="item-qty-control">
                 <button type="button" class="item-qty-btn minus">-</button>
-                <input type="number" class="item-qty-input" value="0" min="0" max="999" data-size="One size">
+                <input type="number" class="item-qty-input" value="0" min="0" max="999" data-size="${sizeKey}">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
         `;
         
         // Store the size value for quantity tracking
-        newRow.dataset.size = 'One size';
+        newRow.dataset.size = sizeKey;
         
         selectedSizes.appendChild(newRow);
         updateSizeQuantities();
