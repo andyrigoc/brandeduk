@@ -17,9 +17,14 @@
     function readState() {
         var store = getStorage();
         if (!store) {
-            return false;
+            return false; // Default: EX VAT
         }
-        return store.getItem(STORAGE_KEY) === 'on';
+        var value = store.getItem(STORAGE_KEY);
+        // Default to 'off' (EX VAT) if no value is set
+        if (value === null) {
+            return false; // EX VAT by default
+        }
+        return value === 'on';
     }
 
     function writeState(nextState) {
@@ -160,6 +165,11 @@
     window.brandedukv15.vat = vatApi;
 
     function init() {
+        // Ensure EX VAT is the default - set it explicitly if not already set
+        var store = getStorage();
+        if (store && store.getItem(STORAGE_KEY) === null) {
+            store.setItem(STORAGE_KEY, 'off'); // EX VAT default
+        }
         syncControls();
         dispatchChange('init');
     }

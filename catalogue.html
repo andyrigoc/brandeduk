@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Catalogue - Branded UK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        /* Header Top */
+        .header-top {
+            background: linear-gradient(180deg, #f8f9fa, #e9ecef);
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-top-left { display: flex; align-items: center; }
+        .header-top-right { display: flex; align-items: center; gap: 16px; }
+        
+        /* Social Icons 3D */
+        .header-social-3d {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        .header-social-3d .social-icon-3d {
+            --icon-size: 32px;
+            width: var(--icon-size) !important;
+            height: var(--icon-size) !important;
+            border-radius: 10px !important;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca) !important;
+            box-shadow: 
+                4px 4px 8px rgba(0,0,0,0.15),
+                -4px -4px 8px rgba(255,255,255,0.9) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #555 !important;
+            font-size: 14px !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+        }
+        .header-social-3d .social-icon-3d:hover {
+            box-shadow: 
+                inset 3px 3px 6px rgba(0,0,0,0.1),
+                inset -3px -3px 6px rgba(255,255,255,0.7) !important;
+            transform: scale(0.95) !important;
+        }
+        .header-social-3d .social-icon-3d.facebook:hover { color: #1877F2 !important; }
+        .header-social-3d .social-icon-3d.instagram:hover { color: #E4405F !important; }
+        .header-social-3d .social-icon-3d.linkedin:hover { color: #0A66C2 !important; }
+        .header-social-3d .social-icon-3d.youtube:hover { color: #FF0000 !important; }
+        .header-social-3d .social-icon-3d.pinterest:hover { color: #BD081C !important; }
+        
+        .header-top-email {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .header-top-email:hover { color: #7c3aed; }
+        .header-top-phone {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-top-phone:hover { color: #7c3aed; }
+        
+        /* Catalogue Container - wrapper to hide iframe scrollbar */
+        .catalogue-container {
+            width: 100%;
+            height: calc(100vh - 90px);
+            overflow: hidden;
+            position: relative;
+        }
+        .catalogue-container iframe {
+            display: block;
+            width: 100%;
+            height: calc(100% + 20px); /* Extra height to push scrollbar below visible area */
+            border: none;
+        }
+        
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .back-link:hover { color: #a855f7; }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="header-container">
+            <div class="header-top-left">
+                <div class="header-social-3d">
+                    <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon-3d linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon-3d youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon-3d pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="header-top-right">
+                <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                <a href="tel:02089742722" class="header-top-phone">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    0208 974 2722
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<a href="brandeduk.com/home-pc.html" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    Back to Home
+</a>
+
+<div class="catalogue-container">
+    <iframe src="https://brandeduk.fullcollection.com"></iframe>
+</div>
+
+</body>
+</html>

@@ -100,8 +100,9 @@ html, body {
     z-index: 1;
 }
 
+/* TEMPORARILY HIDDEN - gallery thumbnails disabled until new images available */
 .thumb-column {
-    display: flex;
+    display: none !important;
     flex-direction: column;
     gap: 8px;
     margin-left: 0;

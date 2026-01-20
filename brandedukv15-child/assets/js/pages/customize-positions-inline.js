@@ -567,8 +567,16 @@
         });
 
         // Upload zone click - opens file dialog
+        // IMPORTANT: Don't trigger if clicking on the label (which already opens the file dialog)
         if (uploadZone && fileInput) {
             uploadZone.addEventListener('click', function(e) {
+                // Don't trigger if clicking on label or input (they handle it themselves)
+                if (e.target.tagName === 'LABEL' || e.target.tagName === 'INPUT') {
+                    return;
+                }
+                if (e.target.closest('label')) {
+                    return;
+                }
                 e.stopPropagation();
                 fileInput.value = '';
                 fileInput.click();
@@ -672,19 +680,16 @@
     }
 
     function removeDesignImageBackground() {
-        console.log('🎨 removeDesignImageBackground called');
         const previewImg = document.getElementById('designPreviewImg');
         const canvas = document.getElementById('bgRemovalCanvas');
         const removeBgBtn = document.getElementById('removeBgBtn');
 
-        console.log('🎨 Elements:', { previewImg: !!previewImg, previewImgSrc: previewImg?.src?.substring(0, 50), canvas: !!canvas, removeBgBtn: !!removeBgBtn });
-
         if (!previewImg || !previewImg.src || !canvas) {
-            console.error('🎨 Missing required elements for background removal');
+            console.error('Missing required elements for background removal');
             return;
         }
 
-        // Save original image for undo functionality (like mobile)
+        // Save original image for undo functionality
         if (!designModalState.originalLogoImage) {
             designModalState.originalLogoImage = previewImg.src;
         }
@@ -696,135 +701,127 @@
             if (span) span.textContent = 'Processing';
         }
 
-        // Use setTimeout to allow UI to update (like mobile)
-        setTimeout(() => {
-            console.log('🎨 Starting background removal process...');
+        // Create new image to process
+        const img = new Image();
+        
+        img.onload = function() {
             try {
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                const img = new Image();
-                
-                // Don't set crossOrigin for data URLs - it causes CORS issues
-                const imgSrc = previewImg.src;
-                console.log('🎨 Image source type:', imgSrc.startsWith('data:') ? 'data URL' : 'external URL');
-                
-                if (!imgSrc.startsWith('data:')) {
-                    img.crossOrigin = 'Anonymous';
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                const width = canvas.width;
+                const height = canvas.height;
+
+                // Sample corner pixels to detect background color
+                function getPixel(x, y) {
+                    const idx = (y * width + x) * 4;
+                    return { r: data[idx], g: data[idx + 1], b: data[idx + 2], a: data[idx + 3] };
                 }
 
-                img.onload = function() {
-                    console.log('🎨 Image loaded, dimensions:', img.width, 'x', img.height);
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+                const corners = [
+                    getPixel(0, 0),
+                    getPixel(width - 1, 0),
+                    getPixel(0, height - 1),
+                    getPixel(width - 1, height - 1)
+                ];
 
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    const width = canvas.width;
-                    const height = canvas.height;
-
-                    function getPixelColorAt(x, y) {
-                        const idx = (y * width + x) * 4;
-                        return { r: data[idx], g: data[idx + 1], b: data[idx + 2] };
-                    }
-
-                    function isColorSimilarTo(r, g, b, target, tol) {
-                        const dr = Math.abs(r - target.r);
-                        const dg = Math.abs(g - target.g);
-                        const db = Math.abs(b - target.b);
-                        return dr <= tol && dg <= tol && db <= tol;
-                    }
-
-                    const corners = [
-                        getPixelColorAt(0, 0),
-                        getPixelColorAt(width - 1, 0),
-                        getPixelColorAt(0, height - 1),
-                        getPixelColorAt(width - 1, height - 1)
-                    ];
-                    
-                    console.log('🎨 Corner colors:', corners);
-
-                    const bgColor = {
-                        r: Math.round(corners.reduce((sum, c) => sum + c.r, 0) / corners.length),
-                        g: Math.round(corners.reduce((sum, c) => sum + c.g, 0) / corners.length),
-                        b: Math.round(corners.reduce((sum, c) => sum + c.b, 0) / corners.length)
-                    };
-                    
-                    console.log('🎨 Detected background color:', bgColor);
-
-                    const tolerance = 45;
-                    const visited = new Uint8Array(width * height);
-                    const queue = [];
-
-                    for (let x = 0; x < width; x++) {
-                        queue.push([x, 0]);
-                        queue.push([x, height - 1]);
-                    }
-                    for (let y = 1; y < height - 1; y++) {
-                        queue.push([0, y]);
-                        queue.push([width - 1, y]);
-                    }
-
-                    while (queue.length > 0) {
-                        const [x, y] = queue.shift();
-                        if (x < 0 || x >= width || y < 0 || y >= height) continue;
-
-                        const idx = y * width + x;
-                        if (visited[idx]) continue;
-                        visited[idx] = 1;
-
-                        const pixelIdx = idx * 4;
-                        const r = data[pixelIdx];
-                        const g = data[pixelIdx + 1];
-                        const b = data[pixelIdx + 2];
-
-                        if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
-                            data[pixelIdx + 3] = 0;
-                            queue.push([x + 1, y]);
-                            queue.push([x - 1, y]);
-                            queue.push([x, y + 1]);
-                            queue.push([x, y - 1]);
-                        }
-                    }
-
-                    console.log('🎨 Flood fill complete, updating image...');
-                    ctx.putImageData(imageData, 0, 0);
-                    const processedImageUrl = canvas.toDataURL('image/png');
-                    previewImg.src = processedImageUrl;
-                    console.log('🎨 Background removal SUCCESS!');
-
-                    // Update button state - change to "Keep Background" (like mobile)
-                    if (removeBgBtn) {
-                        removeBgBtn.classList.remove('processing');
-                        removeBgBtn.classList.add('bg-removed');
-                        const span = removeBgBtn.querySelector('span');
-                        if (span) span.textContent = 'Keep Background';
-                    }
-
-                    designModalState.backgroundRemoved = true;
+                // Calculate average background color from corners
+                const bgColor = {
+                    r: Math.round(corners.reduce((sum, c) => sum + c.r, 0) / 4),
+                    g: Math.round(corners.reduce((sum, c) => sum + c.g, 0) / 4),
+                    b: Math.round(corners.reduce((sum, c) => sum + c.b, 0) / 4)
                 };
 
-                img.onerror = function(e) {
-                    console.error('🎨 FAILED to load image for background removal:', e);
-                    if (removeBgBtn) {
-                        removeBgBtn.classList.remove('processing');
-                        const span = removeBgBtn.querySelector('span');
-                        if (span) span.textContent = 'Remove BG';
-                    }
-                };
+                // Check if colors are similar
+                function isBackground(r, g, b, tolerance) {
+                    return Math.abs(r - bgColor.r) <= tolerance &&
+                           Math.abs(g - bgColor.g) <= tolerance &&
+                           Math.abs(b - bgColor.b) <= tolerance;
+                }
 
-                // Use current preview image src (like mobile) - NOT originalLogoImage
-                console.log('🎨 Setting img.src to load image...');
-                img.src = imgSrc;
+                const tolerance = 50;
+                const visited = new Uint8Array(width * height);
+
+                // Flood fill from edges using a faster approach
+                const stack = [];
+
+                // Add all edge pixels to stack
+                for (let x = 0; x < width; x++) {
+                    stack.push(x); stack.push(0);                    // Top edge
+                    stack.push(x); stack.push(height - 1);           // Bottom edge
+                }
+                for (let y = 1; y < height - 1; y++) {
+                    stack.push(0); stack.push(y);                    // Left edge
+                    stack.push(width - 1); stack.push(y);            // Right edge
+                }
+
+                // Process stack (flood fill)
+                while (stack.length > 0) {
+                    const y = stack.pop();
+                    const x = stack.pop();
+
+                    if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                    const idx = y * width + x;
+                    if (visited[idx]) continue;
+                    visited[idx] = 1;
+
+                    const pixelIdx = idx * 4;
+                    const r = data[pixelIdx];
+                    const g = data[pixelIdx + 1];
+                    const b = data[pixelIdx + 2];
+
+                    if (isBackground(r, g, b, tolerance)) {
+                        data[pixelIdx + 3] = 0; // Make transparent
+
+                        // Add neighbors (4-directional)
+                        stack.push(x + 1); stack.push(y);
+                        stack.push(x - 1); stack.push(y);
+                        stack.push(x); stack.push(y + 1);
+                        stack.push(x); stack.push(y - 1);
+                    }
+                }
+
+                // Apply processed image
+                ctx.putImageData(imageData, 0, 0);
+                const processedImageUrl = canvas.toDataURL('image/png');
+                previewImg.src = processedImageUrl;
+
+                // Update button state
+                if (removeBgBtn) {
+                    removeBgBtn.classList.remove('processing');
+                    removeBgBtn.classList.add('bg-removed');
+                    const span = removeBgBtn.querySelector('span');
+                    if (span) span.textContent = 'Keep Background';
+                }
+
+                designModalState.backgroundRemoved = true;
 
             } catch (e) {
-                console.error('🎨 Background removal CATCH error:', e);
+                console.error('Background removal error:', e);
                 if (removeBgBtn) {
                     removeBgBtn.classList.remove('processing');
                     const span = removeBgBtn.querySelector('span');
                     if (span) span.textContent = 'Remove BG';
                 }
             }
-        }, 50);
+        };
+
+        img.onerror = function() {
+            console.error('Failed to load image for background removal');
+            if (removeBgBtn) {
+                removeBgBtn.classList.remove('processing');
+                const span = removeBgBtn.querySelector('span');
+                if (span) span.textContent = 'Remove BG';
+            }
+        };
+
+        // Load the image - use the current preview src
+        img.src = previewImg.src;
     }
 
     function restoreDesignOriginalBackground() {
