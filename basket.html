@@ -781,21 +781,6 @@
                         <i class="fab fa-pinterest-p"></i>
                     </a>
                 </div>
-                <!-- Clear All confirmation modal (replaces browser confirm) -->
-                <div class="confirm-modal-overlay" id="clearConfirmModal" aria-hidden="true">
-                    <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle">
-                        <div class="confirm-modal__header">
-                            <h3 class="confirm-modal__title" id="clearConfirmTitle">Clear basket?</h3>
-                        </div>
-                        <div class="confirm-modal__body" id="clearConfirmBody">
-                            This will remove all items and reset everything.
-                        </div>
-                        <div class="confirm-modal__actions">
-                            <button type="button" class="confirm-btn" id="clearConfirmCancel">Cancel</button>
-                            <button type="button" class="confirm-btn confirm-btn--danger" id="clearConfirmOk">Clear All</button>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="tablet-top-bar__center">
                 <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
@@ -1590,5 +1575,21 @@
             window.location.href = 'customize.html';
         }
     </script>
+
+    <!-- Clear All confirmation modal (must be outside all containers for proper z-index) -->
+    <div class="confirm-modal-overlay" id="clearConfirmModal" aria-hidden="true">
+        <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle">
+            <div class="confirm-modal__header">
+                <h3 class="confirm-modal__title" id="clearConfirmTitle">Clear basket?</h3>
+            </div>
+            <div class="confirm-modal__body" id="clearConfirmBody">
+                This will remove all items and reset everything.
+            </div>
+            <div class="confirm-modal__actions">
+                <button type="button" class="confirm-btn" id="clearConfirmCancel">Cancel</button>
+                <button type="button" class="confirm-btn confirm-btn--danger" id="clearConfirmOk">Clear All</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
