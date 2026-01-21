@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablet Order Process v4</title>
+<link rel="stylesheet" href="order.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+</head>
+<body>
+
+<div class="order-container">
+    
+    <!-- Header -->
+    <header class="order-header">
+        <h1>Customise Your Apron</h1>
+        <p class="product-code">Sample Product</p>
+    </header>
+
+    <!-- Progress / Steps -->
+    <div class="progress-bar" aria-label="Order steps">
+        <div class="progress-step active" data-step="1">
+            <span class="step-dot">1</span>
+            <span class="step-label">Colour</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="2">
+            <span class="step-dot">2</span>
+            <span class="step-label">Size & Qty</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="3">
+            <span class="step-dot">3</span>
+            <span class="step-label">Logo</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="4">
+            <span class="step-dot">4</span>
+            <span class="step-label">Submit</span>
+        </div>
+    </div>
+
+    <!-- Horizontal wizard (right-to-left with bounce) -->
+    <div class="wizard-viewport" id="wizardViewport">
+        <div class="wizard-track" id="wizardTrack">
+
+            <!-- STEP 1: Color Selection -->
+            <section class="order-section page" data-step="1">
+                <h2 class="section-title">1. Choose Colour</h2>
+                <div class="colour-grid" id="colourGrid">
+                    <button class="colour-swatch" type="button" data-colour="Black" title="Black" aria-label="Black"></button>
+                    <button class="colour-swatch" type="button" data-colour="Navy" title="Navy" aria-label="Navy"></button>
+                    <button class="colour-swatch" type="button" data-colour="White" title="White" aria-label="White"></button>
+                    <button class="colour-swatch" type="button" data-colour="Red" title="Red" aria-label="Red"></button>
+                    <button class="colour-swatch" type="button" data-colour="Royal" title="Royal" aria-label="Royal"></button>
+                    <button class="colour-swatch" type="button" data-colour="Forest Green" title="Forest Green" aria-label="Forest Green"></button>
+                </div>
+                <div class="selected-colour-label">Selected: <strong id="selectedColourName">-</strong></div>
+            </section>
+
+            <!-- STEP 2: Size & Quantity -->
+            <section class="order-section page" data-step="2">
+                <h2 class="section-title">2. Size & Quantity</h2>
+                <div class="size-qty-compact" id="sizeQtyCompact">
+                    <div class="selected-sizes" id="selectedSizes">
+                        <!-- Size rows added dynamically -->
+                    </div>
+                    <button class="add-size-btn" id="addSizeBtn" type="button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Size
+                    </button>
+                    <div class="qty-total-bar">
+                        <span class="total-label">Total Pieces:</span>
+                        <span class="total-value"><span id="totalQty">0</span> pcs</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STEP 3: Position Cards -->
+            <section class="order-section page" data-step="3">
+                <h2 class="section-title">3. Choose Position(s) & Upload Logo</h2>
+                <div class="key">
+                    <span class="key-label">Key:</span>
+                    <span class="key-badge embroidery">Embroidery</span>
+                    <span class="key-badge print">Print</span>
+                </div>
+                <div class="positions-grid" id="positionOptions">
+            
+            <!-- Center Front -->
+            <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="3.50">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="small-centre-front">
+                        <span>Center Front</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-role="method" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">£5.00</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-role="method" data-default-label="PRINT" data-default-price="£3.50">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£3.50</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/center-front.png" alt="Center Front">
+                    <div class="logo-overlay-box front-center" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="remove-bg-btn" title="Remove background">
+                            <span>Remove BG</span>
+                        </button>
+                        <button type="button" class="delete-logo-btn" title="Remove logo">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Left -->
+            <div class="position-card" data-position="left-breast" data-embroidery="5.00" data-print="3.50">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="left-breast">
+                        <span>Low Left</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-role="method" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">£5.00</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-role="method" data-default-label="PRINT" data-default-price="£3.50">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£3.50</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/low-left.png" alt="Low Left">
+                    <div class="logo-overlay-box apron-low-left" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="remove-bg-btn" title="Remove background">
+                            <span>Remove BG</span>
+                        </button>
+                        <button type="button" class="delete-logo-btn" title="Remove logo">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Right -->
+            <div class="position-card" data-position="right-breast" data-embroidery="5.00" data-print="3.50">
+                <div class="position-card-header">
+                    <label class="position-checkbox">
+                        <input type="checkbox" name="position" value="right-breast">
+                        <span>Low Right</span>
+                    </label>
+                    <div class="position-prices">
+                        <button type="button" class="price-badge price-emb" data-method="embroidery" data-role="method" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                            <span class="price-label">EMBROIDERY</span>
+                            <span class="price-value">£5.00</span>
+                        </button>
+                        <button type="button" class="price-badge price-print" data-method="print" data-role="method" data-default-label="PRINT" data-default-price="£3.50">
+                            <span class="price-label">PRINT</span>
+                            <span class="price-value">£3.50</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="position-preview">
+                    <img class="position-placeholder" src="../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/low-right.png" alt="Low Right">
+                    <div class="logo-overlay-box apron-low-right" hidden>
+                        <img class="logo-overlay-img" src="" alt="">
+                    </div>
+                </div>
+                <div class="uploaded-logo-container" hidden>
+                    <div class="uploaded-logo-box">
+                        <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                        <button type="button" class="remove-bg-btn" title="Remove background">
+                            <span>Remove BG</span>
+                        </button>
+                        <button type="button" class="delete-logo-btn" title="Remove logo">×</button>
+                    </div>
+                </div>
+            </div>
+
+                </div>
+            </section>
+
+            <!-- STEP 4: Submit -->
+            <section class="order-section page" data-step="4">
+                <h2 class="section-title">4. Submit</h2>
+                <div class="review-box" id="reviewBox">
+                    <div class="review-row"><span>Colour</span><strong id="reviewColour">-</strong></div>
+                    <div class="review-row"><span>Total Pieces</span><strong id="reviewQty">0</strong></div>
+                    <div class="review-row"><span>Positions</span><strong id="reviewPositions">-</strong></div>
+                </div>
+                <button class="submit-btn" id="submitBtn" type="button">Add to Quote</button>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Hidden file input for logo upload -->
+    <input type="file" id="logoFileInput" accept="image/*" hidden>
+    
+    <!-- Hidden canvas for background removal -->
+    <canvas id="bgRemovalCanvas" class="bg-removal-canvas" aria-hidden="true"></canvas>
+
+    <!-- Wizard Nav -->
+    <div class="wizard-nav">
+        <button class="nav-btn back" id="btnBack" type="button">Back</button>
+        <button class="nav-btn next" id="btnNext" type="button">Continue</button>
+    </div>
+
+</div>
+
+<script src="order.js"></script>
+</body>
+</html>
