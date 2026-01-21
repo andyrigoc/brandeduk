@@ -89,31 +89,50 @@ function initBrandsMarqueeLogos() {
 // ============================================
 function initVatToggle() {
     const vatToggle = document.querySelector('.header-top-vat-toggle');
-    if (!vatToggle) {
-        console.log('VAT toggle not found');
+    if (!vatToggle) return;
+
+    // If the shared VAT toggle script is present, let it own the control.
+    // We only react to its change event to update legacy price nodes.
+    if (window.brandedukv15 && window.brandedukv15.vat) {
+        const apply = () => updateAllPrices(!!window.brandedukv15.vat.isOn());
+        apply();
+        document.addEventListener('brandeduk:vat-change', apply);
         return;
     }
-    
+
+    const STORAGE_KEY = 'brandeduk-vat-mode';
+    const LEGACY_KEY = 'brandeduk-vat';
+
     const excLabel = vatToggle.querySelector('.header-top-vat-toggle__label--exc');
     const incLabel = vatToggle.querySelector('.header-top-vat-toggle__label--inc');
-    const thumb = vatToggle.querySelector('.header-top-vat-toggle__thumb');
-    
-    // Load saved state
-    const isIncVat = localStorage.getItem('brandeduk-vat') === 'inc';
-    updateVatState(vatToggle, excLabel, incLabel, isIncVat);
-    
-    // Update all prices on page load
-    updateAllPrices(isIncVat);
-    
+
+    const read = () => {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored === 'on') return true;
+        if (stored === 'off') return false;
+        const legacy = localStorage.getItem(LEGACY_KEY);
+        if (legacy === 'inc') return true;
+        if (legacy === 'exc') return false;
+        return false;
+    };
+
+    const write = (isOn) => {
+        localStorage.setItem(STORAGE_KEY, isOn ? 'on' : 'off');
+        localStorage.setItem(LEGACY_KEY, isOn ? 'inc' : 'exc');
+    };
+
+    const apply = (isOn) => {
+        updateVatState(vatToggle, excLabel, incLabel, isOn);
+        updateAllPrices(isOn);
+    };
+
+    apply(read());
+
     vatToggle.addEventListener('click', function(e) {
         e.preventDefault();
-        const currentState = this.getAttribute('aria-pressed') === 'true';
-        const newState = !currentState;
-        localStorage.setItem('brandeduk-vat', newState ? 'inc' : 'exc');
-        updateVatState(this, excLabel, incLabel, newState);
-        
-        // Update all prices immediately
-        updateAllPrices(newState);
+        const newState = !(this.getAttribute('aria-pressed') === 'true');
+        write(newState);
+        apply(newState);
     });
 }
 
@@ -149,13 +168,19 @@ function updateAllPrices(includeVat) {
     
     // Dispatch custom event for other scripts to listen
     document.dispatchEvent(new CustomEvent('vatStateChanged', { 
-        detail: { includeVat: includeVat }
+        detail: { includeVat: includeVat, rate: VAT_RATE, source: 'main.js' }
+    }));
+    document.dispatchEvent(new CustomEvent('brandeduk:vat-change', {
+        detail: { isOn: includeVat, rate: VAT_RATE, source: 'main.js' }
+    }));
+    window.dispatchEvent(new CustomEvent('vatToggleChanged', {
+        detail: { vatOn: includeVat, rate: VAT_RATE, source: 'main.js' }
     }));
 }
 
 // Helper to get current VAT state
 function isVatIncluded() {
-    return localStorage.getItem('brandeduk-vat') === 'inc';
+    return localStorage.getItem('brandeduk-vat-mode') === 'on' || localStorage.getItem('brandeduk-vat') === 'inc';
 }
 
 // ============================================

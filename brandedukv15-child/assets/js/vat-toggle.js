@@ -2,6 +2,7 @@
     'use strict';
 
     var STORAGE_KEY = 'brandeduk-vat-mode';
+    var LEGACY_KEY = 'brandeduk-vat';
     var VAT_RATE = 0.20;
 
     window.brandedukv15 = window.brandedukv15 || {};
@@ -20,8 +21,20 @@
             return false; // Default: EX VAT
         }
         var value = store.getItem(STORAGE_KEY);
-        // Default to 'off' (EX VAT) if no value is set
+
+        // Default to 'off' (EX VAT) if no value is set.
+        // Also support legacy key brandeduk-vat = 'inc' | 'exc'.
         if (value === null) {
+            var legacy = store.getItem(LEGACY_KEY);
+            if (legacy === 'inc' || legacy === 'exc') {
+                var next = legacy === 'inc';
+                try {
+                    store.setItem(STORAGE_KEY, next ? 'on' : 'off');
+                } catch (e) {
+                    // ignore
+                }
+                return next;
+            }
             return false; // EX VAT by default
         }
         return value === 'on';
@@ -34,6 +47,8 @@
         }
         try {
             store.setItem(STORAGE_KEY, nextState ? 'on' : 'off');
+            // Keep legacy storage key in sync for older pages/scripts.
+            store.setItem(LEGACY_KEY, nextState ? 'inc' : 'exc');
         } catch (error) {
             console.warn('VAT toggle: unable to persist state', error);
         }
@@ -61,6 +76,26 @@
         }
 
         document.dispatchEvent(event);
+
+        // Compatibility events for older prototype pages/scripts.
+        try {
+            document.dispatchEvent(
+                new CustomEvent('vatStateChanged', {
+                    detail: { includeVat: isOn, rate: VAT_RATE, source: source || 'toggle' }
+                })
+            );
+        } catch (e) {
+            // ignore
+        }
+        try {
+            window.dispatchEvent(
+                new CustomEvent('vatToggleChanged', {
+                    detail: { vatOn: isOn, rate: VAT_RATE, source: source || 'toggle' }
+                })
+            );
+        } catch (e2) {
+            // ignore
+        }
     }
 
     function updateControl(control, isOn) {

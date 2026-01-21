@@ -221,21 +221,42 @@
             return formatCurrency(minVal) + ' - ' + formatCurrency(maxVal);
         }
 
+        function getBaseTierPrice(product) {
+            const breaks = (product && Array.isArray(product.priceBreaks)) ? product.priceBreaks : [];
+            if (!breaks.length) return null;
+
+            let bestPrice = null;
+            let bestMinQty = Infinity;
+
+            breaks.forEach(step => {
+                const p = Number(step && step.price);
+                if (!Number.isFinite(p) || p <= 0) return;
+
+                const rawMin = step.minQty ?? step.min ?? step.from ?? step.qty ?? step.quantity ?? step.start;
+                const minQty = Number(rawMin);
+                const normalizedMin = Number.isFinite(minQty) && minQty > 0 ? minQty : 0;
+
+                if (normalizedMin < bestMinQty) {
+                    bestMinQty = normalizedMin;
+                    bestPrice = p;
+                }
+            });
+
+            if (bestPrice === null) {
+                const first = Number(breaks[0] && breaks[0].price);
+                if (Number.isFinite(first) && first > 0) return first;
+            }
+
+            return bestPrice;
+        }
+
         function getProductPriceRange(product) {
-            const breaks = product.priceBreaks || [];
-            if (!breaks.length) {
-                const base = Number(product.price) || 0;
-                return { min: base, max: base };
+            const baseTier = getBaseTierPrice(product);
+            if (baseTier !== null) {
+                return { min: baseTier, max: baseTier };
             }
-            const values = breaks.map(step => Number(step.price)).filter(price => price > 0);
-            if (values.length === 0) {
-                const base = Number(product.price) || 0;
-                return { min: base, max: base };
-            }
-            return {
-                min: Math.min(...values),
-                max: Math.max(...values)
-            };
+            const base = Number(product && product.price) || 0;
+            return { min: base, max: base };
         }
 
         // Category title mappings

@@ -2882,24 +2882,24 @@ async function getProductTypeName(slug) {
     }
 }
 
-// VAT helpers - uses same key as vat-toggle.js
-// Expected behavior:
-// - Toggle OFF (left/grey) → show "ex VAT" → no VAT added
-// - Toggle ON (right/purple) → show "inc VAT" → add 20% VAT
-// The toggle stores 'on' when VAT is included, 'off' or null when excluded
+// VAT helpers - prefer the shared vat-toggle.js API
+function getVatApi() {
+    return window.brandedukv15 && window.brandedukv15.vat;
+}
+
 function isVatOn() {
-    const stored = localStorage.getItem('brandeduk-vat-mode');
-    // When toggle is visually ON (purple/right), localStorage should be 'on' → return true → show "inc VAT"
-    // When toggle is visually OFF (left), localStorage should be 'off' or null → return false → show "ex VAT"
-    // FIX: Toggle stores backwards - when visually ON (purple/right) it stores 'off' or null
-    // When visually OFF (left) it stores 'on'
-    // So we invert: return true when stored is NOT 'on'
-    const result = stored !== 'on';
-    console.log('🔍 isVatOn() - stored:', stored, '→ returning:', result, '→ will show:', result ? 'inc VAT' : 'ex VAT');
-    return result;
+    const vat = getVatApi();
+    if (vat && typeof vat.isOn === 'function') {
+        return !!vat.isOn();
+    }
+    return localStorage.getItem('brandeduk-vat-mode') === 'on';
 }
 
 function formatCurrency(amount) {
+    const vat = getVatApi();
+    if (vat && typeof vat.format === 'function') {
+        return vat.format(amount);
+    }
     let value = Number(amount) || 0;
     if (isVatOn()) {
         value = value * 1.20;
@@ -2908,7 +2908,40 @@ function formatCurrency(amount) {
 }
 
 function vatSuffix() {
+    const vat = getVatApi();
+    if (vat && typeof vat.suffix === 'function') {
+        return vat.suffix();
+    }
     return isVatOn() ? 'inc VAT' : 'ex VAT';
+}
+
+function getBaseTierPrice(product) {
+    const breaks = product && Array.isArray(product.priceBreaks) ? product.priceBreaks : [];
+    if (!breaks.length) return null;
+
+    let bestPrice = null;
+    let bestMinQty = Infinity;
+
+    breaks.forEach(step => {
+        const p = Number(step && step.price);
+        if (!Number.isFinite(p) || p <= 0) return;
+
+        const rawMin = step.minQty ?? step.min ?? step.from ?? step.qty ?? step.quantity ?? step.start;
+        const minQty = Number(rawMin);
+        const normalizedMin = Number.isFinite(minQty) && minQty > 0 ? minQty : 0;
+
+        if (normalizedMin < bestMinQty) {
+            bestMinQty = normalizedMin;
+            bestPrice = p;
+        }
+    });
+
+    if (bestPrice === null) {
+        const first = Number(breaks[0] && breaks[0].price);
+        if (Number.isFinite(first) && first > 0) return first;
+    }
+
+    return bestPrice;
 }
 
 function getPriceRange() {
@@ -3049,8 +3082,9 @@ async function renderProducts() {
         const colorIndex = index % colors.length;
         const displayColor = colors[colorIndex];
         
-        // Use product.price directly (ignore priceBreaks for shop page)
-        const productPrice = parseFloat(product.price) || parseFloat(product.basePrice) || 0;
+        // Display should use the lowest-discount tier (smallest quantity break).
+        const baseTierPrice = getBaseTierPrice(product);
+        const productPrice = (baseTierPrice !== null ? baseTierPrice : (parseFloat(product.price) || parseFloat(product.basePrice) || 0));
         
         // For display purposes, we only need the single price
         const minPrice = productPrice;
