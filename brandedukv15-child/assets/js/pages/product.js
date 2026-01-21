@@ -10,7 +10,7 @@ let PRODUCT_DATA = null;
 let DISCOUNTS = [];
 
 // API Configuration
-const API_BASE_URL = 'https://brandeduk-backend.onrender.com/api';
+const API_BASE_URL = 'https://api.brandeduk.com/api';
 
 const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
 const VAT_FALLBACK_RATE = 0.20;
@@ -294,14 +294,14 @@ function initBreadcrumb() {
     if (productType) {
         const categorySlug = productTypeToSlug(productType);
         if (categorySlug) {
-            breadcrumbCategoryLink.href = `brandeduk.com/shop-pc.html?productType=${categorySlug}`;
+            breadcrumbCategoryLink.href = `shop-pc.html?productType=${categorySlug}`;
             breadcrumbCategoryLink.textContent = productType;
         } else {
-            breadcrumbCategoryLink.href = 'brandeduk.com/shop-pc.html';
+            breadcrumbCategoryLink.href = 'shop-pc.html';
             breadcrumbCategoryLink.textContent = productType;
         }
     } else {
-        breadcrumbCategoryLink.href = 'brandeduk.com/shop-pc.html';
+        breadcrumbCategoryLink.href = 'shop-pc.html';
         breadcrumbCategoryLink.textContent = 'All Products';
     }
     

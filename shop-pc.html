@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20251230">
     <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
-    <link rel="stylesheet" href="css/style.css?v=20251230">
+    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
     <style>
         /* ============================================
            DESKTOP HEADER 3D SOCIAL ICONS (Neumorphic)
@@ -2037,8 +2037,8 @@
 <script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
 <script src="../brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
 <script src="../brandedukv15-child/assets/js/api.js?v=20260107"></script>
-<script src="js/main.js?v=20251230"></script>
-<script src="js/product-types-menu.js?v=20260110"></script>
+<script src="brandeduk.com/js/main.js?v=20251230"></script>
+<script src="brandeduk.com/js/product-types-menu.js?v=20260110"></script>
 <script>
 // ============================================================================
 // API INTEGRATION - Desktop Shop Page
@@ -2265,6 +2265,9 @@ let currentState = {
 };
 
 let isLoading = false;
+let renderProductsCallCount = 0;
+let renderProductsPending = null;
+let renderProductsDebounceTimer = null;
 
 // ============================================================================
 // API INTEGRATION FUNCTIONS
@@ -2432,16 +2435,31 @@ function buildApiParams() {
 
     // Price range (numeric values)
     // Send priceMin and priceMax if they are set (even if they match the full range)
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2432',message:'buildApiParams checking priceMin/priceMax',data:{currentStatePriceMin:currentState.priceMin,currentStatePriceMax:currentState.priceMax,priceMinType:typeof currentState.priceMin,priceMaxType:typeof currentState.priceMax,priceMinIsNull:currentState.priceMin===null,priceMaxIsNull:currentState.priceMax===null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
         params.priceMin = Number(currentState.priceMin);
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2435',message:'buildApiParams ADDING priceMin',data:{priceMin:params.priceMin},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         console.log('💰 Adding priceMin to API params:', params.priceMin);
     } else {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2438',message:'buildApiParams NOT adding priceMin',data:{reason:'null or undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         console.log('💰 priceMin is null/undefined, not adding to API params');
     }
     if (currentState.priceMax !== null && currentState.priceMax !== undefined) {
         params.priceMax = Number(currentState.priceMax);
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2441',message:'buildApiParams ADDING priceMax',data:{priceMax:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         console.log('💰 Adding priceMax to API params:', params.priceMax);
     } else {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2444',message:'buildApiParams NOT adding priceMax',data:{reason:'null or undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         console.log('💰 priceMax is null/undefined, not adding to API params');
     }
 
@@ -2515,18 +2533,45 @@ function buildApiParams() {
 }
 
 // Fetch products from API
+// Track pending API requests and abort controller
+let pendingRequest = null;
+let abortController = null;
+
 async function fetchProducts() {
-    if (isLoading) {
-        console.log('⏳ API call already in progress, skipping...');
-        return;
-    }
-    isLoading = true;
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2537',message:'fetchProducts() ENTRY',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     
-    try {
+    // Note: Loader is already shown by renderProducts() before calling fetchProducts()
+    // Only show loader here if it wasn't already shown (safety check)
+    const grid = document.getElementById('productsGrid');
+    if (grid && !grid.querySelector('.products-loader')) {
+        showLoader();
+    }
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2542',message:'fetchProducts() AFTER showLoader() check',data:{timestamp:Date.now(),hasLoader:!!grid?.querySelector('.products-loader')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
+    
+    // If a request is already in progress, cancel it and start a new one
+    // This ensures we always use the latest parameters
+    if (pendingRequest && abortController) {
+        console.log('⏳ Cancelling previous API request to use latest parameters...');
+        abortController.abort();
+        pendingRequest = null;
+        abortController = null;
+        isLoading = false;
+    }
+    
+    isLoading = true;
+    abortController = new AbortController();
+    // Create a promise for this request
+    const currentRequest = (async () => {
+        try {
         const params = buildApiParams();
         
         // Always use the standard /api/products endpoint (works with all sidebar filters)
-        const baseUrl = 'https://brandeduk-backend.onrender.com/api/products';
+        const baseUrl = 'https://api.brandeduk.com/api/products';
         
         // Note: productType and accreditation are already handled in buildApiParams()
         // from currentState, so no need to check URL here again
@@ -2563,6 +2608,9 @@ async function fetchProducts() {
         const queryString = queryParts.join('&');
         const fullUrl = `${baseUrl}${queryString ? '?' + queryString : ''}`;
         
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2563',message:'API CALL TRIGGERED',data:{url:fullUrl,params:params,hasPriceMin:'priceMin' in params,hasPriceMax:'priceMax' in params,priceMinValue:params.priceMin,priceMaxValue:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         // Log the API call
         console.log('🚀 API CALL TRIGGERED:', {
             method: 'GET',
@@ -2578,14 +2626,17 @@ async function fetchProducts() {
             // Use BrandedAPI - it handles productType and accreditation as query params
             data = await BrandedAPI.getProducts(params);
         } else {
-            // Fallback: fetch directly
-            const response = await fetch(fullUrl);
+            // Fallback: fetch directly with abort signal
+            const response = await fetch(fullUrl, { signal: abortController.signal });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             data = await response.json();
         }
         
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2606',message:'API RESPONSE RECEIVED',data:{total:data?.total,itemsCount:data?.items?.length||0,hasItems:!!data?.items,priceRange:data?.priceRange,firstItemPrice:data?.items?.[0]?.price},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         console.log('✅ API RESPONSE RECEIVED:', {
             total: data && data.total,
             itemsCount: (data && data.items && data.items.length) || 0,
@@ -2603,17 +2654,44 @@ async function fetchProducts() {
         // NOT the user's selected price filter. Setting it here would overwrite
         // the user's price filter selection every time products are fetched.
         
-        return data.items || [];
+        const items = data.items || [];
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2623',message:'fetchProducts returning items',data:{itemsCount:items.length,total:data?.total,firstItemPrice:items[0]?.price,priceMinInParams:params.priceMin,priceMaxInParams:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
+        return items;
+        } catch (error) {
+            // Don't log errors for aborted requests
+            if (error.name === 'AbortError') {
+                console.log('⏹️ API request was cancelled (new request started)');
+                throw error; // Re-throw so caller knows it was aborted
+            }
+            console.error('❌ ERROR fetching products:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString()
+            });
+            return [];
+        } finally {
+            isLoading = false;
+            // Only clear if this is still the current request
+            if (pendingRequest === currentRequest) {
+                pendingRequest = null;
+                abortController = null;
+            }
+        }
+    })();
+    
+    pendingRequest = currentRequest;
+    try {
+        return await currentRequest;
     } catch (error) {
-        console.error('❌ ERROR fetching products:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            timestamp: new Date().toISOString()
-        });
+        // If request was aborted, return empty array (new request will handle it)
+        if (error.name === 'AbortError') {
+            return [];
+        }
+        console.error('❌ Error awaiting pending request:', error);
         return [];
-    } finally {
-        isLoading = false;
     }
 }
 
@@ -2828,7 +2906,7 @@ async function getProductTypeName(slug) {
     }
     
     try {
-        const BASE_URL = 'https://brandeduk-backend.onrender.com';
+        const BASE_URL = 'https://api.brandeduk.com';
         const response = await fetch(`${BASE_URL}/api/filters/product-types`);
         
         if (!response.ok) {
@@ -2952,9 +3030,25 @@ function getPriceRange() {
 
 // Show beautiful loader
 function showLoader() {
-    const grid = document.getElementById('productsGrid');
-    if (!grid) return;
+    const startTime = performance.now();
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3029',message:'showLoader() ENTRY',data:{timestamp:Date.now(),perfTime:startTime,stackTrace:new Error().stack?.split('\n').slice(0,5).join('|')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     
+    const grid = document.getElementById('productsGrid');
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3034',message:'showLoader() grid check',data:{gridExists:!!grid,gridId:grid?.id,gridHasChildren:grid?.children?.length,gridInnerHTMLBefore:grid?.innerHTML?.substring(0,50)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    
+    if (!grid) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3040',message:'showLoader() EARLY RETURN - grid not found',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
+        // #endregion
+        return;
+    }
+    
+    // Force synchronous DOM update to ensure loader is visible
     grid.innerHTML = `
         <div class="products-loader">
             <section class="dots-container">
@@ -2967,10 +3061,87 @@ function showLoader() {
             <div class="loader-text">Loading products...</div>
         </div>
     `;
+    
+    // Force browser to render the loader before continuing
+    // This ensures the loader is visible even for fast API calls
+    grid.offsetHeight; // Force reflow
+    
+    const loaderEl = grid.querySelector('.products-loader');
+    const computedStyle = loaderEl ? window.getComputedStyle(loaderEl) : null;
+    const rect = loaderEl ? loaderEl.getBoundingClientRect() : null;
+    // Improved viewport check: visible if any part is in viewport
+    const isInViewport = rect ? (
+        (rect.top >= 0 && rect.top < window.innerHeight) || 
+        (rect.bottom > 0 && rect.bottom <= window.innerHeight) ||
+        (rect.top < 0 && rect.bottom > window.innerHeight)
+    ) : false;
+    
+    // If loader is not in viewport, scroll it into view
+    if (loaderEl && !isInViewport) {
+        loaderEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3063',message:'showLoader() AFTER innerHTML',data:{loaderExists:!!loaderEl,display:computedStyle?.display,visibility:computedStyle?.visibility,opacity:computedStyle?.opacity,zIndex:computedStyle?.zIndex,position:computedStyle?.position,isInViewport:isInViewport,rectTop:rect?.top,rectLeft:rect?.left,windowHeight:window.innerHeight,windowWidth:window.innerWidth,perfTime:performance.now(),elapsed:performance.now()-startTime,scrolledIntoView:!isInViewport},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
+    // #endregion
 }
 
-// Render products (now uses API data)
+// Render products (now uses API data) - with debouncing to prevent race conditions
 async function renderProducts() {
+    // Cancel any pending debounced call
+    if (renderProductsDebounceTimer) {
+        clearTimeout(renderProductsDebounceTimer);
+        renderProductsDebounceTimer = null;
+    }
+    
+    // If a render is already in progress, queue this one
+    if (renderProductsPending) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3088',message:'renderProducts() QUEUED - already in progress',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+        // #endregion
+        // Wait for current render to complete, then retry
+        return renderProductsPending.then(() => {
+            return renderProducts();
+        });
+    }
+    
+    renderProductsCallCount++;
+    const callId = renderProductsCallCount;
+    const renderStartTime = performance.now();
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3098',message:'renderProducts() ENTRY',data:{callId:callId,timestamp:Date.now(),perfTime:renderStartTime,isLoading:isLoading,activeCalls:renderProductsCallCount,hasPending:!!renderProductsPending},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+    // #endregion
+    
+    // CRITICAL: Set pending flag IMMEDIATELY (synchronously) to prevent race condition
+    // Create a promise that will be resolved when render completes
+    let resolvePending, rejectPending;
+    const pendingPromise = new Promise((resolve, reject) => {
+        resolvePending = resolve;
+        rejectPending = reject;
+    });
+    
+    // Set pending flag BEFORE async operation starts
+    renderProductsPending = pendingPromise;
+    
+    // Execute the actual render
+    (async () => {
+        try {
+            const result = await renderProductsInternal(renderStartTime, callId);
+            resolvePending(result);
+        } catch (error) {
+            rejectPending(error);
+        } finally {
+            // Clear pending flag after completion
+            renderProductsPending = null;
+        }
+    })();
+    
+    return pendingPromise;
+}
+
+// Internal render function (actual implementation)
+async function renderProductsInternal(renderStartTime, callId) {
+    
     const grid = document.getElementById('productsGrid');
     if (!grid) {
         console.error('❌ productsGrid element not found!');
@@ -2983,33 +3154,64 @@ async function renderProducts() {
     const categoryTitleEl = document.getElementById('categoryTitle');
     const productsCountEl = document.getElementById('productsCount');
     
-    // Check if this is initial load (no products in grid yet)
-    const isInitialLoad = grid.children.length === 0;
-    // Check if we're performing a search
-    const isSearching = currentState.search && currentState.search.trim().length > 0;
+    // ALWAYS show loader before fetching products - better UX
+    const beforeLoaderTime = performance.now();
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3086',message:'renderProducts() BEFORE showLoader()',data:{gridExists:!!grid,gridChildrenCount:grid.children.length,hasLoader:!!grid.querySelector('.products-loader'),perfTime:beforeLoaderTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
+    showLoader();
+    const afterLoaderTime = performance.now();
     
-    // Show loader on initial load OR when searching
-    if (isInitialLoad || isSearching) {
-        // Show beautiful loader
-        showLoader();
-        // Hide title/count initially
-        if (categoryTitleEl) {
-            categoryTitleEl.style.opacity = '0';
-            categoryTitleEl.style.transition = 'opacity 0.3s ease';
-        }
-        if (productsCountEl) {
-            productsCountEl.style.opacity = '0';
-            productsCountEl.style.transition = 'opacity 0.3s ease';
-        }
-    } else {
-        // Keep current products visible - don't show loading state for filter changes
-        const currentProductsCount = grid.children.length;
-        console.log(`📦 Keeping ${currentProductsCount} current products visible while fetching...`);
+    // Hide title/count initially while loading
+    if (categoryTitleEl) {
+        categoryTitleEl.style.opacity = '0';
+        categoryTitleEl.style.transition = 'opacity 0.3s ease';
+    }
+    if (productsCountEl) {
+        productsCountEl.style.opacity = '0';
+        productsCountEl.style.transition = 'opacity 0.3s ease';
     }
     
-    // Fetch new products (keep old ones visible or show loader)
-    const products = await fetchProducts();
+    // Ensure loader is rendered before starting async operation
+    // Use requestAnimationFrame to guarantee the loader is visible
+    const rafStartTime = performance.now();
+    await new Promise(resolve => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+        });
+    });
+    const rafEndTime = performance.now();
     
+    // #region agent log
+    const loaderAfterRAF = grid.querySelector('.products-loader');
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3102',message:'renderProducts() AFTER RAF',data:{hasLoader:!!loaderAfterRAF,rafDuration:rafEndTime-rafStartTime,loaderToRAF:rafStartTime-afterLoaderTime,perfTime:rafEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
+    
+    // Fetch new products (loader is already showing and rendered)
+    const fetchStartTime = performance.now();
+    const products = await fetchProducts();
+    const fetchEndTime = performance.now();
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3115',message:'renderProducts() fetchProducts() COMPLETE',data:{productsLength:products?.length,hasLoader:!!grid.querySelector('.products-loader'),fetchDuration:fetchEndTime-fetchStartTime,totalElapsed:fetchEndTime-renderStartTime,perfTime:fetchEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2995',message:'renderProducts received products from fetchProducts',data:{productsLength:products?.length,productsIsArray:Array.isArray(products),productsType:typeof products},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    
+    // Guard against undefined products
+    if (!products || !Array.isArray(products)) {
+        console.error('❌ fetchProducts() returned invalid data:', products);
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2998',message:'renderProducts INVALID products data - returning early',data:{products:products},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        return;
+    }
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3003',message:'renderProducts products array is valid',data:{productsLength:products.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     console.log(`📦 Received ${products.length} products from API`);
     
     // Update title and count (only after data arrives)
@@ -3067,7 +3269,18 @@ async function renderProducts() {
     updatePagination();
     
     // Now replace the grid with new products (only after data arrives)
+    const clearStartTime = performance.now();
+    const loaderBeforeClear = grid.querySelector('.products-loader');
+    const loaderVisibleBeforeClear = loaderBeforeClear ? window.getComputedStyle(loaderBeforeClear).display !== 'none' : false;
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3189',message:'renderProducts() BEFORE clearing grid',data:{hasLoader:!!loaderBeforeClear,loaderVisible:loaderVisibleBeforeClear,productsLength:products.length,timeSinceRenderStart:clearStartTime-renderStartTime,perfTime:clearStartTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     grid.innerHTML = '';
+    const clearEndTime = performance.now();
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3193',message:'renderProducts() AFTER clearing grid',data:{gridInnerHTML:grid.innerHTML,productsLength:products.length,clearDuration:clearEndTime-clearStartTime,loaderVisibleDuration:clearStartTime-renderStartTime,perfTime:clearEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     
     if (products.length === 0) {
         console.log('⚠️ No products found matching criteria');
@@ -3260,6 +3473,9 @@ document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
             updateURL();
             
             console.log('🔄 Calling renderProducts() to trigger API call...');
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3372',message:'QUICK FILTER calling renderProducts()',data:{filterValue:filterValue,isPressed:isPressed,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+            // #endregion
             await renderProducts();
             await fetchFilterCounts();
         }
@@ -3302,7 +3518,20 @@ document.querySelector('.clear-all-btn')?.addEventListener('click', async functi
     updateURL();
     await renderProducts();
     await fetchFilterCounts();
-    initPriceRangeSlider();
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'About to call initPriceRangeSlider (without await)',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    initPriceRangeSlider().then(() => {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'initPriceRangeSlider COMPLETED',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.log('✅ initPriceRangeSlider completed');
+    }).catch(err => {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'initPriceRangeSlider FAILED',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.error('❌ initPriceRangeSlider failed:', err);
+    });
 });
 
 // Listen for VAT state changes from main.js (legacy)
@@ -3321,10 +3550,11 @@ document.addEventListener('brandeduk:vat-change', function(e) {
 
 // Dual Price Range Slider
 async function initPriceRangeSlider() {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2698',message:'initPriceRangeSlider ENTRY',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    console.log('🎚️ Initializing price range slider...');
+    try {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3319',message:'initPriceRangeSlider ENTRY',data:{timestamp:Date.now(),stack:new Error().stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.log('🎚️ Initializing price range slider...');
     const sliderMin = document.getElementById('priceSliderMin');
     const sliderMax = document.getElementById('priceSliderMax');
     const rangeSelected = document.getElementById('priceRangeSelected');
@@ -3352,7 +3582,6 @@ async function initPriceRangeSlider() {
     // Declare variables in function scope
     let catalogMinPrice = 14;
     let catalogMaxPrice = 65;
-    let priceUpdateTimeout;
     
     // Fetch price range from API (without filters to get full range)
     try {
@@ -3421,17 +3650,10 @@ async function initPriceRangeSlider() {
         sliderMax.value = catalogMaxPrice;
     }
     
-    function updateSlider(triggerAPI = false) {
-        console.log('🎚️ updateSlider() called', { triggerAPI });
+    // Update UI only (for input events - while dragging)
+    function updatePriceSliderUI() {
         let minVal = parseInt(sliderMin.value);
         let maxVal = parseInt(sliderMax.value);
-
-        console.log('🎚️ Slider values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
-
-        if (!Number.isFinite(minVal) || !Number.isFinite(maxVal)) {
-            console.warn('⚠️ Invalid slider values:', { minVal, maxVal });
-            return;
-        }
         
         // Prevent crossing
         if (minVal > maxVal) {
@@ -3442,237 +3664,139 @@ async function initPriceRangeSlider() {
             sliderMax.value = maxVal;
         }
         
-        // Update selected range bar
+        // Update UI
         const percentMin = ((minVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
         const percentMax = ((maxVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
         if (rangeSelected) {
-        rangeSelected.style.left = percentMin + '%';
-        rangeSelected.style.width = (percentMax - percentMin) + '%';
+            rangeSelected.style.left = percentMin + '%';
+            rangeSelected.style.width = (percentMax - percentMin) + '%';
         }
         
-        // Update display with VAT
         const vatMultiplier = isVatOn() ? 1.20 : 1;
         const displayMin = (minVal * vatMultiplier).toFixed(2);
         const displayMax = (maxVal * vatMultiplier).toFixed(2);
         if (rangeDisplay) {
-        rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+            rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
         }
-        
-        // Update inputs
         if (inputMin) inputMin.value = '£' + minVal;
         if (inputMax) inputMax.value = '£' + maxVal;
+    }
+    
+    // Handle price slider change - call API (for change events - when user releases)
+    function handlePriceSliderChange() {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3421',message:'handlePriceSliderChange CALLED',data:{sliderMinValue:sliderMin?.value,sliderMaxValue:sliderMax?.value,sliderMinExists:!!sliderMin,sliderMaxExists:!!sliderMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        console.log('🎚️ handlePriceSliderChange() called');
         
-        // Update state - only set if values are different from full catalog range
-        // If they match the full range, set to null so API doesn't filter by price
+        // Update UI first
+        updatePriceSliderUI();
+        
+        let minVal = parseInt(sliderMin.value);
+        let maxVal = parseInt(sliderMax.value);
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3423',message:'handlePriceSliderChange parsed values',data:{minVal:minVal,maxVal:maxVal,catalogMinPrice:catalogMinPrice,catalogMaxPrice:catalogMaxPrice},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        console.log('🎚️ Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
+        
+        // Update state - set to null if full range, otherwise set values
         if (minVal === catalogMinPrice && maxVal === catalogMaxPrice) {
-            // Full range selected - don't filter by price
             currentState.priceMin = null;
             currentState.priceMax = null;
-            console.log('💰 Price range matches full catalog, setting state to null');
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3452',message:'handlePriceSliderChange setting state to null (full range)',data:{minVal:minVal,maxVal:maxVal},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
         } else {
-            // Partial range selected - filter by price
             currentState.priceMin = minVal;
             currentState.priceMax = maxVal;
-            console.log('💰 Price state updated (filtering):', { priceMin: currentState.priceMin, priceMax: currentState.priceMax });
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3457',message:'handlePriceSliderChange setting state values',data:{priceMin:currentState.priceMin,priceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
         }
         
-        // Always clear any pending timeout
-        clearTimeout(priceUpdateTimeout);
-        
-        // Trigger API call
-        if (triggerAPI) {
-            // Immediate API call (for change events)
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3460',message:'handlePriceSliderChange about to call API',data:{currentStatePriceMin:currentState.priceMin,currentStatePriceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        // Call API directly - just like filter checkboxes do
         currentState.page = 1;
         updateURL();
-            console.log('💰 Triggering IMMEDIATE API call with price range:', { priceMin: minVal, priceMax: maxVal });
-            console.log('📤 Current state before API call:', JSON.parse(JSON.stringify(currentState)));
-            renderProducts().then(() => {
-                console.log('✅ renderProducts() completed');
-            }).catch(err => {
-                console.error('❌ Error in renderProducts():', err);
-            });
-            fetchFilterCounts().then(() => {
-                console.log('✅ fetchFilterCounts() completed');
-            }).catch(err => {
-                console.error('❌ Error in fetchFilterCounts():', err);
-            });
-        } else {
-            // Debounced API call (for input events while dragging)
-        priceUpdateTimeout = setTimeout(async () => {
-                console.log('💰 Price filter changed (debounced), fetching products...', { priceMin: minVal, priceMax: maxVal });
-                console.log('📤 Current state before API call:', JSON.parse(JSON.stringify(currentState)));
-        currentState.page = 1;
-        updateURL();
-                try {
-            await renderProducts();
-                    console.log('✅ renderProducts() completed (debounced)');
-                } catch (err) {
-                    console.error('❌ Error in renderProducts() (debounced):', err);
-                }
-                try {
-            await fetchFilterCounts();
-                    console.log('✅ fetchFilterCounts() completed (debounced)');
-                } catch (err) {
-                    console.error('❌ Error in fetchFilterCounts() (debounced):', err);
-                }
-        }, 500); // Debounce 500ms while dragging
-            console.log('⏳ Debounced API call scheduled (500ms delay)');
-        }
+        console.log('🚀 Calling renderProducts()...');
+        renderProducts().then(() => {
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3463',message:'renderProducts completed',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            console.log('✅ renderProducts() completed');
+        }).catch(err => {
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3463',message:'renderProducts ERROR',data:{error:err.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            console.error('❌ renderProducts() error:', err);
+        });
+        fetchFilterCounts();
     }
     
-    // Track last values to detect changes
-    let lastMinVal = parseInt(sliderMin.value);
-    let lastMaxVal = parseInt(sliderMax.value);
-    
-    // Function to check if slider values changed and trigger API
-    function checkAndTriggerAPI() {
-        const currentMin = parseInt(sliderMin.value);
-        const currentMax = parseInt(sliderMax.value);
-        
-        if (currentMin !== lastMinVal || currentMax !== lastMaxVal) {
-            console.log('🔄 Slider values changed:', {
-                old: { min: lastMinVal, max: lastMaxVal },
-                new: { min: currentMin, max: currentMax }
-            });
-            lastMinVal = currentMin;
-            lastMaxVal = currentMax;
-            updateSlider(true); // Always trigger API when values change
-        }
-    }
-    
-    // Update UI and trigger debounced API call on slider movement (while dragging)
+    // Simple event listeners - just call the handler on change
     console.log('🔧 Attaching price slider event listeners...');
-    
     // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2897',message:'About to attach event listeners',data:{sliderMinType:typeof sliderMin,sliderMaxType:typeof sliderMax,sliderMinIsElement:sliderMin instanceof Element,sliderMaxIsElement:sliderMax instanceof Element},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3468',message:'About to attach event listeners',data:{sliderMinExists:!!sliderMin,sliderMaxExists:!!sliderMax,sliderMinId:sliderMin?.id,sliderMaxId:sliderMax?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
     
-    // Input event - fires while dragging (debounced)
-    try {
-    sliderMin.addEventListener('input', () => {
+    if (sliderMin) {
+        sliderMin.addEventListener('change', function(e) {
             // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2900',message:'sliderMin input EVENT FIRED',data:{value:sliderMin.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-            // #endregion
-            console.log('🎚️ sliderMin input event fired, value:', sliderMin.value);
-            updateSlider(false); // Debounced API call while dragging
-        });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2903',message:'sliderMin input listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
-    } catch (e) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2903',message:'ERROR attaching sliderMin input listener',data:{error:e.message,stack:e.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
-        console.error('Error attaching sliderMin input listener:', e);
-    }
-    
-    try {
-    sliderMax.addEventListener('input', () => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2904',message:'sliderMax input EVENT FIRED',data:{value:sliderMax.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-            // #endregion
-            console.log('🎚️ sliderMax input event fired, value:', sliderMax.value);
-            updateSlider(false); // Debounced API call while dragging
-        });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2907',message:'sliderMax input listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
-    } catch (e) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2907',message:'ERROR attaching sliderMax input listener',data:{error:e.message,stack:e.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
-        console.error('Error attaching sliderMax input listener:', e);
-    }
-    
-    // Change event - fires when slider is released (immediate)
-    try {
-    sliderMin.addEventListener('change', () => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2910',message:'sliderMin change EVENT FIRED',data:{value:sliderMin.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin change EVENT FIRED',data:{value:sliderMin.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
             console.log('🎚️ sliderMin change event fired, value:', sliderMin.value);
-            checkAndTriggerAPI(); // Check and trigger API
+            handlePriceSliderChange();
         });
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2913',message:'sliderMin change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         // #endregion
-    } catch (e) {
+    } else {
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2913',message:'ERROR attaching sliderMin change listener',data:{error:e.message,stack:e.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin NOT FOUND',data:{error:'Element not found'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         // #endregion
-        console.error('Error attaching sliderMin change listener:', e);
+        console.error('❌ sliderMin element not found!');
     }
     
-    try {
-    sliderMax.addEventListener('change', () => {
+    if (sliderMax) {
+        sliderMax.addEventListener('change', function(e) {
             // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2915',message:'sliderMax change EVENT FIRED',data:{value:sliderMax.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax change EVENT FIRED',data:{value:sliderMax.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
             console.log('🎚️ sliderMax change event fired, value:', sliderMax.value);
-            checkAndTriggerAPI(); // Check and trigger API
+            handlePriceSliderChange();
         });
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2918',message:'sliderMax change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         // #endregion
-    } catch (e) {
+    } else {
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2918',message:'ERROR attaching sliderMax change listener',data:{error:e.message,stack:e.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax NOT FOUND',data:{error:'Element not found'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         // #endregion
-        console.error('Error attaching sliderMax change listener:', e);
+        console.error('❌ sliderMax element not found!');
     }
     
-    // Mouseup event - backup to ensure API call when slider is released
-    try {
-        sliderMin.addEventListener('mouseup', () => {
+    // Also listen to 'input' events for real-time UI updates while dragging (no API call)
+    if (sliderMin) {
+        sliderMin.addEventListener('input', function(e) {
             // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2921',message:'sliderMin mouseup EVENT FIRED',data:{value:sliderMin.value,type:'mouseup'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin input EVENT FIRED - UI only',data:{value:sliderMin.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            console.log('🎚️ sliderMin mouseup event fired, value:', sliderMin.value);
-            setTimeout(() => {
-                checkAndTriggerAPI();
-            }, 50);
+            console.log('🎚️ sliderMin input event fired, value:', sliderMin.value);
+            updatePriceSliderUI(); // Only update UI, don't call API
         });
-        sliderMax.addEventListener('mouseup', () => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2928',message:'sliderMax mouseup EVENT FIRED',data:{value:sliderMax.value,type:'mouseup'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-            // #endregion
-            console.log('🎚️ sliderMax mouseup event fired, value:', sliderMax.value);
-            setTimeout(() => {
-                checkAndTriggerAPI();
-            }, 50);
-        });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2933',message:'mouseup listeners ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
-    } catch (e) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2933',message:'ERROR attaching mouseup listeners',data:{error:e.message,stack:e.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
-        console.error('Error attaching mouseup listeners:', e);
     }
     
-    // Touch end for mobile devices
-    try {
-        sliderMin.addEventListener('touchend', () => {
+    if (sliderMax) {
+        sliderMax.addEventListener('input', function(e) {
             // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2936',message:'sliderMin touchend EVENT FIRED',data:{value:sliderMin.value,type:'touchend'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax input EVENT FIRED - UI only',data:{value:sliderMax.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            console.log('🎚️ sliderMin touchend event fired, value:', sliderMin.value);
-            setTimeout(() => {
-                checkAndTriggerAPI();
-            }, 50);
+            console.log('🎚️ sliderMax input event fired, value:', sliderMax.value);
+            updatePriceSliderUI(); // Only update UI, don't call API
         });
-        sliderMax.addEventListener('touchend', () => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2943',message:'sliderMax touchend EVENT FIRED',data:{value:sliderMax.value,type:'touchend'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-            // #endregion
-            console.log('🎚️ sliderMax touchend event fired, value:', sliderMax.value);
-            setTimeout(() => {
-                checkAndTriggerAPI();
-            }, 50);
-        });
-    } catch (e) {
-        console.error('Error attaching touchend listeners:', e);
     }
     
     // #region agent log
@@ -3684,25 +3808,41 @@ async function initPriceRangeSlider() {
     if (inputMin) {
         inputMin.addEventListener('change', function() {
             let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
-        if (isNaN(val)) val = catalogMinPrice;
-        val = Math.max(catalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
+            if (isNaN(val)) val = catalogMinPrice;
+            val = Math.max(catalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
             sliderMin.value = val;
-            updateSlider(true); // Trigger API immediately
+            handlePriceSliderChange(); // Call the simple handler
         });
     }
     
     if (inputMax) {
         inputMax.addEventListener('change', function() {
             let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
-        if (isNaN(val)) val = catalogMaxPrice;
-        val = Math.min(catalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
+            if (isNaN(val)) val = catalogMaxPrice;
+            val = Math.min(catalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
             sliderMax.value = val;
-            updateSlider(true); // Trigger API immediately
+            handlePriceSliderChange(); // Call the simple handler
         });
     }
     
     // Initialize display (without triggering API on initial load)
-    updateSlider(false);
+    // Just update UI, don't call API
+    const initMinVal = parseInt(sliderMin.value);
+    const initMaxVal = parseInt(sliderMax.value);
+    const percentMin = ((initMinVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
+    const percentMax = ((initMaxVal - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100;
+    if (rangeSelected) {
+        rangeSelected.style.left = percentMin + '%';
+        rangeSelected.style.width = (percentMax - percentMin) + '%';
+    }
+    const vatMultiplier = isVatOn() ? 1.20 : 1;
+    const displayMin = (initMinVal * vatMultiplier).toFixed(2);
+    const displayMax = (initMaxVal * vatMultiplier).toFixed(2);
+    if (rangeDisplay) {
+        rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+    }
+    if (inputMin) inputMin.value = '£' + initMinVal;
+    if (inputMax) inputMax.value = '£' + initMaxVal;
     // #region agent log
     fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3071',message:'initPriceRangeSlider EXIT - function complete',data:{sliderMinValue:sliderMin.value,sliderMaxValue:sliderMax.value,statePriceMin:currentState.priceMin,statePriceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
@@ -3714,6 +3854,13 @@ async function initPriceRangeSlider() {
         statePriceMax: currentState.priceMax,
         catalogRange: { min: catalogMinPrice, max: catalogMaxPrice }
     });
+    } catch (err) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3726',message:'initPriceRangeSlider ERROR in try block',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.error('❌ Error in initPriceRangeSlider:', err);
+        throw err; // Re-throw to maintain error propagation
+    }
 }
 
 function updatePriceRangeDisplay() {
@@ -3831,6 +3978,9 @@ function setupFilterCheckboxes() {
                 updateURL();
                 
                 console.log('🔄 Calling renderProducts() to trigger API call...');
+                // #region agent log
+                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3918',message:'FILTER CHECKBOX calling renderProducts()',data:{filterKey:filterKey,checkedValues:checkedBoxes,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+                // #endregion
                 try {
                 await renderProducts();
                 await fetchFilterCounts();
@@ -3857,6 +4007,9 @@ function setupSearchInput() {
                 currentState.search = e.target.value.trim();
                 currentState.page = 1;
                 updateURL();
+                // #region agent log
+                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3895',message:'SEARCH INPUT calling renderProducts()',data:{searchQuery:currentState.search,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+                // #endregion
                 await renderProducts();
                 await fetchFilterCounts();
             }
@@ -3883,6 +4036,9 @@ function setupSearchInput() {
                 currentState.search = e.target.value.trim();
                 currentState.page = 1;
                 updateURL();
+                // #region agent log
+                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3922',message:'HEADER SEARCH calling renderProducts()',data:{searchQuery:currentState.search,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+                // #endregion
                 await renderProducts();
                 await fetchFilterCounts();
             }
@@ -3892,7 +4048,20 @@ function setupSearchInput() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function() {
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3902',message:'DOMContentLoaded handler STARTED',data:{documentReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     console.log('🚀 Page loaded, initializing filters and products...');
+    
+    // Show loader immediately when page loads - better UX
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3899',message:'DOMContentLoaded BEFORE showLoader()',data:{documentReady:document.readyState,gridExists:!!document.getElementById('productsGrid')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    showLoader();
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3902',message:'DOMContentLoaded AFTER showLoader()',data:{hasLoader:!!document.getElementById('productsGrid')?.querySelector('.products-loader')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     
     // Initialize filters first
     setupFilterCheckboxes();
@@ -3908,13 +4077,48 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (categoryTitleEl) categoryTitleEl.style.opacity = '0';
     if (productsCountEl) productsCountEl.style.opacity = '0';
     
-    // Load initial products (will show loader automatically)
-    await renderProducts();
-    await fetchFilterCounts();
+    // Load initial products (loader is already showing)
     // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3274',message:'About to CALL initPriceRangeSlider',data:{documentReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3818',message:'About to call renderProducts',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
-    await initPriceRangeSlider();
+    try {
+        await renderProducts();
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3820',message:'renderProducts completed, about to call fetchFilterCounts',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+    } catch (err) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3820',message:'renderProducts ERROR',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.error('❌ Error in renderProducts():', err);
+    }
+    
+    try {
+        await fetchFilterCounts();
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3822',message:'fetchFilterCounts completed, About to CALL initPriceRangeSlider',data:{documentReady:document.readyState,functionExists:typeof initPriceRangeSlider},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+    } catch (err) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3822',message:'fetchFilterCounts ERROR',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.error('❌ Error in fetchFilterCounts():', err);
+    }
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3824',message:'About to CALL initPriceRangeSlider (after try-catch)',data:{documentReady:document.readyState,functionExists:typeof initPriceRangeSlider},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    try {
+        await initPriceRangeSlider();
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3925',message:'initPriceRangeSlider call completed successfully',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+    } catch (err) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3925',message:'initPriceRangeSlider call FAILED with error',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        console.error('❌ Error calling initPriceRangeSlider:', err);
+    }
     
     // Ensure prices match current VAT state on initial load
     console.log('💰 Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });

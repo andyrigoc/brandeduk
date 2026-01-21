@@ -1,6 +1,6 @@
 {
   "backend": {
-    "baseUrl": "https://brandeduk-backend.onrender.com",
+    "baseUrl": "https://api.brandeduk.com",
     "endpoints": [
       {"method": "GET", "path": "/health", "usedBy": ["BrandedAPI.healthCheck"], "purpose": "Backend health check"},
 

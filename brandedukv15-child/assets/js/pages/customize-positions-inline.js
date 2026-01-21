@@ -1134,7 +1134,7 @@
                             result = await window.BrandedAPI.submitQuote(quoteData);
                         } else {
                             // Fallback: direct fetch to API
-                            const API_BASE_URL = 'https://brandeduk-backend.onrender.com';
+                            const API_BASE_URL = 'https://api.brandeduk.com';
 
                             console.log(quoteData);
                             const response = await fetch(`${API_BASE_URL}/api/quotes`, {
@@ -1196,7 +1196,7 @@
 
                             const homeHref =
                                 document.querySelector('.searchbar-header__brand')?.getAttribute('href') ||
-                                'brandeduk.com/home-pc.html';
+                                'home-pc.html';
 
                             window.location.replace(homeHref);
                         }, 600);

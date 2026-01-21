@@ -1,7 +1,7 @@
 /**
  * BrandedUK API Service Module
  * Handles all API calls to the backend
- * Base URL: https://brandeduk-backend.onrender.com
+ * Base URL: https://api.brandeduk.com
  */
 
 const BrandedAPI = (function() {
@@ -11,7 +11,7 @@ const BrandedAPI = (function() {
     // CONFIGURATION
     // ==========================================================================
     
-    const BASE_URL = 'https://brandeduk-backend.onrender.com';
+    const BASE_URL = 'https://api.brandeduk.com';
     const DEFAULT_LIMIT = 24;
     const MAX_LIMIT = 200;
 

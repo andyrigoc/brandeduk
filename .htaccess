@@ -1,0 +1,21 @@
+# Apache Configuration - Set index.html as default
+DirectoryIndex index.html index.htm
+
+# Enable directory listing (optional - remove if you don't want it)
+Options +Indexes
+
+# Show all files in directory listing
+IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable
+
+# Allow access to all HTML files
+<FilesMatch "\.(html|htm)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Prevent directory listing for sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+

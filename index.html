@@ -80,13 +80,13 @@
         <p style="margin:0; font-size:13px;">
             <a href="index-mobile.html" id="mobileLink">Mobile/Tablet</a>
             &nbsp;|&nbsp;
-            <a href="brandeduk.com/home-pc.html" id="desktopLink">Desktop</a>
+            <a href="home-pc.html" id="desktopLink">Desktop</a>
         </p>
         <noscript>
             <p>
                 JavaScript is required for automatic redirect.<br>
                 <a href="index-mobile.html">Go to Mobile/Tablet Site</a> | 
-                <a href="brandeduk.com/home-pc.html">Go to Desktop Site</a>
+                <a href="home-pc.html">Go to Desktop Site</a>
             </p>
         </noscript>
     </div>
@@ -97,6 +97,7 @@
             var lastTarget = null;
             var autoTimer = null;
             var debugInfoEl = document.getElementById('debugInfo');
+            var redirected = false;
 
             function updateDebug(mode) {
                 if (!debugInfoEl) return;
@@ -108,7 +109,7 @@
                     var params = new URLSearchParams(window.location.search);
                     var force = (params.get('force') || '').toLowerCase();
                     if (force === 'mobile') return 'index-mobile.html';
-                    if (force === 'desktop') return 'brandeduk.com/home-pc.html';
+                    if (force === 'desktop') return 'home-pc.html';
                 } catch (e) {}
                 return null;
             }
@@ -131,21 +132,31 @@
                     ? window.matchMedia('(max-width: ' + (BREAKPOINT - 1) + 'px)').matches
                     : (window.innerWidth < BREAKPOINT);
                 var shouldUseMobile = isMobileUA || isTabletUA || isViewportMobile;
-                return shouldUseMobile ? 'index-mobile.html' : 'brandeduk.com/home-pc.html';
+                return shouldUseMobile ? 'index-mobile.html' : 'home-pc.html';
             }
 
             function redirectIfNeeded() {
+                if (redirected) return;
                 var forced = getForcedTarget();
                 var target = forced || computeTargetByDevice();
                 updateDebug(forced ? ('forced:' + forced) : (target.indexOf('mobile') !== -1 ? 'auto:mobile' : 'auto:desktop'));
-                if (target && target !== lastTarget) {
+                if (target) {
+                    redirected = true;
                     lastTarget = target;
                     window.location.replace(target);
                 }
             }
 
+            // Try immediate redirect
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', redirectIfNeeded);
+            } else {
+                redirectIfNeeded();
+            }
+            
+            // Backup redirect after short delay
             updateDebug('pending');
-            autoTimer = setTimeout(redirectIfNeeded, 250);
+            autoTimer = setTimeout(redirectIfNeeded, 50);
         })();
     </script>
 </body>

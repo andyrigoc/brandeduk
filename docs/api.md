@@ -1,8 +1,8 @@
 # BrandedUK API flows & reference
 
-This repo is primarily a **static frontend + WordPress child theme**, but it integrates with an external backend API hosted on Render:
+This repo is primarily a **static frontend + WordPress child theme**, but it integrates with an external backend API:
 
-- **Backend base URL:** `https://brandeduk-backend.onrender.com`
+- **Backend base URL:** `https://api.brandeduk.com`
 - **Backend API prefix:** `/api`
 
 There are also **deployment-specific** endpoints:
@@ -28,7 +28,7 @@ There are also **deployment-specific** endpoints:
 
 ### Direct fetch usage (also present)
 - Product detail page JS: [brandedukv15-child/assets/js/pages/product.js](../brandedukv15-child/assets/js/pages/product.js)
-  - Uses `https://brandeduk-backend.onrender.com/api` and calls `/products/:code`
+  - Uses `https://api.brandeduk.com/api` and calls `/products/:code`
 - Mega menu product types: [brandeduk.com/js/product-types-menu.js](../brandeduk.com/js/product-types-menu.js)
   - Calls `/api/filters/product-types`
 
@@ -49,9 +49,9 @@ These keys matter because they determine what gets sent to the quote endpoints.
 
 ---
 
-## Backend API (Render) — Endpoint reference
+## Backend API — Endpoint reference
 
-Base: `https://brandeduk-backend.onrender.com`
+Base: `https://api.brandeduk.com`
 
 ### Health
 - `GET /health`

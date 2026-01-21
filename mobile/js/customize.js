@@ -69,7 +69,7 @@
 
     // === API ===
     // Minimal API base used by desktop product.js � reuse here for mobile fetches
-    const API_BASE_URL = 'https://brandeduk-backend.onrender.com/api';
+    const API_BASE_URL = 'https://api.brandeduk.com/api';
 
     // === DYNAMIC POSITION MAPPING SYSTEM ===
     
@@ -1767,7 +1767,7 @@
 
                     // Submit quote via API
                     let result = { success: false };
-                    const API_BASE_URL = 'https://brandeduk-backend.onrender.com';
+                    const API_BASE_URL = 'https://api.brandeduk.com';
                     
                     try {
                         // Try using BrandedAPI if available

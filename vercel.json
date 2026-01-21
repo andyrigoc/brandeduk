@@ -7,23 +7,23 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/home.html"
+      "destination": "/index.html"
     },
     {
       "source": "/product",
-      "destination": "/product-detail.html"
+      "destination": "/index.html"
     },
     {
       "source": "/customize",
-      "destination": "/customize-positions.html"
+      "destination": "/index.html"
     },
     {
       "source": "/quote",
-      "destination": "/quote-form.html"
+      "destination": "/index.html"
     },
     {
       "source": "/search",
-      "destination": "/search-results.html"
+      "destination": "/index.html"
     }
   ],
   "headers": [

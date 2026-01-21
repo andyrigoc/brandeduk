@@ -10,7 +10,7 @@
 
 | Setting | Value |
 |---------|-------|
-| **Base URL** | `https://brandeduk-backend.onrender.com` |
+| **Base URL** | `https://api.brandeduk.com` |
 | **Authentication** | None required (Public API) |
 | **Main Endpoint** | `GET /api/products` |
 | **Total Products** | ~4,047 |

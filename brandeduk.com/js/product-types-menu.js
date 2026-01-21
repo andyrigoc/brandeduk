@@ -2,7 +2,7 @@
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://brandeduk-backend.onrender.com';
+    const BASE_URL = 'https://api.brandeduk.com';
     const API_BASE = `${BASE_URL}/api/filters/product-types`;
     
     // Cache for product types
@@ -129,7 +129,7 @@
         }
         
         // If we're in root or other directories, use absolute path
-        return 'brandeduk.com/shop-pc.html';
+        return '../shop-pc.html';
     }
     
     /**
