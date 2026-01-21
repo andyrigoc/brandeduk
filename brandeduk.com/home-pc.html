@@ -251,6 +251,72 @@
         .header-social-3d .social-icon-3d.linkedin:hover { color: #0A66C2 !important; }
         .header-social-3d .social-icon-3d.youtube:hover { color: #FF0000 !important; }
         .header-social-3d .social-icon-3d.pinterest:hover { color: #BD081C !important; }
+        
+        /* ============================================
+           EXCLUSIVES MEGAMENU
+           ============================================ */
+        .exclusives-menu {
+            position: relative;
+        }
+        .exclusives-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 600px;
+        }
+        .exclusives-menu:hover .exclusives-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .exclusives-dropdown-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .exclusives-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .exclusive-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .exclusive-brand:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .exclusive-brand img {
+            max-width: 70%;
+            max-height: 50%;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+        .exclusive-brand:hover img {
+            filter: grayscale(0%);
+        }
+        
         /* Search expand desktop - espande da destra a sinistra */
         .searchbar-header__search-expand {
             position: relative;
@@ -1186,6 +1252,63 @@
                                     <figcaption class="promo-card-title">Bundle 5</figcaption>
                                     <span class="promo-card-tag">Pro</span>
                                 </figure>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Exclusives Menu -->
+                    <li class="has-megamenu exclusives-menu">
+                        <a href="#" aria-haspopup="true">
+                            Exclusives
+                            <span class="nav-caret" aria-hidden="true"></span>
+                        </a>
+                        <div class="exclusives-dropdown" role="region" aria-label="Exclusive brands">
+                            <div class="exclusives-dropdown-title">Exclusives</div>
+                            <div class="exclusives-grid">
+                                <a href="shop-pc.html?brand=adidas" class="exclusive-brand" title="Adidas">
+                                    <img src="../brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
+                                </a>
+                                <a href="shop-pc.html?brand=bc" class="exclusive-brand" title="B&C Be Inspired">
+                                    <img src="../brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C">
+                                </a>
+                                <a href="shop-pc.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand">
+                                </a>
+                                <a href="shop-pc.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic">
+                                </a>
+                                <a href="shop-pc.html?brand=brandit" class="exclusive-brand" title="Brandit">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit">
+                                </a>
+                                <a href="shop-pc.html?brand=comfort-colors" class="exclusive-brand" title="Comfort Colors">
+                                    <img src="../brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
+                                </a>
+                                <a href="shop-pc.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
+                                    <img src="../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png" alt="New Morning Studios">
+                                </a>
+                                <a href="shop-pc.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
+                                    <img src="../brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus">
+                                </a>
+                                <a href="shop-pc.html?brand=nutshell" class="exclusive-brand" title="Nutshell">
+                                    <img src="../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell">
+                                </a>
+                                <a href="shop-pc.html?brand=ogio" class="exclusive-brand" title="OGIO">
+                                    <img src="../brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
+                                </a>
+                                <a href="shop-pc.html?brand=rhino" class="exclusive-brand" title="Rhino">
+                                    <img src="../brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
+                                </a>
+                                <a href="shop-pc.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
+                                    <img src="../brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon">
+                                </a>
+                                <a href="shop-pc.html?brand=tri-dri" class="exclusive-brand" title="Tri Dri">
+                                    <img src="../brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
+                                </a>
+                                <a href="shop-pc.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
+                                    <img src="../brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour">
+                                </a>
+                                <a href="shop-pc.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                    <img src="../brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
+                                </a>
                             </div>
                         </div>
                     </li>

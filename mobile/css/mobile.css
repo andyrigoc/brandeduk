@@ -6816,6 +6816,7 @@ a {
     display: flex;
     flex-direction: column;
     border: 2px solid transparent;
+    height: 100%; /* Ensure all cards same height in grid */
 }
 
 .product-card-shop:active {
@@ -6880,17 +6881,32 @@ a {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1; /* Push colors to bottom */
 }
 
 .product-code {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     font-size: 10px;
     font-weight: 700;
     color: #7c3aed;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    min-height: 24px; /* Fixed height for 2 lines of brand name */
+    line-height: 1.2;
+}
+
+.product-code .brand-name {
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--gray-500);
+    text-align: right;
+    max-width: 60%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .brand-logo {
@@ -6908,7 +6924,8 @@ a {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.6em;
+    min-height: 31.2px; /* Exactly 2 lines: 12px * 1.3 * 2 = 31.2px */
+    height: 31.2px; /* Force 2 line height */
 }
 
 .product-price {
@@ -6945,7 +6962,7 @@ a {
     grid-auto-flow: column;
     grid-auto-columns: var(--color-size);
     gap: var(--color-gap);
-    margin-top: 4px;
+    margin-top: auto; /* Push to bottom */
     padding: 6px 0;
     width: 100%;
     overflow-x: auto;
@@ -8117,8 +8134,9 @@ a {
     border-bottom: 1px solid var(--gray-100);
 }
 
-/* Toggle Filters - New clean pill switch design */
+/* Toggle Filters - HIDDEN */
 .filters-toggles {
+    display: none !important;
     background: var(--gray-50);
 }
 

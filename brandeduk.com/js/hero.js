@@ -81,3 +81,25 @@
         }
     });
 })();
+
+/* ============================================
+   HERO BANNER - BRANDED BOUNCING (split into chars)
+   ============================================ */
+(function() {
+    var bounceEls = document.querySelectorAll('[data-bounce-text]');
+    if (!bounceEls.length) return;
+
+    bounceEls.forEach(function(el) {
+        var text = (el.textContent || '').trim();
+        if (!text) return;
+
+        el.textContent = '';
+        Array.from(text).forEach(function(ch, idx) {
+            var span = document.createElement('span');
+            span.className = 'hero-bounce-char';
+            span.style.setProperty('--char-index', String(idx));
+            span.textContent = ch === ' ' ? '\u00A0' : ch;
+            el.appendChild(span);
+        });
+    });
+})();
