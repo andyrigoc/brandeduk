@@ -474,6 +474,41 @@
 }
 
 /* ========================================
+   TABLET HOME: LEFT ORDER SUMMARY SIDEBAR
+   (index-mobile.html)
+   ======================================== */
+.tablet-order-summary {
+    display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tablet-summary-layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 16px;
+        align-items: start;
+        max-width: var(--container-max, 1280px);
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .tablet-order-summary {
+        display: block;
+    }
+
+    .tablet-main-content {
+        min-width: 0;
+    }
+
+    .tablet-order-summary .order-summary-section--sidebar {
+        position: sticky;
+        top: 155px;
+        max-height: calc(100vh - 190px);
+        overflow: auto;
+    }
+}
+
+/* ========================================
    TABLET ONLY (768px - 1023px)
    Hero Banner 1: Get In Touch - maximize text height in its box
    ======================================== */

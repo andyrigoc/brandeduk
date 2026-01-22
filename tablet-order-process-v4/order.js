@@ -6,6 +6,9 @@
 $(function() {
     'use strict';
 
+    const VAT_RATE = 0.2;
+    const VAT_KEY = 'brandeduk-vat-mode';
+
     // === WIZARD STATE ===
     const wizard = {
         step: 1,
@@ -15,44 +18,176 @@ $(function() {
 
     // === STATE ===
     const state = {
+        product: {
+            code: null,
+            name: null,
+            basePrice: 0,
+            image: '',
+            sizes: []
+        },
         selectedColour: null,
         sizeQuantities: {},
+        availableSizes: [],
+        activeSize: null,
         selectedPositions: [],
         positionMethods: {},      // position -> 'embroidery' or 'print'
         positionLogos: {},        // position -> { original, processed, bgRemoved }
         currentUploadPosition: null
     };
 
-    // Available sizes
-    const AVAILABLE_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+    const FALLBACK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
     // === DOM CACHE ===
     const $colourGrid = $('#colourGrid');
     const $selectedColourName = $('#selectedColourName');
-    const $selectedSizes = $('#selectedSizes');
-    const $addSizeBtn = $('#addSizeBtn');
+    const $sizeChipGrid = $('#sizeChipGrid');
+    const $activeSizeLabel = $('#activeSizeLabel');
+    const $activeSizeQty = $('#activeSizeQty');
+    const $sizeActiveBox = $('#sizeActiveBox');
+    const $selectedSizesSummary = $('#selectedSizesSummary');
     const $totalQty = $('#totalQty');
     const $positionOptions = $('#positionOptions');
     const $logoFileInput = $('#logoFileInput');
     const $bgRemovalCanvas = $('#bgRemovalCanvas')[0];
     const $submitBtn = $('#submitBtn');
+    const $pickAnotherBtn = $('#pickAnotherBtn');
+    const $keepShoppingBtn = $('#keepShoppingBtn');
 
     // === INIT ===
     init();
 
     function init() {
+        hydrateProductFromSession();
         setupWizard();
+        setupStep4Redirects();
         setupColourSelection();
         setupSizeSelection();
+        setupOrderSummarySidebar();
         setupPositionCards();
         setupLogoUpload();
-        addInitialSizeRow();
         updateWizardUI();
+        updateOrderSummarySidebar();
+    }
+
+    function hydrateProductFromSession() {
+        let raw = null;
+        try {
+            raw = JSON.parse(sessionStorage.getItem('customizingProduct') || 'null');
+        } catch {
+            raw = null;
+        }
+
+        if (!raw) {
+            try {
+                raw = JSON.parse(sessionStorage.getItem('selectedProductData') || 'null');
+            } catch {
+                raw = null;
+            }
+        }
+
+        const product = raw || {};
+        state.product.code = product.code || product.productCode || product.sku || product.id || state.product.code;
+        state.product.name = product.name || product.title || product.productName || product.displayName || state.product.name || 'Customise Your Product';
+        state.product.basePrice = Number(product.price || product.basePrice || product.startPrice || product.startingPrice) || state.product.basePrice || 0;
+        state.product.image = product.image || product.photo || state.product.image || '';
+        state.product.sizes = normalizeProductSizesFromApi(product);
+
+        state.availableSizes = sortSizes(state.product.sizes && state.product.sizes.length ? state.product.sizes : FALLBACK_SIZES);
+
+        const titleEl = document.getElementById('productTitle');
+        const codeEl = document.getElementById('productCode');
+        if (titleEl) titleEl.textContent = state.product.name || 'Customise Your Product';
+        if (codeEl) codeEl.textContent = state.product.code ? `#${state.product.code}` : 'Sample Product';
+    }
+
+    function normalizeProductSizesFromApi(productData) {
+        const raw = productData || {};
+
+        const normalizeList = (value) => {
+            if (!value) return [];
+            if (Array.isArray(value)) {
+                return value
+                    .map(v => String(v || '').trim())
+                    .filter(Boolean);
+            }
+            if (typeof value === 'string') {
+                const parts = value.split(/[;,|]/g);
+                const cleaned = parts.map(p => p.trim()).filter(Boolean);
+                return cleaned.length ? cleaned : [value.trim()].filter(Boolean);
+            }
+            return [String(value).trim()].filter(Boolean);
+        };
+
+        const uniq = (arr) => {
+            const out = [];
+            const seen = new Set();
+            arr.forEach(v => {
+                const key = String(v).trim();
+                if (!key) return;
+                if (seen.has(key)) return;
+                seen.add(key);
+                out.push(key);
+            });
+            return out;
+        };
+
+        let sizes = [];
+        sizes = sizes.concat(normalizeList(raw.sizes));
+        sizes = sizes.concat(normalizeList(raw.SIZES));
+        sizes = sizes.concat(normalizeList(raw.size));
+        sizes = sizes.concat(normalizeList(raw.SIZE));
+        sizes = sizes.concat(normalizeList(raw.SIEZE));
+        sizes = sizes.concat(normalizeList(raw.sieze));
+
+        const variantList = Array.isArray(raw.variants) ? raw.variants : (Array.isArray(raw.colors) ? raw.colors : []);
+        if (variantList && variantList.length) {
+            variantList.forEach(v => {
+                sizes = sizes.concat(normalizeList(v?.sizes));
+                sizes = sizes.concat(normalizeList(v?.SIEZE));
+                sizes = sizes.concat(normalizeList(v?.sieze));
+                sizes = sizes.concat(normalizeList(v?.size));
+            });
+        }
+
+        sizes = uniq(sizes);
+
+        const productType = String(raw.productType || raw.category || raw.type || '').trim().toLowerCase();
+        const isOneSizeType = ['beanies', 'caps', 'aprons'].some(t => productType.includes(t));
+        if ((!sizes || sizes.length === 0) && isOneSizeType) {
+            return ['ONESIZE'];
+        }
+
+        return sizes || [];
+    }
+
+    function sortSizes(sizes) {
+        const order = ['XXS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL','7XL','8XL','ONESIZE','ONE SIZE','OS','O/S'];
+        const rank = new Map(order.map((s, i) => [s.toUpperCase(), i]));
+        return (sizes || [])
+            .map(s => String(s || '').trim())
+            .filter(Boolean)
+            .sort((a, b) => {
+                const ra = rank.has(a.toUpperCase()) ? rank.get(a.toUpperCase()) : 999;
+                const rb = rank.has(b.toUpperCase()) ? rank.get(b.toUpperCase()) : 999;
+                if (ra !== rb) return ra - rb;
+                return a.localeCompare(b);
+            });
+    }
+
+    function setupStep4Redirects() {
+        // Later you can change these targets to your real home/shop routes.
+        $pickAnotherBtn.on('click', function() {
+            window.location.href = '../index.html';
+        });
+        $keepShoppingBtn.on('click', function() {
+            window.location.href = '../shop.html';
+        });
     }
 
     // === WIZARD ===
     function setupWizard() {
         const $viewport = $('#wizardViewport');
+        const $track = $('#wizardTrack');
         if (!$viewport.length) return;
 
         $('#btnBack').on('click', function() {
@@ -68,33 +203,139 @@ $(function() {
             goToStep(wizard.step + 1);
         });
 
-        // Sync when user swipes/scrolls manually
-        let scrollTimer;
-        $viewport.on('scroll', function() {
-            clearTimeout(scrollTimer);
-            scrollTimer = setTimeout(function() {
-                const width = $viewport[0].clientWidth || 1;
-                const s = Math.round($viewport[0].scrollLeft / width) + 1;
-                const newStep = clamp(s, wizard.min, wizard.max);
-                if (newStep !== wizard.step) {
-                    wizard.step = newStep;
-                    updateWizardUI();
-                }
-            }, 80);
-        });
+        // Swipe/drag support (scroll da destra a sinistra)
+        if ($track.length) {
+            setupWizardSwipe($viewport, $track);
+        }
     }
 
     function goToStep(step) {
         const $viewport = $('#wizardViewport');
+        const $track = $('#wizardTrack');
         if (!$viewport.length) return;
 
         wizard.step = clamp(step, wizard.min, wizard.max);
         updateWizardUI();
 
         const width = $viewport[0].clientWidth || 1;
-        const targetScrollLeft = (wizard.step - 1) * width;
+        const targetX = -(wizard.step - 1) * width;
+        animateTrackToX($track, targetX);
+    }
+
+    function getTrackX($track) {
+        const m = ($track.css('transform') || '').match(/matrix\(([^)]+)\)/);
+        if (!m) return 0;
+        const parts = m[1].split(',').map(s => parseFloat(s.trim()));
+        // matrix(a,b,c,d,tx,ty)
+        return parts.length >= 6 ? parts[4] : 0;
+    }
+
+    function setTrackX($track, x) {
+        $track.css('transform', `translate3d(${x}px, 0, 0)`);
+    }
+
+    function animateTrackToX($track, targetX) {
+        if (!$track || !$track.length) return;
+        const startX = getTrackX($track);
         const easing = $.easing && $.easing.easeOutBack ? 'easeOutBack' : 'swing';
-        $viewport.stop().animate({ scrollLeft: targetScrollLeft }, 520, easing);
+
+        $({ x: startX }).stop(true).animate(
+            { x: targetX },
+            {
+                duration: 520,
+                easing,
+                step: function(now) {
+                    setTrackX($track, now);
+                },
+                complete: function() {
+                    setTrackX($track, targetX);
+                }
+            }
+        );
+    }
+
+    function setupWizardSwipe($viewport, $track) {
+        let isDown = false;
+        let isDragging = false;
+        let startClientX = 0;
+        let startClientY = 0;
+        let startX = 0;
+        let lastClientX = 0;
+        let lastTime = 0;
+
+        function width() {
+            return $viewport[0].clientWidth || 1;
+        }
+
+        function boundsClamp(x) {
+            const minX = -(wizard.max - 1) * width();
+            const maxX = 0;
+            // small rubber band
+            if (x < minX) return minX - Math.min(60, (minX - x) * 0.25);
+            if (x > maxX) return maxX + Math.min(60, (x - maxX) * 0.25);
+            return x;
+        }
+
+        $viewport.on('pointerdown', function(e) {
+            // only primary button
+            if (e.originalEvent && e.originalEvent.button && e.originalEvent.button !== 0) return;
+
+            // Don't hijack interactions (colour swatches, selects, buttons, etc.)
+            if ($(e.target).closest('button, a, input, select, textarea, label').length) return;
+
+            isDown = true;
+            isDragging = false;
+            startClientX = e.originalEvent ? e.originalEvent.clientX : e.clientX;
+            startClientY = e.originalEvent ? e.originalEvent.clientY : e.clientY;
+            lastClientX = startClientX;
+            lastTime = Date.now();
+            startX = getTrackX($track);
+        });
+
+        $viewport.on('pointermove', function(e) {
+            if (!isDown) return;
+            const clientX = e.originalEvent ? e.originalEvent.clientX : e.clientX;
+            const clientY = e.originalEvent ? e.originalEvent.clientY : e.clientY;
+            const dx = clientX - startClientX;
+            const dy = clientY - startClientY;
+
+            // Only start dragging on clear horizontal intent
+            if (!isDragging) {
+                if (Math.abs(dx) < 10) return;
+                if (Math.abs(dy) > Math.abs(dx)) {
+                    // treat as vertical scroll; don't drag
+                    isDown = false;
+                    return;
+                }
+                isDragging = true;
+            }
+
+            const x = boundsClamp(startX + dx);
+            setTrackX($track, x);
+            lastClientX = clientX;
+            lastTime = Date.now();
+        });
+
+        $viewport.on('pointerup pointercancel', function(e) {
+            if (!isDown) return;
+            isDown = false;
+
+            // If it was just a tap, do nothing (let normal clicks work)
+            if (!isDragging) return;
+
+            const currentX = getTrackX($track);
+            const w = width();
+            const rawStep = Math.round(Math.abs(currentX) / w) + 1;
+            const targetStep = clamp(rawStep, wizard.min, wizard.max);
+            wizard.step = targetStep;
+            updateWizardUI();
+            animateTrackToX($track, -(wizard.step - 1) * w);
+        });
+
+        // Keep position correct on resize
+        $(window).on('resize', function() {
+            setTrackX($track, -(wizard.step - 1) * width());
+        });
     }
 
     function updateWizardUI() {
@@ -110,6 +351,7 @@ $(function() {
         $('#btnNext').text(wizard.step >= wizard.max ? 'Finish' : 'Continue');
 
         updateReview();
+        updateCurrentItemSummary();
     }
 
     function canAdvanceFromStep(step) {
@@ -131,13 +373,7 @@ $(function() {
     }
 
     function getTotalQty() {
-        let total = 0;
-        $selectedSizes.find('.size-qty-item').each(function() {
-            const size = $(this).find('.size-select').val();
-            const qty = parseInt($(this).find('.item-qty-input').val()) || 0;
-            if (size && qty > 0) total += qty;
-        });
-        return total;
+        return Object.values(state.sizeQuantities || {}).reduce((sum, q) => sum + (Number(q) || 0), 0);
     }
 
     // === COLOUR SELECTION ===
@@ -148,137 +384,98 @@ $(function() {
             state.selectedColour = $(this).data('colour');
             $selectedColourName.text(state.selectedColour);
             updateWizardUI();
+            updateOrderSummarySidebar();
         });
     }
 
     // === SIZE SELECTION ===
     function setupSizeSelection() {
-        // Add size button
-        $addSizeBtn.on('click', function() {
-            addSizeRow();
-        });
+        renderSizeChips();
 
-        // Delegated events for size controls
-        $('#sizeQtyCompact').on('click', '.item-qty-btn.minus', function() {
-            const $input = $(this).siblings('.item-qty-input');
-            let val = parseInt($input.val()) || 0;
-            if (val > 0) {
-                $input.val(val - 1);
-                updateTotalQty();
-                updateWizardUI();
-            }
-        });
-
-        $('#sizeQtyCompact').on('click', '.item-qty-btn.plus', function() {
-            const $input = $(this).siblings('.item-qty-input');
-            let val = parseInt($input.val()) || 0;
-            if (val < 999) {
-                $input.val(val + 1);
-                updateTotalQty();
-                updateWizardUI();
-            }
-        });
-
-        $('#sizeQtyCompact').on('click', '.remove-size-btn', function() {
-            $(this).closest('.size-qty-item').remove();
-            updateAvailableSizes();
-            updateTotalQty();
-            updateWizardUI();
-        });
-
-        $('#sizeQtyCompact').on('change', '.size-select', function() {
-            updateAvailableSizes();
-            updateTotalQty();
-            updateWizardUI();
-        });
-
-        $('#sizeQtyCompact').on('input change', '.item-qty-input', function() {
-            updateTotalQty();
-            updateWizardUI();
-        });
-    }
-
-    function addInitialSizeRow() {
-        addSizeRow();
-    }
-
-    function addSizeRow() {
-        const usedSizes = getUsedSizes();
-        const availableSizes = AVAILABLE_SIZES.filter(s => !usedSizes.includes(s));
-
-        if (availableSizes.length === 0) {
-            alert('All sizes have been added');
-            return;
+        if (!state.activeSize && state.availableSizes && state.availableSizes.length) {
+            setActiveSize(state.availableSizes[0]);
         }
 
-        let optionsHTML = '<option value="">Size</option>';
-        availableSizes.forEach(size => {
-            optionsHTML += `<option value="${size}">${size}</option>`;
+        $('#activeSizeMinus').on('click', function() { adjustActiveSize(-1); });
+        $('#activeSizePlus').on('click', function() { adjustActiveSize(1); });
+
+        $sizeChipGrid.on('click', '.size-chip', function() {
+            setActiveSize($(this).attr('data-size') || null);
         });
 
-        const $row = $(`
-            <div class="size-qty-item">
-                <select class="size-select">${optionsHTML}</select>
-                <div class="item-qty-control">
-                    <button type="button" class="item-qty-btn minus">−</button>
-                    <input type="number" class="item-qty-input" value="1" min="0" max="999">
-                    <button type="button" class="item-qty-btn plus">+</button>
-                </div>
-                <button type="button" class="remove-size-btn">×</button>
-            </div>
-        `);
-
-        $selectedSizes.append($row);
-        updateAvailableSizes();
-        updateTotalQty();
+        updateTotalsUI();
+        updateSelectedSizesSummary();
         updateWizardUI();
     }
 
-    function getUsedSizes() {
-        const used = [];
-        $selectedSizes.find('.size-select').each(function() {
-            const val = $(this).val();
-            if (val) used.push(val);
-        });
-        return used;
+    function renderSizeChips() {
+        if (!$sizeChipGrid.length) return;
+        const sizes = state.availableSizes || [];
+        if (!sizes.length) {
+            $sizeChipGrid.html('<div class="size-chip-empty">No sizes available</div>');
+            return;
+        }
+
+        const html = sizes.map(size => {
+            const qty = Number(state.sizeQuantities[size]) || 0;
+            const activeClass = state.activeSize === size ? 'active' : '';
+            const qtyLabel = qty > 0
+                ? `<span class="size-chip-qty">${qty}</span>`
+                : `<span class="size-chip-qty" style="opacity:0.25">0</span>`;
+            return `<button type="button" class="size-chip ${activeClass}" data-size="${escapeAttr(size)}" aria-label="Size ${escapeAttr(size)}">${escapeHtml(size)}${qtyLabel}</button>`;
+        }).join('');
+
+        $sizeChipGrid.html(html);
     }
 
-    function updateAvailableSizes() {
-        const usedSizes = getUsedSizes();
-
-        $selectedSizes.find('.size-select').each(function() {
-            const $select = $(this);
-            const currentVal = $select.val();
-            const otherUsed = usedSizes.filter(s => s !== currentVal);
-
-            let optionsHTML = '<option value="">Size</option>';
-            AVAILABLE_SIZES.forEach(size => {
-                if (!otherUsed.includes(size)) {
-                    const selected = size === currentVal ? 'selected' : '';
-                    optionsHTML += `<option value="${size}" ${selected}>${size}</option>`;
-                }
-            });
-
-            $select.html(optionsHTML);
-        });
-
-        // Show/hide add button
-        const remaining = AVAILABLE_SIZES.filter(s => !usedSizes.includes(s));
-        $addSizeBtn.toggle(remaining.length > 0);
+    function setActiveSize(size) {
+        if (!size) return;
+        state.activeSize = size;
+        $activeSizeLabel.text(size);
+        $sizeActiveBox.addClass('active');
+        $activeSizeQty.text(Number(state.sizeQuantities[size]) || 0);
+        renderSizeChips();
+        updateSelectedSizesSummary();
+        updateTotalsUI();
+        updateWizardUI();
+        updateOrderSummarySidebar();
     }
 
-    function updateTotalQty() {
-        state.sizeQuantities = {};
-        let total = 0;
-        $selectedSizes.find('.size-qty-item').each(function() {
-            const size = $(this).find('.size-select').val();
-            const qty = parseInt($(this).find('.item-qty-input').val()) || 0;
-            if (size && qty > 0) {
-                total += qty;
-                state.sizeQuantities[size] = qty;
-            }
-        });
-        $totalQty.text(total);
+    function adjustActiveSize(delta) {
+        if (!state.activeSize && state.availableSizes && state.availableSizes.length) {
+            setActiveSize(state.availableSizes[0]);
+        }
+
+        const size = state.activeSize;
+        if (!size) return;
+
+        const current = Number(state.sizeQuantities[size]) || 0;
+        const next = Math.max(0, current + delta);
+
+        if (next <= 0) {
+            delete state.sizeQuantities[size];
+        } else {
+            state.sizeQuantities[size] = next;
+        }
+
+        $activeSizeQty.text(next);
+        updateTotalsUI();
+        renderSizeChips();
+        updateSelectedSizesSummary();
+        updateWizardUI();
+        updateOrderSummarySidebar();
+    }
+
+    function updateTotalsUI() {
+        $totalQty.text(getTotalQty());
+    }
+
+    function updateSelectedSizesSummary() {
+        if (!$selectedSizesSummary.length) return;
+        const parts = Object.entries(state.sizeQuantities || {})
+            .filter(([, qty]) => (Number(qty) || 0) > 0)
+            .map(([size, qty]) => `${size}×${qty}`);
+        $selectedSizesSummary.text(parts.length ? parts.join('  ') : 'No sizes selected');
     }
 
     // === POSITION CARDS ===
@@ -324,7 +521,9 @@ $(function() {
                 // Select
                 $card.addClass('selected');
                 $checkbox.prop('checked', true);
-                state.selectedPositions.push(position);
+                if (!state.selectedPositions.includes(position)) {
+                    state.selectedPositions.push(position);
+                }
             }
 
             updateWizardUI();
@@ -344,7 +543,9 @@ $(function() {
             if (!$card.hasClass('selected')) {
                 $card.addClass('selected');
                 $card.find('input[type="checkbox"]').prop('checked', true);
-                state.selectedPositions.push(position);
+                if (!state.selectedPositions.includes(position)) {
+                    state.selectedPositions.push(position);
+                }
             }
 
             // Set method
@@ -662,6 +863,16 @@ $(function() {
             .replace(/'/g, '&#39;');
     }
 
+    function escapeAttr(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/`/g, '&#96;');
+    }
+
     function updateReview() {
         $('#reviewColour').text(state.selectedColour || '-');
         $('#reviewQty').text(getTotalQty());
@@ -684,22 +895,343 @@ $(function() {
 
     // === SUBMIT ===
     $submitBtn.on('click', function() {
-        // Collect data
-        const orderData = {
-            colour: state.selectedColour,
-            sizes: state.sizeQuantities,
-            positions: state.selectedPositions,
-            methods: state.positionMethods,
+        const totalQty = getTotalQty();
+        if (!state.product || !state.product.code) {
+            alert('Missing product info. Please start from a product page.');
+            return;
+        }
+        if (!state.selectedColour) {
+            alert('Please choose a colour.');
+            return;
+        }
+        if (totalQty <= 0) {
+            alert('Please select size quantities.');
+            return;
+        }
+
+        const product = {
+            code: state.product.code,
+            name: state.product.name,
+            color: state.selectedColour,
+            image: state.product.image || '',
+            price: Number(state.product.basePrice) || 0,
+            quantities: { ...state.sizeQuantities },
+            quantity: totalQty,
+            positions: state.selectedPositions.slice(),
+            methods: { ...state.positionMethods },
             logos: {}
         };
 
-        // Include logo data
         Object.keys(state.positionLogos).forEach(pos => {
-            orderData.logos[pos] = state.positionLogos[pos].processed;
+            product.logos[pos] = state.positionLogos[pos].processed;
         });
 
-        console.log('Order Data:', orderData);
-        alert('Order added to quote! Check console for details.');
+        addToBasket(product);
+        updateOrderSummarySidebar();
+        alert('Added to basket!');
     });
+
+    // === ORDER SUMMARY SIDEBAR (reused tablet logic) ===
+    function isVatIncluded() {
+        return localStorage.getItem(VAT_KEY) === 'on';
+    }
+
+    function vatSuffix() {
+        return isVatIncluded() ? 'inc VAT' : 'ex VAT';
+    }
+
+    function formatMoney(amount) {
+        const n = Number(amount) || 0;
+        return '£' + n.toFixed(2);
+    }
+
+    function displayMoney(baseExVat) {
+        const base = Number(baseExVat) || 0;
+        const display = isVatIncluded() ? base * (1 + VAT_RATE) : base;
+        return formatMoney(display);
+    }
+
+    function readBasket() {
+        try {
+            return JSON.parse(localStorage.getItem('quoteBasket')) || [];
+        } catch {
+            return [];
+        }
+    }
+
+    function writeBasket(basket) {
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        } catch {
+            // ignore
+        }
+        window.dispatchEvent(new CustomEvent('basketUpdated'));
+    }
+
+    function buildGroupedBasketItems(basket) {
+        const grouped = [];
+
+        basket.forEach((item, index) => {
+            const qtyMap = item && (item.quantities && Object.keys(item.quantities).length
+                ? item.quantities
+                : (item.sizes && Object.keys(item.sizes).length ? item.sizes : null));
+
+            if (qtyMap) {
+                Object.entries(qtyMap).forEach(([size, qty]) => {
+                    const numericQty = Number(qty) || 0;
+                    if (numericQty > 0) {
+                        grouped.push({
+                            index,
+                            name: item.name,
+                            code: item.code,
+                            color: item.color,
+                            size,
+                            qty: numericQty,
+                            image: item.image,
+                            price: Number(item.price)
+                        });
+                    }
+                });
+                return;
+            }
+
+            const numericQty = Number(item.quantity || item.totalQty) || 0;
+            if (numericQty > 0) {
+                grouped.push({
+                    index,
+                    name: item.name,
+                    code: item.code,
+                    color: item.color,
+                    size: item.size || '',
+                    qty: numericQty,
+                    image: item.image,
+                    price: Number(item.price)
+                });
+            }
+        });
+
+        return grouped;
+    }
+
+    function basketTotalQty(grouped) {
+        return grouped.reduce((sum, g) => sum + (Number(g.qty) || 0), 0);
+    }
+
+    function setupOrderSummarySidebar() {
+        // Re-render on basket updates
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'quoteBasket' || e.key === VAT_KEY) updateOrderSummarySidebar();
+        });
+        window.addEventListener('basketUpdated', updateOrderSummarySidebar);
+        window.addEventListener('vatToggleChanged', updateOrderSummarySidebar);
+
+        // Delegated +/- + remove
+        $('#basketItemsList')
+            .on('click', '.qty-toggle-btn.plus', function() {
+                const idx = parseInt($(this).attr('data-index') || '0', 10);
+                const size = $(this).attr('data-size') || '';
+                updateBasketItemQuantity(idx, 1, size);
+            })
+            .on('click', '.qty-toggle-btn.minus', function() {
+                const idx = parseInt($(this).attr('data-index') || '0', 10);
+                const size = $(this).attr('data-size') || '';
+                updateBasketItemQuantity(idx, -1, size);
+            })
+            .on('click', '.remove-item-btn', function() {
+                const idx = parseInt($(this).attr('data-index') || '0', 10);
+                const size = $(this).attr('data-size') || '';
+                removeBasketGroup(idx, size);
+            });
+    }
+
+    function updateOrderSummarySidebar() {
+        const root = document.getElementById('tabletOrderSummary');
+        if (!root) return;
+
+        const basket = readBasket();
+        const grouped = buildGroupedBasketItems(basket);
+        const totalQty = basketTotalQty(grouped);
+
+        const garmentCostEl = document.getElementById('sidebarGarmentCost');
+        const garmentUnitEl = document.getElementById('garmentUnitPrice');
+        const garmentQtyEl = document.getElementById('garmentQty');
+        const totalEl = document.getElementById('sidebarTotalCost');
+        const itemsEl = document.getElementById('basketItemsList');
+        const emptyEl = document.getElementById('tabletOrderSummaryEmpty');
+        const vatSuffixEl = document.getElementById('tabletVatSuffix');
+
+        let garmentTotal = 0;
+        let basketHTML = '';
+
+        grouped.forEach(g => {
+            const safeSizeKey = (g.size || 'all').replace(/[^a-z0-9_-]/gi, '-');
+            const tempKey = `${g.index}_${safeSizeKey}`;
+            const unit = Number.isFinite(g.price) ? g.price : 0;
+            const lineTotal = unit * g.qty;
+            garmentTotal += lineTotal;
+
+            basketHTML += `
+                <div class="sidebar-basket-item" data-index="${g.index}" data-size="${escapeAttr(g.size)}">
+                    <img src="${escapeAttr(g.image || '')}" alt="${escapeAttr(g.color || '')}">
+                    <div class="sidebar-basket-details">
+                        <strong>${escapeHtml(g.name || 'Product')}</strong>
+                        <div class="product-code" id="product-code-${tempKey}">${escapeHtml(g.code || '')}${g.color ? ` - ${escapeHtml(g.color)}` : ''}</div>
+                        <div class="product-sizes">${g.qty}×${escapeHtml(g.size || '')}</div>
+                        <div class="product-price">
+                            <div class="qty-toggle">
+                                <button type="button" class="qty-toggle-btn minus" data-index="${g.index}" data-size="${escapeAttr(g.size)}" aria-label="Decrease quantity">-</button>
+                                <span class="qty-toggle-value" id="qty-display-${tempKey}">${g.qty}</span>
+                                <button type="button" class="qty-toggle-btn plus" data-index="${g.index}" data-size="${escapeAttr(g.size)}" aria-label="Increase quantity">+</button>
+                            </div>
+                            <span id="row-total-${tempKey}" class="basket-line-price" data-qty="${g.qty}" data-unit="${unit}">${displayMoney(lineTotal)} ${vatSuffix()}</span>
+                        </div>
+                    </div>
+                    <button class="remove-item-btn" data-index="${g.index}" data-size="${escapeAttr(g.size)}" title="Remove item" aria-label="Remove item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        });
+
+        if (emptyEl) {
+            emptyEl.hidden = grouped.length > 0;
+        }
+
+        const avgUnit = totalQty > 0 ? (garmentTotal / totalQty) : 0;
+
+        if (vatSuffixEl) {
+            vatSuffixEl.textContent = vatSuffix();
+        }
+
+        if (garmentCostEl) {
+            garmentCostEl.textContent = displayMoney(garmentTotal);
+        }
+        if (garmentUnitEl) {
+            garmentUnitEl.textContent = displayMoney(avgUnit);
+        }
+        if (garmentQtyEl) {
+            garmentQtyEl.textContent = `Qty: ${totalQty}`;
+        }
+        if (totalEl) {
+            totalEl.innerHTML = `${displayMoney(garmentTotal)} <span class="vat-suffix">${vatSuffix()}</span>`;
+        }
+
+        if (itemsEl) {
+            itemsEl.innerHTML = basketHTML;
+        }
+    }
+
+    function updateBasketItemQuantity(index, delta, size) {
+        const basket = readBasket();
+        const item = basket[index];
+        if (!item) return;
+
+        const qtyMap = item.quantities && Object.keys(item.quantities).length
+            ? item.quantities
+            : (item.sizes && Object.keys(item.sizes).length ? item.sizes : null);
+
+        if (qtyMap && size) {
+            const current = Number(qtyMap[size]) || 0;
+            const next = current + delta;
+            if (next <= 0) {
+                delete qtyMap[size];
+            } else {
+                qtyMap[size] = next;
+            }
+            item.quantity = Object.values(qtyMap).reduce((sum, q) => sum + (Number(q) || 0), 0);
+        } else {
+            const current = Number(item.quantity || item.totalQty) || 0;
+            const next = current + delta;
+            item.quantity = Math.max(0, next);
+        }
+
+        if ((Number(item.quantity) || 0) <= 0) {
+            basket.splice(index, 1);
+        }
+
+        writeBasket(basket);
+        updateOrderSummarySidebar();
+    }
+
+    function removeBasketGroup(index, size) {
+        const basket = readBasket();
+        const item = basket[index];
+        if (!item) return;
+
+        const qtyMap = item.quantities && Object.keys(item.quantities).length
+            ? item.quantities
+            : (item.sizes && Object.keys(item.sizes).length ? item.sizes : null);
+
+        if (qtyMap && size) {
+            delete qtyMap[size];
+            item.quantity = Object.values(qtyMap).reduce((sum, q) => sum + (Number(q) || 0), 0);
+            if (Object.keys(qtyMap).length === 0 || item.quantity <= 0) {
+                basket.splice(index, 1);
+            }
+        } else {
+            basket.splice(index, 1);
+        }
+
+        writeBasket(basket);
+        updateOrderSummarySidebar();
+    }
+
+    function addToBasket(product) {
+        try {
+            const basket = readBasket();
+            const existingIndex = basket.findIndex(item => item.code === product.code && item.color === product.color);
+
+            if (existingIndex > -1) {
+                const existing = basket[existingIndex];
+                if (product.quantities) {
+                    existing.quantities = existing.quantities || {};
+                    Object.keys(product.quantities).forEach(size => {
+                        existing.quantities[size] = (existing.quantities[size] || 0) + (Number(product.quantities[size]) || 0);
+                    });
+                    existing.quantity = Object.values(existing.quantities).reduce((sum, q) => sum + (Number(q) || 0), 0);
+                }
+            } else {
+                basket.push(product);
+            }
+
+            writeBasket(basket);
+        } catch (e) {
+            console.error('Error adding to basket:', e);
+        }
+    }
+
+    function updateCurrentItemSummary() {
+        const productNameEl = document.getElementById('currentProductName');
+        const colourEl = document.getElementById('currentColour');
+        const sizesEl = document.getElementById('currentSizes');
+        const positionsEl = document.getElementById('currentPositions');
+
+        if (productNameEl) productNameEl.textContent = state.product?.name || '-';
+        if (colourEl) colourEl.textContent = state.selectedColour || '-';
+
+        const sizeParts = Object.entries(state.sizeQuantities || {})
+            .filter(([, q]) => (Number(q) || 0) > 0)
+            .map(([s, q]) => `${s}×${q}`);
+        if (sizesEl) sizesEl.textContent = sizeParts.length ? sizeParts.join(' ') : '-';
+
+        if (!state.selectedPositions.length) {
+            if (positionsEl) positionsEl.textContent = '-';
+            return;
+        }
+
+        const posParts = state.selectedPositions.map(pos => {
+            const $card = $positionOptions.find(`[data-position="${pos}"]`);
+            const name = ($card.find('.position-checkbox span').text() || pos).trim();
+            const method = state.positionMethods[pos] || '';
+            return name + (method ? ` (${method})` : '');
+        });
+
+        if (positionsEl) positionsEl.textContent = posParts.join(' | ');
+    }
 
 });

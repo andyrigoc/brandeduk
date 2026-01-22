@@ -11,39 +11,93 @@
 <body>
 
 <div class="order-container">
-    
-    <!-- Header -->
-    <header class="order-header">
-        <h1>Customise Your Apron</h1>
-        <p class="product-code">Sample Product</p>
-    </header>
+    <div class="order-layout">
+        <!-- LEFT: Order Summary (tablet style) -->
+        <aside class="order-sidebar" aria-label="Your order summary">
+            <section class="order-summary-section order-summary-section--sidebar" id="tabletOrderSummary">
+                <h2 class="section-title">Your Order Summary:</h2>
 
-    <!-- Progress / Steps -->
-    <div class="progress-bar" aria-label="Order steps">
-        <div class="progress-step active" data-step="1">
-            <span class="step-dot">1</span>
-            <span class="step-label">Colour</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="2">
-            <span class="step-dot">2</span>
-            <span class="step-label">Size & Qty</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="3">
-            <span class="step-dot">3</span>
-            <span class="step-label">Logo</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step" data-step="4">
-            <span class="step-dot">4</span>
-            <span class="step-label">Submit</span>
-        </div>
-    </div>
+                <div class="current-item-box" id="currentItemBox">
+                    <h4 class="current-item-title">Currently Adding</h4>
+                    <div class="current-item-rows">
+                        <div class="current-item-row"><span>Product</span><strong id="currentProductName">-</strong></div>
+                        <div class="current-item-row"><span>Colour</span><strong id="currentColour">-</strong></div>
+                        <div class="current-item-row"><span>Sizes</span><strong id="currentSizes">-</strong></div>
+                        <div class="current-item-row"><span>Positions</span><strong id="currentPositions">-</strong></div>
+                    </div>
+                </div>
 
-    <!-- Horizontal wizard (right-to-left with bounce) -->
-    <div class="wizard-viewport" id="wizardViewport">
-        <div class="wizard-track" id="wizardTrack">
+                <div class="sidebar-costs">
+                    <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+
+                    <div class="section garment-section">
+                        <div class="row">
+                            <span class="label">Garment Cost <span class="vat-suffix" id="tabletVatSuffix">ex VAT</span></span>
+                            <span class="value" id="sidebarGarmentCost">£0.00</span>
+                        </div>
+                        <div class="row detail">
+                            <span>Unit Price:</span>
+                            <span class="detail-values">
+                                <span id="garmentUnitPrice">£0.00</span>
+                                <span id="garmentQty">Qty: 0</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="customizationCostsList"></div>
+
+                    <div class="cost-row total-row">
+                        <strong>Total Cost</strong>
+                        <strong id="sidebarTotalCost" class="total-amount">£0.00 <span class="vat-suffix">ex VAT</span></strong>
+                    </div>
+                </div>
+
+                <div id="tabletOrderSummaryEmpty" class="summary-note" hidden>
+                    No items yet. Add products to start your quote.
+                </div>
+
+                <div id="basketItemsList" class="basket-items-scroll"></div>
+
+                <p class="summary-note">Shipping cost TBC after quote approval<br>Delivery 5/7 working days after approval</p>
+
+                <a class="submit-quote-btn" href="../basket.html#orderSummary" aria-label="Open basket">View Basket</a>
+            </section>
+        </aside>
+
+        <!-- RIGHT: Wizard -->
+        <div class="order-main">
+            <!-- Header -->
+            <header class="order-header">
+                <h1 id="productTitle">Customise Your Product</h1>
+                <p class="product-code" id="productCode">Sample Product</p>
+            </header>
+
+            <!-- Progress / Steps -->
+            <div class="progress-bar" aria-label="Order steps">
+                <div class="progress-step active" data-step="1">
+                    <span class="step-dot">1</span>
+                    <span class="step-label">Colour</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <span class="step-dot">2</span>
+                    <span class="step-label">Size & Qty</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <span class="step-dot">3</span>
+                    <span class="step-label">Logo</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="4">
+                    <span class="step-dot">4</span>
+                    <span class="step-label">Submit</span>
+                </div>
+            </div>
+
+            <!-- Horizontal wizard (right-to-left with bounce) -->
+            <div class="wizard-viewport" id="wizardViewport">
+                <div class="wizard-track" id="wizardTrack">
 
             <!-- STEP 1: Color Selection -->
             <section class="order-section page" data-step="1">
@@ -63,16 +117,18 @@
             <section class="order-section page" data-step="2">
                 <h2 class="section-title">2. Size & Quantity</h2>
                 <div class="size-qty-compact" id="sizeQtyCompact">
-                    <div class="selected-sizes" id="selectedSizes">
-                        <!-- Size rows added dynamically -->
+                    <div class="size-chip-grid" id="sizeChipGrid" aria-label="Available sizes"></div>
+
+                    <div class="size-active-box" id="sizeActiveBox">
+                        <div class="size-active-label">Selected Size: <strong id="activeSizeLabel">-</strong></div>
+                        <div class="qty-toggle qty-toggle--active-size">
+                            <button type="button" class="qty-toggle-btn minus" id="activeSizeMinus" aria-label="Decrease quantity">-</button>
+                            <span class="qty-toggle-value" id="activeSizeQty">0</span>
+                            <button type="button" class="qty-toggle-btn plus" id="activeSizePlus" aria-label="Increase quantity">+</button>
+                        </div>
+                        <div class="selected-sizes-summary" id="selectedSizesSummary">No sizes selected</div>
                     </div>
-                    <button class="add-size-btn" id="addSizeBtn" type="button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Add Size
-                    </button>
+
                     <div class="qty-total-bar">
                         <span class="total-label">Total Pieces:</span>
                         <span class="total-value"><span id="totalQty">0</span> pcs</span>
@@ -206,22 +262,28 @@
                     <div class="review-row"><span>Total Pieces</span><strong id="reviewQty">0</strong></div>
                     <div class="review-row"><span>Positions</span><strong id="reviewPositions">-</strong></div>
                 </div>
+                <div class="submit-actions">
+                    <button class="secondary-btn" id="pickAnotherBtn" type="button">Pick Another Item</button>
+                    <button class="secondary-btn" id="keepShoppingBtn" type="button">Keep Shopping</button>
+                </div>
                 <button class="submit-btn" id="submitBtn" type="button">Add to Quote</button>
             </section>
 
+                </div>
+            </div>
+
+            <!-- Hidden file input for logo upload -->
+            <input type="file" id="logoFileInput" accept="image/*" hidden>
+            
+            <!-- Hidden canvas for background removal -->
+            <canvas id="bgRemovalCanvas" class="bg-removal-canvas" aria-hidden="true"></canvas>
+
+            <!-- Wizard Nav -->
+            <div class="wizard-nav">
+                <button class="nav-btn back" id="btnBack" type="button">Back</button>
+                <button class="nav-btn next" id="btnNext" type="button">Continue</button>
+            </div>
         </div>
-    </div>
-
-    <!-- Hidden file input for logo upload -->
-    <input type="file" id="logoFileInput" accept="image/*" hidden>
-    
-    <!-- Hidden canvas for background removal -->
-    <canvas id="bgRemovalCanvas" class="bg-removal-canvas" aria-hidden="true"></canvas>
-
-    <!-- Wizard Nav -->
-    <div class="wizard-nav">
-        <button class="nav-btn back" id="btnBack" type="button">Back</button>
-        <button class="nav-btn next" id="btnNext" type="button">Continue</button>
     </div>
 
 </div>

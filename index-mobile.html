@@ -607,6 +607,51 @@
 
     <!-- Main Content -->
     <main class="mobile-main">
+        <div class="tablet-summary-layout">
+            <aside class="tablet-order-summary" aria-label="Your order summary">
+                <section class="order-summary-section order-summary-section--sidebar" id="tabletOrderSummary">
+                    <h2 class="section-title">Your Order Summary:</h2>
+
+                    <div class="sidebar-costs">
+                        <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+
+                        <div class="section garment-section">
+                            <div class="row">
+                                <span class="label">Garment Cost <span class="vat-suffix" id="tabletVatSuffix">ex VAT</span></span>
+                                <span class="value" id="sidebarGarmentCost">£0.00</span>
+                            </div>
+                            <div class="row detail">
+                                <span>Unit Price:</span>
+                                <span class="detail-values">
+                                    <span id="garmentUnitPrice">£0.00</span>
+                                    <span id="garmentQty">Qty: 0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div id="customizationCostsList"></div>
+
+                        <div class="cost-row total-row">
+                            <strong>Total Cost</strong>
+                            <strong id="sidebarTotalCost" class="total-amount">£0.00 <span class="vat-suffix">ex VAT</span></strong>
+                        </div>
+                    </div>
+
+                    <div id="tabletOrderSummaryEmpty" class="summary-note" hidden>
+                        No items yet. Add products to start your quote.
+                    </div>
+
+                    <div id="basketItemsList" class="basket-items-scroll"></div>
+
+                    <p class="summary-note">Shipping cost TBC after quote approval<br>Delivery 5/7 working days after approval</p>
+
+                    <a class="submit-quote-btn" href="basket.html#orderSummary" aria-label="Open basket">
+                        View Basket
+                    </a>
+                </section>
+            </aside>
+
+            <div class="tablet-main-content">
         <!-- Hero 1 - Expanding Panels (Always visible) -->
         <div class="hero-expanding-wrapper">
             <div class="hero-cont s--inactive" id="hero1">
@@ -1520,6 +1565,8 @@
                 </div>
             </div>
         </footer>
+            </div>
+        </div>
     </main>
 
     <!-- Slide-out Menu -->
@@ -2574,5 +2621,7 @@
             });
         })();
     </script>
+
+    <script src="brandedukv15-child/assets/js/pages/tablet-order-summary-sidebar.js?v=20260122"></script>
 </body>
 </html>
