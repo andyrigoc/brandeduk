@@ -660,6 +660,91 @@
             display: none; /* Hide static filter counts */
         }
 
+        /* Primary Colour swatches (replaces tick boxes) */
+        .filter-color-swatches {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            padding: 0 4px;
+        }
+
+        .color-swatch-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 6px;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        .color-swatch-item:hover {
+            background: #f3f4f6;
+        }
+
+        .color-swatch-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .color-swatch-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            background: var(--swatch, #e5e7eb);
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 2px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .color-swatch-item input[type="checkbox"]:checked + .color-swatch-circle {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        .color-swatch-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            line-height: 1;
+            text-align: center;
+        }
+
+        /* Swatch palette */
+        .color-swatch-item[data-color="black"] { --swatch: #111827; }
+        .color-swatch-item[data-color="blue"] { --swatch: #2563eb; }
+        .color-swatch-item[data-color="grey"] { --swatch: #6b7280; }
+        .color-swatch-item[data-color="green"] { --swatch: #16a34a; }
+        .color-swatch-item[data-color="white"] { --swatch: #ffffff; }
+        .color-swatch-item[data-color="white"] .color-swatch-circle { border-color: #d1d5db; }
+        .color-swatch-item[data-color="red"] { --swatch: #dc2626; }
+        .color-swatch-item[data-color="pink"] { --swatch: #ec4899; }
+        .color-swatch-item[data-color="yellow"] { --swatch: #facc15; }
+        .color-swatch-item[data-color="neutral"] { --swatch: #d1d5db; }
+        .color-swatch-item[data-color="purple"] { --swatch: #7c3aed; }
+        .color-swatch-item[data-color="orange"] { --swatch: #f97316; }
+        .color-swatch-item[data-color="brown"] { --swatch: #92400e; }
+        .color-swatch-item[data-color="other"] { --swatch: linear-gradient(135deg, #9ca3af, #e5e7eb); }
+        .color-swatch-item[data-color="pattern"] .color-swatch-circle {
+            background: repeating-linear-gradient(
+                45deg,
+                #111827 0px,
+                #111827 5px,
+                #ffffff 5px,
+                #ffffff 10px
+            );
+        }
+
         /* Products Section */
         .products-section {
             background: white;
@@ -727,8 +812,8 @@
         .products-header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 12px;
+            flex-wrap: nowrap;
             flex-shrink: 0;
         }
 
@@ -743,7 +828,8 @@
         .products-controls {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            flex-wrap: nowrap;
         }
 
         .control-group {
@@ -773,7 +859,7 @@
             background-repeat: no-repeat;
             background-position: right 10px center;
             transition: all 0.2s ease;
-            min-width: 130px;
+            min-width: 112px;
         }
 
         .control-select:hover {
@@ -1019,6 +1105,14 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            flex-wrap: nowrap;
+        }
+
+        .pagination-page-numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: nowrap;
         }
 
         .pagination-container {
@@ -1068,7 +1162,7 @@
         .pagination-page {
             min-width: 32px;
             height: 32px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             background: white;
@@ -1774,21 +1868,77 @@
             <span class="filter-expandable-arrow">›</span>
         </div>
         <div class="filter-expandable-content">
-            <div class="filter-checkbox-list">
-                <label class="filter-checkbox-item"><input type="checkbox" value="black"><span>Black</span><span class="count">(142)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="blue"><span>Blue</span><span class="count">(98)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="grey"><span>Grey</span><span class="count">(76)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="green"><span>Green</span><span class="count">(42)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="white"><span>White</span><span class="count">(128)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="red"><span>Red</span><span class="count">(54)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="pink"><span>Pink</span><span class="count">(32)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="yellow"><span>Yellow</span><span class="count">(28)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="neutral"><span>Neutral</span><span class="count">(24)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="purple"><span>Purple</span><span class="count">(26)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="orange"><span>Orange</span><span class="count">(24)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="brown"><span>Brown</span><span class="count">(18)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="pattern"><span>Pattern</span><span class="count">(12)</span></label>
-                <label class="filter-checkbox-item"><input type="checkbox" value="other"><span>Other</span><span class="count">(8)</span></label>
+            <div class="filter-color-swatches" aria-label="Primary colour">
+                <label class="color-swatch-item" data-color="black" title="Black">
+                    <input type="checkbox" value="black">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Black</span>
+                </label>
+                <label class="color-swatch-item" data-color="blue" title="Blue">
+                    <input type="checkbox" value="blue">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Blue</span>
+                </label>
+                <label class="color-swatch-item" data-color="grey" title="Grey">
+                    <input type="checkbox" value="grey">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Grey</span>
+                </label>
+                <label class="color-swatch-item" data-color="green" title="Green">
+                    <input type="checkbox" value="green">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Green</span>
+                </label>
+                <label class="color-swatch-item" data-color="white" title="White">
+                    <input type="checkbox" value="white">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">White</span>
+                </label>
+                <label class="color-swatch-item" data-color="red" title="Red">
+                    <input type="checkbox" value="red">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Red</span>
+                </label>
+                <label class="color-swatch-item" data-color="pink" title="Pink">
+                    <input type="checkbox" value="pink">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Pink</span>
+                </label>
+                <label class="color-swatch-item" data-color="yellow" title="Yellow">
+                    <input type="checkbox" value="yellow">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Yellow</span>
+                </label>
+                <label class="color-swatch-item" data-color="neutral" title="Neutral">
+                    <input type="checkbox" value="neutral">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Neutral</span>
+                </label>
+                <label class="color-swatch-item" data-color="purple" title="Purple">
+                    <input type="checkbox" value="purple">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Purple</span>
+                </label>
+                <label class="color-swatch-item" data-color="orange" title="Orange">
+                    <input type="checkbox" value="orange">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Orange</span>
+                </label>
+                <label class="color-swatch-item" data-color="brown" title="Brown">
+                    <input type="checkbox" value="brown">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Brown</span>
+                </label>
+                <label class="color-swatch-item" data-color="pattern" title="Pattern">
+                    <input type="checkbox" value="pattern">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Pattern</span>
+                </label>
+                <label class="color-swatch-item" data-color="other" title="Other">
+                    <input type="checkbox" value="other">
+                    <span class="color-swatch-circle" aria-hidden="true"></span>
+                    <span class="color-swatch-name">Other</span>
+                </label>
             </div>
         </div>
 
@@ -2007,7 +2157,7 @@
                 <div class="pagination-pages" id="paginationTop" style="display: none;">
                     <button type="button" class="pagination-button" id="paginationFirst" title="First page">«</button>
                     <button type="button" class="pagination-button" id="paginationPrev" title="Previous page">&lt;</button>
-                    <span id="paginationPageNumbers"></span>
+                    <div id="paginationPageNumbers" class="pagination-page-numbers" aria-label="Pagination pages"></div>
                     <button type="button" class="pagination-button" id="paginationNext" title="Next page">&gt;</button>
                     <button type="button" class="pagination-button" id="paginationLast" title="Last page">»</button>
                 </div>
@@ -2242,6 +2392,8 @@ let currentState = {
     priceMin: null,
     priceMax: null,
     sort: 'best',
+    // Variant-driven colour filter (API param: color=black)
+    color: '',
     filters: {
         gender: [],
         ageGroup: [],
@@ -2361,6 +2513,9 @@ currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('pr
 currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
 }
 
+// Variant colour filter (persisted in URL as ?color=black)
+currentState.color = slugifyColor(urlParams.get('color') || '');
+
 // Handle style parameter (subcategory) from URL
 const styleParam = urlParams.get('style');
 if (styleParam) {
@@ -2379,6 +2534,83 @@ if (styleParam) {
 function mapFilterValue(filterType, frontendValue) {
     const mapping = FILTER_MAPPINGS[filterType];
     return mapping && mapping[frontendValue] ? mapping[frontendValue] : frontendValue;
+}
+
+// ---------------------------------------------------------------------------
+// Variant colour matching helpers (used for Primary Colour -> ?color= filter)
+// ---------------------------------------------------------------------------
+
+function slugifyColor(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+function getVariantImage(variant, product) {
+    return (
+        (variant && (variant.main || variant.image_url || variant.image)) ||
+        (product && product.image) ||
+        ''
+    );
+}
+
+function pickBestColorVariant(product, requestedSlug) {
+    const target = slugifyColor(requestedSlug);
+    if (!target) return null;
+
+    const variants = Array.isArray(product && product.colors) ? product.colors : [];
+    if (variants.length === 0) return null;
+
+    const synonyms = {
+        black: ['black', 'jet', 'jet-black', 'charcoal', 'graphite', 'carbon', 'ebony', 'midnight-black'],
+        navy: ['navy', 'midnight', 'midnight-navy', 'deep-navy', 'dark-navy'],
+        grey: ['grey', 'gray', 'charcoal', 'slate', 'graphite', 'heather', 'marl'],
+        white: ['white', 'off-white', 'ivory', 'natural'],
+        red: ['red', 'burgundy', 'maroon', 'crimson', 'wine'],
+        blue: ['blue', 'royal', 'sky', 'light-blue'],
+        green: ['green', 'forest', 'bottle', 'olive', 'khaki'],
+        yellow: ['yellow', 'gold', 'mustard'],
+        pink: ['pink', 'fuchsia', 'hot-pink'],
+        purple: ['purple', 'violet', 'lilac', 'plum'],
+        orange: ['orange', 'coral', 'burnt-orange'],
+        brown: ['brown', 'chocolate', 'tan', 'camel'],
+        neutral: ['neutral', 'natural', 'sand', 'stone', 'beige', 'oatmeal']
+    };
+
+    const needles = [target, ...(synonyms[target] || [])]
+        .map(slugifyColor)
+        .filter(Boolean);
+
+    let best = null;
+    let bestScore = -1;
+
+    for (const v of variants) {
+        const nameSlug = slugifyColor(v && v.name);
+        if (!nameSlug) continue;
+
+        let score = 0;
+        if (nameSlug === target) {
+            score = 100;
+        } else if (nameSlug.includes(target) || target.includes(nameSlug)) {
+            score = 85;
+        } else if (needles.some(n => nameSlug.includes(n))) {
+            score = 70;
+        }
+
+        if (score > bestScore) {
+            bestScore = score;
+            best = v;
+        }
+    }
+
+    // Only accept if it's a reasonable match.
+    if (!best || bestScore < 70) return null;
+    return best;
 }
 
 // Build API params from current state
@@ -2487,6 +2719,10 @@ function buildApiParams() {
 
     // Process each filter
     Object.keys(currentState.filters).forEach(filterKey => {
+        // When variant colour is active, do not send primaryColour[]
+        if (filterKey === 'primaryColour' && currentState.color) {
+            return;
+        }
         const filterValues = currentState.filters[filterKey];
         // Ensure filterValues is an array
         const values = Array.isArray(filterValues) ? filterValues : [];
@@ -2519,6 +2755,11 @@ function buildApiParams() {
                 params['flag[]'] = mappedQuickFilters;
             }
         }
+    }
+
+    // Variant colour param (server-side filter by any matching variant)
+    if (currentState.color) {
+        params.color = currentState.color;
     }
 
     // Log the final params we will send to the API
@@ -2697,64 +2938,73 @@ async function fetchProducts() {
 
 // Fetch filter counts
 async function fetchFilterCounts() {
-    try {
-        console.log('🔍 Fetching filter counts...');
-        const params = buildApiParams();
-        
-        // Call /api/products with same parameters to get filter aggregations
-        const counts = await BrandedAPI.getFilterCounts(params);
-        
-        console.log('📊 Filter counts received:', counts);
-        updateFilterCounts(counts);
-    } catch (error) {
-        console.error('❌ Error fetching filter counts:', error);
-    }
+    // Intentionally disabled: swatch badge numbers are not reliable right now.
+    return;
 }
 
 // Update filter counts in sidebar
 function updateFilterCounts(counts) {
     if (!counts) return;
-    
-    // Map API filter names to frontend selectors
-    const filterMap = {
-        gender: '.filter-checkbox-item input[value]',
-        ageGroup: '.filter-checkbox-item input[value]',
-        sleeve: '.filter-checkbox-item input[value]',
-        neckline: '.filter-checkbox-item input[value]',
-        fabric: '.filter-checkbox-item input[value]',
-        size: '.filter-checkbox-item input[value]',
-        primaryColour: '.filter-checkbox-item input[value]',
-        colourShade: '.filter-checkbox-item input[value]',
-        style: '.filter-checkbox-item input[value]',
-        tag: '.filter-checkbox-item input[value]',
-        weight: '.filter-checkbox-item input[value]',
-        fit: '.filter-checkbox-item input[value]',
-        sector: '.filter-checkbox-item input[value]',
-        sport: '.filter-checkbox-item input[value]',
-        effect: '.filter-checkbox-item input[value]',
-        accreditations: '.filter-checkbox-item input[value]',
-        feature: '.filter-checkbox-item input[value]'
+
+    const titleByKey = {
+        gender: 'Gender',
+        ageGroup: 'Age Group',
+        sleeve: 'Sleeve',
+        neckline: 'Neckline',
+        accreditations: 'Accreditations',
+        primaryColour: 'Primary Colour',
+        colourShade: 'Colour Shade',
+        style: 'Style',
+        feature: 'Features',
+        size: 'Size',
+        fabric: 'Fabric',
+        weight: 'Weight (GSM)',
+        fit: 'Fit',
+        sector: 'Related Sector',
+        sport: 'Related Sport',
+        tag: 'Tag',
+        effect: 'Effect'
     };
-    
-    // Update counts for each filter type
-    Object.keys(counts).forEach(apiFilterName => {
-        const filterSection = document.querySelector(`.filter-expandable-row:has(h4:contains('${apiFilterName}'))`);
-        if (!filterSection) return;
-        
-        const filterContent = filterSection.nextElementSibling;
-        if (!filterContent || !filterContent.classList.contains('filter-expandable-content')) return;
-        
-        Object.keys(counts[apiFilterName]).forEach(slug => {
-            // Find the checkbox with matching value (may need reverse mapping)
-            const checkbox = filterContent.querySelector(`input[value="${slug}"]`);
-            if (checkbox) {
-                const count = counts[apiFilterName][slug];
-                let countSpan = checkbox.parentElement.querySelector('.count');
-                if (!countSpan) {
-                    countSpan = document.createElement('span');
-                    countSpan.className = 'count';
-                    checkbox.parentElement.appendChild(countSpan);
-                }
+
+    const contentByTitle = new Map();
+    document.querySelectorAll('.filter-expandable-row').forEach(row => {
+        const h4 = row.querySelector('h4');
+        const title = h4?.textContent?.trim();
+        const content = row.nextElementSibling;
+        if (!title) return;
+        if (!content || !content.classList.contains('filter-expandable-content')) return;
+        contentByTitle.set(title.toLowerCase(), content);
+    });
+
+    const escapeSelectorValue = (value) => {
+        if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(value);
+        return String(value).replace(/"/g, '\\"');
+    };
+
+    Object.entries(counts).forEach(([apiKey, bucket]) => {
+        if (!bucket || typeof bucket !== 'object') return;
+        const title = titleByKey[apiKey] || apiKey;
+        const filterContent = contentByTitle.get(String(title).toLowerCase()) || contentByTitle.get(String(apiKey).toLowerCase());
+        if (!filterContent) return;
+
+        Object.entries(bucket).forEach(([slug, count]) => {
+            const escapedSlug = escapeSelectorValue(slug);
+            const checkbox = filterContent.querySelector(`input[value="${escapedSlug}"]`);
+            if (!checkbox) return;
+
+            const label = checkbox.closest('label');
+            if (!label) return;
+
+            let countSpan = label.querySelector('.count');
+            if (!countSpan) {
+                countSpan = document.createElement('span');
+                countSpan.className = 'count';
+                label.appendChild(countSpan);
+            }
+
+            if (label.classList.contains('color-swatch-item')) {
+                countSpan.textContent = String(count);
+            } else {
                 countSpan.textContent = `(${count})`;
             }
         });
@@ -2799,6 +3049,8 @@ function updateURL() {
         
         // Remove category, priceMin, priceMax, search, limit unless explicitly set
         url.searchParams.delete('category');
+        if (currentState.color) url.searchParams.set('color', currentState.color);
+        else url.searchParams.delete('color');
         if (currentState.priceMin === null) url.searchParams.delete('priceMin');
         if (currentState.priceMax === null) url.searchParams.delete('priceMax');
         if (!currentState.search) url.searchParams.delete('q');
@@ -2824,6 +3076,8 @@ function updateURL() {
     else url.searchParams.delete('priceMin');
     if (currentState.priceMax !== null) url.searchParams.set('priceMax', currentState.priceMax);
     else url.searchParams.delete('priceMax');
+    if (currentState.color) url.searchParams.set('color', currentState.color);
+    else url.searchParams.delete('color');
     }
     
     window.history.replaceState({}, '', url);
@@ -3076,13 +3330,8 @@ function showLoader() {
         (rect.top < 0 && rect.bottom > window.innerHeight)
     ) : false;
     
-    // If loader is not in viewport, scroll it into view
-    if (loaderEl && !isInViewport) {
-        loaderEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    
     // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3063',message:'showLoader() AFTER innerHTML',data:{loaderExists:!!loaderEl,display:computedStyle?.display,visibility:computedStyle?.visibility,opacity:computedStyle?.opacity,zIndex:computedStyle?.zIndex,position:computedStyle?.position,isInViewport:isInViewport,rectTop:rect?.top,rectLeft:rect?.left,windowHeight:window.innerHeight,windowWidth:window.innerWidth,perfTime:performance.now(),elapsed:performance.now()-startTime,scrolledIntoView:!isInViewport},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3063',message:'showLoader() AFTER innerHTML',data:{loaderExists:!!loaderEl,display:computedStyle?.display,visibility:computedStyle?.visibility,opacity:computedStyle?.opacity,zIndex:computedStyle?.zIndex,position:computedStyle?.position,isInViewport:isInViewport,rectTop:rect?.top,rectLeft:rect?.left,windowHeight:window.innerHeight,windowWidth:window.innerWidth,perfTime:performance.now(),elapsed:performance.now()-startTime,scrolledIntoView:false},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
     // #endregion
 }
 
@@ -3284,7 +3533,7 @@ async function renderProductsInternal(renderStartTime, callId) {
     
     if (products.length === 0) {
         console.log('⚠️ No products found matching criteria');
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">No products found matching your criteria.</div>';
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">No products found${currentState.color ? ' for this colour' : ' matching your criteria'}.</div>`;
         return;
     }
     
@@ -3293,8 +3542,18 @@ async function renderProductsInternal(renderStartTime, callId) {
     products.forEach((product, index) => {
         // Transform API product to frontend format
         const colors = product.colors || [{ name: 'Default', main: product.image }];
-        const colorIndex = index % colors.length;
-        const displayColor = colors[colorIndex];
+
+        // If a variant colour filter is active, force the matching (or closest) variant
+        let displayColors = colors;
+        let displayColor = colors[0] || { name: 'Default', main: product.image };
+        if (currentState.color) {
+            const matched = pickBestColorVariant(product, currentState.color);
+            if (!matched) {
+                return; // Exclude product if no suitable variant match
+            }
+            displayColors = [matched];
+            displayColor = matched;
+        }
         
         // Display should use the lowest-discount tier (smallest quantity break).
         const baseTierPrice = getBaseTierPrice(product);
@@ -3307,13 +3566,15 @@ async function renderProductsInternal(renderStartTime, callId) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        // Generate ALL colors for this card
-        const colorsHtml = colors.map((c, i) => 
-            `<button type="button" class="color-dot ${i === colorIndex ? 'active' : ''}" data-color="${c.name}" data-main="${c.main || c.image_url || product.image}" style="background-image: url('${c.main || c.image_url || product.image}');" title="${c.name}"></button>`
-        ).join('');
+        // Generate colors for this card (single dot when filtering by colour)
+        const colorsHtml = displayColors.map((c, i) => {
+            const imgUrl = getVariantImage(c, product);
+            const isActive = i === 0 ? 'active' : '';
+            return `<button type="button" class="color-dot ${isActive}" data-color="${c.name}" data-main="${imgUrl}" style="background-image: url('${imgUrl}');" title="${c.name}"></button>`;
+        }).join('');
         
         const visibleColors = 7;
-        const progressPercent = Math.min(100, (visibleColors / colors.length) * 100);
+        const progressPercent = Math.min(100, (visibleColors / displayColors.length) * 100);
         
         // Build badges based on customization types
         let badgesHtml = '';
@@ -3329,7 +3590,7 @@ async function renderProductsInternal(renderStartTime, callId) {
                 <div class="product-badges">
                     ${badgesHtml}
                 </div>
-                <img src="${displayColor.main}" alt="${product.name}" class="product-image">
+                <img src="${getVariantImage(displayColor, product)}" alt="${product.name}" class="product-image">
             </div>
             <div class="product-info">
                 <div class="product-code-row">
@@ -3390,6 +3651,12 @@ async function renderProductsInternal(renderStartTime, callId) {
                 const progress = maxScroll > 0 ? ((colorsContainer.scrollLeft + colorsContainer.clientWidth) / colorsContainer.scrollWidth) * 100 : 100;
                 if (progressBar) progressBar.style.width = progress + '%';
             });
+        }
+
+        // When filtering by colour, hide the slider controls (single variant shown)
+        if (currentState.color) {
+            const controls = card.querySelector('.color-slider-controls');
+            if (controls) controls.style.display = 'none';
         }
         
         // Card click - go to product detail
@@ -3489,14 +3756,15 @@ document.querySelector('.clear-all-btn')?.addEventListener('click', async functi
         btn.setAttribute('aria-pressed', 'false');
     });
     
-    // Reset all checkboxes
-    document.querySelectorAll('.filter-checkbox-item input[type="checkbox"]').forEach(cb => {
+    // Reset all checkboxes (including colour swatches)
+    document.querySelectorAll('.filter-checkbox-item input[type="checkbox"], .color-swatch-item input[type="checkbox"]').forEach(cb => {
         cb.checked = false;
     });
     
     // Reset state
     currentState.page = 1;
     currentState.search = '';
+    currentState.color = '';
     currentState.priceMin = null;
     currentState.priceMax = null;
     Object.keys(currentState.filters).forEach(key => {
@@ -3943,6 +4211,37 @@ function setupFilterCheckboxes() {
             
             checkbox.addEventListener('change', async (e) => {
                 e.stopPropagation();
+
+                // Special-case: Primary Colour controls variant colour filter (single select)
+                if (filterKey === 'primaryColour') {
+                    if (checkbox.checked) {
+                        // Enforce single selection in the section
+                        content.querySelectorAll('input[type="checkbox"]').forEach(other => {
+                            if (other !== checkbox) other.checked = false;
+                        });
+                        currentState.color = slugifyColor(checkbox.value);
+                    } else {
+                        currentState.color = '';
+                    }
+
+                    // Avoid sending primaryColour[] when using variant colour
+                    currentState.filters.primaryColour = [];
+                    currentState.page = 1;
+                    updateURL();
+
+                    if (renderProductsDebounceTimer) {
+                        clearTimeout(renderProductsDebounceTimer);
+                    }
+                    renderProductsDebounceTimer = setTimeout(async () => {
+                        try {
+                            await renderProducts();
+                            await fetchFilterCounts();
+                        } catch (error) {
+                            console.error('❌ Error updating products (colour):', error);
+                        }
+                    }, 300);
+                    return;
+                }
                 
                 console.log('🔘 FILTER CHECKBOX CLICKED:', {
                     filterKey: filterKey,
@@ -4066,9 +4365,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize filters first
     setupFilterCheckboxes();
     setupSearchInput();
+
+    // Sync Primary Colour UI from currentState.color
+    if (currentState.color) {
+        currentState.filters.primaryColour = [];
+        document.querySelectorAll('.filter-expandable-row').forEach(row => {
+            const h4 = row.querySelector('h4');
+            if (!h4 || h4.textContent.trim() !== 'Primary Colour') return;
+            const content = row.nextElementSibling;
+            if (!content || !content.classList.contains('filter-expandable-content')) return;
+            content.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = slugifyColor(cb.value) === currentState.color;
+            });
+        });
+    }
     
     // Verify filter checkboxes are set up
-    const totalCheckboxes = document.querySelectorAll('.filter-checkbox-item input[type="checkbox"]').length;
+    const totalCheckboxes = document.querySelectorAll('.filter-checkbox-item input[type="checkbox"], .color-swatch-item input[type="checkbox"]').length;
     console.log(`✅ Found ${totalCheckboxes} filter checkboxes, event handlers attached`);
     
     // Hide title and count initially to prevent flash
@@ -4170,6 +4483,32 @@ function updatePrices() {
 }
 
 // Pagination functions
+function scrollToProductsSectionTop() {
+    const section = document.querySelector('.products-section');
+    if (!section) return;
+
+    const header = document.querySelector('.site-header');
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const extraPadding = 16;
+
+    const targetTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - extraPadding;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+}
+
+async function goToPage(newPage) {
+    const totalPages = Math.ceil(currentState.total / currentState.limit);
+    if (!Number.isFinite(totalPages) || totalPages <= 0) return;
+
+    const nextPage = Math.max(1, Math.min(Number(newPage) || 1, totalPages));
+    if (nextPage === currentState.page) return;
+
+    currentState.page = nextPage;
+    updateURL();
+    await renderProducts();
+    await fetchFilterCounts();
+    updatePagination();
+}
+
 function updatePagination() {
     const paginationTop = document.getElementById('paginationTop');
     const paginationContainer = document.getElementById('paginationContainer');
@@ -4211,17 +4550,42 @@ function updatePagination() {
     if (nextTopBtn) nextTopBtn.disabled = currentState.page === totalPages;
     if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
     
-    // Render page numbers (show current page and adjacent pages)
+    // Render page numbers (show up to 3 pages as a sliding window)
     if (pageNumbersContainer) {
         pageNumbersContainer.innerHTML = '';
-        
-        // Show current page in black circle
-        const currentPageBtn = document.createElement('button');
-        currentPageBtn.type = 'button';
-        currentPageBtn.className = 'pagination-page active';
-        currentPageBtn.textContent = currentState.page;
-        currentPageBtn.setAttribute('aria-current', 'page');
-        pageNumbersContainer.appendChild(currentPageBtn);
+
+        const maxVisible = 3;
+        let startPage = 1;
+        let endPage = totalPages;
+
+        if (totalPages > maxVisible) {
+            startPage = currentState.page - 1;
+            endPage = currentState.page + 1;
+
+            if (startPage < 1) {
+                startPage = 1;
+                endPage = maxVisible;
+            }
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = totalPages - (maxVisible - 1);
+            }
+        }
+
+        for (let page = startPage; page <= endPage; page++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pagination-page' + (page === currentState.page ? ' active' : '');
+            btn.textContent = String(page);
+            if (page === currentState.page) {
+                btn.setAttribute('aria-current', 'page');
+            } else {
+                btn.addEventListener('click', async () => {
+                    await goToPage(page);
+                });
+            }
+            pageNumbersContainer.appendChild(btn);
+        }
     }
 }
 
@@ -4234,12 +4598,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prevBtn) {
         prevBtn.addEventListener('click', async () => {
             if (currentState.page > 1) {
-                currentState.page--;
-                updateURL();
-                await renderProducts();
-                await fetchFilterCounts();
-                updatePagination();
-                document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                await goToPage(currentState.page - 1);
             }
         });
     }
@@ -4248,12 +4607,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', async () => {
             const totalPages = Math.ceil(currentState.total / currentState.limit);
             if (currentState.page < totalPages) {
-                currentState.page++;
-                updateURL();
-                await renderProducts();
-                await fetchFilterCounts();
-                updatePagination();
-                document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                await goToPage(currentState.page + 1);
             }
         });
     }
@@ -4264,19 +4618,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextTopBtn = document.getElementById('paginationNext');
     const lastBtn = document.getElementById('paginationLast');
     
-    async function handlePaginationClick(newPage) {
-        currentState.page = newPage;
-        updateURL();
-        await renderProducts();
-        await fetchFilterCounts();
-        updatePagination();
-        document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    
     if (firstBtn) {
         firstBtn.addEventListener('click', async () => {
             if (currentState.page > 1) {
-                await handlePaginationClick(1);
+                await goToPage(1);
             }
         });
     }
@@ -4284,7 +4629,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prevTopBtn) {
         prevTopBtn.addEventListener('click', async () => {
             if (currentState.page > 1) {
-                await handlePaginationClick(currentState.page - 1);
+                await goToPage(currentState.page - 1);
             }
         });
     }
@@ -4293,7 +4638,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextTopBtn.addEventListener('click', async () => {
             const totalPages = Math.ceil(currentState.total / currentState.limit);
             if (currentState.page < totalPages) {
-                await handlePaginationClick(currentState.page + 1);
+                await goToPage(currentState.page + 1);
             }
         });
     }
@@ -4302,7 +4647,7 @@ document.addEventListener('DOMContentLoaded', function() {
         lastBtn.addEventListener('click', async () => {
             const totalPages = Math.ceil(currentState.total / currentState.limit);
             if (currentState.page < totalPages) {
-                await handlePaginationClick(totalPages);
+                await goToPage(totalPages);
             }
         });
     }
@@ -4652,5 +4997,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script src="../brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
 </body>
 </html>

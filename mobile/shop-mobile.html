@@ -193,8 +193,188 @@
         // State
         let currentPage = 1;
         let currentCategory = 'all';
+        let currentSearchQuery = '';
+        let currentColorFilter = '';
+        let currentPriceMax = null;
+        let currentArrayFilters = {};
+        let currentFlagFilters = [];
         let totalProducts = 0;
         const LIMIT = 24;
+
+        const TOGGLE_FLAG_MAP = {
+            newIn: 'new-in',
+            bradeal: 'raladeal',
+            offers: 'offers',
+            inStock: 'in-stock',
+            recycled: 'recycled-organic'
+            // plusSizes: (no known API flag; intentionally not mapped)
+        };
+
+        function safeJsonParse(value) {
+            try {
+                return JSON.parse(value);
+            } catch {
+                return null;
+            }
+        }
+
+        function slugifyColor(value) {
+            return String(value || '')
+                .toLowerCase()
+                .trim()
+                .replace(/&/g, 'and')
+                .replace(/\+/g, 'plus')
+                .replace(/\//g, '-')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '')
+                .replace(/-+/g, '-');
+        }
+
+        function normalizeColorCompare(value) {
+            return slugifyColor(value).replace(/-/g, '');
+        }
+
+        function pickBestColorVariant(colors, targetSlug) {
+            const list = Array.isArray(colors) ? colors : [];
+            if (!list.length) return null;
+            const target = normalizeColorCompare(targetSlug);
+            if (!target) return null;
+
+            const synonyms = {
+                black: ['black', 'jet', 'ebony'],
+                white: ['white', 'ivory'],
+                grey: ['grey', 'gray', 'charcoal', 'heather', 'marl', 'ash'],
+                navy: ['navy', 'midnight'],
+                blue: ['blue', 'royal', 'azure', 'cobalt'],
+                red: ['red', 'crimson', 'scarlet'],
+                green: ['green', 'forest', 'bottle', 'olive'],
+                yellow: ['yellow', 'gold', 'mustard'],
+                orange: ['orange'],
+                purple: ['purple', 'violet'],
+                pink: ['pink', 'fuchsia', 'magenta'],
+                brown: ['brown', 'tan', 'camel', 'chocolate'],
+                burgundy: ['burgundy', 'maroon', 'wine'],
+                khaki: ['khaki', 'stone', 'sand', 'beige'],
+                multi: ['multi', 'multicolour', 'multi-colour', 'camo', 'camouflage']
+            };
+
+            let best = null;
+            let bestScore = -1;
+
+            list.forEach(c => {
+                const name = (c && c.name) || '';
+                const cmp = normalizeColorCompare(name);
+                if (!cmp) return;
+
+                let score = 0;
+                if (cmp === target) score = 100;
+                else if (cmp.includes(target)) score = 90;
+                else {
+                    const synList = synonyms[targetSlug] || synonyms[slugifyColor(targetSlug)] || [];
+                    for (const syn of synList) {
+                        const synCmp = normalizeColorCompare(syn);
+                        if (synCmp && cmp.includes(synCmp)) {
+                            score = 85;
+                            break;
+                        }
+                    }
+                }
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = c;
+                }
+            });
+
+            return best || list[0] || null;
+        }
+
+        function readStoredFilters() {
+            const raw = sessionStorage.getItem('brandeduk-filters');
+            const parsed = safeJsonParse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            return parsed;
+        }
+
+        function applyStoredFiltersIfRequested(urlParams) {
+            const isFiltered = (urlParams.get('filtered') || '').toLowerCase() === 'true';
+            if (!isFiltered) return;
+
+            const stored = readStoredFilters();
+            if (!stored) return;
+
+            // Search
+            if (!currentSearchQuery && stored.search) {
+                currentSearchQuery = String(stored.search).trim();
+            }
+
+            // Price
+            const storedPriceMax = Number(stored.priceMax);
+            if (Number.isFinite(storedPriceMax) && storedPriceMax > 0) {
+                currentPriceMax = storedPriceMax;
+            }
+
+            // Flags from toggles
+            const toggles = stored.toggles && typeof stored.toggles === 'object' ? stored.toggles : {};
+            const flags = [];
+            Object.keys(TOGGLE_FLAG_MAP).forEach(toggleKey => {
+                if (toggles[toggleKey]) {
+                    flags.push(TOGGLE_FLAG_MAP[toggleKey]);
+                }
+            });
+            currentFlagFilters = Array.from(new Set(flags));
+
+            // Checkbox groups -> API array params (except primaryColour)
+            const checkboxes = stored.checkboxes && typeof stored.checkboxes === 'object' ? stored.checkboxes : {};
+            const nextArrayFilters = {};
+            Object.entries(checkboxes).forEach(([groupName, values]) => {
+                if (!Array.isArray(values) || !values.length) return;
+                if (groupName === 'primaryColour') return;
+                nextArrayFilters[groupName] = values.map(v => String(v).trim()).filter(Boolean);
+            });
+            currentArrayFilters = nextArrayFilters;
+
+            // Primary Colour -> canonical color filter
+            const storedColor = (stored.color || (checkboxes.primaryColour && checkboxes.primaryColour[0]) || '').toString();
+            if (!currentColorFilter && storedColor) {
+                currentColorFilter = slugifyColor(storedColor);
+            }
+        }
+
+        function buildProductsOptions(overrides = {}) {
+            const options = {
+                page: currentPage,
+                limit: LIMIT,
+                ...overrides
+            };
+
+            if (currentColorFilter) {
+                options.color = currentColorFilter;
+            }
+
+            const search = (overrides.search || overrides.q || currentSearchQuery || '').toString().trim();
+            if (search) {
+                options.search = search;
+            } else {
+                options.category = currentCategory;
+            }
+
+            if (Number.isFinite(currentPriceMax) && currentPriceMax > 0) {
+                options.priceMax = currentPriceMax;
+            }
+
+            if (Array.isArray(currentFlagFilters) && currentFlagFilters.length) {
+                options['flag[]'] = currentFlagFilters;
+            }
+
+            Object.entries(currentArrayFilters || {}).forEach(([groupName, values]) => {
+                if (!Array.isArray(values) || !values.length) return;
+                const key = `${groupName}[]`;
+                options[key] = values;
+            });
+
+            return options;
+        }
         
         // VAT Functions
         function formatCurrency(baseAmount) {
@@ -306,8 +486,9 @@
             // Colors
             const colors = product.colors || [];
             const displayColors = colors.slice(0, 8);
-            const colorIndex = index % Math.max(colors.length, 1);
-            const displayColor = colors[colorIndex] || colors[0] || { name: 'Default', main: product.image };
+            const displayColor = (currentColorFilter
+                ? (pickBestColorVariant(colors, currentColorFilter) || colors[0])
+                : (colors[0] || null)) || { name: 'Default', main: product.image };
 
             const colorsHTML = displayColors.map(c => {
                 const imgUrl = c.main || product.image;
@@ -418,17 +599,14 @@
             `;
 
             try {
-                const result = await BrandedAPI.getProducts({
-                    page: currentPage,
-                    limit: LIMIT,
-                    search: query
-                });
+                const result = await BrandedAPI.getProducts(buildProductsOptions({ search: query }));
 
                 totalProducts = result.total;
 
                 // Update title
-                if (categoryTitle) categoryTitle.textContent = `Search: ${query}`;
-                if (breadcrumbCategory) breadcrumbCategory.textContent = `SEARCH: ${query.toUpperCase()}`;
+                const suffix = currentColorFilter ? ` (${currentColorFilter.toUpperCase()})` : '';
+                if (categoryTitle) categoryTitle.textContent = `Search: ${query}${suffix}`;
+                if (breadcrumbCategory) breadcrumbCategory.textContent = `SEARCH: ${query.toUpperCase()}${suffix}`;
                 if (resultsCount) resultsCount.textContent = `${totalProducts.toLocaleString()} items`;
 
                 // Clear and render
@@ -495,16 +673,13 @@
             `;
 
             try {
-                const result = await BrandedAPI.getProducts({
-                    page: currentPage,
-                    limit: LIMIT,
-                    category: currentCategory
-                });
+                const result = await BrandedAPI.getProducts(buildProductsOptions());
 
                 totalProducts = result.total;
 
                 // Update title
-                const title = CATEGORY_TITLES[currentCategory] || 'Products';
+                const baseTitle = CATEGORY_TITLES[currentCategory] || 'Products';
+                const title = currentColorFilter ? `${baseTitle} (${currentColorFilter.toUpperCase()})` : baseTitle;
                 if (categoryTitle) categoryTitle.textContent = title;
                 if (breadcrumbCategory) breadcrumbCategory.textContent = title.toUpperCase();
                 if (resultsCount) resultsCount.textContent = `${totalProducts.toLocaleString()} items`;
@@ -594,7 +769,12 @@
             // Get category and search from URL
             const urlParams = new URLSearchParams(window.location.search);
             currentCategory = urlParams.get('category') || 'all';
-            const searchQuery = urlParams.get('search') || urlParams.get('q') || '';
+            currentSearchQuery = urlParams.get('search') || urlParams.get('q') || '';
+            currentColorFilter = urlParams.get('color') || '';
+
+            applyStoredFiltersIfRequested(urlParams);
+
+            const searchQuery = currentSearchQuery;
             
             // If search query exists, use it
             if (searchQuery) {
@@ -621,24 +801,11 @@
                     searchTimeout = setTimeout(async () => {
                         const query = e.target.value.trim();
                         if (query.length >= 2) {
-                            try {
-                                const result = await BrandedAPI.getProducts({
-                                    search: query,
-                                    limit: LIMIT
-                                });
-                                
-                                const grid = document.getElementById('productsGrid');
-                                grid.innerHTML = '';
-                                
-                                result.items.forEach((product, index) => {
-                                    grid.appendChild(createProductCard(product, index));
-                                });
-                                
-                                document.getElementById('resultsCount').textContent = `${result.total} items`;
-                            } catch (err) {
-                                console.error('Search error:', err);
-                            }
+                            currentSearchQuery = query;
+                            currentPage = 1;
+                            loadProductsWithSearch(query);
                         } else if (query.length === 0) {
+                            currentSearchQuery = '';
                             loadProducts();
                         }
                     }, 500);

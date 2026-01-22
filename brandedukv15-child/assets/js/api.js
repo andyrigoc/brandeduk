@@ -374,6 +374,11 @@ const BrandedAPI = (function() {
             limit: 1 // Only need metadata, not products
         };
 
+        // Variant color filter
+        if (currentFilters.color) {
+            params.color = currentFilters.color;
+        }
+
         // Search query (mutually exclusive with productType)
         if (currentFilters.q || currentFilters.search) {
             params.q = currentFilters.q || currentFilters.search;

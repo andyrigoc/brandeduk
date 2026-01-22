@@ -328,12 +328,12 @@
 
 /* Sustainable panel (expanded): move image 5px down */
 .hero-el[data-category="sustainable"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 5px);
+  background-position: center calc(50% + 85px);
 }
 
 /* Apron panel (expanded): shift image 70px left */
 .hero-el:nth-child(1).s--active .hero-el__bg:before {
-  background-position: calc(50% + 55px) center;
+  background-position: calc(50% + 25px) calc(50% + 60px);
 }
 
 /* Apron panel (expanded): close X should be black */
@@ -387,7 +387,7 @@
 
 /* Beanies panel (expanded): move image 20px down */
 .hero-el[data-category="beanies"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 40px);
+  background-position: center calc(50% + 140px);
 }
 
 .hero-el:nth-child(4) {
@@ -408,6 +408,11 @@
   background-position: calc(50% + 20px) center;
 }
 
+/* Hi-Viz panel (expanded): move image 50px down */
+.hero-el[data-category="hi-viz"].s--active .hero-el__bg:before {
+  background-position: center calc(50% + 50px);
+}
+
 .hero-el:nth-child(5) {
   left: calc(80% + 16px);
   transform: translate3d(0, 0, 0);
@@ -423,7 +428,7 @@
 
 /* Polo panel (expanded): move image 20px down */
 .hero-el[data-category="polo"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 20px);
+  background-position: center calc(50% + 102px);
 }
 
 .hero-el:nth-child(6) {
@@ -441,7 +446,7 @@
 
 /* Jackets panel (expanded): move image 25px down */
 .hero-el[data-category="jackets"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 38px);
+  background-position: center calc(50% + 168px);
 }
 
 .hero-el:nth-child(7) {
@@ -459,7 +464,7 @@
 
 /* T-Shirts panel (expanded): move image 10px down */
 .hero-el[data-category="tshirts"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 10px);
+  background-position: center calc(50% + 70px);
 }
 
 .hero-el:nth-child(8) {
@@ -472,12 +477,12 @@
 .hero-el:nth-child(8) .hero-el__bg:before {
   transition-delay: 0.49s;
   background-image: url('../../hero/images/WorkTrousers.jpg');
-  background-position: center center;
+  background-position: center calc(50% + 10px);
 }
 
 /* Work Trousers panel (expanded): move image 30px down */
 .hero-el[data-category="trousers"].s--active .hero-el__bg:before {
-  background-position: center calc(50% + 60px);
+  background-position: center calc(50% + 170px);
 }
 
 .hero-el:nth-child(9) {

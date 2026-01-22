@@ -1023,6 +1023,20 @@ function initFiltersDropup() {
             this.setAttribute('aria-pressed', !isPressed);
         });
     });
+
+    // Primary Colour behaves like a single-select (radio) on mobile
+    const primaryColourGroup = document.querySelector('.filter-expandable[data-filter="primaryColour"]');
+    if (primaryColourGroup) {
+        const primaryColourCheckboxes = Array.from(primaryColourGroup.querySelectorAll('input[type="checkbox"]'));
+        primaryColourCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (!cb.checked) return;
+                primaryColourCheckboxes.forEach(other => {
+                    if (other !== cb) other.checked = false;
+                });
+            });
+        });
+    }
     
     // Expandable filters
     document.querySelectorAll('.filter-expandable__header').forEach(header => {
@@ -1083,7 +1097,9 @@ function initFiltersDropup() {
             toggles: {},
             search: '',
             priceMax: 100,
-            checkboxes: {}
+            checkboxes: {},
+            // Canonical variant-color slug for shop list (maps from Primary Colour)
+            color: ''
         };
         
         // Get toggle states
@@ -1112,6 +1128,11 @@ function initFiltersDropup() {
         });
         
         // Store in sessionStorage for use on shop page
+        // Primary Colour is treated as single-select and persisted to `activeFilters.color`
+        if (activeFilters.checkboxes.primaryColour && activeFilters.checkboxes.primaryColour.length) {
+            activeFilters.color = String(activeFilters.checkboxes.primaryColour[0] || '').trim();
+            activeFilters.checkboxes.primaryColour = [activeFilters.color];
+        }
         sessionStorage.setItem('brandeduk-filters', JSON.stringify(activeFilters));
         
         // Count active filters

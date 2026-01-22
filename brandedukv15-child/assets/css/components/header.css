@@ -1941,6 +1941,24 @@
     color: #a855f7 !important;
 }
 
+/* Desktop-only: enlarge brandedUK logo by ~10% */
+@media (min-width: 1024px) {
+    .searchbar-header__brand-img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .searchbar-header__brand-badge {
+        width: 58px;
+        height: 58px;
+        font-size: 26px;
+    }
+
+    .searchbar-header__brand-text {
+        font-size: 37px;
+    }
+}
+
 .searchbar-header__search-expand {
     position: relative;
     width: 44px;
