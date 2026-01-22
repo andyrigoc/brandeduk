@@ -20,6 +20,8 @@ const ShopManager = (function() {
         priceMin: null,
         priceMax: null,
         sort: 'newest',
+        // Variant-driven color filter (API param: color=black)
+        color: '',
         filters: {
             gender: [],
             ageGroup: [],
@@ -44,6 +46,11 @@ const ShopManager = (function() {
     let isLoading = false;
     let productsGrid = null;
     let loadingOverlay = null;
+
+    // Abort/cancel in-flight product fetches
+    let activeProductsAbortController = null;
+    let colorDebounceTimer = null;
+    const COLOR_DEBOUNCE_MS = 300;
 
     // Category title mappings
     const CATEGORY_TITLES = {
@@ -210,12 +217,36 @@ const ShopManager = (function() {
             url.searchParams.delete('sort');
         }
 
+        // Set variant color filter
+        if (currentState.color) {
+            url.searchParams.set('color', currentState.color);
+        } else {
+            url.searchParams.delete('color');
+        }
+
         window.history.replaceState({}, '', url);
     }
 
     // ==========================================================================
     // PRODUCT CARD RENDERING
     // ==========================================================================
+
+    function slugifyColor(value) {
+        return String(value || '')
+            .trim()
+            .toLowerCase()
+            .replace(/&/g, ' and ')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+
+    function findColorVariant(product, colorSlug) {
+        if (!colorSlug) return null;
+        const colors = Array.isArray(product?.colors) ? product.colors : [];
+        return colors.find(c => slugifyColor(c?.name) === colorSlug) || null;
+    }
 
     function createProductCard(product, index) {
         const card = document.createElement('div');
@@ -234,20 +265,28 @@ const ShopManager = (function() {
             badgesHTML += '<span class="badge print">PRINT</span>';
         }
 
-        // Colors - show first N colors
-        const colors = product.colors || [];
-        const displayColors = colors.slice(0, 12); // Show max 12 color dots
-        const colorIndex = index % Math.max(colors.length, 1);
-        const displayColor = colors[colorIndex] || colors[0] || { name: 'Default', main: product.image };
+        // Colors / variant selection
+        const allColors = product.colors || [];
+        const activeColorSlug = currentState.color || '';
+        const matchedVariant = activeColorSlug ? findColorVariant(product, activeColorSlug) : null;
+
+        // If a color filter is active and this product has no matching variant, exclude it.
+        if (activeColorSlug && !matchedVariant) {
+            return null;
+        }
+
+        const displayColor = matchedVariant || allColors[0] || { name: 'Default', main: product.image };
+        const displayColors = activeColorSlug ? [displayColor] : allColors.slice(0, 12);
 
         const colorsHTML = displayColors.map(c => {
             const imgUrl = c.main || product.image;
-            return `<button type="button" class="color-dot" data-color="${c.name}" data-main="${imgUrl}" style="background-image: url('${imgUrl}'); background-size: cover; background-position: center;" title="${c.name}"></button>`;
+            const isActive = activeColorSlug ? 'active' : '';
+            return `<button type="button" class="color-dot ${isActive}" data-color="${c.name}" data-main="${imgUrl}" style="background-image: url('${imgUrl}'); background-size: cover; background-position: center;" title="${c.name}"></button>`;
         }).join('');
 
-        // More colors indicator
-        const moreColorsHTML = colors.length > 12 
-            ? `<span class="more-colors">+${colors.length - 12}</span>` 
+        // More colors indicator (hide when filtered)
+        const moreColorsHTML = (!activeColorSlug && allColors.length > 12)
+            ? `<span class="more-colors">+${allColors.length - 12}</span>`
             : '';
 
         // Price range
@@ -281,9 +320,13 @@ const ShopManager = (function() {
             </div>
         `;
 
-        // Color dot interactions
+        // Color dot interactions (disable switching when a global color filter is active)
         let selectedColor = null;
         card.querySelectorAll('.color-dot').forEach(dot => {
+            if (currentState.color) {
+                // Keep the variant fixed when filtering by color
+                return;
+            }
             dot.addEventListener('mouseenter', () => {
                 if (!selectedColor) {
                     const img = card.querySelector('.product-main-img');
@@ -318,13 +361,14 @@ const ShopManager = (function() {
             sessionStorage.setItem('selectedProduct', product.code);
             sessionStorage.setItem('selectedProductData', JSON.stringify(product));
             
+        currentState.color = slugifyColor(urlParams.get('color') || '');
             const activeColorDot = card.querySelector('.color-dot.active');
-            if (activeColorDot) {
-                sessionStorage.setItem('selectedColorName', activeColorDot.dataset.color);
-                sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
-            } else if (displayColor) {
+            if (displayColor) {
                 sessionStorage.setItem('selectedColorName', displayColor.name);
                 sessionStorage.setItem('selectedColorUrl', displayColor.main);
+            } else if (activeColorDot) {
+                sessionStorage.setItem('selectedColorName', activeColorDot.dataset.color);
+                sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
             }
             
             // Determine if we're on mobile or desktop
@@ -332,7 +376,11 @@ const ShopManager = (function() {
                             window.innerWidth < 768;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
-            window.location.href = targetPage;
+            const url = new URL(targetPage, window.location.origin);
+            if (currentState.color) {
+                url.searchParams.set('color', currentState.color);
+            }
+            window.location.href = url.toString();
         });
 
         return card;
@@ -357,7 +405,12 @@ const ShopManager = (function() {
     // ==========================================================================
 
     async function renderProducts(options = {}) {
-        if (isLoading) return;
+        // Cancel any previous in-flight request
+        if (activeProductsAbortController) {
+            try { activeProductsAbortController.abort(); } catch { /* ignore */ }
+        }
+        activeProductsAbortController = new AbortController();
+        const signal = activeProductsAbortController.signal;
 
         showLoading();
 
@@ -370,6 +423,10 @@ const ShopManager = (function() {
                 search: currentState.search,
                 sort: currentState.sort
             };
+
+            if (currentState.color) {
+                apiParams.color = currentState.color;
+            }
 
             // Add price filters
             if (currentState.priceMin !== null) {
@@ -389,7 +446,7 @@ const ShopManager = (function() {
             console.log('[ShopManager] Fetching products with params:', apiParams);
 
             // Fetch from API
-            const result = await BrandedAPI.getProducts(apiParams);
+            const result = await BrandedAPI.getProducts({ ...apiParams, signal });
 
             // Update state
             currentState.total = result.total;
@@ -420,18 +477,31 @@ const ShopManager = (function() {
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">No products found</h3>
-                            <p style="color: #6b7280; font-size: 14px;">Try adjusting your filters or search terms</p>
+                            <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">No products found${currentState.color ? ' for this colour' : ''}</h3>
+                            <p style="color: #6b7280; font-size: 14px;">${currentState.color ? 'Try a different colour or clear the colour filter' : 'Try adjusting your filters or search terms'}</p>
                             <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
                         </div>
                     `;
                 } else {
+                    let rendered = 0;
                     result.items.forEach((product, index) => {
                         const card = createProductCard(product, index);
+                        if (!card) return;
+                        rendered++;
                         card.style.opacity = '0';
                         card.style.transform = 'translateY(20px)';
                         productsGrid.appendChild(card);
                     });
+
+                    if (rendered === 0) {
+                        productsGrid.innerHTML = `
+                            <div class="no-products-message" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                                <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">No products found for this colour</h3>
+                                <p style="color: #6b7280; font-size: 14px;">Try a different colour or clear the colour filter</p>
+                                <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
+                            </div>
+                        `;
+                    }
 
                     // Animate cards in with stagger
                     const cards = productsGrid.querySelectorAll('.product-card-shop');
@@ -458,6 +528,10 @@ const ShopManager = (function() {
             hideLoading();
 
         } catch (error) {
+            if (error && (error.name === 'AbortError' || error.code === 20)) {
+                // Request was cancelled due to a newer filter selection
+                return;
+            }
             console.error('[ShopManager] Error fetching products:', error);
             hideLoading();
             
@@ -638,6 +712,7 @@ const ShopManager = (function() {
         currentState.priceMin = null;
         currentState.priceMax = null;
         currentState.sort = 'newest';
+        currentState.color = '';
         Object.keys(currentState.filters).forEach(key => {
             currentState.filters[key] = [];
         });
@@ -651,6 +726,11 @@ const ShopManager = (function() {
         });
         document.querySelectorAll('.filter-toggle input:checked').forEach(toggle => {
             toggle.checked = false;
+        });
+
+        // Clear any checkbox-based color filter UI if present
+        document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
         });
         
         const searchInput = document.getElementById('sidebarTextSearch');
@@ -696,6 +776,44 @@ const ShopManager = (function() {
         currentState.search = urlParams.get('q') || '';
         currentState.page = parseInt(urlParams.get('page'), 10) || 1;
         currentState.sort = urlParams.get('sort') || 'newest';
+        currentState.color = slugifyColor(urlParams.get('color') || '');
+    }
+
+    function syncColorFilterUI() {
+        const active = currentState.color || '';
+
+        // Checkbox-based color controls
+        document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(cb => {
+            cb.checked = !!active && slugifyColor(cb.value) === active;
+        });
+
+        // Swatch-based color controls
+        document.querySelectorAll('.filter-colour-swatch').forEach(swatch => {
+            const raw = swatch.dataset.colour || swatch.dataset.color || '';
+            swatch.classList.toggle('active', !!active && slugifyColor(raw) === active);
+        });
+    }
+
+    function setColor(colorValue) {
+        const next = slugifyColor(colorValue);
+        currentState.color = next;
+        currentState.page = 1;
+        syncColorFilterUI();
+
+        // Debounce just the color filter to avoid hammering the API
+        if (colorDebounceTimer) {
+            clearTimeout(colorDebounceTimer);
+        }
+        colorDebounceTimer = setTimeout(() => {
+            renderProducts();
+        }, COLOR_DEBOUNCE_MS);
+    }
+
+    function clearColor() {
+        currentState.color = '';
+        currentState.page = 1;
+        syncColorFilterUI();
+        renderProducts();
     }
 
     async function init() {
@@ -724,6 +842,7 @@ const ShopManager = (function() {
 
         // Parse URL params
         initFromURL();
+        syncColorFilterUI();
 
         // Set active category button
         const filterButtons = document.querySelectorAll('.category-filter-card');
@@ -807,16 +926,29 @@ const ShopManager = (function() {
             });
         });
 
-        // Color swatches
+        // Color swatches (variant color filter)
         document.querySelectorAll('.filter-colour-swatch').forEach(swatch => {
             swatch.addEventListener('click', function() {
                 const colour = this.dataset.colour;
-                this.classList.toggle('active');
-                
-                const activeColors = Array.from(document.querySelectorAll('.filter-colour-swatch.active'))
-                    .map(s => s.dataset.colour);
-                
-                setFilter('primaryColour', activeColors);
+                document.querySelectorAll('.filter-colour-swatch').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+                setColor(colour);
+            });
+        });
+
+        // Checkbox-based color filter (shop.html uses .filter-color)
+        document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const value = this.value;
+                if (this.checked) {
+                    // Enforce single selection for variant color
+                    document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(other => {
+                        if (other !== this) other.checked = false;
+                    });
+                    setColor(value);
+                } else {
+                    clearColor();
+                }
             });
         });
 
@@ -857,6 +989,7 @@ const ShopManager = (function() {
         // Listen for popstate (browser back/forward)
         window.addEventListener('popstate', () => {
             initFromURL();
+            syncColorFilterUI();
             renderProducts();
         });
     }
@@ -872,6 +1005,8 @@ const ShopManager = (function() {
         setSearch,
         setPriceRange,
         setSort,
+        setColor,
+        clearColor,
         setFilter,
         toggleFilter,
         clearFilter,

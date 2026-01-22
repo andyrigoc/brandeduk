@@ -109,7 +109,7 @@ const BrandedAPI = (function() {
     /**
      * Make API request with error handling
      */
-    async function apiRequest(endpoint, params = {}) {
+    async function apiRequest(endpoint, params = {}, fetchOptions = {}) {
         const queryString = buildQueryString(params);
         const url = `${BASE_URL}${endpoint}${queryString ? '?' + queryString : ''}`;
         
@@ -122,7 +122,7 @@ const BrandedAPI = (function() {
         });
         
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, fetchOptions);
             
             console.log('📡 [BrandedAPI] Response received:', {
                 status: response.status,
@@ -243,6 +243,11 @@ const BrandedAPI = (function() {
             limit: Math.min(options.limit || DEFAULT_LIMIT, MAX_LIMIT)
         };
 
+        // Variant color filter (expects normalized slug e.g. "black")
+        if (options.color) {
+            params.color = options.color;
+        }
+
         // Search query (mutually exclusive with productType)
         if (options.q || options.search) {
             params.q = options.q || options.search;
@@ -292,7 +297,8 @@ const BrandedAPI = (function() {
             params.sort = options.sort;
         }
 
-        const response = await apiRequest('/api/products', params);
+        const fetchOptions = options.signal ? { signal: options.signal } : {};
+        const response = await apiRequest('/api/products', params, fetchOptions);
 
         return {
             items: (response.items || []).map(transformProduct),
