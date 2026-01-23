@@ -120,11 +120,20 @@ document.addEventListener('brandeduk:vat-change', function(event) {
 
 // ===== LOAD PRODUCT DATA =====
 async function loadProductData() {
-    // Try to get product code from sessionStorage first
+    // Try to get product code from URL first, then sessionStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlProductCode = urlParams.get('code');
     const savedProductCode = sessionStorage.getItem('selectedProduct');
     
+    // URL takes priority, then sessionStorage
+    const productCode = urlProductCode || savedProductCode;
+    
+    // If we got code from URL, save it to sessionStorage for consistency
+    if (urlProductCode && urlProductCode !== savedProductCode) {
+        sessionStorage.setItem('selectedProduct', urlProductCode);
+    }
+    
     let productData = null;
-    const productCode = savedProductCode;
     
     // ALWAYS fetch fresh data from API to ensure prices are up-to-date
     if (productCode) {
@@ -1854,6 +1863,32 @@ function updateTotals() {
     }
 
     updateBelowSummary(total, unit);
+    
+    // Update sidebar in real-time
+    updateSidebarFromProduct(grandProductTotal, unit);
+}
+
+// Update sidebar with current product selection
+function updateSidebarFromProduct(totalQty, unitPrice) {
+    const garmentCostEl = document.getElementById('sidebarGarmentCost');
+    const garmentUnitPriceEl = document.getElementById('garmentUnitPrice');
+    const garmentQtyEl = document.getElementById('garmentQty');
+    const totalCostEl = document.getElementById('sidebarTotalCost');
+    
+    const garmentTotal = totalQty * unitPrice;
+    
+    if (garmentCostEl) {
+        garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
+    }
+    if (garmentUnitPriceEl) {
+        garmentUnitPriceEl.textContent = formatCurrency(unitPrice);
+    }
+    if (garmentQtyEl) {
+        garmentQtyEl.textContent = `Qty: ${totalQty}`;
+    }
+    if (totalCostEl) {
+        totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
+    }
 }
 
 // Update tier pricing highlight
@@ -1955,90 +1990,85 @@ addContinueButton.onclick = () => {
 };
 
 /* ---------------------------------------------------
-   ADD & CUSTOMIZE BUTTON (destra)
+   ADD & CUSTOMIZE BUTTON (legacy - button removed, section always visible)
+   This handler is kept for backward compatibility if button exists
 --------------------------------------------------- */
 
-addCustomizeButton.onclick = () => {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
-    
-    // If there's a current selection, save it to basket
-    if (total > 0) {
-        // Get existing basket
-        let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+if (addCustomizeButton) {
+    addCustomizeButton.onclick = () => {
+        const total = Object.values(qty).reduce((a,b)=>a+b,0);
         
-        // Calculate TOTAL quantity of THIS PRODUCT across ALL colors
-        const currentProductTotal = basket
-            .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
-            .reduce((sum, item) => sum + item.quantity, 0);
-        
-        const newTotal = currentProductTotal + total;
-        const newUnitPrice = getUnitPrice(newTotal);
-        
-        // Check if same product with same color already exists
-        const existingIndex = basket.findIndex(item => 
-            item.name === PRODUCT_NAME && 
-            item.code === PRODUCT_CODE && 
-            item.color === selectedColorName
-        );
-        
-        if (existingIndex !== -1) {
-            // Merge sizes with existing item
-            Object.keys(qty).forEach(size => {
-                if (qty[size] > 0) {
-                    basket[existingIndex].sizes[size] = (basket[existingIndex].sizes[size] || 0) + qty[size];
+        // If there's a current selection, save it to basket
+        if (total > 0) {
+            // Get existing basket
+            let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+            
+            // Calculate TOTAL quantity of THIS PRODUCT across ALL colors
+            const currentProductTotal = basket
+                .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
+                .reduce((sum, item) => sum + item.quantity, 0);
+            
+            const newTotal = currentProductTotal + total;
+            const newUnitPrice = getUnitPrice(newTotal);
+            
+            // Check if same product with same color already exists
+            const existingIndex = basket.findIndex(item => 
+                item.name === PRODUCT_NAME && 
+                item.code === PRODUCT_CODE && 
+                item.color === selectedColorName
+            );
+            
+            if (existingIndex !== -1) {
+                // Merge sizes with existing item
+                Object.keys(qty).forEach(size => {
+                    if (qty[size] > 0) {
+                        basket[existingIndex].sizes[size] = (basket[existingIndex].sizes[size] || 0) + qty[size];
+                    }
+                });
+                
+                // Recalculate total quantity and size summary
+                basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a,b)=>a+b,0);
+                basket[existingIndex].size = getSizesSummaryFromSizes(basket[existingIndex].sizes);
+                basket[existingIndex].price = newUnitPrice.toFixed(2);
+            } else {
+                // Create new item
+                const productData = {
+                    name: PRODUCT_NAME,
+                    code: PRODUCT_CODE,
+                    color: selectedColorName,
+                    image: selectedColorURL,
+                    quantity: total,
+                    size: getSizesSummary(),
+                    price: newUnitPrice.toFixed(2),
+                    sizes: {...qty}
+                };
+                basket.push(productData);
+            }
+            
+            // Update price for ALL items of the SAME PRODUCT (all colors)
+            basket.forEach(item => {
+                if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
+                    item.price = newUnitPrice.toFixed(2);
                 }
             });
             
-            // Recalculate total quantity and size summary
-            basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a,b)=>a+b,0);
-            basket[existingIndex].size = getSizesSummaryFromSizes(basket[existingIndex].sizes);
-            basket[existingIndex].price = newUnitPrice.toFixed(2);
-        } else {
-            // Create new item
-            const productData = {
-                name: PRODUCT_NAME,
-                code: PRODUCT_CODE,
-                color: selectedColorName,
-                image: selectedColorURL,
-                quantity: total,
-                size: getSizesSummary(),
-                price: newUnitPrice.toFixed(2),
-                sizes: {...qty}
-            };
-            basket.push(productData);
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            updateBasketTotalBox();
         }
         
-        // Update price for ALL items of the SAME PRODUCT (all colors)
-        basket.forEach(item => {
-            if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
-                item.price = newUnitPrice.toFixed(2);
-            }
-        });
+        // Show inline customization section instead of navigating
+        const positionsSection = document.getElementById('step3PositionsSection');
         
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-        updateBasketTotalBox();
-    }
-    
-    // Show inline customization section instead of navigating
-    const ctaSection = document.getElementById('step3CTASection');
-    const positionsSection = document.getElementById('step3PositionsSection');
-    
-    if (ctaSection && positionsSection) {
-        // Hide CTA buttons
-        ctaSection.style.display = 'none';
-        // Show positions section
-        positionsSection.style.display = 'block';
-        
-        // Scroll to positions section
-        positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        // Update step progress to step 3
-        updateStepProgress(3);
-    } else {
-        // Fallback: navigate to customization page if inline section not found
-        window.location.href = 'customize-positions.html';
-    }
-};
+        // Customization section is now always visible, just scroll to it
+        if (positionsSection) {
+            // Scroll to positions section
+            positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Update step progress to step 3
+            updateStepProgress(3);
+        }
+    };
+}
 
 function getSizesSummary() {
     const sizeEntries = Object.entries(qty).filter(([s,q]) => q > 0);
@@ -2064,7 +2094,12 @@ const mobileAddCustomize = document.getElementById("mobileAddCustomize");
 
 if (mobileAddCustomize) {
     mobileAddCustomize.onclick = () => {
-        addCustomizeButton.click();
+        // Scroll to positions section directly (button no longer exists)
+        const positionsSection = document.getElementById('step3PositionsSection');
+        if (positionsSection) {
+            positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updateStepProgress(3);
+        }
     };
 }
 

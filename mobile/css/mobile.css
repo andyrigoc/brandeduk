@@ -7540,33 +7540,37 @@ a {
     transform: scale(0.9);
 }
 
-/* Toggle Background Button - positioned top left, square */
+/* Toggle Background Button - positioned top left, compact but readable */
 .toggle-bg-btn {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 6px;
+    left: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 2px;
-    width: 56px;
-    height: 56px;
-    border: 2px dashed #16a34a;
-    border-radius: 10px;
+    width: 46px;
+    height: 42px;
+    min-width: 46px;
+    min-height: 42px;
+    padding: 4px;
+    border: 1.5px dashed #16a34a;
+    border-radius: 7px;
     background: #fff;
     color: #16a34a;
-    font-size: 9px;
-    font-weight: 600;
+    font-size: 7px;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 2;
-    padding: 4px;
 }
 
 .toggle-bg-btn span {
-    line-height: 1.1;
+    line-height: 1.05;
     text-align: center;
+    font-size: 7px;
+    letter-spacing: 0.2px;
 }
 
 .toggle-bg-btn:hover {
@@ -7592,8 +7596,8 @@ a {
 
 .toggle-bg-btn svg {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
 }
 
 .toggle-bg-btn.done {

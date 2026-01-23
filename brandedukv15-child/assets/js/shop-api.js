@@ -361,7 +361,6 @@ const ShopManager = (function() {
             sessionStorage.setItem('selectedProduct', product.code);
             sessionStorage.setItem('selectedProductData', JSON.stringify(product));
             
-        currentState.color = slugifyColor(urlParams.get('color') || '');
             const activeColorDot = card.querySelector('.color-dot.active');
             if (displayColor) {
                 sessionStorage.setItem('selectedColorName', displayColor.name);

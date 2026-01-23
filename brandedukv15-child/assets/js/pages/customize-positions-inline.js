@@ -105,9 +105,20 @@
     }
 
     // Initialize when DOM is ready
+    let positionsInitialized = false;
+    
     function initPositionsInline() {
         const positionsSection = document.getElementById('step3PositionsSection');
-        if (!positionsSection) return;
+        if (!positionsSection) {
+            console.log('step3PositionsSection not found');
+            return;
+        }
+        
+        if (positionsInitialized) {
+            console.log('Positions already initialized, skipping');
+            return;
+        }
+        positionsInitialized = true;
 
         console.log('Initializing inline positions functionality...');
 
@@ -1776,39 +1787,27 @@
         }, duration);
     }
 
-    // Auto-initialize when positions section becomes visible
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                const target = mutation.target;
-                if (target.id === 'step3PositionsSection' && target.style.display !== 'none') {
-                    initPositionsInline();
-                    observer.disconnect();
-                }
-            }
-        });
-    });
-
-    const positionsSection = document.getElementById('step3PositionsSection');
-    if (positionsSection) {
-        if (positionsSection.style.display !== 'none' && positionsSection.offsetParent !== null) {
-            // Already visible
+    // Auto-initialize when DOM is ready
+    function safeInitPositions() {
+        const section = document.getElementById('step3PositionsSection');
+        if (section) {
             initPositionsInline();
-        } else {
-            // Wait for it to become visible
-            observer.observe(positionsSection, { attributes: true });
         }
     }
 
-    // Also init on DOMContentLoaded as fallback
-    document.addEventListener('DOMContentLoaded', () => {
-        // Delay init slightly to ensure product.js has run
-        setTimeout(() => {
-            const section = document.getElementById('step3PositionsSection');
-            if (section && section.style.display !== 'none') {
-                initPositionsInline();
-            }
-        }, 500);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Delay slightly to ensure product.js has loaded
+            setTimeout(safeInitPositions, 100);
+        });
+    } else {
+        // DOM already loaded
+        setTimeout(safeInitPositions, 100);
+    }
+
+    // Also listen for window load as final fallback
+    window.addEventListener('load', () => {
+        setTimeout(safeInitPositions, 200);
     });
 
 })();

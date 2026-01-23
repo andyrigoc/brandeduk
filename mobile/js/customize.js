@@ -1280,22 +1280,14 @@
         
         // Restore UI from state if we had saved state (after all UI is rendered)
         setTimeout(() => {
-            console.log('? Running restoreUIFromState after timeout...');
+            console.log('🔄 Running restoreUIFromState after timeout...');
             restoreUIFromState();
         }, 300);
         
-        console.log('? INIT COMPLETE');
+        console.log('✅ INIT COMPLETE');
         
-        // Force clear size rows after everything is loaded (only if no restored state)
-        setTimeout(() => {
-            if (!state.sizeQuantities || Object.keys(state.sizeQuantities).length === 0) {
-                const selectedSizes = document.querySelector('.selected-sizes');
-                if (selectedSizes) {
-                    selectedSizes.innerHTML = '';
-                    console.log('FORCED CLEAR of all size rows');
-                }
-            }
-        }, 100);
+        // REMOVED: Force clear was causing the size rows to disappear after being added
+        // The size selection UI is now handled properly by setupSizeSelection()
     }
 
     // === Order Card Accordion ===
@@ -3051,13 +3043,18 @@
 
     // === Add "One size" row with plus/minus quantity selector ===
     function addOneSizeRow(container) {
+        console.log('📐 addOneSizeRow CALLED');
         const selectedSizes = container.querySelector('.selected-sizes');
-        if (!selectedSizes) return;
+        if (!selectedSizes) {
+            console.error('❌ addOneSizeRow: .selected-sizes NOT FOUND in container!');
+            return;
+        }
 
         // Prefer whatever the API provided (e.g. ONESIZE/One Size/OS)
         const productSizes = getProductSizes();
         const sizeKey = (productSizes && productSizes[0]) ? String(productSizes[0]) : 'ONESIZE';
         const displayLabel = 'One Size';
+        console.log('📐 addOneSizeRow: Creating row with sizeKey=', sizeKey);
         
         const newRow = document.createElement('div');
         newRow.className = 'size-qty-item one-size-item';
@@ -3074,13 +3071,19 @@
         newRow.dataset.size = sizeKey;
         
         selectedSizes.appendChild(newRow);
+        console.log('📐 addOneSizeRow: Row appended! Children count:', selectedSizes.children.length);
         updateSizeQuantities();
     }
 
     // === Size/Qty Compact Selection ===
     function setupSizeSelection() {
+        console.log('📐 setupSizeSelection CALLED');
         const container = document.querySelector('.size-qty-compact');
-        if (!container) return;
+        if (!container) {
+            console.error('❌ setupSizeSelection: .size-qty-compact container NOT FOUND!');
+            return;
+        }
+        console.log('📐 setupSizeSelection: container found');
 
         // Initialize state for size quantities
         state.sizeQuantities = {};
@@ -3089,10 +3092,12 @@
         const selectedSizes = container.querySelector('.selected-sizes');
         if (selectedSizes) {
             selectedSizes.innerHTML = '';
+            console.log('📐 setupSizeSelection: cleared existing rows');
         }
 
         // Get product sizes from API - fallback to default if not available
         const productSizes = getProductSizes();
+        console.log('📐 setupSizeSelection: productSizes =', productSizes);
         const isOneSize = productSizes.length === 1 && 
             (productSizes[0].toLowerCase() === 'one size' || 
              productSizes[0].toLowerCase() === 'onesize' ||
@@ -3101,18 +3106,23 @@
         // Add size button
         const addBtn = container.querySelector('.add-size-btn');
         
+        console.log('📐 setupSizeSelection - productSizes:', productSizes, 'isOneSize:', isOneSize, 'addBtn found:', !!addBtn);
+        
         if (isOneSize) {
             // For "One size" products: hide "Add Size" button and auto-create a row
             if (addBtn) {
                 addBtn.style.display = 'none';
             }
-            // Auto-add a "One size" row
-            addOneSizeRow(container);
-            console.log('📐 Product is "One size" - auto-added row with quantity selector');
+            // Auto-add a "One size" row - use setTimeout to ensure it stays after all other init code
+            setTimeout(() => {
+                addOneSizeRow(container);
+                console.log('📐 Product is "One size" - auto-added row with quantity selector (delayed)');
+            }, 500);
         } else {
-            // For multi-size products: show "Add Size" button
+            // For multi-size products: show "Add Size" button AND add first row automatically
+            console.log('📐 Multi-size product - showing Add Size button and adding first row');
             if (addBtn) {
-                addBtn.style.display = '';
+                addBtn.style.display = 'flex';
                 // Remove any existing listener to prevent duplicates
                 const newBtn = addBtn.cloneNode(true);
                 addBtn.parentNode.replaceChild(newBtn, addBtn);
@@ -3122,6 +3132,11 @@
                     if (navigator.vibrate) navigator.vibrate(10);
                 });
             }
+            // Auto-add first size row so user can immediately select size & qty - delayed to ensure it stays
+            setTimeout(() => {
+                addSizeRow(container);
+                console.log('📐 First size row auto-added for multi-size product (delayed)');
+            }, 500);
         }
 
         // Event delegation for size/qty items
@@ -4594,7 +4609,7 @@
         if (removeBgBtn) {
             removeBgBtn.classList.remove('processing', 'done');
             const btnText = removeBgBtn.querySelector('span');
-            if (btnText) btnText.textContent = 'Remove BG';
+            if (btnText) btnText.textContent = 'REMOVE BG';
         }
         
         // Reset Undo button and original image state
@@ -4682,10 +4697,20 @@
                         //     logoOverlayBox.classList.add('active');
                         // }
                         
-                        // Auto-remove background for ALL images (not just JPEG)
-                        // Salva l'immagine originale prima della rimozione automatica
+                        // Save original image for auto background removal
                         state.originalLogoImage = ev.target.result;
-                        // Rimuovi automaticamente lo sfondo per tutte le immagini
+                        state.backgroundRemoved = false;
+
+                        // Reset Remove BG button to initial state
+                        const removeBgBtn = document.getElementById('removeBgBtn');
+                        if (removeBgBtn) {
+                            removeBgBtn.classList.remove('processing', 'done');
+                            removeBgBtn.disabled = false;
+                            const spanEl = removeBgBtn.querySelector('span');
+                            if (spanEl) spanEl.textContent = 'KEEP BACKGROUND';
+                        }
+
+                        // Auto-remove background after load
                         setTimeout(() => removeImageBackground(), 150);
                     };
                     reader.readAsDataURL(file);
@@ -4722,11 +4747,7 @@
                 if (removeBgBtn) {
                     removeBgBtn.classList.remove('processing', 'done');
                     const btnText = removeBgBtn.querySelector('span');
-                    if (btnText) btnText.textContent = 'Remove BG';
-                    // Ripristina funzionalit� originale
-                    removeBgBtn.onclick = function() {
-                        removeImageBackground();
-                    };
+                    if (btnText) btnText.textContent = 'KEEP BACKGROUND';
                 }
             });
         }
@@ -4787,7 +4808,7 @@
         const removeBgBtn = document.getElementById('removeBgBtn');
         if (removeBgBtn) {
             removeBgBtn.addEventListener('click', () => {
-                // Check if background was already removed (button shows "Keep Background")
+                // Check if background was already removed (button shows "KEEP BACKGROUND")
                 if (state.backgroundRemoved) {
                     restoreOriginalImage();
                 } else {
@@ -4805,166 +4826,123 @@
         }
     }
     
-    // === Background Removal Algorithm ===
+    // === Background Removal Algorithm (recreated for mobile/tablet) ===
     function removeImageBackground() {
         const previewImg = document.getElementById('designPreviewImg');
-        const canvas = document.getElementById('bgRemovalCanvas');
         const removeBgBtn = document.getElementById('removeBgBtn');
         const undoBgBtn = document.getElementById('undoBgBtn');
-        
-        if (!previewImg || !previewImg.src || !canvas) return;
-        
-        // Save original image for undo functionality
+
+        if (!previewImg || !previewImg.src) {
+            return;
+        }
+
         if (!state.originalLogoImage) {
             state.originalLogoImage = previewImg.src;
         }
-        
-        // Show processing state
+
         if (removeBgBtn) {
             removeBgBtn.classList.add('processing');
-            removeBgBtn.querySelector('span').textContent = 'Processing';
+            removeBgBtn.disabled = true;
+            const spanEl = removeBgBtn.querySelector('span');
+            if (spanEl) spanEl.textContent = 'PROCESSING';
         }
-        
-        // Use setTimeout to allow UI to update
-        setTimeout(() => {
-            try {
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                const img = new Image();
-                
-                // Don't set crossOrigin for data URLs - it causes CORS issues
-                const imgSrc = previewImg.src;
-                if (!imgSrc.startsWith('data:')) {
-                    img.crossOrigin = 'Anonymous';
-                }
-                
-                img.onload = function() {
-                    // Set canvas size to match image
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    
-                    // Draw image to canvas
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // Get image data
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    const width = canvas.width;
-                    const height = canvas.height;
-                    
-                    // Sample corner pixels to detect background color
-                    const corners = [
-                        getPixelColorAt(data, 0, 0, width),
-                        getPixelColorAt(data, width - 1, 0, width),
-                        getPixelColorAt(data, 0, height - 1, width),
-                        getPixelColorAt(data, width - 1, height - 1, width)
-                    ];
-                    
-                    // Find the most common corner color (likely background)
-                    const bgColor = findDominantCornerColor(corners);
-                    
-                    // Tolerance for color matching
-                    const tolerance = 45;
-                    
-                    // Track visited pixels
-                    const visited = new Uint8Array(width * height);
-                    
-                    // Flood fill from all edge pixels - THIS PRESERVES INTERNAL COLORS
-                    const queue = [];
-                    
-                    // Add all edge pixels to queue
-                    for (let x = 0; x < width; x++) {
-                        queue.push([x, 0]);           // Top edge
-                        queue.push([x, height - 1]);  // Bottom edge
-                    }
-                    for (let y = 1; y < height - 1; y++) {
-                        queue.push([0, y]);           // Left edge
-                        queue.push([width - 1, y]);   // Right edge
-                    }
-                    
-                    // Process queue (Flood Fill)
-                    while (queue.length > 0) {
-                        const [x, y] = queue.shift();
-                        
-                        // Check bounds
-                        if (x < 0 || x >= width || y < 0 || y >= height) continue;
-                        
-                        const idx = y * width + x;
-                        
-                        // Skip if already visited
-                        if (visited[idx]) continue;
-                        visited[idx] = 1;
-                        
-                        // Get pixel color
-                        const pixelIdx = idx * 4;
-                        const r = data[pixelIdx];
-                        const g = data[pixelIdx + 1];
-                        const b = data[pixelIdx + 2];
-                        
-                        // Check if pixel matches background color
-                        if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
-                            // Make transparent
-                            data[pixelIdx + 3] = 0;
-                            
-                            // Add neighbors to queue
-                            queue.push([x + 1, y]);
-                            queue.push([x - 1, y]);
-                            queue.push([x, y + 1]);
-                            queue.push([x, y - 1]);
-                        }
-                    }
-                    
-                    // Put processed image data back
-                    ctx.putImageData(imageData, 0, 0);
-                    
-                    // Convert canvas to data URL and update preview
-                    const processedImageUrl = canvas.toDataURL('image/png');
-                    previewImg.src = processedImageUrl;
-                    
-                    // REMOVED: Don't update main product preview - only customization section
-                    // The logo should only appear in the position cards, not on the main product thumbnail
-                    // const logoOverlayImg = document.getElementById('logoOverlayImg');
-                    // if (logoOverlayImg) {
-                    //     logoOverlayImg.src = processedImageUrl;
-                    // }
-                    
-                    // Update button state - cambia in "Keep Background"
-                    if (removeBgBtn) {
-                        removeBgBtn.classList.remove('processing');
-                        removeBgBtn.classList.add('done');
-                        removeBgBtn.querySelector('span').textContent = 'Keep Background';
-                    }
-                    
-                    // Set state flag to track background was removed
-                    state.backgroundRemoved = true;
-                    
-                    // Nascondi Undo button (non pi� necessario, usa il pulsante principale)
-                    if (undoBgBtn) {
-                        undoBgBtn.hidden = true;
-                    }
-                    
-                    // Haptic feedback
-                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-                };
-                
-                img.onerror = function() {
-                    console.error('Failed to load image for background removal');
-                    if (removeBgBtn) {
-                        removeBgBtn.classList.remove('processing');
-                        removeBgBtn.querySelector('span').textContent = 'Remove BG';
-                    }
-                };
-                
-                // Use the imgSrc variable we defined above
-                img.src = imgSrc;
-                
-            } catch (e) {
-                console.error('Background removal error:', e);
-                if (removeBgBtn) {
-                    removeBgBtn.classList.remove('processing');
-                    removeBgBtn.querySelector('span').textContent = 'Remove BG';
+
+        const img = new Image();
+        const imgSrc = previewImg.src;
+        if (!imgSrc.startsWith('data:')) {
+            img.crossOrigin = 'Anonymous';
+        }
+
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const corners = [
+                getPixelColorAt(data, 0, 0, width),
+                getPixelColorAt(data, width - 1, 0, width),
+                getPixelColorAt(data, 0, height - 1, width),
+                getPixelColorAt(data, width - 1, height - 1, width)
+            ];
+
+            const bgColor = findDominantCornerColor(corners);
+            const tolerance = 45;
+            const visited = new Uint8Array(width * height);
+            const qx = [];
+            const qy = [];
+
+            for (let x = 0; x < width; x++) {
+                qx.push(x); qy.push(0);
+                qx.push(x); qy.push(height - 1);
+            }
+            for (let y = 1; y < height - 1; y++) {
+                qx.push(0); qy.push(y);
+                qx.push(width - 1); qy.push(y);
+            }
+
+            let qi = 0;
+            while (qi < qx.length) {
+                const x = qx[qi];
+                const y = qy[qi];
+                qi += 1;
+
+                if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                const idx = y * width + x;
+                if (visited[idx]) continue;
+                visited[idx] = 1;
+
+                const pixelIdx = idx * 4;
+                const r = data[pixelIdx];
+                const g = data[pixelIdx + 1];
+                const b = data[pixelIdx + 2];
+
+                if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
+                    data[pixelIdx + 3] = 0;
+                    qx.push(x + 1); qy.push(y);
+                    qx.push(x - 1); qy.push(y);
+                    qx.push(x); qy.push(y + 1);
+                    qx.push(x); qy.push(y - 1);
                 }
             }
-        }, 50);
+
+            ctx.putImageData(imageData, 0, 0);
+            previewImg.src = canvas.toDataURL('image/png');
+
+            if (removeBgBtn) {
+                removeBgBtn.classList.remove('processing');
+                removeBgBtn.classList.add('done');
+                removeBgBtn.disabled = false;
+                const spanEl = removeBgBtn.querySelector('span');
+                if (spanEl) spanEl.textContent = 'KEEP BACKGROUND';
+            }
+
+            state.backgroundRemoved = true;
+
+            if (undoBgBtn) {
+                undoBgBtn.hidden = true;
+            }
+
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+        };
+
+        img.onerror = function() {
+            if (removeBgBtn) {
+                removeBgBtn.classList.remove('processing');
+                removeBgBtn.disabled = false;
+                const spanEl = removeBgBtn.querySelector('span');
+                if (spanEl) spanEl.textContent = 'REMOVE BG';
+            }
+        };
+
+        img.src = imgSrc;
     }
     
     // Get pixel color at specific coordinates
@@ -5013,11 +4991,11 @@
         //     logoOverlayImg.src = state.originalLogoImage;
         // }
         
-        // Reset Remove BG button - torna a "Remove BG"
+        // Reset Remove BG button
         if (removeBgBtn) {
             removeBgBtn.classList.remove('processing', 'done');
             const btnText = removeBgBtn.querySelector('span');
-            if (btnText) btnText.textContent = 'Remove BG';
+            if (btnText) btnText.textContent = 'REMOVE BG';
         }
         
         // Reset state flag

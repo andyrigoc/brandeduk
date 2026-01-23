@@ -445,11 +445,11 @@
   background-position: calc(50% + 30px) calc(50% + 12px);
 }
 
-/* Tablet (incl. 1024px): when expanded, shift image down ~20px to show more face */
+/* Tablet (incl. 1024px): when expanded - fill entire box, no purple visible */
 @media (min-width: 768px) and (max-width: 1024px) {
   .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
-    background-size: auto 100%;
-    background-position: 35% calc(10% + 20px) !important;
+    background-size: cover !important;
+    background-position: center top !important;
   }
 }
 
