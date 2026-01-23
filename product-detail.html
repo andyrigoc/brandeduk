@@ -2871,11 +2871,16 @@
             hidePositions: ['large-centre-front']
         },
         'aprons': {
-            imagePath: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron',
+            useExternalImages: true,
+            images: {
+                front: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/center-front.png',
+                lowLeft: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/low-left.png',
+                lowRight: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/low-right.png'
+            },
             positions: {
-                'left-breast': { label: 'Low Left', image: 'low-left.png', embroidery: '5.00', print: '3.50' },
-                'right-breast': { label: 'Low Right', image: 'low-right.png', embroidery: '5.00', print: '3.50' },
-                'small-centre-front': { label: 'Center Front', image: 'center-front.png', embroidery: '5.00', print: '3.50' }
+                'left-breast': { label: 'Low Left', imageKey: 'lowLeft', embroidery: '5.00', print: '3.50', cssClass: 'apron-low-left' },
+                'right-breast': { label: 'Low Right', imageKey: 'lowRight', embroidery: '5.00', print: '3.50', cssClass: 'apron-low-right' },
+                'small-centre-front': { label: 'Center Front', imageKey: 'front', embroidery: '5.00', print: '3.50', cssClass: 'front-center' }
             },
             hidePositions: ['large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm']
         },
@@ -2916,18 +2921,22 @@
     };
     
     function updatePositionCardsForCategory(category, productData) {
+        console.log('🎨 updatePositionCardsForCategory called with category:', category, 'productData:', productData);
+        
         // Try to build positions dynamically from productType first
         let config = null;
         if (productData && productData.productType) {
             const dynamicConfig = buildPositionsFromProductType(productData.productType);
             if (dynamicConfig) {
                 config = dynamicConfig;
+                console.log('✅ Using dynamic config for productType:', productData.productType);
             }
         }
         
         // Fallback to hardcoded config if dynamic failed or productType not available
         if (!config) {
             config = CATEGORY_POSITION_CONFIG[category] || CATEGORY_POSITION_CONFIG['default'];
+            console.log('📋 Using hardcoded config for category:', category, 'config:', config);
         }
         
         const isZip = isZipProduct(productData);
@@ -3366,6 +3375,16 @@
         
         // Start trying
         tryUpdateWithDelay();
+        
+        // Also listen for the productDataLoaded event from product.js
+        window.addEventListener('productDataLoaded', function(e) {
+            const productData = e.detail;
+            if (productData && productData.productType) {
+                console.log('📦 productDataLoaded event received, updating position cards for:', productData.productType);
+                const mappedCategory = productTypeToCategory(productData.productType) || 'default';
+                updatePositionCardsForCategory(mappedCategory, productData);
+            }
+        });
     }
     
     // Header searchbar handler - redirects to shop page with search query

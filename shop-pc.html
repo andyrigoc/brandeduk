@@ -52,6 +52,71 @@
         .header-social-3d .social-icon-3d.youtube:hover { color: #FF0000 !important; }
         .header-social-3d .social-icon-3d.pinterest:hover { color: #BD081C !important; }
         
+        /* ============================================
+           EXCLUSIVES MENU
+           ============================================ */
+        .exclusives-menu {
+            position: relative;
+        }
+        .exclusives-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 600px;
+        }
+        .exclusives-menu:hover .exclusives-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .exclusives-dropdown-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .exclusives-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .exclusive-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .exclusive-brand:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .exclusive-brand img {
+            max-width: 70%;
+            max-height: 50%;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+        .exclusive-brand:hover img {
+            filter: grayscale(0%);
+        }
+        
         /* Legacy social buttons (fallback) */
         .header-top .social-buttons-header { gap: 10px; }
         .header-top .social-buttons-header a { width: 32px; height: 32px; }
@@ -752,6 +817,30 @@
             border-radius: 16px;
             overflow: hidden;
             min-width: 0;
+        }
+
+        /* Brand Banner */
+        .brand-banner {
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .brand-banner-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .brand-banner-logo {
+            max-height: 80px;
+            max-width: 300px;
+            object-fit: contain;
+            filter: grayscale(0);
         }
 
         .products-header {
@@ -1683,6 +1772,63 @@
                     </li>
                     <li><a href="home-pc.html">BrandedUK</a></li>
                     <li><a href="#">Promotions</a></li>
+                    <!-- Exclusives Menu -->
+                    <li class="has-megamenu exclusives-menu">
+                        <a href="#" aria-haspopup="true">
+                            Exclusives
+                            <span class="nav-caret" aria-hidden="true"></span>
+                        </a>
+                        <div class="exclusives-dropdown" role="region" aria-label="Exclusive brands">
+                            <div class="exclusives-dropdown-title">Exclusives</div>
+                            <div class="exclusives-grid">
+                                <a href="shop-pc.html?brand=adidas" class="exclusive-brand" title="Adidas">
+                                    <img src="../brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
+                                </a>
+                                <a href="shop-pc.html?brand=bc" class="exclusive-brand" title="B&C Be Inspired">
+                                    <img src="../brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C">
+                                </a>
+                                <a href="shop-pc.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand">
+                                </a>
+                                <a href="shop-pc.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic">
+                                </a>
+                                <a href="shop-pc.html?brand=brandit" class="exclusive-brand" title="Brandit">
+                                    <img src="../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit">
+                                </a>
+                                <a href="shop-pc.html?brand=comfort-colors" class="exclusive-brand" title="Comfort Colors">
+                                    <img src="../brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
+                                </a>
+                                <a href="shop-pc.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
+                                    <img src="../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png" alt="New Morning Studios">
+                                </a>
+                                <a href="shop-pc.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
+                                    <img src="../brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus">
+                                </a>
+                                <a href="shop-pc.html?brand=nutshell" class="exclusive-brand" title="Nutshell">
+                                    <img src="../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell">
+                                </a>
+                                <a href="shop-pc.html?brand=ogio" class="exclusive-brand" title="OGIO">
+                                    <img src="../brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
+                                </a>
+                                <a href="shop-pc.html?brand=rhino" class="exclusive-brand" title="Rhino">
+                                    <img src="../brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
+                                </a>
+                                <a href="shop-pc.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
+                                    <img src="../brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon">
+                                </a>
+                                <a href="shop-pc.html?brand=tri-dri" class="exclusive-brand" title="Tri Dri">
+                                    <img src="../brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
+                                </a>
+                                <a href="shop-pc.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
+                                    <img src="../brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour">
+                                </a>
+                                <a href="shop-pc.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                    <img src="../brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
+                                </a>
+                            </div>
+                        </div>
+                    </li>
                     <li><a href="#">More</a></li>
                     <li><a href="#">Services</a></li>
                     <li><a href="#">About</a></li>
@@ -2186,7 +2332,7 @@
 
 <script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
 <script src="../brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-<script src="../brandedukv15-child/assets/js/api.js?v=20260107"></script>
+<script src="../brandedukv15-child/assets/js/api.js?v=20260122"></script>
 <script src="brandeduk.com/js/main.js?v=20251230"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260110"></script>
 <script>
@@ -2388,6 +2534,7 @@ let currentState = {
     total: 0,
     category: 'all',
     productType: null, // Store productType from URL (e.g., 'aprons', 'tshirts')
+    brand: null, // Store brand from URL (e.g., 'adidas', 'bc')
     search: '',
     priceMin: null,
     priceMax: null,
@@ -2511,6 +2658,32 @@ currentState.sort = urlParams.get('sort') || 'best';
 currentState.search = urlParams.get('q') || '';
 currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
 currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
+}
+
+// Brand filter from URL (e.g., ?brand=adidas)
+const brandParam = urlParams.get('brand');
+if (brandParam) {
+    // Map URL slug to API brand name (case-sensitive, must match API exactly)
+    const brandSlugToName = {
+        'adidas': 'adidas',
+        'bc': 'B&C',
+        'build-your-brand': 'Build Your Brand',
+        'build-your-brand-basic': 'BY BASICS',
+        'brandit': 'Brandit',
+        'comfort-colors': 'Comfort Colors',
+        'new-morning-studios': 'New Morning Studios',
+        'nimbus': 'Nimbus',
+        'nutshell': 'Nutshell',
+        'ogio': 'OGIO',
+        'rhino': 'Rhino',
+        'ribbon': 'Ribbon',
+        'tridri': 'TriDri',
+        'tri-dri': 'TriDri',
+        'under-armour': 'Under Armour',
+        'wombat': 'Wombat'
+    };
+    currentState.brand = brandSlugToName[brandParam] || brandParam;
+    console.log('🏷️ Brand filter active:', currentState.brand);
 }
 
 // Variant colour filter (persisted in URL as ?color=black)
@@ -2762,6 +2935,12 @@ function buildApiParams() {
         params.color = currentState.color;
     }
 
+    // Brand filter param
+    if (currentState.brand) {
+        params['brand[]'] = [currentState.brand];
+        console.log('🏷️ Adding brand to API params:', currentState.brand);
+    }
+
     // Log the final params we will send to the API
     try {
         const cleanParams = JSON.parse(JSON.stringify(params));
@@ -2895,7 +3074,14 @@ async function fetchProducts() {
         // NOT the user's selected price filter. Setting it here would overwrite
         // the user's price filter selection every time products are fetched.
         
-        const items = data.items || [];
+        let items = data.items || [];
+        
+        // Brand filter is now handled server-side via brand[] parameter
+        // The API filters products by brand, returning only matching products
+        if (currentState.brand) {
+            console.log('🏷️ Brand filter applied server-side:', currentState.brand, '- Total:', data.total);
+        }
+        
         // #region agent log
         fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2623',message:'fetchProducts returning items',data:{itemsCount:items.length,total:data?.total,firstItemPrice:items[0]?.price,priceMinInParams:params.priceMin,priceMaxInParams:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
         // #endregion
@@ -3138,6 +3324,54 @@ async function getAccreditationName(slug) {
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
+}
+
+/**
+ * Show brand banner above product grid
+ * @param {string} brandSlug - Brand slug from URL
+ * @param {string} brandName - Brand display name
+ */
+function showBrandBanner(brandSlug, brandName) {
+    // Check if banner already exists
+    if (document.getElementById('brandBanner')) return;
+    
+    // Brand logo mappings
+    const brandLogos = {
+        'adidas': '../brandedukv15-child/assets/images/brands/adidas.jpg',
+        'bc': '../brandedukv15-child/assets/images/brands/bandc-collection.png',
+        'build-your-brand': '../brandedukv15-child/assets/images/brands/build-your-brand.png',
+        'build-your-brand-basic': '../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg',
+        'brandit': '../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg',
+        'comfort-colors': '../brandedukv15-child/assets/images/brands/comfort-colors.webp',
+        'new-morning-studios': '../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png',
+        'nimbus': '../brandedukv15-child/assets/images/brands/nimbus2020.webp',
+        'nutshell': '../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp',
+        'ogio': '../brandedukv15-child/assets/images/brands/ogio2020.webp',
+        'rhino': '../brandedukv15-child/assets/images/brands/rhino2020.jpg',
+        'ribbon': '../brandedukv15-child/assets/images/brands/ribbon-collection.png',
+        'tridri': '../brandedukv15-child/assets/images/brands/tridri2020.webp',
+        'tri-dri': '../brandedukv15-child/assets/images/brands/tridri.webp',
+        'under-armour': '../brandedukv15-child/assets/images/brands/under-armour.webp',
+        'wombat': '../brandedukv15-child/assets/images/brands/wombat.jpg'
+    };
+    
+    const logoUrl = brandLogos[brandSlug] || '';
+    
+    // Create banner HTML
+    const banner = document.createElement('div');
+    banner.id = 'brandBanner';
+    banner.className = 'brand-banner';
+    banner.innerHTML = `
+        <div class="brand-banner-inner">
+            ${logoUrl ? `<img src="${logoUrl}" alt="${brandName}" class="brand-banner-logo">` : ''}
+        </div>
+    `;
+    
+    // Insert banner before products grid
+    const productsHeader = document.querySelector('.products-header');
+    if (productsHeader) {
+        productsHeader.parentNode.insertBefore(banner, productsHeader.nextSibling);
+    }
 }
 
 /**
@@ -3465,12 +3699,20 @@ async function renderProductsInternal(renderStartTime, callId) {
     
     // Update title and count (only after data arrives)
     if (categoryTitleEl) {
-        // Check if productType or accreditation is in URL
+        // Check if productType or accreditation or brand is in URL
         const urlParams = new URLSearchParams(window.location.search);
         const productTypeParam = urlParams.get('productType');
         const accreditationParam = urlParams.get('accreditation');
+        const brandParam = urlParams.get('brand');
         
-        if (accreditationParam) {
+        if (brandParam && currentState.brand) {
+            // Brand filter active - show brand name as title
+            categoryTitleEl.textContent = currentState.brand;
+            categoryTitleEl.style.opacity = '1';
+            
+            // Also show brand banner if not already present
+            showBrandBanner(brandParam, currentState.brand);
+        } else if (accreditationParam) {
             // Fetch accreditation name
             getAccreditationName(accreditationParam).then(name => {
                 categoryTitleEl.textContent = name || 'Sustainable Products';
@@ -3543,16 +3785,19 @@ async function renderProductsInternal(renderStartTime, callId) {
         // Transform API product to frontend format
         const colors = product.colors || [{ name: 'Default', main: product.image }];
 
-        // If a variant colour filter is active, force the matching (or closest) variant
+        // If a variant colour filter is active, set the matching variant as default but keep all colors visible
         let displayColors = colors;
         let displayColor = colors[0] || { name: 'Default', main: product.image };
+        let activeColorIndex = 0;
         if (currentState.color) {
             const matched = pickBestColorVariant(product, currentState.color);
             if (!matched) {
                 return; // Exclude product if no suitable variant match
             }
-            displayColors = [matched];
             displayColor = matched;
+            // Find the index of the matched color in the full colors array
+            activeColorIndex = colors.findIndex(c => c === matched || (c.name === matched.name && c.main === matched.main));
+            if (activeColorIndex < 0) activeColorIndex = 0;
         }
         
         // Display should use the lowest-discount tier (smallest quantity break).
@@ -3566,10 +3811,10 @@ async function renderProductsInternal(renderStartTime, callId) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        // Generate colors for this card (single dot when filtering by colour)
+        // Generate colors for this card (all colors visible, filtered color is active)
         const colorsHtml = displayColors.map((c, i) => {
             const imgUrl = getVariantImage(c, product);
-            const isActive = i === 0 ? 'active' : '';
+            const isActive = i === activeColorIndex ? 'active' : '';
             return `<button type="button" class="color-dot ${isActive}" data-color="${c.name}" data-main="${imgUrl}" style="background-image: url('${imgUrl}');" title="${c.name}"></button>`;
         }).join('');
         
@@ -3651,12 +3896,6 @@ async function renderProductsInternal(renderStartTime, callId) {
                 const progress = maxScroll > 0 ? ((colorsContainer.scrollLeft + colorsContainer.clientWidth) / colorsContainer.scrollWidth) * 100 : 100;
                 if (progressBar) progressBar.style.width = progress + '%';
             });
-        }
-
-        // When filtering by colour, hide the slider controls (single variant shown)
-        if (currentState.color) {
-            const controls = card.querySelector('.color-slider-controls');
-            if (controls) controls.style.display = 'none';
         }
         
         // Card click - go to product detail

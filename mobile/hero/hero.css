@@ -1,4 +1,76 @@
 /* Hero Expanding Sections */
+
+/* ========================================
+   REGOLE FORZATE - MOBILE FIRST (max 767px)
+   Le immagini hero devono SEMPRE mostrare la parte ALTA
+   MAI mostrare lo sfondo viola (gradient)
+   ======================================== */
+@media (max-width: 767px) {
+  /* Forza tutte le immagini hero a mostrare la parte alta */
+  .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Apron - spostato a destra per mostrare la persona */
+  .hero-el:nth-child(1) .hero-el__bg:before {
+    background-position: calc(50% + 140px) top !important;
+  }
+  
+  /* Apron espanso */
+  .hero-el:nth-child(1).s--active .hero-el__bg:before {
+    background-position: calc(50% + 25px) top !important;
+  }
+  
+  /* Hoodie non espanso */
+  .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 145px) top !important;
+  }
+  
+  /* Hoodie espanso */
+  .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+    background-position: calc(50% + 30px) top !important;
+  }
+  
+  /* Beanies espanso */
+  .hero-el[data-category="beanies"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Hi-Viz */
+  .hero-el[data-category="hi-viz"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 20px) top !important;
+  }
+  
+  .hero-el[data-category="hi-viz"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Polo espanso */
+  .hero-el[data-category="polo"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Jackets espanso */
+  .hero-el[data-category="jackets"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* T-Shirts espanso */
+  .hero-el[data-category="tshirts"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Trousers espanso */
+  .hero-el[data-category="trousers"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Sustainable espanso */
+  .hero-el[data-category="sustainable"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+}
+
 .hero-cont {
   position: relative;
   overflow-x: auto;
@@ -360,6 +432,14 @@
   background-position: calc(50% + 145px) center;
 }
 
+/* Tablet: hoodie non-expanded - fix for real tablet aspect ratio */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+    background-size: auto 100%;
+    background-position: calc(50% + 100px) center;
+  }
+}
+
 /* Hoodie panel: when expanded, shift image 30px right */
 .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
   background-position: calc(50% + 30px) calc(50% + 12px);
@@ -368,6 +448,7 @@
 /* Tablet (incl. 1024px): when expanded, shift image down ~20px to show more face */
 @media (min-width: 768px) and (max-width: 1024px) {
   .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+    background-size: auto 100%;
     background-position: 35% calc(10% + 20px) !important;
   }
 }

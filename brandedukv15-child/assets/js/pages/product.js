@@ -9,6 +9,12 @@ let BASE_PRICE = null;
 let PRODUCT_DATA = null;
 let DISCOUNTS = [];
 
+// Expose PRODUCT_DATA globally for other scripts
+Object.defineProperty(window, 'PRODUCT_DATA', {
+    get: function() { return PRODUCT_DATA; },
+    set: function(val) { PRODUCT_DATA = val; }
+});
+
 // API Configuration
 const API_BASE_URL = 'https://api.brandeduk.com/api';
 
@@ -168,6 +174,9 @@ async function loadProductData() {
     PRODUCT_DATA = productData;
     PRODUCT_CODE = productData.code;
     PRODUCT_NAME = productData.name;
+    
+    // Dispatch event so other scripts know product data is ready
+    window.dispatchEvent(new CustomEvent('productDataLoaded', { detail: productData }));
     
     // Convert priceBreaks to DISCOUNTS format
     if (productData.priceBreaks && productData.priceBreaks.length > 0) {
@@ -1739,38 +1748,6 @@ function updateBelowSummary(total, unit) {
         </div>
     `;
 
-    // Always show Delete button (visible but disabled if no items)
-    const deleteButtonHtml = `
-        <button id="delete" class="del-btn${currentTotal === 0 ? ' del-btn--disabled' : ''}" type="button" aria-label="Delete" data-running="false"${currentTotal === 0 ? ' disabled' : ''}>
-            <svg class="del-btn__icon" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
-                <clipPath id="can-clip">
-                    <rect class="del-btn__icon-can-fill" x="5" y="24" width="14" height="11"></rect>
-                </clipPath>
-                <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" transform="translate(12,12)">
-                    <g class="del-btn__icon-lid">
-                        <polyline points="9,5 9,1 15,1 15,5"></polyline>
-                        <polyline points="4,5 20,5"></polyline>
-                    </g>
-                    <g class="del-btn__icon-can">
-                        <g stroke-width="0">
-                            <polyline id="can-fill" points="6,10 7,23 17,23 18,10"></polyline>
-                            <use clip-path="url(#can-clip)" href="#can-fill" fill="#fff"></use>
-                        </g>
-                        <polyline points="6,10 7,23 17,23 18,10"></polyline>
-                    </g>
-                </g>
-            </svg>
-            <span class="del-btn__letters" aria-hidden="true" data-anim>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">D</span></span>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">e</span></span>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">l</span></span>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">e</span></span>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">t</span></span>
-                <span class="del-btn__letter-box"><span class="del-btn__letter">e</span></span>
-            </span>
-        </button>
-    `;
-
     belowSummary.innerHTML = `
         ${currentTotal === 0 ? `
             <div class="summary-text">
@@ -1778,34 +1755,7 @@ function updateBelowSummary(total, unit) {
                 <span class="summary-total">Total: <span class="total-green">${formatCurrency(0)}</span> ${vatSuffix()}</span>
             </div>
         ` : summaryMarkup}
-        ${deleteButtonHtml}
     `;
-
-    const deleteBtn = document.getElementById('delete');
-    if (deleteBtn) {
-        new DeleteButton(deleteBtn, {
-            onClear: () => {
-                localStorage.removeItem('quoteBasket');
-                sessionStorage.removeItem('customizingProduct');
-                sessionStorage.removeItem('selectedPositions');
-                sessionStorage.removeItem('positionMethods');
-                sessionStorage.removeItem('positionCustomizations');
-                sessionStorage.removeItem('currentPositionIndex');
-                hasBasketItems = false;
-
-                resetSizes();
-                resetColorSelection();
-                setTimeout(() => {
-                    updateTotals();
-                    // Update cart badge after clearing
-                    if (window.brandedukv15 && window.brandedukv15.updateCartBadge) {
-                        window.brandedukv15.updateCartBadge();
-                    }
-                    showToast('✓ Basket cleared successfully!');
-                }, 0);
-            }
-        });
-    }
 }
 
 /* ---------------------------------------------------

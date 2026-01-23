@@ -5932,6 +5932,10 @@ a {
     background: var(--teal);
 }
 
+.quick-action-icon.whatsapp-icon {
+    background: #25D366;
+}
+
 .quick-action-icon svg {
     width: 18px;
     height: 18px;

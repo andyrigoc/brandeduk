@@ -279,11 +279,12 @@ const BrandedAPI = (function() {
         // gender[]: ['male', 'female']
         // size[]: ['m', 'l']
         // flag[]: ['raladeal', 'offers']
+        // brand[]: ['adidas', 'B&C Collection']
         const arrayParamNames = [
             'gender[]', 'ageGroup[]', 'sleeve[]', 'neckline[]', 'accreditations[]',
             'primaryColour[]', 'colourShade[]', 'style[]', 'feature[]', 'size[]',
             'fabric[]', 'weight[]', 'fit[]', 'sector[]', 'sport[]', 'tag[]',
-            'effect[]', 'cmyk[]', 'pantone[]', 'flag[]'
+            'effect[]', 'cmyk[]', 'pantone[]', 'flag[]', 'brand[]'
         ];
 
         arrayParamNames.forEach(paramName => {

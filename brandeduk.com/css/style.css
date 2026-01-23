@@ -484,6 +484,11 @@ img {
     color: var(--white);
 }
 
+.quick-actions-desktop .whatsapp-card .quick-action-icon {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: var(--white);
+}
+
 .quick-actions-desktop .call-card .quick-action-icon {
     background: linear-gradient(135deg, var(--teal) 0%, #14b8a6 100%);
     color: var(--white);
