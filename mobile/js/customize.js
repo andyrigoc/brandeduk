@@ -1660,13 +1660,14 @@
                     // Process basket items
                     basket.forEach((item) => {
                         const qtyMap = item.quantities || item.sizes || {};
-                        const itemQuantity = item.quantity || Object.values(qtyMap).reduce((sum, q) => sum + (Number(q) || 0), 0);
+                        const itemQuantity = item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
                         const unitPrice = Number(item.price) || 0;
                         const itemTotal = unitPrice * itemQuantity;
                         
                         totalGarmentCost += itemTotal;
                         totalQuantity += itemQuantity;
                         
+                        // Build sizes string summary (PC ki tarah)
                         const sizesBreakdown = Object.entries(qtyMap)
                             .filter(([size, qty]) => Number(qty) > 0)
                             .reduce((acc, [size, qty]) => {
@@ -1674,16 +1675,47 @@
                                 return acc;
                             }, {});
                         
+                        // Create sizesSummary string (PC me jo hai waisa)
+                        const sizesSummary = Object.entries(qtyMap)
+                            .filter(([size, qty]) => Number(qty) > 0)
+                            .map(([size, qty]) => `${size}: ${qty}`)
+                            .join(', ');
+                        
+                        // Get image from correct source
+                        const productImage = productData.images ? 
+                            (Array.isArray(productData.images) ? productData.images[0] : productData.images) : 
+                            (productData.image || item.image || '');
+                        
                         basketItems.push({
                             name: item.name || productData.name || 'Product',
                             code: item.code || productData.code || '',
                             color: item.color || item.selectedColorName || state.selectedColorName || '',
-                            sizes: sizesBreakdown,
                             quantity: itemQuantity,
+                            sizes: sizesBreakdown,
+                            sizesSummary: sizesSummary || item.size || 'N/A',
                             unitPrice: unitPrice,
-                            itemTotal: itemTotal
+                            itemTotal: itemTotal,
+                            image: productImage
                         });
                     });
+
+                    // Helper function for position name (ISKO OUTER SCOPE ME RAKHO)
+                    function getPositionName(positionCode) {
+                        const positionMap = {
+                            'left-breast': 'Left Chest',
+                            'right-breast': 'Right Chest', 
+                            'small-centre-front': 'Small Centre Front',
+                            'large-front-center': 'Large Front Center',
+                            'large-centre-front': 'Large Centre Front',
+                            'large-back': 'Back',
+                            'left-arm': 'Left Sleeve',
+                            'right-arm': 'Right Sleeve',
+                            'back-center': 'Back Center',
+                            'left-sleeve': 'Left Sleeve',
+                            'right-sleeve': 'Right Sleeve'
+                        };
+                        return positionMap[positionCode] || positionCode;
+                    }
 
                     // Process customizations
                     const customizationsEntries = Object.entries(positionCustomizations);
@@ -1710,15 +1742,17 @@
                             digitizingFee = 25.00; // Standard digitizing fee
                         }
                         
+                        // Get position name (PC ki tarah)
+                        const positionName = getPositionName(position) || position;
+                        
                         customizationsList.push({
-                            position: position,
-                            method: method,
+                            position: positionName,
+                            method: method === 'print' ? 'Print' : 'Embroidery',
                             type: type,
+                            hasLogo: hasLogo,  // <-- Yeh PC version me bhi hai
                             unitPrice: unitPrice,
-                            quantity: quantity,
                             lineTotal: lineTotal,
-                            hasLogo: hasLogo,
-                            customizationName: customization.name || ''
+                            quantity: quantity
                         });
                     });
 
@@ -1728,6 +1762,66 @@
                     const totalCostExVat = totalGarmentCost + customizationTotal + digitizingFee;
                     const vatAmount = totalCostExVat * vatRate;
                     const totalCostIncVat = totalCostExVat + vatAmount;
+
+                    // #region agent log
+                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:quoteSubmit:before',message:'positionCustomizations before collecting logos',data:{positionCustomizationsKeys:Object.keys(positionCustomizations),statePositionDesignsKeys:Object.keys(state.positionDesigns||{}),positionCustomizationsSnapshot:JSON.stringify(positionCustomizations).substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
+                    
+                    // Collect logo files for FormData upload
+                    const logoFiles = {};
+                    Object.entries(positionCustomizations).forEach(([position, customization]) => {
+                        if (!customization) return;
+                        
+                        // Check for logo data in customization or positionDesigns
+                        const designData = state.positionDesigns?.[position];
+                        const logoDataSource = customization.logo || customization.logoData || customization.logoUrl || designData?.logo || designData?.logoData;
+                        
+                        console.log(`🔍 Checking position "${position}" for logo:`, {
+                            hasCustomizationLogo: !!customization.logo,
+                            hasCustomizationLogoData: !!customization.logoData,
+                            hasCustomizationLogoUrl: !!customization.logoUrl,
+                            hasDesignLogo: !!designData?.logo,
+                            logoDataPrefix: logoDataSource?.substring?.(0, 50),
+                            isBase64: logoDataSource?.startsWith?.('data:')
+                        });
+                        
+                        // #region agent log
+                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:logoCollection',message:'Checking position for logo',data:{position:position,hasCustomizationLogo:!!customization.logo,hasCustomizationLogoData:!!customization.logoData,hasDesignLogo:!!designData?.logo,logoDataSourcePrefix:logoDataSource?.substring?.(0,80),isBase64:logoDataSource?.startsWith?.('data:'),customizationKeys:Object.keys(customization||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+                        // #endregion
+                        
+                        if (logoDataSource && typeof logoDataSource === 'string' && logoDataSource.startsWith('data:')) {
+                            try {
+                                const matches = logoDataSource.match(/^data:image\/(\w+);base64,(.+)$/);
+                                if (matches) {
+                                    console.log(`✅ Converting base64 to File for position "${position}"`);
+                                    const mimeType = matches[1] === 'jpeg' ? 'image/jpeg' : `image/${matches[1]}`;
+                                    const base64Data = matches[2];
+                                    const byteCharacters = atob(base64Data);
+                                    const byteNumbers = new Array(byteCharacters.length);
+                                    for (let i = 0; i < byteCharacters.length; i++) {
+                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                    }
+                                    const byteArray = new Uint8Array(byteNumbers);
+                                    const blob = new Blob([byteArray], { type: mimeType });
+                                    
+                                    const timestamp = Date.now();
+                                    const filename = `logo-${position}-${timestamp}.${matches[1]}`;
+                                    const file = new File([blob], filename, { type: mimeType });
+                                    
+                                    logoFiles[position] = file;
+                                    console.log(`📎 Collected logo file for position "${position}":`, filename, 'Size:', file.size, 'bytes');
+                                }
+                            } catch (err) {
+                                console.warn(`Could not convert logo for position "${position}":`, err);
+                            }
+                        }
+                    });
+                    
+                    console.log('📦 Logo files collected:', Object.keys(logoFiles).length, Object.keys(logoFiles));
+                    
+                    // #region agent log
+                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:afterLogoCollection',message:'Logo files collected',data:{logoFilesCount:Object.keys(logoFiles).length,logoFilesKeys:Object.keys(logoFiles),filesInfo:Object.entries(logoFiles).map(([k,v])=>({pos:k,isFile:v instanceof File,name:v?.name,size:v?.size}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                    // #endregion
 
                     const quoteData = {
                         customer: {
@@ -1753,7 +1847,16 @@
                             hasPoa: customizationsList.some(c => c.lineTotal === 'POA')
                         },
                         basket: basketItems,
-                        customizations: customizationsList,
+                        customizations: customizationsList.map(c => ({
+                            position: c.position,
+                            method: c.method,
+                            type: c.type,
+                            hasLogo: c.hasLogo,
+                            unitPrice: c.unitPrice,
+                            lineTotal: c.lineTotal,
+                            quantity: c.quantity
+                        })),
+                        logoFiles: Object.keys(logoFiles).length > 0 ? logoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };
 
@@ -1762,31 +1865,92 @@
                     const API_BASE_URL = 'https://api.brandeduk.com';
                     
                     try {
-                        // Try using BrandedAPI if available
+                        // Try using BrandedAPI if available (handles FormData correctly)
                         if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
                             result = await window.BrandedAPI.submitQuote(quoteData);
                         } else {
-                            // Fallback: direct fetch to API
-                            const response = await fetch(`${API_BASE_URL}/api/quotes`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(quoteData)
-                            });
-
-                            if (!response.ok) {
-                                const errorText = await response.text();
-                                throw new Error(`API Error: ${response.status} - ${errorText}`);
-                            }
-
-                            const contentType = response.headers.get('content-type');
-                            if (contentType && contentType.includes('application/json')) {
+                            // Fallback: direct fetch to API (must use FormData if logoFiles present)
+                            const hasLogoFiles = quoteData.logoFiles && Object.keys(quoteData.logoFiles).length > 0;
+                            
+                            if (hasLogoFiles) {
+                                // Use FormData for file uploads (same as BrandedAPI)
+                                const formData = new FormData();
+                                
+                                // Remove logoFiles from quoteData before stringifying
+                                const { logoFiles, ...dataWithoutFiles } = quoteData;
+                                
+                                // Clean customizations to ensure no logoData is included
+                                if (dataWithoutFiles.customizations && Array.isArray(dataWithoutFiles.customizations)) {
+                                    dataWithoutFiles.customizations = dataWithoutFiles.customizations.map(c => {
+                                        const { logoData, logoUrl, ...cleanCustomization } = c;
+                                        return cleanCustomization;
+                                    });
+                                }
+                                
+                                formData.append('quoteData', JSON.stringify(dataWithoutFiles));
+                                
+                                // Add logo files with position names (map to backend slugs - same as BrandedAPI)
+                                const mapPositionToBackendSlug = (position) => {
+                                    const positionMap = {
+                                        'left-breast': 'left-breast',
+                                        'right-breast': 'right-breast',
+                                        'small-centre-front': 'small-centre-front',
+                                        'large-front-center': 'large-front-center',
+                                        'large-centre-front': 'large-centre-front',
+                                        'left-arm': 'left-sleeve',
+                                        'right-arm': 'right-sleeve',
+                                        'large-back': 'back-center',
+                                        'back-center': 'back-center',
+                                        'left-sleeve': 'left-sleeve',
+                                        'right-sleeve': 'right-sleeve'
+                                    };
+                                    return positionMap[position] || position.replace(/\s+/g, '-').toLowerCase();
+                                };
+                                
+                                Object.entries(logoFiles).forEach(([position, file]) => {
+                                    if (file instanceof File || file instanceof Blob) {
+                                        // Map frontend position to backend slug (same as BrandedAPI)
+                                        const positionSlug = mapPositionToBackendSlug(position);
+                                        const formDataKey = `logo_${positionSlug}`;
+                                        formData.append(formDataKey, file, file.name || `logo-${positionSlug}.png`);
+                                        console.log(`📎 [Mobile Fallback] Added logo file: ${formDataKey} (${(file.size/1024).toFixed(2)}KB)`);
+                                    }
+                                });
+                                
+                                const response = await fetch(`${API_BASE_URL}/api/quotes`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+                                
+                                if (!response.ok) {
+                                    const errorText = await response.text();
+                                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                                }
+                                
                                 result = await response.json();
                             } else {
-                                const text = await response.text();
-                                console.error('Non-JSON response:', text);
-                                throw new Error('Server returned non-JSON response');
+                                // No logo files - use JSON
+                                const response = await fetch(`${API_BASE_URL}/api/quotes`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(quoteData)
+                                });
+
+                                if (!response.ok) {
+                                    const errorText = await response.text();
+                                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                                }
+
+                                const contentType = response.headers.get('content-type');
+                                if (contentType && contentType.includes('application/json')) {
+                                    result = await response.json();
+                                } else {
+                                    const text = await response.text();
+                                    console.error('Non-JSON response:', text);
+                                    throw new Error('Server returned non-JSON response');
+                                }
                             }
                         }
                     } catch (apiError) {
@@ -5033,6 +5197,10 @@
             strokeColor: modal.querySelector('.stroke-circle.active')?.dataset.color || '#1f2937',
             clipart: modal.querySelector('.clipart-item.selected')?.textContent || null
         };
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:applyDesignToPosition',message:'Logo data gathered',data:{position:position,method:method,hasLogo:!!designData.logo,logoPrefix:designData.logo?.substring?.(0,50),isBase64:designData.logo?.startsWith?.('data:')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
         
         // CRITICAL: Ensure positionMethods is updated for basket saving
         if (!state.positionMethods) state.positionMethods = {};

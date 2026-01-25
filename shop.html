@@ -345,6 +345,53 @@
             display: none !important;
         }
         
+        /* Filter count badges */
+        .filter-checkbox .count,
+        .filter-color .count,
+        .filter-size .count {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        /* Disabled filter states */
+        .filter-checkbox.disabled,
+        .filter-color.disabled,
+        .filter-size.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .filter-expandable.disabled {
+            opacity: 0.5;
+        }
+
+        .filter-expandable.disabled .filter-expandable__header {
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .filter-expandable.disabled .filter-expandable__header span:first-child {
+            color: #9ca3af;
+        }
+
+        /* Color filter count badge */
+        .filter-color .count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            font-size: 8px;
+            background: #7c3aed;
+            color: white;
+            padding: 1px 3px;
+            border-radius: 6px;
+            font-weight: 600;
+            min-width: 14px;
+            text-align: center;
+        }
+        
         /* Logo spacing for back button - Tablet */
         @media (min-width: 768px) {
             .mobile-logo-center {
@@ -468,6 +515,104 @@
             border-color: #1f2937;
             color: white;
             font-weight: 600;
+        }
+
+        /* Price Range Slider Styles - Mobile */
+        .price-range-display {
+            font-size: 14px;
+            font-weight: 600;
+            color: #17a2b8;
+            margin: 8px 0 12px;
+        }
+
+        .price-range-slider-container {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            margin: 20px 0;
+        }
+
+        .price-range-track {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+        }
+
+        .price-range-selected {
+            position: absolute;
+            height: 6px;
+            background: #1f2937;
+            border-radius: 3px;
+        }
+
+        .price-slider {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: transparent;
+            pointer-events: none;
+            outline: none;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: #17a2b8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: all;
+            border: 3px solid white;
+        }
+
+        .price-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            background: #17a2b8;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: all;
+            border: 3px solid white;
+        }
+
+        .price-range-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .price-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .price-input-group label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .price-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: #17a2b8;
         }
     </style>
 </head>
@@ -1372,18 +1517,29 @@
                         <span class="filter-expandable__arrow">⌄</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <div class="price-range-display">
-                            <span id="priceMinDisplay">£0</span>
-                            <span>-</span>
-                            <span id="priceMaxDisplay">£100</span>
+                        <div class="price-range-display" id="priceRangeDisplay">£14 - £65</div>
+                        <div class="price-range-slider-container">
+                            <div class="price-range-track"></div>
+                            <div class="price-range-selected" id="priceRangeSelected"></div>
+                            <input type="range" min="14" max="65" value="14" class="price-slider" id="priceSliderMin">
+                            <input type="range" min="14" max="65" value="65" class="price-slider" id="priceSliderMax">
                         </div>
-                        <input type="range" class="filter-price-slider" id="filterPriceRange" min="0" max="100" value="100">
+                        <div class="price-range-inputs">
+                            <div class="price-input-group">
+                                <label>Min</label>
+                                <input type="text" class="price-input" id="priceInputMin" value="£14">
+                            </div>
+                            <div class="price-input-group">
+                                <label>Max</label>
+                                <input type="text" class="price-input" id="priceInputMax" value="£65">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- EXPANDABLE FILTERS -->
-            <div class="filters-section filters-expandables">
+            <!-- EXPANDABLE FILTERS - Dynamic Container -->
+            <div class="filters-section filters-expandables" id="mobileFiltersContainer">
                 <!-- Gender -->
                 <div class="filter-expandable" data-filter="gender">
                     <div class="filter-expandable__header">
@@ -1699,7 +1855,7 @@
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
     <!-- API Integration Scripts -->
     <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
-    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260123"></script>
+    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260107"></script>
     <script>
         console.log('=== SHOP SCRIPT STARTED (API MODE) ===');
 
@@ -1908,10 +2064,13 @@
             search: '',
             priceMin: null,
             priceMax: null,
+            apiPriceRange: null,
             sort: 'best',
             filters: {
                 gender: [],
                 ageGroup: [],
+                brand: [], // For sidebar brand filter (when filtering by productType)
+                productType: [], // For sidebar productType filter (when filtering by brand)
                 sleeve: [],
                 neckline: [],
                 fabric: [],
@@ -1945,7 +2104,7 @@
 
         function getApiCategoryName(categorySlug) {
             const slugToApiName = {
-                'tshirts': 'T-Shirts','caps':'Caps','hoodies':'Hoodies','jackets':'Jackets','polo':'Polos','shirts':'Shirts','sweatshirts':'Sweatshirts','beanies':'Beanies','blouses':'Blouses','chinos':'Chinos','fleeces':'Fleeces','hivis':'Hi-Vis','trousers':'Trousers','workwear':'Workwear'
+                'tshirts': 'T-Shirts','caps':'Caps','hoodies':'Hoodies','jackets':'Jackets','polo':'Polos','shirts':'Shirts','sweatshirts':'Sweatshirts','beanies':'Beanies','blouses':'Blouses','chinos':'Chinos','fleeces':'Fleeces','hivis':'Hi-Vis','trousers':'Trousers','workwear':'Workwear','aprons':'Aprons'
             };
             return slugToApiName[categorySlug] || null;
         }
@@ -2002,6 +2161,8 @@
             const filterMap = {
                 'gender': 'gender',
                 'ageGroup': 'ageGroup',
+                'brand': 'brand', // Sidebar brand filter (when filtering by productType)
+                'productType': 'productType', // Sidebar productType filter (when filtering by brand)
                 'sleeve': 'sleeve',
                 'neckline': 'neckline',
                 'accreditations': 'accreditations',
@@ -2061,6 +2222,19 @@
                 const params = buildApiParams();
                 const data = await BrandedAPI.getProducts(params);
                 currentState.total = data.total || 0;
+                
+                // Store priceRange from API response to update slider range
+                // This represents the min/max prices available in the current filtered results
+                if (data.priceRange) {
+                    currentState.apiPriceRange = {
+                        min: data.priceRange.min || 0,
+                        max: data.priceRange.max || 0
+                    };
+                    console.log('💰 API priceRange stored (mobile):', currentState.apiPriceRange);
+                } else {
+                    console.log('⚠️ API response has no priceRange (mobile)');
+                }
+                
                 return data.items || [];
             } catch (err) {
                 console.error('Error fetching products (mobile):', err);
@@ -2070,33 +2244,252 @@
 
         async function fetchFilterCounts() {
             try {
-                const params = buildApiParams();
-                const counts = await BrandedAPI.getFilterAggregations(params);
-                updateFilterCounts(counts);
+                // Build query params for filters API
+                const params = new URLSearchParams();
+                
+                // Determine which filters API to use: brand-specific or general
+                let filterApiUrl;
+                
+                // Check if brand filter is active (from sidebar filters, not URL)
+                const activeBrandFilter = currentState.filters.brand && currentState.filters.brand.length > 0 
+                    ? currentState.filters.brand[0] 
+                    : null;
+                
+                if (activeBrandFilter) {
+                    // Use brand-specific filters API: /api/filters/brands/{brand}/filters
+                    filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
+                    console.log('🏷️ Using brand-specific filters API for:', activeBrandFilter);
+                } else {
+                    // Use general products filters API
+                    filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
+                    
+                    // Add productType if set (category maps to productType for filter API)
+                    if (currentState.category && currentState.category !== 'all') {
+                        const apiCategoryName = getApiCategoryName(currentState.category);
+                        if (apiCategoryName) {
+                            params.append('productType', apiCategoryName);
+                        } else {
+                            // If not in mapping, pass raw category value as productType
+                            params.append('productType', currentState.category);
+                        }
+                    }
+                    
+                    // Add productType from filters if set (sidebar filter)
+                    if (currentState.filters.productType && currentState.filters.productType.length > 0) {
+                        params.append('productType', currentState.filters.productType[0]);
+                    }
+                }
+                
+                // Add search query if present
+                if (currentState.search && currentState.search.trim()) {
+                    params.append('q', currentState.search.trim());
+                }
+                
+                // Add price range if set
+                if (currentState.priceMin !== null) {
+                    params.append('priceMin', currentState.priceMin);
+                }
+                if (currentState.priceMax !== null) {
+                    params.append('priceMax', currentState.priceMax);
+                }
+                
+                // Add quick filters
+                if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
+                    currentState.filters.quickFilters.forEach(flag => {
+                        const mappedFlag = FILTER_MAPPINGS.quickFilter?.[flag] || flag;
+                        params.append('flag[]', mappedFlag);
+                    });
+                }
+                
+                const queryString = params.toString();
+                const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
+                
+                console.log('📊 Fetching filter counts from:', url);
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Filter API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 Filter counts received:', data);
+                
+                if (data && data.filters) {
+                    renderMobileDynamicFilters(data.filters);
+                }
             } catch (err) {
                 console.error('Error fetching filter counts (mobile):', err);
+                // Keep static fallback on error
             }
         }
 
-        function updateFilterCounts(counts) {
-            if (!counts) return;
-            // counts shape: { filterName: { slug: count, ... }, ... }
-            Object.keys(counts).forEach(apiFilterName => {
-                const section = document.querySelector(`.filter-expandable[data-filter="${apiFilterName}"]`);
-                if (!section) return;
+        // Filter display configuration for mobile
+        const MOBILE_FILTER_CONFIG = {
+            gender: { title: 'Gender', order: 1, stateKey: 'gender' },
+            ageGroup: { title: 'Age Group', order: 2, stateKey: 'ageGroup' },
+            brand: { title: 'Brand', order: 3, stateKey: 'brand' },
+            productType: { title: 'Product Type', order: 4, stateKey: 'productType' },
+            sleeve: { title: 'Sleeve', order: 5, stateKey: 'sleeve' },
+            neckline: { title: 'Neckline', order: 6, stateKey: 'neckline' },
+            accreditations: { title: 'Accreditations', order: 7, stateKey: 'accreditations' },
+            primaryColour: { title: 'Primary Colour', order: 8, stateKey: 'primaryColour', isColorGrid: true },
+            colourShade: { title: 'Colour Shade', order: 9, stateKey: 'colourShade' },
+            style: { title: 'Style', order: 10, stateKey: 'style' },
+            feature: { title: 'Features', order: 11, stateKey: 'feature' },
+            size: { title: 'Size', order: 12, stateKey: 'size', isSizeGrid: true },
+            fabric: { title: 'Fabric', order: 13, stateKey: 'fabric' },
+            weight: { title: 'Weight (GSM)', order: 14, stateKey: 'weight' },
+            fit: { title: 'Fit', order: 15, stateKey: 'fit' },
+            sector: { title: 'Related Sector', order: 16, stateKey: 'sector' },
+            sport: { title: 'Related Sport', order: 17, stateKey: 'sport' },
+            tag: { title: 'Tag', order: 18, stateKey: 'tag' },
+            effect: { title: 'Effect', order: 19, stateKey: 'effect' }
+        };
+
+        // Color mapping for mobile color grid
+        const MOBILE_COLOR_MAP = {
+            'black': '#1a1a1a', 'white': '#ffffff', 'navy': '#000080', 'grey': '#808080',
+            'red': '#ff0000', 'blue': '#0000ff', 'green': '#008000', 'yellow': '#ffff00',
+            'orange': '#ffa500', 'purple': '#800080', 'pink': '#ffc0cb', 'brown': '#8b4513',
+            'burgundy': '#800020', 'khaki': '#c3b091', 'neutral': '#d1d5db', 'pattern': 'linear-gradient(135deg, red, orange, yellow, green, blue, purple)',
+            'other': '#e5e7eb'
+        };
+
+        // Render dynamic filters for mobile
+        function renderMobileDynamicFilters(filters) {
+            const container = document.getElementById('mobileFiltersContainer');
+            if (!container) {
+                console.error('❌ mobileFiltersContainer not found');
+                return;
+            }
+
+            // Save current checked states
+            const checkedStates = {};
+            container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                const section = cb.closest('.filter-expandable');
+                const filterKey = section?.dataset?.filter;
+                if (filterKey) {
+                    if (!checkedStates[filterKey]) checkedStates[filterKey] = [];
+                    checkedStates[filterKey].push(cb.value);
+                }
+            });
+
+            // Also get from currentState.filters
+            Object.keys(currentState.filters).forEach(key => {
+                if (Array.isArray(currentState.filters[key]) && currentState.filters[key].length > 0) {
+                    checkedStates[key] = currentState.filters[key];
+                }
+            });
+
+            // Sort filter keys
+            const sortedKeys = Object.keys(filters).sort((a, b) => {
+                const orderA = MOBILE_FILTER_CONFIG[a]?.order || 99;
+                const orderB = MOBILE_FILTER_CONFIG[b]?.order || 99;
+                return orderA - orderB;
+            });
+
+            let html = '';
+
+            sortedKeys.forEach(filterKey => {
+                const filterData = filters[filterKey];
+                const config = MOBILE_FILTER_CONFIG[filterKey] || { title: filterKey, stateKey: filterKey };
+                
+                if (!filterData || !Array.isArray(filterData) || filterData.length === 0) return;
+
+                const checkedValues = checkedStates[config.stateKey] || checkedStates[filterKey] || [];
+                const isColorGrid = config.isColorGrid;
+                const isSizeGrid = config.isSizeGrid;
+
+                html += `<div class="filter-expandable" data-filter="${filterKey}">
+                    <div class="filter-expandable__header">
+                        <span>${config.title}</span>
+                        <span class="filter-expandable__arrow">›</span>
+                    </div>
+                    <div class="filter-expandable__content${isColorGrid ? ' filter-colors-grid' : ''}${isSizeGrid ? ' filter-sizes-grid' : ''}">`;
+
+                filterData.forEach(item => {
+                    const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
+                    
+                    if (isColorGrid) {
+                        const colorValue = MOBILE_COLOR_MAP[item.slug] || '#e5e7eb';
+                        const isMulti = item.slug === 'pattern' || item.slug === 'multi';
+                        const style = colorValue.includes('gradient') 
+                            ? `background: ${colorValue}` 
+                            : `--color: ${colorValue}`;
+                        // Don't show count for primary colour swatches
+                        html += `<label class="filter-color${isMulti ? ' filter-color--multi' : ''}" style="${style}">
+                            <input type="checkbox" value="${item.slug}" ${isChecked}>
+                            <span>${item.name}</span>
+                        </label>`;
+                    } else if (isSizeGrid) {
+                        html += `<label class="filter-size">
+                            <input type="checkbox" value="${item.slug}" ${isChecked}>
+                            <span>${item.name}</span>
+                            ${item.count > 0 ? `<span class="count">(${item.count})</span>` : ''}
+                        </label>`;
+                    } else {
+                        html += `<label class="filter-checkbox">
+                            <input type="checkbox" value="${item.slug}" ${isChecked}>
+                            ${item.name}
+                            ${item.count > 0 ? `<span class="count">(${item.count})</span>` : ''}
+                        </label>`;
+                    }
+                });
+
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+
+            // Re-attach expand/collapse handlers
+            container.querySelectorAll('.filter-expandable__header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const expandable = this.closest('.filter-expandable');
+                    const isExpanded = expandable.dataset.expanded === 'true';
+                    expandable.dataset.expanded = isExpanded ? 'false' : 'true';
+                    const content = expandable.querySelector('.filter-expandable__content');
+                    if (content) {
+                        content.style.display = isExpanded ? 'none' : 'block';
+                    }
+                });
+            });
+
+            // Re-attach checkbox handlers
+            setupMobileDynamicCheckboxes();
+
+            console.log('✅ Mobile dynamic filters rendered');
+        }
+
+        // Setup mobile checkbox handlers
+        function setupMobileDynamicCheckboxes() {
+            const container = document.getElementById('mobileFiltersContainer');
+            if (!container) return;
+
+            container.querySelectorAll('.filter-expandable[data-filter]').forEach(section => {
+                const filterKey = section.dataset.filter;
+                const config = MOBILE_FILTER_CONFIG[filterKey];
+                const stateKey = config?.stateKey || filterKey;
                 const content = section.querySelector('.filter-expandable__content');
                 if (!content) return;
-                Object.keys(counts[apiFilterName]).forEach(slug => {
-                    const checkbox = content.querySelector(`input[value="${slug}"]`);
-                    if (checkbox) {
-                        let countSpan = checkbox.parentElement.querySelector('.count');
-                        if (!countSpan) {
-                            countSpan = document.createElement('span');
-                            countSpan.className = 'count';
-                            checkbox.parentElement.appendChild(countSpan);
+
+                content.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    if (cb.dataset.mobileListenerAttached) return;
+                    cb.dataset.mobileListenerAttached = 'true';
+
+                    cb.addEventListener('change', async () => {
+                        const checkedValues = Array.from(
+                            content.querySelectorAll('input[type="checkbox"]:checked')
+                        ).map(c => c.value);
+
+                        if (!currentState.filters[stateKey]) {
+                            currentState.filters[stateKey] = [];
                         }
-                        countSpan.textContent = `(${counts[apiFilterName][slug]})`;
-                    }
+                        currentState.filters[stateKey] = checkedValues;
+
+                        currentState.page = 1;
+                        updateURL();
+                        await renderProducts();
+                    });
                 });
             });
         }
@@ -2164,76 +2557,240 @@
             }
         }
 
-        // Price range init adapted for mobile UI
+        // Price range init adapted for mobile UI (dual slider like desktop)
+        let mobilePriceSliderEventListenersAttached = false;
+        let mobileCatalogMinPrice = 14;
+        let mobileCatalogMaxPrice = 65;
+
         async function initPriceRangeSlider() {
-            const slider = document.getElementById('filterPriceRange');
-            const minDisplay = document.getElementById('priceMinDisplay');
-            const maxDisplay = document.getElementById('priceMaxDisplay');
-            if (!slider) return;
+            const sliderMin = document.getElementById('priceSliderMin');
+            const sliderMax = document.getElementById('priceSliderMax');
+            const rangeSelected = document.getElementById('priceRangeSelected');
+            const rangeDisplay = document.getElementById('priceRangeDisplay');
+            const inputMin = document.getElementById('priceInputMin');
+            const inputMax = document.getElementById('priceInputMax');
+
+            if (!sliderMin || !sliderMax) {
+                console.error('❌ Mobile price sliders not found');
+                return;
+            }
 
             try {
-                const data = await BrandedAPI.getProducts({ limit: 1 });
-                const range = data.priceRange || { min: 14, max: 65 };
-                const catalogMin = Math.floor(range.min || 14);
-                const catalogMax = Math.ceil(range.max || 65);
-                slider.min = catalogMin;
-                slider.max = catalogMax;
+                let priceRange = null;
                 
-                // Initialize slider value from URL or use full range (but don't set state unless in URL)
-                const urlParams = new URLSearchParams(window.location.search);
-                const urlPriceMax = urlParams.get('priceMax');
-                
-                if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
-                    const priceMax = Math.max(catalogMin, Math.min(catalogMax, parseFloat(urlPriceMax)));
-                    slider.value = priceMax;
-                    currentState.priceMax = priceMax;
+                // First, check if we have priceRange from the latest API response
+                if (currentState.apiPriceRange) {
+                    priceRange = currentState.apiPriceRange;
+                    console.log('📡 Using price range from latest API response (mobile):', priceRange);
                 } else {
-                    slider.value = catalogMax;
-                    currentState.priceMax = null; // Keep null so API doesn't filter by price
+                    // Fallback: fetch price range from API (without filters to get full range)
+                    console.log('📡 Fetching price range from API (mobile, no cached range)...');
+                    const data = await BrandedAPI.getProducts({ limit: 1 });
+                    priceRange = data.priceRange || { min: 14, max: 65 };
                 }
                 
-                // Initialize display without setting state
-                const initialMaxVal = parseInt(slider.value);
-                minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
-                maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (initialMaxVal * 1.2).toFixed(2) : initialMaxVal.toFixed(2)));
+                mobileCatalogMinPrice = Math.floor(priceRange.min || 14);
+                mobileCatalogMaxPrice = Math.ceil(priceRange.max || 65);
+                console.log('✅ Price range determined (mobile):', { mobileCatalogMinPrice, mobileCatalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
+                
+                // Update slider attributes
+                sliderMin.min = mobileCatalogMinPrice;
+                sliderMin.max = mobileCatalogMaxPrice;
+                sliderMax.min = mobileCatalogMinPrice;
+                sliderMax.max = mobileCatalogMaxPrice;
+                
+                // Initialize slider values from URL or use full range
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlPriceMin = urlParams.get('priceMin');
+                const urlPriceMax = urlParams.get('priceMax');
+                
+                if (urlPriceMin && !isNaN(parseFloat(urlPriceMin))) {
+                    sliderMin.value = Math.max(mobileCatalogMinPrice, Math.min(mobileCatalogMaxPrice, parseFloat(urlPriceMin)));
+                    currentState.priceMin = parseFloat(urlPriceMin);
+                } else {
+                    sliderMin.value = mobileCatalogMinPrice;
+                    currentState.priceMin = null;
+                }
+                
+                if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
+                    sliderMax.value = Math.max(mobileCatalogMinPrice, Math.min(mobileCatalogMaxPrice, parseFloat(urlPriceMax)));
+                    currentState.priceMax = parseFloat(urlPriceMax);
+                } else {
+                    sliderMax.value = mobileCatalogMaxPrice;
+                    currentState.priceMax = null;
+                }
 
-                function update(triggerAPI = false) {
-                    let maxVal = parseInt(slider.value);
-                    if (!Number.isFinite(maxVal)) maxVal = catalogMax;
+                function updatePriceSliderUI() {
+                    let minVal = parseInt(sliderMin.value);
+                    let maxVal = parseInt(sliderMax.value);
                     
-                    // Only set price state if values are different from full catalog range
-                    // If they match the full range, set to null so API doesn't filter by price
-                    if (maxVal === catalogMax) {
-                        // Full range selected - don't filter by price
+                    // Ensure min doesn't exceed max
+                    if (minVal > maxVal) {
+                        const temp = minVal;
+                        minVal = maxVal;
+                        maxVal = temp;
+                        sliderMin.value = minVal;
+                        sliderMax.value = maxVal;
+                    }
+                    
+                    // Update selected range visual
+                    const percentMin = ((minVal - mobileCatalogMinPrice) / (mobileCatalogMaxPrice - mobileCatalogMinPrice)) * 100;
+                    const percentMax = ((maxVal - mobileCatalogMinPrice) / (mobileCatalogMaxPrice - mobileCatalogMinPrice)) * 100;
+                    if (rangeSelected) {
+                        rangeSelected.style.left = percentMin + '%';
+                        rangeSelected.style.width = (percentMax - percentMin) + '%';
+                    }
+                    
+                    // Update display text with VAT consideration
+                    const displayMin = isVatOn() ? (minVal * 1.2).toFixed(2) : minVal.toFixed(2);
+                    const displayMax = isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2);
+                    if (rangeDisplay) {
+                        rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+                    }
+                    if (inputMin) inputMin.value = '£' + minVal;
+                    if (inputMax) inputMax.value = '£' + maxVal;
+                }
+
+                function handlePriceSliderChange() {
+                    let minVal = parseInt(sliderMin.value);
+                    let maxVal = parseInt(sliderMax.value);
+                    
+                    // Ensure min doesn't exceed max
+                    if (minVal > maxVal) {
+                        const temp = minVal;
+                        minVal = maxVal;
+                        maxVal = temp;
+                        sliderMin.value = minVal;
+                        sliderMax.value = maxVal;
+                    }
+                    
+                    // Set state - if full range, set to null
+                    if (minVal === mobileCatalogMinPrice && maxVal === mobileCatalogMaxPrice) {
                         currentState.priceMin = null;
                         currentState.priceMax = null;
                     } else {
-                        // Partial range selected - filter by price
-                        currentState.priceMin = catalogMin;
+                        currentState.priceMin = minVal;
                         currentState.priceMax = maxVal;
                     }
                     
-                    minDisplay && (minDisplay.textContent = '£' + (isVatOn() ? (catalogMin * 1.2).toFixed(2) : catalogMin.toFixed(2)));
-                    maxDisplay && (maxDisplay.textContent = '£' + (isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2)));
-                    
-                    // Only trigger API call and URL update if user actually changed the slider
-                    if (triggerAPI) {
-                        currentState.page = 1;
-                        updateURL();
-                        renderProducts();
-                        fetchFilterCounts();
-                    }
+                    updatePriceSliderUI();
+                    currentState.page = 1;
+                    updateURL();
+                    renderProducts();
+                    fetchFilterCounts();
                 }
 
-                // Only trigger API on user input, not on initialization
-                slider.addEventListener('input', () => update(true));
-                // Don't call update() on initialization - just set display values above
+                // Only attach event listeners once
+                if (!mobilePriceSliderEventListenersAttached) {
+                    sliderMin.addEventListener('change', handlePriceSliderChange);
+                    sliderMin.addEventListener('input', updatePriceSliderUI);
+                    sliderMax.addEventListener('change', handlePriceSliderChange);
+                    sliderMax.addEventListener('input', updatePriceSliderUI);
+                    
+                    // Input field handlers
+                    if (inputMin) {
+                        inputMin.addEventListener('change', function() {
+                            let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
+                            if (isNaN(val)) val = mobileCatalogMinPrice;
+                            val = Math.max(mobileCatalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
+                            sliderMin.value = val;
+                            handlePriceSliderChange();
+                        });
+                    }
+                    
+                    if (inputMax) {
+                        inputMax.addEventListener('change', function() {
+                            let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
+                            if (isNaN(val)) val = mobileCatalogMaxPrice;
+                            val = Math.min(mobileCatalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
+                            sliderMax.value = val;
+                            handlePriceSliderChange();
+                        });
+                    }
+                    
+                    mobilePriceSliderEventListenersAttached = true;
+                }
+
+                // Initialize display
+                updatePriceSliderUI();
+                
             } catch (err) {
                 console.error('Error init price slider (mobile):', err);
-                // On error, don't set price state - keep null
                 currentState.priceMin = null;
                 currentState.priceMax = null;
             }
+        }
+
+        // Update price slider range from API response (for filter updates)
+        function updateMobilePriceSliderRangeFromAPI() {
+            const sliderMin = document.getElementById('priceSliderMin');
+            const sliderMax = document.getElementById('priceSliderMax');
+            const rangeSelected = document.getElementById('priceRangeSelected');
+            const rangeDisplay = document.getElementById('priceRangeDisplay');
+            const inputMin = document.getElementById('priceInputMin');
+            const inputMax = document.getElementById('priceInputMax');
+
+            if (!sliderMin || !sliderMax) {
+                console.log('⚠️ Mobile price sliders not found in updateMobilePriceSliderRangeFromAPI');
+                return;
+            }
+
+            // Check if we have priceRange from API response
+            if (!currentState.apiPriceRange) {
+                console.log('⚠️ No API price range available yet (mobile)');
+                return;
+            }
+
+            const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
+            const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
+            
+            console.log('🔄 Updating mobile price slider range from API:', { apiMin, apiMax });
+
+            // Update slider min/max attributes
+            sliderMin.min = apiMin;
+            sliderMin.max = apiMax;
+            sliderMax.min = apiMin;
+            sliderMax.max = apiMax;
+
+            // Determine new slider values
+            let newMinVal, newMaxVal;
+
+            if (currentState.priceMin === null && currentState.priceMax === null) {
+                newMinVal = apiMin;
+                newMaxVal = apiMax;
+            } else {
+                newMinVal = Math.max(apiMin, Math.min(currentState.priceMin || apiMin, apiMax));
+                newMaxVal = Math.min(apiMax, Math.max(currentState.priceMax || apiMax, apiMin));
+            }
+
+            sliderMin.value = newMinVal;
+            sliderMax.value = newMaxVal;
+
+            // Update the UI
+            const percentMin = ((newMinVal - apiMin) / (apiMax - apiMin)) * 100;
+            const percentMax = ((newMaxVal - apiMin) / (apiMax - apiMin)) * 100;
+            if (rangeSelected) {
+                rangeSelected.style.left = percentMin + '%';
+                rangeSelected.style.width = (percentMax - percentMin) + '%';
+            }
+
+            const displayMin = isVatOn() ? (newMinVal * 1.2).toFixed(2) : newMinVal.toFixed(2);
+            const displayMax = isVatOn() ? (newMaxVal * 1.2).toFixed(2) : newMaxVal.toFixed(2);
+            if (rangeDisplay) {
+                rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+            }
+            if (inputMin) inputMin.value = '£' + newMinVal;
+            if (inputMax) inputMax.value = '£' + newMaxVal;
+            
+            console.log('✅ Mobile price slider range updated:', { 
+                min: apiMin, 
+                max: apiMax, 
+                newMinVal, 
+                newMaxVal,
+                sliderMinValue: sliderMin.value,
+                sliderMaxValue: sliderMax.value,
+                priceFilterActive: currentState.priceMin !== null || currentState.priceMax !== null
+            });
         }
 
         // Search input handling (mobile filter input + header search)
@@ -2276,6 +2833,8 @@
             const filterKeyMap = {
                 'gender': 'gender',
                 'ageGroup': 'ageGroup',
+                'brand': 'brand',
+                'productType': 'productType',
                 'sleeve': 'sleeve',
                 'neckline': 'neckline',
                 'accreditations': 'accreditations',
@@ -2396,6 +2955,9 @@
             const resultsEl = document.getElementById('resultsCount');
             if (titleEl) titleEl.textContent = (currentState.category && currentState.category !== 'all') ? currentState.category : 'All Products';
             if (resultsEl) resultsEl.textContent = `${currentState.total} items`;
+
+            // Update price slider range based on API response (like desktop)
+            updateMobilePriceSliderRangeFromAPI();
 
             grid.innerHTML = '';
             if (!products || products.length === 0) {

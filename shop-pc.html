@@ -52,71 +52,6 @@
         .header-social-3d .social-icon-3d.youtube:hover { color: #FF0000 !important; }
         .header-social-3d .social-icon-3d.pinterest:hover { color: #BD081C !important; }
         
-        /* ============================================
-           EXCLUSIVES MENU
-           ============================================ */
-        .exclusives-menu {
-            position: relative;
-        }
-        .exclusives-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            padding: 24px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            min-width: 600px;
-        }
-        .exclusives-menu:hover .exclusives-dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-        .exclusives-dropdown-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        .exclusives-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-        }
-        .exclusive-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: #f3f4f6;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .exclusive-brand:hover {
-            background: #e5e7eb;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .exclusive-brand img {
-            max-width: 70%;
-            max-height: 50%;
-            object-fit: contain;
-            filter: grayscale(100%);
-            transition: filter 0.3s ease;
-        }
-        .exclusive-brand:hover img {
-            filter: grayscale(0%);
-        }
-        
         /* Legacy social buttons (fallback) */
         .header-top .social-buttons-header { gap: 10px; }
         .header-top .social-buttons-header a { width: 32px; height: 32px; }
@@ -722,7 +657,61 @@
         .filter-checkbox-item .count {
             font-size: 12px;
             color: #9ca3af;
-            display: none; /* Hide static filter counts */
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        /* Disabled filter states */
+        .filter-checkbox-item.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .filter-checkbox-item.disabled input[type="checkbox"] {
+            cursor: not-allowed;
+        }
+
+        .filter-checkbox-item.disabled label,
+        .filter-checkbox-item.disabled span {
+            cursor: not-allowed;
+        }
+
+        .filter-expandable-row.disabled {
+            opacity: 0.5;
+        }
+
+        .filter-expandable-row.disabled h4 {
+            color: #9ca3af;
+        }
+
+        .filter-expandable-row.disabled + .filter-expandable-content {
+            pointer-events: none;
+        }
+
+        .filter-expandable-row.disabled .filter-expandable-arrow {
+            color: #d1d5db;
+        }
+
+        /* Color swatch disabled state */
+        .color-swatch-item.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .color-swatch-item .count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 9px;
+            background: #7c3aed;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 8px;
+            font-weight: 600;
+            min-width: 16px;
+            text-align: center;
         }
 
         /* Primary Colour swatches (replaces tick boxes) */
@@ -810,6 +799,72 @@
             );
         }
 
+              
+        /* ============================================
+           EXCLUSIVES MEGAMENU
+           ============================================ */
+           .exclusives-menu {
+            position: relative;
+        }
+        .exclusives-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 600px;
+        }
+        .exclusives-menu:hover .exclusives-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .exclusives-dropdown-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .exclusives-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        .exclusive-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .exclusive-brand:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .exclusive-brand img {
+            max-width: 70%;
+            max-height: 50%;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+        .exclusive-brand:hover img {
+            filter: grayscale(0%);
+        }
+        
         /* Products Section */
         .products-section {
             background: white;
@@ -817,30 +872,6 @@
             border-radius: 16px;
             overflow: hidden;
             min-width: 0;
-        }
-
-        /* Brand Banner */
-        .brand-banner {
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .brand-banner-inner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .brand-banner-logo {
-            max-height: 80px;
-            max-width: 300px;
-            object-fit: contain;
-            filter: grayscale(0);
         }
 
         .products-header {
@@ -1771,8 +1802,6 @@
                         </ul>
                     </li>
                     <li><a href="home-pc.html">BrandedUK</a></li>
-                    <li><a href="#">Promotions</a></li>
-                    <!-- Exclusives Menu -->
                     <li class="has-megamenu exclusives-menu">
                         <a href="#" aria-haspopup="true">
                             Exclusives
@@ -1781,10 +1810,10 @@
                         <div class="exclusives-dropdown" role="region" aria-label="Exclusive brands">
                             <div class="exclusives-dropdown-title">Exclusives</div>
                             <div class="exclusives-grid">
-                                <a href="shop-pc.html?brand=adidas" class="exclusive-brand" title="Adidas">
+                                <a href="shop-pc.html?brand=adidas®" class="exclusive-brand" title="Adidas">
                                     <img src="../brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
                                 </a>
-                                <a href="shop-pc.html?brand=bc" class="exclusive-brand" title="B&C Be Inspired">
+                                <a href="shop-pc.html?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
                                     <img src="../brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C">
                                 </a>
                                 <a href="shop-pc.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
@@ -1793,10 +1822,10 @@
                                 <a href="shop-pc.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
                                     <img src="../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic">
                                 </a>
-                                <a href="shop-pc.html?brand=brandit" class="exclusive-brand" title="Brandit">
+                                <a href="shop-pc.html?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
                                     <img src="../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit">
                                 </a>
-                                <a href="shop-pc.html?brand=comfort-colors" class="exclusive-brand" title="Comfort Colors">
+                                <a href="shop-pc.html?brand=comfort-colors®" class="exclusive-brand" title="Comfort Colors">
                                     <img src="../brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
                                 </a>
                                 <a href="shop-pc.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
@@ -1805,7 +1834,7 @@
                                 <a href="shop-pc.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
                                     <img src="../brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus">
                                 </a>
-                                <a href="shop-pc.html?brand=nutshell" class="exclusive-brand" title="Nutshell">
+                                <a href="shop-pc.html?brand=nutshell®" class="exclusive-brand" title="Nutshell">
                                     <img src="../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell">
                                 </a>
                                 <a href="shop-pc.html?brand=ogio" class="exclusive-brand" title="OGIO">
@@ -1817,7 +1846,7 @@
                                 <a href="shop-pc.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
                                     <img src="../brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon">
                                 </a>
-                                <a href="shop-pc.html?brand=tri-dri" class="exclusive-brand" title="Tri Dri">
+                                <a href="shop-pc.html?brand=tridri®" class="exclusive-brand" title="TriDri">
                                     <img src="../brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
                                 </a>
                                 <a href="shop-pc.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
@@ -1829,6 +1858,7 @@
                             </div>
                         </div>
                     </li>
+                    <li><a href="#">Promotions</a></li>
                     <li><a href="#">More</a></li>
                     <li><a href="#">Services</a></li>
                     <li><a href="#">About</a></li>
@@ -1925,8 +1955,9 @@
             </div>
         </div>
 
-        <!-- Expandable Filter Rows -->
-        <div class="filter-expandable-row">
+        <!-- Expandable Filter Rows - Dynamic Container -->
+        <div id="dynamicFiltersContainer">
+        <div class="filter-expandable-row" data-filter-key="gender">
             <h4>Gender</h4>
             <span class="filter-expandable-arrow">›</span>
         </div>
@@ -2257,6 +2288,7 @@
                 <label class="filter-checkbox-item"><input type="checkbox" value="acid-wash"><span>Acid Wash</span><span class="count">(12)</span></label>
             </div>
         </div>
+        </div><!-- End dynamicFiltersContainer -->
 
     </aside>
 
@@ -2330,9 +2362,9 @@
     <p>&copy; 2024 BrandedUK. All rights reserved.</p>
 </footer>
 
-<script src="../brandedukv15-child/assets/js/header.js?v=20251230"></script>
-<script src="../brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-<script src="../brandedukv15-child/assets/js/api.js?v=20260122"></script>
+<script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
+<script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260124f"></script>
 <script src="brandeduk.com/js/main.js?v=20251230"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260110"></script>
 <script>
@@ -2534,16 +2566,19 @@ let currentState = {
     total: 0,
     category: 'all',
     productType: null, // Store productType from URL (e.g., 'aprons', 'tshirts')
-    brand: null, // Store brand from URL (e.g., 'adidas', 'bc')
+    brand: null, // Store brand from URL (e.g., 'nike', 'adidas')
     search: '',
     priceMin: null,
     priceMax: null,
+    apiPriceRange: null, // Store priceRange from API response to update slider
     sort: 'best',
     // Variant-driven colour filter (API param: color=black)
     color: '',
     filters: {
         gender: [],
         ageGroup: [],
+        brand: [], // For sidebar brand filter (when filtering by productType)
+        productType: [], // For sidebar productType filter (when filtering by brand)
         sleeve: [],
         neckline: [],
         fabric: [],
@@ -2611,11 +2646,17 @@ function getApiCategoryName(categorySlug) {
 // Initialize state from URL
 const productTypeParam = urlParams.get('productType');
 const accreditationParam = urlParams.get('accreditation');
+const brandParam = urlParams.get('brand');
 
-// If productType or accreditation is in URL, reset state to defaults (clean state)
-if (productTypeParam || accreditationParam) {
+// #region agent log
+fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:URL_PARAMS',message:'URL parameters parsed',data:{productTypeParam:productTypeParam,accreditationParam:accreditationParam,brandParam:brandParam,fullURL:window.location.href,searchString:window.location.search},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B1'})}).catch(()=>{});
+// #endregion
+
+// If productType, accreditation, or brand is in URL, reset state to defaults (clean state)
+if (productTypeParam || accreditationParam || brandParam) {
     currentState.category = 'all';
     currentState.productType = productTypeParam || null; // Store productType from URL
+    currentState.brand = brandParam || null; // Store brand from URL
     currentState.page = parseInt(urlParams.get('page')) || 1;
     currentState.limit = parseInt(urlParams.get('limit')) || 28;
     currentState.sort = urlParams.get('sort') || 'best';
@@ -2658,32 +2699,6 @@ currentState.sort = urlParams.get('sort') || 'best';
 currentState.search = urlParams.get('q') || '';
 currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
 currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
-}
-
-// Brand filter from URL (e.g., ?brand=adidas)
-const brandParam = urlParams.get('brand');
-if (brandParam) {
-    // Map URL slug to API brand name (case-sensitive, must match API exactly)
-    const brandSlugToName = {
-        'adidas': 'adidas',
-        'bc': 'B&C',
-        'build-your-brand': 'Build Your Brand',
-        'build-your-brand-basic': 'BY BASICS',
-        'brandit': 'Brandit',
-        'comfort-colors': 'Comfort Colors',
-        'new-morning-studios': 'New Morning Studios',
-        'nimbus': 'Nimbus',
-        'nutshell': 'Nutshell',
-        'ogio': 'OGIO',
-        'rhino': 'Rhino',
-        'ribbon': 'Ribbon',
-        'tridri': 'TriDri',
-        'tri-dri': 'TriDri',
-        'under-armour': 'Under Armour',
-        'wombat': 'Wombat'
-    };
-    currentState.brand = brandSlugToName[brandParam] || brandParam;
-    console.log('🏷️ Brand filter active:', currentState.brand);
 }
 
 // Variant colour filter (persisted in URL as ?color=black)
@@ -2793,6 +2808,14 @@ function buildApiParams() {
     // Pagination (always included)
     params.page = currentState.page || 1;
     params.limit = currentState.limit || 28;
+    
+    // Debug: Log pagination params
+    console.log('📄 API Params - Pagination:', { 
+        page: params.page, 
+        limit: params.limit,
+        currentStateLimit: currentState.limit,
+        currentStatePage: currentState.page
+    });
 
     // Sort parameter
     if (currentState.sort) {
@@ -2838,33 +2861,31 @@ function buildApiParams() {
     // Note: accreditation=recycled from URL is handled via quickFilters -> flag[]=['recycled-organic']
     // See quickFilters handling below
 
-    // Price range (numeric values)
-    // Send priceMin and priceMax if they are set (even if they match the full range)
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2432',message:'buildApiParams checking priceMin/priceMax',data:{currentStatePriceMin:currentState.priceMin,currentStatePriceMax:currentState.priceMax,priceMinType:typeof currentState.priceMin,priceMaxType:typeof currentState.priceMax,priceMinIsNull:currentState.priceMin===null,priceMaxIsNull:currentState.priceMax===null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
-    if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
-        params.priceMin = Number(currentState.priceMin);
+    // Brand filter (from URL, e.g., ?brand=nike)
+    if (currentState.brand) {
+        params.brand = currentState.brand;
+        console.log('🏷️ Adding brand to API params:', params.brand);
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2435',message:'buildApiParams ADDING priceMin',data:{priceMin:params.priceMin},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:buildApiParams:BRAND',message:'Brand added to API params',data:{brand:params.brand,currentStateBrand:currentState.brand},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B2'})}).catch(()=>{});
         // #endregion
-        console.log('💰 Adding priceMin to API params:', params.priceMin);
     } else {
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2438',message:'buildApiParams NOT adding priceMin',data:{reason:'null or undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:buildApiParams:NO_BRAND',message:'Brand NOT in currentState',data:{currentStateBrand:currentState.brand,brandIsNull:currentState.brand===null,brandIsUndefined:currentState.brand===undefined,brandIsFalsy:!currentState.brand},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B2'})}).catch(()=>{});
         // #endregion
+    }
+
+    // Price range (numeric values)
+    // Send priceMin and priceMax if they are set (even if they match the full range)
+    if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
+        params.priceMin = Number(currentState.priceMin);
+        console.log('💰 Adding priceMin to API params:', params.priceMin);
+    } else {
         console.log('💰 priceMin is null/undefined, not adding to API params');
     }
     if (currentState.priceMax !== null && currentState.priceMax !== undefined) {
         params.priceMax = Number(currentState.priceMax);
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2441',message:'buildApiParams ADDING priceMax',data:{priceMax:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         console.log('💰 Adding priceMax to API params:', params.priceMax);
     } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2444',message:'buildApiParams NOT adding priceMax',data:{reason:'null or undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         console.log('💰 priceMax is null/undefined, not adding to API params');
     }
 
@@ -2873,6 +2894,8 @@ function buildApiParams() {
     const filterMap = {
         'gender': 'gender',
         'ageGroup': 'ageGroup',
+        'brand': 'brand', // Sidebar brand filter (when filtering by productType)
+        'productType': 'productType', // Sidebar productType filter (when filtering by brand)
         'sleeve': 'sleeve',
         'neckline': 'neckline',
         'accreditations': 'accreditations',
@@ -2892,10 +2915,6 @@ function buildApiParams() {
 
     // Process each filter
     Object.keys(currentState.filters).forEach(filterKey => {
-        // When variant colour is active, do not send primaryColour[]
-        if (filterKey === 'primaryColour' && currentState.color) {
-            return;
-        }
         const filterValues = currentState.filters[filterKey];
         // Ensure filterValues is an array
         const values = Array.isArray(filterValues) ? filterValues : [];
@@ -2932,13 +2951,7 @@ function buildApiParams() {
 
     // Variant colour param (server-side filter by any matching variant)
     if (currentState.color) {
-        params.color = currentState.color;
-    }
-
-    // Brand filter param
-    if (currentState.brand) {
-        params['brand[]'] = [currentState.brand];
-        console.log('🏷️ Adding brand to API params:', currentState.brand);
+        params.colour = currentState.color;
     }
 
     // Log the final params we will send to the API
@@ -2948,6 +2961,9 @@ function buildApiParams() {
     } catch (e) {
         console.log('🔧 buildApiParams() -> Final params:', params);
     }
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:buildApiParams:FINAL',message:'Final API params',data:{params:params,hasBrand:!!params.brand},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B3'})}).catch(()=>{});
+    // #endregion
     
     return params;
 }
@@ -2958,20 +2974,12 @@ let pendingRequest = null;
 let abortController = null;
 
 async function fetchProducts() {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2537',message:'fetchProducts() ENTRY',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
-    
     // Note: Loader is already shown by renderProducts() before calling fetchProducts()
     // Only show loader here if it wasn't already shown (safety check)
     const grid = document.getElementById('productsGrid');
     if (grid && !grid.querySelector('.products-loader')) {
         showLoader();
     }
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2542',message:'fetchProducts() AFTER showLoader() check',data:{timestamp:Date.now(),hasLoader:!!grid?.querySelector('.products-loader')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
     
     // If a request is already in progress, cancel it and start a new one
     // This ensures we always use the latest parameters
@@ -3028,9 +3036,6 @@ async function fetchProducts() {
         const queryString = queryParts.join('&');
         const fullUrl = `${baseUrl}${queryString ? '?' + queryString : ''}`;
         
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2563',message:'API CALL TRIGGERED',data:{url:fullUrl,params:params,hasPriceMin:'priceMin' in params,hasPriceMax:'priceMax' in params,priceMinValue:params.priceMin,priceMaxValue:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         // Log the API call
         console.log('🚀 API CALL TRIGGERED:', {
             method: 'GET',
@@ -3054,37 +3059,56 @@ async function fetchProducts() {
             data = await response.json();
         }
         
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2606',message:'API RESPONSE RECEIVED',data:{total:data?.total,itemsCount:data?.items?.length||0,hasItems:!!data?.items,priceRange:data?.priceRange,firstItemPrice:data?.items?.[0]?.price},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         console.log('✅ API RESPONSE RECEIVED:', {
             total: data && data.total,
             itemsCount: (data && data.items && data.items.length) || 0,
             priceRange: data && data.priceRange,
+            page: data && data.page,
+            limit: data && data.limit,
+            expectedLimit: currentState.limit,
             timestamp: new Date().toISOString()
         });
+        
+        // Debug: Verify limit matches (only warn if it's not the last page)
+        const isLastPage = data && data.total && currentState.limit && 
+                          (data.page >= Math.ceil(data.total / currentState.limit));
+        if (data && data.items && data.items.length !== (data.limit || currentState.limit) && !isLastPage) {
+            console.warn('⚠️ API returned fewer items than requested (this is normal if filters reduce results):', {
+                requestedLimit: currentState.limit,
+                apiReturnedLimit: data.limit,
+                actualItemsCount: data.items.length,
+                page: data.page,
+                total: data.total,
+                note: 'This is expected when filters reduce available products'
+            });
+        }
         
         // Update state with response data
         currentState.total = data.total || 0;
         currentState.page = data.page || currentState.page;
-        currentState.limit = data.limit || currentState.limit;
+        // DO NOT overwrite currentState.limit with API's returned limit
+        // Keep the user's requested limit so pagination and UI stay consistent
+        // The API might return fewer items, but we should still use the requested limit for calculations
+        // currentState.limit = data.limit || currentState.limit; // REMOVED - keep user's requested limit
+        
+        // Store priceRange from API response to update slider range
+        // This represents the min/max prices available in the current filtered results
+        if (data.priceRange) {
+            currentState.apiPriceRange = {
+                min: data.priceRange.min || 0,
+                max: data.priceRange.max || 0
+            };
+            console.log('💰 API priceRange stored:', currentState.apiPriceRange);
+        } else {
+            console.log('⚠️ API response has no priceRange');
+        }
         
         // NOTE: Do NOT set priceMin/priceMax from data.priceRange
         // data.priceRange is metadata about available prices in filtered results,
         // NOT the user's selected price filter. Setting it here would overwrite
         // the user's price filter selection every time products are fetched.
         
-        let items = data.items || [];
-        
-        // Brand filter is now handled server-side via brand[] parameter
-        // The API filters products by brand, returning only matching products
-        if (currentState.brand) {
-            console.log('🏷️ Brand filter applied server-side:', currentState.brand, '- Total:', data.total);
-        }
-        
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2623',message:'fetchProducts returning items',data:{itemsCount:items.length,total:data?.total,firstItemPrice:items[0]?.price,priceMinInParams:params.priceMin,priceMaxInParams:params.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
+        const items = data.items || [];
         return items;
         } catch (error) {
             // Don't log errors for aborted requests
@@ -3122,79 +3146,274 @@ async function fetchProducts() {
     }
 }
 
-// Fetch filter counts
+// Fetch filter counts and render dynamic filters
 async function fetchFilterCounts() {
-    // Intentionally disabled: swatch badge numbers are not reliable right now.
-    return;
+    try {
+        // Build query params for filters API (same as product API)
+        const params = new URLSearchParams();
+        
+        // Determine which filters API to use: brand-specific or general
+        let filterApiUrl;
+        
+        if (currentState.brand) {
+            // Use brand-specific filters API: /api/filters/brands/{brand}/filters
+            filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(currentState.brand)}/filters`;
+            console.log('🏷️ Using brand-specific filters API for:', currentState.brand);
+        } else {
+            // Use general products filters API
+            filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
+            
+            // Add productType if set
+            if (currentState.productType) {
+                params.append('productType', currentState.productType);
+            } else if (currentState.category && currentState.category !== 'all') {
+                const apiCategoryName = getApiCategoryName(currentState.category);
+                if (apiCategoryName) {
+                    params.append('productType', apiCategoryName);
+                }
+            }
+        }
+        
+        // Add search query if present
+        if (currentState.search && currentState.search.trim()) {
+            params.append('q', currentState.search.trim());
+        }
+        
+        // Add price range if set
+        if (currentState.priceMin !== null) {
+            params.append('priceMin', currentState.priceMin);
+        }
+        if (currentState.priceMax !== null) {
+            params.append('priceMax', currentState.priceMax);
+        }
+        
+        // Add colour filter if set
+        if (currentState.color) {
+            params.append('colour', currentState.color);
+        }
+        
+        // Add quick filters
+        if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
+            currentState.filters.quickFilters.forEach(flag => {
+                const mappedFlag = FILTER_MAPPINGS.quickFilter?.[flag] || flag;
+                params.append('flag[]', mappedFlag);
+            });
+        }
+        
+        const queryString = params.toString();
+        const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
+        
+        console.log('📊 Fetching filter counts from:', url);
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Filter API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('📊 Filter counts received:', data);
+        
+        if (data && data.filters) {
+            // Render dynamic filters from API response
+            renderDynamicFilters(data.filters);
+        }
+    } catch (err) {
+        console.error('❌ Error fetching filter counts:', err);
+        // Keep static fallback filters on error
+    }
 }
 
-// Update filter counts in sidebar
-function updateFilterCounts(counts) {
-    if (!counts) return;
+// Filter display configuration
+const FILTER_CONFIG = {
+    gender: { title: 'Gender', order: 1, stateKey: 'gender' },
+    ageGroup: { title: 'Age Group', order: 2, stateKey: 'ageGroup' },
+    brand: { title: 'Brand', order: 3, stateKey: 'brand' },
+    productType: { title: 'Product Type', order: 4, stateKey: 'productType' },
+    sleeve: { title: 'Sleeve', order: 5, stateKey: 'sleeve' },
+    neckline: { title: 'Neckline', order: 6, stateKey: 'neckline' },
+    accreditations: { title: 'Accreditations', order: 7, stateKey: 'accreditations' },
+    primaryColour: { title: 'Primary Colour', order: 8, stateKey: 'primaryColour', isColorSwatch: true },
+    colourShade: { title: 'Colour Shade', order: 9, stateKey: 'colourShade' },
+    style: { title: 'Style', order: 10, stateKey: 'style' },
+    feature: { title: 'Features', order: 11, stateKey: 'feature' },
+    size: { title: 'Size', order: 12, stateKey: 'size' },
+    fabric: { title: 'Fabric', order: 13, stateKey: 'fabric' },
+    weight: { title: 'Weight (GSM)', order: 14, stateKey: 'weight' },
+    fit: { title: 'Fit', order: 15, stateKey: 'fit' },
+    sector: { title: 'Related Sector', order: 16, stateKey: 'sector' },
+    sport: { title: 'Related Sport', order: 17, stateKey: 'sport' },
+    tag: { title: 'Tag', order: 18, stateKey: 'tag' },
+    effect: { title: 'Effect', order: 19, stateKey: 'effect' }
+};
 
-    const titleByKey = {
-        gender: 'Gender',
-        ageGroup: 'Age Group',
-        sleeve: 'Sleeve',
-        neckline: 'Neckline',
-        accreditations: 'Accreditations',
-        primaryColour: 'Primary Colour',
-        colourShade: 'Colour Shade',
-        style: 'Style',
-        feature: 'Features',
-        size: 'Size',
-        fabric: 'Fabric',
-        weight: 'Weight (GSM)',
-        fit: 'Fit',
-        sector: 'Related Sector',
-        sport: 'Related Sport',
-        tag: 'Tag',
-        effect: 'Effect'
-    };
+// Color swatch CSS colors mapping
+const COLOR_SWATCH_MAP = {
+    'black': '#111827',
+    'blue': '#2563eb',
+    'grey': '#6b7280',
+    'green': '#16a34a',
+    'white': '#ffffff',
+    'red': '#dc2626',
+    'pink': '#ec4899',
+    'yellow': '#facc15',
+    'neutral': '#d1d5db',
+    'purple': '#7c3aed',
+    'orange': '#f97316',
+    'brown': '#92400e',
+    'pattern': 'linear-gradient(135deg, #9ca3af, #e5e7eb)',
+    'other': 'linear-gradient(135deg, #9ca3af, #e5e7eb)'
+};
 
-    const contentByTitle = new Map();
-    document.querySelectorAll('.filter-expandable-row').forEach(row => {
-        const h4 = row.querySelector('h4');
-        const title = h4?.textContent?.trim();
-        const content = row.nextElementSibling;
-        if (!title) return;
-        if (!content || !content.classList.contains('filter-expandable-content')) return;
-        contentByTitle.set(title.toLowerCase(), content);
+// Render dynamic filters from API data
+function renderDynamicFilters(filters) {
+    const container = document.getElementById('dynamicFiltersContainer');
+    if (!container) {
+        console.error('❌ dynamicFiltersContainer not found');
+        return;
+    }
+
+    // Save current checked states before rebuilding
+    const checkedStates = {};
+    container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        const filterKey = cb.closest('[data-filter-key]')?.dataset.filterKey;
+        if (filterKey) {
+            if (!checkedStates[filterKey]) checkedStates[filterKey] = [];
+            checkedStates[filterKey].push(cb.value);
+        }
     });
 
-    const escapeSelectorValue = (value) => {
-        if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(value);
-        return String(value).replace(/"/g, '\\"');
-    };
+    // Also get checked states from currentState.filters
+    Object.keys(currentState.filters).forEach(key => {
+        if (Array.isArray(currentState.filters[key]) && currentState.filters[key].length > 0) {
+            checkedStates[key] = currentState.filters[key];
+        }
+    });
 
-    Object.entries(counts).forEach(([apiKey, bucket]) => {
-        if (!bucket || typeof bucket !== 'object') return;
-        const title = titleByKey[apiKey] || apiKey;
-        const filterContent = contentByTitle.get(String(title).toLowerCase()) || contentByTitle.get(String(apiKey).toLowerCase());
-        if (!filterContent) return;
+    // Sort filter keys by configured order
+    const sortedKeys = Object.keys(filters).sort((a, b) => {
+        const orderA = FILTER_CONFIG[a]?.order || 99;
+        const orderB = FILTER_CONFIG[b]?.order || 99;
+        return orderA - orderB;
+    });
 
-        Object.entries(bucket).forEach(([slug, count]) => {
-            const escapedSlug = escapeSelectorValue(slug);
-            const checkbox = filterContent.querySelector(`input[value="${escapedSlug}"]`);
-            if (!checkbox) return;
+    let html = '';
 
-            const label = checkbox.closest('label');
-            if (!label) return;
+    sortedKeys.forEach(filterKey => {
+        const filterData = filters[filterKey];
+        const config = FILTER_CONFIG[filterKey] || { title: filterKey, stateKey: filterKey };
+        
+        // Skip if no options
+        if (!filterData || !Array.isArray(filterData) || filterData.length === 0) return;
 
-            let countSpan = label.querySelector('.count');
-            if (!countSpan) {
-                countSpan = document.createElement('span');
-                countSpan.className = 'count';
-                label.appendChild(countSpan);
-            }
+        const isColorSwatch = config.isColorSwatch;
+        const checkedValues = checkedStates[config.stateKey] || checkedStates[filterKey] || [];
 
-            if (label.classList.contains('color-swatch-item')) {
-                countSpan.textContent = String(count);
+        // Build filter row
+        html += `<div class="filter-expandable-row" data-filter-key="${filterKey}">
+            <h4>${config.title}</h4>
+            <span class="filter-expandable-arrow">›</span>
+        </div>
+        <div class="filter-expandable-content">`;
+
+        if (isColorSwatch) {
+            // Color swatch grid - don't show counts for primary colour
+            html += `<div class="filter-color-swatches" aria-label="${config.title}">`;
+            filterData.forEach(item => {
+                const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
+                const colorValue = COLOR_SWATCH_MAP[item.slug] || '#e5e7eb';
+                const isPattern = item.slug === 'pattern';
+                const swatchStyle = colorValue.includes('gradient') 
+                    ? `background: ${colorValue};` 
+                    : `background-color: ${colorValue};`;
+                const borderStyle = item.slug === 'white' ? 'border-color: #d1d5db;' : '';
+                
+                html += `<label class="color-swatch-item" data-color="${item.slug}" title="${item.name}">
+                    <input type="checkbox" value="${item.slug}" ${isChecked}>
+                    <span class="color-swatch-circle" style="${swatchStyle}${borderStyle}" aria-hidden="true"></span>
+                    <span class="color-swatch-name">${item.name}</span>
+                </label>`;
+            });
+            html += `</div>`;
             } else {
-                countSpan.textContent = `(${count})`;
-            }
+            // Regular checkbox list
+            html += `<div class="filter-checkbox-list">`;
+            filterData.forEach(item => {
+                const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
+                html += `<label class="filter-checkbox-item">
+                    <input type="checkbox" value="${item.slug}" ${isChecked}>
+                    <span>${item.name}</span>
+                    ${item.count > 0 ? `<span class="count">(${item.count})</span>` : ''}
+                </label>`;
+            });
+            html += `</div>`;
+        }
+
+        html += `</div>`;
+    });
+
+    // Update container
+    container.innerHTML = html;
+
+    // Re-attach event listeners for expand/collapse
+    container.querySelectorAll('.filter-expandable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            this.classList.toggle('expanded');
         });
     });
+
+    // Re-attach checkbox change handlers
+    setupDynamicFilterCheckboxes();
+
+    console.log('✅ Dynamic filters rendered successfully');
+}
+
+// Setup event handlers for dynamically rendered filter checkboxes
+function setupDynamicFilterCheckboxes() {
+    const container = document.getElementById('dynamicFiltersContainer');
+    if (!container) return;
+
+    container.querySelectorAll('.filter-expandable-row[data-filter-key]').forEach(row => {
+        const filterKey = row.dataset.filterKey;
+        const config = FILTER_CONFIG[filterKey];
+        const stateKey = config?.stateKey || filterKey;
+        const content = row.nextElementSibling;
+        
+        if (!content || !content.classList.contains('filter-expandable-content')) return;
+
+        content.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            if (cb.dataset.dynamicListenerAttached) return;
+            cb.dataset.dynamicListenerAttached = 'true';
+
+            cb.addEventListener('change', async () => {
+                // Get all checked values in this section
+                const checkedValues = Array.from(
+                    content.querySelectorAll('input[type="checkbox"]:checked')
+                ).map(c => c.value);
+
+                // Update state
+                if (!currentState.filters[stateKey]) {
+                    currentState.filters[stateKey] = [];
+                }
+                currentState.filters[stateKey] = checkedValues;
+
+                // Clear variant color filter when using primaryColour[] (they're mutually exclusive)
+                if (filterKey === 'primaryColour') {
+                    currentState.color = '';
+                }
+
+                currentState.page = 1;
+                updateURL();
+                await renderProducts();
+                // Don't re-fetch filter counts on checkbox change to avoid infinite loop
+            });
+        });
+    });
+}
+
+// Legacy updateFilterCounts - now handled by renderDynamicFilters
+function updateFilterCounts(counts) {
+    // This function is now deprecated - dynamic filters are rendered by renderDynamicFilters
+    console.log('ℹ️ updateFilterCounts called - filters are now rendered dynamically');
 }
 
 // Update URL without reload
@@ -3202,21 +3421,28 @@ function updateURL() {
     const url = new URL(window.location);
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Check if productType or accreditation is in URL/state
+    // Check if productType, brand, or accreditation is in URL/state
     const hasProductType = currentState.productType !== null && currentState.productType !== undefined;
+    const hasBrand = currentState.brand !== null && currentState.brand !== undefined;
     const accreditationParam = urlParams.get('accreditation');
     // Check if recycled is in quickFilters (from accreditation=recycled URL param)
     const hasRecycledFlag = currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled');
     
-    if (hasProductType || accreditationParam || hasRecycledFlag) {
-        // When productType or accreditation is present, only include essential parameters
-        if (hasProductType) {
+    if (hasProductType || hasBrand || accreditationParam || hasRecycledFlag) {
+        // When productType, brand, or accreditation is present, only include essential parameters
+        if (hasBrand) {
+            url.searchParams.set('brand', currentState.brand);
+            url.searchParams.delete('productType');
+            url.searchParams.delete('accreditation');
+        } else if (hasProductType) {
             url.searchParams.set('productType', currentState.productType);
             url.searchParams.delete('accreditation');
+            url.searchParams.delete('brand');
         }
         if (accreditationParam || hasRecycledFlag) {
             url.searchParams.set('accreditation', 'recycled');
             url.searchParams.delete('productType');
+            url.searchParams.delete('brand');
         }
         
         // Only add page if it's not 1
@@ -3244,6 +3470,7 @@ function updateURL() {
     } else {
         // Normal category-based navigation - include all params
         url.searchParams.delete('productType');
+        url.searchParams.delete('brand');
     url.searchParams.set('category', currentState.category);
     url.searchParams.set('page', currentState.page);
     if (currentState.limit && currentState.limit !== 28) {
@@ -3324,54 +3551,6 @@ async function getAccreditationName(slug) {
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
-}
-
-/**
- * Show brand banner above product grid
- * @param {string} brandSlug - Brand slug from URL
- * @param {string} brandName - Brand display name
- */
-function showBrandBanner(brandSlug, brandName) {
-    // Check if banner already exists
-    if (document.getElementById('brandBanner')) return;
-    
-    // Brand logo mappings
-    const brandLogos = {
-        'adidas': '../brandedukv15-child/assets/images/brands/adidas.jpg',
-        'bc': '../brandedukv15-child/assets/images/brands/bandc-collection.png',
-        'build-your-brand': '../brandedukv15-child/assets/images/brands/build-your-brand.png',
-        'build-your-brand-basic': '../brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg',
-        'brandit': '../brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg',
-        'comfort-colors': '../brandedukv15-child/assets/images/brands/comfort-colors.webp',
-        'new-morning-studios': '../brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png',
-        'nimbus': '../brandedukv15-child/assets/images/brands/nimbus2020.webp',
-        'nutshell': '../brandedukv15-child/assets/images/brands/nutshell-bag2020.webp',
-        'ogio': '../brandedukv15-child/assets/images/brands/ogio2020.webp',
-        'rhino': '../brandedukv15-child/assets/images/brands/rhino2020.jpg',
-        'ribbon': '../brandedukv15-child/assets/images/brands/ribbon-collection.png',
-        'tridri': '../brandedukv15-child/assets/images/brands/tridri2020.webp',
-        'tri-dri': '../brandedukv15-child/assets/images/brands/tridri.webp',
-        'under-armour': '../brandedukv15-child/assets/images/brands/under-armour.webp',
-        'wombat': '../brandedukv15-child/assets/images/brands/wombat.jpg'
-    };
-    
-    const logoUrl = brandLogos[brandSlug] || '';
-    
-    // Create banner HTML
-    const banner = document.createElement('div');
-    banner.id = 'brandBanner';
-    banner.className = 'brand-banner';
-    banner.innerHTML = `
-        <div class="brand-banner-inner">
-            ${logoUrl ? `<img src="${logoUrl}" alt="${brandName}" class="brand-banner-logo">` : ''}
-        </div>
-    `;
-    
-    // Insert banner before products grid
-    const productsHeader = document.querySelector('.products-header');
-    if (productsHeader) {
-        productsHeader.parentNode.insertBefore(banner, productsHeader.nextSibling);
-    }
 }
 
 /**
@@ -3519,20 +3698,9 @@ function getPriceRange() {
 // Show beautiful loader
 function showLoader() {
     const startTime = performance.now();
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3029',message:'showLoader() ENTRY',data:{timestamp:Date.now(),perfTime:startTime,stackTrace:new Error().stack?.split('\n').slice(0,5).join('|')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
-    
     const grid = document.getElementById('productsGrid');
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3034',message:'showLoader() grid check',data:{gridExists:!!grid,gridId:grid?.id,gridHasChildren:grid?.children?.length,gridInnerHTMLBefore:grid?.innerHTML?.substring(0,50)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
-    
     if (!grid) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3040',message:'showLoader() EARLY RETURN - grid not found',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
         return;
     }
     
@@ -3564,9 +3732,6 @@ function showLoader() {
         (rect.top < 0 && rect.bottom > window.innerHeight)
     ) : false;
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3063',message:'showLoader() AFTER innerHTML',data:{loaderExists:!!loaderEl,display:computedStyle?.display,visibility:computedStyle?.visibility,opacity:computedStyle?.opacity,zIndex:computedStyle?.zIndex,position:computedStyle?.position,isInViewport:isInViewport,rectTop:rect?.top,rectLeft:rect?.left,windowHeight:window.innerHeight,windowWidth:window.innerWidth,perfTime:performance.now(),elapsed:performance.now()-startTime,scrolledIntoView:false},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
-    // #endregion
 }
 
 // Render products (now uses API data) - with debouncing to prevent race conditions
@@ -3579,9 +3744,6 @@ async function renderProducts() {
     
     // If a render is already in progress, queue this one
     if (renderProductsPending) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3088',message:'renderProducts() QUEUED - already in progress',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-        // #endregion
         // Wait for current render to complete, then retry
         return renderProductsPending.then(() => {
             return renderProducts();
@@ -3591,10 +3753,6 @@ async function renderProducts() {
     renderProductsCallCount++;
     const callId = renderProductsCallCount;
     const renderStartTime = performance.now();
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3098',message:'renderProducts() ENTRY',data:{callId:callId,timestamp:Date.now(),perfTime:renderStartTime,isLoading:isLoading,activeCalls:renderProductsCallCount,hasPending:!!renderProductsPending},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-    // #endregion
-    
     // CRITICAL: Set pending flag IMMEDIATELY (synchronously) to prevent race condition
     // Create a promise that will be resolved when render completes
     let resolvePending, rejectPending;
@@ -3639,9 +3797,6 @@ async function renderProductsInternal(renderStartTime, callId) {
     
     // ALWAYS show loader before fetching products - better UX
     const beforeLoaderTime = performance.now();
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3086',message:'renderProducts() BEFORE showLoader()',data:{gridExists:!!grid,gridChildrenCount:grid.children.length,hasLoader:!!grid.querySelector('.products-loader'),perfTime:beforeLoaderTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     showLoader();
     const afterLoaderTime = performance.now();
     
@@ -3665,53 +3820,36 @@ async function renderProductsInternal(renderStartTime, callId) {
     });
     const rafEndTime = performance.now();
     
-    // #region agent log
-    const loaderAfterRAF = grid.querySelector('.products-loader');
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3102',message:'renderProducts() AFTER RAF',data:{hasLoader:!!loaderAfterRAF,rafDuration:rafEndTime-rafStartTime,loaderToRAF:rafStartTime-afterLoaderTime,perfTime:rafEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
-    // #endregion
-    
     // Fetch new products (loader is already showing and rendered)
     const fetchStartTime = performance.now();
     const products = await fetchProducts();
     const fetchEndTime = performance.now();
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3115',message:'renderProducts() fetchProducts() COMPLETE',data:{productsLength:products?.length,hasLoader:!!grid.querySelector('.products-loader'),fetchDuration:fetchEndTime-fetchStartTime,totalElapsed:fetchEndTime-renderStartTime,perfTime:fetchEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2995',message:'renderProducts received products from fetchProducts',data:{productsLength:products?.length,productsIsArray:Array.isArray(products),productsType:typeof products},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    
     // Guard against undefined products
     if (!products || !Array.isArray(products)) {
         console.error('❌ fetchProducts() returned invalid data:', products);
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2998',message:'renderProducts INVALID products data - returning early',data:{products:products},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         return;
     }
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3003',message:'renderProducts products array is valid',data:{productsLength:products.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     console.log(`📦 Received ${products.length} products from API`);
     
     // Update title and count (only after data arrives)
     if (categoryTitleEl) {
-        // Check if productType or accreditation or brand is in URL
+        // Check if productType, accreditation, or brand is in URL
         const urlParams = new URLSearchParams(window.location.search);
         const productTypeParam = urlParams.get('productType');
         const accreditationParam = urlParams.get('accreditation');
         const brandParam = urlParams.get('brand');
         
-        if (brandParam && currentState.brand) {
-            // Brand filter active - show brand name as title
-            categoryTitleEl.textContent = currentState.brand;
+        if (brandParam) {
+            // Format brand name nicely for display
+            const brandDisplayName = brandParam
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            categoryTitleEl.textContent = brandDisplayName;
             categoryTitleEl.style.opacity = '1';
-            
-            // Also show brand banner if not already present
-            showBrandBanner(brandParam, currentState.brand);
+            console.log('🏷️ Showing brand title:', brandDisplayName);
         } else if (accreditationParam) {
             // Fetch accreditation name
             getAccreditationName(accreditationParam).then(name => {
@@ -3759,19 +3897,17 @@ async function renderProductsInternal(renderStartTime, callId) {
     // Update pagination
     updatePagination();
     
+    // Update price slider range based on API response
+    updatePriceSliderRangeFromAPI();
+    
     // Now replace the grid with new products (only after data arrives)
     const clearStartTime = performance.now();
     const loaderBeforeClear = grid.querySelector('.products-loader');
     const loaderVisibleBeforeClear = loaderBeforeClear ? window.getComputedStyle(loaderBeforeClear).display !== 'none' : false;
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3189',message:'renderProducts() BEFORE clearing grid',data:{hasLoader:!!loaderBeforeClear,loaderVisible:loaderVisibleBeforeClear,productsLength:products.length,timeSinceRenderStart:clearStartTime-renderStartTime,perfTime:clearStartTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
+    const gridChildrenBeforeClear = grid.children.length;
     grid.innerHTML = '';
     const clearEndTime = performance.now();
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3193',message:'renderProducts() AFTER clearing grid',data:{gridInnerHTML:grid.innerHTML,productsLength:products.length,clearDuration:clearEndTime-clearStartTime,loaderVisibleDuration:clearStartTime-renderStartTime,perfTime:clearEndTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
+    const gridChildrenAfterClear = grid.children.length;
     
     if (products.length === 0) {
         console.log('⚠️ No products found matching criteria');
@@ -3780,24 +3916,47 @@ async function renderProductsInternal(renderStartTime, callId) {
     }
     
     console.log(`✅ Rendering ${products.length} products to grid...`);
+    console.log('📊 Rendering details:', {
+        productsReceived: products.length,
+        expectedLimit: currentState.limit,
+        currentPage: currentState.page,
+        totalProducts: currentState.total
+    });
     
-    products.forEach((product, index) => {
+    // Safety check: Only render up to the limit (in case API returns more)
+    const productsToRender = products.slice(0, currentState.limit);
+    if (products.length > currentState.limit) {
+        console.warn('⚠️ API returned more products than limit:', {
+            received: products.length,
+            limit: currentState.limit,
+            rendering: productsToRender.length
+        });
+    }
+    
+    const renderedCount = productsToRender.length;
+    let productsFilteredOut = 0;
+    
+    productsToRender.forEach((product, index) => {
         // Transform API product to frontend format
         const colors = product.colors || [{ name: 'Default', main: product.image }];
 
-        // If a variant colour filter is active, set the matching variant as default but keep all colors visible
+        // If a variant colour filter is active, force the matching (or closest) variant
+        // NOTE: The API already filters by color, so we don't need to exclude products here.
+        // We just need to select the best matching color variant for display.
         let displayColors = colors;
         let displayColor = colors[0] || { name: 'Default', main: product.image };
-        let activeColorIndex = 0;
         if (currentState.color) {
             const matched = pickBestColorVariant(product, currentState.color);
-            if (!matched) {
-                return; // Exclude product if no suitable variant match
+            // Don't filter out products - API already filtered by color
+            // Just use the matched variant for display, or fall back to first color
+            if (matched) {
+                displayColors = [matched];
+                displayColor = matched;
+            } else {
+                // If no match found (shouldn't happen if API filtered correctly), use first color
+                displayColors = colors;
+                displayColor = colors[0] || { name: 'Default', main: product.image };
             }
-            displayColor = matched;
-            // Find the index of the matched color in the full colors array
-            activeColorIndex = colors.findIndex(c => c === matched || (c.name === matched.name && c.main === matched.main));
-            if (activeColorIndex < 0) activeColorIndex = 0;
         }
         
         // Display should use the lowest-discount tier (smallest quantity break).
@@ -3811,10 +3970,10 @@ async function renderProductsInternal(renderStartTime, callId) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        // Generate colors for this card (all colors visible, filtered color is active)
+        // Generate colors for this card (single dot when filtering by colour)
         const colorsHtml = displayColors.map((c, i) => {
             const imgUrl = getVariantImage(c, product);
-            const isActive = i === activeColorIndex ? 'active' : '';
+            const isActive = i === 0 ? 'active' : '';
             return `<button type="button" class="color-dot ${isActive}" data-color="${c.name}" data-main="${imgUrl}" style="background-image: url('${imgUrl}');" title="${c.name}"></button>`;
         }).join('');
         
@@ -3897,6 +4056,12 @@ async function renderProductsInternal(renderStartTime, callId) {
                 if (progressBar) progressBar.style.width = progress + '%';
             });
         }
+
+        // When filtering by colour, hide the slider controls (single variant shown)
+        if (currentState.color) {
+            const controls = card.querySelector('.color-slider-controls');
+            if (controls) controls.style.display = 'none';
+        }
         
         // Card click - go to product detail
         card.addEventListener('click', () => {
@@ -3914,7 +4079,26 @@ async function renderProductsInternal(renderStartTime, callId) {
         grid.appendChild(card);
     });
     
-    console.log(`✅ Successfully rendered ${products.length} products to grid!`);
+    const gridChildrenAfterRender = grid.children.length;
+    
+    // Warn if fewer products rendered than expected (only if not last page)
+    if (gridChildrenAfterRender < currentState.limit) {
+        const isLastPage = currentState.page >= Math.ceil(currentState.total / currentState.limit);
+        // Only warn if it's not the last page (last page having fewer items is normal)
+        if (!isLastPage) {
+            console.warn('⚠️ Fewer products rendered than limit (this is normal if filters reduce results):', {
+                expected: currentState.limit,
+                rendered: gridChildrenAfterRender,
+                filteredOut: productsFilteredOut,
+                receivedFromAPI: products.length,
+                page: currentState.page,
+                total: currentState.total,
+                note: 'This is expected when filters reduce available products'
+            });
+        }
+    }
+    
+    console.log(`✅ Successfully rendered ${renderedCount} products to grid!`);
 }
 
 // Toggle switch functionality for special filters
@@ -3979,9 +4163,6 @@ document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
             updateURL();
             
             console.log('🔄 Calling renderProducts() to trigger API call...');
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3372',message:'QUICK FILTER calling renderProducts()',data:{filterValue:filterValue,isPressed:isPressed,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-            // #endregion
             await renderProducts();
             await fetchFilterCounts();
         }
@@ -4025,42 +4206,34 @@ document.querySelector('.clear-all-btn')?.addEventListener('click', async functi
     updateURL();
     await renderProducts();
     await fetchFilterCounts();
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'About to call initPriceRangeSlider (without await)',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     initPriceRangeSlider().then(() => {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'initPriceRangeSlider COMPLETED',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.log('✅ initPriceRangeSlider completed');
     }).catch(err => {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3270',message:'initPriceRangeSlider FAILED',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.error('❌ initPriceRangeSlider failed:', err);
     });
 });
 
 // Listen for VAT state changes from main.js (legacy)
 document.addEventListener('vatStateChanged', function(e) {
-    renderProducts(); // Re-render products with new VAT prices
+    console.log('💰 vatStateChanged event received');
+    updatePrices(); // Update existing prices immediately (no API call needed)
     updatePriceRangeDisplay();
 });
 
 // Listen for VAT state changes from vat-toggle.js
 document.addEventListener('brandeduk:vat-change', function(e) {
     console.log('💰 VAT toggle changed, updating prices...');
-    updatePrices(); // Update existing prices immediately (fast)
+    updatePrices(); // Update existing prices immediately (no API call needed)
     updatePriceRangeDisplay(); // Update price range display
-    renderProducts(); // Re-render products with new VAT prices (async, slower)
+    // Note: No renderProducts() call - VAT is a display-only change, not a filter
 });
 
 // Dual Price Range Slider
+// Flag to prevent duplicate event listeners
+let priceSliderEventListenersAttached = false;
+
 async function initPriceRangeSlider() {
     try {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3319',message:'initPriceRangeSlider ENTRY',data:{timestamp:Date.now(),stack:new Error().stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.log('🎚️ Initializing price range slider...');
     const sliderMin = document.getElementById('priceSliderMin');
     const sliderMax = document.getElementById('priceSliderMax');
@@ -4069,37 +4242,37 @@ async function initPriceRangeSlider() {
     const inputMin = document.getElementById('priceInputMin');
     const inputMax = document.getElementById('priceInputMax');
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2707',message:'Element existence check',data:{sliderMinExists:!!sliderMin,sliderMaxExists:!!sliderMax,sliderMinId:sliderMin?.id,sliderMaxId:sliderMax?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    
     if (!sliderMin || !sliderMax) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2708',message:'Sliders NOT FOUND - early return',data:{sliderMin:!!sliderMin,sliderMax:!!sliderMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         console.error('❌ Price sliders not found!', { sliderMin: !!sliderMin, sliderMax: !!sliderMax });
         return;
     }
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2712',message:'Sliders found - continuing',data:{sliderMinDisabled:sliderMin.disabled,sliderMaxDisabled:sliderMax.disabled,sliderMinPointerEvents:getComputedStyle(sliderMin).pointerEvents,sliderMaxPointerEvents:getComputedStyle(sliderMax).pointerEvents},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-    // #endregion
     console.log('✅ Price sliders found');
     
     // Declare variables in function scope
     let catalogMinPrice = 14;
     let catalogMaxPrice = 65;
     
-    // Fetch price range from API (without filters to get full range)
+    // Use priceRange from API response if available (from current filtered results)
+    // Otherwise fetch from API (without filters to get full catalog range)
     try {
-        console.log('📡 Fetching price range from API...');
-        const params = { limit: 1 }; // Just to get priceRange metadata
-        const data = await BrandedAPI.getProducts(params);
-        const priceRange = data.priceRange || { min: 14, max: 65 };
+        let priceRange = null;
+        
+        // First, check if we have priceRange from the latest API response
+        if (currentState.apiPriceRange) {
+            priceRange = currentState.apiPriceRange;
+            console.log('📡 Using price range from latest API response:', priceRange);
+        } else {
+            // Fallback: fetch price range from API (without filters to get full range)
+            console.log('📡 Fetching price range from API (no cached range)...');
+            const params = { limit: 1 }; // Just to get priceRange metadata
+            const data = await BrandedAPI.getProducts(params);
+            priceRange = data.priceRange || { min: 14, max: 65 };
+        }
         
         catalogMinPrice = Math.floor(priceRange.min || 14);
         catalogMaxPrice = Math.ceil(priceRange.max || 65);
-        console.log('✅ Price range fetched:', { catalogMinPrice, catalogMaxPrice });
+        console.log('✅ Price range determined:', { catalogMinPrice, catalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
         
     sliderMin.disabled = false;
     sliderMax.disabled = false;
@@ -4191,9 +4364,6 @@ async function initPriceRangeSlider() {
     
     // Handle price slider change - call API (for change events - when user releases)
     function handlePriceSliderChange() {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3421',message:'handlePriceSliderChange CALLED',data:{sliderMinValue:sliderMin?.value,sliderMaxValue:sliderMax?.value,sliderMinExists:!!sliderMin,sliderMaxExists:!!sliderMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         console.log('🎚️ handlePriceSliderChange() called');
         
         // Update UI first
@@ -4202,95 +4372,54 @@ async function initPriceRangeSlider() {
         let minVal = parseInt(sliderMin.value);
         let maxVal = parseInt(sliderMax.value);
         
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3423',message:'handlePriceSliderChange parsed values',data:{minVal:minVal,maxVal:maxVal,catalogMinPrice:catalogMinPrice,catalogMaxPrice:catalogMaxPrice},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         console.log('🎚️ Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
         
         // Update state - set to null if full range, otherwise set values
         if (minVal === catalogMinPrice && maxVal === catalogMaxPrice) {
             currentState.priceMin = null;
             currentState.priceMax = null;
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3452',message:'handlePriceSliderChange setting state to null (full range)',data:{minVal:minVal,maxVal:maxVal},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
         } else {
             currentState.priceMin = minVal;
             currentState.priceMax = maxVal;
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3457',message:'handlePriceSliderChange setting state values',data:{priceMin:currentState.priceMin,priceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
         }
         
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3460',message:'handlePriceSliderChange about to call API',data:{currentStatePriceMin:currentState.priceMin,currentStatePriceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         // Call API directly - just like filter checkboxes do
         currentState.page = 1;
         updateURL();
         console.log('🚀 Calling renderProducts()...');
         renderProducts().then(() => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3463',message:'renderProducts completed',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
             console.log('✅ renderProducts() completed');
         }).catch(err => {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3463',message:'renderProducts ERROR',data:{error:err.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
             console.error('❌ renderProducts() error:', err);
         });
         fetchFilterCounts();
     }
     
     // Simple event listeners - just call the handler on change
+    // Only attach event listeners once to prevent duplicate API calls
+    if (!priceSliderEventListenersAttached) {
     console.log('🔧 Attaching price slider event listeners...');
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3468',message:'About to attach event listeners',data:{sliderMinExists:!!sliderMin,sliderMaxExists:!!sliderMax,sliderMinId:sliderMin?.id,sliderMaxId:sliderMax?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    
     if (sliderMin) {
         sliderMin.addEventListener('change', function(e) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin change EVENT FIRED',data:{value:sliderMin.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.log('🎚️ sliderMin change event fired, value:', sliderMin.value);
             handlePriceSliderChange();
         });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
     } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin NOT FOUND',data:{error:'Element not found'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         console.error('❌ sliderMin element not found!');
     }
     
     if (sliderMax) {
         sliderMax.addEventListener('change', function(e) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax change EVENT FIRED',data:{value:sliderMax.value,type:'change'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.log('🎚️ sliderMax change event fired, value:', sliderMax.value);
             handlePriceSliderChange();
         });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax change listener ATTACHED',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
     } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax NOT FOUND',data:{error:'Element not found'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         console.error('❌ sliderMax element not found!');
     }
     
     // Also listen to 'input' events for real-time UI updates while dragging (no API call)
     if (sliderMin) {
         sliderMin.addEventListener('input', function(e) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMin input EVENT FIRED - UI only',data:{value:sliderMin.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.log('🎚️ sliderMin input event fired, value:', sliderMin.value);
             updatePriceSliderUI(); // Only update UI, don't call API
         });
@@ -4298,18 +4427,10 @@ async function initPriceRangeSlider() {
     
     if (sliderMax) {
         sliderMax.addEventListener('input', function(e) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3470',message:'sliderMax input EVENT FIRED - UI only',data:{value:sliderMax.value,type:'input'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.log('🎚️ sliderMax input event fired, value:', sliderMax.value);
             updatePriceSliderUI(); // Only update UI, don't call API
         });
     }
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:2949',message:'All event listeners attachment complete',data:{success:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    console.log('✅ All price slider event listeners attached');
     
     // Input field handlers - trigger API on change
     if (inputMin) {
@@ -4330,6 +4451,12 @@ async function initPriceRangeSlider() {
             sliderMax.value = val;
             handlePriceSliderChange(); // Call the simple handler
         });
+        }
+        
+        priceSliderEventListenersAttached = true;
+        console.log('✅ All price slider event listeners attached');
+    } else {
+        console.log('⏭️ Price slider event listeners already attached, skipping');
     }
     
     // Initialize display (without triggering API on initial load)
@@ -4350,9 +4477,6 @@ async function initPriceRangeSlider() {
     }
     if (inputMin) inputMin.value = '£' + initMinVal;
     if (inputMax) inputMax.value = '£' + initMaxVal;
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3071',message:'initPriceRangeSlider EXIT - function complete',data:{sliderMinValue:sliderMin.value,sliderMaxValue:sliderMax.value,statePriceMin:currentState.priceMin,statePriceMax:currentState.priceMax},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     console.log('✅ Price slider initialization complete');
     console.log('📊 Final slider state:', {
         sliderMinValue: sliderMin.value,
@@ -4362,12 +4486,88 @@ async function initPriceRangeSlider() {
         catalogRange: { min: catalogMinPrice, max: catalogMaxPrice }
     });
     } catch (err) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3726',message:'initPriceRangeSlider ERROR in try block',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.error('❌ Error in initPriceRangeSlider:', err);
         throw err; // Re-throw to maintain error propagation
     }
+}
+
+// Update price slider min/max range based on API response
+function updatePriceSliderRangeFromAPI() {
+    const sliderMin = document.getElementById('priceSliderMin');
+    const sliderMax = document.getElementById('priceSliderMax');
+    
+    if (!sliderMin || !sliderMax) {
+        return;
+    }
+    
+    // Check if we have priceRange from API response
+    if (!currentState.apiPriceRange) {
+        console.log('⚠️ No API price range available yet');
+        return;
+    }
+    
+    const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
+    const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
+    
+    console.log('🔄 Updating price slider range from API:', { apiMin, apiMax });
+    
+    // Update slider min/max attributes
+    sliderMin.min = apiMin;
+    sliderMin.max = apiMax;
+    sliderMax.min = apiMin;
+    sliderMax.max = apiMax;
+    
+    // Determine the target slider values
+    let currentMin, currentMax;
+    
+    // If no price filter is active (both null), reset slider to full range
+    if (currentState.priceMin === null && currentState.priceMax === null) {
+        currentMin = apiMin;
+        currentMax = apiMax;
+        console.log('🔄 No price filter active - resetting slider to full range');
+    } else {
+        // Price filter is active - preserve user's selection but clamp to valid range
+        currentMin = currentState.priceMin !== null ? currentState.priceMin : apiMin;
+        currentMax = currentState.priceMax !== null ? currentState.priceMax : apiMax;
+        
+        // Adjust values if they're outside the new range
+    if (currentMin < apiMin) currentMin = apiMin;
+    if (currentMin > apiMax) currentMin = apiMax;
+    if (currentMax < apiMin) currentMax = apiMin;
+    if (currentMax > apiMax) currentMax = apiMax;
+    }
+    
+    // Update slider values
+        sliderMin.value = currentMin;
+        sliderMax.value = currentMax;
+    
+    // Update the input fields
+    const inputMin = document.getElementById('priceInputMin');
+    const inputMax = document.getElementById('priceInputMax');
+    if (inputMin) inputMin.value = '£' + currentMin;
+    if (inputMax) inputMax.value = '£' + currentMax;
+    
+    // Update the UI display
+    updatePriceRangeDisplay();
+    
+    // Update the visual selected range
+    const rangeSelected = document.getElementById('priceRangeSelected');
+    if (rangeSelected) {
+        const percentMin = ((currentMin - apiMin) / (apiMax - apiMin)) * 100;
+        const percentMax = ((currentMax - apiMin) / (apiMax - apiMin)) * 100;
+        rangeSelected.style.left = percentMin + '%';
+        rangeSelected.style.width = (percentMax - percentMin) + '%';
+    }
+    
+    console.log('✅ Price slider range updated:', { 
+        min: apiMin, 
+        max: apiMax, 
+        currentMin, 
+        currentMax,
+        sliderMinValue: sliderMin.value,
+        sliderMaxValue: sliderMax.value,
+        priceFilterActive: currentState.priceMin !== null || currentState.priceMax !== null
+    });
 }
 
 function updatePriceRangeDisplay() {
@@ -4407,6 +4607,8 @@ function setupFilterCheckboxes() {
     const filterMap = {
         'Gender': 'gender',
         'Age Group': 'ageGroup',
+        'Brand': 'brand',
+        'Product Type': 'productType',
         'Sleeve': 'sleeve',
         'Neckline': 'neckline',
         'Accreditations': 'accreditations',
@@ -4451,35 +4653,18 @@ function setupFilterCheckboxes() {
             checkbox.addEventListener('change', async (e) => {
                 e.stopPropagation();
 
-                // Special-case: Primary Colour controls variant colour filter (single select)
+                // Primary Colour now works like other filters (using primaryColour[] array)
+                // Note: If you want single selection, uncomment the single-select logic below
                 if (filterKey === 'primaryColour') {
-                    if (checkbox.checked) {
-                        // Enforce single selection in the section
-                        content.querySelectorAll('input[type="checkbox"]').forEach(other => {
-                            if (other !== checkbox) other.checked = false;
-                        });
-                        currentState.color = slugifyColor(checkbox.value);
-                    } else {
-                        currentState.color = '';
-                    }
-
-                    // Avoid sending primaryColour[] when using variant colour
-                    currentState.filters.primaryColour = [];
-                    currentState.page = 1;
-                    updateURL();
-
-                    if (renderProductsDebounceTimer) {
-                        clearTimeout(renderProductsDebounceTimer);
-                    }
-                    renderProductsDebounceTimer = setTimeout(async () => {
-                        try {
-                            await renderProducts();
-                            await fetchFilterCounts();
-                        } catch (error) {
-                            console.error('❌ Error updating products (colour):', error);
-                        }
-                    }, 300);
-                    return;
+                    // Optional: Enforce single selection (uncomment if needed)
+                    // if (checkbox.checked) {
+                    //     content.querySelectorAll('input[type="checkbox"]').forEach(other => {
+                    //         if (other !== checkbox) other.checked = false;
+                    //     });
+                    // }
+                    
+                    // Clear variant color filter when using primaryColour[]
+                    currentState.color = '';
                 }
                 
                 console.log('🔘 FILTER CHECKBOX CLICKED:', {
@@ -4516,9 +4701,6 @@ function setupFilterCheckboxes() {
                 updateURL();
                 
                 console.log('🔄 Calling renderProducts() to trigger API call...');
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3918',message:'FILTER CHECKBOX calling renderProducts()',data:{filterKey:filterKey,checkedValues:checkedBoxes,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-                // #endregion
                 try {
                 await renderProducts();
                 await fetchFilterCounts();
@@ -4545,9 +4727,6 @@ function setupSearchInput() {
                 currentState.search = e.target.value.trim();
                 currentState.page = 1;
                 updateURL();
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3895',message:'SEARCH INPUT calling renderProducts()',data:{searchQuery:currentState.search,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-                // #endregion
                 await renderProducts();
                 await fetchFilterCounts();
             }
@@ -4574,9 +4753,6 @@ function setupSearchInput() {
                 currentState.search = e.target.value.trim();
                 currentState.page = 1;
                 updateURL();
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3922',message:'HEADER SEARCH calling renderProducts()',data:{searchQuery:currentState.search,timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-                // #endregion
                 await renderProducts();
                 await fetchFilterCounts();
             }
@@ -4586,35 +4762,25 @@ function setupSearchInput() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function() {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3902',message:'DOMContentLoaded handler STARTED',data:{documentReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     console.log('🚀 Page loaded, initializing filters and products...');
     
     // Show loader immediately when page loads - better UX
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3899',message:'DOMContentLoaded BEFORE showLoader()',data:{documentReady:document.readyState,gridExists:!!document.getElementById('productsGrid')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     showLoader();
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3902',message:'DOMContentLoaded AFTER showLoader()',data:{hasLoader:!!document.getElementById('productsGrid')?.querySelector('.products-loader')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     
     // Initialize filters first
     setupFilterCheckboxes();
     setupSearchInput();
 
-    // Sync Primary Colour UI from currentState.color
-    if (currentState.color) {
-        currentState.filters.primaryColour = [];
+    // Sync Primary Colour UI from currentState.filters.primaryColour
+    if (currentState.filters.primaryColour && currentState.filters.primaryColour.length > 0) {
         document.querySelectorAll('.filter-expandable-row').forEach(row => {
             const h4 = row.querySelector('h4');
             if (!h4 || h4.textContent.trim() !== 'Primary Colour') return;
             const content = row.nextElementSibling;
             if (!content || !content.classList.contains('filter-expandable-content')) return;
             content.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.checked = slugifyColor(cb.value) === currentState.color;
+                // Check if this checkbox value is in the primaryColour filter array
+                cb.checked = currentState.filters.primaryColour.includes(cb.value);
             });
         });
     }
@@ -4630,45 +4796,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (productsCountEl) productsCountEl.style.opacity = '0';
     
     // Load initial products (loader is already showing)
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3818',message:'About to call renderProducts',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     try {
         await renderProducts();
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3820',message:'renderProducts completed, about to call fetchFilterCounts',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
     } catch (err) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3820',message:'renderProducts ERROR',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.error('❌ Error in renderProducts():', err);
     }
     
     try {
         await fetchFilterCounts();
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3822',message:'fetchFilterCounts completed, About to CALL initPriceRangeSlider',data:{documentReady:document.readyState,functionExists:typeof initPriceRangeSlider},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
     } catch (err) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3822',message:'fetchFilterCounts ERROR',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.error('❌ Error in fetchFilterCounts():', err);
     }
     
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3824',message:'About to CALL initPriceRangeSlider (after try-catch)',data:{documentReady:document.readyState,functionExists:typeof initPriceRangeSlider},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     try {
         await initPriceRangeSlider();
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3925',message:'initPriceRangeSlider call completed successfully',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
     } catch (err) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'shop-pc.html:3925',message:'initPriceRangeSlider call FAILED with error',data:{error:err.message,stack:err.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         console.error('❌ Error calling initPriceRangeSlider:', err);
     }
     
@@ -4736,6 +4878,7 @@ function scrollToProductsSectionTop() {
 
 async function goToPage(newPage) {
     const totalPages = Math.ceil(currentState.total / currentState.limit);
+    
     if (!Number.isFinite(totalPages) || totalPages <= 0) return;
 
     const nextPage = Math.max(1, Math.min(Number(newPage) || 1, totalPages));
@@ -4746,6 +4889,7 @@ async function goToPage(newPage) {
     await renderProducts();
     await fetchFilterCounts();
     updatePagination();
+    
 }
 
 function updatePagination() {
@@ -4914,12 +5058,23 @@ document.addEventListener('DOMContentLoaded', function() {
         viewSelect.value = currentState.limit || 28;
         
         viewSelect.addEventListener('change', async (e) => {
-            currentState.limit = parseInt(e.target.value);
+            const newLimit = parseInt(e.target.value);
+            const oldLimit = currentState.limit;
+            const oldPage = currentState.page;
+            
+            console.log('🔄 View limit changed:', {
+                oldLimit: currentState.limit,
+                newLimit: newLimit,
+                selectedValue: e.target.value
+            });
+            currentState.limit = newLimit;
             currentState.page = 1; // Reset to first page when limit changes
+            
             updateURL();
             await renderProducts();
             await fetchFilterCounts();
             updatePagination();
+            
         });
     }
 });
