@@ -99,6 +99,37 @@
             var debugInfoEl = document.getElementById('debugInfo');
             var redirected = false;
 
+            function loadTawkIfAllowed() {
+                try {
+                    var host = window.location.hostname;
+                    if (host === 'localhost' || host === '127.0.0.1') {
+                        return Promise.resolve({ skipped: true });
+                    }
+                } catch (e) {
+                    // If we can't read hostname for some reason, don't block redirect.
+                    return Promise.resolve({ skipped: true });
+                }
+
+                return new Promise(function (resolve) {
+                    try {
+                        window.Tawk_API = window.Tawk_API || {};
+                        window.Tawk_LoadStart = new Date();
+
+                        var s1 = document.createElement('script');
+                        var s0 = document.getElementsByTagName('script')[0];
+                        s1.async = true;
+                        s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+                        s1.charset = 'UTF-8';
+                        s1.setAttribute('crossorigin', '*');
+                        s1.onload = function () { resolve({ loaded: true }); };
+                        s1.onerror = function () { resolve({ loaded: false }); };
+                        s0.parentNode.insertBefore(s1, s0);
+                    } catch (e) {
+                        resolve({ loaded: false });
+                    }
+                });
+            }
+
             function updateDebug(mode) {
                 if (!debugInfoEl) return;
                 debugInfoEl.textContent = 'width=' + window.innerWidth + ' • dpr=' + (window.devicePixelRatio || 1) + ' • mode=' + mode;
@@ -147,16 +178,40 @@
                 }
             }
 
-            // Try immediate redirect
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', redirectIfNeeded);
-            } else {
+            // Load Tawk quickly (online only), then redirect.
+            // This prevents the redirect from cutting off the network request immediately.
+            updateDebug('pending');
+
+            var MAX_WAIT_MS = 700;
+            var didRedirect = false;
+
+            function safeRedirect(reason) {
+                if (didRedirect) return;
+                didRedirect = true;
+                updateDebug(reason);
                 redirectIfNeeded();
             }
-            
-            // Backup redirect after short delay
-            updateDebug('pending');
-            autoTimer = setTimeout(redirectIfNeeded, 50);
+
+            // Timeout always wins to keep UX snappy.
+            autoTimer = setTimeout(function () {
+                safeRedirect('timeout');
+            }, MAX_WAIT_MS);
+
+            // Start as early as possible; if DOM isn't ready yet, just wait for it.
+            var start = function () {
+                loadTawkIfAllowed().then(function (result) {
+                    // Redirect immediately after we at least start/finish loading.
+                    // We still keep the timeout as a safety net.
+                    if (result && result.skipped) return safeRedirect('skip:localhost');
+                    return safeRedirect('tawk');
+                });
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', start);
+            } else {
+                start();
+            }
         })();
     </script>
 </body>
