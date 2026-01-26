@@ -3484,6 +3484,22 @@
 </script>
 
 <style>
+/* Hide the Tawk launcher bubble by default (only show when user opens chat). */
+body:not(.tawk-open) iframe[title="chat widget"],
+body:not(.tawk-open) .tawk-min-container,
+body:not(.tawk-open) #tawk-bubble-container {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(120px) !important;
+}
+body.tawk-open iframe[title="chat widget"],
+body.tawk-open .tawk-min-container,
+body.tawk-open #tawk-bubble-container {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+}
+
 @media (max-width: 1023px) {
     iframe[title="chat widget"],
     .tawk-min-container,

@@ -2923,10 +2923,22 @@ document.addEventListener('DOMContentLoaded', function() {
     window.Tawk_API = window.Tawk_API || {};
     // Hide default bubble; open only from our in-site trigger.
     window.Tawk_API.onLoad = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
+        try {
+            document.body.classList.remove('tawk-open');
+            if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
+        } catch (e) {}
+    };
+    window.Tawk_API.onChatMaximized = function () {
+        try { document.body.classList.add('tawk-open'); } catch (e) {}
     };
     window.Tawk_API.onChatMinimized = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
+        try {
+            document.body.classList.remove('tawk-open');
+            if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
+        } catch (e) {}
+    };
+    window.Tawk_API.onChatHidden = function () {
+        try { document.body.classList.remove('tawk-open'); } catch (e) {}
     };
     window.Tawk_LoadStart = new Date();
 
@@ -2958,6 +2970,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function openTawkPopup() {
+        try { document.body.classList.add('tawk-open'); } catch (e) {}
         waitForTawk(function (api) {
             if (typeof api.showWidget === 'function') api.showWidget();
             if (typeof api.maximize === 'function') { api.maximize(); return true; }
@@ -2967,6 +2980,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Behave like a "popup": hide default bubble and open only from our UI.
     waitForTawk(function (api) {
+        try { document.body.classList.remove('tawk-open'); } catch (e) {}
         if (typeof api.hideWidget === 'function') { api.hideWidget(); return true; }
         return false;
     }, 8000);
