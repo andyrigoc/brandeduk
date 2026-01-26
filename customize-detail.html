@@ -718,8 +718,16 @@
 <script type="text/javascript">
 (function(){
     var host = window.location.hostname;
-    // Tawk blocks localhost; avoid noisy console errors during local dev.
-    if (host === 'localhost' || host === '127.0.0.1') return;
+    // Tawk often blocks localhost; avoid noisy console errors during local dev.
+    // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
+    var allowLocal = false;
+    try {
+        var params = new URLSearchParams(window.location.search);
+        allowLocal = params.has('tawk') || params.has('chat');
+    } catch (e) {
+        allowLocal = false;
+    }
+    if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
 
     var propertyId = '69628dafb346e51985794182';
     var widgetId = '1jekfitse';
@@ -728,6 +736,13 @@
     // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
 
     window.Tawk_API = window.Tawk_API || {};
+    // Hide default bubble; open only from our in-site trigger.
+    window.Tawk_API.onLoad = function () {
+        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
+    };
+    window.Tawk_API.onChatMinimized = function () {
+        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
+    };
     window.Tawk_LoadStart = new Date();
 
     var s1 = document.createElement('script');
