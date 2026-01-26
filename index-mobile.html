@@ -53,6 +53,13 @@
         .site-header {
             display: none !important;
         }
+        
+        /* Note: responsive.css handles showing desktop header on wider screens */
+
+        /* Prevent duplicated header bars on tablet: this page is mobile/tablet UI only */
+        .site-header {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="customize-page">
@@ -2576,6 +2583,30 @@
             });
         })();
     </script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+    <style>
+    /* Position tawk.to above bottom nav */
+    iframe[title="chat widget"],
+    .tawk-min-container,
+    #tawk-bubble-container,
+    .widget-visible {
+        bottom: 75px !important;
+    }
+    </style>
 
 </body>
 </html>
