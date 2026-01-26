@@ -1456,7 +1456,7 @@
                     <!-- Brand Column -->
                     <div class="footer-brand">
                         <div class="footer-logo">brandeduk</div>
-                        <p class="footer-copyright">Copyright © 2025 BrandedUK</p>
+                        <p class="footer-copyright">Copyright © 2026 BrandedUK</p>
                         <p class="footer-rights">All rights reserved</p>
                         <div class="footer-social footer-social-3d">
                             <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
@@ -2283,6 +2283,101 @@
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
+
+    <style>
+    /* Hero 1: mobile auto-scroll (marquee) + hide scrollbar */
+    @media (max-width: 767px) {
+        #hero1.hero-auto-scroll {
+            overflow-x: hidden !important;
+        }
+        #hero1.hero-auto-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Make the wrap-around reset feel smoother */
+        #hero1.hero-auto-scroll.hero-scroll-resetting {
+            opacity: 0;
+            transition: opacity 160ms ease;
+        }
+        #hero1.hero-auto-scroll:not(.hero-scroll-resetting) {
+            opacity: 1;
+            transition: opacity 160ms ease;
+        }
+    }
+    </style>
+
+    <script>
+    (function () {
+        if (!window.matchMedia || !window.matchMedia('(max-width: 767px)').matches) return;
+
+        var hero = document.getElementById('hero1');
+        if (!hero) return;
+
+        // Respect reduced-motion.
+        try {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        } catch (e) {}
+
+        hero.classList.add('hero-auto-scroll');
+
+        var pausedUntil = 0;
+        var touching = false;
+        function pauseFor(ms) {
+            pausedUntil = Math.max(pausedUntil, Date.now() + (ms || 2500));
+        }
+
+        // Mobile behavior: stop scrolling while finger is down, resume on release.
+        hero.addEventListener('touchstart', function () { touching = true; }, { passive: true });
+        hero.addEventListener('touchend', function () { touching = false; pauseFor(800); }, { passive: true });
+        hero.addEventListener('touchcancel', function () { touching = false; pauseFor(800); }, { passive: true });
+        hero.addEventListener('pointerdown', function () { touching = true; }, { passive: true });
+        hero.addEventListener('pointerup', function () { touching = false; pauseFor(800); }, { passive: true });
+        hero.addEventListener('pointercancel', function () { touching = false; pauseFor(800); }, { passive: true });
+
+        // Also pause briefly on scroll/wheel interactions.
+        hero.addEventListener('wheel', function () { pauseFor(2000); }, { passive: true });
+
+        var speedPxPerSec = 28;
+        var lastTs = null;
+
+        var resetting = false;
+        function smoothResetToStart() {
+            if (resetting) return;
+            resetting = true;
+            hero.classList.add('hero-scroll-resetting');
+            setTimeout(function () {
+                hero.scrollLeft = 0;
+                // Allow a frame for layout, then fade back in.
+                window.requestAnimationFrame(function () {
+                    hero.classList.remove('hero-scroll-resetting');
+                    resetting = false;
+                });
+            }, 160);
+        }
+
+        function tick(ts) {
+            if (lastTs === null) lastTs = ts;
+            var dt = (ts - lastTs) / 1000;
+            lastTs = ts;
+
+            // Pause while a panel is expanded.
+            var paused = touching || Date.now() < pausedUntil;
+            if (!paused && !hero.classList.contains('s--el-active')) {
+                var max = hero.scrollWidth - hero.clientWidth;
+                if (max > 0) {
+                    hero.scrollLeft += speedPxPerSec * dt;
+                    if (hero.scrollLeft >= max - 1) {
+                        smoothResetToStart();
+                    }
+                }
+            }
+
+            window.requestAnimationFrame(tick);
+        }
+
+        window.requestAnimationFrame(tick);
+    })();
+    </script>
     
     <!-- Social Icons Click Handler: Single click = activate color, Double click = open link -->
     <script>
@@ -2586,7 +2681,7 @@
         var allowLocal = false;
         try {
             var params = new URLSearchParams(window.location.search);
-            allowLocal = params.has('tawk') || params.has('chat');
+            allowLocal = params.get('tawk') === '1' || params.get('chat') === '1';
         } catch (e) {
             allowLocal = false;
         }
@@ -2633,6 +2728,17 @@
 
     <script>
     (function () {
+        var host = window.location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '';
+        var allowLocal = false;
+        try {
+            var params = new URLSearchParams(window.location.search);
+            allowLocal = params.get('tawk') === '1' || params.get('chat') === '1';
+        } catch (e) {
+            allowLocal = false;
+        }
+        var tawkExpected = !isLocal || allowLocal;
+
         function waitForTawk(fn, timeoutMs) {
             var start = Date.now();
             (function tick() {
@@ -2647,11 +2753,53 @@
             })();
         }
 
+        function showLocalTawkHintOnce() {
+            if (window.__tawkLocalHintShown) return;
+            window.__tawkLocalHintShown = true;
+            alert('Chat is disabled on localhost.\n\nTo test locally, add ?tawk=1 (or ?chat=1) to the URL.\nOr test on the live domain.');
+        }
+
+        if (!tawkExpected) {
+            document.addEventListener('click', function (e) {
+                var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
+                if (!trigger) return;
+                e.preventDefault();
+                showLocalTawkHintOnce();
+            });
+
+            var fab = document.getElementById('chatbotBtn');
+            if (fab) {
+                try { fab.disabled = false; } catch (e) {}
+                fab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showLocalTawkHintOnce();
+                });
+            }
+            return;
+        }
+
+        var openInFlight = false;
+        var openResetTimer = null;
+
         function openTawkPopup() {
+            if (openInFlight) return;
+            openInFlight = true;
+            if (openResetTimer) clearTimeout(openResetTimer);
+            openResetTimer = setTimeout(function () {
+                openInFlight = false;
+                try { document.body.classList.remove('tawk-open'); } catch (e) {}
+            }, 5500);
+
             try { document.body.classList.add('tawk-open'); } catch (e) {}
             waitForTawk(function (api) {
                 if (typeof api.showWidget === 'function') api.showWidget();
-                if (typeof api.maximize === 'function') { api.maximize(); return true; }
+                if (typeof api.maximize === 'function') {
+                    api.maximize();
+                    openInFlight = false;
+                    if (openResetTimer) clearTimeout(openResetTimer);
+                    openResetTimer = null;
+                    return true;
+                }
                 return false;
             }, 5000);
         }

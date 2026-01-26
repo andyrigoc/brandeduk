@@ -76,4 +76,4 @@ cd tools
 
 ---
 
-**brandeduk.com** © 2025 - Workwear & Custom Apparel
+**brandeduk.com** © 2026 - Workwear & Custom Apparel

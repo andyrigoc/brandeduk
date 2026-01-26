@@ -14,6 +14,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Basket page uses its own header; hide the global fixed site header to avoid double headers and clipped top area on mobile. */
+        body.basket-page .mobile-header,
+        body.basket-page .tablet-top-bar {
+            display: none !important;
+        }
+
+        body.basket-page {
+            padding-top: 0 !important;
+        }
+
         /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
         .social-icons-mobile {
             gap: 3px !important;
@@ -760,7 +770,7 @@
         }
     </style>
 </head>
-<body>
+<body class="basket-page">
         <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
         <div class="tablet-top-bar">
             <div class="tablet-top-bar__left">
