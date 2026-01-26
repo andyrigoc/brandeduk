@@ -2588,25 +2588,28 @@
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
     })();
+    
+    // Wait for tawk to load then position it
+    Tawk_API.onLoad = function(){
+        console.log('Tawk.to loaded successfully!');
+        // Add CSS to position widget above bottom nav
+        var style = document.createElement('style');
+        style.textContent = '.tawk-min-container, #tawk-bubble-container, iframe[title="chat widget"] { bottom: 80px !important; z-index: 999999 !important; }';
+        document.head.appendChild(style);
+    };
+    
+    Tawk_API.onStatusChange = function(status){
+        console.log('Tawk.to status:', status);
+    };
     </script>
     <!--End of Tawk.to Script-->
-
-    <style>
-    /* Position tawk.to above bottom nav */
-    iframe[title="chat widget"],
-    .tawk-min-container,
-    #tawk-bubble-container,
-    .widget-visible {
-        bottom: 75px !important;
-    }
-    </style>
 
 </body>
 </html>
