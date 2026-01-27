@@ -1,16 +1,20 @@
 {
   "version": 2,
-  "buildCommand": null,
-  "outputDirectory": ".",
-  "installCommand": null,
-  "framework": null,
-"rewrites": [
+  "redirects": [
+    { "source": "/home-pc.html", "destination": "/d", "permanent": true },
+    { "source": "/shop-pc.html", "destination": "/shop", "permanent": true },
+    { "source": "/product-detail.html", "destination": "/product", "permanent": true },
+    { "source": "/index-mobile.html", "destination": "/m", "permanent": true },
+    { "source": "/shop.html", "destination": "/m/shop", "permanent": true },
+    { "source": "/mobile/customize-mobile.html", "destination": "/m/customize", "permanent": true }
+  ],
+  "rewrites": [
     { "source": "/shop", "destination": "/shop-pc.html" },
     { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/m/shop", "destination": "/shop.html" },
     { "source": "/m/customize", "destination": "/mobile/customize-mobile.html" }
-],
+  ],
   "headers": [
     {
       "source": "/(.*)",
