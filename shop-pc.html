@@ -2623,7 +2623,7 @@ const urlParams = new URLSearchParams(window.location.search);
             let newPath = null;
 
             if (productType) {
-                newPath = `/shop/type/${encodeURIComponent(productType)}`;
+                newPath = `/shop/productType/${encodeURIComponent(productType)}`;
                 url.searchParams.delete('productType');
             } else if (brand) {
                 newPath = `/shop/brand/${encodeURIComponent(brand)}`;
