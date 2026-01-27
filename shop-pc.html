@@ -2610,6 +2610,37 @@ let renderProductsDebounceTimer = null;
 // Parse URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 
+// Normalize URL: turn /shop?productType=foo or /shop?brand=bar into clean paths
+(function normalizeShopUrl() {
+    try {
+        const url = new URL(window.location.href);
+        const path = url.pathname;
+        const productType = url.searchParams.get('productType');
+        const brand = url.searchParams.get('brand');
+
+        // Only normalize legacy query-style URLs that are still on /shop
+        if (path === '/shop') {
+            let newPath = null;
+
+            if (productType) {
+                newPath = `/shop/type/${encodeURIComponent(productType)}`;
+                url.searchParams.delete('productType');
+            } else if (brand) {
+                newPath = `/shop/brand/${encodeURIComponent(brand)}`;
+                url.searchParams.delete('brand');
+            }
+
+            if (newPath) {
+                const qs = url.searchParams.toString();
+                const newUrl = newPath + (qs ? `?${qs}` : '');
+                window.history.replaceState({}, '', newUrl);
+            }
+        }
+    } catch (e) {
+        console.warn('[Shop] URL normalization failed:', e);
+    }
+})();
+
 // Category normalization and API name mapping
 function normalizeCategory(raw) {
     const value = String(raw || '').trim().toLowerCase();
