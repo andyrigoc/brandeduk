@@ -5,43 +5,21 @@
   "installCommand": null,
   "framework": null,
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/product",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/customize",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/quote",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/search",
-      "destination": "/index.html"
-    }
+    { "source": "/", "destination": "/home-pc.html" },
+    { "source": "/shop", "destination": "/shop-pc.html" },
+    { "source": "/product", "destination": "/product-detail.html" },
+
+    { "source": "/m", "destination": "/index-mobile.html" },
+    { "source": "/m/shop", "destination": "/shop.html" },
+    { "source": "/m/customize", "destination": "/mobile/customize-mobile.html" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
   ]
