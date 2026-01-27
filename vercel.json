@@ -12,6 +12,11 @@
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
 
+        { 
+      "source": "/shop/shop-pc.html", 
+      "destination": "/shop-pc.html" 
+    },
+
     { "source": "/shop/productType/:productType", "destination": "/shop-pc.html?productType=:productType" },
     { "source": "/shop/brand/:brand", "destination": "/shop-pc.html?brand=:brand" },
 
