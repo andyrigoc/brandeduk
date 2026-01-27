@@ -121,15 +121,8 @@
      * Get the correct shop page URL based on current page location
      */
     function getShopPageUrl() {
-        const currentPath = window.location.pathname;
-        
-        // If we're in brandeduk.com directory, use relative path
-        if (currentPath.includes('/brandeduk.com/')) {
-            return 'shop-pc.html';
-        }
-        
-        // If we're in root or other directories, use absolute path
-        return '../shop-pc.html';
+        // ALWAYS use clean absolute path
+        return '/shop';
     }
     
     /**
@@ -144,7 +137,7 @@
             html += `<li class="brand-heading">${letter}</li>`;
             grouped[letter].forEach(type => {
                 // Use correct path based on current page location
-                const href = `${shopUrl}?productType=${encodeURIComponent(type.slug)}`;
+                const href = `${shopUrl}/productType/${encodeURIComponent(type.slug)}`;
                 html += `<li><a href="${href}" data-slug="${type.slug}">${type.name}</a></li>`;
             });
         });
@@ -198,8 +191,7 @@
                     const slug = this.getAttribute('data-slug');
                     if (slug) {
                         const shopUrl = getShopPageUrl();
-                        const targetUrl = `${shopUrl}?productType=${encodeURIComponent(slug)}`;
-                        console.log('🔗 Navigating to shop with productType:', slug, '→', targetUrl);
+                        const targetUrl = `${shopUrl}/productType/${encodeURIComponent(slug)}`;                        console.log('🔗 Navigating to shop with productType:', slug, '→', targetUrl);
                         // Navigate to shop page with product type filter
                         window.location.href = targetUrl;
                     }
