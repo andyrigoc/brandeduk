@@ -12,6 +12,7 @@
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
 
+    { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" },
 
     { "source": "/mobile", "destination": "/index-mobile.html" },
@@ -33,6 +34,11 @@
     {
       "source": "/shop-pc.html",
       "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/product-detail.html",
+      "destination": "/product",
       "permanent": true
     },
     {
