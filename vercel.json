@@ -8,9 +8,12 @@
 
   "rewrites": [
     { "source": "/", "destination": "/home-pc.html" },
+    { "source": "/detection", "destination": "/index.html" },
 
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
+    { "source": "/shop/productType/:productType", "destination": "/shop-pc.html?productType=:productType" },
+    { "source": "/shop/brand/:brand", "destination": "/shop-pc.html?brand=:brand" },
 
     { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" },
@@ -28,7 +31,12 @@
   "redirects": [
     {
       "source": "/home-pc.html",
-      "destination": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
