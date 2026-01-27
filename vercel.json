@@ -12,8 +12,8 @@
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
 
-    { "source": "/shop/productType/:productType", "destination": "/shop-pc.html" },
-    { "source": "/shop/brand/:brand", "destination": "/shop-pc.html" },
+    { "source": "/shop/productType/:productType", "destination": "/shop-pc.html?productType=:productType" },
+    { "source": "/shop/brand/:brand", "destination": "/shop-pc.html?brand=:brand" },
 
     { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" },
