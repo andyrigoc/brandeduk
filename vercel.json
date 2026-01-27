@@ -1,18 +1,67 @@
 {
   "version": 2,
+  "name": "branded-uk-fork-v10",
   "buildCommand": null,
   "outputDirectory": ".",
   "installCommand": null,
   "framework": null,
+
   "rewrites": [
     { "source": "/", "destination": "/home-pc.html" },
+
+    { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
-    { "source": "/product", "destination": "/product-detail.html" },
+
+    { "source": "/product/:code", "destination": "/product-detail.html" },
+
+    { "source": "/mobile", "destination": "/index-mobile.html" },
+    { "source": "/mobile/customize", "destination": "/mobile/customize-mobile.html" },
+
+    { "source": "/category/:name", "destination": "/shop.html" },
 
     { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/m/shop", "destination": "/shop.html" },
     { "source": "/m/customize", "destination": "/mobile/customize-mobile.html" }
   ],
+
+  "redirects": [
+    {
+      "source": "/home-pc.html",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/shop-pc.html",
+      "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/index-mobile.html",
+      "destination": "/mobile",
+      "permanent": true
+    },
+    {
+      "source": "/mobile/customize-mobile.html",
+      "destination": "/mobile/customize",
+      "permanent": true
+    },
+    {
+      "source": "/m",
+      "destination": "/mobile",
+      "permanent": true
+    },
+    {
+      "source": "/m/shop",
+      "destination": "/mobile",
+      "permanent": true
+    },
+    {
+      "source": "/m/customize",
+      "destination": "/mobile/customize",
+      "permanent": true
+    }
+  ],
+
   "headers": [
     {
       "source": "/(.*)",

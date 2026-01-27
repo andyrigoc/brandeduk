@@ -188,11 +188,15 @@ const ShopManager = (function() {
 
     function updateURL() {
         const url = new URL(window.location);
-        
-        // Set category
+
+        // For clean category URLs, prefer /category/:slug when category is set
         if (currentState.category && currentState.category !== 'all') {
-            url.searchParams.set('category', currentState.category);
+            const cleanPath = `/category/${encodeURIComponent(currentState.category)}`;
+            url.pathname = cleanPath;
+            url.searchParams.delete('category');
         } else {
+            // Default to /shop for "all" category
+            url.pathname = '/shop';
             url.searchParams.delete('category');
         }
 
@@ -768,10 +772,24 @@ const ShopManager = (function() {
     // INITIALIZATION
     // ==========================================================================
 
+    function getCategoryFromLocation() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromQuery = urlParams.get('category');
+        if (fromQuery) return fromQuery;
+
+        // Support /category/:name paths for clean URLs
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        if (parts[0] === 'category' && parts[1]) {
+            return decodeURIComponent(parts[1]);
+        }
+
+        return 'all';
+    }
+
     function initFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        
-        currentState.category = urlParams.get('category') || 'all';
+
+        currentState.category = getCategoryFromLocation();
         currentState.search = urlParams.get('q') || '';
         currentState.page = parseInt(urlParams.get('page'), 10) || 1;
         currentState.sort = urlParams.get('sort') || 'newest';
