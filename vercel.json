@@ -16,13 +16,7 @@
     { "source": "/product/:code", "destination": "/product-detail.html" },
 
     { "source": "/mobile", "destination": "/index-mobile.html" },
-    { "source": "/mobile/customize", "destination": "/mobile/customize-mobile.html" },
-
-    { "source": "/category/:name", "destination": "/shop.html" },
-
-    { "source": "/m", "destination": "/index-mobile.html" },
-    { "source": "/m/shop", "destination": "/shop.html" },
-    { "source": "/m/customize", "destination": "/mobile/customize-mobile.html" }
+    { "source": "/mobile/customize", "destination": "/mobile/customize-mobile.html" }
   ],
 
   "redirects": [
