@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "branded-uk-fork-v10",
+  "name": "branded-uk",
   "buildCommand": null,
   "outputDirectory": ".",
   "installCommand": null,
@@ -10,32 +10,21 @@
     { "source": "/", "destination": "/home-pc.html" },
     { "source": "/detection", "destination": "/index.html" },
 
-    { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
-    { "source": "/shop/productType/:productType", "destination": "/shop-pc.html?productType=:productType" },
-    { "source": "/shop/brand/:brand", "destination": "/shop-pc.html?brand=:brand" },
+    { "source": "/shop/productType/:productType", "destination": "/shop-pc.html" },
+    { "source": "/shop/brand/:brand", "destination": "/shop-pc.html" },
 
-    { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" },
-
+    
     { "source": "/mobile", "destination": "/index-mobile.html" },
     { "source": "/mobile/customize", "destination": "/mobile/customize-mobile.html" },
 
-    { "source": "/category/:name", "destination": "/shop.html" },
-
-    { "source": "/m", "destination": "/index-mobile.html" },
-    { "source": "/m/shop", "destination": "/shop.html" },
-    { "source": "/m/customize", "destination": "/mobile/customize-mobile.html" }
+    { "source": "/category/:name", "destination": "/shop.html" }
   ],
 
   "redirects": [
     {
       "source": "/home-pc.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/home",
       "destination": "/",
       "permanent": true
     },
@@ -60,18 +49,8 @@
       "permanent": true
     },
     {
-      "source": "/m",
-      "destination": "/mobile",
-      "permanent": true
-    },
-    {
-      "source": "/m/shop",
-      "destination": "/mobile",
-      "permanent": true
-    },
-    {
-      "source": "/m/customize",
-      "destination": "/mobile/customize",
+      "source": "/shop.html",
+      "destination": "/shop",
       "permanent": true
     }
   ],
@@ -80,9 +59,7 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
       ]
     }
   ]
