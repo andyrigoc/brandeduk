@@ -45,6 +45,11 @@
       "permanent": true
     },
     {
+      "source": "/shop/product-detail.html",
+      "destination": "/product",
+      "permanent": true
+    },
+    {
       "source": "/index-mobile.html",
       "destination": "/mobile",
       "permanent": true
