@@ -6,6 +6,47 @@
 (function() {
     'use strict';
 
+    // ------------------------------------------------------------------
+    // DEBUG INGEST (local dev only)
+    // ------------------------------------------------------------------
+    // The codebase contains debug telemetry POSTs to a local collector at
+    // http://127.0.0.1:7244/ingest/... which causes noisy net::ERR_CONNECTION_REFUSED
+    // in normal runs. We block only those requests unless explicitly enabled.
+    (function blockLocalDebugIngest() {
+        if (window.__brandeduk_blocked_local_ingest__) return;
+        window.__brandeduk_blocked_local_ingest__ = true;
+
+        let ingestEnabled = false;
+        try {
+            ingestEnabled = window.localStorage && window.localStorage.getItem('brandeduk-debug-ingest') === 'on';
+        } catch (e) {
+            ingestEnabled = false;
+        }
+
+        if (ingestEnabled) return;
+        if (typeof window.fetch !== 'function') return;
+
+        const INGEST_PREFIX = 'http://127.0.0.1:7244/ingest/';
+        const originalFetch = window.fetch.bind(window);
+
+        window.fetch = function(input, init) {
+            try {
+                const url = typeof input === 'string' ? input : (input && input.url);
+                if (url && url.indexOf(INGEST_PREFIX) === 0) {
+                    // Return a resolved fetch-like response without touching the network.
+                    if (typeof Response === 'function') {
+                        return Promise.resolve(new Response(null, { status: 204, statusText: 'No Content' }));
+                    }
+                    return Promise.resolve({ ok: true, status: 204, statusText: 'No Content' });
+                }
+            } catch (e) {
+                // fall through
+            }
+
+            return originalFetch(input, init);
+        };
+    })();
+
     // === VAT Constants ===
     const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
     const VAT_RATE = 0.20;
@@ -72,6 +113,73 @@
     const API_BASE_URL = 'https://api.brandeduk.com/api';
 
     // === DYNAMIC POSITION MAPPING SYSTEM ===
+    
+    // === IMAGE COMPRESSION UTILITY ===
+    // Compress images before upload to avoid 413 errors (max ~800KB target)
+    async function compressImageFile(file, maxSizeKB = 800, maxDimension = 1200) {
+        // If file is already small enough, return as-is
+        if (file.size <= maxSizeKB * 1024) {
+            console.log(`📷 Image already small enough: ${(file.size/1024).toFixed(1)}KB`);
+            return file;
+        }
+        
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            img.onload = function() {
+                let { width, height } = img;
+                
+                // Scale down if too large
+                if (width > maxDimension || height > maxDimension) {
+                    const ratio = Math.min(maxDimension / width, maxDimension / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Try progressively lower quality until size is acceptable
+                let quality = 0.85;
+                const tryCompress = () => {
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            resolve(file); // Fallback to original
+                            return;
+                        }
+                        
+                        if (blob.size > maxSizeKB * 1024 && quality > 0.3) {
+                            quality -= 0.1;
+                            tryCompress();
+                        } else {
+                            const compressedFile = new File([blob], file.name, { 
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            console.log(`📷 Compressed image: ${(file.size/1024).toFixed(1)}KB → ${(compressedFile.size/1024).toFixed(1)}KB (quality: ${quality.toFixed(2)})`);
+                            resolve(compressedFile);
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                
+                tryCompress();
+            };
+            
+            img.onerror = () => {
+                console.warn('📷 Could not load image for compression, using original');
+                resolve(file);
+            };
+            
+            // Load image from file
+            const reader = new FileReader();
+            reader.onload = (e) => { img.src = e.target.result; };
+            reader.onerror = () => resolve(file);
+            reader.readAsDataURL(file);
+        });
+    }
     
     // Default fallback images (hoodie images)
     const DEFAULT_POSITION_IMAGES = {
@@ -579,43 +687,36 @@
             const savedProductCode = sessionStorage.getItem('selectedProduct');
             let productData = null;
 
-            if (savedProductData) {
+            // ALWAYS fetch fresh product detail from API to get complete sizes
+            // The products list endpoint only returns partial size data
+            const productCode = savedProductCode || (savedProductData ? JSON.parse(savedProductData).code : null);
+            
+            if (productCode) {
                 try {
-                    productData = JSON.parse(savedProductData);
-                    const savedCode = productData.code || productData.productCode || productData.sku;
-                    const requestedCode = savedProductCode;
-                    
-                    // Verify the saved product matches the requested product code
-                    if (requestedCode && savedCode && savedCode !== requestedCode) {
-                        console.warn('?? Product code mismatch! Saved:', savedCode, 'Requested:', requestedCode);
-                        console.warn('?? Clearing cached data and fetching fresh...');
-                        productData = null; // Clear mismatched data
-                        sessionStorage.removeItem('selectedProductData'); // Remove stale cache
+                    console.log('📦 Fetching fresh product detail from API for:', productCode);
+                    const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
+                    if (res.ok) {
+                        productData = await res.json();
+                        console.log('✅ Fetched product from API:', productData.code);
+                        console.log('📐 Product sizes from API:', productData.sizes);
+                        console.log('🎨 Product colors count:', (productData.colors || []).length);
+                        // Update cache with complete data
+                        sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
-                        console.log('? Loaded product data from sessionStorage:', savedCode || productData);
-                        console.log('?? Product colors count:', (productData.colors || []).length);
+                        console.warn('Product API returned', res.status, '- falling back to cached data');
                     }
                 } catch (e) {
-                    console.warn('Failed to parse selectedProductData from sessionStorage', e);
-                    productData = null;
+                    console.warn('Failed to fetch product from API, using cached data if available', e);
                 }
             }
 
-            if (!productData && savedProductCode) {
-                // Fetch from API as fallback
+            // Fallback to cached data only if API fetch failed
+            if (!productData && savedProductData) {
                 try {
-                    const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(savedProductCode)}`);
-                    if (res.ok) {
-                        productData = await res.json();
-                        console.log('? Fetched product from API:', productData.code || savedProductCode);
-                        console.log('?? Product colors count:', (productData.colors || []).length);
-                        // cache for next time
-                        sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
-                    } else {
-                        console.warn('Product API returned', res.status);
-                    }
+                    productData = JSON.parse(savedProductData);
+                    console.log('⚠️ Using cached product data (API unavailable):', productData.code);
                 } catch (e) {
-                    console.warn('Failed to fetch product from API', e);
+                    console.warn('Failed to parse cached product data', e);
                 }
             }
 
@@ -1819,9 +1920,19 @@
                     
                     console.log('📦 Logo files collected:', Object.keys(logoFiles).length, Object.keys(logoFiles));
                     
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:afterLogoCollection',message:'Logo files collected',data:{logoFilesCount:Object.keys(logoFiles).length,logoFilesKeys:Object.keys(logoFiles),filesInfo:Object.entries(logoFiles).map(([k,v])=>({pos:k,isFile:v instanceof File,name:v?.name,size:v?.size}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-                    // #endregion
+                    // Compress large images before upload to avoid 413 errors
+                    const compressedLogoFiles = {};
+                    for (const [position, file] of Object.entries(logoFiles)) {
+                        try {
+                            const compressed = await compressImageFile(file, 800, 1200);
+                            compressedLogoFiles[position] = compressed;
+                        } catch (err) {
+                            console.warn(`Could not compress logo for ${position}, using original:`, err);
+                            compressedLogoFiles[position] = file;
+                        }
+                    }
+                    
+                    console.log('📦 Compressed logo files:', Object.entries(compressedLogoFiles).map(([k,v]) => `${k}: ${(v.size/1024).toFixed(1)}KB`));
 
                     const quoteData = {
                         customer: {
@@ -1856,7 +1967,7 @@
                             lineTotal: c.lineTotal,
                             quantity: c.quantity
                         })),
-                        logoFiles: Object.keys(logoFiles).length > 0 ? logoFiles : undefined,
+                        logoFiles: Object.keys(compressedLogoFiles).length > 0 ? compressedLogoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };
 
@@ -1907,7 +2018,8 @@
                                     return positionMap[position] || position.replace(/\s+/g, '-').toLowerCase();
                                 };
                                 
-                                Object.entries(logoFiles).forEach(([position, file]) => {
+                                // Use compressed logo files instead of original
+                                Object.entries(compressedLogoFiles).forEach(([position, file]) => {
                                     if (file instanceof File || file instanceof Blob) {
                                         // Map frontend position to backend slug (same as BrandedAPI)
                                         const positionSlug = mapPositionToBackendSlug(position);
@@ -1955,7 +2067,20 @@
                         }
                     } catch (apiError) {
                         console.error('Quote API error:', apiError);
-                        showToastOrAlert('Failed to send quote. Please contact info@brandeduk.com directly.');
+                        
+                        // Provide more specific error messages
+                        let errorMessage = 'Failed to send quote. Please contact info@brandeduk.com directly.';
+                        if (apiError.message) {
+                            if (apiError.message.includes('413') || apiError.message.toLowerCase().includes('too large')) {
+                                errorMessage = 'Logo file is too large. Please use a smaller image (under 1MB) or contact us directly.';
+                            } else if (apiError.message.includes('Failed to fetch') || apiError.message.includes('NetworkError')) {
+                                errorMessage = 'Network error. Please check your connection and try again.';
+                            } else if (apiError.message.includes('CORS')) {
+                                errorMessage = 'Server connection issue. Please try again or contact info@brandeduk.com';
+                            }
+                        }
+                        
+                        showToastOrAlert(errorMessage);
                         if (popupSubmitBtn) {
                             popupSubmitBtn.textContent = 'Submit Quote Request';
                             popupSubmitBtn.disabled = false;
@@ -2023,8 +2148,8 @@
                                 document.body.style.overflow = '';
                             }
                             
-                            // Redirect to index-mobile.html
-                            window.location.replace('index-mobile.html');
+                            // Redirect to homepage (use absolute path from root)
+                            window.location.replace('/index-mobile.html');
                         }, 1500);
                     } else {
                         throw new Error(result.message || 'Unknown error');
@@ -3188,6 +3313,8 @@
         // Get sizes from product data
         let sizes = state.product?.sizes || [];
         
+        console.log('📐 getProductSizes() called - raw state.product.sizes:', state.product?.sizes);
+        
         // Normalize: if it's a string, convert to array
         if (typeof sizes === 'string') {
             sizes = [sizes];
@@ -3200,8 +3327,10 @@
             sizes = isOneSizeType
                 ? ['ONESIZE']
                 : ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+            console.log('📐 getProductSizes() - no sizes from API, using fallback:', sizes);
         }
         
+        console.log('📐 getProductSizes() returning:', sizes);
         return sizes;
     }
 
@@ -5815,52 +5944,93 @@
         const basketItemsList = document.getElementById('basketItemsList');
         if (!basketItemsList) return;
         
-        if (!basket || basket.length === 0) {
-            basketItemsList.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 16px 0; font-size: 13px;">No items in basket</p>';
-            return;
-        }
-        
         let itemsHtml = '';
-        basket.forEach((item, index) => {
-            const itemImage = item.colorImage || item.image || 'assets/images/products/default.jpg';
-            const itemColor = item.color || 'Black';
-            const itemName = item.productName || item.name || 'Custom Product';
+        
+        // FIRST: Show CURRENT product being customized (if any items selected)
+        if (state.quantity > 0 && state.product) {
+            const currentImage = state.selectedColorImage || state.product.imageUrl || 'assets/images/products/default.jpg';
+            const currentColor = state.selectedColorName || 'Not selected';
+            const currentName = state.product.name || 'Custom Product';
+            const currentCode = state.product.code || '';
             
-            // Support both 'sizes' and 'quantities' keys
-            const sizes = item.sizes || item.quantities || {};
-            
-            // Build sizes display (read-only, no +/- controls)
-            let sizesHtml = '';
-            if (Object.keys(sizes).length > 0) {
-                const sizesList = Object.entries(sizes)
+            // Build sizes display for current product
+            let currentSizesHtml = '';
+            if (state.sizeQuantities && Object.keys(state.sizeQuantities).length > 0) {
+                const sizesList = Object.entries(state.sizeQuantities)
                     .filter(([, qty]) => qty > 0)
                     .map(([size, qty]) => `${size}: ${qty}`)
                     .join(', ');
-                sizesHtml = `<span class="sizes-text">${sizesList}</span>`;
+                currentSizesHtml = `<span class="sizes-text">${sizesList}</span>`;
             }
             
             itemsHtml += `
-                <div class="basket-item-card" data-index="${index}">
+                <div class="basket-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
                     <div class="basket-item-image">
-                        <img src="${itemImage}" alt="${itemName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
+                        <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                     </div>
                     <div class="basket-item-info">
-                        <h4>${itemName}</h4>
-                        <p class="item-color">Color: ${itemColor}</p>
+                        <h4>${currentName} <span style="color: #7c3aed; font-size: 11px;">(Current)</span></h4>
+                        <p class="item-code" style="font-size: 11px; color: #6b7280;">${currentCode}</p>
+                        <p class="item-color">Color: ${currentColor}</p>
                         <div class="item-sizes">
-                            ${sizesHtml}
+                            ${currentSizesHtml}
                         </div>
                     </div>
-                    <button type="button" class="basket-item-remove" data-index="${index}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            <line x1="10" y1="11" x2="10" y2="17"/>
-                            <line x1="14" y1="11" x2="14" y2="17"/>
-                        </svg>
-                    </button>
                 </div>
             `;
-        });
+        }
+        
+        // THEN: Show basket items
+        if (!basket || basket.length === 0) {
+            if (itemsHtml === '') {
+                basketItemsList.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 16px 0; font-size: 13px;">No items in basket</p>';
+                return;
+            }
+        }
+        
+        // Add basket items to itemsHtml
+        if (basket && basket.length > 0) {
+            basket.forEach((item, index) => {
+                const itemImage = item.colorImage || item.image || 'assets/images/products/default.jpg';
+                const itemColor = item.color || 'Black';
+                const itemName = item.productName || item.name || 'Custom Product';
+                
+                // Support both 'sizes' and 'quantities' keys
+                const sizes = item.sizes || item.quantities || {};
+                
+                // Build sizes display (read-only, no +/- controls)
+                let sizesHtml = '';
+                if (Object.keys(sizes).length > 0) {
+                    const sizesList = Object.entries(sizes)
+                        .filter(([, qty]) => qty > 0)
+                        .map(([size, qty]) => `${size}: ${qty}`)
+                        .join(', ');
+                    sizesHtml = `<span class="sizes-text">${sizesList}</span>`;
+                }
+                
+                itemsHtml += `
+                    <div class="basket-item-card" data-index="${index}">
+                        <div class="basket-item-image">
+                            <img src="${itemImage}" alt="${itemName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
+                        </div>
+                        <div class="basket-item-info">
+                            <h4>${itemName}</h4>
+                            <p class="item-color">Color: ${itemColor}</p>
+                            <div class="item-sizes">
+                                ${sizesHtml}
+                            </div>
+                        </div>
+                        <button type="button" class="basket-item-remove" data-index="${index}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
         
         basketItemsList.innerHTML = itemsHtml;
         
@@ -6484,7 +6654,7 @@
         });
         
         modal.querySelector('#viewQuoteBtn').addEventListener('click', () => {
-            window.location.href = 'basket-mobile.html';
+            window.location.href = '/basket-mobile.html';
         });
     }
 

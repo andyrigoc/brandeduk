@@ -2409,6 +2409,7 @@ function closeValidationError() {
 function updateSidebarProductInfo() {
     const nameEl = document.getElementById('sidebarProductName');
     const codeEl = document.getElementById('sidebarProductCode');
+    const colorEl = document.getElementById('sidebarProductColor');
     const garmentCostEl = document.getElementById('sidebarGarmentCost');
     const totalCostEl = document.getElementById('sidebarTotalCost');
 
@@ -2431,6 +2432,26 @@ function updateSidebarProductInfo() {
 
     garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()} x ${totalQty}`;
     totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
+    
+    // Update color and sizes display
+    if (colorEl) {
+        const colorName = selectedColorName || sessionStorage.getItem('selectedColorName') || 'Not selected';
+        
+        // Build sizes string from sizeQuantities
+        let sizesStr = '';
+        if (typeof sizeQuantities !== 'undefined' && Object.keys(sizeQuantities).length > 0) {
+            const sizeEntries = Object.entries(sizeQuantities)
+                .filter(([_, qty]) => qty > 0)
+                .map(([size, qty]) => `${qty} x ${size}`);
+            sizesStr = sizeEntries.join(', ');
+        }
+        
+        if (sizesStr) {
+            colorEl.textContent = `${colorName} / ${sizesStr}`;
+        } else {
+            colorEl.textContent = colorName;
+        }
+    }
 }
 
 // Method and Type button toggles

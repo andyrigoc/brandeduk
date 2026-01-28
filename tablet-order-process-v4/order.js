@@ -9,6 +9,15 @@ $(function() {
     const VAT_RATE = 0.2;
     const VAT_KEY = 'brandeduk-vat-mode';
 
+    // Subtle "back" easing for small bounce on wizard animations
+    if ($.easing && !$.easing.easeOutBackSmall) {
+        $.easing.easeOutBackSmall = function(x, t, b, c, d) {
+            const s = 0.9; // smaller overshoot than easeOutBack
+            t = t / d - 1;
+            return c * (t * t * ((s + 1) * t + s) + 1) + b;
+        };
+    }
+
     // === WIZARD STATE ===
     const wizard = {
         step: 1,
@@ -207,6 +216,75 @@ $(function() {
         if ($track.length) {
             setupWizardSwipe($viewport, $track);
         }
+
+        // Small right-to-left hint + bounce (only once per session)
+        playWizardSwipeHint($viewport, $track);
+    }
+
+    function playWizardSwipeHint($viewport, $track) {
+        const viewport = $viewport && $viewport[0];
+        if (!viewport || !$track || !$track.length) return;
+
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        try {
+            if (sessionStorage.getItem('brandeduk_wizard_scroll_hint_done') === '1') return;
+        } catch (_) {}
+
+        const width = viewport.clientWidth || 1;
+        const minX = -(wizard.max - 1) * width;
+        if (minX === 0) return;
+
+        const startX = getTrackX($track);
+        const nudge = 80;
+        const targetX = Math.max(minX, Math.min(0, startX - nudge));
+        if (Math.abs(targetX - startX) < 20) return;
+
+        let cancelled = false;
+        const cancel = () => {
+            cancelled = true;
+            viewport.removeEventListener('pointerdown', cancel, { passive: true });
+            viewport.removeEventListener('touchstart', cancel, { passive: true });
+            viewport.removeEventListener('wheel', cancel, { passive: true });
+            window.removeEventListener('keydown', cancel, { passive: true });
+        };
+        viewport.addEventListener('pointerdown', cancel, { passive: true });
+        viewport.addEventListener('touchstart', cancel, { passive: true });
+        viewport.addEventListener('wheel', cancel, { passive: true });
+        window.addEventListener('keydown', cancel, { passive: true });
+
+        setTimeout(function() {
+            if (cancelled) return;
+
+            const out = ($.easing && $.easing.easeOutQuad) ? 'easeOutQuad' : 'swing';
+            const back = ($.easing && $.easing.easeOutBackSmall) ? 'easeOutBackSmall' : (($.easing && $.easing.easeOutBack) ? 'easeOutBack' : 'swing');
+
+            // Nudge left (reveals next step edge), then bounce back
+            $({ x: startX }).stop(true).animate(
+                { x: targetX },
+                {
+                    duration: 360,
+                    easing: out,
+                    step: function(now) { setTrackX($track, now); },
+                    complete: function() {
+                        if (cancelled) return;
+                        $({ x: targetX }).stop(true).animate(
+                            { x: startX },
+                            {
+                                duration: 520,
+                                easing: back,
+                                step: function(now) { setTrackX($track, now); },
+                                complete: function() {
+                                    setTrackX($track, startX);
+                                    cancel();
+                                    try { sessionStorage.setItem('brandeduk_wizard_scroll_hint_done', '1'); } catch (_) {}
+                                }
+                            }
+                        );
+                    }
+                }
+            );
+        }, 250);
     }
 
     function goToStep(step) {
@@ -237,7 +315,7 @@ $(function() {
     function animateTrackToX($track, targetX) {
         if (!$track || !$track.length) return;
         const startX = getTrackX($track);
-        const easing = $.easing && $.easing.easeOutBack ? 'easeOutBack' : 'swing';
+        const easing = ($.easing && $.easing.easeOutBackSmall) ? 'easeOutBackSmall' : (($.easing && $.easing.easeOutBack) ? 'easeOutBack' : 'swing');
 
         $({ x: startX }).stop(true).animate(
             { x: targetX },
