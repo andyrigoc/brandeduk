@@ -218,7 +218,9 @@ function goToProduct(code) {
         sessionStorage.setItem('selectedProduct', code);
         sessionStorage.setItem('selectedProductData', JSON.stringify(product));
     }
-    window.location.href = 'product-detail.html';
+    // Use clean URL, but keep ?code= for backwards compatibility
+    const target = `/product/${encodeURIComponent(code)}?code=${encodeURIComponent(code)}`;
+    window.location.href = target;
 }
 
 // ===== SEARCH & FILTER =====

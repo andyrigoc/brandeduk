@@ -118,11 +118,33 @@ document.addEventListener('brandeduk:vat-change', function(event) {
     updateBasketTotalBox(); // Refresh basket box on VAT change
 });
 
+function getProductCodeFromLocation() {
+    // Prefer query string for backwards compatibility
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const fromQuery = params.get('code');
+        if (fromQuery) return fromQuery;
+    } catch (e) {
+        // ignore
+    }
+
+    // Fallback to path segment: /product/TL560 or /product/TL560/
+    try {
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        if (parts[0] === 'product' && parts[1]) {
+            return decodeURIComponent(parts[1]);
+        }
+    } catch (e) {
+        // ignore
+    }
+
+    return null;
+}
+
 // ===== LOAD PRODUCT DATA =====
 async function loadProductData() {
-    // Try to get product code from URL first, then sessionStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlProductCode = urlParams.get('code');
+    // Try to get product code from URL (query or path) first, then sessionStorage
+    const urlProductCode = getProductCodeFromLocation();
     const savedProductCode = sessionStorage.getItem('selectedProduct');
     
     // URL takes priority, then sessionStorage
@@ -312,14 +334,15 @@ function initBreadcrumb() {
     if (productType) {
         const categorySlug = productTypeToSlug(productType);
         if (categorySlug) {
-            breadcrumbCategoryLink.href = `shop-pc.html?productType=${categorySlug}`;
+            // Use clean /shop URL with productType as query param for compatibility
+            breadcrumbCategoryLink.href = `/shop?productType=${encodeURIComponent(categorySlug)}`;
             breadcrumbCategoryLink.textContent = productType;
         } else {
-            breadcrumbCategoryLink.href = 'shop-pc.html';
+            breadcrumbCategoryLink.href = '/shop';
             breadcrumbCategoryLink.textContent = productType;
         }
     } else {
-        breadcrumbCategoryLink.href = 'shop-pc.html';
+        breadcrumbCategoryLink.href = '/shop';
         breadcrumbCategoryLink.textContent = 'All Products';
     }
     
@@ -2386,6 +2409,7 @@ function closeValidationError() {
 function updateSidebarProductInfo() {
     const nameEl = document.getElementById('sidebarProductName');
     const codeEl = document.getElementById('sidebarProductCode');
+    const colorEl = document.getElementById('sidebarProductColor');
     const garmentCostEl = document.getElementById('sidebarGarmentCost');
     const totalCostEl = document.getElementById('sidebarTotalCost');
 
@@ -2408,6 +2432,26 @@ function updateSidebarProductInfo() {
 
     garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()} x ${totalQty}`;
     totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
+    
+    // Update color and sizes display
+    if (colorEl) {
+        const colorName = selectedColorName || sessionStorage.getItem('selectedColorName') || 'Not selected';
+        
+        // Build sizes string from sizeQuantities
+        let sizesStr = '';
+        if (typeof sizeQuantities !== 'undefined' && Object.keys(sizeQuantities).length > 0) {
+            const sizeEntries = Object.entries(sizeQuantities)
+                .filter(([_, qty]) => qty > 0)
+                .map(([size, qty]) => `${qty} x ${size}`);
+            sizesStr = sizeEntries.join(', ');
+        }
+        
+        if (sizesStr) {
+            colorEl.textContent = `${colorName} / ${sizesStr}`;
+        } else {
+            colorEl.textContent = colorName;
+        }
+    }
 }
 
 // Method and Type button toggles

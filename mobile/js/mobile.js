@@ -15,17 +15,63 @@ function initBrandsMarqueeLogos() {
     const brandCards = document.querySelectorAll('.brands-section .brand-card');
     if (!brandCards.length) return;
 
-    const slugifyBrand = (name) => {
-        return (name || '')
-            .toLowerCase()
-            .trim()
-            .replace(/&/g, 'and')
-            .replace(/\+/g, 'plus')
-            .replace(/\//g, '-')
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '')
-            .replace(/-+/g, '-');
+    // Direct mapping: brand display name → exact filename (avoids 404 errors)
+    const brandFileMap = {
+        '2786': '27862020.webp',
+        'Adidas': 'adidas.jpg',
+        'Anthem': 'anthem.jpg',
+        'Asquith & Fox': 'asquith-and-fox.jpg',
+        'AWDis': 'awdis.webp',
+        'B&C Collection': 'bandc-collection.png',
+        'BabyBugz': 'babybugz2020.jpg',
+        'BagBase': 'bagbase.jpeg',
+        'Beechfield': 'beechfield.jpeg',
+        'Bella+Canvas': 'bellapluscanvas.svg',
+        'Callaway': 'callaway2020.jpg',
+        'Colortone': 'colortone2020.webp',
+        'Comfort Colors': 'comfort-colors.webp',
+        'Craghoppers': 'craghoppers.jpg',
+        'Finden & Hales': 'finden-and-hales.png',
+        'Flexfit': 'flexfit.webp',
+        'Front Row': 'front-row.jpg',
+        'Fruit of the Loom': 'fruit-of-the-loom.jpg',
+        'Gamegear': 'gamegear.webp',
+        'Gildan': 'gildan2020.webp',
+        'Henbury': 'henbury2020.webp',
+        'Kariban': 'kariban2020.webp',
+        'KiMood': 'kimood2020.jpg',
+        'Kustom Kit': 'kustom-kit2020.webp',
+        'Larkwood': 'larkwood.jpeg',
+        'Maddins': 'maddins2020.jpg',
+        'Mumbles': 'mumbles2020.webp',
+        'Nike': 'nike2020.jpg',
+        'Nimbus': 'nimbus2020.webp',
+        'OGIO': 'ogio2020.webp',
+        'Portwest': 'portwest.webp',
+        'Premier': 'premier2020.webp',
+        'Pro RTX': 'pro-rtx2020.jpg',
+        'Quadra': 'quadra-2020.webp',
+        'Regatta': 'regatta.webp',
+        'Result': 'result2020.webp',
+        'Rhino': 'rhino2020.jpg',
+        'Russell': 'russell.webp',
+        'Scruffs': 'scruffs.jpg',
+        'SF Clothing': 'sf-clothing.webp',
+        'Spiro': 'spiro.webp',
+        'Stanley/Stella': 'stanley-stella.webp',
+        'Stormtech': 'stormtech.webp',
+        'Tee Jays': 'tee-jays.jpg',
+        'Tombo': 'tombo2020.webp',
+        'Towel City': 'towel-city2020.jpg',
+        'TriDri': 'tridri.webp',
+        'Under Armour': 'under-armour.webp',
+        'Westford Mill': 'westford-mill-2020.webp',
+        'Wombat': 'wombat.jpg',
+        'Xpres': 'xpres2020.jpg',
+        'Yoko': 'yoko.webp'
     };
+
+    const basePath = 'brandedukv15-child/assets/images/brands/';
 
     brandCards.forEach((card) => {
         if (!(card instanceof HTMLElement)) return;
@@ -34,52 +80,28 @@ function initBrandsMarqueeLogos() {
         const brandName = (card.textContent || '').trim();
         if (!brandName) return;
 
-        const slug = slugifyBrand(brandName);
-        if (!slug) return;
-
-        // Your pack uses many "...2020" filenames (e.g. gildan2020.webp),
-        // but the UI labels are plain brand names (e.g. "Gildan").
-        // Try clean slug first, then common pack variants.
-        const candidates = [
-            `brandedukv15-child/assets/images/brands/${slug}.svg`,
-            `brandedukv15-child/assets/images/brands/${slug}.webp`,
-            `brandedukv15-child/assets/images/brands/${slug}.png`,
-            `brandedukv15-child/assets/images/brands/${slug}.jpg`,
-            `brandedukv15-child/assets/images/brands/${slug}.jpeg`,
-
-            `brandedukv15-child/assets/images/brands/${slug}2020.webp`,
-            `brandedukv15-child/assets/images/brands/${slug}2020.jpg`,
-            `brandedukv15-child/assets/images/brands/${slug}_2020.webp`,
-            `brandedukv15-child/assets/images/brands/${slug}_2020.jpg`,
-            `brandedukv15-child/assets/images/brands/${slug}-2020.webp`,
-            `brandedukv15-child/assets/images/brands/${slug}-2020.jpg`
-        ];
+        const filename = brandFileMap[brandName];
+        if (!filename) {
+            // No mapping found, keep text
+            return;
+        }
 
         const img = document.createElement('img');
         img.className = 'brand-logo-img';
         img.loading = 'lazy';
         img.decoding = 'async';
         img.alt = brandName;
+        img.src = basePath + filename;
 
-        const fallbackToText = () => {
+        img.addEventListener('error', () => {
             if (!card.isConnected) return;
             card.innerHTML = '';
             card.textContent = brandName;
-        };
-
-        let idx = 0;
-        const tryNext = () => {
-            const nextSrc = candidates[idx++];
-            if (!nextSrc) return fallbackToText();
-            img.src = nextSrc;
-        };
-
-        img.addEventListener('error', tryNext);
+        });
 
         card.title = brandName;
         card.innerHTML = '';
         card.appendChild(img);
-        tryNext();
     });
 }
 
