@@ -28,6 +28,15 @@
         });
     }
 
+    function closeAllExclusivesDropdowns(exceptItem) {
+        document.querySelectorAll('.exclusives-menu.is-open').forEach((item) => {
+            if (exceptItem && item === exceptItem) return;
+            item.classList.remove('is-open');
+            const trigger = item.querySelector(':scope > a');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+    }
+
     function resetExpandedMenus(root) {
         if (!root) {
             return;
@@ -88,6 +97,7 @@
                 const willOpen = !item.classList.contains('is-open');
                 closeAllPromoDropdowns(item);
                 closeAllCatalogueDropdowns();
+                closeAllExclusivesDropdowns();
                 closeAllDropdowns();
                 closeAllSearchbarDropdowns();
 
@@ -369,6 +379,50 @@
         });
     }
 
+    function initExclusivesDropdownToggle() {
+        const excItems = Array.from(document.querySelectorAll('.exclusives-menu'));
+        if (!excItems.length) return;
+
+        excItems.forEach((item) => {
+            const trigger = item.querySelector(':scope > a');
+            const dropdown = item.querySelector(':scope > .exclusives-dropdown');
+            if (!trigger || !dropdown) return;
+
+            if (!trigger.hasAttribute('aria-expanded')) {
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            const toggle = (event) => {
+                if (event) { event.preventDefault(); event.stopPropagation(); }
+                const willOpen = !item.classList.contains('is-open');
+                closeAllExclusivesDropdowns(item);
+                closeAllPromoDropdowns();
+                closeAllCatalogueDropdowns();
+                closeAllDropdowns();
+                closeAllSearchbarDropdowns();
+                item.classList.toggle('is-open', willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            };
+
+            trigger.addEventListener('click', toggle);
+            trigger.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Spacebar') toggle(e);
+                if (e.key === 'Escape') closeAllExclusivesDropdowns();
+            });
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element)) return;
+            if (event.target.closest('.exclusives-menu')) return;
+            closeAllExclusivesDropdowns();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAllExclusivesDropdowns();
+        });
+    }
+
     function initCatalogueDropdownToggle() {
         const catItems = Array.from(document.querySelectorAll('.catalogue-menu'));
         if (!catItems.length) return;
@@ -438,6 +492,7 @@
         initModernSearchDropdown();
         initSearchExpandToggle();
         initPromoDropdownToggle();
+        initExclusivesDropdownToggle();
         initCatalogueDropdownToggle();
     }
 

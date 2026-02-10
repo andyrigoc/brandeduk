@@ -1717,6 +1717,104 @@ body {
     display: block;
 }
 
+/* ── Exclusives dropdown (brand grid) ── */
+.exclusives-menu {
+    position: relative;
+}
+
+.exclusives-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 700px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #d6deed;
+    box-shadow: 0 22px 46px rgba(15, 23, 42, 0.22);
+    padding: 24px 28px;
+    display: none;
+    z-index: 55;
+}
+
+.exclusives-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
+    border-top: 1px solid #d6deed;
+    border-left: 1px solid #d6deed;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.exclusives-menu:hover .exclusives-dropdown,
+.exclusives-menu:focus-within .exclusives-dropdown,
+.exclusives-menu.is-open .exclusives-dropdown {
+    display: block;
+}
+
+.exclusives-dropdown-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.exclusives-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.exclusive-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+    background: #fafafa;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.exclusive-brand:hover {
+    border-color: #a855f7;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+    transform: translateY(-2px);
+}
+
+.exclusive-brand img {
+    max-width: 100%;
+    max-height: 48px;
+    object-fit: contain;
+}
+
+@media (max-width: 767px) {
+    .exclusives-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 60px;
+        left: 8px;
+        right: 8px;
+        transform: none;
+        min-width: auto;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .exclusives-dropdown::before {
+        display: none;
+    }
+    .exclusives-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 /* ── Catalogue dropdown (simple 2-item list) ── */
 .catalogue-menu {
     position: relative;
