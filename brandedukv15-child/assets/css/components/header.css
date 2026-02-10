@@ -2044,30 +2044,47 @@ body {
 
 /* === Logo e Search Expand === */
 .searchbar-header__brand-img {
-    width: 40px;
-    height: 40px;
+    height: 92px;
+    width: auto;
     object-fit: contain;
 }
 .searchbar-header__brand-text {
-    color: #a855f7 !important;
+    display: none !important; /* Text is now part of the logo image */
 }
 
-/* Desktop-only: enlarge brandedUK logo by ~10% */
+/* Desktop-only: enlarge brandedUK logo */
 @media (min-width: 1024px) {
     .searchbar-header__brand-img {
-        width: 44px;
-        height: 44px;
+        height: 112px;
     }
 
     .searchbar-header__brand-badge {
-        width: 58px;
-        height: 58px;
-        font-size: 26px;
+        display: none;
     }
 
     .searchbar-header__brand-text {
-        font-size: 37px;
+        display: none !important;
     }
+}
+
+/* Mobile logo (header-logo-row pattern) */
+.mobile-logo-center .logo-badge-img {
+    height: 77px;
+    width: auto;
+    object-fit: contain;
+}
+.mobile-logo-center .logo-text-styled {
+    display: none !important; /* Text is now part of the logo image */
+}
+
+/* Menu logo (slide-out menu) */
+.menu-logo .logo-image {
+    height: 70px !important;
+    width: auto !important;
+    object-fit: contain;
+}
+.menu-logo .logo-text {
+    display: none !important;
 }
 
 .searchbar-header__search-expand {

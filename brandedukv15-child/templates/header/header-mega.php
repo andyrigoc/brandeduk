@@ -47,8 +47,7 @@ $asset_dir = get_stylesheet_directory_uri();
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
                 <a class="searchbar-header__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'brandedUK home', 'brandedukv15-child' ); ?>">
-                    <span class="searchbar-header__brand-badge" aria-hidden="true">bd</span>
-                    <span class="searchbar-header__brand-text">brandeduk.com</span>
+                    <img class="searchbar-header__brand-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/ui/bd-logo-3d.png' ); ?>" alt="BrandedUK">
                 </a>
 
                 <form class="searchbar-header__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
