@@ -20,25 +20,34 @@
         return;
       }
       
-      // If already active, navigate to category page
+      // If already active, navigate immediately
       if (this.classList.contains('s--active')) {
         var category = this.getAttribute('data-category');
-        console.log('Hero clicked, category:', category);
         if (category) {
           window.location.href = 'shop.html?category=' + category;
         }
         return;
       }
+
+      // Step 1: Expand the panel (visual effect)
       $cont.classList.add('s--el-active');
 
       // Ensure the expanded panel is centered in the visible frame
-      // (if the user scrolled the strip before opening a card)
       lastScrollLeft = $cont.scrollLeft || 0;
       try {
         $cont.scrollLeft = 0;
       } catch (err) {}
 
       this.classList.add('s--active');
+
+      // Step 2: After full expansion animation, auto-navigate to the category
+      var clickedEl = this;
+      setTimeout(function() {
+        var category = clickedEl.getAttribute('data-category');
+        if (category) {
+          window.location.href = 'shop.html?category=' + category;
+        }
+      }, 2500);
     });
   });
 

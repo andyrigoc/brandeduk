@@ -14,6 +14,31 @@
         $cont.classList.remove('s--inactive');
     }, 300);
 
+    // Map frontend category to API productType slug
+    var categoryToSlug = {
+        'aprons': 'aprons',
+        'hoodies': 'hoodies',
+        'beanies': 'beanies',
+        'hivis': 'safety-vests',
+        'polo': 'polos',
+        'jackets': 'jackets',
+        'tshirts': 't-shirts',
+        'trousers': 'trousers',
+        'sustainable': 'sustainable'
+    };
+
+    function navigateToCategory(category) {
+        if (!category) return;
+        var productTypeSlug = categoryToSlug[category];
+        if (category === 'sustainable') {
+            window.location.href = 'shop-pc.html?accreditation=recycled';
+        } else if (productTypeSlug) {
+            window.location.href = 'shop-pc.html?productType=' + encodeURIComponent(productTypeSlug);
+        } else {
+            window.location.href = 'shop-pc.html?category=' + encodeURIComponent(category);
+        }
+    }
+
     $elsArr.forEach(function($el) {
         $el.addEventListener('click', function(e) {
             // Don't navigate if clicking close button or CTA link
@@ -21,44 +46,21 @@
                 return;
             }
             
-            // If already active, navigate to category page
+            // If already active, navigate immediately
             if (this.classList.contains('s--active')) {
-                var category = this.getAttribute('data-category');
-                
-                if (category) {
-                    // Map frontend category to API productType slug
-                    var categoryToSlug = {
-                        'aprons': 'aprons',
-                        'hoodies': 'hoodies',
-                        'beanies': 'beanies',
-                        'hivis': 'safety-vests', // Map Hivis to Safety Vests
-                        'polo': 'polos',
-                        'jackets': 'jackets',
-                        'tshirts': 't-shirts',
-                        'trousers': 'trousers',
-                        'sustainable': 'sustainable' // Special: will use accreditations filter
-                    };
-                    
-                    var productTypeSlug = categoryToSlug[category];
-                    
-                    if (category === 'sustainable') {
-                        // For sustainable, use accreditation API endpoint with 'recycled' slug
-                        // This uses /api/filters/accreditations/recycled/products
-                        window.location.href = 'shop-pc.html?accreditation=recycled';
-                    } else if (productTypeSlug) {
-                        // Use productType parameter only - clean URL with no other params
-                        window.location.href = 'shop-pc.html?productType=' + encodeURIComponent(productTypeSlug);
-                    } else {
-                        // Fallback to category
-                        window.location.href = 'shop-pc.html?category=' + encodeURIComponent(category);
-                    }
-                }
+                navigateToCategory(this.getAttribute('data-category'));
                 return;
             }
             
-            // Expand this panel
+            // Step 1: Expand this panel (visual effect)
             $cont.classList.add('s--el-active');
             this.classList.add('s--active');
+
+            // Step 2: After full expansion animation, auto-navigate to the category
+            var clickedEl = this;
+            setTimeout(function() {
+                navigateToCategory(clickedEl.getAttribute('data-category'));
+            }, 2500);
         });
     });
 
