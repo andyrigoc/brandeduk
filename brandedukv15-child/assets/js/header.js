@@ -1,4 +1,33 @@
 (function () {
+    if (typeof window !== 'undefined') {
+        if (window.__brandedukHeaderScriptsInitialized === true) {
+            return;
+        }
+        window.__brandedukHeaderScriptsInitialized = true;
+    }
+
+    function closeAllPromoDropdowns(exceptItem) {
+        document.querySelectorAll('.promotions-menu.is-open').forEach((item) => {
+            if (exceptItem && item === exceptItem) {
+                return;
+            }
+            item.classList.remove('is-open');
+            const trigger = item.querySelector(':scope > a');
+            if (trigger) {
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    function closeAllCatalogueDropdowns(exceptItem) {
+        document.querySelectorAll('.catalogue-menu.is-open').forEach((item) => {
+            if (exceptItem && item === exceptItem) return;
+            item.classList.remove('is-open');
+            const trigger = item.querySelector(':scope > a');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+    }
+
     function resetExpandedMenus(root) {
         if (!root) {
             return;
@@ -29,6 +58,68 @@
             }
             if (dropdown) {
                 dropdown.hidden = true;
+            }
+        });
+    }
+
+    function initPromoDropdownToggle() {
+        const promoItems = Array.from(document.querySelectorAll('.promotions-menu'));
+        if (!promoItems.length) {
+            return;
+        }
+
+        promoItems.forEach((item) => {
+            const trigger = item.querySelector(':scope > a');
+            const dropdown = item.querySelector(':scope > .promo-dropdown');
+            if (!trigger || !dropdown) {
+                return;
+            }
+
+            if (!trigger.hasAttribute('aria-expanded')) {
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            const toggle = (event) => {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                const willOpen = !item.classList.contains('is-open');
+                closeAllPromoDropdowns(item);
+                closeAllCatalogueDropdowns();
+                closeAllDropdowns();
+                closeAllSearchbarDropdowns();
+
+                item.classList.toggle('is-open', willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            };
+
+            trigger.addEventListener('click', toggle);
+
+            trigger.addEventListener('keydown', (event) => {
+                if (event.key === ' ' || event.key === 'Spacebar') {
+                    toggle(event);
+                }
+                if (event.key === 'Escape') {
+                    closeAllPromoDropdowns();
+                }
+            });
+
+            dropdown.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element)) return;
+            if (event.target.closest('.promotions-menu')) return;
+            closeAllPromoDropdowns();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeAllPromoDropdowns();
             }
         });
     }
@@ -278,11 +369,76 @@
         });
     }
 
+    function initCatalogueDropdownToggle() {
+        const catItems = Array.from(document.querySelectorAll('.catalogue-menu'));
+        if (!catItems.length) return;
+
+        catItems.forEach((item) => {
+            const trigger = item.querySelector(':scope > a');
+            const dropdown = item.querySelector(':scope > .catalogue-dropdown');
+            if (!trigger || !dropdown) return;
+
+            if (!trigger.hasAttribute('aria-expanded')) {
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            const toggle = (event) => {
+                if (event) { event.preventDefault(); event.stopPropagation(); }
+                const willOpen = !item.classList.contains('is-open');
+                closeAllCatalogueDropdowns(item);
+                closeAllPromoDropdowns();
+                closeAllDropdowns();
+                closeAllSearchbarDropdowns();
+                item.classList.toggle('is-open', willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            };
+
+            trigger.addEventListener('click', toggle);
+            trigger.addEventListener('keydown', (event) => {
+                if (event.key === ' ' || event.key === 'Spacebar') toggle(event);
+                if (event.key === 'Escape') closeAllCatalogueDropdowns();
+            });
+            dropdown.addEventListener('click', (event) => event.stopPropagation());
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element)) return;
+            if (event.target.closest('.catalogue-menu')) return;
+            closeAllCatalogueDropdowns();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAllCatalogueDropdowns();
+        });
+    }
+
+    function initFixedHeaderOffset() {
+        const header = document.querySelector('.site-header');
+        if (!header) return;
+
+        const update = () => {
+            const rect = header.getBoundingClientRect();
+            const height = Math.max(0, Math.ceil(rect.height));
+            document.documentElement.style.setProperty('--brandeduk-site-header-height', `${height}px`);
+        };
+
+        update();
+
+        if (typeof ResizeObserver !== 'undefined') {
+            const ro = new ResizeObserver(() => update());
+            ro.observe(header);
+        }
+
+        window.addEventListener('resize', update, { passive: true });
+    }
+
     function initHeaderScripts() {
+        initFixedHeaderOffset();
         initCategoryDropdown();
         initSearchbarHeaderDropdown();
         initModernSearchDropdown();
         initSearchExpandToggle();
+        initPromoDropdownToggle();
+        initCatalogueDropdownToggle();
     }
 
     if (document.readyState === 'loading') {

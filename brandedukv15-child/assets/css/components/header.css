@@ -12,6 +12,16 @@
     --header-shell-width: 1240px;
     --header-shell-padding: 28px;
     --header-surface-extra-width: 0px;
+    /* Fallback used before JS measures the real header height. */
+    --brandeduk-site-header-height: 220px;
+}
+
+/*
+  Fixed header/searchbar: the header must stay visible on scroll on EVERY page.
+  JS updates --brandeduk-site-header-height to prevent overlap.
+*/
+body {
+    padding-top: var(--brandeduk-site-header-height);
 }
 
 .header-top {
@@ -977,9 +987,12 @@
 }
 
 .site-header {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 60;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 2000;
     background: #ffffff;
     color: var(--brandeduk-header-navy);
     box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
@@ -1663,6 +1676,10 @@
     transform: rotate(180deg);
 }
 
+.promotions-menu.is-open > a .nav-caret::before {
+    transform: rotate(180deg);
+}
+
 .promo-dropdown {
     position: absolute;
     top: calc(100% + 12px);
@@ -1694,6 +1711,100 @@
 .promotions-menu:hover .promo-dropdown,
 .promotions-menu:focus-within .promo-dropdown {
     display: block;
+}
+
+.promotions-menu.is-open .promo-dropdown {
+    display: block;
+}
+
+/* ── Catalogue dropdown (simple 2-item list) ── */
+.catalogue-menu {
+    position: relative;
+}
+
+.catalogue-menu > a {
+    cursor: pointer;
+}
+
+.catalogue-menu > a .nav-caret::before {
+    content: "\25BE";
+    font-size: 12px;
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+}
+
+.catalogue-menu:hover > a .nav-caret::before,
+.catalogue-menu:focus-within > a .nav-caret::before,
+.catalogue-menu.is-open > a .nav-caret::before {
+    transform: rotate(180deg);
+}
+
+.catalogue-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #d6deed;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+    padding: 8px 0;
+    display: none;
+    z-index: 55;
+    list-style: none;
+    margin: 0;
+}
+
+.catalogue-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-top: 1px solid #d6deed;
+    border-left: 1px solid #d6deed;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.catalogue-menu:hover .catalogue-dropdown,
+.catalogue-menu:focus-within .catalogue-dropdown,
+.catalogue-menu.is-open .catalogue-dropdown {
+    display: block;
+}
+
+.catalogue-dropdown li {
+    margin: 0;
+    padding: 0;
+}
+
+.catalogue-dropdown li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+}
+
+.catalogue-dropdown li a:hover {
+    background: linear-gradient(180deg, rgba(122, 82, 204, 0.12), rgba(122, 82, 204, 0.06));
+    color: #7c3aed;
+}
+
+.catalogue-dropdown li a svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
 }
 
 .promo-dropdown-inner {
@@ -1804,23 +1915,6 @@
         flex-wrap: wrap;
         gap: 16px 20px;
     }
-
-    .promo-dropdown {
-        position: static;
-        transform: none;
-        margin-top: 12px;
-        min-width: 0;
-        width: 100%;
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
-    }
-
-    .promo-dropdown::before {
-        display: none;
-    }
-
-    .promo-dropdown-inner {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
 }
 
 @media (max-width: 1023px) {
@@ -1848,6 +1942,23 @@
         flex-direction: column;
         align-items: stretch;
         padding: 16px 20px;
+    }
+
+    .promo-dropdown {
+        position: static;
+        transform: none;
+        margin-top: 12px;
+        min-width: 0;
+        width: 100%;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+    }
+
+    .promo-dropdown::before {
+        display: none;
+    }
+
+    .promo-dropdown-inner {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 
     .category-dropdown .dropdown-box {

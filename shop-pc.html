@@ -1841,7 +1841,7 @@
         <div class="searchbar-header">
             <div class="searchbar-header__surface">
                 <div class="searchbar-header__inner">
-                    <a class="searchbar-header__brand" href="/home" aria-label="brandedUK home">
+                    <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
                         <img class="searchbar-header__brand-img"
                             src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BD" aria-hidden="true">
                         <span class="searchbar-header__brand-text">branded<span
@@ -2299,7 +2299,7 @@
                                 <li><a href="#">Winter Workwear</a></li>
                             </ul>
                         </li>
-                        <li><a href="/home">BrandedUK</a></li>
+                        <li><a href="index.html">BrandedUK</a></li>
                         <li class="has-megamenu exclusives-menu">
                             <a href="#" aria-haspopup="true">
                                 Exclusives
@@ -2369,7 +2369,41 @@
                                 </div>
                             </div>
                         </li>
-                        <li><a href="#">Promotions</a></li>
+                        <li class="has-megamenu promotions-menu">
+                            <a href="#" aria-haspopup="true" aria-expanded="false">
+                                Promotions
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <div class="promo-dropdown" role="region" aria-label="Promotional bundles">
+                                <div class="promo-dropdown-inner">
+                                    <figure class="promo-card promo-theme-1">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 1</figcaption>
+                                        <span class="promo-card-tag">Starter</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-2">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 2</figcaption>
+                                        <span class="promo-card-tag">Teams</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-3">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 3</figcaption>
+                                        <span class="promo-card-tag">Eco</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-4">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 4</figcaption>
+                                        <span class="promo-card-tag">Season</span>
+                                    </figure>
+                                    <figure class="promo-card promo-theme-5">
+                                        <div class="promo-card-thumb" aria-hidden="true"></div>
+                                        <figcaption class="promo-card-title">Bundle 5</figcaption>
+                                        <span class="promo-card-tag">Pro</span>
+                                    </figure>
+                                </div>
+                            </div>
+                        </li>
                         <li><a href="#">More</a></li>
                         <li><a href="#">Services</a></li>
                         <li><a href="#">About</a></li>
@@ -4727,8 +4761,8 @@
                         sessionStorage.setItem('selectedColorName', activeColor.dataset.color);
                         sessionStorage.setItem('selectedColorUrl', activeColor.dataset.main);
                     }
-                    // Navigate to product detail page
-                    window.location.href = '/product?code=' + product.code;
+                    // Navigate to product detail page (static prototype)
+                    window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code);
                 });
 
                 grid.appendChild(card);
