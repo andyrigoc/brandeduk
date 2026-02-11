@@ -172,6 +172,10 @@
             
             console.log(`📊 Product types received: ${productTypes.length} items`);
             
+            // Debug: Check if T-shirts is in the list
+            const tshirts = productTypes.find(t => t.name && t.name.toLowerCase().includes('t-shirt'));
+            console.log('🔍 T-shirts in API response:', tshirts);
+            
             if (!productTypes || productTypes.length === 0) {
                 console.warn('⚠️ No product types available');
                 menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #6b7280;">No product types available. Check console for details.</li>';
@@ -186,6 +190,10 @@
             // Generate and insert HTML
             const html = generateDropdownHTML(productTypes);
             console.log(`✅ Generated HTML for ${productTypes.length} product types`);
+            
+            // Debug: Check if T-shirts is in the generated HTML
+            console.log('🔍 T-shirts in HTML:', html.includes('T-shirts') || html.includes('tshirts'));
+            
             menuContainer.innerHTML = html;
             
             // Add click handlers for navigation
