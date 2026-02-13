@@ -136,8 +136,139 @@
             transition: color 0.2s ease;
         }
 
-        .searchbar-header__search-expand:focus-within .search-icon-expand {
+        .searchbar-header__search-expand:focus-within .search-input-expand {
             color: #a855f7;
+        }
+
+        /* Search Suggestions Dropdown */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+            border: 1px solid #eef2f6;
+            animation: fadeInSuggestions 0.2s ease-out;
+        }
+
+        @keyframes fadeInSuggestions {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-group {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .suggestion-group:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-group-title {
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #1f2937;
+        }
+
+        .suggestion-item:hover {
+            background: #f8fafc;
+        }
+
+        .suggestion-item mark {
+            background: transparent;
+            color: #a855f7;
+            font-weight: 700;
+            padding: 0;
+        }
+
+        .suggestion-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .suggestion-item-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: contain;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+        }
+
+        .suggestion-item-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .suggestion-item-label {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .suggestion-item-sub {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .no-suggestions {
+            padding: 24px 16px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .did-you-mean {
+            padding: 12px 16px;
+            background: #fef2f2;
+            border-bottom: 1px solid #fee2e2;
+        }
+
+        .did-you-mean-title {
+            font-size: 12px;
+            color: #ef4444;
+            margin-bottom: 4px;
         }
 
         /* Logo viola */
@@ -862,9 +993,9 @@
 
         .price-range-slider-container {
             position: relative;
-            width: 100%;
+            width: 90%;
             height: 6px;
-            margin: 20px 0;
+            margin: 20px auto;
         }
 
         .price-range-track {
@@ -886,6 +1017,7 @@
             position: absolute;
             width: 100%;
             height: 6px;
+            appearance: none;
             -webkit-appearance: none;
             background: transparent;
             pointer-events: none;
@@ -893,6 +1025,7 @@
         }
 
         .price-slider::-webkit-slider-thumb {
+            appearance: none;
             -webkit-appearance: none;
             width: 22px;
             height: 22px;
@@ -1539,6 +1672,7 @@
             margin-bottom: 8px;
             line-height: 1.4;
             display: -webkit-box;
+            line-clamp: 2;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
@@ -1841,12 +1975,14 @@
                     <div class="searchbar-header__actions">
                         <div class="searchbar-header__search-expand">
                             <input type="text" class="search-input-expand"
-                                placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                                placeholder="Search products, brands, categories..." id="searchbarHeaderInput"
+                                autocomplete="off">
                             <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
+                            <div class="search-suggestions" id="searchSuggestions"></div>
                         </div>
 
                         <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
@@ -4050,56 +4186,33 @@
         // Fetch filter counts and render dynamic filters
         async function fetchFilterCounts() {
             try {
-                // Build query params for filters API (same as product API)
+                // Build query params for filters API (using the same logic as product API)
+                const apiParams = buildApiParams();
                 const params = new URLSearchParams();
 
                 // Determine which filters API to use: brand-specific or general
-                let filterApiUrl;
+                let filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
 
                 if (currentState.brand) {
-                    // Use brand-specific filters API: /api/filters/brands/{brand}/filters
                     filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(currentState.brand)}/filters`;
                     console.log('🏷️ Using brand-specific filters API for:', currentState.brand);
-                } else {
-                    // Use general products filters API
-                    filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
+                }
 
-                    // Add productType if set
-                    if (currentState.productType) {
-                        params.append('productType', currentState.productType);
-                    } else if (currentState.category && currentState.category !== 'all') {
-                        const apiCategoryName = getApiCategoryName(currentState.category);
-                        if (apiCategoryName) {
-                            params.append('productType', apiCategoryName);
-                        }
+                // Append all params from buildApiParams to URLSearchParams
+                Object.keys(apiParams).forEach(key => {
+                    const value = apiParams[key];
+                    if (value === null || value === undefined || value === '') return;
+
+                    if (Array.isArray(value)) {
+                        value.forEach(v => {
+                            // If key already ends with [], don't add it again
+                            const paramKey = key.endsWith('[]') ? key : `${key}[]`;
+                            params.append(paramKey, v);
+                        });
+                    } else {
+                        params.append(key, value);
                     }
-                }
-
-                // Add search query if present
-                if (currentState.search && currentState.search.trim()) {
-                    params.append('q', currentState.search.trim());
-                }
-
-                // Add price range if set
-                if (currentState.priceMin !== null) {
-                    params.append('priceMin', currentState.priceMin);
-                }
-                if (currentState.priceMax !== null) {
-                    params.append('priceMax', currentState.priceMax);
-                }
-
-                // Add colour filter if set
-                if (currentState.color) {
-                    params.append('colour', currentState.color);
-                }
-
-                // Add quick filters
-                if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
-                    currentState.filters.quickFilters.forEach(flag => {
-                        const mappedFlag = FILTER_MAPPINGS.quickFilter?.[flag] || flag;
-                        params.append('flag[]', mappedFlag);
-                    });
-                }
+                });
 
                 const queryString = params.toString();
                 const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
@@ -4812,9 +4925,60 @@
 
             if (products.length === 0) {
                 console.log('⚠️ No products found matching criteria');
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">No products found${currentState.color ? ' for this colour' : ' matching your criteria'}.</div>`;
+
+                let noResultsHtml = `
+                    <div class="no-results-container" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #e2e8f0; margin: 20px 0;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                        <h3 style="font-size: 20px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">No products found</h3>
+                        <p style="color: #64748b; max-width: 400px; margin: 0 auto 24px;">We couldn't find any products matching "${currentState.search || 'your criteria'}".</p>
+                        <div id="noResultsSuggestions" class="no-results-suggestions"></div>
+                        <button onclick="document.querySelector('.clear-all-btn').click()" style="padding: 10px 24px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s;">Clear all filters</button>
+                    </div>`;
+
+                grid.innerHTML = noResultsHtml;
+
+                // If there's a search query, try to get "Did you mean" suggestions
+                if (currentState.search) {
+                    const suggestionContainer = document.getElementById('noResultsSuggestions');
+                    fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(currentState.search)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const { brands = [], types = [] } = data;
+                            const suggestions = [...brands, ...types].slice(0, 3);
+
+                            if (suggestions.length > 0) {
+                                let suggestHtml = '<div style="margin-bottom: 20px;"><p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">Did you mean?</p><div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">';
+                                suggestions.forEach(s => {
+                                    suggestHtml += `<button class="did-you-mean-btn" style="padding: 6px 16px; background: #a855f710; color: #a855f7; border: 1px solid #a855f730; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer;" onclick="handleSuggestionClick('${s.type}', '${s.value}', '${s.label}')">${s.label}</button>`;
+                                });
+                                suggestHtml += '</div></div>';
+                                suggestionContainer.innerHTML = suggestHtml;
+                            }
+                        })
+                        .catch(err => console.error('Error fetching fallback suggestions:', err));
+                }
                 return;
             }
+
+            // Global helper for fallback suggestions
+            window.handleSuggestionClick = function (type, value, label) {
+                const headerSearch = document.getElementById('searchbarHeaderInput');
+                if (type === 'brand') {
+                    currentState.brand = value;
+                    currentState.productType = null;
+                    currentState.search = '';
+                } else if (type === 'type') {
+                    currentState.productType = value;
+                    currentState.brand = null;
+                    currentState.search = '';
+                }
+
+                if (headerSearch) headerSearch.value = label;
+                currentState.page = 1;
+                updateURL();
+                renderProducts();
+                fetchFilterCounts();
+            };
 
             console.log(`✅ Rendering ${products.length} products to grid...`);
             console.log('📊 Rendering details:', {
@@ -5443,29 +5607,50 @@
             console.log('🔄 Updating price slider range from API:', { apiMin, apiMax });
 
             // Update slider min/max attributes
-            sliderMin.min = apiMin;
-            sliderMin.max = apiMax;
-            sliderMax.min = apiMin;
-            sliderMax.max = apiMax;
+            let rangeMin, rangeMax;
+
+            // If price filter is inactive, sync slider bounds with full API range.
+            // If active, PRESERVE existing bounds to avoid shrinking the range, allowing expansion.
+            if (currentState.priceMin === null && currentState.priceMax === null) {
+                rangeMin = apiMin;
+                rangeMax = apiMax;
+                sliderMin.min = rangeMin;
+                sliderMin.max = rangeMax;
+                sliderMax.min = rangeMin;
+                sliderMax.max = rangeMax;
+            } else {
+                // Filter active: use existing bounds
+                rangeMin = parseFloat(sliderMin.min);
+                rangeMax = parseFloat(sliderMax.max);
+                // Safety check: Fallback to API range if slider bounds are invalid
+                if (isNaN(rangeMin) || isNaN(rangeMax)) {
+                    rangeMin = apiMin;
+                    rangeMax = apiMax;
+                    sliderMin.min = rangeMin;
+                    sliderMin.max = rangeMax;
+                    sliderMax.min = rangeMin;
+                    sliderMax.max = rangeMax;
+                }
+            }
 
             // Determine the target slider values
             let currentMin, currentMax;
 
-            // If no price filter is active (both null), reset slider to full range
+            // If no price filter is active (both null), reset handles to full range
             if (currentState.priceMin === null && currentState.priceMax === null) {
-                currentMin = apiMin;
-                currentMax = apiMax;
-                console.log('🔄 No price filter active - resetting slider to full range');
+                currentMin = rangeMin;
+                currentMax = rangeMax;
+                console.log('🔄 No price filter active - resetting slider handles to full range');
             } else {
                 // Price filter is active - preserve user's selection but clamp to valid range
-                currentMin = currentState.priceMin !== null ? currentState.priceMin : apiMin;
-                currentMax = currentState.priceMax !== null ? currentState.priceMax : apiMax;
+                currentMin = currentState.priceMin !== null ? currentState.priceMin : rangeMin;
+                currentMax = currentState.priceMax !== null ? currentState.priceMax : rangeMax;
 
-                // Adjust values if they're outside the new range
-                if (currentMin < apiMin) currentMin = apiMin;
-                if (currentMin > apiMax) currentMin = apiMax;
-                if (currentMax < apiMin) currentMax = apiMin;
-                if (currentMax > apiMax) currentMax = apiMax;
+                // Adjust values if they're outside the allowed range
+                if (currentMin < rangeMin) currentMin = rangeMin;
+                if (currentMin > rangeMax) currentMin = rangeMax;
+                if (currentMax < rangeMin) currentMax = rangeMin;
+                if (currentMax > rangeMax) currentMax = rangeMax;
             }
 
             // Update slider values
@@ -5649,45 +5834,33 @@
             console.log('📝 To test: Click any filter checkbox and check the console for API call logs');
         }
 
-        // Search input handler
+        // Debounce utility
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // Search input handler (Sidebar only, Header is handled by header.js)
         function setupSearchInput() {
-            const searchInput = document.querySelector('.filter-search');
-            if (searchInput) {
-                // Only trigger API call on Enter key press
-                searchInput.addEventListener('keypress', async (e) => {
+            const sidebarSearch = document.querySelector('.filter-search');
+
+            // Sidebar search handler
+            if (sidebarSearch) {
+                sidebarSearch.addEventListener('keypress', async (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        currentState.search = e.target.value.trim();
-                        currentState.page = 1;
-                        updateURL();
-                        await renderProducts();
-                        await fetchFilterCounts();
-                    }
-                });
-
-                // Also allow clearing search on Escape
-                searchInput.addEventListener('keydown', async (e) => {
-                    if (e.key === 'Escape') {
-                        e.target.value = '';
-                        currentState.search = '';
-                        currentState.page = 1;
-                        updateURL();
-                        await renderProducts();
-                        await fetchFilterCounts();
-                    }
-                });
-            }
-
-            // Header search input
-            const headerSearch = document.getElementById('searchbarHeaderInput');
-            if (headerSearch) {
-                headerSearch.addEventListener('keypress', async (e) => {
-                    if (e.key === 'Enter') {
-                        currentState.search = e.target.value.trim();
-                        currentState.page = 1;
-                        updateURL();
-                        await renderProducts();
-                        await fetchFilterCounts();
+                        const query = e.target.value.trim();
+                        if (query) {
+                            currentState.search = query;
+                            currentState.page = 1;
+                            updateURL();
+                            await renderProducts();
+                            await fetchFilterCounts();
+                        }
                     }
                 });
             }

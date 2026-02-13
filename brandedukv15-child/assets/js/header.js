@@ -485,6 +485,121 @@
         window.addEventListener('resize', update, { passive: true });
     }
 
+    function initSearchTypeahead() {
+        // List of all known search input IDs on the site
+        const searchInputIds = ['searchbarHeaderInput', 'desktopSearchInput', 'searchInput', 'search-input'];
+
+        searchInputIds.forEach(id => {
+            const searchInput = document.getElementById(id);
+            if (!searchInput) return;
+
+            // Ensure parent has relative positioning
+            const inputWrap = searchInput.parentElement;
+            if (inputWrap) {
+                inputWrap.classList.add('search-input-wrap-relative');
+            }
+
+            // Inject suggestion box if it doesn't exist for THIS input
+            const suggestionBoxId = `searchSuggestions_${id}`;
+            let suggestionBox = document.getElementById(suggestionBoxId);
+            if (!suggestionBox) {
+                suggestionBox = document.createElement('div');
+                suggestionBox.id = suggestionBoxId;
+                suggestionBox.className = 'search-suggestions';
+                inputWrap.appendChild(suggestionBox);
+            }
+
+            // Disable browser autocomplete
+            searchInput.setAttribute('autocomplete', 'off');
+
+            let debounceTimer;
+            const debounce = (callback, time) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(callback, time);
+            };
+
+            const renderSuggestions = (data, query) => {
+                const { products = [] } = data;
+
+                if (products.length === 0) {
+                    suggestionBox.classList.remove('active');
+                    return;
+                }
+
+                const highlight = (text) => {
+                    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    return text.replace(regex, '<mark>$1</mark>');
+                };
+
+                // Premium UI for Products
+                let html = '<div class="suggestion-group-title">Product Results</div>';
+
+                products.slice(0, 8).forEach(product => {
+                    const detailUrl = `product-detail.html?code=${product.value}`;
+                    const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
+
+                    html += `
+                        <a href="${detailUrl}" class="suggestion-item">
+                            <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='/brandedukv15-child/assets/images/ui/no-image.png'">
+                            <div class="suggestion-item-content">
+                                <div class="suggestion-item-label">${highlight(product.label)}</div>
+                                <div class="suggestion-item-sub">
+                                    <span>Code: ${product.value}</span>
+                                </div>
+                            </div>
+                        </a>`;
+                });
+
+                // View all results link
+                html += `
+                    <a href="shop-pc.html?q=${encodeURIComponent(query)}" class="view-all-results">
+                        View all results for "${query}" →
+                    </a>`;
+
+                suggestionBox.innerHTML = html;
+                suggestionBox.classList.add('active');
+            };
+
+            const fetchSuggestions = async (query) => {
+                if (query.length < 2) {
+                    suggestionBox.classList.remove('active');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(query)}`);
+                    if (!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    renderSuggestions(data, query);
+                } catch (error) {
+                    console.error('Search Suggestion Error:', error);
+                }
+            };
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                debounce(() => fetchSuggestions(query), 300);
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                    suggestionBox.classList.remove('active');
+                }
+            });
+
+            // Handle enter key
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        window.location.href = `shop-pc.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        });
+    }
+
     function initHeaderScripts() {
         initFixedHeaderOffset();
         initCategoryDropdown();
@@ -494,6 +609,7 @@
         initPromoDropdownToggle();
         initExclusivesDropdownToggle();
         initCatalogueDropdownToggle();
+        initSearchTypeahead();
     }
 
     if (document.readyState === 'loading') {
