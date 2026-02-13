@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -20,6 +21,7 @@
             margin-left: 8px !important;
             padding-left: 0 !important;
         }
+
         .mobile-header .social-icons-mobile .social-icon {
             width: 27px !important;
             height: 27px !important;
@@ -29,6 +31,7 @@
             max-height: 27px !important;
             border-radius: 7px !important;
         }
+
         .mobile-header .social-icons-mobile .social-icon i {
             font-size: 12px !important;
         }
@@ -52,7 +55,6 @@
             color: inherit;
             text-decoration: none;
         }
-
     </style>
     <style>
         /* Desktop header (same as main page) */
@@ -64,6 +66,7 @@
         .desktop-site-header .searchbar-header__account .searchbar-header__action-ring {
             background: #7c3aed;
         }
+
         .desktop-site-header .searchbar-header__account .searchbar-header__action-icon {
             stroke: #fff;
             fill: none;
@@ -73,53 +76,80 @@
         .desktop-site-header .header-top .social-buttons-header {
             gap: 10px;
         }
+
         .desktop-site-header .header-top .social-buttons-header a {
             width: 32px;
             height: 32px;
             transition: all 0.3s ease;
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-icon svg {
             width: 14px;
             height: 14px;
             transition: fill 0.3s ease;
         }
-        .desktop-site-header .header-top .social-buttons-header .social-facebook .social-icon svg { fill: #1877f2; }
+
+        .desktop-site-header .header-top .social-buttons-header .social-facebook .social-icon svg {
+            fill: #1877f2;
+        }
+
         .desktop-site-header .header-top .social-buttons-header .social-facebook:hover {
             box-shadow: 0 6px 20px rgba(24, 119, 242, 0.6);
             transform: translateY(-2px);
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-facebook:hover .social-icon {
             background: linear-gradient(0deg, #e7f3ff, #fff);
         }
-        .desktop-site-header .header-top .social-buttons-header .social-instagram .social-icon svg { fill: #e4405f; }
+
+        .desktop-site-header .header-top .social-buttons-header .social-instagram .social-icon svg {
+            fill: #e4405f;
+        }
+
         .desktop-site-header .header-top .social-buttons-header .social-instagram:hover {
             box-shadow: 0 6px 20px rgba(228, 64, 95, 0.6);
             transform: translateY(-2px);
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-instagram:hover .social-icon {
             background: linear-gradient(0deg, #fce4ec, #fff);
         }
-        .desktop-site-header .header-top .social-buttons-header .social-linkedin .social-icon svg { fill: #0a66c2; }
+
+        .desktop-site-header .header-top .social-buttons-header .social-linkedin .social-icon svg {
+            fill: #0a66c2;
+        }
+
         .desktop-site-header .header-top .social-buttons-header .social-linkedin:hover {
             box-shadow: 0 6px 20px rgba(10, 102, 194, 0.6);
             transform: translateY(-2px);
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-linkedin:hover .social-icon {
             background: linear-gradient(0deg, #e8f4fc, #fff);
         }
-        .desktop-site-header .header-top .social-buttons-header .social-youtube .social-icon svg { fill: #ff0000; }
+
+        .desktop-site-header .header-top .social-buttons-header .social-youtube .social-icon svg {
+            fill: #ff0000;
+        }
+
         .desktop-site-header .header-top .social-buttons-header .social-youtube:hover {
             box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
             transform: translateY(-2px);
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-youtube:hover .social-icon {
             background: linear-gradient(0deg, #ffe5e5, #fff);
         }
-        .desktop-site-header .header-top .social-buttons-header .social-pinterest .social-icon svg { fill: #bd081c; }
+
+        .desktop-site-header .header-top .social-buttons-header .social-pinterest .social-icon svg {
+            fill: #bd081c;
+        }
+
         .desktop-site-header .header-top .social-buttons-header .social-pinterest:hover {
             box-shadow: 0 6px 20px rgba(189, 8, 28, 0.6);
             transform: translateY(-2px);
         }
+
         .desktop-site-header .header-top .social-buttons-header .social-pinterest:hover .social-icon {
             background: linear-gradient(0deg, #fce4e8, #fff);
         }
@@ -132,9 +162,11 @@
             transition: width 0.3s ease-in-out;
             margin-right: 8px;
         }
+
         .desktop-site-header .searchbar-header__search-expand:focus-within {
             width: 320px;
         }
+
         .desktop-site-header .searchbar-header__search-expand .search-input-expand {
             position: absolute;
             right: 0;
@@ -146,13 +178,16 @@
             border-radius: 9999px;
             padding: 12px 44px 12px 20px;
         }
+
         .desktop-site-header .searchbar-header__search-expand .search-input-expand::placeholder {
             color: transparent;
             transition: color 0.2s ease;
         }
+
         .desktop-site-header .searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
             color: #9ca3af;
         }
+
         .desktop-site-header .searchbar-header__search-expand .search-icon-expand {
             position: absolute;
             top: 50%;
@@ -188,7 +223,7 @@
             padding: 12px 0;
             border-bottom: 1px solid #e5e7eb;
         }
-        
+
         .categories-filter-scroll .categories-scroll {
             display: flex;
             gap: 10px;
@@ -198,11 +233,11 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
-        
+
         .categories-filter-scroll .categories-scroll::-webkit-scrollbar {
             display: none;
         }
-        
+
         .category-filter-card {
             flex: 0 0 auto;
             display: flex;
@@ -218,12 +253,12 @@
             scroll-snap-align: start;
             min-width: 70px;
         }
-        
+
         .category-filter-card:hover {
             background: #e5e7eb;
             transform: translateY(-2px);
         }
-        
+
         .category-filter-card.active {
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
             border-color: #7c3aed;
@@ -231,15 +266,15 @@
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
         }
-        
+
         .category-filter-card.active .category-icon svg {
             stroke: #fff;
         }
-        
+
         .category-filter-card.active .category-icon img {
             filter: brightness(0) invert(1);
         }
-        
+
         .category-filter-card .category-icon {
             width: 28px;
             height: 28px;
@@ -247,7 +282,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .category-filter-card .category-icon img,
         .category-filter-card .category-icon svg {
             width: 24px;
@@ -255,40 +290,41 @@
             object-fit: contain;
             transition: filter 0.3s ease;
         }
-        
+
         .category-filter-card span {
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
         }
-        
+
         /* Products fade animation */
         .products-grid-shop.filtering .product-card-shop {
             opacity: 0;
             transform: translateY(20px);
         }
-        
+
         .product-card-shop {
             opacity: 1;
             transform: translateY(0);
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        
+
         .product-card-shop.fade-in {
             animation: fadeInUp 0.4s ease forwards;
         }
-        
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         /* Filter Toggles - 20% bigger + custom colors */
         .filter-toggle-row .vat-toggle-mobile {
             transform: none;
@@ -310,33 +346,33 @@
             border-radius: 9999px;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox:checked + .vat-toggle-label:after {
+        #filtersDropup .filters-toggles .vat-checkbox:checked+.vat-toggle-label:after {
             left: calc(100% - 2px);
             transform: translateX(-100%);
         }
-        
+
         /* Special Filters: checked colors (use data-filter to avoid nth-child mismatches) */
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="newIn"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="newIn"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="bradeal"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="bradeal"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #ef4444, #dc2626) !important;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="offers"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="offers"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #a855f7, #9333ea) !important;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="inStock"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="inStock"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #64748b, #475569) !important;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="recycled"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="recycled"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #14b8a6, #0d9488) !important;
         }
 
-        #filtersDropup .filters-toggles .vat-checkbox[data-filter="plusSizes"]:checked + .vat-toggle-label {
+        #filtersDropup .filters-toggles .vat-checkbox[data-filter="plusSizes"]:checked+.vat-toggle-label {
             background: linear-gradient(90deg, #f97316, #ea580c) !important;
         }
 
@@ -344,7 +380,7 @@
         .filters-toggles {
             display: none !important;
         }
-        
+
         /* Filter count badges */
         .filter-checkbox .count,
         .filter-color .count,
@@ -391,7 +427,7 @@
             min-width: 14px;
             text-align: center;
         }
-        
+
         /* Logo spacing for back button - Tablet */
         @media (min-width: 768px) {
             .mobile-logo-center {
@@ -564,7 +600,7 @@
             background: #17a2b8;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             pointer-events: all;
             border: 3px solid white;
         }
@@ -575,7 +611,7 @@
             background: #17a2b8;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             pointer-events: all;
             border: 3px solid white;
         }
@@ -617,6 +653,7 @@
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
+
 <body>
 
     <!-- Desktop Header (from main page) -->
@@ -625,55 +662,82 @@
             <div class="header-container">
                 <div class="header-top-left">
                     <ul class="social-buttons-header">
-                        <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook" target="_blank" rel="noopener" aria-label="Facebook">
-                            <span class="social-icon">
-                                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            </span>
-                        </a></li>
-                        <li><a href="https://www.instagram.com/brandeduk_workwear/" class="social-instagram" target="_blank" rel="noopener" aria-label="Instagram">
-                            <span class="social-icon">
-                                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                            </span>
-                        </a></li>
-                        <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
-                            <span class="social-icon">
-                                <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                            </span>
-                        </a></li>
-                        <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube" target="_blank" rel="noopener" aria-label="YouTube">
-                            <span class="social-icon">
-                                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            </span>
-                        </a></li>
-                        <li><a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
-                            <span class="social-icon">
-                                <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
-                            </span>
-                        </a></li>
+                        <li><a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-facebook"
+                                target="_blank" rel="noopener" aria-label="Facebook">
+                                <span class="social-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                    </svg>
+                                </span>
+                            </a></li>
+                        <li><a href="https://www.instagram.com/brandeduk_workwear/" class="social-instagram"
+                                target="_blank" rel="noopener" aria-label="Instagram">
+                                <span class="social-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                                    </svg>
+                                </span>
+                            </a></li>
+                        <li><a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-linkedin"
+                                target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <span class="social-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                                    </svg>
+                                </span>
+                            </a></li>
+                        <li><a href="https://www.youtube.com/@barudanamericainc3060" class="social-youtube"
+                                target="_blank" rel="noopener" aria-label="YouTube">
+                                <span class="social-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                    </svg>
+                                </span>
+                            </a></li>
+                        <li><a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed"
+                                class="social-pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+                                <span class="social-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
+                                    </svg>
+                                </span>
+                            </a></li>
                     </ul>
                 </div>
                 <div class="header-top-right">
                     <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
                     <nav class="header-top-links" aria-label="utility navigation">
                         <a href="tel:02089742722" class="header-top-phone">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
                             </svg>
                             0208 974 2722
                         </a>
                         <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
-                            <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
-                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                            <button class="header-top-vat-toggle" type="button" aria-pressed="false"
+                                aria-label="Toggle VAT pricing">
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc"
+                                    data-vat-exc>exc vat</span>
                                 <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
-                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
+                                <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc"
+                                    data-vat-inc>inc vat</span>
                             </button>
                         </div>
                         <a class="header-top-basket-link" href="customize-positions-pc.html" aria-label="View quote">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M6 6h15l-1.5 9h-12z"/>
-                                <circle cx="9" cy="20" r="1"/>
-                                <circle cx="18" cy="20" r="1"/>
-                                <path d="M6 6L5 3H2"/>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 6h15l-1.5 9h-12z" />
+                                <circle cx="9" cy="20" r="1" />
+                                <circle cx="18" cy="20" r="1" />
+                                <path d="M6 6L5 3H2" />
                             </svg>
                             <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
                         </a>
@@ -686,13 +750,16 @@
             <div class="searchbar-header__surface">
                 <div class="searchbar-header__inner">
                     <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
-                        <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                        <img class="searchbar-header__brand-img"
+                            src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
                     </a>
 
                     <div class="searchbar-header__actions">
                         <div class="searchbar-header__search-expand">
-                            <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
-                            <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <input type="text" class="search-input-expand"
+                                placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                            <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
@@ -701,24 +768,30 @@
                         <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
                             <span class="searchbar-header__action-ring is-animating">
                                 <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                                    <path
+                                        d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z">
+                                    </path>
                                 </svg>
                             </span>
                         </a>
 
                         <a class="searchbar-header__action" href="#" data-open-tawk="1" aria-label="Chat with us">
                             <span class="searchbar-header__action-ring is-animating">
-                                <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                                <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp"
+                                    viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z">
+                                    </path>
                                 </svg>
                             </span>
                         </a>
 
-                        <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
+                        <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account"
+                            id="accountBtn">
                             <span class="searchbar-header__action-ring is-animating">
                                 <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
                                 </svg>
                             </span>
                         </a>
@@ -730,7 +803,8 @@
         <div class="header-bottom sticky-header">
             <div class="header-container">
                 <div class="category-dropdown has-border" data-visible="false">
-                    <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                    <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false"
+                        title="Browse Categories">
                         <span class="category-toggle-icon" aria-hidden="true"></span>
                         <span class="category-toggle-label">Browse Categories</span>
                         <span class="category-toggle-caret" aria-hidden="true"></span>
@@ -739,7 +813,9 @@
                         <ul class="menu vertical-menu category-menu">
                             <li class="has-children">
                                 <a href="category-tshirts.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png"
+                                        alt="" aria-hidden="true">
                                     <span class="category-text">T-Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -764,7 +840,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-polo.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Polo Shirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -786,7 +864,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-hoodies.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png"
+                                        alt="" aria-hidden="true">
                                     <span class="category-text">Hoodies &amp; Sweatshirts</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -807,7 +887,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-jackets.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Jackets &amp; Softshell</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -829,7 +911,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-hivis.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Hi-Vis Clothing</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -851,7 +935,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-trousers.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Work Trousers</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -860,18 +946,20 @@
                                         <ul>
                                             <li><a href="#">Cargo Pants</a></li>
                                             <a href="category-workwear.html">
-                                            <li><a href="#">Stretch Work Trousers</a></li>
-                                            <li><a href="#">Waterproof / Over-trousers</a></li>
-                                            <li><a href="#">Work Shorts</a></li>
-                                            <li><a href="#">Work Trousers</a></li>
-                                            <li><a href="#">Women's Work Trousers</a></li>
+                                                <li><a href="#">Stretch Work Trousers</a></li>
+                                                <li><a href="#">Waterproof / Over-trousers</a></li>
+                                                <li><a href="#">Work Shorts</a></li>
+                                                <li><a href="#">Work Trousers</a></li>
+                                                <li><a href="#">Women's Work Trousers</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
                                 <a href="shop.html?category=aprons">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Work &amp; Uniforms</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -889,7 +977,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-fleeces.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Fleeces</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -898,17 +988,19 @@
                                         <ul>
                                             <li><a href="#">Full Zip Fleece</a></li>
                                             <a href="category-headwear.html">
-                                            <li><a href="#">Heavy Fleece</a></li>
-                                            <li><a href="#">Kids Fleece</a></li>
-                                            <li><a href="#">Microfleece Jackets</a></li>
-                                            <li><a href="#">Women's Fleece</a></li>
+                                                <li><a href="#">Heavy Fleece</a></li>
+                                                <li><a href="#">Kids Fleece</a></li>
+                                                <li><a href="#">Microfleece Jackets</a></li>
+                                                <li><a href="#">Women's Fleece</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             <li class="has-children">
                                 <a href="shop.html?category=beanies">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Headwear / Accessories</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -928,7 +1020,9 @@
                             </li>
                             <li class="has-children">
                                 <a href="category-sustainable.html">
-                                    <img class="category-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt="" aria-hidden="true">
+                                    <img class="category-icon"
+                                        src="brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""
+                                        aria-hidden="true">
                                     <span class="category-text">Sustainable / Recycled &amp; Organic</span>
                                     <span class="category-caret" aria-hidden="true"></span>
                                 </a>
@@ -1158,29 +1252,42 @@
                                     <a href="shop.html?brand=adidas%C2%AE" class="exclusive-brand" title="Adidas">
                                         <img src="brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
                                     </a>
-                                    <a href="shop.html?brand=b%26c-collection" class="exclusive-brand" title="B&C Collection">
-                                        <img src="brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&C">
+                                    <a href="shop.html?brand=b%26c-collection" class="exclusive-brand"
+                                        title="B&C Collection">
+                                        <img src="brandedukv15-child/assets/images/brands/bandc-collection.png"
+                                            alt="B&C">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand">
+                                    <a href="shop.html?brand=build-your-brand" class="exclusive-brand"
+                                        title="Build Your Brand">
+                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand.png"
+                                            alt="Build Your Brand">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brand-basic" class="exclusive-brand" title="Build Your Brand Basic">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg" alt="Build Your Brand Basic">
+                                    <a href="shop.html?brand=build-your-brand-basic" class="exclusive-brand"
+                                        title="Build Your Brand Basic">
+                                        <img src="brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg"
+                                            alt="Build Your Brand Basic">
                                     </a>
-                                    <a href="shop.html?brand=build-your-brandit" class="exclusive-brand" title="Brandit">
-                                        <img src="brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg" alt="Brandit">
+                                    <a href="shop.html?brand=build-your-brandit" class="exclusive-brand"
+                                        title="Brandit">
+                                        <img src="brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg"
+                                            alt="Brandit">
                                     </a>
-                                    <a href="shop.html?brand=comfort-colors%C2%AE" class="exclusive-brand" title="Comfort Colors">
-                                        <img src="brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
+                                    <a href="shop.html?brand=comfort-colors%C2%AE" class="exclusive-brand"
+                                        title="Comfort Colors">
+                                        <img src="brandedukv15-child/assets/images/brands/comfort-colors.webp"
+                                            alt="Comfort Colors">
                                     </a>
-                                    <a href="shop.html?brand=new-morning-studios" class="exclusive-brand" title="New Morning Studios">
-                                        <img src="brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png" alt="New Morning Studios">
+                                    <a href="shop.html?brand=new-morning-studios" class="exclusive-brand"
+                                        title="New Morning Studios">
+                                        <img src="brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png"
+                                            alt="New Morning Studios">
                                     </a>
                                     <a href="shop.html?brand=nimbus" class="exclusive-brand" title="Nimbus">
                                         <img src="brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nimbus">
                                     </a>
                                     <a href="shop.html?brand=nutshell%C2%AE" class="exclusive-brand" title="Nutshell">
-                                        <img src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp" alt="Nutshell">
+                                        <img src="brandedukv15-child/assets/images/brands/nutshell-bag2020.webp"
+                                            alt="Nutshell">
                                     </a>
                                     <a href="shop.html?brand=ogio" class="exclusive-brand" title="OGIO">
                                         <img src="brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
@@ -1189,13 +1296,15 @@
                                         <img src="brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
                                     </a>
                                     <a href="shop.html?brand=ribbon" class="exclusive-brand" title="Ribbon">
-                                        <img src="brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg" alt="Ribbon">
+                                        <img src="brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg"
+                                            alt="Ribbon">
                                     </a>
                                     <a href="shop.html?brand=tridri%C2%AE" class="exclusive-brand" title="TriDri">
                                         <img src="brandedukv15-child/assets/images/brands/tridri.webp" alt="Tri Dri">
                                     </a>
                                     <a href="shop.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
-                                        <img src="brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour">
+                                        <img src="brandedukv15-child/assets/images/brands/under-armour.webp"
+                                            alt="Under Armour">
                                     </a>
                                     <a href="shop.html?brand=wombat" class="exclusive-brand" title="Wombat">
                                         <img src="brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
@@ -1205,10 +1314,17 @@
                         </li>
                         <li><a href="#">More</a></li>
                         <li><a href="#">Services</a></li>
-                        <li class="catalogue-menu"><a href="#" aria-expanded="false">Catalogue <span class="nav-caret" aria-hidden="true"></span></a>
+                        <li class="catalogue-menu"><a href="#" aria-expanded="false">Catalogue <span class="nav-caret"
+                                    aria-hidden="true"></span></a>
                             <ul class="catalogue-dropdown">
-                                <li><a href="catalogue.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 1</a></li>
-                                <li><a href="catalogue2.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 2</a></li>
+                                <li><a href="catalogue.html"><svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20">
+                                            </path>
+                                        </svg> Catalogue 1</a></li>
+                                <li><a href="catalogue2.html"><svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20">
+                                            </path>
+                                        </svg> Catalogue 2</a></li>
                             </ul>
                         </li>
                         <li><a href="#">About</a></li>
@@ -1217,45 +1333,51 @@
             </div>
         </div>
     </header>
-    
+
     <!-- Tablet Top Bar (768px+) -->
     <div class="tablet-top-bar">
         <div class="tablet-top-bar__left">
             <div class="social-icons-container">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook"
+                    target="_blank" rel="noopener">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank"
+                    rel="noopener">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin"
+                    target="_blank" rel="noopener">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank"
+                    rel="noopener">
                     <i class="fab fa-youtube"></i>
                 </a>
-                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed"
+                    class="social-icon pinterest" target="_blank" rel="noopener">
                     <i class="fab fa-pinterest-p"></i>
                 </a>
             </div>
         </div>
-        
+
         <div class="tablet-top-bar__center">
             <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                    <path d="m2 7 10 7 10-7"/>
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m2 7 10 7 10-7" />
                 </svg>
                 info@brandeduk.com
             </a>
             <a href="tel:02089742722" class="tablet-top-bar__phone">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 0208 974 2722
             </a>
         </div>
-        
+
         <div class="tablet-top-bar__right">
             <div class="vat-toggle-tablet">
                 <span class="vat-label vat-label--exc">EXC VAT</span>
@@ -1265,26 +1387,31 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Mobile Header -->
     <header class="mobile-header">
         <!-- Top Row: Social + VAT Toggle -->
         <div class="header-top-row">
             <!-- Social Buttons Left -->
             <div class="social-icons-container social-icons-mobile">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook"
+                    target="_blank" rel="noopener">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank"
+                    rel="noopener">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin"
+                    target="_blank" rel="noopener">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank"
+                    rel="noopener">
                     <i class="fab fa-youtube"></i>
                 </a>
-                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed"
+                    class="social-icon pinterest" target="_blank" rel="noopener">
                     <i class="fab fa-pinterest-p"></i>
                 </a>
             </div>
@@ -1306,7 +1433,8 @@
             <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
                 <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
-                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
@@ -1326,10 +1454,10 @@
             <button class="category-filter-card active" data-category="all">
                 <div class="category-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7"/>
-                        <rect x="14" y="3" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
                     </svg>
                 </div>
                 <span>All</span>
@@ -1446,10 +1574,13 @@
         </div>
         <!-- Pagination -->
         <div class="shop-pagination-mobile" id="mobilePagination" style="display: none;">
-            <button type="button" class="shop-pagination-button" id="mobilePaginationFirst" title="First page">«</button>
-            <button type="button" class="shop-pagination-button" id="mobilePaginationPrev" title="Previous page">&lt;</button>
+            <button type="button" class="shop-pagination-button" id="mobilePaginationFirst"
+                title="First page">«</button>
+            <button type="button" class="shop-pagination-button" id="mobilePaginationPrev"
+                title="Previous page">&lt;</button>
             <span id="mobilePaginationPageNumbers"></span>
-            <button type="button" class="shop-pagination-button" id="mobilePaginationNext" title="Next page">&gt;</button>
+            <button type="button" class="shop-pagination-button" id="mobilePaginationNext"
+                title="Next page">&gt;</button>
             <button type="button" class="shop-pagination-button" id="mobilePaginationLast" title="Last page">»</button>
         </div>
     </div>
@@ -1465,22 +1596,23 @@
     <nav class="bottom-nav">
         <a href="index.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span class="nav-item-label">Home</span>
         </a>
         <a href="shop.html" class="nav-item active">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
         <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <svg class="filter-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <svg class="filter-icon-svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <line x1="6" y1="21" x2="6" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="3"></line>
                 <line x1="18" y1="21" x2="18" y2="3"></line>
@@ -1492,9 +1624,9 @@
 
         <a href="basket.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
             <span class="nav-badge" id="navBasketBadge" style="display: none;">0</span>
             <span class="nav-item-label">Basket</span>
@@ -1502,8 +1634,8 @@
 
         <a href="#" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
             </svg>
             <span class="nav-item-label">Account</span>
         </a>
@@ -1567,7 +1699,8 @@
             <!-- SEARCH WITHIN RESULTS -->
             <div class="filters-section">
                 <label class="filter-search-label">Search products</label>
-                <input type="text" class="filter-search-input" id="filterSearchInput" placeholder="Search within results...">
+                <input type="text" class="filter-search-input" id="filterSearchInput"
+                    placeholder="Search within results...">
             </div>
 
             <!-- PRICE RANGE -->
@@ -1634,7 +1767,8 @@
                         <span class="filter-expandable__arrow">›</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="short-sleeve-2"> Short Sleeve</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="short-sleeve-2"> Short
+                            Sleeve</label>
                         <label class="filter-checkbox"><input type="checkbox" value="long-sleeve-2"> Long Sleeve</label>
                         <label class="filter-checkbox"><input type="checkbox" value="sleeveless"> Sleeveless</label>
                         <label class="filter-checkbox"><input type="checkbox" value="raglan-sleeve"> Raglan</label>
@@ -1655,7 +1789,8 @@
                         <label class="filter-checkbox"><input type="checkbox" value="mandarin"> Mandarin</label>
                         <label class="filter-checkbox"><input type="checkbox" value="scoop-neck-2"> Scoop Neck</label>
                         <label class="filter-checkbox"><input type="checkbox" value="zip-neck-2"> Zip Neck</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="button-down-collar"> Button Down</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="button-down-collar"> Button
+                            Down</label>
                     </div>
                 </div>
 
@@ -1667,9 +1802,11 @@
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="en-iso-20471"> EN ISO 20471</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="ris-3279-tom-rail"> RIS-3279-TOM Rail</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="ris-3279-tom-rail"> RIS-3279-TOM
+                            Rail</label>
                         <label class="filter-checkbox"><input type="checkbox" value="oeko-tex"> OEKO-TEX</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="gots-licence"> GOTS Certified</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="gots-licence"> GOTS
+                            Certified</label>
                         <label class="filter-checkbox"><input type="checkbox" value="fairtrade-"> Fair Trade</label>
                     </div>
                 </div>
@@ -1681,21 +1818,37 @@
                         <span class="filter-expandable__arrow">›</span>
                     </div>
                     <div class="filter-expandable__content filter-colors-grid">
-                        <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox" value="black"><span>Black</span></label>
-                        <label class="filter-color" style="--color: #ffffff"><input type="checkbox" value="white"><span>White</span></label>
-                        <label class="filter-color" style="--color: #000080"><input type="checkbox" value="navy"><span>Navy</span></label>
-                        <label class="filter-color" style="--color: #808080"><input type="checkbox" value="grey"><span>Grey</span></label>
-                        <label class="filter-color" style="--color: #ff0000"><input type="checkbox" value="red"><span>Red</span></label>
-                        <label class="filter-color" style="--color: #0000ff"><input type="checkbox" value="blue"><span>Blue</span></label>
-                        <label class="filter-color" style="--color: #008000"><input type="checkbox" value="green"><span>Green</span></label>
-                        <label class="filter-color" style="--color: #ffff00"><input type="checkbox" value="yellow"><span>Yellow</span></label>
-                        <label class="filter-color" style="--color: #ffa500"><input type="checkbox" value="orange"><span>Orange</span></label>
-                        <label class="filter-color" style="--color: #800080"><input type="checkbox" value="purple"><span>Purple</span></label>
-                        <label class="filter-color" style="--color: #ffc0cb"><input type="checkbox" value="pink"><span>Pink</span></label>
-                        <label class="filter-color" style="--color: #8b4513"><input type="checkbox" value="brown"><span>Brown</span></label>
-                        <label class="filter-color" style="--color: #800020"><input type="checkbox" value="burgundy"><span>Burgundy</span></label>
-                        <label class="filter-color" style="--color: #c3b091"><input type="checkbox" value="khaki"><span>Khaki</span></label>
-                        <label class="filter-color filter-color--multi" style="background: linear-gradient(135deg, red, orange, yellow, green, blue, purple)"><input type="checkbox" value="multi"><span>Multi</span></label>
+                        <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox"
+                                value="black"><span>Black</span></label>
+                        <label class="filter-color" style="--color: #ffffff"><input type="checkbox"
+                                value="white"><span>White</span></label>
+                        <label class="filter-color" style="--color: #000080"><input type="checkbox"
+                                value="navy"><span>Navy</span></label>
+                        <label class="filter-color" style="--color: #808080"><input type="checkbox"
+                                value="grey"><span>Grey</span></label>
+                        <label class="filter-color" style="--color: #ff0000"><input type="checkbox"
+                                value="red"><span>Red</span></label>
+                        <label class="filter-color" style="--color: #0000ff"><input type="checkbox"
+                                value="blue"><span>Blue</span></label>
+                        <label class="filter-color" style="--color: #008000"><input type="checkbox"
+                                value="green"><span>Green</span></label>
+                        <label class="filter-color" style="--color: #ffff00"><input type="checkbox"
+                                value="yellow"><span>Yellow</span></label>
+                        <label class="filter-color" style="--color: #ffa500"><input type="checkbox"
+                                value="orange"><span>Orange</span></label>
+                        <label class="filter-color" style="--color: #800080"><input type="checkbox"
+                                value="purple"><span>Purple</span></label>
+                        <label class="filter-color" style="--color: #ffc0cb"><input type="checkbox"
+                                value="pink"><span>Pink</span></label>
+                        <label class="filter-color" style="--color: #8b4513"><input type="checkbox"
+                                value="brown"><span>Brown</span></label>
+                        <label class="filter-color" style="--color: #800020"><input type="checkbox"
+                                value="burgundy"><span>Burgundy</span></label>
+                        <label class="filter-color" style="--color: #c3b091"><input type="checkbox"
+                                value="khaki"><span>Khaki</span></label>
+                        <label class="filter-color filter-color--multi"
+                            style="background: linear-gradient(135deg, red, orange, yellow, green, blue, purple)"><input
+                                type="checkbox" value="multi"><span>Multi</span></label>
                     </div>
                 </div>
 
@@ -1765,13 +1918,16 @@
                         <span class="filter-expandable__arrow">›</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <label class="filter-checkbox"><input type="checkbox" value="anti-bacterial"> Anti-bacterial</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="anti-bacterial">
+                            Anti-bacterial</label>
                         <label class="filter-checkbox"><input type="checkbox" value="breathable"> Breathable</label>
                         <label class="filter-checkbox"><input type="checkbox" value="eco"> Eco</label>
                         <label class="filter-checkbox"><input type="checkbox" value="heavyweight"> Heavyweight</label>
                         <label class="filter-checkbox"><input type="checkbox" value="tear-away"> Tear-away</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="uv-protection"> UV Protection</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="water-resistant"> Water-resistant</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="uv-protection"> UV
+                            Protection</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="water-resistant">
+                            Water-resistant</label>
                     </div>
                 </div>
 
@@ -1803,9 +1959,12 @@
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="cotton-100"> 100% Cotton</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="polyester-100"> 100% Polyester</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="organic-100"> Organic Cotton</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="recycled-100"> Recycled Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="polyester-100"> 100%
+                            Polyester</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="organic-100"> Organic
+                            Cotton</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="recycled-100"> Recycled
+                            Polyester</label>
                         <label class="filter-checkbox"><input type="checkbox" value="nylon-100"> Nylon</label>
                         <label class="filter-checkbox"><input type="checkbox" value="ringspun-100"> Ringspun</label>
                     </div>
@@ -1883,7 +2042,8 @@
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="adhesives"> Adhesives</label>
-                        <label class="filter-checkbox"><input type="checkbox" value="cut-away-inner-label"> Cut-away Inner Label</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="cut-away-inner-label"> Cut-away
+                            Inner Label</label>
                         <label class="filter-checkbox"><input type="checkbox" value="sewn-tag"> Sewn Tag</label>
                         <label class="filter-checkbox"><input type="checkbox" value="tagless"> Tagless</label>
                     </div>
@@ -1906,7 +2066,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Apply Button -->
         <div class="filters-dropup__footer">
             <button class="filters-apply-btn" id="filtersApplyBtn">Apply Filters</button>
@@ -2165,7 +2325,7 @@
 
         function getApiCategoryName(categorySlug) {
             const slugToApiName = {
-                'tshirts': 'T-Shirts','caps':'Caps','hoodies':'Hoodies','jackets':'Jackets','polo':'Polos','shirts':'Shirts','sweatshirts':'Sweatshirts','beanies':'Beanies','blouses':'Blouses','chinos':'Chinos','fleeces':'Fleeces','hivis':'Hi-Vis','trousers':'Trousers','workwear':'Workwear','aprons':'Aprons'
+                'tshirts': 'T-Shirts', 'caps': 'Caps', 'hoodies': 'Hoodies', 'jackets': 'Jackets', 'polo': 'Polos', 'shirts': 'Shirts', 'sweatshirts': 'Sweatshirts', 'beanies': 'Beanies', 'blouses': 'Blouses', 'chinos': 'Chinos', 'fleeces': 'Fleeces', 'hivis': 'Hi-Vis', 'trousers': 'Trousers', 'workwear': 'Workwear', 'aprons': 'Aprons'
             };
             return slugToApiName[categorySlug] || null;
         }
@@ -2245,7 +2405,7 @@
             Object.keys(currentState.filters).forEach(filterKey => {
                 const filterValues = currentState.filters[filterKey];
                 const values = Array.isArray(filterValues) ? filterValues : [];
-                
+
                 if (values.length > 0) {
                     const apiParam = filterMap[filterKey];
                     if (apiParam) {
@@ -2253,7 +2413,7 @@
                         const mappedValues = values.map(val => {
                             return FILTER_MAPPINGS[filterKey]?.[val] || val;
                         }).filter(v => v); // Remove any null/undefined values
-                        
+
                         if (mappedValues.length > 0) {
                             params[`${apiParam}[]`] = mappedValues;
                         }
@@ -2263,10 +2423,10 @@
 
             // Handle quick filters separately (flag[] param with special mappings)
             if (currentState.filters.quickFilters) {
-                const quickValues = Array.isArray(currentState.filters.quickFilters) 
-                    ? currentState.filters.quickFilters 
+                const quickValues = Array.isArray(currentState.filters.quickFilters)
+                    ? currentState.filters.quickFilters
                     : [];
-                
+
                 if (quickValues.length > 0) {
                     const mappedQuickFilters = quickValues.map(val => FILTER_MAPPINGS.quickFilter?.[val] || val).filter(v => v);
                     if (mappedQuickFilters.length > 0) {
@@ -2283,7 +2443,7 @@
                 const params = buildApiParams();
                 const data = await BrandedAPI.getProducts(params);
                 currentState.total = data.total || 0;
-                
+
                 // Store priceRange from API response to update slider range
                 // This represents the min/max prices available in the current filtered results
                 if (data.priceRange) {
@@ -2295,7 +2455,7 @@
                 } else {
                     console.log('⚠️ API response has no priceRange (mobile)');
                 }
-                
+
                 return data.items || [];
             } catch (err) {
                 console.error('Error fetching products (mobile):', err);
@@ -2307,15 +2467,15 @@
             try {
                 // Build query params for filters API
                 const params = new URLSearchParams();
-                
+
                 // Determine which filters API to use: brand-specific or general
                 let filterApiUrl;
-                
+
                 // Check if brand filter is active (from sidebar filters, not URL)
-                const activeBrandFilter = currentState.filters.brand && currentState.filters.brand.length > 0 
-                    ? currentState.filters.brand[0] 
+                const activeBrandFilter = currentState.filters.brand && currentState.filters.brand.length > 0
+                    ? currentState.filters.brand[0]
                     : null;
-                
+
                 if (activeBrandFilter) {
                     // Use brand-specific filters API: /api/filters/brands/{brand}/filters
                     filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
@@ -2323,7 +2483,7 @@
                 } else {
                     // Use general products filters API
                     filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
-                    
+
                     // Add productType if set (category maps to productType for filter API)
                     if (currentState.category && currentState.category !== 'all') {
                         const apiCategoryName = getApiCategoryName(currentState.category);
@@ -2334,18 +2494,18 @@
                             params.append('productType', currentState.category);
                         }
                     }
-                    
+
                     // Add productType from filters if set (sidebar filter)
                     if (currentState.filters.productType && currentState.filters.productType.length > 0) {
                         params.append('productType', currentState.filters.productType[0]);
                     }
                 }
-                
+
                 // Add search query if present
                 if (currentState.search && currentState.search.trim()) {
                     params.append('q', currentState.search.trim());
                 }
-                
+
                 // Add price range if set
                 if (currentState.priceMin !== null) {
                     params.append('priceMin', currentState.priceMin);
@@ -2353,7 +2513,7 @@
                 if (currentState.priceMax !== null) {
                     params.append('priceMax', currentState.priceMax);
                 }
-                
+
                 // Add quick filters
                 if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
                     currentState.filters.quickFilters.forEach(flag => {
@@ -2361,20 +2521,20 @@
                         params.append('flag[]', mappedFlag);
                     });
                 }
-                
+
                 const queryString = params.toString();
                 const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
-                
+
                 console.log('📊 Fetching filter counts from:', url);
-                
+
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`Filter API error: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('📊 Filter counts received:', data);
-                
+
                 if (data && data.filters) {
                     renderMobileDynamicFilters(data.filters);
                 }
@@ -2454,7 +2614,7 @@
             sortedKeys.forEach(filterKey => {
                 const filterData = filters[filterKey];
                 const config = MOBILE_FILTER_CONFIG[filterKey] || { title: filterKey, stateKey: filterKey };
-                
+
                 if (!filterData || !Array.isArray(filterData) || filterData.length === 0) return;
 
                 const checkedValues = checkedStates[config.stateKey] || checkedStates[filterKey] || [];
@@ -2470,12 +2630,12 @@
 
                 filterData.forEach(item => {
                     const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
-                    
+
                     if (isColorGrid) {
                         const colorValue = MOBILE_COLOR_MAP[item.slug] || '#e5e7eb';
                         const isMulti = item.slug === 'pattern' || item.slug === 'multi';
-                        const style = colorValue.includes('gradient') 
-                            ? `background: ${colorValue}` 
+                        const style = colorValue.includes('gradient')
+                            ? `background: ${colorValue}`
                             : `--color: ${colorValue}`;
                         // Don't show count for primary colour swatches
                         html += `<label class="filter-color${isMulti ? ' filter-color--multi' : ''}" style="${style}">
@@ -2504,7 +2664,7 @@
 
             // Re-attach expand/collapse handlers
             container.querySelectorAll('.filter-expandable__header').forEach(header => {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function () {
                     const expandable = this.closest('.filter-expandable');
                     const isExpanded = expandable.dataset.expanded === 'true';
                     expandable.dataset.expanded = isExpanded ? 'false' : 'true';
@@ -2572,41 +2732,41 @@
             if (currentState.search) url.searchParams.set('q', currentState.search); else url.searchParams.delete('q');
             if (currentState.priceMin !== null) url.searchParams.set('priceMin', currentState.priceMin); else url.searchParams.delete('priceMin');
             if (currentState.priceMax !== null) url.searchParams.set('priceMax', currentState.priceMax); else url.searchParams.delete('priceMax');
-            
+
             // Preserve accreditation=recycled URL parameter if recycled is in quickFilters
             if (currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled')) {
                 url.searchParams.set('accreditation', 'recycled');
             } else {
                 url.searchParams.delete('accreditation');
             }
-            
+
             window.history.replaceState({}, '', url);
         }
 
         function updateMobilePagination() {
             const paginationContainer = document.getElementById('mobilePagination');
             if (!paginationContainer) return;
-            
+
             const totalPages = Math.ceil(currentState.total / currentState.limit);
-            
+
             if (totalPages <= 1) {
                 paginationContainer.style.display = 'none';
                 return;
             }
-            
+
             paginationContainer.style.display = 'flex';
-            
+
             const firstBtn = document.getElementById('mobilePaginationFirst');
             const prevBtn = document.getElementById('mobilePaginationPrev');
             const nextBtn = document.getElementById('mobilePaginationNext');
             const lastBtn = document.getElementById('mobilePaginationLast');
             const pageNumbersContainer = document.getElementById('mobilePaginationPageNumbers');
-            
+
             if (firstBtn) firstBtn.disabled = currentState.page === 1;
             if (prevBtn) prevBtn.disabled = currentState.page === 1;
             if (nextBtn) nextBtn.disabled = currentState.page === totalPages;
             if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
-            
+
             if (pageNumbersContainer) {
                 pageNumbersContainer.innerHTML = '';
                 const currentPageBtn = document.createElement('button');
@@ -2638,7 +2798,7 @@
 
             try {
                 let priceRange = null;
-                
+
                 // First, check if we have priceRange from the latest API response
                 if (currentState.apiPriceRange) {
                     priceRange = currentState.apiPriceRange;
@@ -2649,22 +2809,22 @@
                     const data = await BrandedAPI.getProducts({ limit: 1 });
                     priceRange = data.priceRange || { min: 14, max: 65 };
                 }
-                
+
                 mobileCatalogMinPrice = Math.floor(priceRange.min || 14);
                 mobileCatalogMaxPrice = Math.ceil(priceRange.max || 65);
                 console.log('✅ Price range determined (mobile):', { mobileCatalogMinPrice, mobileCatalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
-                
+
                 // Update slider attributes
                 sliderMin.min = mobileCatalogMinPrice;
                 sliderMin.max = mobileCatalogMaxPrice;
                 sliderMax.min = mobileCatalogMinPrice;
                 sliderMax.max = mobileCatalogMaxPrice;
-                
+
                 // Initialize slider values from URL or use full range
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlPriceMin = urlParams.get('priceMin');
                 const urlPriceMax = urlParams.get('priceMax');
-                
+
                 if (urlPriceMin && !isNaN(parseFloat(urlPriceMin))) {
                     sliderMin.value = Math.max(mobileCatalogMinPrice, Math.min(mobileCatalogMaxPrice, parseFloat(urlPriceMin)));
                     currentState.priceMin = parseFloat(urlPriceMin);
@@ -2672,7 +2832,7 @@
                     sliderMin.value = mobileCatalogMinPrice;
                     currentState.priceMin = null;
                 }
-                
+
                 if (urlPriceMax && !isNaN(parseFloat(urlPriceMax))) {
                     sliderMax.value = Math.max(mobileCatalogMinPrice, Math.min(mobileCatalogMaxPrice, parseFloat(urlPriceMax)));
                     currentState.priceMax = parseFloat(urlPriceMax);
@@ -2684,7 +2844,7 @@
                 function updatePriceSliderUI() {
                     let minVal = parseInt(sliderMin.value);
                     let maxVal = parseInt(sliderMax.value);
-                    
+
                     // Ensure min doesn't exceed max
                     if (minVal > maxVal) {
                         const temp = minVal;
@@ -2693,7 +2853,7 @@
                         sliderMin.value = minVal;
                         sliderMax.value = maxVal;
                     }
-                    
+
                     // Update selected range visual
                     const percentMin = ((minVal - mobileCatalogMinPrice) / (mobileCatalogMaxPrice - mobileCatalogMinPrice)) * 100;
                     const percentMax = ((maxVal - mobileCatalogMinPrice) / (mobileCatalogMaxPrice - mobileCatalogMinPrice)) * 100;
@@ -2701,7 +2861,7 @@
                         rangeSelected.style.left = percentMin + '%';
                         rangeSelected.style.width = (percentMax - percentMin) + '%';
                     }
-                    
+
                     // Update display text with VAT consideration
                     const displayMin = isVatOn() ? (minVal * 1.2).toFixed(2) : minVal.toFixed(2);
                     const displayMax = isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2);
@@ -2715,7 +2875,7 @@
                 function handlePriceSliderChange() {
                     let minVal = parseInt(sliderMin.value);
                     let maxVal = parseInt(sliderMax.value);
-                    
+
                     // Ensure min doesn't exceed max
                     if (minVal > maxVal) {
                         const temp = minVal;
@@ -2724,7 +2884,7 @@
                         sliderMin.value = minVal;
                         sliderMax.value = maxVal;
                     }
-                    
+
                     // Set state - if full range, set to null
                     if (minVal === mobileCatalogMinPrice && maxVal === mobileCatalogMaxPrice) {
                         currentState.priceMin = null;
@@ -2733,7 +2893,7 @@
                         currentState.priceMin = minVal;
                         currentState.priceMax = maxVal;
                     }
-                    
+
                     updatePriceSliderUI();
                     currentState.page = 1;
                     updateURL();
@@ -2747,10 +2907,10 @@
                     sliderMin.addEventListener('input', updatePriceSliderUI);
                     sliderMax.addEventListener('change', handlePriceSliderChange);
                     sliderMax.addEventListener('input', updatePriceSliderUI);
-                    
+
                     // Input field handlers
                     if (inputMin) {
-                        inputMin.addEventListener('change', function() {
+                        inputMin.addEventListener('change', function () {
                             let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = mobileCatalogMinPrice;
                             val = Math.max(mobileCatalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
@@ -2758,9 +2918,9 @@
                             handlePriceSliderChange();
                         });
                     }
-                    
+
                     if (inputMax) {
-                        inputMax.addEventListener('change', function() {
+                        inputMax.addEventListener('change', function () {
                             let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = mobileCatalogMaxPrice;
                             val = Math.min(mobileCatalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
@@ -2768,13 +2928,13 @@
                             handlePriceSliderChange();
                         });
                     }
-                    
+
                     mobilePriceSliderEventListenersAttached = true;
                 }
 
                 // Initialize display
                 updatePriceSliderUI();
-                
+
             } catch (err) {
                 console.error('Error init price slider (mobile):', err);
                 currentState.priceMin = null;
@@ -2804,7 +2964,7 @@
 
             const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
             const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
-            
+
             console.log('🔄 Updating mobile price slider range from API:', { apiMin, apiMax });
 
             // Update slider min/max attributes
@@ -2842,11 +3002,11 @@
             }
             if (inputMin) inputMin.value = '£' + newMinVal;
             if (inputMax) inputMax.value = '£' + newMaxVal;
-            
-            console.log('✅ Mobile price slider range updated:', { 
-                min: apiMin, 
-                max: apiMax, 
-                newMinVal, 
+
+            console.log('✅ Mobile price slider range updated:', {
+                min: apiMin,
+                max: apiMax,
+                newMinVal,
                 newMaxVal,
                 sliderMinValue: sliderMin.value,
                 sliderMaxValue: sliderMax.value,
@@ -2916,7 +3076,7 @@
             document.querySelectorAll('.filter-expandable').forEach(section => {
                 const htmlFilterKey = section.dataset.filter;
                 if (!htmlFilterKey) return;
-                
+
                 // Map HTML key to state key
                 const stateKey = filterKeyMap[htmlFilterKey] || htmlFilterKey;
                 const content = section.querySelector('.filter-expandable__content');
@@ -2958,7 +3118,7 @@
                 checkbox.addEventListener('change', async () => {
                     const filterId = checkbox.dataset.filter;
                     const filterValue = quickFilterMap[filterId];
-                    
+
                     if (!filterValue || filterId === 'plusSizes') return; // Skip plusSizes (not in API)
 
                     // Update quickFilters array
@@ -3049,7 +3209,7 @@
 
                 grid.appendChild(card);
             });
-            
+
             updateMobilePagination();
         }
 
@@ -3079,13 +3239,13 @@
             updateBasketBadge();
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const tabletSocialIcons = document.querySelectorAll('.tablet-top-bar .social-icon');
             let clickTimer = null;
             let clickCount = 0;
             let lastClickedIcon = null;
             tabletSocialIcons.forEach(icon => {
-                icon.addEventListener('click', function(e) {
+                icon.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (lastClickedIcon !== icon) { clickCount = 0; lastClickedIcon = icon; }
                     clickCount++;
@@ -3096,11 +3256,11 @@
                     }
                 });
             });
-            document.addEventListener('click', function(e) { const topBar = document.querySelector('.tablet-top-bar'); if (topBar && !topBar.contains(e.target)) tabletSocialIcons.forEach(icon => icon.classList.remove('active')); });
+            document.addEventListener('click', function (e) { const topBar = document.querySelector('.tablet-top-bar'); if (topBar && !topBar.contains(e.target)) tabletSocialIcons.forEach(icon => icon.classList.remove('active')); });
         });
 
         // Initialize filters and product rendering on mobile
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             // Read initial URL params
             const urlParams = new URLSearchParams(window.location.search);
             currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
@@ -3110,7 +3270,7 @@
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
-            
+
             // Handle accreditation=recycled URL parameter (adds to quickFilters, which maps to flag[]=['recycled-organic'])
             const accreditationParam = urlParams.get('accreditation');
             if (accreditationParam === 'recycled') {
@@ -3124,11 +3284,11 @@
             setupFilterCheckboxes();
             setupQuickFilterToggles();
             setupSearchInput();
-            
+
             // Setup Sort and View controls
             const sortSelect = document.getElementById('mobileSortSelect');
             const viewSelect = document.getElementById('mobileViewSelect');
-            
+
             if (sortSelect) {
                 sortSelect.value = currentState.sort || 'best';
                 sortSelect.addEventListener('change', async (e) => {
@@ -3140,7 +3300,7 @@
                     updateMobilePagination();
                 });
             }
-            
+
             if (viewSelect) {
                 viewSelect.value = currentState.limit || 24;
                 viewSelect.addEventListener('change', async (e) => {
@@ -3152,13 +3312,13 @@
                     updateMobilePagination();
                 });
             }
-            
+
             // Setup pagination buttons
             const firstBtn = document.getElementById('mobilePaginationFirst');
             const prevBtn = document.getElementById('mobilePaginationPrev');
             const nextBtn = document.getElementById('mobilePaginationNext');
             const lastBtn = document.getElementById('mobilePaginationLast');
-            
+
             async function handlePaginationClick(newPage) {
                 currentState.page = newPage;
                 updateURL();
@@ -3167,26 +3327,26 @@
                 updateMobilePagination();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-            
+
             if (firstBtn) {
                 firstBtn.addEventListener('click', async () => {
                     if (currentState.page > 1) await handlePaginationClick(1);
                 });
             }
-            
+
             if (prevBtn) {
                 prevBtn.addEventListener('click', async () => {
                     if (currentState.page > 1) await handlePaginationClick(currentState.page - 1);
                 });
             }
-            
+
             if (nextBtn) {
                 nextBtn.addEventListener('click', async () => {
                     const totalPages = Math.ceil(currentState.total / currentState.limit);
                     if (currentState.page < totalPages) await handlePaginationClick(currentState.page + 1);
                 });
             }
-            
+
             if (lastBtn) {
                 lastBtn.addEventListener('click', async () => {
                     const totalPages = Math.ceil(currentState.total / currentState.limit);
@@ -3201,114 +3361,117 @@
         });
     </script>
     <script src="mobile/js/mobile.js?v=20251230"></script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-(function(){
-    var host = window.location.hostname;
-    // Tawk often blocks localhost; avoid noisy console errors during local dev.
-    // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
-    var allowLocal = false;
-    try {
-        var params = new URLSearchParams(window.location.search);
-        allowLocal = params.has('tawk') || params.has('chat');
-    } catch (e) {
-        allowLocal = false;
-    }
-    if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
-
-    var propertyId = '69628dafb346e51985794182';
-    var widgetId = '1jekfitse';
-
-    // If you create a separate Tawk property for staging, set it here:
-    // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
-
-    window.Tawk_API = window.Tawk_API || {};
-    // Hide default bubble; open only from our in-site trigger.
-    window.Tawk_API.onLoad = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_API.onChatMinimized = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_LoadStart = new Date();
-
-    var s1 = document.createElement('script');
-    var s0 = document.getElementsByTagName('script')[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/' + propertyId + '/' + widgetId;
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1, s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
-
-<script>
-(function () {
-    function waitForTawk(fn, timeoutMs) {
-        var start = Date.now();
-        (function tick() {
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        (function () {
+            var host = window.location.hostname;
+            // Tawk often blocks localhost; avoid noisy console errors during local dev.
+            // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
+            var allowLocal = false;
             try {
-                if (window.Tawk_API && typeof fn === 'function') {
-                    var res = fn(window.Tawk_API);
-                    if (res === true) return;
-                }
-            } catch (e) {}
-            if (Date.now() - start >= timeoutMs) return;
-            setTimeout(tick, 150);
+                var params = new URLSearchParams(window.location.search);
+                allowLocal = params.has('tawk') || params.has('chat');
+            } catch (e) {
+                allowLocal = false;
+            }
+            if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
+
+            var propertyId = '69628dafb346e51985794182';
+            var widgetId = '1jekfitse';
+
+            // If you create a separate Tawk property for staging, set it here:
+            // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
+
+            window.Tawk_API = window.Tawk_API || {};
+            // Hide default bubble; open only from our in-site trigger.
+            window.Tawk_API.onLoad = function () {
+                try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) { }
+            };
+            window.Tawk_API.onChatMinimized = function () {
+                try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) { }
+            };
+            window.Tawk_LoadStart = new Date();
+
+            var s1 = document.createElement('script');
+            var s0 = document.getElementsByTagName('script')[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/' + propertyId + '/' + widgetId;
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
         })();
-    }
+    </script>
+    <!--End of Tawk.to Script-->
 
-    function openTawkPopup() {
-        waitForTawk(function (api) {
-            if (typeof api.showWidget === 'function') api.showWidget();
-            if (typeof api.maximize === 'function') { api.maximize(); return true; }
-            return false;
-        }, 5000);
-    }
+    <script>
+        (function () {
+            function waitForTawk(fn, timeoutMs) {
+                var start = Date.now();
+                (function tick() {
+                    try {
+                        if (window.Tawk_API && typeof fn === 'function') {
+                            var res = fn(window.Tawk_API);
+                            if (res === true) return;
+                        }
+                    } catch (e) { }
+                    if (Date.now() - start >= timeoutMs) return;
+                    setTimeout(tick, 150);
+                })();
+            }
 
-    waitForTawk(function (api) {
-        if (typeof api.hideWidget === 'function') { api.hideWidget(); return true; }
-        return false;
-    }, 8000);
+            function openTawkPopup() {
+                waitForTawk(function (api) {
+                    if (typeof api.showWidget === 'function') api.showWidget();
+                    if (typeof api.maximize === 'function') { api.maximize(); return true; }
+                    return false;
+                }, 5000);
+            }
 
-    document.addEventListener('click', function (e) {
-        var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
-        if (!trigger) return;
-        e.preventDefault();
-        openTawkPopup();
-    });
-})();
-</script>
+            waitForTawk(function (api) {
+                if (typeof api.hideWidget === 'function') { api.hideWidget(); return true; }
+                return false;
+            }, 8000);
 
-<style>
-/* Hide the Tawk launcher bubble by default (only show when user opens chat). */
-body:not(.tawk-open) iframe[title="chat widget"],
-body:not(.tawk-open) .tawk-min-container,
-body:not(.tawk-open) #tawk-bubble-container {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translateY(120px) !important;
-}
-body.tawk-open iframe[title="chat widget"],
-body.tawk-open .tawk-min-container,
-body.tawk-open #tawk-bubble-container {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transform: none !important;
-}
+            document.addEventListener('click', function (e) {
+                var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
+                if (!trigger) return;
+                e.preventDefault();
+                openTawkPopup();
+            });
+        })();
+    </script>
 
-@media (max-width: 1023px) {
-    iframe[title="chat widget"],
-    .tawk-min-container,
-    #tawk-bubble-container {
-        bottom: 75px !important;
-    }
-}
-</style>
+    <style>
+        /* Hide the Tawk launcher bubble by default (only show when user opens chat). */
+        body:not(.tawk-open) iframe[title="chat widget"],
+        body:not(.tawk-open) .tawk-min-container,
+        body:not(.tawk-open) #tawk-bubble-container {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(120px) !important;
+        }
+
+        body.tawk-open iframe[title="chat widget"],
+        body.tawk-open .tawk-min-container,
+        body.tawk-open #tawk-bubble-container {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: none !important;
+        }
+
+        @media (max-width: 1023px) {
+
+            iframe[title="chat widget"],
+            .tawk-min-container,
+            #tawk-bubble-container {
+                bottom: 75px !important;
+            }
+        }
+    </style>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
 </body>
+
 </html>

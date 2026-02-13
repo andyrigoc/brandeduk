@@ -11,8 +11,8 @@ let DISCOUNTS = [];
 
 // Expose PRODUCT_DATA globally for other scripts
 Object.defineProperty(window, 'PRODUCT_DATA', {
-    get: function() { return PRODUCT_DATA; },
-    set: function(val) { PRODUCT_DATA = val; }
+    get: function () { return PRODUCT_DATA; },
+    set: function (val) { PRODUCT_DATA = val; }
 });
 
 // API Configuration
@@ -112,7 +112,7 @@ function updateAllPricing() {
 }
 
 // Listen for VAT toggle changes
-document.addEventListener('brandeduk:vat-change', function(event) {
+document.addEventListener('brandeduk:vat-change', function (event) {
     console.log('💰 VAT changed, updating prices. isVatOn():', isVatOn(), 'suffix:', vatSuffix());
     updateAllPricing();
     updateBasketTotalBox(); // Refresh basket box on VAT change
@@ -146,17 +146,17 @@ async function loadProductData() {
     // Try to get product code from URL (query or path) first, then sessionStorage
     const urlProductCode = getProductCodeFromLocation();
     const savedProductCode = sessionStorage.getItem('selectedProduct');
-    
+
     // URL takes priority, then sessionStorage
     const productCode = urlProductCode || savedProductCode;
-    
+
     // If we got code from URL, save it to sessionStorage for consistency
     if (urlProductCode && urlProductCode !== savedProductCode) {
         sessionStorage.setItem('selectedProduct', urlProductCode);
     }
-    
+
     let productData = null;
-    
+
     // ALWAYS fetch fresh data from API to ensure prices are up-to-date
     if (productCode) {
         console.log('Fetching product from API...', productCode);
@@ -194,34 +194,32 @@ async function loadProductData() {
             }
         }
     }
-    
+
     if (!productData) {
         console.error('❌ No product data available!');
         alert('Product not found. Please go back and select a product.');
         return false;
     }
-    
+
     // Initialize product variables
     PRODUCT_DATA = productData;
     PRODUCT_CODE = productData.code;
     PRODUCT_NAME = productData.name;
-    
+
     // Dispatch event so other scripts know product data is ready
     window.dispatchEvent(new CustomEvent('productDataLoaded', { detail: productData }));
-    
-    // Convert priceBreaks to DISCOUNTS format
+
+    // Convert priceBreaks to DISCOUNTS format - use API percentage directly
     if (productData.priceBreaks && productData.priceBreaks.length > 0) {
         DISCOUNTS = productData.priceBreaks.map((breakItem, index) => {
-            const prevPrice = index > 0 ? productData.priceBreaks[index - 1].price : productData.price;
-            const save = prevPrice > 0 ? Math.round(((prevPrice - breakItem.price) / prevPrice) * 100) : 0;
             return {
                 min: breakItem.min,
                 max: breakItem.max,
                 price: breakItem.price,
-                save: save
+                save: breakItem.percentage || 0
             };
         });
-        
+
         // Set BASE_PRICE to the first tier's price (1-9 tier) so main price matches
         BASE_PRICE = DISCOUNTS[0].price;
     } else {
@@ -229,17 +227,17 @@ async function loadProductData() {
         BASE_PRICE = productData.price;
         DISCOUNTS = [{ min: 1, max: 99999, price: BASE_PRICE, save: 0 }];
     }
-    
+
     // Log available fields for debugging
     console.log('📋 Available product fields:', Object.keys(productData));
-    
+
     console.log('✅ Product initialized:', {
         code: PRODUCT_CODE,
         name: PRODUCT_NAME,
         price: BASE_PRICE,
         discounts: DISCOUNTS
     });
-    
+
     return true;
 }
 
@@ -249,10 +247,10 @@ function initTierPricing() {
     if (!tierPricingContainer || !DISCOUNTS || DISCOUNTS.length === 0) {
         return;
     }
-    
+
     // Clear existing tier items
     tierPricingContainer.innerHTML = '';
-    
+
     // Create tier items from DISCOUNTS array
     DISCOUNTS.forEach((tier, index) => {
         const tierItem = document.createElement('div');
@@ -260,7 +258,7 @@ function initTierPricing() {
         tierItem.setAttribute('data-min', tier.min);
         tierItem.setAttribute('data-max', tier.max);
         tierItem.setAttribute('data-base-price', tier.price);
-        
+
         // Format quantity range
         // First tier shows range (e.g., "1-9"), all others show min+ (e.g., "10+", "25+")
         let qtyText = '';
@@ -271,22 +269,19 @@ function initTierPricing() {
             // All other tiers: show min+
             qtyText = `${tier.min}+`;
         }
-        
-        // Calculate save percentage (compared to first tier/base price)
-        const firstTierPrice = DISCOUNTS[0].price;
-        const savePercent = firstTierPrice > 0 && tier.price < firstTierPrice 
-            ? Math.round(((firstTierPrice - tier.price) / firstTierPrice) * 100) 
-            : 0;
-        
+
+        // Use save percentage directly from API priceBreaks data
+        const savePercent = tier.save || 0;
+
         // Use formatCurrency to respect VAT toggle state
         const formattedPrice = formatCurrency(tier.price);
-        
+
         tierItem.innerHTML = `
             <span class="tier-qty">${qtyText}</span>
             <span class="tier-price">${formattedPrice}</span>
             ${savePercent > 0 ? `<span class="tier-save">-${savePercent}%</span>` : ''}
         `;
-        
+
         tierPricingContainer.appendChild(tierItem);
     });
 }
@@ -295,18 +290,18 @@ function initTierPricing() {
 function initBreadcrumb() {
     const breadcrumbCategoryLink = document.getElementById('breadcrumbCategoryLink');
     const breadcrumbProduct = document.getElementById('breadcrumbProduct');
-    
+
     if (!breadcrumbCategoryLink || !breadcrumbProduct) {
         return;
     }
-    
+
     // Get productType from API data
     let productType = PRODUCT_DATA?.productType || PRODUCT_DATA?.category || '';
-    
+
     // Map API productType to URL slug for shop link
     function productTypeToSlug(apiProductType) {
         if (!apiProductType) return null;
-        
+
         const typeToSlug = {
             'T-shirts': 'tshirts',
             'T-Shirts': 'tshirts',
@@ -326,10 +321,10 @@ function initBreadcrumb() {
             'Headwear / Accessories': 'caps',
             'Beanies': 'beanies'
         };
-        
+
         return typeToSlug[apiProductType] || apiProductType.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     }
-    
+
     // Update category link
     if (productType) {
         const categorySlug = productTypeToSlug(productType);
@@ -345,7 +340,7 @@ function initBreadcrumb() {
         breadcrumbCategoryLink.href = '/shop';
         breadcrumbCategoryLink.textContent = 'All Products';
     }
-    
+
     // Update product name from API data
     if (PRODUCT_DATA && PRODUCT_DATA.name) {
         breadcrumbProduct.textContent = PRODUCT_DATA.name.toUpperCase();
@@ -356,14 +351,14 @@ function initBreadcrumb() {
 }
 
 // Initialize product data and then update page
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     const loaded = await loadProductData();
     if (loaded) {
         // Update page title
         if (PRODUCT_NAME) {
             document.title = `${PRODUCT_NAME} - Branded UK`;
         }
-        
+
         // Update product name and code in the page (if elements exist)
         // Use ID selector first to avoid conflicts with productTypeTitle h1
         const productNameEl = document.getElementById('productTitle');
@@ -375,7 +370,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else if (!PRODUCT_NAME) {
             console.warn('⚠️ PRODUCT_NAME is missing. Product data:', PRODUCT_DATA);
         }
-        
+
         // Update garment-main-title (main product title above price tier)
         const garmentMainTitle = document.querySelector('.garment-main-title');
         if (garmentMainTitle && PRODUCT_DATA && PRODUCT_DATA.name) {
@@ -384,35 +379,35 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else if (!garmentMainTitle) {
             console.warn('⚠️ Garment main title element (.garment-main-title) not found');
         }
-        
+
         const productCodeEl = document.querySelector('.product-code, [data-product-code], .prod-code-value');
         if (productCodeEl && PRODUCT_CODE) {
             productCodeEl.textContent = PRODUCT_CODE;
         }
-        
+
         // Update description box title (h2)
         const descTitleEl = document.getElementById('productDescriptionTitle') || document.querySelector('.description-box h2');
         if (descTitleEl && PRODUCT_NAME) {
             descTitleEl.textContent = PRODUCT_NAME;
         }
-        
+
         // Update description text
         const descTextEl = document.getElementById('productDescriptionText');
         if (descTextEl && PRODUCT_DATA && PRODUCT_DATA.description) {
             descTextEl.innerHTML = PRODUCT_DATA.description;
         }
-        
+
         // Update sidebar product name and code
         const sidebarProductName = document.getElementById('sidebarProductName');
         if (sidebarProductName && PRODUCT_NAME) {
             sidebarProductName.textContent = PRODUCT_NAME;
         }
-        
+
         const sidebarProductCode = document.getElementById('sidebarProductCode');
         if (sidebarProductCode && PRODUCT_CODE) {
             sidebarProductCode.textContent = 'EE-' + PRODUCT_CODE;
         }
-        
+
         // Update brand logo and link
         if (PRODUCT_DATA && PRODUCT_DATA.brand) {
             const brandLink = document.getElementById('brandLink');
@@ -433,7 +428,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 brandLink.style.display = 'block';
             }
         }
-        
+
         // Update customization badges from API
         if (PRODUCT_DATA && PRODUCT_DATA.customization && Array.isArray(PRODUCT_DATA.customization)) {
             const customizationBadge = document.getElementById('customizationBadge');
@@ -447,17 +442,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 });
             }
         }
-        
+
         // Update product type title - check multiple possible field names
         const productTypeTitle = document.getElementById('productTypeTitle');
-        
+
         if (productTypeTitle) {
             // Try productType first, then category, then try to extract from name
-            let productType = PRODUCT_DATA?.productType || 
-                            PRODUCT_DATA?.category || 
-                            PRODUCT_DATA?.ProductType ||
-                            PRODUCT_DATA?.Category;
-            
+            let productType = PRODUCT_DATA?.productType ||
+                PRODUCT_DATA?.category ||
+                PRODUCT_DATA?.ProductType ||
+                PRODUCT_DATA?.Category;
+
             // If still empty, try to extract from product name (e.g., "Colours bib apron" -> "Aprons")
             if (!productType || productType.trim() === '') {
                 const name = PRODUCT_DATA?.name || '';
@@ -474,7 +469,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     'cap': 'Caps',
                     'beanie': 'Beanies'
                 };
-                
+
                 const nameLower = name.toLowerCase();
                 for (const [keyword, type] of Object.entries(productTypeKeywords)) {
                     if (nameLower.includes(keyword)) {
@@ -483,7 +478,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     }
                 }
             }
-            
+
             if (productType && productType.trim() !== '') {
                 productTypeTitle.textContent = productType;
                 productTypeTitle.style.display = 'block';
@@ -496,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             console.warn('⚠️ Product type title element not found');
         }
-        
+
         // Set initial main image from images array or top-level image field
         if (mainImage && PRODUCT_DATA) {
             if (PRODUCT_DATA.images && Array.isArray(PRODUCT_DATA.images)) {
@@ -519,7 +514,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 mainImage.alt = PRODUCT_NAME || 'Product';
             }
         }
-        
+
         // Update description if available (already handled above, but keeping for backward compatibility)
         if (PRODUCT_DATA && PRODUCT_DATA.description) {
             const descTextEl = document.getElementById('productDescriptionText');
@@ -538,17 +533,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
         }
-        
+
         // Update product details (fabric, fit, weight, care)
         if (PRODUCT_DATA && PRODUCT_DATA.details) {
             const details = PRODUCT_DATA.details;
             const detailsHTML = [];
-            
+
             if (details.fabric) detailsHTML.push(`<b>Fabric:</b> ${details.fabric}`);
             if (details.weight) detailsHTML.push(`<b>Weight:</b> ${details.weight}`);
             if (details.fit) detailsHTML.push(`<b>Fit:</b> ${details.fit}`);
             if (details.care) detailsHTML.push(`<b>Care:</b> ${details.care}`);
-            
+
             if (detailsHTML.length > 0) {
                 const descTextEl = document.getElementById('productDescriptionText');
                 if (descTextEl) {
@@ -575,29 +570,29 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
         }
-        
+
         // Initialize thumbnail column from API data
         if (PRODUCT_DATA && PRODUCT_DATA.colors) {
             initThumbnailColumn(PRODUCT_DATA.colors);
         }
-        
+
         // Initialize colors from API data
         if (PRODUCT_DATA && PRODUCT_DATA.colors) {
             initColors(PRODUCT_DATA.colors);
         }
-        
+
         // Initialize sizes from API data
         if (PRODUCT_DATA && PRODUCT_DATA.sizes) {
             initSizes(PRODUCT_DATA.sizes);
         }
-        
+
         // Initialize tier pricing from API data
         initTierPricing();
-        
+
         // Initialize breadcrumb navigation
         initBreadcrumb();
     }
-    
+
     // Wait a tick to ensure VAT toggle has initialized
     setTimeout(() => {
         updateAllPricing();
@@ -610,23 +605,23 @@ function updateBasketTotalBox() {
     const basketTotalItems = document.getElementById('basketTotalItems');
     const basketGrandTotal = document.getElementById('basketGrandTotal');
     const basketTotalBox = document.getElementById('basketTotalBox');
-    
+
     if (!basketTotalItems || !basketGrandTotal) return;
-    
+
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-    
+
     // Hide box if basket is empty
     if (basket.length === 0) {
         if (basketTotalBox) basketTotalBox.style.display = 'none';
         return;
     }
-    
+
     // Show box if there are items
     if (basketTotalBox) basketTotalBox.style.display = 'block';
-    
+
     let grandTotal = 0;
     let itemsHTML = '';
-    
+
     basket.forEach(item => {
         // Calculate total quantity for this item
         let totalQty = 0;
@@ -635,11 +630,11 @@ function updateBasketTotalBox() {
         } else {
             totalQty = Number(item.quantity) || 0;
         }
-        
+
         // Calculate item total (garment + customizations)
         const unitPrice = Number(item.price) || 0;
         let itemTotal = unitPrice * totalQty;
-        
+
         // Add customization costs if available
         let customizationInfo = '';
         if (item.customizations && item.customizations.length > 0) {
@@ -649,9 +644,9 @@ function updateBasketTotalBox() {
                 customizationInfo += ` + ${c.position}`;
             });
         }
-        
+
         grandTotal += itemTotal;
-        
+
         // Format sizes display
         let sizesText = '';
         if (item.quantities && Object.keys(item.quantities).length > 0) {
@@ -661,7 +656,7 @@ function updateBasketTotalBox() {
                 .join(', ');
             sizesText = sizeList ? ` (${sizeList})` : '';
         }
-        
+
         itemsHTML += `
             <div class="basket-total-item">
                 <div class="basket-total-item__info">
@@ -672,13 +667,13 @@ function updateBasketTotalBox() {
             </div>
         `;
     });
-    
+
     basketTotalItems.innerHTML = itemsHTML;
     basketGrandTotal.textContent = formatCurrency(grandTotal) + ' ' + vatSuffix();
 }
 
 // Listen for storage changes (cross-tab sync)
-window.addEventListener('storage', function(e) {
+window.addEventListener('storage', function (e) {
     if (e.key === 'quoteBasket') {
         updateBasketTotalBox();
     }
@@ -772,7 +767,7 @@ class DeleteButton {
 
     handleClick(evt) {
         if (this.isRunning || !this.el) return;
-        
+
         // Execute clear directly without confirmation
         this.beginClearSequence();
     }
@@ -819,8 +814,8 @@ class DeleteButton {
    ELEMENTS
 --------------------------------------------------- */
 
-const mainImage    = document.getElementById("mainImage");
-const mainPriceEl  = document.getElementById("mainPrice");
+const mainImage = document.getElementById("mainImage");
+const mainPriceEl = document.getElementById("mainPrice");
 const addContinueButton = document.getElementById("addContinueButton");
 const addCustomizeButton = document.getElementById("addCustomizeButton");
 const belowSummary = document.getElementById("belowBtnSummary");
@@ -830,13 +825,13 @@ const sizesGrid = document.getElementById("sizesGrid");
 const colorGrid = document.getElementById("colorGrid");
 
 /* POPUP */
-const popup        = document.getElementById("quotePopup");
+const popup = document.getElementById("quotePopup");
 const popupContent = document.getElementById("popupContent");
 const popupSummary = document.getElementById("popupSummary");
-const closePopup   = document.getElementById("closePopup");
+const closePopup = document.getElementById("closePopup");
 
-const uploadBtnPopup   = document.getElementById("uploadLogoBtn");
-const logoInputHidden  = document.getElementById("logoInput");
+const uploadBtnPopup = document.getElementById("uploadLogoBtn");
+const logoInputHidden = document.getElementById("logoInput");
 const logoPreviewPopup = document.getElementById("logoPreview");
 
 /* ---------------------------------------------------
@@ -848,11 +843,11 @@ let colors = [];
 
 // No color selected by default - user must click to select
 let selectedColorName = null;
-let selectedColorURL  = null;
+let selectedColorURL = null;
 
 function initThumbnailGallery() {
     if (!productThumbColumn) return;
-    
+
     // Find thumbnails in the slider inner container or directly in column
     const thumbInner = productThumbColumn.querySelector('.thumb-slider-inner');
     const thumbContainer = thumbInner || productThumbColumn;
@@ -867,18 +862,18 @@ function initThumbnailGallery() {
         // Remove existing listeners to avoid duplicates
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
-        
+
         newButton.addEventListener('click', () => {
             const imgSrc = newButton.dataset.image;
             const colorName = newButton.dataset.colorName || newButton.getAttribute('aria-label')?.replace(/^View /, '').split(' ')[0] || '';
-            
+
             if (!imgSrc) return;
-            
+
             // Update main image
             if (mainImage) {
                 mainImage.src = imgSrc;
             }
-            
+
             // Find matching color in color grid and select it
             if (colorName && colors.length > 0) {
                 const matchingColor = colors.find(([name]) => name === colorName);
@@ -887,8 +882,8 @@ function initThumbnailGallery() {
                     const colorThumb = document.querySelector(`.color-thumb[data-color-name="${name}"]`);
                     if (colorThumb) {
                         // Check if there are unsaved items
-                        const currentTotal = Object.values(qty).reduce((a,b)=>a+b,0);
-                        
+                        const currentTotal = Object.values(qty).reduce((a, b) => a + b, 0);
+
                         if (currentTotal > 0) {
                             // Show confirmation modal
                             showColorChangeModal(name, url, colorThumb);
@@ -899,7 +894,7 @@ function initThumbnailGallery() {
                     }
                 }
             }
-            
+
             setActive(newButton);
         });
     });
@@ -920,17 +915,17 @@ function initThumbnailGallery() {
         if (match) {
             thumbButtons.forEach(btn => btn.classList.remove('active'));
             match.classList.add('active');
-            
+
             // Scroll to active thumbnail if it's not visible
             if (thumbInner && productThumbColumn.querySelectorAll('.thumb-item').length > 5) {
                 const matchIndex = parseInt(match.dataset.index || '0');
                 const itemHeight = 80;
                 const itemsPerView = 5;
-                
+
                 // Calculate if we need to scroll
                 const currentStart = thumbnailSliderState.currentIndex;
                 const currentEnd = currentStart + itemsPerView - 1;
-                
+
                 if (matchIndex < currentStart) {
                     // Scroll up to show the active item
                     thumbnailSliderState.currentIndex = Math.max(0, matchIndex);
@@ -939,7 +934,7 @@ function initThumbnailGallery() {
                     const maxIndex = Math.max(0, thumbnailSliderState.totalItems - itemsPerView);
                     thumbnailSliderState.currentIndex = Math.min(maxIndex, matchIndex - itemsPerView + 1);
                 }
-                
+
                 const translateY = -thumbnailSliderState.currentIndex * itemHeight;
                 thumbInner.style.transform = `translateY(${translateY}px)`;
                 updateThumbnailSliderButtons();
@@ -963,37 +958,37 @@ function initThumbnailColumn(productColors) {
         console.warn('Thumbnail column element not found');
         return;
     }
-    
+
     if (!productColors || !Array.isArray(productColors) || productColors.length === 0) {
         console.warn('No colors available for thumbnail column');
         productThumbColumn.innerHTML = '';
         return;
     }
-    
+
     // Clear existing thumbnails and wrapper
     productThumbColumn.innerHTML = '';
-    
+
     // Create wrapper for slider
     const sliderWrapper = document.createElement('div');
     sliderWrapper.className = 'thumb-slider-wrapper';
     sliderWrapper.style.cssText = 'position: relative; display: flex; flex-direction: column; gap: 8px;';
-    
+
     // Create container for thumbnails
     const thumbContainer = document.createElement('div');
     thumbContainer.className = 'thumb-slider-container';
     thumbContainer.style.cssText = 'position: relative; overflow: hidden; max-height: 400px;';
-    
+
     // Create inner container for all thumbnails
     const thumbInner = document.createElement('div');
     thumbInner.className = 'thumb-slider-inner';
     thumbInner.style.cssText = 'display: flex; flex-direction: column; gap: 8px; transition: transform 0.3s ease;';
-    
+
     // Create all thumbnail buttons
     productColors.forEach((color, index) => {
         const colorName = color.name || 'Unknown';
         const thumbUrl = color.thumb || color.main || color.url || '';
         const mainUrl = color.main || color.thumb || color.url || '';
-        
+
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'thumb-item';
@@ -1002,7 +997,7 @@ function initThumbnailColumn(productColors) {
         button.setAttribute('data-index', index);
         button.setAttribute('aria-label', `View ${colorName} ${PRODUCT_NAME || 'product'}`);
         button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0;';
-        
+
         // Set first thumbnail as active by default (only if no color is already selected)
         const savedColorName = sessionStorage.getItem('selectedColorName');
         if (index === 0 && !savedColorName) {
@@ -1010,18 +1005,18 @@ function initThumbnailColumn(productColors) {
         } else if (savedColorName === colorName) {
             button.classList.add('active');
         }
-        
+
         const img = document.createElement('img');
         img.src = thumbUrl;
         img.alt = `${colorName} thumbnail`;
         img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; border-radius: 8px;';
-        
+
         button.appendChild(img);
         thumbInner.appendChild(button);
     });
-    
+
     thumbContainer.appendChild(thumbInner);
-    
+
     // Add navigation buttons if more than 5 colors
     if (productColors.length > 5) {
         // Previous button - positioned at top
@@ -1068,7 +1063,7 @@ function initThumbnailColumn(productColors) {
             e.stopPropagation();
             slideThumbnails('prev');
         };
-        
+
         // Next button - positioned at bottom
         const nextBtn = document.createElement('button');
         nextBtn.className = 'thumb-slider-btn thumb-slider-next';
@@ -1113,11 +1108,11 @@ function initThumbnailColumn(productColors) {
             e.stopPropagation();
             slideThumbnails('next');
         };
-        
+
         sliderWrapper.appendChild(thumbContainer);
         sliderWrapper.appendChild(prevBtn);
         sliderWrapper.appendChild(nextBtn);
-        
+
         // Initialize slider state
         thumbnailSliderState.totalItems = productColors.length;
         thumbnailSliderState.currentIndex = 0;
@@ -1125,12 +1120,12 @@ function initThumbnailColumn(productColors) {
     } else {
         sliderWrapper.appendChild(thumbContainer);
     }
-    
+
     productThumbColumn.appendChild(sliderWrapper);
-    
+
     // Initialize gallery functionality
     initThumbnailGallery();
-    
+
     // Set initial main image from first color if main image not already set
     const savedColorName = sessionStorage.getItem('selectedColorName');
     if (productColors.length > 0 && mainImage) {
@@ -1152,17 +1147,17 @@ function initThumbnailColumn(productColors) {
             }
         }
     }
-    
+
     console.log('✅ Thumbnail column initialized with', productColors.length, 'colors (slider enabled)');
 }
 
 function slideThumbnails(direction) {
     const thumbInner = document.querySelector('.thumb-slider-inner');
     if (!thumbInner) return;
-    
+
     const itemHeight = 80; // 72px height + 8px gap
     const maxIndex = Math.max(0, thumbnailSliderState.totalItems - thumbnailSliderState.itemsPerView);
-    
+
     if (direction === 'next') {
         thumbnailSliderState.currentIndex = Math.min(
             thumbnailSliderState.currentIndex + 1,
@@ -1174,17 +1169,17 @@ function slideThumbnails(direction) {
             0
         );
     }
-    
+
     const translateY = -thumbnailSliderState.currentIndex * itemHeight;
     thumbInner.style.transform = `translateY(${translateY}px)`;
-    
+
     updateThumbnailSliderButtons();
 }
 
 function updateThumbnailSliderButtons() {
     const prevBtn = document.querySelector('.thumb-slider-prev');
     const nextBtn = document.querySelector('.thumb-slider-next');
-    
+
     if (prevBtn) {
         const isDisabled = thumbnailSliderState.currentIndex === 0;
         prevBtn.disabled = isDisabled;
@@ -1199,7 +1194,7 @@ function updateThumbnailSliderButtons() {
             prevBtn.style.color = '#374151';
         }
     }
-    
+
     if (nextBtn) {
         const maxIndex = Math.max(0, thumbnailSliderState.totalItems - thumbnailSliderState.itemsPerView);
         const isDisabled = thumbnailSliderState.currentIndex >= maxIndex;
@@ -1223,27 +1218,27 @@ function initColors(productColors) {
         console.warn('No colors available for this product');
         return;
     }
-    
+
     // Clear existing colors
     colorGrid.innerHTML = '';
     colors = [];
-    
+
     // Convert API colors format to internal format: [name, url]
     productColors.forEach(color => {
         const name = color.name || 'Unknown';
         const url = color.main || color.thumb || color.url || '';
         colors.push([name, url]);
     });
-    
+
     // Check for color filter from home page
     const filterColorName = sessionStorage.getItem('filterColorName');
     const savedColorName = sessionStorage.getItem('selectedColorName');
     const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-    
+
     // Priority: 1. Saved color with basket items, 2. Filter color, 3. Saved color
     let colorToSelect = null;
     let colorToSelectUrl = null;
-    
+
     if (savedColorName) {
         const hasItemsForColor = basket.some(item => item.color === savedColorName);
         if (hasItemsForColor) {
@@ -1255,7 +1250,7 @@ function initColors(productColors) {
             }
         }
     }
-    
+
     // If no saved color with basket items, check filter color
     if (!colorToSelect && filterColorName) {
         // Try to find matching color (case-insensitive, partial match)
@@ -1269,7 +1264,7 @@ function initColors(productColors) {
             colorToSelectUrl = matchingColor[1];
         }
     }
-    
+
     // If still no color, use saved color (without basket items requirement)
     if (!colorToSelect && savedColorName) {
         const savedColor = colors.find(([name]) => name === savedColorName);
@@ -1278,7 +1273,7 @@ function initColors(productColors) {
             colorToSelectUrl = savedColor[1];
         }
     }
-    
+
     // Build color grid
     colors.forEach(([name, url], i) => {
         const div = document.createElement("div");
@@ -1293,14 +1288,14 @@ function initColors(productColors) {
             selectedColorName = name;
             selectedColorURL = url;
             if (mainImage) mainImage.src = url;
-            
+
             // Update thumbnail gallery to show this color's image (use setTimeout to ensure gallery is initialized)
             setTimeout(() => {
                 if (typeof window.setGalleryActiveBySrc === 'function') {
                     window.setGalleryActiveBySrc(url);
                 }
             }, 100);
-            
+
             // Update step progress and clear filter if color was auto-selected from filter
             if (filterColorName && filterColorName === colorToSelect) {
                 setTimeout(() => {
@@ -1313,8 +1308,8 @@ function initColors(productColors) {
 
         div.onclick = () => {
             // Check if there are unsaved items
-            const currentTotal = Object.values(qty).reduce((a,b)=>a+b,0);
-            
+            const currentTotal = Object.values(qty).reduce((a, b) => a + b, 0);
+
             if (currentTotal > 0) {
                 // Show confirmation modal
                 showColorChangeModal(name, url, div);
@@ -1326,7 +1321,7 @@ function initColors(productColors) {
 
         colorGrid.appendChild(div);
     });
-    
+
     console.log('✅ Colors initialized:', colors.length);
 }
 
@@ -1334,17 +1329,17 @@ function initColors(productColors) {
 document.addEventListener('click', (e) => {
     const colorGrid = document.getElementById('colorGrid');
     const sizesSection = document.querySelector('.size-grid');
-    const currentTotal = Object.values(qty).reduce((a,b)=>a+b,0);
-    
+    const currentTotal = Object.values(qty).reduce((a, b) => a + b, 0);
+
     // If clicked outside color grid and sizes, and no items selected, deselect color
-    if (colorGrid && !colorGrid.contains(e.target) && 
+    if (colorGrid && !colorGrid.contains(e.target) &&
         sizesSection && !sizesSection.contains(e.target) &&
         currentTotal === 0 && selectedColorName) {
-        
+
         // Check if basket has items for current color
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         const hasItemsInBasket = basket.some(item => item.color === selectedColorName);
-        
+
         if (!hasItemsInBasket) {
             resetColorSelection();
             selectedColorName = null;
@@ -1369,23 +1364,23 @@ function initSizes(productSizes) {
         renderSizes();
         return;
     }
-    
+
     // Set size list from API
     sizeList = productSizes;
     qty = {};
     sizeList.forEach(s => qty[s] = 0);
-    
+
     // Render sizes
     renderSizes();
-    
+
     console.log('✅ Sizes initialized:', sizeList);
 }
 
 function renderSizes() {
     if (!sizesGrid) return;
-    
+
     sizesGrid.innerHTML = "";
-    
+
     // Check if color is selected
     const colorSelected = selectedColorName !== null;
 
@@ -1411,7 +1406,7 @@ function renderSizes() {
 
         sizesGrid.appendChild(box);
     });
-    
+
     // Show message if no color selected
     updateSizesMessage();
 
@@ -1424,7 +1419,7 @@ function renderSizes() {
 function updateSizesMessage() {
     let msg = document.getElementById('selectColorMessage');
     const colorSelected = selectedColorName !== null;
-    
+
     if (!colorSelected) {
         if (!msg) {
             msg = document.createElement('div');
@@ -1452,7 +1447,7 @@ function attachSizeEvents() {
             if (qty[s] !== undefined) {
                 qty[s]++;
                 updateInput(s);
-                
+
                 // Trigger step 2 progress on first size selection
                 if (!step2ProgressTriggered) {
                     step2ProgressTriggered = true;
@@ -1510,18 +1505,18 @@ function resetSizes() {
 function resetColorSelection() {
     // Remove active class from all color thumbs
     document.querySelectorAll(".color-thumb").forEach(c => c.classList.remove("active"));
-    
+
     // Clear session storage
     sessionStorage.removeItem('selectedColorName');
     sessionStorage.removeItem('selectedColorUrl');
-    
+
     // Reset selected color variables
     selectedColorName = null;
     selectedColorURL = null;
-    
+
     // Reset step progress bar
     resetStepProgress();
-    
+
     // Re-render sizes to disable them
     renderSizes();
 }
@@ -1536,10 +1531,10 @@ function updateStepProgress(stepCompleted) {
     const stepLabel3 = document.getElementById('stepLabel3');
     const connector12 = document.getElementById('connector-1-2');
     const connector23 = document.getElementById('connector-2-3');
-    
+
     const greenStyle = 'width:44px; height:44px; border-radius:50%; background:#10b981; color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,0.3);';
     const greenLabelStyle = 'font-size:0.9rem; font-weight:600; color:#10b981;';
-    
+
     if (stepCompleted === 1) {
         // Color selected - make step 1 green immediately
         if (stepNum1 && !stepNum1.dataset.completed) {
@@ -1553,7 +1548,7 @@ function updateStepProgress(stepCompleted) {
         if (connector12 && !connector12.dataset.completed) {
             // Start loading animation
             connector12.innerHTML = '<div style="height:100%; width:0; background:#10b981; border-radius:2px; animation:loadBar 2s ease-out forwards;"></div>';
-            
+
             // Add keyframes if not exists
             if (!document.getElementById('loadBarKeyframes')) {
                 const style = document.createElement('style');
@@ -1561,13 +1556,13 @@ function updateStepProgress(stepCompleted) {
                 style.textContent = '@keyframes loadBar { 0% { width: 0; } 100% { width: 100%; } }';
                 document.head.appendChild(style);
             }
-            
+
             // After 2 seconds, complete step 2
             setTimeout(() => {
                 connector12.style.background = '#10b981';
                 connector12.innerHTML = '';
                 connector12.dataset.completed = 'true';
-                
+
                 if (stepNum2) {
                     stepNum2.style.cssText = greenStyle;
                     stepNum2.textContent = '2✓';
@@ -1580,12 +1575,12 @@ function updateStepProgress(stepCompleted) {
         // Logo added - animate connector 2-3, then make step 3 green
         if (connector23 && !connector23.dataset.completed) {
             connector23.innerHTML = '<div style="height:100%; width:0; background:#10b981; border-radius:2px; animation:loadBar 2s ease-out forwards;"></div>';
-            
+
             setTimeout(() => {
                 connector23.style.background = '#10b981';
                 connector23.innerHTML = '';
                 connector23.dataset.completed = 'true';
-                
+
                 if (stepNum3) {
                     stepNum3.style.cssText = greenStyle;
                     stepNum3.textContent = '3✓';
@@ -1602,7 +1597,7 @@ function resetStepProgress() {
     const purpleStyle = 'width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,0.3);';
     const purpleLabelStyle = 'font-size:0.9rem; font-weight:600; color:#7c3aed;';
     const connectorStyle = 'width:60px; height:4px; background:#e5e7eb; margin:0 16px; margin-bottom:28px; border-radius:2px;';
-    
+
     for (let i = 1; i <= 3; i++) {
         const stepNum = document.getElementById('stepNum' + i);
         const stepLabel = document.getElementById('stepLabel' + i);
@@ -1615,7 +1610,7 @@ function resetStepProgress() {
             stepLabel.style.cssText = purpleLabelStyle;
         }
     }
-    
+
     const connector12 = document.getElementById('connector-1-2');
     const connector23 = document.getElementById('connector-2-3');
     if (connector12) {
@@ -1635,24 +1630,24 @@ function changeColor(name, url, colorDiv) {
     if (colorDiv) colorDiv.classList.add("active");
 
     selectedColorName = name;
-    selectedColorURL  = url;
+    selectedColorURL = url;
 
     if (mainImage) mainImage.src = url;
-    
+
     // Update thumbnail gallery active state
     if (typeof window.setGalleryActiveBySrc === 'function') {
         window.setGalleryActiveBySrc(url);
     }
-    
+
     // Save selection to sessionStorage
     sessionStorage.setItem('selectedColorName', name);
     sessionStorage.setItem('selectedColorUrl', url);
 
     resetSizes();
-    
+
     // Update step progress - step 1 completed
     updateStepProgress(1);
-    
+
     // Natural scroll to color section
     const colorSection = document.querySelector('.color-grid');
     if (colorSection) {
@@ -1669,31 +1664,31 @@ function changeColor(name, url, colorDiv) {
 function showColorChangeModal(newColorName, newColorUrl, newColorDiv) {
     const modal = document.getElementById('colorChangeModal');
     modal.style.display = 'flex';
-    
+
     // Save button - add current selection to basket then change color
     document.getElementById('colorChangeSaveBtn').onclick = () => {
         try {
-            const total = Object.values(qty).reduce((a,b)=>a+b,0);
-            
+            const total = Object.values(qty).reduce((a, b) => a + b, 0);
+
             if (total > 0) {
                 // Get existing basket
                 let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-                
+
                 // Calculate TOTAL quantity of THIS PRODUCT across ALL colors
                 const currentProductTotal = basket
                     .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
                     .reduce((sum, item) => sum + item.quantity, 0);
-                
+
                 const newTotal = currentProductTotal + total;
                 const newUnitPrice = getUnitPrice(newTotal);
-                
+
                 // Check if same product with same color already exists
-                const existingIndex = basket.findIndex(item => 
-                    item.name === PRODUCT_NAME && 
-                    item.code === PRODUCT_CODE && 
+                const existingIndex = basket.findIndex(item =>
+                    item.name === PRODUCT_NAME &&
+                    item.code === PRODUCT_CODE &&
                     item.color === selectedColorName
                 );
-                
+
                 if (existingIndex !== -1) {
                     // Merge sizes with existing item
                     Object.keys(qty).forEach(size => {
@@ -1701,9 +1696,9 @@ function showColorChangeModal(newColorName, newColorUrl, newColorDiv) {
                             basket[existingIndex].sizes[size] = (basket[existingIndex].sizes[size] || 0) + qty[size];
                         }
                     });
-                    
+
                     // Recalculate total quantity and size summary
-                    basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a,b)=>a+b,0);
+                    basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a, b) => a + b, 0);
                     basket[existingIndex].size = getSizesSummaryFromSizes(basket[existingIndex].sizes);
                     basket[existingIndex].price = newUnitPrice.toFixed(2);
                 } else {
@@ -1716,31 +1711,31 @@ function showColorChangeModal(newColorName, newColorUrl, newColorDiv) {
                         quantity: total,
                         size: getSizesSummary(),
                         price: newUnitPrice.toFixed(2),
-                        sizes: {...qty}
+                        sizes: { ...qty }
                     };
                     basket.push(productData);
                 }
-                
+
                 // Update price for ALL items of the SAME PRODUCT (all colors)
                 basket.forEach(item => {
                     if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
                         item.price = newUnitPrice.toFixed(2);
                     }
                 });
-                
+
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                
+
                 // Update cart badge and basket total box
                 if (window.brandedukv15 && window.brandedukv15.updateCartBadge) {
                     window.brandedukv15.updateCartBadge();
                 }
                 updateBasketTotalBox();
-                
+
                 hasBasketItems = true;
-                
+
                 showToast(`✓ ${total} items saved to basket!`);
             }
-            
+
             // Change color and close modal
             changeColor(newColorName, newColorUrl, newColorDiv);
         } catch (error) {
@@ -1749,7 +1744,7 @@ function showColorChangeModal(newColorName, newColorUrl, newColorDiv) {
             modal.style.display = 'none';
         }
     };
-    
+
     // Discard button - just change color without saving
     document.getElementById('colorChangeDiscardBtn').onclick = () => {
         changeColor(newColorName, newColorUrl, newColorDiv);
@@ -1767,11 +1762,11 @@ function updateBelowSummary(total, unit) {
         console.warn('belowSummary element not found');
         return;
     }
-    
+
     // Show ONLY current selection (not basket)
     const currentTotal = total;
     const currentPrice = currentTotal > 0 ? (unit * currentTotal) : 0;
-    
+
     const perItemLabel = currentTotal > 0 ? ` · ${formatCurrency(unit)} each ${vatSuffix()}` : '';
     const summaryMarkup = `
         <div class="summary-text">
@@ -1798,14 +1793,14 @@ function updateDiscountBox(total) {
     // Support both old .disc-box and new .tier-item classes
     const boxes = document.querySelectorAll(".disc-box");
     const tierItems = document.querySelectorAll(".tier-item");
-    
+
     boxes.forEach(b => b.classList.remove("active"));
     tierItems.forEach(t => t.classList.remove("active"));
 
     let appliedIndex = 0;
 
-    DISCOUNTS.forEach((tier,i)=>{
-        if(total >= tier.min && total <= tier.max) appliedIndex = i;
+    DISCOUNTS.forEach((tier, i) => {
+        if (total >= tier.min && total <= tier.max) appliedIndex = i;
     });
 
     if (boxes[appliedIndex]) boxes[appliedIndex].classList.add("active");
@@ -1828,17 +1823,17 @@ function getCurrentTier(totalItems) {
 }
 
 function updateTotals() {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
-    
+    const total = Object.values(qty).reduce((a, b) => a + b, 0);
+
     // Check if basket has items
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
     hasBasketItems = basket.length > 0;
-    
+
     // Calculate TOTAL quantity of THIS PRODUCT in basket (all colors)
     const basketProductTotal = basket
         .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
         .reduce((sum, item) => sum + item.quantity, 0);
-    
+
     // Grand total = basket quantity + current selection
     const grandProductTotal = basketProductTotal + total;
 
@@ -1867,14 +1862,14 @@ function updateTotals() {
     const buttonsDisabled = total === 0 && !hasBasketItems;
     if (addContinueButton) addContinueButton.disabled = buttonsDisabled;
     if (addCustomizeButton) addCustomizeButton.disabled = buttonsDisabled;
-    
+
     // Sync mobile sticky bar
     const mobileAddCustomize = document.getElementById("mobileAddCustomize");
     const stickyItemCount = document.getElementById("stickyItemCount");
     const stickyTotal = document.getElementById("stickyTotal");
-    
+
     if (mobileAddCustomize) mobileAddCustomize.disabled = buttonsDisabled;
-    
+
     // Update sticky bar summary
     if (stickyItemCount) {
         const displayTotal = grandProductTotal > 0 ? grandProductTotal : total;
@@ -1886,7 +1881,7 @@ function updateTotals() {
     }
 
     updateBelowSummary(total, unit);
-    
+
     // Update sidebar in real-time
     updateSidebarFromProduct(grandProductTotal, unit);
 }
@@ -1897,9 +1892,9 @@ function updateSidebarFromProduct(totalQty, unitPrice) {
     const garmentUnitPriceEl = document.getElementById('garmentUnitPrice');
     const garmentQtyEl = document.getElementById('garmentQty');
     const totalCostEl = document.getElementById('sidebarTotalCost');
-    
+
     const garmentTotal = totalQty * unitPrice;
-    
+
     if (garmentCostEl) {
         garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
     }
@@ -1918,7 +1913,7 @@ function updateSidebarFromProduct(totalQty, unitPrice) {
 function updateTierPricing(total) {
     const tierItems = document.querySelectorAll('.tier-item');
     if (tierItems.length === 0) return;
-    
+
     tierItems.forEach(item => {
         const min = parseInt(item.dataset.min);
         const max = parseInt(item.dataset.max);
@@ -1939,27 +1934,27 @@ function updateTierPricing(total) {
 --------------------------------------------------- */
 
 addContinueButton.onclick = () => {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
+    const total = Object.values(qty).reduce((a, b) => a + b, 0);
     if (total === 0) return;
-    
+
     // Get existing basket
     let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-    
+
     // Calculate TOTAL quantity of THIS PRODUCT across ALL colors
     const currentProductTotal = basket
         .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
         .reduce((sum, item) => sum + item.quantity, 0);
-    
+
     const newTotal = currentProductTotal + total;
     const newUnitPrice = getUnitPrice(newTotal);
-    
+
     // Check if same product with same color already exists
-    const existingIndex = basket.findIndex(item => 
-        item.name === PRODUCT_NAME && 
-        item.code === PRODUCT_CODE && 
+    const existingIndex = basket.findIndex(item =>
+        item.name === PRODUCT_NAME &&
+        item.code === PRODUCT_CODE &&
         item.color === selectedColorName
     );
-    
+
     if (existingIndex !== -1) {
         // Merge sizes with existing item
         Object.keys(qty).forEach(size => {
@@ -1967,9 +1962,9 @@ addContinueButton.onclick = () => {
                 basket[existingIndex].sizes[size] = (basket[existingIndex].sizes[size] || 0) + qty[size];
             }
         });
-        
+
         // Recalculate total quantity and size summary
-        basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a,b)=>a+b,0);
+        basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a, b) => a + b, 0);
         basket[existingIndex].size = getSizesSummaryFromSizes(basket[existingIndex].sizes);
         basket[existingIndex].price = newUnitPrice.toFixed(2);
     } else {
@@ -1982,32 +1977,32 @@ addContinueButton.onclick = () => {
             quantity: total,
             size: getSizesSummary(),
             price: newUnitPrice.toFixed(2),
-            sizes: {...qty}
+            sizes: { ...qty }
         };
         basket.push(productData);
     }
-    
+
     // Update price for ALL items of the SAME PRODUCT (all colors)
     basket.forEach(item => {
         if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
             item.price = newUnitPrice.toFixed(2);
         }
     });
-    
+
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
-    
+
     // Update cart badge and basket total box
     if (window.brandedukv15 && window.brandedukv15.updateCartBadge) {
         window.brandedukv15.updateCartBadge();
     }
     updateBasketTotalBox();
-    
+
     // Show success toast (non alert)
     showToast(`✓ ${total} items added to basket! Continue choosing more colors or sizes.`);
-    
+
     // Update hasBasketItems flag
     hasBasketItems = true;
-    
+
     // Reset sizes per nuova selezione
     resetSizes();
 };
@@ -2019,28 +2014,28 @@ addContinueButton.onclick = () => {
 
 if (addCustomizeButton) {
     addCustomizeButton.onclick = () => {
-        const total = Object.values(qty).reduce((a,b)=>a+b,0);
-        
+        const total = Object.values(qty).reduce((a, b) => a + b, 0);
+
         // If there's a current selection, save it to basket
         if (total > 0) {
             // Get existing basket
             let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-            
+
             // Calculate TOTAL quantity of THIS PRODUCT across ALL colors
             const currentProductTotal = basket
                 .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
                 .reduce((sum, item) => sum + item.quantity, 0);
-            
+
             const newTotal = currentProductTotal + total;
             const newUnitPrice = getUnitPrice(newTotal);
-            
+
             // Check if same product with same color already exists
-            const existingIndex = basket.findIndex(item => 
-                item.name === PRODUCT_NAME && 
-                item.code === PRODUCT_CODE && 
+            const existingIndex = basket.findIndex(item =>
+                item.name === PRODUCT_NAME &&
+                item.code === PRODUCT_CODE &&
                 item.color === selectedColorName
             );
-            
+
             if (existingIndex !== -1) {
                 // Merge sizes with existing item
                 Object.keys(qty).forEach(size => {
@@ -2048,9 +2043,9 @@ if (addCustomizeButton) {
                         basket[existingIndex].sizes[size] = (basket[existingIndex].sizes[size] || 0) + qty[size];
                     }
                 });
-                
+
                 // Recalculate total quantity and size summary
-                basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a,b)=>a+b,0);
+                basket[existingIndex].quantity = Object.values(basket[existingIndex].sizes).reduce((a, b) => a + b, 0);
                 basket[existingIndex].size = getSizesSummaryFromSizes(basket[existingIndex].sizes);
                 basket[existingIndex].price = newUnitPrice.toFixed(2);
             } else {
@@ -2063,30 +2058,30 @@ if (addCustomizeButton) {
                     quantity: total,
                     size: getSizesSummary(),
                     price: newUnitPrice.toFixed(2),
-                    sizes: {...qty}
+                    sizes: { ...qty }
                 };
                 basket.push(productData);
             }
-            
+
             // Update price for ALL items of the SAME PRODUCT (all colors)
             basket.forEach(item => {
                 if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
                     item.price = newUnitPrice.toFixed(2);
                 }
             });
-            
+
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
             updateBasketTotalBox();
         }
-        
+
         // Show inline customization section instead of navigating
         const positionsSection = document.getElementById('step3PositionsSection');
-        
+
         // Customization section is now always visible, just scroll to it
         if (positionsSection) {
             // Scroll to positions section
             positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
+
             // Update step progress to step 3
             updateStepProgress(3);
         }
@@ -2094,19 +2089,19 @@ if (addCustomizeButton) {
 }
 
 function getSizesSummary() {
-    const sizeEntries = Object.entries(qty).filter(([s,q]) => q > 0);
+    const sizeEntries = Object.entries(qty).filter(([s, q]) => q > 0);
     if (sizeEntries.length === 1) {
         return sizeEntries[0][0];
     }
-    return sizeEntries.map(([s,q]) => `${q}x${s}`).join(', ');
+    return sizeEntries.map(([s, q]) => `${q}x${s}`).join(', ');
 }
 
 function getSizesSummaryFromSizes(sizes) {
-    const sizeEntries = Object.entries(sizes).filter(([s,q]) => q > 0);
+    const sizeEntries = Object.entries(sizes).filter(([s, q]) => q > 0);
     if (sizeEntries.length === 1) {
         return sizeEntries[0][0];
     }
-    return sizeEntries.map(([s,q]) => `${q}x${s}`).join(', ');
+    return sizeEntries.map(([s, q]) => `${q}x${s}`).join(', ');
 }
 
 /* ---------------------------------------------------
@@ -2127,13 +2122,13 @@ if (mobileAddCustomize) {
 }
 
 function openPopup() {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
-    const unit  = getUnitPrice(total);
+    const total = Object.values(qty).reduce((a, b) => a + b, 0);
+    const unit = getUnitPrice(total);
     const lineTotal = unit * total;
 
     const sizeLines = Object.entries(qty)
-        .filter(([s,q]) => q > 0)
-        .map(([s,q]) => `${selectedColorName}, ${s}: ${q}`)
+        .filter(([s, q]) => q > 0)
+        .map(([s, q]) => `${selectedColorName}, ${s}: ${q}`)
         .join("<br>");
 
     popupContent.innerHTML = `
@@ -2208,13 +2203,13 @@ let customizationData = {
 function openCustomizationModal() {
     const modal = document.getElementById('customizationModal');
     modal.style.display = 'block';
-    
+
     // Reset to step 1
     goToStep(1);
-    
+
     // Render color selection grid
     renderColorSelection();
-    
+
     // Set product info in sidebar
     updateSidebarProductInfo();
 }
@@ -2222,7 +2217,7 @@ function openCustomizationModal() {
 function closeCustomizationModal() {
     const modal = document.getElementById('customizationModal');
     modal.style.display = 'none';
-    
+
     // Reset customization data
     customizationData = {
         selectedColor: null,
@@ -2236,33 +2231,33 @@ function closeCustomizationModal() {
 function renderColorSelection() {
     const grid = document.getElementById('colorSelectionGrid');
     if (!grid) return;
-    
+
     grid.innerHTML = '';
-    
+
     if (!colors || colors.length === 0) {
         console.warn('No colors available for color selection');
         return;
     }
-    
+
     colors.forEach(([name, url]) => {
         const circle = document.createElement('div');
         circle.className = 'color-circle';
         circle.style.background = `url('${url}') center/cover`;
         circle.title = name;
-        
+
         circle.onclick = () => {
             // Remove previous selection
             document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-            
+
             // Select this color
             circle.classList.add('selected');
             customizationData.selectedColor = name;
             customizationData.selectedColorUrl = url;
-            
+
             // Update main image
             mainImage.src = url;
         };
-        
+
         grid.appendChild(circle);
     });
 }
@@ -2272,13 +2267,13 @@ function goToStep(stepNumber) {
     document.querySelectorAll('.cust-step').forEach(step => {
         step.classList.remove('active-step');
     });
-    
+
     // Show selected step
     const targetStep = document.getElementById(`step${stepNumber}`);
     if (targetStep) {
         targetStep.classList.add('active-step');
     }
-    
+
     // Update step indicators
     document.querySelectorAll('.step-circle').forEach(circle => {
         const circleStep = parseInt(circle.dataset.step);
@@ -2293,12 +2288,12 @@ function goToStep(stepNumber) {
 function validateAndGoToStep3() {
     // Check if at least one position is selected
     const checkedPositions = document.querySelectorAll('input[name="position"]:checked');
-    
+
     if (checkedPositions.length === 0) {
         showValidationError('Please select at least one position');
         return;
     }
-    
+
     // Store selected positions
     customizationData.selectedPositions = Array.from(checkedPositions).map(cb => {
         const card = cb.closest('.position-card');
@@ -2309,9 +2304,9 @@ function validateAndGoToStep3() {
             printPrice: card.dataset.print
         };
     });
-    
+
     customizationData.currentPositionIndex = 0;
-    
+
     // Go to first position customization
     showPositionCustomization(0);
     goToStep(3);
@@ -2320,11 +2315,11 @@ function validateAndGoToStep3() {
 function showPositionCustomization(index) {
     const position = customizationData.selectedPositions[index];
     const total = customizationData.selectedPositions.length;
-    
+
     // Update position title
     document.getElementById('positionCounter').textContent = `(${index + 1} of ${total})`;
     document.getElementById('currentPositionName').textContent = position.name;
-    
+
     // Update preview image
     document.getElementById('previewHoodieImage').src = customizationData.selectedColorUrl || mainImage.src;
     document.getElementById('sidebarProductImage').src = customizationData.selectedColorUrl || mainImage.src;
@@ -2334,7 +2329,7 @@ function validateAndNextPosition() {
     // Validate customisation name
     const nameInput = document.getElementById('customisationName');
     const nameError = document.getElementById('nameError');
-    
+
     if (!nameInput.value.trim()) {
         nameError.style.display = 'block';
         nameInput.focus();
@@ -2342,7 +2337,7 @@ function validateAndNextPosition() {
     } else {
         nameError.style.display = 'none';
     }
-    
+
     // Store current position data
     const currentPosition = customizationData.selectedPositions[customizationData.currentPositionIndex];
     const positionData = {
@@ -2351,14 +2346,14 @@ function validateAndNextPosition() {
         method: document.querySelector('.method-btn.active').dataset.method,
         type: document.querySelector('.type-btn.active').dataset.type
     };
-    
+
     customizationData.positionsData[customizationData.currentPositionIndex] = positionData;
-    
+
     // Check if there are more positions
     if (customizationData.currentPositionIndex < customizationData.selectedPositions.length - 1) {
         customizationData.currentPositionIndex++;
         showPositionCustomization(customizationData.currentPositionIndex);
-        
+
         // Clear form for next position
         nameInput.value = '';
     } else {
@@ -2374,7 +2369,7 @@ function goBackFromStep3() {
 function addCustomizedItemToBasket() {
     // Get quote basket from localStorage
     let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-    
+
     // Prepare item
     const item = {
         code: PRODUCT_CODE,
@@ -2385,10 +2380,10 @@ function addCustomizedItemToBasket() {
         price: BASE_PRICE,
         customization: customizationData.positionsData
     };
-    
+
     basket.push(item);
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
-    
+
     // Close modal and redirect to basket
     closeCustomizationModal();
     window.location.href = 'quote-basket.html';
@@ -2397,7 +2392,7 @@ function addCustomizedItemToBasket() {
 function showValidationError(message) {
     const errorModal = document.getElementById('validationError');
     const errorMessage = document.getElementById('validationErrorMessage');
-    
+
     errorMessage.textContent = message;
     errorModal.style.display = 'block';
 }
@@ -2432,11 +2427,11 @@ function updateSidebarProductInfo() {
 
     garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()} x ${totalQty}`;
     totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
-    
+
     // Update color and sizes display
     if (colorEl) {
         const colorName = selectedColorName || sessionStorage.getItem('selectedColorName') || 'Not selected';
-        
+
         // Build sizes string from sizeQuantities
         let sizesStr = '';
         if (typeof sizeQuantities !== 'undefined' && Object.keys(sizeQuantities).length > 0) {
@@ -2445,7 +2440,7 @@ function updateSidebarProductInfo() {
                 .map(([size, qty]) => `${qty} x ${size}`);
             sizesStr = sizeEntries.join(', ');
         }
-        
+
         if (sizesStr) {
             colorEl.textContent = `${colorName} / ${sizesStr}`;
         } else {
@@ -2463,13 +2458,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
         });
     });
-    
+
     // Type buttons
     document.querySelectorAll('.type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             // Show/hide sections based on type
             if (btn.dataset.type === 'logo') {
                 document.getElementById('logoUploadSection').style.display = 'block';
@@ -2480,7 +2475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
     // Upload tabs
     document.querySelectorAll('.upload-tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -2488,48 +2483,48 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
         });
     });
-    
+
     // Dropzone click
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('positionLogoInput');
-    
+
     if (dropzone && fileInput) {
         dropzone.addEventListener('click', () => {
             fileInput.click();
         });
-        
+
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
                 const file = e.target.files[0];
                 const reader = new FileReader();
-                
+
                 reader.onload = (event) => {
                     document.getElementById('logoPreviewImage').src = event.target.result;
                     document.getElementById('uploadArea').style.display = 'none';
                     document.getElementById('logoPreviewArea').style.display = 'block';
                 };
-                
+
                 reader.readAsDataURL(file);
             }
         });
     }
-    
+
     // Position checkboxes
     document.querySelectorAll('.position-card').forEach(card => {
         const checkbox = card.querySelector('input[type="checkbox"]');
-        
+
         card.addEventListener('click', (e) => {
             if (e.target !== checkbox) {
                 checkbox.checked = !checkbox.checked;
             }
-            
+
             if (checkbox.checked) {
                 card.classList.add('selected');
             } else {
                 card.classList.remove('selected');
             }
         });
-        
+
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 card.classList.add('selected');
@@ -2558,10 +2553,10 @@ function showToast(message) {
     toast.className = 'toast-notification';
     toast.textContent = message;
     document.body.appendChild(toast);
-    
+
     // Show toast
     setTimeout(() => toast.classList.add('show'), 10);
-    
+
     // Hide and remove after 3 seconds
     setTimeout(() => {
         toast.classList.remove('show');

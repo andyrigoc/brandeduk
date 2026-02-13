@@ -10,20 +10,39 @@ let BASE_PRICE = 0;
 // Colors loaded dynamically from API
 let colors = [];
 
-const DISCOUNTS = [
-    { min: 1,   max: 9,     price: BASE_PRICE, save: 0  },
-    { min: 10,  max: 24,    price: 16.54,      save: 8  },
-    { min: 25,  max: 49,    price: 16.18,      save: 10 },
-    { min: 50,  max: 99,    price: 14.94,      save: 15 },
-    { min: 100, max: 249,   price: 13.49,      save: 25 },
-    { min: 250, max: 99999, price: 12.59,      save: 30 }
+// Discounts loaded dynamically from API priceBreaks
+let DISCOUNTS = [
+    { min: 1, max: 99999, price: BASE_PRICE, save: 0 }
 ];
+
+// Load discounts from API product data (priceBreaks)
+function loadDiscountsFromAPI() {
+    const savedData = sessionStorage.getItem('selectedProductData');
+    if (!savedData) return;
+    try {
+        const productData = JSON.parse(savedData);
+        if (productData.priceBreaks && productData.priceBreaks.length > 0) {
+            DISCOUNTS = productData.priceBreaks.map((breakItem) => ({
+                min: breakItem.min,
+                max: breakItem.max,
+                price: breakItem.price,
+                save: breakItem.percentage || 0
+            }));
+            BASE_PRICE = DISCOUNTS[0].price;
+        } else if (productData.price) {
+            BASE_PRICE = productData.price;
+            DISCOUNTS = [{ min: 1, max: 99999, price: BASE_PRICE, save: 0 }];
+        }
+    } catch (e) {
+        console.warn('Failed to load discounts from API data:', e);
+    }
+}
 
 // STATE
 let selectedColorName = colors[0][0];
-let selectedColorURL  = colors[0][1];
+let selectedColorURL = colors[0][1];
 let selectedCustomizationMethod = null; // 'embroidery' or 'print'
-const sizeList = ["S","M","L","XL","2XL","3XL","4XL","5XL"];
+const sizeList = ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 let qty = {};
 sizeList.forEach(s => qty[s] = 0);
 
@@ -38,6 +57,7 @@ const colorGrid = document.getElementById("colorGrid");
 
 // ===== INITIALIZE =====
 document.addEventListener('DOMContentLoaded', () => {
+    loadDiscountsFromAPI();
     loadSavedColorSelection();
     buildColorGrid();
     renderSizes();
@@ -48,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadSavedColorSelection() {
     const savedColorName = sessionStorage.getItem('selectedColorName');
     const savedColorUrl = sessionStorage.getItem('selectedColorUrl');
-    
+
     if (savedColorName && savedColorUrl) {
         selectedColorName = savedColorName;
         selectedColorURL = savedColorUrl;
@@ -59,35 +79,35 @@ function loadSavedColorSelection() {
 // ===== BUILD COLOR GRID =====
 function buildColorGrid() {
     colorGrid.innerHTML = '';
-    
+
     colors.forEach(([name, url], i) => {
         const div = document.createElement("div");
         div.className = "color-thumb";
         div.style.backgroundImage = `url('${url}')`;
-        
+
         // Mark as active if it's the saved color
         if (name === selectedColorName) {
             div.classList.add("active");
         } else if (i === 0 && !sessionStorage.getItem('selectedColorName')) {
             div.classList.add("active");
         }
-        
+
         div.onclick = () => {
             document.querySelectorAll(".color-thumb").forEach(c => c.classList.remove("active"));
             div.classList.add("active");
-            
+
             selectedColorName = name;
-            selectedColorURL  = url;
+            selectedColorURL = url;
             mainImage.src = url;
-            
+
             // Save to sessionStorage
             sessionStorage.setItem('selectedColorName', name);
             sessionStorage.setItem('selectedColorUrl', url);
-            
+
             resetSizes();
             updateTotals();
         };
-        
+
         colorGrid.appendChild(div);
     });
 }
@@ -95,11 +115,11 @@ function buildColorGrid() {
 // ===== SIZES =====
 function renderSizes() {
     sizesGrid.innerHTML = "";
-    
+
     sizeList.forEach(size => {
         const box = document.createElement("div");
         box.className = "size-box";
-        
+
         box.innerHTML = `
             <div class="size-label">${size}</div>
             <div class="qty-wrapper">
@@ -114,10 +134,10 @@ function renderSizes() {
                 <button class="qty-btn plus" data-size="${size}">+</button>
             </div>
         `;
-        
+
         sizesGrid.appendChild(box);
     });
-    
+
     attachSizeEvents();
 }
 
@@ -129,7 +149,7 @@ function attachSizeEvents() {
             updateInput(s);
         };
     });
-    
+
     document.querySelectorAll(".qty-btn.minus").forEach(btn => {
         btn.onclick = () => {
             const s = btn.dataset.size;
@@ -137,7 +157,7 @@ function attachSizeEvents() {
             updateInput(s);
         };
     });
-    
+
     document.querySelectorAll(".qty-input").forEach(inp => {
         inp.oninput = () => {
             const s = inp.dataset.size;
@@ -160,7 +180,7 @@ function updateSizeBoxState(size) {
     if (!input) return;
     const box = input.closest(".size-box");
     if (!box) return;
-    
+
     if (qty[size] > 0) box.classList.add("active");
     else box.classList.remove("active");
 }
@@ -186,24 +206,24 @@ function getCurrentTier(totalItems) {
 function updateDiscountBox(total) {
     const boxes = document.querySelectorAll(".disc-box");
     boxes.forEach(b => b.classList.remove("active"));
-    
+
     let appliedIndex = 0;
-    DISCOUNTS.forEach((tier,i)=>{
-        if(total >= tier.min && total <= tier.max) appliedIndex = i;
+    DISCOUNTS.forEach((tier, i) => {
+        if (total >= tier.min && total <= tier.max) appliedIndex = i;
     });
-    
+
     boxes[appliedIndex]?.classList.add("active");
 }
 
 function updateTotals() {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
-    
+    const total = Object.values(qty).reduce((a, b) => a + b, 0);
+
     updateDiscountBox(total);
-    
+
     const unit = getUnitPrice(total);
-    
+
     mainPriceEl.innerHTML = `£${unit.toFixed(2)} <span>each ex VAT</span>`;
-    
+
     const tier = getCurrentTier(total);
     if (total === 0) {
         priceInfoEl.innerHTML = "Price listed for 1–9 units";
@@ -211,13 +231,13 @@ function updateTotals() {
         priceInfoEl.innerHTML =
             `<b>Bulk price applied:</b> £${tier.price.toFixed(2)} ex VAT (${tier.min}+ units)`;
     }
-    
+
     quoteButton.disabled = total === 0;
     quoteButton.textContent = `Add ${total} Items to Quote`;
-    
+
     if (total > 0) quoteButton.classList.add("active");
     else quoteButton.classList.remove("active");
-    
+
     updateBelowSummary(total, unit);
 }
 
@@ -226,7 +246,7 @@ function updateBelowSummary(total, unit) {
         belowSummary.innerHTML = "";
         return;
     }
-    
+
     belowSummary.innerHTML = `
         <div class="left-part">
             <b>${total} items</b><br>
@@ -240,9 +260,9 @@ function updateBelowSummary(total, unit) {
 
 // ===== NAVIGATE TO CUSTOMIZATION =====
 quoteButton.onclick = () => {
-    const total = Object.values(qty).reduce((a,b)=>a+b,0);
+    const total = Object.values(qty).reduce((a, b) => a + b, 0);
     if (total === 0) return;
-    
+
     // Save product data
     const productData = {
         name: PRODUCT_NAME,
@@ -252,19 +272,19 @@ quoteButton.onclick = () => {
         quantity: total,
         size: getSizesSummary(),
         price: getUnitPrice(total).toFixed(2),
-        sizes: {...qty}
+        sizes: { ...qty }
     };
-    
+
     sessionStorage.setItem('customizingProduct', JSON.stringify(productData));
-    
+
     // Navigate to positions
     window.location.href = 'customize-positions.html';
 };
 
 function getSizesSummary() {
-    const sizeEntries = Object.entries(qty).filter(([s,q]) => q > 0);
+    const sizeEntries = Object.entries(qty).filter(([s, q]) => q > 0);
     if (sizeEntries.length === 1) {
         return sizeEntries[0][0];
     }
-    return sizeEntries.map(([s,q]) => `${q}x${s}`).join(', ');
+    return sizeEntries.map(([s, q]) => `${q}x${s}`).join(', ');
 }

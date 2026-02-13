@@ -4,7 +4,7 @@
  * Requires: api.js to be loaded first
  */
 
-const ShopManager = (function() {
+const ShopManager = (function () {
     'use strict';
 
     // ==========================================================================
@@ -157,10 +157,10 @@ const ShopManager = (function() {
     }
 
     function updatePageTitle() {
-        const title = CATEGORY_TITLES[currentState.category] || 
-                     CATEGORY_TITLES[currentState.category.toLowerCase()] || 
-                     'Products';
-        
+        const title = CATEGORY_TITLES[currentState.category] ||
+            CATEGORY_TITLES[currentState.category.toLowerCase()] ||
+            'Products';
+
         // Update various title elements
         const categoryTitleEl = document.getElementById('categoryTitle');
         if (categoryTitleEl) {
@@ -172,8 +172,8 @@ const ShopManager = (function() {
             shopCategoryHeading.textContent = title;
         }
 
-        const breadcrumbCategoryEl = document.getElementById('shopBreadcrumbCategory') || 
-                                     document.getElementById('breadcrumbCategory');
+        const breadcrumbCategoryEl = document.getElementById('shopBreadcrumbCategory') ||
+            document.getElementById('breadcrumbCategory');
         if (breadcrumbCategoryEl) {
             breadcrumbCategoryEl.textContent = title.toUpperCase();
         }
@@ -260,7 +260,7 @@ const ShopManager = (function() {
         // Badges
         const hasEmbroidery = product.customization.includes('embroidery');
         const hasPrint = product.customization.includes('print');
-        
+
         let badgesHTML = '';
         if (hasEmbroidery) {
             badgesHTML += '<span class="badge embroidery">EMBROIDERY</span>';
@@ -280,6 +280,40 @@ const ShopManager = (function() {
         }
 
         const displayColor = matchedVariant || allColors[0] || { name: 'Default', main: product.image };
+        // Use the model/lifestyle image as the default thumbnail (not the color variant image)
+        // BUT if a colour-related filter (primaryColour or colourShade) is active, show
+        // the first matching colour variant image so users see the filtered colour.
+        const hasColorFilter = activeColorSlug ||
+            (currentState.filters.primaryColour && currentState.filters.primaryColour.length > 0) ||
+            (currentState.filters.colourShade && currentState.filters.colourShade.length > 0);
+
+        let defaultThumbImage = product.image;
+        if (activeColorSlug && matchedVariant) {
+            // Variant-level color filter – show the matched variant
+            defaultThumbImage = matchedVariant.main || product.image;
+        } else if (hasColorFilter && !activeColorSlug) {
+            // primaryColour / colourShade filter active – pick first matching variant
+            const filterColorValues = [
+                ...(currentState.filters.primaryColour || []),
+                ...(currentState.filters.colourShade || [])
+            ];
+            if (filterColorValues.length > 0 && allColors.length > 0) {
+                // Try to find a color variant whose name matches any of the filter values
+                const matched = allColors.find(c => {
+                    const cSlug = slugifyColor(c.name);
+                    return filterColorValues.some(fv => {
+                        const fvSlug = slugifyColor(fv);
+                        return cSlug === fvSlug || cSlug.includes(fvSlug) || fvSlug.includes(cSlug);
+                    });
+                });
+                if (matched) {
+                    defaultThumbImage = matched.main || product.image;
+                } else {
+                    // No exact match – fall back to first color variant (since API already filtered by color)
+                    defaultThumbImage = allColors[0].main || product.image;
+                }
+            }
+        }
         const displayColors = activeColorSlug ? [displayColor] : allColors.slice(0, 12);
 
         const colorsHTML = displayColors.map(c => {
@@ -306,7 +340,7 @@ const ShopManager = (function() {
                     ${badgesHTML}
                 </div>
                 <div class="product-figure">
-                    <img src="${displayColor.main || product.image}" alt="${product.name}" class="product-main-img" loading="lazy">
+                    <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-main-img" loading="lazy">
                 </div>
             </div>
             <div class="product-info">
@@ -339,10 +373,13 @@ const ShopManager = (function() {
             });
 
             dot.addEventListener('mouseleave', () => {
+                const img = card.querySelector('.product-main-img');
                 if (selectedColor) {
-                    const img = card.querySelector('.product-main-img');
-                    const activeDot = card.querySelector('.color-dot.active');
-                    if (img && activeDot) img.src = activeDot.dataset.main;
+                    // If a color was explicitly clicked, revert to that color's image
+                    if (img) img.src = selectedColor.url;
+                } else {
+                    // No color clicked – revert to the model/lifestyle image
+                    if (img) img.src = product.image;
                 }
             });
 
@@ -364,7 +401,7 @@ const ShopManager = (function() {
             console.log('[ShopManager] Card clicked:', product.code);
             sessionStorage.setItem('selectedProduct', product.code);
             sessionStorage.setItem('selectedProductData', JSON.stringify(product));
-            
+
             const activeColorDot = card.querySelector('.color-dot.active');
             if (displayColor) {
                 sessionStorage.setItem('selectedColorName', displayColor.name);
@@ -373,10 +410,10 @@ const ShopManager = (function() {
                 sessionStorage.setItem('selectedColorName', activeColorDot.dataset.color);
                 sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
             }
-            
+
             // Determine if we're on mobile or desktop
-            const isMobile = window.location.pathname.includes('mobile/') || 
-                            window.innerWidth < 768;
+            const isMobile = window.location.pathname.includes('mobile/') ||
+                window.innerWidth < 768;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
             const url = new URL(targetPage, window.location.origin);
@@ -398,7 +435,7 @@ const ShopManager = (function() {
             'awdis': 'https://i.postimg.cc/placeholder-awdis.png'
             // Add more as needed
         };
-        
+
         const normalized = (brandName || '').toLowerCase();
         return brandLogos[normalized] || null;
     }
@@ -468,9 +505,9 @@ const ShopManager = (function() {
                 // Fade out animation
                 productsGrid.style.opacity = '0';
                 productsGrid.style.transform = 'translateY(10px)';
-                
+
                 await new Promise(resolve => setTimeout(resolve, 150));
-                
+
                 productsGrid.innerHTML = '';
 
                 if (result.items.length === 0) {
@@ -537,7 +574,7 @@ const ShopManager = (function() {
             }
             console.error('[ShopManager] Error fetching products:', error);
             hideLoading();
-            
+
             if (productsGrid) {
                 productsGrid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
@@ -642,7 +679,7 @@ const ShopManager = (function() {
     function goToPage(page) {
         currentState.page = page;
         renderProducts();
-        
+
         // Scroll to top of products
         const shopTitleBar = document.querySelector('.shop-title-bar');
         if (shopTitleBar) {
@@ -719,7 +756,7 @@ const ShopManager = (function() {
         Object.keys(currentState.filters).forEach(key => {
             currentState.filters[key] = [];
         });
-        
+
         // Clear UI filter states
         document.querySelectorAll('.filter-option input:checked').forEach(cb => {
             cb.checked = false;
@@ -735,10 +772,10 @@ const ShopManager = (function() {
         document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(cb => {
             cb.checked = false;
         });
-        
+
         const searchInput = document.getElementById('sidebarTextSearch');
         if (searchInput) searchInput.value = '';
-        
+
         const priceSlider = document.getElementById('priceRangeSlider');
         if (priceSlider) {
             priceSlider.value = priceSlider.max;
@@ -835,10 +872,10 @@ const ShopManager = (function() {
 
     async function init() {
         console.log('[ShopManager] Initializing...');
-        
+
         // Get grid element
         productsGrid = document.getElementById('productsGrid');
-        
+
         // Create loading overlay if needed
         if (!document.getElementById('shopLoadingOverlay')) {
             loadingOverlay = document.createElement('div');
@@ -882,16 +919,16 @@ const ShopManager = (function() {
     function setupEventListeners() {
         // Category filter buttons
         document.querySelectorAll('.category-filter-card').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const category = this.dataset.category;
-                
+
                 // Update active state
                 document.querySelectorAll('.category-filter-card').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 // Scroll into view
                 this.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                
+
                 // Set category and render
                 setCategory(category);
             });
@@ -919,7 +956,7 @@ const ShopManager = (function() {
                     priceLabel.textContent = `£0 - £${max}`;
                 }
             });
-            
+
             priceSlider.addEventListener('change', (e) => {
                 const max = Number(e.target.value);
                 setPriceRange(0, max);
@@ -936,7 +973,7 @@ const ShopManager = (function() {
 
         // Filter checkboxes
         document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', function() {
+            cb.addEventListener('change', function () {
                 const filterType = this.name;
                 const value = this.value;
                 toggleFilter(filterType, value);
@@ -945,7 +982,7 @@ const ShopManager = (function() {
 
         // Color swatches (variant color filter)
         document.querySelectorAll('.filter-colour-swatch').forEach(swatch => {
-            swatch.addEventListener('click', function() {
+            swatch.addEventListener('click', function () {
                 const colour = this.dataset.colour;
                 document.querySelectorAll('.filter-colour-swatch').forEach(s => s.classList.remove('active'));
                 this.classList.add('active');
@@ -955,7 +992,7 @@ const ShopManager = (function() {
 
         // Checkbox-based color filter (shop.html uses .filter-color)
         document.querySelectorAll('.filter-color input[type="checkbox"], .filter-colour input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', function() {
+            cb.addEventListener('change', function () {
                 const value = this.value;
                 if (this.checked) {
                     // Enforce single selection for variant color
@@ -971,9 +1008,9 @@ const ShopManager = (function() {
 
         // Quick filter toggles
         document.querySelectorAll('.filter-toggle input[type="checkbox"]').forEach(toggle => {
-            toggle.addEventListener('change', function() {
+            toggle.addEventListener('change', function () {
                 const filterValue = this.value;
-                
+
                 if (filterValue === 'in-stock') {
                     // Handle stock filter - may need special API param
                     console.log('[ShopManager] In-stock filter:', this.checked);
@@ -1031,7 +1068,7 @@ const ShopManager = (function() {
         updatePrices,
         goToPage,
         getState: () => ({ ...currentState }),
-        
+
         // Expose formatting for external use
         formatCurrency,
         vatSuffix,
