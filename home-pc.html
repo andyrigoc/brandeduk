@@ -2910,25 +2910,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
 
     window.Tawk_API = window.Tawk_API || {};
-    // Hide default bubble; open only from our in-site trigger.
-    window.Tawk_API.onLoad = function () {
-        try {
-            document.body.classList.remove('tawk-open');
-            if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
-        } catch (e) {}
-    };
-    window.Tawk_API.onChatMaximized = function () {
-        try { document.body.classList.add('tawk-open'); } catch (e) {}
-    };
-    window.Tawk_API.onChatMinimized = function () {
-        try {
-            document.body.classList.remove('tawk-open');
-            if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
-        } catch (e) {}
-    };
-    window.Tawk_API.onChatHidden = function () {
-        try { document.body.classList.remove('tawk-open'); } catch (e) {}
-    };
+    // Show Tawk bubble by default
+    window.Tawk_API.onLoad = function () {};
+    window.Tawk_API.onChatMaximized = function () {};
+    window.Tawk_API.onChatMinimized = function () {};
+    window.Tawk_API.onChatHidden = function () {};
     window.Tawk_LoadStart = new Date();
 
     var s1 = document.createElement('script');
@@ -2967,11 +2953,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-    // Behave like a "popup": hide default bubble and open only from our UI.
+    // Tawk bubble visible by default
     waitForTawk(function (api) {
-        try { document.body.classList.remove('tawk-open'); } catch (e) {}
-        if (typeof api.hideWidget === 'function') { api.hideWidget(); return true; }
-        return false;
+        return true;
     }, 8000);
 
     document.addEventListener('click', function (e) {
