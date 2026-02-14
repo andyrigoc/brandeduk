@@ -68,6 +68,11 @@
             padding: 12px 0;
         }
 
+        /* Extra top padding for page-container to prevent content being cut off by sticky header */
+        .page-container {
+            padding-top: 200px;
+        }
+
         .back-bar .header-container {
             max-width: 1440px;
             margin: 0 auto;
@@ -661,6 +666,46 @@
             left: 72%;
             width: 28px;
             height: 28px;
+        }
+
+        /* Modern Submit Quote Button */
+        .submit-quote-btn-modern {
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .submit-quote-btn-modern:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+        .submit-quote-btn-modern:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.3);
+        }
+        .submit-quote-btn-modern:disabled {
+            background: linear-gradient(135deg, #d1d5db 0%, #e5e7eb 100%);
+            color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .submit-quote-btn-modern svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -1402,12 +1447,9 @@
                                     <span class="label">Garment Cost</span>
                                     <span class="value" id="sidebarGarmentCost">£0.00</span>
                                 </div>
-                                <div class="row detail">
-                                    <span>Unit Price:</span>
-                                    <span class="detail-values">
-                                        <span id="garmentUnitPrice">£0.00</span>
-                                        <span id="garmentQty">Qty: 0</span>
-                                    </span>
+                                <div class="row detail" style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span>Unit Price: <span id="garmentUnitPrice">£0.00</span></span>
+                                    <span style="text-align:right;">Quantity: <span id="garmentQty">0</span></span>
                                 </div>
                             </div>
                             <div id="customizationCostsList">
@@ -1417,6 +1459,15 @@
                                 <strong>Total Cost</strong>
                                 <strong id="sidebarTotalCost" class="total-amount">£0.00</strong>
                             </div>
+                            
+                            <!-- Submit Quote Button -->
+                            <button id="submitQuoteBtnSidebar" class="submit-quote-btn-modern" disabled>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 2L11 13"></path>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                                </svg>
+                                <span>Submit Your Quote</span>
+                            </button>
                         </div>
 
                         <div id="basketItemsList" class="basket-items-scroll">
@@ -1671,13 +1722,7 @@
                     </div>
                 </div>
 
-                <!-- Submit Quote Button for Step 4 -->
-                <div class="step4-submit-cta" style="margin-top:24px; text-align:center;">
-                    <button id="submitQuoteBtnInline" class="cta-btn primary" style="min-width:280px;" disabled>
-                        <span class="cta-icon">📩</span>
-                        <span class="cta-text">Submit Your Quote</span>
-                    </button>
-                </div>
+                <!-- Submit Quote Button moved to sidebar -->
             </div>
         </div>
 

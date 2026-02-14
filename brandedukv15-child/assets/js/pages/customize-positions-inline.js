@@ -154,7 +154,7 @@
         if (!buttons.length) return;
 
         const popup = document.getElementById('quoteRequestPopup');
-        const submitBtn = document.getElementById('submitQuoteBtnInline');
+        const submitBtn = document.getElementById('submitQuoteBtnSidebar') || document.getElementById('submitQuoteBtnInline');
 
         buttons.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -955,7 +955,7 @@
         fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:ENTRY',message:'initSubmitQuoteBtn called',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
         // #endregion
         
-        const submitBtn = document.getElementById('submitQuoteBtnInline');
+        const submitBtn = document.getElementById('submitQuoteBtnSidebar') || document.getElementById('submitQuoteBtnInline');
         const popup = document.getElementById('quoteRequestPopup');
         const closeBtn = document.getElementById('closeQuotePopup');
         const form = document.getElementById('quoteRequestForm');
@@ -1420,7 +1420,7 @@
     }
 
     function updateSubmitButton() {
-        const submitBtn = document.getElementById('submitQuoteBtnInline');
+        const submitBtn = document.getElementById('submitQuoteBtnSidebar') || document.getElementById('submitQuoteBtnInline');
         if (!submitBtn) return;
 
         const hasCustomizations = Object.keys(positionCustomizationsMap).length > 0;
@@ -1601,8 +1601,31 @@
         return basket.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     }
 
+    // Get current selection from product page (items not yet added to basket)
+    function getCurrentProductPageSelection() {
+        if (typeof window.getProductPageSelection === 'function') {
+            return window.getProductPageSelection();
+        }
+        // Fallback: try to read the qty object directly
+        if (window.productPageQty && typeof window.productPageQty === 'object') {
+            const totalQty = Object.values(window.productPageQty).reduce((sum, q) => sum + (Number(q) || 0), 0);
+            return {
+                qty: window.productPageQty,
+                totalQty: totalQty,
+                productName: window.PRODUCT_NAME || '',
+                productCode: window.PRODUCT_CODE || '',
+                colorName: window.selectedColorName || null,
+                unitPrice: 0
+            };
+        }
+        return null;
+    }
+
     function updateSummarySidebar() {
         const basket = readBasket();
+        
+        // Also get current selection from product page (not yet in basket)
+        const currentSelection = getCurrentProductPageSelection();
 
         // Build grouped view (per basket item per-size)
         const grouped = [];
@@ -1644,7 +1667,13 @@
             }
         });
 
-        const totalQty = grouped.reduce((sum, g) => sum + (Number(g.qty) || 0), 0);
+        // Calculate total: basket items + current selection from product page
+        const basketQty = grouped.reduce((sum, g) => sum + (Number(g.qty) || 0), 0);
+        const currentSelectionQty = currentSelection ? currentSelection.totalQty : 0;
+        const totalQty = basketQty + currentSelectionQty;
+        
+        // Get unit price from current selection if available
+        const currentUnitPrice = currentSelection && currentSelection.unitPrice ? currentSelection.unitPrice : 0;
 
         let totalGarmentCost = 0;
         let basketHTML = '';
@@ -1684,8 +1713,13 @@
             `;
         });
 
+        // Add current selection cost to totalGarmentCost
+        if (currentSelectionQty > 0 && currentUnitPrice > 0) {
+            totalGarmentCost += currentSelectionQty * currentUnitPrice;
+        }
+
         // Garment cost block
-        const avgUnit = totalQty > 0 ? (totalGarmentCost / totalQty) : 0;
+        const avgUnit = totalQty > 0 ? (totalGarmentCost / totalQty) : (currentUnitPrice || 0);
         const garmentCostEl = document.getElementById('sidebarGarmentCost');
         const garmentUnitEl = document.getElementById('garmentUnitPrice');
         const garmentQtyEl = document.getElementById('garmentQty');
@@ -1698,8 +1732,8 @@
             garmentCostEl.dataset.qty = String(totalQty);
             garmentCostEl.textContent = `${formatMoney(totalGarmentCost)}${suffixText}`;
         }
-        if (garmentUnitEl) garmentUnitEl.textContent = `Unit Price: ${formatMoney(avgUnit)}`;
-        if (garmentQtyEl) garmentQtyEl.textContent = `Qty: ${totalQty}`;
+        if (garmentUnitEl) garmentUnitEl.textContent = formatMoney(avgUnit);
+        if (garmentQtyEl) garmentQtyEl.textContent = totalQty;
 
         // Customizations cost list
         const customizationListEl = document.getElementById('customizationCostsList');

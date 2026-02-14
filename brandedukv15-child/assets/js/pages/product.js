@@ -15,6 +15,16 @@ Object.defineProperty(window, 'PRODUCT_DATA', {
     set: function (val) { PRODUCT_DATA = val; }
 });
 
+// Expose PRODUCT_NAME and PRODUCT_CODE globally for other scripts
+Object.defineProperty(window, 'PRODUCT_NAME', {
+    get: function () { return PRODUCT_NAME; },
+    configurable: true
+});
+Object.defineProperty(window, 'PRODUCT_CODE', {
+    get: function () { return PRODUCT_CODE; },
+    configurable: true
+});
+
 // API Configuration
 const API_BASE_URL = 'https://api.brandeduk.com/api';
 
@@ -845,6 +855,12 @@ let colors = [];
 let selectedColorName = null;
 let selectedColorURL = null;
 
+// Expose selected color globally for other scripts
+Object.defineProperty(window, 'selectedColorName', {
+    get: function() { return selectedColorName; },
+    configurable: true
+});
+
 function initThumbnailGallery() {
     if (!productThumbColumn) return;
 
@@ -1356,11 +1372,33 @@ document.addEventListener('click', (e) => {
 let sizeList = [];
 let qty = {};
 
+// Expose qty globally so other scripts (like customize-positions-inline.js) can read current selection
+window.productPageQty = qty;
+
+// Helper function to get current selection total (for other scripts)
+window.getProductPageTotalQty = function() {
+    if (!qty || typeof qty !== 'object') return 0;
+    return Object.values(qty).reduce((sum, q) => sum + (Number(q) || 0), 0);
+};
+
+// Helper function to get current selection data
+window.getProductPageSelection = function() {
+    return {
+        qty: qty,
+        totalQty: window.getProductPageTotalQty(),
+        productName: PRODUCT_NAME,
+        productCode: PRODUCT_CODE,
+        colorName: selectedColorName,
+        unitPrice: typeof getUnitPrice === 'function' ? getUnitPrice(window.getProductPageTotalQty()) : BASE_PRICE
+    };
+};
+
 function initSizes(productSizes) {
     if (!productSizes || !Array.isArray(productSizes)) {
         console.warn('No sizes available for this product');
         sizeList = [];
         qty = {};
+        window.productPageQty = qty; // Update global reference
         renderSizes();
         return;
     }
@@ -1369,6 +1407,7 @@ function initSizes(productSizes) {
     sizeList = productSizes;
     qty = {};
     sizeList.forEach(s => qty[s] = 0);
+    window.productPageQty = qty; // Update global reference
 
     // Render sizes
     renderSizes();
@@ -1817,6 +1856,9 @@ function getUnitPrice(totalItems) {
     return tier ? tier.price : BASE_PRICE;
 }
 
+// Expose getUnitPrice globally for other scripts
+window.getUnitPrice = getUnitPrice;
+
 function getCurrentTier(totalItems) {
     if (totalItems === 0) return DISCOUNTS[0];
     return DISCOUNTS.find(t => totalItems >= t.min && totalItems <= t.max) || DISCOUNTS[0];
@@ -1902,7 +1944,7 @@ function updateSidebarFromProduct(totalQty, unitPrice) {
         garmentUnitPriceEl.textContent = formatCurrency(unitPrice);
     }
     if (garmentQtyEl) {
-        garmentQtyEl.textContent = `Qty: ${totalQty}`;
+        garmentQtyEl.textContent = totalQty;
     }
     if (totalCostEl) {
         totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
@@ -2407,6 +2449,8 @@ function updateSidebarProductInfo() {
     const colorEl = document.getElementById('sidebarProductColor');
     const garmentCostEl = document.getElementById('sidebarGarmentCost');
     const totalCostEl = document.getElementById('sidebarTotalCost');
+    const garmentUnitPriceEl = document.getElementById('garmentUnitPrice');
+    const garmentQtyEl = document.getElementById('garmentQty');
 
     if (!nameEl || !codeEl || !garmentCostEl || !totalCostEl) {
         return;
@@ -2415,29 +2459,36 @@ function updateSidebarProductInfo() {
     nameEl.textContent = PRODUCT_NAME;
     codeEl.textContent = 'EE-' + PRODUCT_CODE;
 
-    const totalQty = typeof sizeQuantities !== 'undefined'
-        ? Object.values(sizeQuantities).reduce((sum, qty) => sum + qty, 0)
+    // Use the correct 'qty' variable (not undefined 'sizeQuantities')
+    const totalQty = typeof qty !== 'undefined' && qty
+        ? Object.values(qty).reduce((sum, q) => sum + q, 0)
         : 0;
 
-    const pricePerUnit = typeof getCurrentPriceForQty === 'function'
-        ? getCurrentPriceForQty(totalQty)
+    const pricePerUnit = typeof getUnitPrice === 'function'
+        ? getUnitPrice(totalQty)
         : BASE_PRICE;
 
     const garmentTotal = totalQty * pricePerUnit;
 
-    garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()} x ${totalQty}`;
+    garmentCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
+    if (garmentUnitPriceEl) {
+        garmentUnitPriceEl.textContent = formatCurrency(pricePerUnit);
+    }
+    if (garmentQtyEl) {
+        garmentQtyEl.textContent = totalQty;
+    }
     totalCostEl.textContent = `${formatCurrency(garmentTotal)} ${vatSuffix()}`;
 
     // Update color and sizes display
     if (colorEl) {
         const colorName = selectedColorName || sessionStorage.getItem('selectedColorName') || 'Not selected';
 
-        // Build sizes string from sizeQuantities
+        // Build sizes string from qty object
         let sizesStr = '';
-        if (typeof sizeQuantities !== 'undefined' && Object.keys(sizeQuantities).length > 0) {
-            const sizeEntries = Object.entries(sizeQuantities)
-                .filter(([_, qty]) => qty > 0)
-                .map(([size, qty]) => `${qty} x ${size}`);
+        if (typeof qty !== 'undefined' && qty && Object.keys(qty).length > 0) {
+            const sizeEntries = Object.entries(qty)
+                .filter(([_, q]) => q > 0)
+                .map(([size, q]) => `${q} x ${size}`);
             sizesStr = sizeEntries.join(', ');
         }
 

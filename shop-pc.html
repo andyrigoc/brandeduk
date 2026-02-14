@@ -3784,6 +3784,46 @@
             );
         }
 
+        // Extract color keyword(s) from a search query (e.g. "red polo" -> "red")
+        function extractColorFromSearch(searchQuery) {
+            if (!searchQuery) return null;
+            const query = searchQuery.toLowerCase().trim();
+            
+            // Comprehensive list of color keywords to detect in search
+            const colorKeywords = [
+                // Primary colors
+                'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white', 'grey', 'gray',
+                // Extended colors
+                'navy', 'royal', 'sky', 'turquoise', 'teal', 'aqua', 'cyan',
+                'burgundy', 'maroon', 'wine', 'crimson', 'coral', 'salmon',
+                'lime', 'olive', 'forest', 'khaki', 'mint',
+                'gold', 'mustard', 'beige', 'tan', 'cream', 'ivory',
+                'violet', 'lilac', 'lavender', 'magenta', 'fuchsia',
+                'charcoal', 'slate', 'graphite', 'silver',
+                'chocolate', 'camel', 'sand', 'stone', 'oatmeal', 'natural',
+                'heather', 'marl', 'melange'
+            ];
+            
+            // Split search into words and find color matches
+            const words = query.split(/\s+/);
+            for (const word of words) {
+                // Check if this word is a color keyword
+                if (colorKeywords.includes(word)) {
+                    return word;
+                }
+                // Also check for compound colors like "light-blue" or "dark-green"
+                if (word.includes('-')) {
+                    const parts = word.split('-');
+                    for (const part of parts) {
+                        if (colorKeywords.includes(part)) {
+                            return part;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         function pickBestColorVariant(product, requestedSlug) {
             const target = slugifyColor(requestedSlug);
             if (!target) return null;
@@ -5010,10 +5050,20 @@
                 // We just need to select the best matching color variant for display.
                 let displayColors = colors;
                 let displayColor = colors[0] || { name: 'Default', main: product.image };
+                
+                // Extract color from search query (e.g. "red polo" -> show red variants)
+                const searchColor = extractColorFromSearch(currentState.search);
+                
+                // Debug: log when search color is detected (only for first product to avoid spam)
+                if (index === 0 && searchColor) {
+                    console.log('🎨 Search color detected:', searchColor, '| Search query:', currentState.search);
+                }
+                
                 // Use the model/lifestyle image as the default thumbnail (not the color variant image)
-                // BUT if a colour-related filter (primaryColour or colourShade) is active, show
-                // the first matching colour variant image so users see the filtered colour.
+                // BUT if a colour-related filter (primaryColour or colourShade) is active, OR
+                // if the search query contains a color term, show the matching colour variant image.
                 const hasColorFilter = currentState.color ||
+                    searchColor ||
                     (currentState.filters.primaryColour && currentState.filters.primaryColour.length > 0) ||
                     (currentState.filters.colourShade && currentState.filters.colourShade.length > 0);
 
@@ -5031,6 +5081,19 @@
                         displayColors = colors;
                         displayColor = colors[0] || { name: 'Default', main: product.image };
                     }
+                } else if (searchColor) {
+                    // Search query contains a color term - show matching variant thumbnail
+                    const matched = pickBestColorVariant(product, searchColor);
+                    if (matched) {
+                        defaultThumbImage = getVariantImage(matched, product);
+                        // Move matching color to front of displayColors for visual emphasis
+                        const matchedIndex = colors.findIndex(c => c.name === matched.name);
+                        if (matchedIndex > 0) {
+                            displayColors = [matched, ...colors.filter((_, i) => i !== matchedIndex)];
+                            displayColor = matched;
+                        }
+                    }
+                    // If no match, keep default thumbnail (product may not have that color)
                 } else if (hasColorFilter) {
                     // primaryColour / colourShade filter active – pick first matching variant
                     const filterColorValues = [
