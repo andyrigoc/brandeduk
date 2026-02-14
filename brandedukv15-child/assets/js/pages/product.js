@@ -1975,6 +1975,7 @@ function updateTierPricing(total) {
    ADD TO QUOTE BUTTON (sinistra)
 --------------------------------------------------- */
 
+if (addContinueButton) {
 addContinueButton.onclick = () => {
     const total = Object.values(qty).reduce((a, b) => a + b, 0);
     if (total === 0) return;
@@ -2048,6 +2049,7 @@ addContinueButton.onclick = () => {
     // Reset sizes per nuova selezione
     resetSizes();
 };
+} // end if (addContinueButton)
 
 /* ---------------------------------------------------
    ADD & CUSTOMIZE BUTTON (legacy - button removed, section always visible)
