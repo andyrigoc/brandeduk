@@ -21,10 +21,8 @@ router.post('/', async (req, res) => {
     }
 
     if (!Array.isArray(basket) || basket.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Basket is required',
-      });
+      // Allow empty basket - customer contact is the priority
+      console.log('[QUOTES] Quote submitted with empty basket - contact request only');
     }
 
     // ✅ pass-through spec structure with company and address support

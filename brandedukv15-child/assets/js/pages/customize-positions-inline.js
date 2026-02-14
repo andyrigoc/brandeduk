@@ -1423,8 +1423,8 @@
         const submitBtn = document.getElementById('submitQuoteBtnSidebar') || document.getElementById('submitQuoteBtnInline');
         if (!submitBtn) return;
 
-        const hasCustomizations = Object.keys(positionCustomizationsMap).length > 0;
-        submitBtn.disabled = !hasCustomizations;
+        // Always keep submit button enabled - customer contact is the priority
+        submitBtn.disabled = false;
     }
 
     function resetCustomization(position, options = {}) {

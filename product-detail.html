@@ -14,19 +14,17 @@
         
         .searchbar-header__search-expand {
             position: relative;
-            width: 44px;
+            width: 320px;
             height: 44px;
-            transition: width 0.3s ease-in-out;
             margin-right: 8px;
         }
-        .searchbar-header__search-expand:focus-within { width: 320px; }
         .searchbar-header__search-expand .search-input-expand {
             position: absolute;
             right: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            border: 2px solid #a855f7;
             outline: none;
             border-radius: 9999px;
             padding: 12px 44px 12px 20px;
@@ -35,18 +33,19 @@
             color: #1f2937;
             box-sizing: border-box;
         }
-        .searchbar-header__search-expand .search-input-expand::placeholder { color: transparent; transition: color 0.2s ease; }
-        .searchbar-header__search-expand:focus-within .search-input-expand::placeholder { color: #9ca3af; }
+        .searchbar-header__search-expand .search-input-expand:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+        }
+        .searchbar-header__search-expand .search-input-expand::placeholder { color: #a855f7; font-weight: 500; }
         .searchbar-header__search-expand .search-icon-expand {
             position: absolute;
             top: 50%;
             right: 12px;
             transform: translateY(-50%);
             pointer-events: none;
-            color: #6b7280;
-            transition: color 0.2s ease;
+            color: #a855f7;
         }
-        .searchbar-header__search-expand:focus-within .search-icon-expand { color: #a855f7; }
 
         .back-btn {
             display: inline-flex;
@@ -1461,7 +1460,7 @@
                             </div>
                             
                             <!-- Submit Quote Button -->
-                            <button id="submitQuoteBtnSidebar" class="submit-quote-btn-modern" disabled>
+                            <button id="submitQuoteBtnSidebar" class="submit-quote-btn-modern">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 2L11 13"></path>
                                     <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
@@ -2098,7 +2097,7 @@
 
                         <!-- Submit Quote Button for Step 4 -->
                         <div class="step4-submit-cta" style="margin-top:24px; text-align:center;">
-                            <button id="submitQuoteBtnInline" class="cta-btn primary" style="min-width:280px;" disabled>
+                            <button id="submitQuoteBtnInline" class="cta-btn primary" style="min-width:280px;">
                                 <span class="cta-icon">📩</span>
                                 <span class="cta-text">Submit Your Quote</span>
                             </button>

@@ -154,17 +154,12 @@
             background: linear-gradient(0deg, #fce4e8, #fff);
         }
 
-        /* Search expand desktop - expand from right to left */
+        /* Search expand desktop - always expanded with purple border */
         .desktop-site-header .searchbar-header__search-expand {
             position: relative;
-            width: 44px;
-            height: 44px;
-            transition: width 0.3s ease-in-out;
-            margin-right: 8px;
-        }
-
-        .desktop-site-header .searchbar-header__search-expand:focus-within {
             width: 320px;
+            height: 44px;
+            margin-right: 8px;
         }
 
         .desktop-site-header .searchbar-header__search-expand .search-input-expand {
@@ -173,19 +168,24 @@
             top: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            border: 2px solid #a855f7;
             outline: none;
             border-radius: 9999px;
             padding: 12px 44px 12px 20px;
+            background: #f3f4f6;
+            font-size: 15px;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+
+        .desktop-site-header .searchbar-header__search-expand .search-input-expand:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
         }
 
         .desktop-site-header .searchbar-header__search-expand .search-input-expand::placeholder {
-            color: transparent;
-            transition: color 0.2s ease;
-        }
-
-        .desktop-site-header .searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
-            color: #9ca3af;
+            color: #a855f7;
+            font-weight: 500;
         }
 
         .desktop-site-header .searchbar-header__search-expand .search-icon-expand {
@@ -193,7 +193,7 @@
             top: 50%;
             right: 16px;
             transform: translateY(-50%);
-            color: #6b7280;
+            color: #a855f7;
         }
 
         @media (min-width: 1024px) {

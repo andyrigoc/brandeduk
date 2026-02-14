@@ -2187,13 +2187,9 @@ body {
 
 .searchbar-header__search-expand {
     position: relative;
-    width: 44px;
-    height: 44px;
-    transition: width 0.3s ease-in-out;
-    margin-right: 8px;
-}
-.searchbar-header__search-expand:focus-within {
     width: 320px;
+    height: 44px;
+    margin-right: 8px;
 }
 .searchbar-header__search-expand .search-input-expand {
     position: absolute;
@@ -2201,7 +2197,7 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    border: none;
+    border: 2px solid #a855f7;
     outline: none;
     border-radius: 9999px;
     padding: 12px 44px 12px 20px;
@@ -2210,12 +2206,13 @@ body {
     color: #1f2937;
     box-sizing: border-box;
 }
-.searchbar-header__search-expand .search-input-expand::placeholder {
-    color: transparent;
-    transition: color 0.2s ease;
+.searchbar-header__search-expand .search-input-expand:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
 }
-.searchbar-header__search-expand:focus-within .search-input-expand::placeholder {
-    color: #9ca3af;
+.searchbar-header__search-expand .search-input-expand::placeholder {
+    color: #a855f7;
+    font-weight: 500;
 }
 .searchbar-header__search-expand .search-icon-expand {
     position: absolute;
@@ -2224,10 +2221,6 @@ body {
     transform: translateY(-50%);
     pointer-events: auto;
     cursor: pointer;
-    color: #6b7280;
-    transition: color 0.2s ease;
-}
-.searchbar-header__search-expand:focus-within .search-icon-expand {
     color: #a855f7;
 }
 
