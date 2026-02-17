@@ -5,82 +5,385 @@
 /* ========================================
    CUSTOM FONTS FOR TEXT CUSTOMIZATION
    ======================================== */
-@font-face { font-family: 'Agency FB'; src: url('../../brandedukv15-child/assets/fonts/AGENCYR.TTF'); }
-@font-face { font-family: 'Agency FB Bold'; src: url('../../brandedukv15-child/assets/fonts/AGENCYB.TTF'); }
-@font-face { font-family: 'Algerian'; src: url('../../brandedukv15-child/assets/fonts/ALGER.TTF'); }
-@font-face { font-family: 'Bahnschrift'; src: url('../../brandedukv15-child/assets/fonts/bahnschrift.ttf'); }
-@font-face { font-family: 'Bauhaus 93'; src: url('../../brandedukv15-child/assets/fonts/BAUHS93.TTF'); }
-@font-face { font-family: 'Bell MT'; src: url('../../brandedukv15-child/assets/fonts/BELL.TTF'); }
-@font-face { font-family: 'Bodoni'; src: url('../../brandedukv15-child/assets/fonts/BOD_R.TTF'); }
-@font-face { font-family: 'Bodoni Bold'; src: url('../../brandedukv15-child/assets/fonts/BOD_B.TTF'); }
-@font-face { font-family: 'Book Antiqua'; src: url('../../brandedukv15-child/assets/fonts/ANTQUAB.TTF'); }
-@font-face { font-family: 'Britannic Bold'; src: url('../../brandedukv15-child/assets/fonts/BRITANIC.TTF'); }
-@font-face { font-family: 'Broadway'; src: url('../../brandedukv15-child/assets/fonts/BROADW.TTF'); }
-@font-face { font-family: 'Brush Script'; src: url('../../brandedukv15-child/assets/fonts/BRUSHSCI.TTF'); }
-@font-face { font-family: 'Calibri Light'; src: url('../../brandedukv15-child/assets/fonts/calibril.ttf'); }
-@font-face { font-family: 'Californian FB'; src: url('../../brandedukv15-child/assets/fonts/CALIFR.TTF'); }
-@font-face { font-family: 'Castellar'; src: url('../../brandedukv15-child/assets/fonts/CASTELAR.TTF'); }
-@font-face { font-family: 'Centaur'; src: url('../../brandedukv15-child/assets/fonts/CENTAUR.TTF'); }
-@font-face { font-family: 'Century'; src: url('../../brandedukv15-child/assets/fonts/CENTURY.TTF'); }
-@font-face { font-family: 'Chiller'; src: url('../../brandedukv15-child/assets/fonts/CHILLER.TTF'); }
-@font-face { font-family: 'Colonna MT'; src: url('../../brandedukv15-child/assets/fonts/COLONNA.TTF'); }
-@font-face { font-family: 'Cooper Black'; src: url('../../brandedukv15-child/assets/fonts/COOPBL.TTF'); }
-@font-face { font-family: 'Copperplate Gothic Bold'; src: url('../../brandedukv15-child/assets/fonts/COPRGTB.TTF'); }
-@font-face { font-family: 'Copperplate Gothic Light'; src: url('../../brandedukv15-child/assets/fonts/COPRGTL.TTF'); }
-@font-face { font-family: 'Curlz MT'; src: url('../../brandedukv15-child/assets/fonts/CURLZ___.TTF'); }
-@font-face { font-family: 'Dubai'; src: url('../../brandedukv15-child/assets/fonts/DUBAI-REGULAR.TTF'); }
-@font-face { font-family: 'Dubai Bold'; src: url('../../brandedukv15-child/assets/fonts/DUBAI-BOLD.TTF'); }
-@font-face { font-family: 'Elephant'; src: url('../../brandedukv15-child/assets/fonts/ELEPHNT.TTF'); }
-@font-face { font-family: 'Engravers MT'; src: url('../../brandedukv15-child/assets/fonts/ENGR.TTF'); }
-@font-face { font-family: 'Felix Titling'; src: url('../../brandedukv15-child/assets/fonts/FELIXTI.TTF'); }
-@font-face { font-family: 'Forte'; src: url('../../brandedukv15-child/assets/fonts/FORTE.TTF'); }
-@font-face { font-family: 'Franklin Gothic'; src: url('../../brandedukv15-child/assets/fonts/framd.ttf'); }
-@font-face { font-family: 'French Script'; src: url('../../brandedukv15-child/assets/fonts/FRSCRIPT.TTF'); }
-@font-face { font-family: 'Gabriola'; src: url('../../brandedukv15-child/assets/fonts/Gabriola.ttf'); }
-@font-face { font-family: 'Garamond'; src: url('../../brandedukv15-child/assets/fonts/GARA.TTF'); }
-@font-face { font-family: 'Gigi'; src: url('../../brandedukv15-child/assets/fonts/GIGI.TTF'); }
-@font-face { font-family: 'Gill Sans Ultra Bold'; src: url('../../brandedukv15-child/assets/fonts/GILSANUB.TTF'); }
-@font-face { font-family: 'Goudy Old Style'; src: url('../../brandedukv15-child/assets/fonts/GOUDOS.TTF'); }
-@font-face { font-family: 'Goudy Stout'; src: url('../../brandedukv15-child/assets/fonts/GOUDYSTO.TTF'); }
-@font-face { font-family: 'Harlow Solid Italic'; src: url('../../brandedukv15-child/assets/fonts/HARLOWSI.TTF'); }
-@font-face { font-family: 'Harrington'; src: url('../../brandedukv15-child/assets/fonts/HARNGTON.TTF'); }
-@font-face { font-family: 'Haettenschweiler'; src: url('../../brandedukv15-child/assets/fonts/HATTEN.TTF'); }
-@font-face { font-family: 'High Tower Text'; src: url('../../brandedukv15-child/assets/fonts/HTOWERT.TTF'); }
-@font-face { font-family: 'Imprint MT Shadow'; src: url('../../brandedukv15-child/assets/fonts/IMPRISHA.TTF'); }
-@font-face { font-family: 'Informal Roman'; src: url('../../brandedukv15-child/assets/fonts/INFROMAN.TTF'); }
-@font-face { font-family: 'Ink Free'; src: url('../../brandedukv15-child/assets/fonts/Inkfree.ttf'); }
-@font-face { font-family: 'Jokerman'; src: url('../../brandedukv15-child/assets/fonts/JOKERMAN.TTF'); }
-@font-face { font-family: 'Juice ITC'; src: url('../../brandedukv15-child/assets/fonts/JUICE___.TTF'); }
-@font-face { font-family: 'Kunstler Script'; src: url('../../brandedukv15-child/assets/fonts/KUNSTLER.TTF'); }
-@font-face { font-family: 'Lucida Calligraphy'; src: url('../../brandedukv15-child/assets/fonts/LCALLIG.TTF'); }
-@font-face { font-family: 'Lucida Handwriting'; src: url('../../brandedukv15-child/assets/fonts/LHANDW.TTF'); }
-@font-face { font-family: 'Magneto'; src: url('../../brandedukv15-child/assets/fonts/MAGNETOB.TTF'); }
-@font-face { font-family: 'Maiandra GD'; src: url('../../brandedukv15-child/assets/fonts/MAIAN.TTF'); }
-@font-face { font-family: 'Matura MT'; src: url('../../brandedukv15-child/assets/fonts/MATURASC.TTF'); }
-@font-face { font-family: 'Mistral'; src: url('../../brandedukv15-child/assets/fonts/MISTRAL.TTF'); }
-@font-face { font-family: 'Modern No. 20'; src: url('../../brandedukv15-child/assets/fonts/MOD20.TTF'); }
-@font-face { font-family: 'Niagara Engraved'; src: url('../../brandedukv15-child/assets/fonts/NIAGENG.TTF'); }
-@font-face { font-family: 'Niagara Solid'; src: url('../../brandedukv15-child/assets/fonts/NIAGSOL.TTF'); }
-@font-face { font-family: 'Old English'; src: url('../../brandedukv15-child/assets/fonts/OLDENGL.TTF'); }
-@font-face { font-family: 'Onyx'; src: url('../../brandedukv15-child/assets/fonts/ONYX.TTF'); }
-@font-face { font-family: 'Palace Script'; src: url('../../brandedukv15-child/assets/fonts/PALSCRI.TTF'); }
-@font-face { font-family: 'Papyrus'; src: url('../../brandedukv15-child/assets/fonts/PAPYRUS.TTF'); }
-@font-face { font-family: 'Parchment'; src: url('../../brandedukv15-child/assets/fonts/PARCHM.TTF'); }
-@font-face { font-family: 'Playbill'; src: url('../../brandedukv15-child/assets/fonts/PLAYBILL.TTF'); }
-@font-face { font-family: 'Poor Richard'; src: url('../../brandedukv15-child/assets/fonts/POORICH.TTF'); }
-@font-face { font-family: 'Pristina'; src: url('../../brandedukv15-child/assets/fonts/PRISTINA.TTF'); }
-@font-face { font-family: 'Rage Italic'; src: url('../../brandedukv15-child/assets/fonts/RAGE.TTF'); }
-@font-face { font-family: 'Ravie'; src: url('../../brandedukv15-child/assets/fonts/RAVIE.TTF'); }
-@font-face { font-family: 'Rockwell'; src: url('../../brandedukv15-child/assets/fonts/ROCK.TTF'); }
-@font-face { font-family: 'Rockwell Extra Bold'; src: url('../../brandedukv15-child/assets/fonts/ROCKEB.TTF'); }
-@font-face { font-family: 'Script MT Bold'; src: url('../../brandedukv15-child/assets/fonts/SCRIPTBL.TTF'); }
-@font-face { font-family: 'Showcard Gothic'; src: url('../../brandedukv15-child/assets/fonts/SHOWG.TTF'); }
-@font-face { font-family: 'Snap ITC'; src: url('../../brandedukv15-child/assets/fonts/SNAP____.TTF'); }
-@font-face { font-family: 'Stencil'; src: url('../../brandedukv15-child/assets/fonts/STENCIL.TTF'); }
-@font-face { font-family: 'Tempus Sans ITC'; src: url('../../brandedukv15-child/assets/fonts/TEMPSITC.TTF'); }
-@font-face { font-family: 'Viner Hand ITC'; src: url('../../brandedukv15-child/assets/fonts/VINERITC.TTF'); }
-@font-face { font-family: 'Vivaldi'; src: url('../../brandedukv15-child/assets/fonts/VIVALDII.TTF'); }
-@font-face { font-family: 'Vladimir Script'; src: url('../../brandedukv15-child/assets/fonts/VLADIMIR.TTF'); }
+@font-face {
+    font-family: 'Agency FB';
+    src: url('../../brandedukv15-child/assets/fonts/AGENCYR.TTF');
+}
+
+@font-face {
+    font-family: 'Agency FB Bold';
+    src: url('../../brandedukv15-child/assets/fonts/AGENCYB.TTF');
+}
+
+@font-face {
+    font-family: 'Algerian';
+    src: url('../../brandedukv15-child/assets/fonts/ALGER.TTF');
+}
+
+@font-face {
+    font-family: 'Bahnschrift';
+    src: url('../../brandedukv15-child/assets/fonts/bahnschrift.ttf');
+}
+
+@font-face {
+    font-family: 'Bauhaus 93';
+    src: url('../../brandedukv15-child/assets/fonts/BAUHS93.TTF');
+}
+
+@font-face {
+    font-family: 'Bell MT';
+    src: url('../../brandedukv15-child/assets/fonts/BELL.TTF');
+}
+
+@font-face {
+    font-family: 'Bodoni';
+    src: url('../../brandedukv15-child/assets/fonts/BOD_R.TTF');
+}
+
+@font-face {
+    font-family: 'Bodoni Bold';
+    src: url('../../brandedukv15-child/assets/fonts/BOD_B.TTF');
+}
+
+@font-face {
+    font-family: 'Book Antiqua';
+    src: url('../../brandedukv15-child/assets/fonts/ANTQUAB.TTF');
+}
+
+@font-face {
+    font-family: 'Britannic Bold';
+    src: url('../../brandedukv15-child/assets/fonts/BRITANIC.TTF');
+}
+
+@font-face {
+    font-family: 'Broadway';
+    src: url('../../brandedukv15-child/assets/fonts/BROADW.TTF');
+}
+
+@font-face {
+    font-family: 'Brush Script';
+    src: url('../../brandedukv15-child/assets/fonts/BRUSHSCI.TTF');
+}
+
+@font-face {
+    font-family: 'Calibri Light';
+    src: url('../../brandedukv15-child/assets/fonts/calibril.ttf');
+}
+
+@font-face {
+    font-family: 'Californian FB';
+    src: url('../../brandedukv15-child/assets/fonts/CALIFR.TTF');
+}
+
+@font-face {
+    font-family: 'Castellar';
+    src: url('../../brandedukv15-child/assets/fonts/CASTELAR.TTF');
+}
+
+@font-face {
+    font-family: 'Centaur';
+    src: url('../../brandedukv15-child/assets/fonts/CENTAUR.TTF');
+}
+
+@font-face {
+    font-family: 'Century';
+    src: url('../../brandedukv15-child/assets/fonts/CENTURY.TTF');
+}
+
+@font-face {
+    font-family: 'Chiller';
+    src: url('../../brandedukv15-child/assets/fonts/CHILLER.TTF');
+}
+
+@font-face {
+    font-family: 'Colonna MT';
+    src: url('../../brandedukv15-child/assets/fonts/COLONNA.TTF');
+}
+
+@font-face {
+    font-family: 'Cooper Black';
+    src: url('../../brandedukv15-child/assets/fonts/COOPBL.TTF');
+}
+
+@font-face {
+    font-family: 'Copperplate Gothic Bold';
+    src: url('../../brandedukv15-child/assets/fonts/COPRGTB.TTF');
+}
+
+@font-face {
+    font-family: 'Copperplate Gothic Light';
+    src: url('../../brandedukv15-child/assets/fonts/COPRGTL.TTF');
+}
+
+@font-face {
+    font-family: 'Curlz MT';
+    src: url('../../brandedukv15-child/assets/fonts/CURLZ___.TTF');
+}
+
+@font-face {
+    font-family: 'Dubai';
+    src: url('../../brandedukv15-child/assets/fonts/DUBAI-REGULAR.TTF');
+}
+
+@font-face {
+    font-family: 'Dubai Bold';
+    src: url('../../brandedukv15-child/assets/fonts/DUBAI-BOLD.TTF');
+}
+
+@font-face {
+    font-family: 'Elephant';
+    src: url('../../brandedukv15-child/assets/fonts/ELEPHNT.TTF');
+}
+
+@font-face {
+    font-family: 'Engravers MT';
+    src: url('../../brandedukv15-child/assets/fonts/ENGR.TTF');
+}
+
+@font-face {
+    font-family: 'Felix Titling';
+    src: url('../../brandedukv15-child/assets/fonts/FELIXTI.TTF');
+}
+
+@font-face {
+    font-family: 'Forte';
+    src: url('../../brandedukv15-child/assets/fonts/FORTE.TTF');
+}
+
+@font-face {
+    font-family: 'Franklin Gothic';
+    src: url('../../brandedukv15-child/assets/fonts/framd.ttf');
+}
+
+@font-face {
+    font-family: 'French Script';
+    src: url('../../brandedukv15-child/assets/fonts/FRSCRIPT.TTF');
+}
+
+@font-face {
+    font-family: 'Gabriola';
+    src: url('../../brandedukv15-child/assets/fonts/Gabriola.ttf');
+}
+
+@font-face {
+    font-family: 'Garamond';
+    src: url('../../brandedukv15-child/assets/fonts/GARA.TTF');
+}
+
+@font-face {
+    font-family: 'Gigi';
+    src: url('../../brandedukv15-child/assets/fonts/GIGI.TTF');
+}
+
+@font-face {
+    font-family: 'Gill Sans Ultra Bold';
+    src: url('../../brandedukv15-child/assets/fonts/GILSANUB.TTF');
+}
+
+@font-face {
+    font-family: 'Goudy Old Style';
+    src: url('../../brandedukv15-child/assets/fonts/GOUDOS.TTF');
+}
+
+@font-face {
+    font-family: 'Goudy Stout';
+    src: url('../../brandedukv15-child/assets/fonts/GOUDYSTO.TTF');
+}
+
+@font-face {
+    font-family: 'Harlow Solid Italic';
+    src: url('../../brandedukv15-child/assets/fonts/HARLOWSI.TTF');
+}
+
+@font-face {
+    font-family: 'Harrington';
+    src: url('../../brandedukv15-child/assets/fonts/HARNGTON.TTF');
+}
+
+@font-face {
+    font-family: 'Haettenschweiler';
+    src: url('../../brandedukv15-child/assets/fonts/HATTEN.TTF');
+}
+
+@font-face {
+    font-family: 'High Tower Text';
+    src: url('../../brandedukv15-child/assets/fonts/HTOWERT.TTF');
+}
+
+@font-face {
+    font-family: 'Imprint MT Shadow';
+    src: url('../../brandedukv15-child/assets/fonts/IMPRISHA.TTF');
+}
+
+@font-face {
+    font-family: 'Informal Roman';
+    src: url('../../brandedukv15-child/assets/fonts/INFROMAN.TTF');
+}
+
+@font-face {
+    font-family: 'Ink Free';
+    src: url('../../brandedukv15-child/assets/fonts/Inkfree.ttf');
+}
+
+@font-face {
+    font-family: 'Jokerman';
+    src: url('../../brandedukv15-child/assets/fonts/JOKERMAN.TTF');
+}
+
+@font-face {
+    font-family: 'Juice ITC';
+    src: url('../../brandedukv15-child/assets/fonts/JUICE___.TTF');
+}
+
+@font-face {
+    font-family: 'Kunstler Script';
+    src: url('../../brandedukv15-child/assets/fonts/KUNSTLER.TTF');
+}
+
+@font-face {
+    font-family: 'Lucida Calligraphy';
+    src: url('../../brandedukv15-child/assets/fonts/LCALLIG.TTF');
+}
+
+@font-face {
+    font-family: 'Lucida Handwriting';
+    src: url('../../brandedukv15-child/assets/fonts/LHANDW.TTF');
+}
+
+@font-face {
+    font-family: 'Magneto';
+    src: url('../../brandedukv15-child/assets/fonts/MAGNETOB.TTF');
+}
+
+@font-face {
+    font-family: 'Maiandra GD';
+    src: url('../../brandedukv15-child/assets/fonts/MAIAN.TTF');
+}
+
+@font-face {
+    font-family: 'Matura MT';
+    src: url('../../brandedukv15-child/assets/fonts/MATURASC.TTF');
+}
+
+@font-face {
+    font-family: 'Mistral';
+    src: url('../../brandedukv15-child/assets/fonts/MISTRAL.TTF');
+}
+
+@font-face {
+    font-family: 'Modern No. 20';
+    src: url('../../brandedukv15-child/assets/fonts/MOD20.TTF');
+}
+
+@font-face {
+    font-family: 'Niagara Engraved';
+    src: url('../../brandedukv15-child/assets/fonts/NIAGENG.TTF');
+}
+
+@font-face {
+    font-family: 'Niagara Solid';
+    src: url('../../brandedukv15-child/assets/fonts/NIAGSOL.TTF');
+}
+
+@font-face {
+    font-family: 'Old English';
+    src: url('../../brandedukv15-child/assets/fonts/OLDENGL.TTF');
+}
+
+@font-face {
+    font-family: 'Onyx';
+    src: url('../../brandedukv15-child/assets/fonts/ONYX.TTF');
+}
+
+@font-face {
+    font-family: 'Palace Script';
+    src: url('../../brandedukv15-child/assets/fonts/PALSCRI.TTF');
+}
+
+@font-face {
+    font-family: 'Papyrus';
+    src: url('../../brandedukv15-child/assets/fonts/PAPYRUS.TTF');
+}
+
+@font-face {
+    font-family: 'Parchment';
+    src: url('../../brandedukv15-child/assets/fonts/PARCHM.TTF');
+}
+
+@font-face {
+    font-family: 'Playbill';
+    src: url('../../brandedukv15-child/assets/fonts/PLAYBILL.TTF');
+}
+
+@font-face {
+    font-family: 'Poor Richard';
+    src: url('../../brandedukv15-child/assets/fonts/POORICH.TTF');
+}
+
+@font-face {
+    font-family: 'Pristina';
+    src: url('../../brandedukv15-child/assets/fonts/PRISTINA.TTF');
+}
+
+@font-face {
+    font-family: 'Rage Italic';
+    src: url('../../brandedukv15-child/assets/fonts/RAGE.TTF');
+}
+
+@font-face {
+    font-family: 'Ravie';
+    src: url('../../brandedukv15-child/assets/fonts/RAVIE.TTF');
+}
+
+@font-face {
+    font-family: 'Rockwell';
+    src: url('../../brandedukv15-child/assets/fonts/ROCK.TTF');
+}
+
+@font-face {
+    font-family: 'Rockwell Extra Bold';
+    src: url('../../brandedukv15-child/assets/fonts/ROCKEB.TTF');
+}
+
+@font-face {
+    font-family: 'Script MT Bold';
+    src: url('../../brandedukv15-child/assets/fonts/SCRIPTBL.TTF');
+}
+
+@font-face {
+    font-family: 'Showcard Gothic';
+    src: url('../../brandedukv15-child/assets/fonts/SHOWG.TTF');
+}
+
+@font-face {
+    font-family: 'Snap ITC';
+    src: url('../../brandedukv15-child/assets/fonts/SNAP____.TTF');
+}
+
+@font-face {
+    font-family: 'Stencil';
+    src: url('../../brandedukv15-child/assets/fonts/STENCIL.TTF');
+}
+
+@font-face {
+    font-family: 'Tempus Sans ITC';
+    src: url('../../brandedukv15-child/assets/fonts/TEMPSITC.TTF');
+}
+
+@font-face {
+    font-family: 'Viner Hand ITC';
+    src: url('../../brandedukv15-child/assets/fonts/VINERITC.TTF');
+}
+
+@font-face {
+    font-family: 'Vivaldi';
+    src: url('../../brandedukv15-child/assets/fonts/VIVALDII.TTF');
+}
+
+@font-face {
+    font-family: 'Vladimir Script';
+    src: url('../../brandedukv15-child/assets/fonts/VLADIMIR.TTF');
+}
 
 /* ========================================
    BACK BUTTON
@@ -130,7 +433,7 @@
     --orange: #ea580c;
     --green: #16a34a;
     --red: #dc2626;
-    
+
     --gray-50: #f9fafb;
     --gray-100: #f3f4f6;
     --gray-200: #e5e7eb;
@@ -141,27 +444,27 @@
     --gray-700: #374151;
     --gray-800: #1f2937;
     --gray-900: #111827;
-    
+
     --white: #ffffff;
     --black: #000000;
-    
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
     --radius-sm: 6px;
     --radius: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 20px;
     --radius-full: 9999px;
-    
+
     --transition-fast: 150ms ease;
     --transition: 200ms ease;
     --transition-slow: 300ms ease;
-    
+
     --header-height: 100px;
     --action-bar-height: 72px;
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
@@ -214,9 +517,12 @@ button {
     color: inherit;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     font-family: inherit;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: 16px;
+    /* Prevents iOS zoom */
 }
 
 a {
@@ -378,12 +684,12 @@ a {
 }
 
 /* Checked state - track turns purple */
-.vat-checkbox:checked + .vat-toggle-label {
+.vat-checkbox:checked+.vat-toggle-label {
     background: #7c3aed;
 }
 
 /* Checked state - thumb moves right - Exact match to reference: left: calc(100% - 5px); transform: translateX(-100%); */
-.vat-checkbox:checked + .vat-toggle-label:after {
+.vat-checkbox:checked+.vat-toggle-label:after {
     left: calc(100% - 2px);
     transform: translateX(-100%);
 }
@@ -394,12 +700,12 @@ a {
 }
 
 /* When checked - update label styles */
-.vat-checkbox:checked ~ .vat-label--exc {
+.vat-checkbox:checked~.vat-label--exc {
     color: #6b7280;
     font-weight: 500;
 }
 
-.vat-checkbox:checked ~ .vat-label--inc {
+.vat-checkbox:checked~.vat-label--inc {
     color: #7c3aed;
     font-weight: 600;
 }
@@ -1234,7 +1540,7 @@ a {
     background: white;
     border-radius: 12px;
     padding: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     display: flex;
     gap: 12px;
 }
@@ -1457,7 +1763,8 @@ a {
 }
 
 .cost-detail {
-    display: none; /* Hide old detail row */
+    display: none;
+    /* Hide old detail row */
 }
 
 /* Total Row - hidden, using new .summary-total-row */
@@ -1595,9 +1902,17 @@ a {
 }
 
 @keyframes pulseGreen {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.03);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .submit-quote-btn svg {
@@ -2530,7 +2845,7 @@ a {
     transition: all var(--transition-fast);
 }
 
-.pos-chip input:checked + .chip-content {
+.pos-chip input:checked+.chip-content {
     border-color: var(--purple);
     background: rgba(107, 33, 168, 0.08);
 }
@@ -2542,7 +2857,7 @@ a {
     text-align: center;
 }
 
-.pos-chip input:checked + .chip-content .chip-icon {
+.pos-chip input:checked+.chip-content .chip-icon {
     color: var(--purple);
 }
 
@@ -2562,7 +2877,7 @@ a {
     border-radius: 8px;
 }
 
-.pos-chip input:checked + .chip-content .chip-price {
+.pos-chip input:checked+.chip-content .chip-price {
     color: var(--white);
     background: var(--purple);
 }
@@ -2587,7 +2902,7 @@ a {
     text-align: left;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     border: 1.4px solid rgba(168, 85, 247, 0.2);
     display: flex;
     flex-direction: column;
@@ -2604,7 +2919,7 @@ a {
 .position-card:hover {
     border-color: rgba(168, 85, 247, 0.35);
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
         0 8px 24px rgba(124, 58, 237, 0.12),
         0 2px 8px rgba(124, 58, 237, 0.08);
 }
@@ -2612,10 +2927,11 @@ a {
 .position-card.selected {
     border-color: rgba(168, 85, 247, 0.5);
     background: rgba(255, 255, 255, 0.99);
-    box-shadow: 
+    box-shadow:
         0 0 0 3px rgba(168, 85, 247, 0.1),
         0 8px 24px rgba(124, 58, 237, 0.15);
-    cursor: pointer; /* Indicate card can be clicked to deselect */
+    cursor: pointer;
+    /* Indicate card can be clicked to deselect */
 }
 
 .position-card.selected:active {
@@ -2721,7 +3037,7 @@ a {
     background: linear-gradient(145deg, #5b8def, #4a76d6);
     color: white !important;
     border: 1px solid rgba(91, 141, 239, 0.6);
-    box-shadow: 
+    box-shadow:
         0 6px 16px rgba(74, 118, 214, 0.3),
         0 2px 6px rgba(74, 118, 214, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.25),
@@ -2739,7 +3055,7 @@ a {
     background: linear-gradient(145deg, #f5c542, #e6b229);
     color: white !important;
     border: 1px solid rgba(245, 197, 66, 0.6);
-    box-shadow: 
+    box-shadow:
         0 6px 16px rgba(230, 178, 41, 0.35),
         0 2px 6px rgba(230, 178, 41, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
@@ -2810,9 +3126,18 @@ a {
 }
 
 @keyframes cloudArrowMove {
-    0% { transform: translateY(100%); }
-    40%, 60% { transform: translateY(0); }
-    100% { transform: translateY(-100%); }
+    0% {
+        transform: translateY(100%);
+    }
+
+    40%,
+    60% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-100%);
+    }
 }
 
 .price-badge.add-logo-btn .add-logo-text {
@@ -3272,7 +3597,7 @@ a {
     transition: all var(--transition-fast);
 }
 
-.position-option input:checked + .position-card {
+.position-option input:checked+.position-card {
     border-color: var(--purple);
     background: rgba(107, 33, 168, 0.05);
 }
@@ -3305,14 +3630,15 @@ a {
     height: 20px;
     border: 2px solid var(--gray-300);
     border-radius: var(--radius-full);
-    display: none; /* Hide check icon */
+    display: none;
+    /* Hide check icon */
     align-items: center;
     justify-content: center;
     color: transparent;
     transition: all var(--transition-fast);
 }
 
-.position-option input:checked + .position-card .position-check {
+.position-option input:checked+.position-card .position-check {
     background: var(--purple);
     border-color: var(--purple);
     color: var(--white);
@@ -4397,7 +4723,7 @@ a {
     font-size: 24px;
     font-weight: 800;
     color: var(--white);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     margin-bottom: 8px;
 }
 
@@ -4432,7 +4758,7 @@ a {
 .hero-dot {
     width: 8px;
     height: 8px;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.5);
     border-radius: var(--radius-full);
 }
 
@@ -4709,7 +5035,7 @@ a {
     width: 12px;
     height: 12px;
     border-radius: var(--radius-full);
-    border: 1px solid rgba(255,255,255,0.8);
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .product-card-colors .more-colors {
@@ -4848,8 +5174,15 @@ a {
 }
 
 @keyframes antenna-wobble {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
+
+    0%,
+    100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
 }
 
 .chatbot-body {
@@ -4857,8 +5190,15 @@ a {
 }
 
 @keyframes body-breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
 }
 
 .chatbot-eye {
@@ -4870,8 +5210,17 @@ a {
 }
 
 @keyframes eye-blink {
-    0%, 45%, 55%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.1); }
+
+    0%,
+    45%,
+    55%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(0.1);
+    }
 }
 
 .chatbot-smile {
@@ -4879,9 +5228,19 @@ a {
 }
 
 @keyframes smile-wiggle {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-1px); }
-    75% { transform: translateX(1px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-1px);
+    }
+
+    75% {
+        transform: translateX(1px);
+    }
 }
 
 /* Bottom Navigation */
@@ -4968,24 +5327,37 @@ a {
 
 /* === Animations === */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
-    from { 
+    from {
         opacity: 0;
         transform: translateY(20px);
     }
-    to { 
+
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 /* ============================================
@@ -5220,10 +5592,12 @@ a {
     display: none;
     align-items: center;
     justify-content: center;
-    pointer-events: none; /* Non interattivo */
+    pointer-events: none;
+    /* Non interattivo */
     z-index: 10;
     user-select: none;
-    transform: translate(-50%, -50%); /* Centra rispetto alle coordinate */
+    transform: translate(-50%, -50%);
+    /* Centra rispetto alle coordinate */
 }
 
 .logo-overlay-box:not([hidden]) {
@@ -5242,8 +5616,15 @@ a {
 }
 
 @keyframes logoFadeIn {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 /* ============================================
@@ -5497,6 +5878,7 @@ a {
     0% {
         transform: translateX(-50%);
     }
+
     100% {
         transform: translateX(0%);
     }
@@ -5506,6 +5888,7 @@ a {
     0% {
         transform: translateX(0%);
     }
+
     100% {
         transform: translateX(-50%);
     }
@@ -5781,7 +6164,7 @@ a {
     font-size: 10px;
     font-weight: 700;
     color: var(--white);
-    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Brands Grid */
@@ -6052,7 +6435,7 @@ a {
     bottom: -20px;
     width: 2px;
     height: 2px;
-    box-shadow: 
+    box-shadow:
         0 0 0 50px #8b5cf6,
         60px 50px 0 70px #8b5cf6,
         90px 90px 0 50px #8b5cf6,
@@ -6070,7 +6453,7 @@ a {
     width: 400px;
     border-radius: 50%;
     height: 20px;
-    box-shadow: 
+    box-shadow:
         0 0 0 50px #8b5cf6,
         -20px 0 0 20px #8b5cf6,
         -90px 0 0 50px #8b5cf6,
@@ -6084,7 +6467,7 @@ a {
 .loop-wrapper .tree:nth-child(2),
 .loop-wrapper .tree:nth-child(3) {
     position: absolute;
-    height: 70px; 
+    height: 70px;
     width: 25px;
     bottom: 0;
     background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/130015/tree.svg) no-repeat;
@@ -6094,7 +6477,7 @@ a {
 
 .loop-wrapper .rock {
     margin-top: -17%;
-    height: 2%; 
+    height: 2%;
     width: 2%;
     bottom: -2px;
     border-radius: 20px;
@@ -6134,50 +6517,120 @@ a {
     margin-bottom: 0;
 }
 
-.loop-wrapper .truck { animation: truck-anim 4s 0.080s ease infinite; }
-.loop-wrapper .wheels { animation: truck-anim 4s 0.001s ease infinite; }
-.loop-wrapper .truck::before { animation: wind-anim 1.5s 0.000s ease infinite; }
+.loop-wrapper .truck {
+    animation: truck-anim 4s 0.080s ease infinite;
+}
 
-.loop-wrapper .tree { animation: tree-anim 3s 0.000s linear infinite; }
-.loop-wrapper .tree:nth-child(2) { animation: tree2-anim 2s 0.150s linear infinite; }
-.loop-wrapper .tree:nth-child(3) { animation: tree3-anim 8s 0.050s linear infinite; }
-.loop-wrapper .rock { animation: rock-anim 4s -0.530s linear infinite; }
+.loop-wrapper .wheels {
+    animation: truck-anim 4s 0.001s ease infinite;
+}
+
+.loop-wrapper .truck::before {
+    animation: wind-anim 1.5s 0.000s ease infinite;
+}
+
+.loop-wrapper .tree {
+    animation: tree-anim 3s 0.000s linear infinite;
+}
+
+.loop-wrapper .tree:nth-child(2) {
+    animation: tree2-anim 2s 0.150s linear infinite;
+}
+
+.loop-wrapper .tree:nth-child(3) {
+    animation: tree3-anim 8s 0.050s linear infinite;
+}
+
+.loop-wrapper .rock {
+    animation: rock-anim 4s -0.530s linear infinite;
+}
 
 @keyframes tree-anim {
-    0% { transform: translateX(500px); }
-    100% { transform: translateX(-50px); }
+    0% {
+        transform: translateX(500px);
+    }
+
+    100% {
+        transform: translateX(-50px);
+    }
 }
+
 @keyframes tree2-anim {
-    0% { transform: translateX(350px); }
-    100% { transform: translateX(-50px); }
+    0% {
+        transform: translateX(350px);
+    }
+
+    100% {
+        transform: translateX(-50px);
+    }
 }
+
 @keyframes tree3-anim {
-    0% { transform: translateX(800px); }
-    100% { transform: translateX(-50px); }
+    0% {
+        transform: translateX(800px);
+    }
+
+    100% {
+        transform: translateX(-50px);
+    }
 }
+
 @keyframes rock-anim {
-    0% { right: -50px; }
-    100% { right: 500px; }
+    0% {
+        right: -50px;
+    }
+
+    100% {
+        right: 500px;
+    }
 }
+
 @keyframes truck-anim {
-    0% { }
-    6% { transform: translateY(0px); }
-    7% { transform: translateY(-5px); }
-    9% { transform: translateY(0px); }
-    10% { transform: translateY(-1px); }
-    11% { transform: translateY(0px); }
-    100% { }
+    0% {}
+
+    6% {
+        transform: translateY(0px);
+    }
+
+    7% {
+        transform: translateY(-5px);
+    }
+
+    9% {
+        transform: translateY(0px);
+    }
+
+    10% {
+        transform: translateY(-1px);
+    }
+
+    11% {
+        transform: translateY(0px);
+    }
+
+    100% {}
 }
+
 @keyframes wind-anim {
-    0% { }
-    50% { transform: translateY(3px); }
-    100% { }
+    0% {}
+
+    50% {
+        transform: translateY(3px);
+    }
+
+    100% {}
 }
+
 @keyframes mtn {
-    100% { transform: translateX(-2000px) rotate(130deg); }
+    100% {
+        transform: translateX(-2000px) rotate(130deg);
+    }
 }
+
 @keyframes hill-anim {
-    100% { transform: translateX(-2000px); }
+    100% {
+        transform: translateX(-2000px);
+    }
 }
 
 /* Legacy Speedy Truck Full Width Animation */
@@ -6209,14 +6662,15 @@ a {
     width: 90px;
     border-radius: 50%;
     height: 12px;
-    box-shadow: 
+    box-shadow:
         0 0 0 22px #8b5cf6,
         -15px 0 0 12px #8b5cf6,
         120px 0 0 22px #8b5cf6;
     animation: hill-mini 3s linear infinite;
 }
 
-.truck-mini, .wheels-mini {
+.truck-mini,
+.wheels-mini {
     position: absolute;
     width: 50px;
     right: 45%;
@@ -6249,17 +6703,41 @@ a {
 }
 
 @keyframes truck-bounce {
-    0%, 100% { transform: translateY(0); }
-    6% { transform: translateY(0); }
-    7% { transform: translateY(-3px); }
-    9% { transform: translateY(0); }
-    10% { transform: translateY(-1px); }
-    11% { transform: translateY(0); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    6% {
+        transform: translateY(0);
+    }
+
+    7% {
+        transform: translateY(-3px);
+    }
+
+    9% {
+        transform: translateY(0);
+    }
+
+    10% {
+        transform: translateY(-1px);
+    }
+
+    11% {
+        transform: translateY(0);
+    }
 }
 
 @keyframes hill-mini {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-220px); }
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-220px);
+    }
 }
 
 /* Services Section */
@@ -6336,7 +6814,7 @@ a {
     margin: 0 0 8px;
 }
 
-.contact-section > p {
+.contact-section>p {
     font-size: 13px;
     color: var(--gray-500);
     margin: 0 0 16px;
@@ -6402,7 +6880,7 @@ a {
 
 .promo-banner-content p {
     font-size: 13px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     margin: 0 0 16px;
 }
 
@@ -6467,7 +6945,7 @@ a {
 .hero-tag {
     display: inline-block;
     padding: 4px 12px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: var(--white);
     font-size: 11px;
     font-weight: 600;
@@ -6491,7 +6969,7 @@ a {
 
 .hero-subtitle {
     font-size: 14px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255, 255, 255, 0.9);
     margin: 0 0 20px;
 }
 
@@ -6505,7 +6983,7 @@ a {
     font-size: 14px;
     font-weight: 600;
     border-radius: var(--radius-full);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hero-btn.btn-teal {
@@ -6529,7 +7007,7 @@ a {
 .hero-dot {
     width: 8px;
     height: 8px;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255, 255, 255, 0.4);
     border-radius: var(--radius-full);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -6544,7 +7022,7 @@ a {
 .menu-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     opacity: 0;
     visibility: hidden;
     transition: all var(--transition);
@@ -6820,7 +7298,8 @@ a {
     display: flex;
     flex-direction: column;
     border: 2px solid transparent;
-    height: 100%; /* Ensure all cards same height in grid */
+    height: 100%;
+    /* Ensure all cards same height in grid */
 }
 
 .product-card-shop:active {
@@ -6885,7 +7364,8 @@ a {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    flex: 1; /* Push colors to bottom */
+    flex: 1;
+    /* Push colors to bottom */
 }
 
 .product-code {
@@ -6897,7 +7377,8 @@ a {
     color: #7c3aed;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-height: 24px; /* Fixed height for 2 lines of brand name */
+    min-height: 24px;
+    /* Fixed height for 2 lines of brand name */
     line-height: 1.2;
 }
 
@@ -6928,8 +7409,10 @@ a {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 31.2px; /* Exactly 2 lines: 12px * 1.3 * 2 = 31.2px */
-    height: 31.2px; /* Force 2 line height */
+    min-height: 31.2px;
+    /* Exactly 2 lines: 12px * 1.3 * 2 = 31.2px */
+    height: 31.2px;
+    /* Force 2 line height */
 }
 
 .product-price {
@@ -6966,7 +7449,8 @@ a {
     grid-auto-flow: column;
     grid-auto-columns: var(--color-size);
     gap: var(--color-gap);
-    margin-top: auto; /* Push to bottom */
+    margin-top: auto;
+    /* Push to bottom */
     padding: 6px 0;
     width: 100%;
     overflow-x: auto;
@@ -7092,7 +7576,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -7322,15 +7806,20 @@ a {
 }
 
 @keyframes springBounce {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scaleY(1);
     }
+
     25% {
         transform: scaleY(0.85);
     }
+
     50% {
         transform: scaleY(1.1);
     }
+
     75% {
         transform: scaleY(0.95);
     }
@@ -7343,12 +7832,16 @@ a {
 }
 
 @keyframes swingArtwork {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: rotate(0deg);
     }
+
     25% {
         transform: rotate(5deg);
     }
+
     75% {
         transform: rotate(-5deg);
     }
@@ -7675,10 +8168,24 @@ a {
 }
 
 @keyframes dots {
-    0%, 20% { content: ''; }
-    40% { content: '.'; }
-    60% { content: '..'; }
-    80%, 100% { content: '...'; }
+
+    0%,
+    20% {
+        content: '';
+    }
+
+    40% {
+        content: '.';
+    }
+
+    60% {
+        content: '..';
+    }
+
+    80%,
+    100% {
+        content: '...';
+    }
 }
 
 .remove-bg-btn svg {
@@ -7968,6 +8475,7 @@ a {
     color: #333;
     white-space: nowrap;
 }
+
 /* ============================================
    BASKET SIZE CONTROLS
    ============================================ */
@@ -8201,7 +8709,7 @@ a {
 }
 
 /* Checked state - thumb moves right */
-.filters-toggles .vat-toggle-mobile .vat-checkbox:checked + .vat-toggle-label:after {
+.filters-toggles .vat-toggle-mobile .vat-checkbox:checked+.vat-toggle-label:after {
     left: calc(100% - 3px) !important;
     transform: translateX(-100%) !important;
 }
@@ -8212,27 +8720,27 @@ a {
 }
 
 /* Toggle checked colors */
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="newIn"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="newIn"]:checked+.vat-toggle-label {
     background: #3b82f6 !important;
 }
 
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="bradeal"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="bradeal"]:checked+.vat-toggle-label {
     background: #ef4444 !important;
 }
 
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="offers"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="offers"]:checked+.vat-toggle-label {
     background: #8b5cf6 !important;
 }
 
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="inStock"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="inStock"]:checked+.vat-toggle-label {
     background: #64748b !important;
 }
 
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="recycled"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="recycled"]:checked+.vat-toggle-label {
     background: #10b981 !important;
 }
 
-.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="plusSizes"]:checked + .vat-toggle-label {
+.filters-toggles .vat-toggle-mobile .vat-checkbox[data-filter="plusSizes"]:checked+.vat-toggle-label {
     background: #f97316 !important;
 }
 
@@ -8418,7 +8926,7 @@ a {
     transition: all 0.2s ease;
 }
 
-.filter-color input:checked + span::before,
+.filter-color input:checked+span::before,
 .filter-color:has(input:checked)::before {
     border-color: var(--teal);
     box-shadow: 0 0 0 2px var(--teal);
@@ -8468,7 +8976,7 @@ a {
     transition: all 0.2s ease;
 }
 
-.filter-size input:checked + span {
+.filter-size input:checked+span {
     background: var(--teal);
     border-color: var(--teal);
     color: var(--white);
@@ -8789,8 +9297,8 @@ a {
     border-bottom-color: #fff;
 }
 
-.account-input-group input:focus + label,
-.account-input-group input:valid + label {
+.account-input-group input:focus+label,
+.account-input-group input:valid+label {
     top: -18px;
     font-size: 11px;
     color: rgba(255, 255, 255, 0.9);
@@ -9062,7 +9570,7 @@ a {
     position: relative;
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     margin-top: 8px;
     max-height: 250px;
     overflow-y: auto;
@@ -9208,4 +9716,50 @@ a {
 
 .price-badge.text-added .price-value {
     display: block !important;
+}
+
+/* ==========================================================================
+   PRODUCT BADGES
+   ========================================================================== */
+
+.product-thumb,
+.product-media {
+    position: relative;
+}
+
+.product-badges {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 10;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: white;
+}
+
+.badge.embroidery {
+    background: #3b82f6;
+}
+
+.badge.print {
+    background: #eab308;
+}
+
+.badge.best-seller {
+    background: #dc2626;
+}
+
+.badge.recommended {
+    background: #059669;
 }

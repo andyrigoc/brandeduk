@@ -262,6 +262,15 @@ const ShopManager = (function () {
         const hasPrint = product.customization.includes('print');
 
         let badgesHTML = '';
+
+        // Add Best Seller / Recommended badges
+        if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
+            badgesHTML += '<span class="badge best-seller">BEST SELLER</span>';
+        }
+        if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
+            badgesHTML += '<span class="badge recommended">RECOMMENDED</span>';
+        }
+
         if (hasEmbroidery) {
             badgesHTML += '<span class="badge embroidery">EMBROIDERY</span>';
         }
@@ -336,7 +345,7 @@ const ShopManager = (function () {
 
         card.innerHTML = `
             <div class="product-media">
-                <div class="product-badges-top">
+                <div class="product-badges">
                     ${badgesHTML}
                 </div>
                 <div class="product-figure">

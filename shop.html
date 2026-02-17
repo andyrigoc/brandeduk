@@ -588,6 +588,7 @@
             width: 100%;
             height: 6px;
             -webkit-appearance: none;
+            appearance: none;
             background: transparent;
             pointer-events: none;
             outline: none;
@@ -649,6 +650,49 @@
         .price-input:focus {
             outline: none;
             border-color: #17a2b8;
+        }
+
+        /* Product Badges */
+        .product-thumb {
+            position: relative;
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge.best-seller {
+            background: #dc2626;
+        }
+
+        .badge.recommended {
+            background: #059669;
+        }
+
+        .badge.embroidery {
+            background: #3b82f6;
+        }
+
+        .badge.print {
+            background: #eab308;
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -1553,7 +1597,9 @@
             <div class="shop-control-group">
                 <label for="mobileSortSelect">Sort:</label>
                 <select id="mobileSortSelect" class="shop-control-select">
+                    <option value="newest" selected>Newest Arrivals</option>
                     <option value="best">Best Sellers</option>
+                    <option value="recommended">Highly Recommended</option>
                     <option value="brand-az">Brand A-Z</option>
                     <option value="brand-za">Brand Z-A</option>
                     <option value="code-az">Code A-Z</option>
@@ -2286,7 +2332,7 @@
             priceMin: null,
             priceMax: null,
             apiPriceRange: null,
-            sort: 'best',
+            sort: 'newest',
             filters: {
                 gender: [],
                 ageGroup: [],
@@ -2346,6 +2392,8 @@
             if (currentState.sort) {
                 const sortMap = {
                     'best': 'best',
+                    'newest': 'newest',
+                    'recommended': 'recommended',
                     'brand-az': 'brand-az',
                     'brand-za': 'brand-za',
                     'code-az': 'code-az',
@@ -2724,7 +2772,7 @@
             } else {
                 url.searchParams.delete('limit');
             }
-            if (currentState.sort && currentState.sort !== 'best') {
+            if (currentState.sort && currentState.sort !== 'newest') {
                 url.searchParams.set('sort', currentState.sort);
             } else {
                 url.searchParams.delete('sort');
@@ -3192,8 +3240,27 @@
                 card.className = 'product-card-shop';
                 const img = (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || product.image || '';
                 const price = (product.priceBreaks && product.priceBreaks.length) ? product.priceBreaks[0].price : product.price;
+                let badgesHtml = '';
+                if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
+                    badgesHtml += '<span class="badge best-seller">BEST SELLER</span>';
+                }
+                if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
+                    badgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
+                }
+                if (product.customization && product.customization.includes('embroidery')) {
+                    badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
+                }
+                if (product.customization && product.customization.includes('print')) {
+                    badgesHtml += '<span class="badge print">PRINT</span>';
+                }
+
                 card.innerHTML = `
-                    <div class="product-thumb"><img src="${img}" alt="${product.name}"/></div>
+                    <div class="product-thumb">
+                        <div class="product-badges">
+                            ${badgesHtml}
+                        </div>
+                        <img src="${img}" alt="${product.name}"/>
+                    </div>
                     <div class="product-meta">
                         <div class="product-code">${product.code || ''}</div>
                         <div class="product-name">${product.name || ''}</div>
@@ -3266,7 +3333,7 @@
             currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 24;
-            currentState.sort = urlParams.get('sort') || 'best';
+            currentState.sort = urlParams.get('sort') || 'newest';
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
@@ -3290,7 +3357,7 @@
             const viewSelect = document.getElementById('mobileViewSelect');
 
             if (sortSelect) {
-                sortSelect.value = currentState.sort || 'best';
+                sortSelect.value = currentState.sort || 'newest';
                 sortSelect.addEventListener('change', async (e) => {
                     currentState.sort = e.target.value;
                     currentState.page = 1;
@@ -3363,15 +3430,15 @@
     <script src="mobile/js/mobile.js?v=20251230"></script>
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
     </script>
     <!--End of Tawk.to Script-->
 

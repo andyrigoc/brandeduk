@@ -32,8 +32,13 @@
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .products-grid-shop.loading {
@@ -46,8 +51,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* ==========================================================================
@@ -218,7 +230,7 @@
     transform: scale(1.1);
 }
 
-.filter-option input:checked + span {
+.filter-option input:checked+span {
     color: #7c3aed;
     font-weight: 600;
 }
@@ -279,7 +291,57 @@
 }
 
 @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
+/* ==========================================================================
+   PRODUCT BADGES
+   ========================================================================== */
+
+.product-thumb,
+.product-media {
+    position: relative;
+}
+
+.product-badges {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 10;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: white;
+}
+
+.badge.embroidery {
+    background: #3b82f6;
+}
+
+.badge.print {
+    background: #eab308;
+}
+
+.badge.best-seller {
+    background: #dc2626;
+}
+
+.badge.recommended {
+    background: #059669;
+}

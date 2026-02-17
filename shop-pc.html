@@ -1612,6 +1612,16 @@
             color: white;
         }
 
+        .badge.best-seller {
+            background: #dc2626;
+            color: white;
+        }
+
+        .badge.recommended {
+            background: #059669;
+            color: white;
+        }
+
         .product-image {
             width: 100%;
             height: 100%;
@@ -3309,7 +3319,9 @@
                         <div class="control-group">
                             <label for="sortSelect">Sort By:</label>
                             <select id="sortSelect" class="control-select">
+                                <option value="newest" selected>Newest Arrivals</option>
                                 <option value="best">Best Sellers</option>
+                                <option value="recommended">Highly Recommended</option>
                                 <option value="brand-az">Brand A-Z</option>
                                 <option value="brand-za">Brand Z-A</option>
                                 <option value="code-az">Product Code A-Z</option>
@@ -3571,7 +3583,7 @@
             priceMin: null,
             priceMax: null,
             apiPriceRange: null, // Store priceRange from API response to update slider
-            sort: 'best',
+            sort: 'newest',
             // Variant-driven colour filter (API param: color=black)
             color: '',
             filters: {
@@ -3687,7 +3699,7 @@
             currentState.brand = brandParam || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 28;
-            currentState.sort = urlParams.get('sort') || 'best';
+            currentState.sort = urlParams.get('sort') || 'newest';
             currentState.search = '';
             currentState.priceMin = null;
             currentState.priceMax = null;
@@ -3723,7 +3735,7 @@
             currentState.category = categoryFilter;
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 28;
-            currentState.sort = urlParams.get('sort') || 'best';
+            currentState.sort = urlParams.get('sort') || 'newest';
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
@@ -3779,7 +3791,7 @@
         function extractColorFromSearch(searchQuery) {
             if (!searchQuery) return null;
             const query = searchQuery.toLowerCase().trim();
-            
+
             // Comprehensive list of color keywords to detect in search
             const colorKeywords = [
                 // Primary colors
@@ -3794,7 +3806,7 @@
                 'chocolate', 'camel', 'sand', 'stone', 'oatmeal', 'natural',
                 'heather', 'marl', 'melange'
             ];
-            
+
             // Split search into words and find color matches
             const words = query.split(/\s+/);
             for (const word of words) {
@@ -3890,6 +3902,8 @@
                 // Map frontend sort values to API sort values
                 const sortMap = {
                     'best': 'best',
+                    'newest': 'newest',
+                    'recommended': 'recommended',
                     'brand-az': 'brand-az',
                     'brand-za': 'brand-za',
                     'code-az': 'code-az',
@@ -4219,6 +4233,12 @@
             try {
                 // Build query params for filters API (using the same logic as product API)
                 const apiParams = buildApiParams();
+
+                // Remove parameters that are not relevant for filter counts
+                delete apiParams.sort;
+                delete apiParams.page;
+                delete apiParams.limit;
+
                 const params = new URLSearchParams();
 
                 // Determine which filters API to use: brand-specific or general
@@ -5041,15 +5061,15 @@
                 // We just need to select the best matching color variant for display.
                 let displayColors = colors;
                 let displayColor = colors[0] || { name: 'Default', main: product.image };
-                
+
                 // Extract color from search query (e.g. "red polo" -> show red variants)
                 const searchColor = extractColorFromSearch(currentState.search);
-                
+
                 // Debug: log when search color is detected (only for first product to avoid spam)
                 if (index === 0 && searchColor) {
                     console.log('🎨 Search color detected:', searchColor, '| Search query:', currentState.search);
                 }
-                
+
                 // Use the model/lifestyle image as the default thumbnail (not the color variant image)
                 // BUT if a colour-related filter (primaryColour or colourShade) is active, OR
                 // if the search query contains a color term, show the matching colour variant image.
@@ -5129,8 +5149,14 @@
                 const visibleColors = 7;
                 const progressPercent = Math.min(100, (visibleColors / displayColors.length) * 100);
 
-                // Build badges based on customization types
                 let badgesHtml = '';
+
+                if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
+                    badgesHtml += '<span class="badge best-seller">BEST SELLER</span>';
+                }
+                if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
+                    badgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
+                }
                 if (product.customization && product.customization.includes('embroidery')) {
                     badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
                 }
@@ -5354,7 +5380,6 @@
             // Reset price range (will be updated after fetching products)
             updateURL();
             await renderProducts();
-            await fetchFilterCounts();
             initPriceRangeSlider().then(() => {
                 console.log('✅ initPriceRangeSlider completed');
             }).catch(err => {
@@ -5913,7 +5938,6 @@
                             currentState.page = 1;
                             updateURL();
                             await renderProducts();
-                            await fetchFilterCounts();
                         }
                     }
                 });
@@ -6047,7 +6071,6 @@
             currentState.page = nextPage;
             updateURL();
             await renderProducts();
-            await fetchFilterCounts();
             updatePagination();
 
         }
@@ -6206,7 +6229,6 @@
                     currentState.page = 1; // Reset to first page when sorting changes
                     updateURL();
                     await renderProducts();
-                    await fetchFilterCounts();
                     updatePagination();
                 });
             }
@@ -6232,7 +6254,6 @@
 
                     updateURL();
                     await renderProducts();
-                    await fetchFilterCounts();
                     updatePagination();
 
                 });
@@ -6560,15 +6581,15 @@
 
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
     </script>
     <!--End of Tawk.to Script-->
 
