@@ -289,7 +289,7 @@ $asset_dir = get_stylesheet_directory_uri();
                             </div>
                         </div>
                     </li>
-                    <li><a href="#"><?php esc_html_e( 'More', 'brandedukv15-child' ); ?></a></li>
+                    <li><a href="#" style="color:#e53e3e;font-weight:700"><?php esc_html_e( 'More', 'brandedukv15-child' ); ?></a></li>
                     <li><a href="#"><?php esc_html_e( 'Services', 'brandedukv15-child' ); ?></a></li>
                     <li><a href="#"><?php esc_html_e( 'About', 'brandedukv15-child' ); ?></a></li>
                 </ul>

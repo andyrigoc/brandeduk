@@ -1107,39 +1107,76 @@ function renderBasketItems() {
     }
   }
 
-  const productImg = productData && productData.images && productData.images.length > 0
-    ? productData.images[0] : "";
-
   let html = "";
   basket.forEach((item, idx) => {
+    const itemImg = item.image || "";
     const lineTotal = (item.qty * unitPrice).toFixed(2);
+
+    // Build per-size breakdown rows
+    let sizesHtml = '';
+    if (item.sizes && typeof item.sizes === 'object') {
+      Object.entries(item.sizes).forEach(([size, qty]) => {
+        sizesHtml += '<div class="size-breakdown-row" data-idx="' + idx + '" data-size="' + size + '">' +
+          '<span class="size-label">' + size + '</span>' +
+          '<div class="size-qty-controls">' +
+            '<button type="button" class="qty-btn size-qty-minus">−</button>' +
+            '<span class="qty-val">' + qty + '</span>' +
+            '<button type="button" class="qty-btn size-qty-plus">+</button>' +
+          '</div>' +
+        '</div>';
+      });
+    }
+
     html += '<div class="basket-item-card" data-idx="' + idx + '">' +
-      '<img src="' + productImg + '" alt="">' +
-      '<div class="basket-item-info">' +
-        '<div class="item-name">' + (productData ? productData.name : "") + '</div>' +
-        '<div class="item-meta">' + (productData ? productData.code : "") + ' - ' + item.colour + '</div>' +
-        '<div class="item-size">' + item.size + '</div>' +
-        '<div class="basket-item-qty">' +
-          '<button type="button" class="qty-btn basket-qty-minus">-</button>' +
-          '<span class="qty-val">' + item.qty + '</span>' +
-          '<button type="button" class="qty-btn basket-qty-plus">+</button>' +
-        '</div>' +
-        '<div class="basket-item-line">' + item.qty + ' x £' + unitPrice.toFixed(2) + ' = <strong>£' + lineTotal + '</strong> ex VAT</div>' +
-      '</div>' +
       '<button type="button" class="basket-item-delete" title="Remove item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>' +
+      '<div class="basket-item-top">' +
+        '<img src="' + itemImg + '" alt="' + item.colour + '">' +
+        '<div class="basket-item-info">' +
+          '<div class="item-name">' + (productData ? productData.name : "") + '</div>' +
+          '<div class="item-meta">' + (productData ? productData.code : "") + ' – ' + item.colour + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="basket-item-sizes">' +
+        '<div class="sizes-header"><span>Size</span><span>Qty</span></div>' +
+        sizesHtml +
+      '</div>' +
+      '<div class="basket-item-line">' + item.qty + ' × £' + unitPrice.toFixed(2) + ' = <strong>£' + lineTotal + '</strong> ex VAT</div>' +
     '</div>';
   });
   container.innerHTML = html;
 }
 
-// Basket qty +/- and delete handlers
-$(document).on("click", ".basket-qty-plus", function () {
-  const idx = parseInt($(this).closest(".basket-item-card").data("idx"));
-  if (basket[idx]) { basket[idx].qty++; renderBasketItems(); updateOrderSummary(); }
+// Basket per-size qty +/- handlers
+$(document).on("click", ".size-qty-plus", function () {
+  const row = $(this).closest(".size-breakdown-row");
+  const idx = parseInt(row.data("idx"));
+  const size = row.data("size");
+  if (basket[idx] && basket[idx].sizes[size] !== undefined) {
+    basket[idx].sizes[size]++;
+    basket[idx].qty = Object.values(basket[idx].sizes).reduce((a, b) => a + b, 0);
+    renderBasketItems(); updateOrderSummary();
+  }
 });
-$(document).on("click", ".basket-qty-minus", function () {
-  const idx = parseInt($(this).closest(".basket-item-card").data("idx"));
-  if (basket[idx] && basket[idx].qty > 1) { basket[idx].qty--; renderBasketItems(); updateOrderSummary(); }
+$(document).on("click", ".size-qty-minus", function () {
+  const row = $(this).closest(".size-breakdown-row");
+  const idx = parseInt(row.data("idx"));
+  const size = row.data("size");
+  if (basket[idx] && basket[idx].sizes[size] !== undefined) {
+    if (basket[idx].sizes[size] > 1) {
+      basket[idx].sizes[size]--;
+    } else {
+      delete basket[idx].sizes[size];
+    }
+    // Recalculate total qty
+    const remaining = Object.values(basket[idx].sizes);
+    if (remaining.length === 0) {
+      basket.splice(idx, 1);
+      if (basket.length === 0) showToast("Basket is empty");
+    } else {
+      basket[idx].qty = remaining.reduce((a, b) => a + b, 0);
+    }
+    renderBasketItems(); updateOrderSummary();
+  }
 });
 $(document).on("click", ".basket-item-delete", function () {
   const idx = parseInt($(this).closest(".basket-item-card").data("idx"));
