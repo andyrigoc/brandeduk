@@ -2490,6 +2490,37 @@
             try {
                 const params = buildApiParams();
                 const data = await BrandedAPI.getProducts(params);
+
+                // ── Hi-Vis merge: combine Safety Vests + "high visibility" + "hi-viz" + Yoko brand ──
+                const isHiVisCategory = (params.productType === 'Safety Vests' || params.productType === 'safety-vests' || params.productType === 'Hi-Vis');
+                if (isHiVisCategory && data && data.items) {
+                    console.log('🦺 Hi-Vis merge (mobile): fetching additional hi-vis/high-visibility/yoko products…');
+                    const extraUrls = [
+                        `https://api.brandeduk.com/api/products?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
+                        `https://api.brandeduk.com/api/products?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
+                        `https://api.brandeduk.com/api/products?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
+                    ];
+                    const extraResults = await Promise.allSettled(
+                        extraUrls.map(url => fetch(url).then(r => r.json()))
+                    );
+                    const seenCodes = new Set(data.items.map(item => item.code));
+                    let added = 0;
+                    extraResults.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value && result.value.items) {
+                            result.value.items.forEach(item => {
+                                if (!seenCodes.has(item.code)) {
+                                    seenCodes.add(item.code);
+                                    data.items.push(item);
+                                    added++;
+                                }
+                            });
+                        }
+                    });
+                    data.total = (data.total || 0) + added;
+                    console.log(`🦺 Hi-Vis merge complete (mobile): +${added} extra products → ${data.total} total`);
+                }
+                // ── End Hi-Vis merge ──
+
                 currentState.total = data.total || 0;
 
                 // Store priceRange from API response to update slider range

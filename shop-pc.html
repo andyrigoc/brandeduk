@@ -3317,7 +3317,6 @@
                     <!-- Sort and View Controls -->
                     <div class="products-controls">
                         <div class="control-group">
-                            <label for="sortSelect">Sort By:</label>
                             <select id="sortSelect" class="control-select">
                                 <option value="newest" selected>Newest Arrivals</option>
                                 <option value="best">Best Sellers</option>
@@ -4140,6 +4139,39 @@
                         }
                         data = await response.json();
                     }
+
+                    // ── Hi-Vis merge: combine Safety Vests + "high visibility" + "hi-viz" + Yoko brand ──
+                    // The API stores hi-vis products across different productTypes, names and brands,
+                    // so we run parallel searches and deduplicate by product code.
+                    const isHiVisCategory = (params.productType === 'Safety Vests' || params.productType === 'safety-vests');
+                    if (isHiVisCategory && data && data.items) {
+                        console.log('🦺 Hi-Vis merge: fetching additional hi-vis/high-visibility/yoko products…');
+                        const extraUrls = [
+                            `${baseUrl}?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
+                            `${baseUrl}?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
+                            `${baseUrl}?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
+                        ];
+                        const extraResults = await Promise.allSettled(
+                            extraUrls.map(url => fetch(url, { signal: abortController.signal }).then(r => r.json()))
+                        );
+                        // Collect existing codes for dedup
+                        const seenCodes = new Set(data.items.map(item => item.code));
+                        let added = 0;
+                        extraResults.forEach((result, idx) => {
+                            if (result.status === 'fulfilled' && result.value && result.value.items) {
+                                result.value.items.forEach(item => {
+                                    if (!seenCodes.has(item.code)) {
+                                        seenCodes.add(item.code);
+                                        data.items.push(item);
+                                        added++;
+                                    }
+                                });
+                            }
+                        });
+                        data.total = (data.total || 0) + added;
+                        console.log(`🦺 Hi-Vis merge complete: +${added} extra products → ${data.total} total`);
+                    }
+                    // ── End Hi-Vis merge ──
 
                     console.log('✅ API RESPONSE RECEIVED:', {
                         total: data && data.total,
