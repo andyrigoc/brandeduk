@@ -1283,21 +1283,23 @@ body {
 .category-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     border: none;
     cursor: pointer;
-    background: linear-gradient(180deg, #cbd5f5, #9ca3c7);
-    color: #111827;
-    padding: 12px 18px;
-    border-radius: 999px;
-    font-weight: 700;
+    background: none;
+    color: #1f2937;
+    padding: 6px 0;
+    border-radius: 0;
+    font-weight: 600;
+    font-size: inherit;
     letter-spacing: 0.01em;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 6px 12px rgba(15, 23, 42, 0.18);
+    box-shadow: none;
+    white-space: nowrap;
 }
 
 .category-toggle:hover,
 .category-dropdown[data-visible="true"] > .category-toggle {
-    color: #ffffff;
+    color: var(--brandeduk-header-teal);
 }
 
 .category-toggle:focus {
@@ -1317,8 +1319,8 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
 }
 
 .category-toggle-icon::before {

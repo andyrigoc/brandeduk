@@ -261,7 +261,7 @@ $asset_dir = get_stylesheet_directory_uri();
                             <?php endforeach; ?>
                         </ul>
                     </li>
-                    <li><a href="#"><?php esc_html_e( 'BrandedUK', 'brandedukv15-child' ); ?></a></li>
+                    <li><a href="#"><?php esc_html_e( 'Branded', 'brandedukv15-child' ); ?></a></li>
                     <li class="has-megamenu promotions-menu">
                         <a href="#" aria-haspopup="true">
                             <?php esc_html_e( 'Promotions', 'brandedukv15-child' ); ?>
