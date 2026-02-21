@@ -749,6 +749,7 @@
             state.product.fabric = productData.fabric || '';
             state.product.image = productData.image || ''; // Top-level product image (model/hero shot)
             state.product.rawData = productData; // Store full product data for reference
+            console.log('🔍 PRODUCT IMAGE DEBUG:', { topLevelImage: productData.image, firstColorMain: (productData.colors && productData.colors[0]) ? productData.colors[0].main : 'no colors', sameImage: productData.image === ((productData.colors && productData.colors[0]) ? productData.colors[0].main : null) });
 
             // Map colors (if present) into PRODUCT_COLORS format
             const colorsSource = productData.colors || productData.colorOptions || productData.variants || [];
