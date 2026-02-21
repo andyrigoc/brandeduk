@@ -747,6 +747,7 @@
             state.product.sizes = normalizeProductSizesFromApi(productData);
             state.product.weight = productData.weight || '';
             state.product.fabric = productData.fabric || '';
+            state.product.image = productData.image || ''; // Top-level product image (model/hero shot)
             state.product.rawData = productData; // Store full product data for reference
 
             // Map colors (if present) into PRODUCT_COLORS format
@@ -833,10 +834,12 @@
                 skuEl.textContent = `#${state.product?.code || ''} ${brandName}`;
             }
 
-            // Main image - clear cache by adding timestamp or replacing src
+            // Main image - use model/hero image from API as default (product.image),
+            // fallback to per-color flat image only if model image is unavailable
             const mainImg = document.getElementById('mainImage');
             if (mainImg) {
-                const imgSrc = state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || state.product?.image || state.product?.photo || '';
+                const modelImage = state.product?.image || state.product?.rawData?.image || '';
+                const imgSrc = modelImage || state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || state.product?.photo || '';
                 if (imgSrc) {
                     // Force reload by clearing src first, then setting new src with cache buster
                     mainImg.src = '';

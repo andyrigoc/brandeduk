@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#6B21A8">
     <title>Shop - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260116a">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260221">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
@@ -15,40 +15,62 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only) */
-        .mobile-header .social-icons-mobile {
-            gap: 3px !important;
-            margin-left: 8px !important;
-            padding-left: 0 !important;
-        }
+        /* ═══ MOBILE ONLY (max 767px) ═══ */
+        @media (max-width: 767px) {
+            /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+            .mobile-header .social-icons-mobile {
+                gap: 3px !important;
+                margin-left: 8px !important;
+                padding-left: 0 !important;
+            }
 
-        .mobile-header .social-icons-mobile .social-icon {
-            width: 27px !important;
-            height: 27px !important;
-            min-width: 27px !important;
-            min-height: 27px !important;
-            max-width: 27px !important;
-            max-height: 27px !important;
-            border-radius: 7px !important;
-        }
+            .mobile-header .social-icons-mobile .social-icon {
+                width: 27px !important;
+                height: 27px !important;
+                min-width: 27px !important;
+                min-height: 27px !important;
+                max-width: 27px !important;
+                max-height: 27px !important;
+                border-radius: 7px !important;
+            }
 
-        .mobile-header .social-icons-mobile .social-icon i {
-            font-size: 12px !important;
-        }
+            .mobile-header .social-icons-mobile .social-icon i {
+                font-size: 12px !important;
+            }
 
-        /* Category heading under category tabs */
-        .shop-category-heading {
-            margin: 0;
-            padding: 10px 16px 0;
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--gray-900);
-            letter-spacing: -0.01em;
-        }
+            /* Move logo row up 10px */
+            .header-logo-row {
+                padding-top: 0 !important;
+                margin-top: -10px;
+            }
 
-        /* Tablet breadcrumb between tabs and title */
-        .shop-breadcrumbs {
-            display: flex;
+            /* Category heading */
+            .shop-category-heading {
+                margin: 0 !important;
+                padding: 2px 16px 0 !important;
+                font-size: 15px !important;
+                font-weight: 800;
+                color: var(--gray-900);
+                letter-spacing: -0.01em;
+            }
+
+            /* Hide breadcrumbs on mobile */
+            .shop-breadcrumbs {
+                display: none !important;
+            }
+
+            .shop-title-bar {
+                padding: 4px 16px !important;
+            }
+
+            .shop-title {
+                font-size: 13px !important;
+            }
+
+            /* Pull products grid up - remove gap */
+            .shop-products-container {
+                padding-top: 8px !important;
+            }
         }
 
         .shop-breadcrumbs a {
@@ -214,57 +236,100 @@
         }
     </style>
     <style>
-        /* Category Filter Styles */
+        /* ── Hamburger Category Menu ── */
         .categories-filter-scroll {
             position: sticky;
             top: 100px;
             background: #fff;
             z-index: 50;
-            padding: 12px 0;
+            padding: 6px 12px;
             border-bottom: 1px solid #e5e7eb;
         }
 
-        .categories-filter-scroll .categories-scroll {
+        /* Hamburger trigger button */
+        .category-hamburger-btn {
             display: flex;
-            gap: 10px;
-            padding: 0 16px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
         }
 
-        .categories-filter-scroll .categories-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .category-filter-card {
-            flex: 0 0 auto;
+        .category-hamburger-btn .hamburger-lines {
             display: flex;
             flex-direction: column;
+            gap: 3px;
+            width: 20px;
+        }
+
+        .category-hamburger-btn .hamburger-lines span {
+            display: block;
+            height: 2.5px;
+            width: 100%;
+            background: #374151;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Animate hamburger → X when open */
+        .category-hamburger-btn.open .hamburger-lines span:nth-child(1) {
+            transform: translateY(5.5px) rotate(45deg);
+        }
+        .category-hamburger-btn.open .hamburger-lines span:nth-child(2) {
+            opacity: 0;
+        }
+        .category-hamburger-btn.open .hamburger-lines span:nth-child(3) {
+            transform: translateY(-5.5px) rotate(-45deg);
+        }
+
+        .category-hamburger-btn .active-cat-label {
+            color: #374151;
+            font-weight: 700;
+        }
+
+        /* Vertical dropdown panel */
+        .categories-dropdown {
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            padding: 8px 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .categories-dropdown.open {
+            display: flex;
+        }
+
+        /* Each category row */
+        .category-filter-card {
+            display: flex;
+            flex-direction: row;
             align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
-            background: #f3f4f6;
-            border: 2px solid transparent;
-            border-radius: 12px;
+            gap: 10px;
+            padding: 10px 14px;
+            background: #f9fafb;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            scroll-snap-align: start;
-            min-width: 70px;
+            transition: background 0.2s ease;
+            width: 100%;
+            text-align: left;
         }
 
         .category-filter-card:hover {
-            background: #e5e7eb;
-            transform: translateY(-2px);
+            background: #ede9fe;
         }
 
         .category-filter-card.active {
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-            border-color: #7c3aed;
             color: #fff;
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
         }
 
         .category-filter-card.active .category-icon svg {
@@ -276,23 +341,24 @@
         }
 
         .category-filter-card .category-icon {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .category-filter-card .category-icon img,
         .category-filter-card .category-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             object-fit: contain;
-            transition: filter 0.3s ease;
+            transition: filter 0.2s ease;
         }
 
         .category-filter-card span {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 600;
             white-space: nowrap;
         }
@@ -439,8 +505,8 @@
         .shop-products-controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding: 16px;
+            gap: 4px;
+            padding: 4px 16px !important;
             background: #fff;
             border-bottom: 1px solid #e5e7eb;
         }
@@ -490,31 +556,83 @@
             box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
-        /* Mobile Pagination */
+        /* Mobile Pagination - HIDDEN */
         .shop-pagination-mobile {
+            display: none !important;
+        }
+
+        /* Hide API-generated purple pagination */
+        .shop-pagination {
+            display: none !important;
+        }
+
+        /* Bottom Pagination - Clean arrows + numbers */
+        .bottom-pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
-            padding: 16px;
-            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px 12px 80px;
+            font-family: inherit;
+        }
+
+        .bottom-pagination a,
+        .bottom-pagination span {
+            text-decoration: none;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+
+        .bottom-pagination a:hover {
+            color: #1f2937;
+        }
+
+        .bottom-pagination .page-current {
+            background: #1f2937;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .bottom-pagination .page-arrow {
+            color: #374151;
+            font-size: 15px;
+        }
+
+        .bottom-pagination .page-arrow:hover {
+            color: #7c3aed;
+        }
+
+        .bottom-pagination .page-disabled {
+            color: #d1d5db;
+            pointer-events: none;
         }
 
         .shop-pagination-button {
-            min-width: 36px;
-            height: 36px;
+            min-width: 26px;
+            height: 26px;
+            max-height: 26px;
+            line-height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            border-radius: 5px;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 0 8px;
+            padding: 0;
         }
 
         .shop-pagination-button:hover:not(:disabled) {
@@ -530,20 +648,22 @@
         }
 
         .shop-pagination-page {
-            min-width: 36px;
-            height: 36px;
+            min-width: 26px;
+            height: 26px;
+            max-height: 26px;
+            line-height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            border-radius: 5px;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 0 12px;
+            padding: 0;
         }
 
         .shop-pagination-page.active {
@@ -1492,9 +1612,16 @@
         <span class="results-count" id="resultsCount">0 items</span>
     </div>
 
-    <!-- Category Filters (Scrollable with Animation) -->
+    <!-- Category Filters (Hamburger Dropdown) -->
     <div class="categories-filter-scroll">
-        <div class="categories-scroll">
+        <!-- Hamburger trigger -->
+        <button class="category-hamburger-btn" id="categoryHamburgerBtn" aria-expanded="false" aria-controls="categoriesDropdown">
+            <span class="hamburger-lines"><span></span><span></span><span></span></span>
+            <span class="active-cat-label" id="activeCatLabel">All</span>
+        </button>
+
+        <!-- Vertical dropdown -->
+        <div class="categories-dropdown" id="categoriesDropdown">
             <button class="category-filter-card active" data-category="all">
                 <div class="category-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1618,8 +1745,8 @@
                 </select>
             </div>
         </div>
-        <!-- Pagination -->
-        <div class="shop-pagination-mobile" id="mobilePagination" style="display: none;">
+        <!-- Pagination (hidden) -->
+        <div class="shop-pagination-mobile" id="mobilePagination" style="display: none !important;">
             <button type="button" class="shop-pagination-button" id="mobilePaginationFirst"
                 title="First page">«</button>
             <button type="button" class="shop-pagination-button" id="mobilePaginationPrev"
@@ -1637,6 +1764,10 @@
             <!-- Cards will be generated by JavaScript -->
         </div>
     </main>
+
+    <!-- Bottom Pagination -->
+    <div class="bottom-pagination" id="bottomPagination">
+    </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
@@ -2824,37 +2955,67 @@
 
         function updateMobilePagination() {
             const paginationContainer = document.getElementById('mobilePagination');
-            if (!paginationContainer) return;
-
             const totalPages = Math.ceil(currentState.total / currentState.limit);
 
-            if (totalPages <= 1) {
-                paginationContainer.style.display = 'none';
-                return;
+            // ── Bottom pagination: « < 1 2 3 > » ──
+            const bp = document.getElementById('bottomPagination');
+            if (bp) {
+                if (totalPages <= 1) {
+                    bp.innerHTML = '';
+                } else {
+                    let html = '';
+                    // « First
+                    if (currentState.page > 1) {
+                        html += '<a class="page-arrow" data-page="1">«</a>';
+                    } else {
+                        html += '<span class="page-arrow page-disabled">«</span>';
+                    }
+                    // < Prev
+                    if (currentState.page > 1) {
+                        html += '<a class="page-arrow" data-page="' + (currentState.page - 1) + '">‹</a>';
+                    } else {
+                        html += '<span class="page-arrow page-disabled">‹</span>';
+                    }
+                    // Page numbers (max 3 visible)
+                    let startPage = Math.max(1, currentState.page - 1);
+                    let endPage = Math.min(totalPages, startPage + 2);
+                    if (endPage - startPage < 2) startPage = Math.max(1, endPage - 2);
+                    for (let i = startPage; i <= endPage; i++) {
+                        if (i === currentState.page) {
+                            html += '<span class="page-current">' + i + '</span>';
+                        } else {
+                            html += '<a data-page="' + i + '">' + i + '</a>';
+                        }
+                    }
+                    // > Next
+                    if (currentState.page < totalPages) {
+                        html += '<a class="page-arrow" data-page="' + (currentState.page + 1) + '">›</a>';
+                    } else {
+                        html += '<span class="page-arrow page-disabled">›</span>';
+                    }
+                    // » Last
+                    if (currentState.page < totalPages) {
+                        html += '<a class="page-arrow" data-page="' + totalPages + '">»</a>';
+                    } else {
+                        html += '<span class="page-arrow page-disabled">»</span>';
+                    }
+                    bp.innerHTML = html;
+
+                    // Click handlers
+                    bp.querySelectorAll('a[data-page]').forEach(link => {
+                        link.addEventListener('click', async () => {
+                            currentState.page = parseInt(link.dataset.page);
+                            updateURL();
+                            await renderProducts();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        });
+                    });
+                }
             }
 
-            paginationContainer.style.display = 'flex';
-
-            const firstBtn = document.getElementById('mobilePaginationFirst');
-            const prevBtn = document.getElementById('mobilePaginationPrev');
-            const nextBtn = document.getElementById('mobilePaginationNext');
-            const lastBtn = document.getElementById('mobilePaginationLast');
-            const pageNumbersContainer = document.getElementById('mobilePaginationPageNumbers');
-
-            if (firstBtn) firstBtn.disabled = currentState.page === 1;
-            if (prevBtn) prevBtn.disabled = currentState.page === 1;
-            if (nextBtn) nextBtn.disabled = currentState.page === totalPages;
-            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
-
-            if (pageNumbersContainer) {
-                pageNumbersContainer.innerHTML = '';
-                const currentPageBtn = document.createElement('button');
-                currentPageBtn.type = 'button';
-                currentPageBtn.className = 'shop-pagination-page active';
-                currentPageBtn.textContent = currentState.page;
-                currentPageBtn.setAttribute('aria-current', 'page');
-                pageNumbersContainer.appendChild(currentPageBtn);
-            }
+            // Keep old pagination hidden
+            if (!paginationContainer) return;
+            paginationContainer.style.display = 'none';
         }
 
         // Price range init adapted for mobile UI (dual slider like desktop)
@@ -3219,12 +3380,31 @@
 
         // Setup category filter buttons - NEW FUNCTION
         function setupCategoryFilters() {
+            // ── Hamburger toggle ──
+            const hamBtn = document.getElementById('categoryHamburgerBtn');
+            const dropdown = document.getElementById('categoriesDropdown');
+            const activeLabel = document.getElementById('activeCatLabel');
+
+            if (hamBtn && dropdown) {
+                hamBtn.addEventListener('click', () => {
+                    const isOpen = dropdown.classList.toggle('open');
+                    hamBtn.classList.toggle('open', isOpen);
+                    hamBtn.setAttribute('aria-expanded', isOpen);
+                });
+            }
+
+            // ── Category card clicks ──
             document.querySelectorAll('.category-filter-card').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     // Remove active from all
                     document.querySelectorAll('.category-filter-card').forEach(b => b.classList.remove('active'));
                     // Add active to clicked
                     btn.classList.add('active');
+                    // Update the hamburger label
+                    if (activeLabel) activeLabel.textContent = btn.querySelector('span:last-child').textContent;
+                    // Close dropdown
+                    if (dropdown) { dropdown.classList.remove('open'); }
+                    if (hamBtn) { hamBtn.classList.remove('open'); hamBtn.setAttribute('aria-expanded', 'false'); }
                     // Update state
                     currentState.category = normalizeCategory(btn.dataset.category) || 'all';
                     currentState.page = 1;
@@ -3382,6 +3562,18 @@
             setupFilterCheckboxes();
             setupQuickFilterToggles();
             setupSearchInput();
+
+            // Sync hamburger active button + label with URL category
+            if (currentState.category && currentState.category !== 'all') {
+                const allCards = document.querySelectorAll('.category-filter-card');
+                allCards.forEach(b => b.classList.remove('active'));
+                const match = document.querySelector('.category-filter-card[data-category="' + currentState.category + '"]');
+                if (match) {
+                    match.classList.add('active');
+                    const lbl = document.getElementById('activeCatLabel');
+                    if (lbl) lbl.textContent = match.querySelector('span:last-child').textContent;
+                }
+            }
 
             // Setup Sort and View controls
             const sortSelect = document.getElementById('mobileSortSelect');

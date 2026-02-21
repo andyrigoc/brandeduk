@@ -600,6 +600,32 @@
         });
     }
 
+    function initHideHeaderOnScroll() {
+        // Desktop only — do not hide header on mobile/tablet
+        if (window.innerWidth < 1024) return;
+        var header = document.querySelector('.site-header');
+        if (!header) return;
+        var lastY = window.scrollY;
+        var ticking = false;
+
+        window.addEventListener('scroll', function () {
+            if (window.innerWidth < 1024) return;
+            if (!ticking) {
+                window.requestAnimationFrame(function () {
+                    var currentY = window.scrollY;
+                    if (currentY > lastY && currentY > 80) {
+                        header.classList.add('header-hidden');
+                    } else {
+                        header.classList.remove('header-hidden');
+                    }
+                    lastY = currentY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
+
     function initHeaderScripts() {
         initFixedHeaderOffset();
         initCategoryDropdown();
@@ -610,6 +636,7 @@
         initExclusivesDropdownToggle();
         initCatalogueDropdownToggle();
         initSearchTypeahead();
+        initHideHeaderOnScroll();
     }
 
     if (document.readyState === 'loading') {

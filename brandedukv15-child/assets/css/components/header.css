@@ -10,7 +10,7 @@
     --brandeduk-header-purple: #7A52CC;
     --header-accent-purple: #4b5563;
     --header-accent-fuchsia: #C952DE;
-    --header-shell-width: 1400px;
+    --header-shell-width: 1240px;
     --header-shell-padding: 28px;
     --header-surface-extra-width: 0px;
     /* Fallback used before JS measures the real header height. */
@@ -707,7 +707,7 @@ body {
 }
 
 .header-modern__inner {
-    max-width: 1400px;
+    max-width: 1240px;
     margin: 0 auto;
     padding: 0 32px;
     display: flex;
@@ -997,6 +997,21 @@ body {
     background: #ffffff;
     color: var(--brandeduk-header-navy);
     box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+    transition: transform 0.35s ease;
+}
+
+.site-header.header-hidden {
+    transform: translateY(-100%);
+}
+
+/* Desktop-only: widen header to match hero (1400px) */
+@media (min-width: 1024px) {
+    :root {
+        --header-shell-width: 1400px;
+    }
+    .header-modern__inner {
+        max-width: 1400px;
+    }
 }
 
 .header-container {
@@ -2177,7 +2192,7 @@ body {
 
 /* === Logo e Search Expand === */
 .searchbar-header__brand-img {
-    height: 133px;
+    height: 92px;
     width: auto;
     object-fit: contain;
 }

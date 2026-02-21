@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20260116b">
+    <link rel="stylesheet" href="css/mobile.css?v=20260221b">
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
@@ -31,6 +31,17 @@
         }
         .mobile-header .social-icons-mobile .social-icon i {
             font-size: 12px !important;
+        }
+
+        /* Reduce gap between header and product image */
+        .customize-main {
+            padding-top: 80px !important;
+        }
+        .gallery-main {
+            padding: 8px !important;
+        }
+        .product-gallery {
+            margin-top: -10px;
         }
 
         /* Apron-specific logo positioning for low-left and low-right */
@@ -148,11 +159,11 @@
     </header>
 
     <!-- Main Content -->
-    <main class="customize-main">
+    <main class="customize-main" style="padding-top: 0 !important; margin-top: -90px !important;">
         
         <!-- Product Gallery -->
         <section class="product-gallery">
-            <div class="gallery-main">
+            <div class="gallery-main" style="padding: 5px !important;">
                 <div class="gallery-badge bestseller">BESTSELLER</div>
                 <div class="product-img-placeholder large" id="productPreviewContainer">
                     <img src="" alt="Product" id="mainImage" style="width: 100%; height: 100%; object-fit: contain;">

@@ -814,7 +814,7 @@ a {
 
 /* === Main Content === */
 .customize-main {
-    padding-top: var(--header-height);
+    padding-top: 6px;
 }
 
 /* === Product Gallery === */
@@ -828,7 +828,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 5px;
 }
 
 .gallery-main img {
