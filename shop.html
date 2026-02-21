@@ -2659,7 +2659,7 @@
                 }
                 // ── End Hi-Vis merge ──
 
-                currentState.total = data.total || 0;
+                currentState.total = data.total || data.items.length || 0;
 
                 // Store priceRange from API response to update slider range
                 // This represents the min/max prices available in the current filtered results
