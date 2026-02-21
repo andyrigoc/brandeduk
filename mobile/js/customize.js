@@ -1320,13 +1320,9 @@
                 state.selectedColorImage = matchingColor.image;
                 console.log('? Applied shop color:', matchingColor.name);
                 
-                // Update main image immediately
+                // Update color label and active button, but keep model image as main
                 setTimeout(() => {
-                    const mainImage = document.querySelector('.gallery-main img');
-                    if (mainImage) {
-                        mainImage.src = matchingColor.image;
-                        console.log('??? Updated main image to:', matchingColor.image);
-                    }
+                    // DON'T overwrite main image - keep the model/hero image from refreshProductDOM()
                     // Update color label
                     const selectedColorEl = document.getElementById('selectedColor');
                     if (selectedColorEl) {
