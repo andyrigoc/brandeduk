@@ -839,7 +839,9 @@
             const mainImg = document.getElementById('mainImage');
             if (mainImg) {
                 const modelImage = state.product?.image || state.product?.rawData?.image || '';
-                const imgSrc = modelImage || state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || state.product?.photo || '';
+                const flatImage = state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || '';
+                const imgSrc = modelImage || flatImage || state.product?.photo || '';
+                console.log('🖼️ refreshProductDOM image selection:', { modelImage, flatImage, chosen: imgSrc });
                 if (imgSrc) {
                     // Force reload by clearing src first, then setting new src with cache buster
                     mainImg.src = '';
