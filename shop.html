@@ -291,6 +291,12 @@
             color: #374151;
             font-weight: 700;
         }
+        .category-hamburger-btn .cat-product-count {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 400;
+            margin-left: 4px;
+        }
 
         /* Vertical dropdown panel */
         .categories-dropdown {
@@ -1618,6 +1624,7 @@
         <button class="category-hamburger-btn" id="categoryHamburgerBtn" aria-expanded="false" aria-controls="categoriesDropdown">
             <span class="hamburger-lines"><span></span><span></span><span></span></span>
             <span class="active-cat-label" id="activeCatLabel">All</span>
+            <span class="cat-product-count" id="catProductCount"></span>
         </button>
 
         <!-- Vertical dropdown -->
@@ -3435,6 +3442,10 @@
             const resultsEl = document.getElementById('resultsCount');
             if (titleEl) titleEl.textContent = (currentState.category && currentState.category !== 'all') ? currentState.category : 'All Products';
             if (resultsEl) resultsEl.textContent = `${currentState.total} items`;
+
+            // Update product count next to hamburger label
+            const catCountEl = document.getElementById('catProductCount');
+            if (catCountEl) catCountEl.textContent = `(${currentState.total})`;
 
             // Update price slider range based on API response (like desktop)
             updateMobilePriceSliderRangeFromAPI();
