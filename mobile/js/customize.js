@@ -686,10 +686,18 @@
             const savedProductData = sessionStorage.getItem('selectedProductData');
             const savedProductCode = sessionStorage.getItem('selectedProduct');
             let productData = null;
+            let cachedData = null; // Keep cached data from shop (has model image)
+
+            // Parse cached data first (from shop page - includes model/hero image)
+            if (savedProductData) {
+                try {
+                    cachedData = JSON.parse(savedProductData);
+                } catch (e) { /* ignore parse error */ }
+            }
 
             // ALWAYS fetch fresh product detail from API to get complete sizes
             // The products list endpoint only returns partial size data
-            const productCode = savedProductCode || (savedProductData ? JSON.parse(savedProductData).code : null);
+            const productCode = savedProductCode || (cachedData ? cachedData.code : null);
             
             if (productCode) {
                 try {
@@ -697,6 +705,12 @@
                     const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
                     if (res.ok) {
                         productData = await res.json();
+                        // CRITICAL: API detail endpoint doesn't return top-level 'image' (model shot)
+                        // Preserve it from the cached shop data if available
+                        if (!productData.image && cachedData && cachedData.image) {
+                            productData.image = cachedData.image;
+                            console.log('🖼️ Preserved model image from shop data:', productData.image);
+                        }
                         console.log('✅ Fetched product from API:', productData.code);
                         console.log('📐 Product sizes from API:', productData.sizes);
                         console.log('🎨 Product colors count:', (productData.colors || []).length);
@@ -711,13 +725,9 @@
             }
 
             // Fallback to cached data only if API fetch failed
-            if (!productData && savedProductData) {
-                try {
-                    productData = JSON.parse(savedProductData);
-                    console.log('⚠️ Using cached product data (API unavailable):', productData.code);
-                } catch (e) {
-                    console.warn('Failed to parse cached product data', e);
-                }
+            if (!productData && cachedData) {
+                productData = cachedData;
+                console.log('⚠️ Using cached product data (API unavailable):', productData.code);
             }
 
             if (!productData) {
