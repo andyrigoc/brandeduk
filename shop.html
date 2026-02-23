@@ -218,6 +218,77 @@
             color: #a855f7;
         }
 
+        /* Search Autocomplete Dropdown */
+        .search-autocomplete {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .search-autocomplete.open {
+            display: block;
+        }
+        .search-autocomplete .ac-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #9ca3af;
+            padding: 8px 16px 4px;
+            letter-spacing: 0.5px;
+        }
+        .search-autocomplete .ac-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+        }
+        .search-autocomplete .ac-item:hover,
+        .search-autocomplete .ac-item.ac-active {
+            background: #f3f0ff;
+        }
+        .search-autocomplete .ac-item .ac-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: #a855f7;
+        }
+        .search-autocomplete .ac-item .ac-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: contain;
+            flex-shrink: 0;
+            background: #f9fafb;
+        }
+        .search-autocomplete .ac-item .ac-match {
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .search-autocomplete .ac-item .ac-brand {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-left: auto;
+        }
+        .search-autocomplete .ac-item .ac-price {
+            font-size: 12px;
+            color: #6b7280;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
         @media (min-width: 1024px) {
             .desktop-site-header {
                 display: block;
@@ -925,14 +996,16 @@
                     </a>
 
                     <div class="searchbar-header__actions">
-                        <div class="searchbar-header__search-expand">
-                            <input type="text" class="search-input-expand"
+                        <div class="searchbar-header__search-expand" style="position: relative;">
+                            <input type="text" class="search-input-expand" autocomplete="off"
                                 placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
                             <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
+                            <!-- Autocomplete dropdown -->
+                            <div class="search-autocomplete" id="searchAutocomplete"></div>
                         </div>
 
                         <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
@@ -3285,11 +3358,196 @@
                 if (!el) return;
                 el.addEventListener('keypress', async (e) => {
                     if (e.key === 'Enter') {
+                        closeAutocomplete();
                         currentState.search = el.value.trim();
                         currentState.page = 1;
                         updateURL();
                         await renderProducts();
                         await fetchFilterCounts();
+                    }
+                });
+            });
+
+            // Setup autocomplete on header search
+            if (headerSearch) {
+                setupAutocomplete(headerSearch);
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // AUTOCOMPLETE / PREDICTIVE SEARCH
+        // ═══════════════════════════════════════════
+        const AUTOCOMPLETE_CATEGORIES = [
+            { label: 'T-Shirts', slug: 'tshirts' },
+            { label: 'Hoodies', slug: 'hoodies' },
+            { label: 'Polo Shirts', slug: 'polo' },
+            { label: 'Sweatshirts', slug: 'sweatshirts' },
+            { label: 'Jackets', slug: 'jackets' },
+            { label: 'Fleeces', slug: 'fleeces' },
+            { label: 'Caps', slug: 'caps' },
+            { label: 'Beanies', slug: 'beanies' },
+            { label: 'Hi-Vis', slug: 'hivis' },
+            { label: 'Trousers', slug: 'trousers' },
+            { label: 'Workwear', slug: 'workwear' },
+            { label: 'Aprons', slug: 'aprons' },
+            { label: 'Shirts', slug: 'shirts' },
+            { label: 'Blouses', slug: 'blouses' },
+            { label: 'Chinos', slug: 'chinos' }
+        ];
+
+        let acTimer = null;
+        let acActiveIndex = -1;
+        let acItems = [];
+
+        function setupAutocomplete(input) {
+            const dropdown = document.getElementById('searchAutocomplete');
+            if (!dropdown) return;
+
+            input.addEventListener('input', () => {
+                clearTimeout(acTimer);
+                const q = input.value.trim();
+                if (q.length < 1) { closeAutocomplete(); return; }
+                // Show category matches immediately, then fetch products after short delay
+                showCategorySuggestions(q, dropdown);
+                acTimer = setTimeout(() => fetchProductSuggestions(q, dropdown), 300);
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (!dropdown.classList.contains('open')) return;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
+                    highlightItem(dropdown);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    acActiveIndex = Math.max(acActiveIndex - 1, -1);
+                    highlightItem(dropdown);
+                } else if (e.key === 'Enter' && acActiveIndex >= 0) {
+                    e.preventDefault();
+                    const activeEl = dropdown.querySelector('.ac-item.ac-active');
+                    if (activeEl) activeEl.click();
+                } else if (e.key === 'Escape') {
+                    closeAutocomplete();
+                }
+            });
+
+            // Close on click outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.searchbar-header__search-expand')) {
+                    closeAutocomplete();
+                }
+            });
+        }
+
+        function closeAutocomplete() {
+            const dropdown = document.getElementById('searchAutocomplete');
+            if (dropdown) { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
+            acActiveIndex = -1;
+            acItems = [];
+        }
+
+        function highlightItem(dropdown) {
+            dropdown.querySelectorAll('.ac-item').forEach((el, i) => {
+                el.classList.toggle('ac-active', i === acActiveIndex);
+            });
+        }
+
+        function highlightMatch(text, query) {
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+        }
+
+        function showCategorySuggestions(query, dropdown) {
+            const q = query.toLowerCase();
+            const matches = AUTOCOMPLETE_CATEGORIES.filter(c => c.label.toLowerCase().includes(q)).sort((a, b) => a.label.localeCompare(b.label));
+
+            let html = '';
+            if (matches.length > 0) {
+                html += '<div class="ac-section-label">Categories</div>';
+                matches.forEach(cat => {
+                    html += `<div class="ac-item" data-type="category" data-slug="${cat.slug}">
+                        <svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        <span>${highlightMatch(cat.label, query)}</span>
+                    </div>`;
+                });
+            }
+
+            dropdown.innerHTML = html;
+            if (html) dropdown.classList.add('open');
+            else dropdown.classList.remove('open');
+
+            acItems = [...dropdown.querySelectorAll('.ac-item')];
+            acActiveIndex = -1;
+            bindAutocompleteClicks(dropdown);
+        }
+
+        async function fetchProductSuggestions(query, dropdown) {
+            if (query.length < 2) return;
+            try {
+                const data = await BrandedAPI.getProducts({ q: query, limit: 6, page: 1 });
+                if (!data || !data.items || data.items.length === 0) return;
+
+                // Keep existing category section
+                let existingCats = dropdown.querySelector('.ac-section-label')?.parentElement === dropdown
+                    ? [...dropdown.querySelectorAll('.ac-section-label, .ac-item[data-type="category"]')].map(el => el.outerHTML).join('')
+                    : '';
+
+                let html = existingCats;
+                html += '<div class="ac-section-label">Products</div>';
+                data.items.slice(0, 6).forEach(product => {
+                    const img = product.image || (product.colors && product.colors[0] && product.colors[0].main) || '';
+                    const price = product.price ? `£${Number(product.price).toFixed(2)}` : '';
+                    html += `<div class="ac-item" data-type="product" data-code="${product.code}">
+                        ${img ? `<img class="ac-thumb" src="${img}" alt="">` : ''}
+                        <span>${highlightMatch(product.name || product.code, query)}</span>
+                        ${product.brand ? `<span class="ac-brand">${product.brand}</span>` : ''}
+                        ${price ? `<span class="ac-price">${price}</span>` : ''}
+                    </div>`;
+                });
+
+                dropdown.innerHTML = html;
+                dropdown.classList.add('open');
+                acItems = [...dropdown.querySelectorAll('.ac-item')];
+                acActiveIndex = -1;
+                bindAutocompleteClicks(dropdown);
+            } catch (e) {
+                console.warn('Autocomplete fetch error:', e);
+            }
+        }
+
+        function bindAutocompleteClicks(dropdown) {
+            dropdown.querySelectorAll('.ac-item').forEach(item => {
+                item.addEventListener('click', async () => {
+                    const type = item.dataset.type;
+                    const headerSearch = document.getElementById('searchbarHeaderInput');
+
+                    if (type === 'category') {
+                        // Navigate to category
+                        const slug = item.dataset.slug;
+                        closeAutocomplete();
+                        if (headerSearch) headerSearch.value = '';
+                        currentState.search = '';
+                        currentState.category = slug;
+                        currentState.page = 1;
+
+                        // Update hamburger label + active button
+                        document.querySelectorAll('.category-filter-card').forEach(b => {
+                            b.classList.toggle('active', b.dataset.category === slug);
+                        });
+                        const activeLabel = document.getElementById('activeCatLabel');
+                        const matchedCat = AUTOCOMPLETE_CATEGORIES.find(c => c.slug === slug);
+                        if (activeLabel && matchedCat) activeLabel.textContent = matchedCat.label;
+
+                        updateURL();
+                        await renderProducts();
+                        await fetchFilterCounts();
+                    } else if (type === 'product') {
+                        // Navigate to product customize page
+                        const code = item.dataset.code;
+                        closeAutocomplete();
+                        sessionStorage.setItem('selectedProduct', code);
+                        window.location.href = 'mobile/customize-mobile.html';
                     }
                 });
             });
