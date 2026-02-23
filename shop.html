@@ -3377,22 +3377,30 @@
         // ═══════════════════════════════════════════
         // AUTOCOMPLETE / PREDICTIVE SEARCH
         // ═══════════════════════════════════════════
-        const AUTOCOMPLETE_CATEGORIES = [
-            { label: 'T-Shirts', slug: 'tshirts' },
-            { label: 'Hoodies', slug: 'hoodies' },
-            { label: 'Polo Shirts', slug: 'polo' },
-            { label: 'Sweatshirts', slug: 'sweatshirts' },
-            { label: 'Jackets', slug: 'jackets' },
-            { label: 'Fleeces', slug: 'fleeces' },
-            { label: 'Caps', slug: 'caps' },
-            { label: 'Beanies', slug: 'beanies' },
-            { label: 'Hi-Vis', slug: 'hivis' },
-            { label: 'Trousers', slug: 'trousers' },
-            { label: 'Workwear', slug: 'workwear' },
-            { label: 'Aprons', slug: 'aprons' },
-            { label: 'Shirts', slug: 'shirts' },
-            { label: 'Blouses', slug: 'blouses' },
-            { label: 'Chinos', slug: 'chinos' }
+        const PRODUCT_TYPES = [
+            'Accessories','Aprons','Arm Guards','Armbands',
+            'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
+            'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
+            'Document Wallets','Dog Vests','Dresses','Dungarees',
+            'Ear Muffs','Embroidery Accessories','Embroidery Backing',
+            'First Aid Boxes','Fleece','Freezer Blocks',
+            'Gilets & Body Warmers','Glasses','Gloves','Gowns',
+            'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
+            'Jackets','Jeans',
+            'Keyrings','Kneepads','Knitted Jumpers',
+            'Laptop Cases','Leggings','Loungewear Bottoms',
+            'Mail Order Bags',
+            'Onesies',
+            'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
+            'Quad Guards',
+            'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
+            'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
+            'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
+            'Umbrellas','Unitards',
+            'Vests (t-shirt)',
+            'Waistcoats','Wallets','Winter Accessory Sets',
+            'Yoga Mats',
+            'Zips Pulls'
         ];
 
         let acTimer = null;
@@ -3407,9 +3415,7 @@
                 clearTimeout(acTimer);
                 const q = input.value.trim();
                 if (q.length < 1) { closeAutocomplete(); return; }
-                // Show category matches immediately, then fetch products after short delay
-                showCategorySuggestions(q, dropdown);
-                acTimer = setTimeout(() => fetchProductSuggestions(q, dropdown), 300);
+                showSuggestions(q, dropdown);
             });
 
             input.addEventListener('keydown', (e) => {
@@ -3431,7 +3437,6 @@
                 }
             });
 
-            // Close on click outside
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.searchbar-header__search-expand')) {
                     closeAutocomplete();
@@ -3458,17 +3463,16 @@
             return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
         }
 
-        function showCategorySuggestions(query, dropdown) {
+        function showSuggestions(query, dropdown) {
             const q = query.toLowerCase();
-            const matches = AUTOCOMPLETE_CATEGORIES.filter(c => c.label.toLowerCase().includes(q)).sort((a, b) => a.label.localeCompare(b.label));
+            const matches = PRODUCT_TYPES.filter(pt => pt.toLowerCase().indexOf(q) === 0);
 
             let html = '';
             if (matches.length > 0) {
-                html += '<div class="ac-section-label">Categories</div>';
-                matches.forEach(cat => {
-                    html += `<div class="ac-item" data-type="category" data-slug="${cat.slug}">
-                        <svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                        <span>${highlightMatch(cat.label, query)}</span>
+                matches.forEach(pt => {
+                    html += `<div class="ac-item" data-label="${pt}">
+                        <svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <span>${highlightMatch(pt, query)}</span>
                     </div>`;
                 });
             }
@@ -3482,73 +3486,18 @@
             bindAutocompleteClicks(dropdown);
         }
 
-        async function fetchProductSuggestions(query, dropdown) {
-            if (query.length < 2) return;
-            try {
-                const data = await BrandedAPI.getProducts({ q: query, limit: 6, page: 1 });
-                if (!data || !data.items || data.items.length === 0) return;
-
-                // Keep existing category section
-                let existingCats = dropdown.querySelector('.ac-section-label')?.parentElement === dropdown
-                    ? [...dropdown.querySelectorAll('.ac-section-label, .ac-item[data-type="category"]')].map(el => el.outerHTML).join('')
-                    : '';
-
-                let html = existingCats;
-                html += '<div class="ac-section-label">Products</div>';
-                data.items.slice(0, 6).forEach(product => {
-                    const img = product.image || (product.colors && product.colors[0] && product.colors[0].main) || '';
-                    const price = product.price ? `£${Number(product.price).toFixed(2)}` : '';
-                    html += `<div class="ac-item" data-type="product" data-code="${product.code}">
-                        ${img ? `<img class="ac-thumb" src="${img}" alt="">` : ''}
-                        <span>${highlightMatch(product.name || product.code, query)}</span>
-                        ${product.brand ? `<span class="ac-brand">${product.brand}</span>` : ''}
-                        ${price ? `<span class="ac-price">${price}</span>` : ''}
-                    </div>`;
-                });
-
-                dropdown.innerHTML = html;
-                dropdown.classList.add('open');
-                acItems = [...dropdown.querySelectorAll('.ac-item')];
-                acActiveIndex = -1;
-                bindAutocompleteClicks(dropdown);
-            } catch (e) {
-                console.warn('Autocomplete fetch error:', e);
-            }
-        }
-
         function bindAutocompleteClicks(dropdown) {
             dropdown.querySelectorAll('.ac-item').forEach(item => {
                 item.addEventListener('click', async () => {
-                    const type = item.dataset.type;
+                    const label = item.dataset.label;
                     const headerSearch = document.getElementById('searchbarHeaderInput');
-
-                    if (type === 'category') {
-                        // Navigate to category
-                        const slug = item.dataset.slug;
-                        closeAutocomplete();
-                        if (headerSearch) headerSearch.value = '';
-                        currentState.search = '';
-                        currentState.category = slug;
-                        currentState.page = 1;
-
-                        // Update hamburger label + active button
-                        document.querySelectorAll('.category-filter-card').forEach(b => {
-                            b.classList.toggle('active', b.dataset.category === slug);
-                        });
-                        const activeLabel = document.getElementById('activeCatLabel');
-                        const matchedCat = AUTOCOMPLETE_CATEGORIES.find(c => c.slug === slug);
-                        if (activeLabel && matchedCat) activeLabel.textContent = matchedCat.label;
-
-                        updateURL();
-                        await renderProducts();
-                        await fetchFilterCounts();
-                    } else if (type === 'product') {
-                        // Navigate to product customize page
-                        const code = item.dataset.code;
-                        closeAutocomplete();
-                        sessionStorage.setItem('selectedProduct', code);
-                        window.location.href = 'mobile/customize-mobile.html';
-                    }
+                    closeAutocomplete();
+                    if (headerSearch) headerSearch.value = label;
+                    currentState.search = label;
+                    currentState.page = 1;
+                    updateURL();
+                    await renderProducts();
+                    await fetchFilterCounts();
                 });
             });
         }

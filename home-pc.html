@@ -355,6 +355,78 @@
             pointer-events: none;
             color: #C952DE;
         }
+
+        /* Search Autocomplete Dropdown */
+        .search-autocomplete {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .search-autocomplete.open {
+            display: block;
+        }
+        .search-autocomplete .ac-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #9ca3af;
+            padding: 8px 16px 4px;
+            letter-spacing: 0.5px;
+        }
+        .search-autocomplete .ac-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.15s;
+        }
+        .search-autocomplete .ac-item:hover,
+        .search-autocomplete .ac-item.ac-active {
+            background: #f3f0ff;
+        }
+        .search-autocomplete .ac-item .ac-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: #a855f7;
+        }
+        .search-autocomplete .ac-item .ac-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: contain;
+            flex-shrink: 0;
+            background: #f9fafb;
+        }
+        .search-autocomplete .ac-item .ac-match {
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .search-autocomplete .ac-item .ac-brand {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-left: auto;
+        }
+        .search-autocomplete .ac-item .ac-price {
+            font-size: 12px;
+            color: #6b7280;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
         /* Logo viola con immagine */
         /* Popup Contact Desktop - larger */
         .popup-contact {
@@ -783,11 +855,13 @@
 
                 <div class="searchbar-header__actions">
                     <div class="searchbar-header__search-expand">
-                        <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                        <input type="text" class="search-input-expand" autocomplete="off" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
                         <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
+                        <!-- Autocomplete dropdown -->
+                        <div class="search-autocomplete" id="searchAutocomplete"></div>
                     </div>
 
                     <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
@@ -2821,25 +2895,142 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })();
 
-// Header searchbar handler - redirects to shop page with search query
+// Header searchbar handler - redirects to shop page with search query + autocomplete
 (function() {
+    var PRODUCT_TYPES = [
+        'Accessories','Aprons','Arm Guards','Armbands',
+        'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
+        'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
+        'Document Wallets','Dog Vests','Dresses','Dungarees',
+        'Ear Muffs','Embroidery Accessories','Embroidery Backing',
+        'First Aid Boxes','Fleece','Freezer Blocks',
+        'Gilets & Body Warmers','Glasses','Gloves','Gowns',
+        'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
+        'Jackets','Jeans',
+        'Keyrings','Kneepads','Knitted Jumpers',
+        'Laptop Cases','Leggings','Loungewear Bottoms',
+        'Mail Order Bags',
+        'Onesies',
+        'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
+        'Quad Guards',
+        'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
+        'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
+        'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
+        'Umbrellas','Unitards',
+        'Vests (t-shirt)',
+        'Waistcoats','Wallets','Winter Accessory Sets',
+        'Yoga Mats',
+        'Zips Pulls'
+    ];
+
+    var acTimer = null;
+    var acActiveIndex = -1;
+    var acItems = [];
+
+    function closeAutocomplete() {
+        var dd = document.getElementById('searchAutocomplete');
+        if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+        acActiveIndex = -1;
+        acItems = [];
+    }
+
+    function highlightItem(dd) {
+        dd.querySelectorAll('.ac-item').forEach(function(el, i) {
+            el.classList.toggle('ac-active', i === acActiveIndex);
+        });
+    }
+
+    function highlightMatch(text, query) {
+        var idx = text.toLowerCase().indexOf(query.toLowerCase());
+        if (idx === -1) return text;
+        return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+    }
+
+    function bindClicks(dd) {
+        dd.querySelectorAll('.ac-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                var label = item.dataset.label;
+                closeAutocomplete();
+                window.location.href = 'shop-pc.html?q=' + encodeURIComponent(label);
+            });
+        });
+    }
+
+    function showSuggestions(query, dd) {
+        var q = query.toLowerCase();
+        var matches = PRODUCT_TYPES.filter(function(pt) {
+            return pt.toLowerCase().indexOf(q) === 0;
+        });
+
+        var html = '';
+        if (matches.length > 0) {
+            matches.forEach(function(pt) {
+                html += '<div class="ac-item" data-label="' + pt + '">' +
+                    '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+                    '<span>' + highlightMatch(pt, query) + '</span>' +
+                '</div>';
+            });
+        }
+
+        dd.innerHTML = html;
+        if (html) dd.classList.add('open'); else dd.classList.remove('open');
+        acItems = [].slice.call(dd.querySelectorAll('.ac-item'));
+        acActiveIndex = -1;
+        bindClicks(dd);
+    }
+
     function setupHeaderSearch() {
-        const headerSearch = document.getElementById('searchbarHeaderInput');
-        if (headerSearch) {
-            headerSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
+        var headerSearch = document.getElementById('searchbarHeaderInput');
+        var dropdown = document.getElementById('searchAutocomplete');
+        if (!headerSearch) return;
+
+        if (dropdown) {
+            headerSearch.addEventListener('input', function() {
+                clearTimeout(acTimer);
+                var q = headerSearch.value.trim();
+                if (q.length < 1) { closeAutocomplete(); return; }
+                showSuggestions(q, dropdown);
+            });
+
+            headerSearch.addEventListener('keydown', function(e) {
+                if (!dropdown.classList.contains('open')) return;
+                if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    const searchQuery = e.target.value.trim();
-                    if (searchQuery) {
-                        // Redirect to shop page with search query parameter
-                        window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
-                    }
+                    acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
+                    highlightItem(dropdown);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    acActiveIndex = Math.max(acActiveIndex - 1, -1);
+                    highlightItem(dropdown);
+                } else if (e.key === 'Enter' && acActiveIndex >= 0) {
+                    e.preventDefault();
+                    var activeEl = dropdown.querySelector('.ac-item.ac-active');
+                    if (activeEl) activeEl.click();
+                    return;
+                } else if (e.key === 'Escape') {
+                    closeAutocomplete();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.searchbar-header__search-expand')) {
+                    closeAutocomplete();
                 }
             });
         }
+
+        headerSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && acActiveIndex < 0) {
+                e.preventDefault();
+                closeAutocomplete();
+                var searchQuery = headerSearch.value.trim();
+                if (searchQuery) {
+                    window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
+                }
+            }
+        });
     }
-    
-    // Initialize on DOMContentLoaded or immediately if already loaded
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', setupHeaderSearch);
     } else {
