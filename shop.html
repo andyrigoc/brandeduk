@@ -54,9 +54,54 @@
                 letter-spacing: -0.01em;
             }
 
-            /* Hide breadcrumbs on mobile */
+            /* Mobile breadcrumbs: compact with back arrow */
             .shop-breadcrumbs {
-                display: none !important;
+                display: flex !important;
+                align-items: center;
+                gap: 6px;
+                margin: 0 !important;
+                padding: 8px 16px 4px !important;
+                font-size: 13px;
+                color: #6b7280;
+            }
+            .shop-breadcrumbs a {
+                color: #7c3aed;
+                font-weight: 600;
+            }
+            .shop-breadcrumbs .breadcrumb-sep {
+                color: #9ca3af;
+                font-size: 11px;
+            }
+            .shop-breadcrumbs .breadcrumb-current {
+                color: #374151;
+                font-weight: 600;
+            }
+
+            /* Back button row */
+            .mobile-back-row {
+                display: flex;
+                align-items: center;
+                padding: 8px 12px 0;
+            }
+            .mobile-back-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: none;
+                border: none;
+                color: #7c3aed;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                transition: background 0.15s;
+            }
+            .mobile-back-btn:active {
+                background: #f3f0ff;
+            }
+            .mobile-back-btn svg {
+                flex-shrink: 0;
             }
 
             .shop-title-bar {
@@ -76,6 +121,11 @@
         .shop-breadcrumbs a {
             color: inherit;
             text-decoration: none;
+        }
+
+        /* Hide mobile-only elements on desktop */
+        .mobile-back-row {
+            display: none;
         }
     </style>
     <style>
@@ -1788,12 +1838,20 @@
         </div>
     </div>
 
+    <!-- Mobile Back Button -->
+    <div class="mobile-back-row">
+        <button type="button" class="mobile-back-btn" onclick="window.location.href='index.html'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Home
+        </button>
+    </div>
+
     <p class="shop-breadcrumbs" aria-label="Breadcrumb">
         <a href="index.html" id="shopBreadcrumbHome">Home</a>
-        <span aria-hidden="true"> - </span>
-        <span>Category</span>
-        <span aria-hidden="true"> - </span>
-        <span id="shopBreadcrumbCategory">All Products</span>
+        <span class="breadcrumb-sep" aria-hidden="true">&rsaquo;</span>
+        <span class="breadcrumb-current" id="shopBreadcrumbCategory">All Products</span>
     </p>
 
     <h2 class="shop-category-heading" id="shopCategoryHeading">All Products</h2>
