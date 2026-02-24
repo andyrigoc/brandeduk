@@ -2318,7 +2318,10 @@
     /* Hero 1: mobile auto-scroll (marquee) + hide scrollbar */
     @media (max-width: 767px) {
         #hero1.hero-auto-scroll {
-            overflow-x: hidden !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;          /* Firefox */
+            -ms-overflow-style: none;       /* IE/Edge */
         }
         #hero1.hero-auto-scroll::-webkit-scrollbar {
             display: none;
@@ -2356,13 +2359,74 @@
             pausedUntil = Math.max(pausedUntil, Date.now() + (ms || 2500));
         }
 
-        // Mobile behavior: stop scrolling while finger is down, resume on release.
-        hero.addEventListener('touchstart', function () { touching = true; }, { passive: true });
-        hero.addEventListener('touchend', function () { touching = false; pauseFor(800); }, { passive: true });
-        hero.addEventListener('touchcancel', function () { touching = false; pauseFor(800); }, { passive: true });
-        hero.addEventListener('pointerdown', function () { touching = true; }, { passive: true });
-        hero.addEventListener('pointerup', function () { touching = false; pauseFor(800); }, { passive: true });
-        hero.addEventListener('pointercancel', function () { touching = false; pauseFor(800); }, { passive: true });
+        // ── Manual touch/drag: swipe left/right to move the carousel ──
+        var dragStartX = 0;
+        var dragScrollStart = 0;
+        var isDragging = false;
+        var dragMoved = false;
+
+        hero.addEventListener('touchstart', function (e) {
+            touching = true;
+            isDragging = true;
+            dragMoved = false;
+            dragStartX = e.touches[0].clientX;
+            dragScrollStart = hero.scrollLeft;
+        }, { passive: true });
+
+        hero.addEventListener('touchmove', function (e) {
+            if (!isDragging) return;
+            var dx = e.touches[0].clientX - dragStartX;
+            if (Math.abs(dx) > 5) dragMoved = true;
+            hero.scrollLeft = dragScrollStart - dx;
+        }, { passive: true });
+
+        hero.addEventListener('touchend', function () {
+            touching = false;
+            isDragging = false;
+            // Longer pause after manual drag so auto-scroll doesn't fight the user
+            pauseFor(dragMoved ? 3000 : 800);
+            dragMoved = false;
+        }, { passive: true });
+
+        hero.addEventListener('touchcancel', function () {
+            touching = false;
+            isDragging = false;
+            dragMoved = false;
+            pauseFor(800);
+        }, { passive: true });
+
+        // Pointer events fallback (mouse drag on desktop emulation)
+        hero.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'touch') return; // already handled above
+            touching = true;
+            isDragging = true;
+            dragMoved = false;
+            dragStartX = e.clientX;
+            dragScrollStart = hero.scrollLeft;
+        }, { passive: true });
+
+        hero.addEventListener('pointermove', function (e) {
+            if (!isDragging || e.pointerType === 'touch') return;
+            var dx = e.clientX - dragStartX;
+            if (Math.abs(dx) > 5) dragMoved = true;
+            hero.scrollLeft = dragScrollStart - dx;
+        }, { passive: true });
+
+        hero.addEventListener('pointerup', function (e) {
+            if (e.pointerType === 'touch') return;
+            touching = false;
+            isDragging = false;
+            pauseFor(dragMoved ? 3000 : 800);
+            dragMoved = false;
+        }, { passive: true });
+
+        hero.addEventListener('pointercancel', function (e) {
+            if (e.pointerType === 'touch') return;
+            touching = false;
+            isDragging = false;
+            dragMoved = false;
+            pauseFor(800);
+        }, { passive: true });
 
         // Also pause briefly on scroll/wheel interactions.
         hero.addEventListener('wheel', function () { pauseFor(2000); }, { passive: true });
