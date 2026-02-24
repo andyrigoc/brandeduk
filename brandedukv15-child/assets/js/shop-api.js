@@ -189,14 +189,10 @@ const ShopManager = (function () {
     function updateURL() {
         const url = new URL(window.location);
 
-        // For clean category URLs, prefer /category/:slug when category is set
+        // Use query-param style URLs (compatible with static file servers / Live Server)
         if (currentState.category && currentState.category !== 'all') {
-            const cleanPath = `/category/${encodeURIComponent(currentState.category)}`;
-            url.pathname = cleanPath;
-            url.searchParams.delete('category');
+            url.searchParams.set('category', currentState.category);
         } else {
-            // Default to /shop for "all" category
-            url.pathname = '/shop';
             url.searchParams.delete('category');
         }
 
