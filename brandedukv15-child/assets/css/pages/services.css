@@ -1,0 +1,304 @@
+/* ═══════════════════════════════════════════════
+   SERVICES PAGE – services.css
+   Mobile-first, then tablet/desktop overrides
+   ═══════════════════════════════════════════════ */
+
+/* ── Variables ── */
+:root {
+    --svc-dark: #111827;
+    --svc-dark-card: #1e2235;
+    --svc-purple: #2d1b4e;
+    --svc-purple-card: #3b2066;
+    --svc-pink: #d4b5e8;
+    --svc-white: #f3f0f7;
+    --svc-white-dim: #c9c3d2;
+    --svc-dot-filled: #ffffff;
+    --svc-dot-empty: rgba(255, 255, 255, 0.25);
+    --svc-radius: 16px;
+    --svc-radius-sm: 12px;
+}
+
+/* ── Page wrapper ── */
+.services-page {
+    background: #ffffff;
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+/* ── Page Title ── */
+.services-page-title {
+    font-family: 'Oswald', 'Impact', system-ui, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #1a1a2e;
+    padding: 24px 16px 8px;
+    margin: 0;
+}
+
+/* ═══════════════════════════════════
+   SERVICE BLOCK (each service section)
+   ═══════════════════════════════════ */
+.service-block {
+    margin: 0 12px 32px;
+}
+
+/* ── Hero Card (text + image) ── */
+.service-hero {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--svc-radius);
+    overflow: hidden;
+    background: var(--svc-dark-card);
+    margin-bottom: 16px;
+}
+
+.service-hero__text {
+    padding: 28px 24px;
+    background: var(--svc-dark-card);
+}
+
+.service-hero__title {
+    font-family: 'Oswald', 'Impact', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--svc-pink);
+    margin: 0 0 16px;
+}
+
+.service-hero__desc {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--svc-white-dim);
+    margin: 0;
+}
+
+.service-hero__image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+}
+
+.service-hero__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ═══════════════════════════════════
+   RATING CARDS (6 per row on desktop)
+   ═══════════════════════════════════ */
+.service-ratings {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.rating-card {
+    background: var(--svc-purple-card);
+    border-radius: var(--svc-radius-sm);
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rating-card__title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+    margin: 0;
+}
+
+.rating-card__dots {
+    display: flex;
+    gap: 4px;
+    margin: 2px 0 8px;
+}
+
+.rating-card__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--svc-dot-filled);
+}
+
+.rating-card__dot--empty {
+    background: var(--svc-dot-empty);
+}
+
+/* Standalone class fallback for empty dots */
+span[class="rating-card__dot--empty"] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--svc-dot-empty);
+}
+
+.rating-card__desc {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--svc-white-dim);
+    margin: 0;
+}
+
+.rating-card__desc strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ═══════════════════════════════════
+   TABLET (768px+)
+   ═══════════════════════════════════ */
+@media (min-width: 768px) {
+    .services-page-title {
+        font-size: 38px;
+        padding: 32px 32px 12px;
+    }
+
+    .service-block {
+        margin: 0 24px 40px;
+    }
+
+    .service-hero {
+        flex-direction: row;
+        min-height: 340px;
+    }
+
+    /* Alternate layout: even blocks reverse */
+    .service-block:nth-child(even) .service-hero {
+        flex-direction: row-reverse;
+    }
+
+    .service-hero__text {
+        flex: 1;
+        padding: 36px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .service-hero__title {
+        font-size: 28px;
+    }
+
+    .service-hero__desc {
+        font-size: 16px;
+    }
+
+    .service-hero__image {
+        flex: 1;
+        aspect-ratio: auto;
+        min-height: 100%;
+    }
+
+    .service-ratings {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .rating-card {
+        padding: 20px 18px;
+    }
+
+    .rating-card__title {
+        font-size: 13px;
+    }
+
+    .rating-card__desc {
+        font-size: 13px;
+    }
+}
+
+/* ═══════════════════════════════════
+   DESKTOP (1024px+)
+   ═══════════════════════════════════ */
+@media (min-width: 1024px) {
+    .services-page-title {
+        font-size: 48px;
+        padding: 48px 48px 16px;
+        letter-spacing: 0.05em;
+    }
+
+    .service-block {
+        margin: 0 48px 48px;
+    }
+
+    .service-hero {
+        min-height: 400px;
+        border-radius: var(--svc-radius);
+    }
+
+    .service-hero__text {
+        padding: 48px 44px;
+    }
+
+    .service-hero__title {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    .service-hero__desc {
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .service-ratings {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 14px;
+    }
+
+    .rating-card {
+        padding: 22px 20px;
+    }
+
+    .rating-card__title {
+        font-size: 13px;
+    }
+
+    .rating-card__dots {
+        margin: 4px 0 10px;
+    }
+
+    .rating-card__dot {
+        width: 11px;
+        height: 11px;
+    }
+
+    .rating-card__desc {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+}
+
+/* ═══════════════════════════════════
+   LARGE DESKTOP (1400px+)
+   ═══════════════════════════════════ */
+@media (min-width: 1400px) {
+    .services-page-title {
+        font-size: 54px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 56px 0 20px;
+    }
+
+    .service-block {
+        max-width: 1400px;
+        margin: 0 auto 56px;
+    }
+
+    .service-hero {
+        min-height: 440px;
+    }
+
+    .service-hero__desc {
+        font-size: 18px;
+    }
+}

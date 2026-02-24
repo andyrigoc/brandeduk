@@ -22,6 +22,18 @@
     <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
     <style>
+        /* Reduce searchbar header gap - PC only */
+        .searchbar-header {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .searchbar-header__surface {
+            padding: 0 var(--searchbar-shell-padding, var(--header-shell-padding)) !important;
+        }
+        .searchbar-header__brand-img {
+            height: 80px !important;
+        }
+
         /* ============================================
            DESKTOP HEADER 3D SOCIAL ICONS (Neumorphic)
            ============================================ */
@@ -2532,7 +2544,7 @@
                             </div>
                         </li>
                         <li><a href="#">More</a></li>
-                        <li><a href="#">Services</a></li>
+                        <li><a href="services.html">Services</a></li>
                         <li><a href="#">About</a></li>
                     </ul>
                 </nav>
