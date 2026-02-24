@@ -53,6 +53,44 @@
         .site-header {
             display: none !important;
         }
+
+        /* ── Search Autocomplete Dropdown ── */
+        .search-autocomplete {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .search-autocomplete.open { display: block; }
+        .search-autocomplete .ac-section-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            color: #9ca3af; padding: 8px 16px 4px; letter-spacing: 0.5px;
+        }
+        .search-autocomplete .ac-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 16px; cursor: pointer; font-size: 14px;
+            color: #374151; transition: background 0.15s;
+        }
+        .search-autocomplete .ac-item:hover,
+        .search-autocomplete .ac-item.ac-active { background: #f3f0ff; }
+        .search-autocomplete .ac-item .ac-icon {
+            width: 20px; height: 20px; flex-shrink: 0; color: #a855f7;
+        }
+        .search-autocomplete .ac-item .ac-match {
+            font-weight: 700; color: #7c3aed;
+        }
+
+        /* Mobile search wrapper needs relative positioning for the dropdown */
+        .search-wrapper-expand { position: relative; }
     </style>
 </head>
 <body class="customize-page">
@@ -132,11 +170,12 @@
 
                     <div class="searchbar-header__actions">
                         <div class="searchbar-header__search-expand">
-                            <input type="text" class="search-input-expand" placeholder="Search products, brands, categories..." id="desktopSearchInput">
+                            <input type="text" class="search-input-expand" autocomplete="off" placeholder="Search products, brands, categories..." id="desktopSearchInput">
                             <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
+                            <div class="search-autocomplete" id="desktopSearchAutocomplete"></div>
                         </div>
 
                         <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
@@ -656,11 +695,12 @@
             </a>
             <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" autocomplete="off" class="search-input-expand">
                 <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
+                <div class="search-autocomplete" id="mobileSearchAutocomplete"></div>
             </div>
         </div>
     </header>
@@ -2490,22 +2530,134 @@
             });
         })();
         
-        // Search Icon Toggle
+        // ── Search Autocomplete (mobile + desktop header) ──
         (function() {
-            const searchIcon = document.querySelector('.header-search-wrapper');
-            const searchBar = document.getElementById('mobileSearchBar');
-            const searchInput = document.getElementById('searchInput');
-            
-            if (searchIcon && searchBar) {
-                searchIcon.addEventListener('click', function() {
-                    if (searchBar.style.display === 'none') {
-                        searchBar.style.display = 'block';
-                        searchInput.focus();
-                    } else {
-                        searchBar.style.display = 'none';
+            var PRODUCT_TYPES = [
+                'Accessories','Aprons','Arm Guards','Armbands',
+                'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
+                'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
+                'Document Wallets','Dog Vests','Dresses','Dungarees',
+                'Ear Muffs','Embroidery Accessories','Embroidery Backing',
+                'First Aid Boxes','Fleece','Freezer Blocks',
+                'Gilets & Body Warmers','Glasses','Gloves','Gowns',
+                'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
+                'Jackets','Jeans',
+                'Keyrings','Kneepads','Knitted Jumpers',
+                'Laptop Cases','Leggings','Loungewear Bottoms',
+                'Mail Order Bags',
+                'Onesies',
+                'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
+                'Quad Guards',
+                'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
+                'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
+                'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
+                'Umbrellas','Unitards',
+                'Vests (t-shirt)',
+                'Waistcoats','Wallets','Winter Accessory Sets',
+                'Yoga Mats',
+                'Zips Pulls'
+            ];
+
+            function highlightMatch(text, query) {
+                var idx = text.toLowerCase().indexOf(query.toLowerCase());
+                if (idx === -1) return text;
+                return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+            }
+
+            function setupSearchAutocomplete(inputId, dropdownId) {
+                var input = document.getElementById(inputId);
+                var dropdown = document.getElementById(dropdownId);
+                if (!input || !dropdown) return;
+
+                var acActiveIndex = -1;
+                var acItems = [];
+
+                function closeAC() {
+                    dropdown.classList.remove('open');
+                    dropdown.innerHTML = '';
+                    acActiveIndex = -1;
+                    acItems = [];
+                }
+
+                function highlightItem() {
+                    dropdown.querySelectorAll('.ac-item').forEach(function(el, i) {
+                        el.classList.toggle('ac-active', i === acActiveIndex);
+                    });
+                }
+
+                function showSuggestions(query) {
+                    var q = query.toLowerCase();
+                    var matches = PRODUCT_TYPES.filter(function(pt) {
+                        return pt.toLowerCase().indexOf(q) === 0;
+                    });
+                    var html = '';
+                    if (matches.length > 0) {
+                        matches.forEach(function(pt) {
+                            html += '<div class="ac-item" data-label="' + pt + '">' +
+                                '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+                                '<span>' + highlightMatch(pt, query) + '</span></div>';
+                        });
+                    }
+                    dropdown.innerHTML = html;
+                    if (html) dropdown.classList.add('open'); else dropdown.classList.remove('open');
+                    acItems = [].slice.call(dropdown.querySelectorAll('.ac-item'));
+                    acActiveIndex = -1;
+                    // Bind clicks
+                    acItems.forEach(function(item) {
+                        item.addEventListener('click', function() {
+                            closeAC();
+                            window.location.href = 'shop.html?q=' + encodeURIComponent(item.dataset.label);
+                        });
+                    });
+                }
+
+                input.addEventListener('input', function() {
+                    var q = input.value.trim();
+                    if (q.length < 1) { closeAC(); return; }
+                    showSuggestions(q);
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (!dropdown.classList.contains('open')) return;
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
+                        highlightItem();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        acActiveIndex = Math.max(acActiveIndex - 1, -1);
+                        highlightItem();
+                    } else if (e.key === 'Enter' && acActiveIndex >= 0) {
+                        e.preventDefault();
+                        var activeEl = dropdown.querySelector('.ac-item.ac-active');
+                        if (activeEl) activeEl.click();
+                        return;
+                    } else if (e.key === 'Escape') {
+                        closeAC();
+                    }
+                });
+
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && acActiveIndex < 0) {
+                        e.preventDefault();
+                        closeAC();
+                        var searchQuery = input.value.trim();
+                        if (searchQuery) {
+                            window.location.href = 'shop.html?q=' + encodeURIComponent(searchQuery);
+                        }
+                    }
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#' + dropdownId) && !e.target.closest('#' + inputId)) {
+                        closeAC();
                     }
                 });
             }
+
+            // Bind to both mobile and desktop header search bars
+            setupSearchAutocomplete('searchInput', 'mobileSearchAutocomplete');
+            setupSearchAutocomplete('desktopSearchInput', 'desktopSearchAutocomplete');
         })();
         
         // Home page VAT price updates
