@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Test - BrandedUK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f7f7f7;
+            color: #333;
+            padding-top: 0;
+        }
+
+        /* ============================================
+           TOP BAR – social icons, email, phones, VAT, basket
+           ============================================ */
+        .header-top {
+            background: linear-gradient(180deg, #f6f7fa, #eceff4);
+            border-bottom: none;
+            position: relative;
+            overflow: visible;
+        }
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .header-top .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            position: relative;
+            min-height: 48px;
+        }
+
+        /* Logo centered inside top bar — white arc (top half of circle) */
+        .header-top-center {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%) translateY(32%);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .header-top-center a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .header-top-center img {
+            height: 110px;
+            width: auto;
+            margin-top: 67px;
+            margin-left: 0;
+        }
+
+        /* Left: Social icons + Email */
+        .header-top-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-social-3d {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .social-icon-3d {
+            --icon-size: 32px;
+            width: var(--icon-size);
+            height: var(--icon-size);
+            border-radius: 10px;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow:
+                4px 4px 8px rgba(0,0,0,0.15),
+                -4px -4px 8px rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .social-icon-3d:hover {
+            box-shadow:
+                inset 3px 3px 6px rgba(0,0,0,0.1),
+                inset -3px -3px 6px rgba(255,255,255,0.7);
+            transform: scale(0.95);
+        }
+        .social-icon-3d.facebook:hover { color: #1877F2; }
+        .social-icon-3d.instagram:hover { color: #E4405F; }
+        .social-icon-3d.linkedin:hover  { color: #0A66C2; }
+        .social-icon-3d.youtube:hover   { color: #FF0000; }
+        .social-icon-3d.twitter:hover   { color: #1DA1F2; }
+
+        .header-top-email {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: 12px;
+            transition: color 0.2s;
+        }
+        .header-top-email:hover { color: #9c5a9c; }
+
+        /* Right: phones, VAT toggle, basket */
+        .header-top-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-top-phone {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+        .header-top-phone:hover { color: #9c5a9c; }
+        .header-top-phone .phone-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow:
+                3px 3px 6px rgba(0,0,0,0.12),
+                -3px -3px 6px rgba(255,255,255,0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-top-phone .phone-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+        .header-top-divider {
+            color: #d1d5db;
+            font-size: 12px;
+        }
+
+        /* VAT Toggle */
+        .header-top-vat-control {
+            display: inline-flex;
+            align-items: center;
+        }
+        .vat-toggle {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .vat-toggle:focus-visible {
+            outline: 3px solid rgba(201, 82, 222, 0.45);
+            outline-offset: 2px;
+        }
+        .vat-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .vat-label.active {
+            color: #1f2937;
+        }
+        .vat-track {
+            width: 36px;
+            height: 20px;
+            background: #d1d5db;
+            border-radius: 999px;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .vat-track.inc-active {
+            background: #C952DE;
+        }
+        .vat-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .vat-track.inc-active .vat-thumb {
+            transform: translateX(16px);
+        }
+
+        /* Basket link */
+        .header-top-basket-link {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .header-top-basket-link:hover {
+            background: rgba(156, 90, 156, 0.1);
+            color: #9c5a9c;
+        }
+        .header-top-basket-link svg {
+            stroke: currentColor;
+            fill: none;
+        }
+
+        /* Account icon */
+        .header-top-account {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #9c5a9c;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .header-top-account:hover {
+            background: #B870B8;
+            transform: scale(1.05);
+        }
+        .header-top-account svg {
+            stroke: #fff;
+            fill: none;
+        }
+
+        /* Phone icon 3D neumorphic (next to login) */
+        .phone-icon-3d {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow:
+                3px 3px 6px rgba(0,0,0,0.12),
+                -3px -3px 6px rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .phone-icon-3d:hover {
+            box-shadow:
+                inset 3px 3px 6px rgba(0,0,0,0.1),
+                inset -3px -3px 6px rgba(255,255,255,0.7);
+            transform: scale(0.95);
+        }
+        .basket-badge {
+            background: #f97316;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        .basket-badge:empty,
+        .basket-badge[data-count="0"] {
+            display: none;
+        }
+
+        /* Middle bar removed – logo is now inside .header-top */
+
+        /* ============================================
+           NAV BAR – sticky bottom bar
+           ============================================ */
+        .header-nav {
+            background: #fff;
+            border-top: none;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            margin-top: 40px;
+        }
+        .header-nav .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+
+        /* Browse Categories button */
+        .nav-browse {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 20px 14px 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            border-right: 1px solid #e5e7eb;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+        .nav-browse:hover {
+            color: #9c5a9c;
+        }
+        .nav-browse .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .nav-browse .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: currentColor;
+            border-radius: 1px;
+        }
+        .nav-browse .caret {
+            font-size: 10px;
+            opacity: 0.5;
+        }
+
+        /* Nav links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 0;
+            flex: 1;
+            justify-content: space-evenly;
+        }
+        .nav-links li {
+            position: relative;
+        }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 14px 16px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #9c5a9c;
+        }
+        .nav-links .nav-caret {
+            font-size: 8px;
+            opacity: 0.4;
+            transition: transform 0.2s;
+        }
+        .nav-links li:hover .nav-caret {
+            transform: rotate(180deg);
+        }
+        .nav-links .nav-more {
+            color: #e53e3e;
+            font-weight: 700;
+        }
+
+        /* ============================================
+           DROPDOWN – Browse Categories mega-menu  
+           ============================================ */
+        .nav-browse-wrapper {
+            position: relative;
+        }
+        .browse-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 280px;
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-4px);
+            transition: all 0.25s ease;
+            z-index: 1000;
+            padding: 8px 0;
+        }
+        .nav-browse-wrapper:hover .browse-dropdown,
+        .nav-browse-wrapper.open .browse-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .browse-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .browse-dropdown a:hover {
+            background: #f3f0ff;
+            color: #7c3aed;
+        }
+        .browse-dropdown .cat-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        /* ============================================
+           All Products / Promotions / Exclusives dropdowns
+           ============================================ */
+        .nav-links li .nav-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+            padding: 20px 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        .nav-links li:hover .nav-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Promotions dropdown – horizontal cards */
+        .promo-dropdown {
+            min-width: 600px;
+        }
+        .promo-dropdown-inner {
+            display: flex;
+            gap: 16px;
+        }
+        .promo-card {
+            flex: 1;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .promo-card:hover {
+            background: #f3f0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .promo-card-thumb {
+            width: 48px;
+            height: 48px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            margin: 0 auto 8px;
+        }
+        .promo-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .promo-card-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #C952DE;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Exclusives dropdown – brand circles */
+        .exclusives-dropdown {
+            min-width: 640px;
+        }
+        .exclusives-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .exclusives-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+        .exclusive-brand {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .exclusive-brand:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .exclusive-brand img {
+            max-width: 65%;
+            max-height: 48%;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s;
+        }
+        .exclusive-brand:hover img {
+            filter: grayscale(0%);
+        }
+
+        /* Catalogue dropdown */
+        .catalogue-dropdown {
+            min-width: 180px;
+        }
+        .catalogue-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        .catalogue-dropdown a:hover {
+            background: #f3f0ff;
+            color: #7c3aed;
+        }
+        .catalogue-dropdown svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           SEARCH ICON IN NAV + POPUP
+           ============================================ */
+        .nav-search-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #374151;
+            border-radius: 50%;
+            transition: all 0.2s;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        .nav-search-btn:hover {
+            background: rgba(156, 90, 156, 0.1);
+            color: #9c5a9c;
+        }
+        .nav-search-btn svg {
+            stroke: currentColor;
+            fill: none;
+        }
+
+        /* Search Popup Overlay */
+        .search-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .search-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: #fff;
+            border-radius: 20px;
+            width: 600px;
+            max-width: 90vw;
+            padding: 32px;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+        }
+        .search-popup.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .search-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .search-popup-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .search-popup-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .search-popup-close:hover {
+            background: #e5e7eb;
+        }
+        .search-popup-close svg {
+            stroke: #4b5563;
+            fill: none;
+        }
+        .search-popup-input-wrap {
+            position: relative;
+        }
+        .search-popup-input {
+            width: 100%;
+            padding: 16px 52px 16px 20px;
+            border: 2px solid #C952DE;
+            border-radius: 999px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #1f2937;
+            background: #f9fafb;
+            outline: none;
+            transition: box-shadow 0.2s;
+        }
+        .search-popup-input:focus {
+            box-shadow: 0 0 0 4px rgba(201, 82, 222, 0.15);
+        }
+        .search-popup-input::placeholder {
+            color: #9ca3af;
+        }
+        .search-popup-input-icon {
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            color: #C952DE;
+            pointer-events: none;
+        }
+        .search-popup-hint {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+        }
+        .search-popup-hint kbd {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-family: inherit;
+        }
+        .demo-content {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        .demo-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        .demo-content p {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================
+     HEADER – TEST VERSION
+     ============================================ -->
+<header class="site-header">
+
+    <!-- ── TOP BAR ── -->
+    <div class="header-top">
+        <div class="header-container">
+            <div class="header-top-left">
+                <div class="header-social-3d">
+                    <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon-3d linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon-3d youtube" target="_blank" rel="noopener" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://twitter.com/brandeduk" class="social-icon-3d twitter" target="_blank" rel="noopener" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+            </div>
+
+            <!-- Logo centered in top bar -->
+            <div class="header-top-center">
+                <a href="index.html" aria-label="BrandedUK home">
+                    <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                </a>
+            </div>
+
+            <div class="header-top-right">
+                <!-- Phone – landline -->
+                <a href="tel:02089742722" class="header-top-phone">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    0208 974 2722
+                </a>
+
+                <!-- VAT Toggle -->
+                <div class="header-top-vat-control">
+                    <button class="vat-toggle" type="button" id="vatToggle" aria-pressed="false" aria-label="Toggle VAT pricing">
+                        <span class="vat-label active" id="vatExcLabel">EXC VAT</span>
+                        <span class="vat-track" id="vatTrack">
+                            <span class="vat-thumb"></span>
+                        </span>
+                        <span class="vat-label" id="vatIncLabel">INC VAT</span>
+                    </button>
+                </div>
+
+                <!-- Basket -->
+                <a class="header-top-basket-link" href="basket.html#orderSummary" aria-label="View quote">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 6h15l-1.5 9h-12z"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                        <path d="M6 6L5 3H2"/>
+                    </svg>
+                </a>
+
+                <!-- Account / Login -->
+                <a class="header-top-account" href="#" id="accountBtn" aria-label="My Account">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </a>
+
+                <!-- Phone icon (neumorphic) -->
+                <a href="tel:02089742722" class="phone-icon-3d" aria-label="Call us">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── NAV BAR ── -->
+    <nav class="header-nav" aria-label="Main navigation">
+        <div class="header-container">
+
+            <!-- Browse Categories -->
+            <div class="nav-browse-wrapper">
+                <button class="nav-browse" type="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="hamburger" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </span>
+                    Browse Categories
+                    <span class="caret" aria-hidden="true">▾</span>
+                </button>
+                <div class="browse-dropdown" role="region" aria-label="Browse categories">
+                    <a href="shop.html?category=tshirts">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                        T-Shirts
+                    </a>
+                    <a href="shop.html?category=polos">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                        Polo Shirts
+                    </a>
+                    <a href="shop.html?category=hoodies">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                        Hoodies &amp; Sweatshirts
+                    </a>
+                    <a href="shop.html?category=jackets">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                        Jackets &amp; Softshell
+                    </a>
+                    <a href="shop.html?category=safety-vests">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                        Hi-Vis Clothing
+                    </a>
+                    <a href="shop.html?category=trousers">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt="">
+                        Work Trousers
+                    </a>
+                    <a href="shop.html?category=aprons">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                        Work &amp; Uniforms
+                    </a>
+                    <a href="shop.html?category=fleece">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                        Fleeces
+                    </a>
+                    <a href="shop.html?category=caps">
+                        <img class="cat-icon" src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                        Headwear / Accessories
+                    </a>
+                    <a href="shop.html">
+                        View All Categories →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Nav Links -->
+            <ul class="nav-links">
+                <li>
+                    <a href="#">
+                        All Products
+                        <span class="nav-caret" aria-hidden="true">▾</span>
+                    </a>
+                    <!-- Dropdown omitted for brevity – same as home-pc.html -->
+                </li>
+                <li><a href="#">Branded</a></li>
+                <li>
+                    <a href="#">
+                        Promotions
+                        <span class="nav-caret" aria-hidden="true">▾</span>
+                    </a>
+                    <div class="nav-dropdown promo-dropdown">
+                        <div class="promo-dropdown-inner">
+                            <figure class="promo-card">
+                                <div class="promo-card-thumb"></div>
+                                <figcaption class="promo-card-title">Bundle 1</figcaption>
+                                <span class="promo-card-tag">Starter</span>
+                            </figure>
+                            <figure class="promo-card">
+                                <div class="promo-card-thumb"></div>
+                                <figcaption class="promo-card-title">Bundle 2</figcaption>
+                                <span class="promo-card-tag">Teams</span>
+                            </figure>
+                            <figure class="promo-card">
+                                <div class="promo-card-thumb"></div>
+                                <figcaption class="promo-card-title">Bundle 3</figcaption>
+                                <span class="promo-card-tag">Eco</span>
+                            </figure>
+                            <figure class="promo-card">
+                                <div class="promo-card-thumb"></div>
+                                <figcaption class="promo-card-title">Bundle 4</figcaption>
+                                <span class="promo-card-tag">Season</span>
+                            </figure>
+                            <figure class="promo-card">
+                                <div class="promo-card-thumb"></div>
+                                <figcaption class="promo-card-title">Bundle 5</figcaption>
+                                <span class="promo-card-tag">Pro</span>
+                            </figure>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">
+                        Exclusives
+                        <span class="nav-caret" aria-hidden="true">▾</span>
+                    </a>
+                    <div class="nav-dropdown exclusives-dropdown">
+                        <div class="exclusives-title">Exclusives</div>
+                        <div class="exclusives-grid">
+                            <a href="shop.html?brand=adidas" class="exclusive-brand" title="Adidas">
+                                <img src="brandedukv15-child/assets/images/brands/adidas.jpg" alt="Adidas">
+                            </a>
+                            <a href="shop.html?brand=b%26c-collection" class="exclusive-brand" title="B&amp;C Collection">
+                                <img src="brandedukv15-child/assets/images/brands/bandc-collection.png" alt="B&amp;C">
+                            </a>
+                            <a href="shop.html?brand=build-your-brand" class="exclusive-brand" title="Build Your Brand">
+                                <img src="brandedukv15-child/assets/images/brands/build-your-brand.png" alt="Build Your Brand">
+                            </a>
+                            <a href="shop.html?brand=comfort-colors" class="exclusive-brand" title="Comfort Colors">
+                                <img src="brandedukv15-child/assets/images/brands/comfort-colors.webp" alt="Comfort Colors">
+                            </a>
+                            <a href="shop.html?brand=under-armour" class="exclusive-brand" title="Under Armour">
+                                <img src="brandedukv15-child/assets/images/brands/under-armour.webp" alt="Under Armour">
+                            </a>
+                            <a href="shop.html?brand=nike" class="exclusive-brand" title="Nike">
+                                <img src="brandedukv15-child/assets/images/brands/nimbus2020.webp" alt="Nike">
+                            </a>
+                            <a href="shop.html?brand=tridri" class="exclusive-brand" title="TriDri">
+                                <img src="brandedukv15-child/assets/images/brands/tridri.webp" alt="TriDri">
+                            </a>
+                            <a href="shop.html?brand=ogio" class="exclusive-brand" title="OGIO">
+                                <img src="brandedukv15-child/assets/images/brands/ogio2020.webp" alt="OGIO">
+                            </a>
+                            <a href="shop.html?brand=wombat" class="exclusive-brand" title="Wombat">
+                                <img src="brandedukv15-child/assets/images/brands/wombat.jpg" alt="Wombat">
+                            </a>
+                            <a href="shop.html?brand=rhino" class="exclusive-brand" title="Rhino">
+                                <img src="brandedukv15-child/assets/images/brands/rhino2020.jpg" alt="Rhino">
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="#" class="nav-more">More</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li>
+                    <a href="#">
+                        Catalogue
+                        <span class="nav-caret" aria-hidden="true">▾</span>
+                    </a>
+                    <div class="nav-dropdown catalogue-dropdown">
+                        <a href="catalogue.html">
+                            <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                            Catalogue 1
+                        </a>
+                        <a href="catalogue2.html">
+                            <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                            Catalogue 2
+                        </a>
+                    </div>
+                </li>
+                <li><a href="#">About</a></li>
+                <li>
+                    <button class="nav-search-btn" type="button" id="navSearchBtn" aria-label="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+</header>
+
+<!-- Search Popup -->
+<div class="search-overlay" id="searchOverlay"></div>
+<div class="search-popup" id="searchPopup">
+    <div class="search-popup-header">
+        <span class="search-popup-title">Search Products</span>
+        <button class="search-popup-close" id="searchPopupClose" aria-label="Close search">
+            <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <div class="search-popup-input-wrap">
+        <input type="text" class="search-popup-input" id="searchPopupInput" placeholder="Search products, brands, categories..." autocomplete="off">
+        <svg class="search-popup-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+        </svg>
+    </div>
+    <div class="search-popup-hint">Press <kbd>Enter</kbd> to search &bull; <kbd>Esc</kbd> to close</div>
+</div>
+
+        /* ============================================
+           DEMO CONTENT BELOW HEADER
+           ============================================ */
+<div class="demo-content">
+    <h2>Header Test Page</h2>
+    <p>This is a standalone test of the new header bar. Scroll down to see the nav bar become sticky. Hover over <strong>Browse Categories</strong>, <strong>Promotions</strong>, <strong>Exclusives</strong>, and <strong>Catalogue</strong> to test dropdowns.</p>
+    <p style="margin-top:24px;color:#9ca3af;font-size:13px;">If this looks good, it will replace the current PC/Tablet header.</p>
+</div>
+
+<!-- Spacer for scroll testing -->
+<div style="height:1200px;"></div>
+
+<script>
+    // ── Search Popup ──
+    (function() {
+        const btn = document.getElementById('navSearchBtn');
+        const overlay = document.getElementById('searchOverlay');
+        const popup = document.getElementById('searchPopup');
+        const closeBtn = document.getElementById('searchPopupClose');
+        const input = document.getElementById('searchPopupInput');
+
+        function openSearch() {
+            overlay.classList.add('active');
+            popup.classList.add('active');
+            setTimeout(() => input.focus(), 100);
+        }
+        function closeSearch() {
+            overlay.classList.remove('active');
+            popup.classList.remove('active');
+            input.value = '';
+        }
+
+        btn.addEventListener('click', openSearch);
+        overlay.addEventListener('click', closeSearch);
+        closeBtn.addEventListener('click', closeSearch);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && popup.classList.contains('active')) {
+                closeSearch();
+            }
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && input.value.trim()) {
+                window.location.href = 'shop.html?q=' + encodeURIComponent(input.value.trim());
+            }
+        });
+    })();
+
+    // ── VAT Toggle ──
+    (function() {
+        const btn = document.getElementById('vatToggle');
+        const track = document.getElementById('vatTrack');
+        const excLabel = document.getElementById('vatExcLabel');
+        const incLabel = document.getElementById('vatIncLabel');
+        let isIncVat = false;
+
+        // Restore from localStorage
+        if (localStorage.getItem('vatMode') === 'inc') {
+            isIncVat = true;
+            track.classList.add('inc-active');
+            excLabel.classList.remove('active');
+            incLabel.classList.add('active');
+        }
+
+        btn.addEventListener('click', function() {
+            isIncVat = !isIncVat;
+            track.classList.toggle('inc-active', isIncVat);
+            excLabel.classList.toggle('active', !isIncVat);
+            incLabel.classList.toggle('active', isIncVat);
+            btn.setAttribute('aria-pressed', isIncVat);
+            localStorage.setItem('vatMode', isIncVat ? 'inc' : 'exc');
+        });
+    })();
+
+    // ── Browse Categories click toggle (for accessibility) ──
+    (function() {
+        const wrapper = document.querySelector('.nav-browse-wrapper');
+        const btn = wrapper.querySelector('.nav-browse');
+        btn.addEventListener('click', function() {
+            const isOpen = wrapper.classList.toggle('open');
+            btn.setAttribute('aria-expanded', isOpen);
+        });
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) {
+                wrapper.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    })();
+</script>
+
+</body>
+</html>
