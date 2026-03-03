@@ -71,7 +71,7 @@
             .account-forms-wrapper { flex: 1; display: flex; overflow: hidden; width: 100%; position: relative; }
             .account-form-holder { flex-basis: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; padding: 24px; }
             .account-form-holder:hover { flex-basis: 55%; }
-            .signin-form { background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%); }
+            .signin-form { background: linear-gradient(135deg, #C952DE 0%, #9b2faf 100%); }
             .signup-form { background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%); }
             .account-form-icon { color: #fff; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.3s ease; }
             .account-form-icon svg { stroke: #fff; }
@@ -212,7 +212,7 @@
                 </div>
                 <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
                     <div class="account-user-avatar">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#8455f4" stroke-width="1">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#C952DE" stroke-width="1">
                             <circle cx="12" cy="12" r="10"/>
                             <path d="M12 14c-2.5 0-4.5-2-4.5-4.5S9.5 5 12 5s4.5 2 4.5 4.5S14.5 14 12 14z"/>
                             <path d="M4.5 19.5c0-3 3.5-5 7.5-5s7.5 2 7.5 5"/>

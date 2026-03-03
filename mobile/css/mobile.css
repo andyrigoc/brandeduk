@@ -9171,7 +9171,7 @@ a {
 }
 
 .signin-form {
-    background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%);
+    background: linear-gradient(135deg, #C952DE 0%, #9b2faf 100%);
 }
 
 .signup-form {
@@ -9348,7 +9348,7 @@ a {
 
 .account-user-avatar {
     font-size: 80px;
-    color: #8455f4;
+    color: #C952DE;
     margin-bottom: 16px;
 }
 

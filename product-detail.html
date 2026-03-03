@@ -397,7 +397,7 @@
             padding: 24px;
         }
         .account-form-holder:hover { flex-basis: 55%; }
-        .signin-form { background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%); }
+        .signin-form { background: linear-gradient(135deg, #C952DE 0%, #9b2faf 100%); }
         .signup-form { background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%); }
         .account-form-icon {
             color: #fff;
@@ -636,35 +636,56 @@
                 right: 12px;
             }
         }
-        /* Apron-specific logo positioning for low-left and low-right */
-        /* These positions are lower on the apron (near the bottom of the bib area, around pocket level) */
+        /* ===== APRON-SPECIFIC LOGO POSITIONS ===== */
+        /* The apron bib spans roughly 15%-58% vertically in the mockup image */
+        /* Low positions sit ~50% top (bottom half of bib, still inside) */
+
+        /* Low Left – lower-left of bib */
         .logo-overlay-box.apron-low-left {
-            top: 70%;
-            left: 28%;
-            width: 28px;
-            height: 28px;
+            top: 50%;
+            left: 38%;
+            width: 24px;
+            height: 24px;
         }
-        
+
+        /* Low Right – lower-right of bib */
         .logo-overlay-box.apron-low-right {
-            top: 70%;
-            left: 72%;
-            width: 28px;
-            height: 28px;
+            top: 50%;
+            left: 52%;
+            width: 24px;
+            height: 24px;
         }
-        
-        /* Inline section (product detail page) apron positioning */
+
+        /* Center Front – middle of bib */
+        body.category-aprons .logo-overlay-box.front-center,
+        body.category-apron .logo-overlay-box.front-center {
+            top: 45%;
+            left: 42%;
+            width: 26px;
+            height: 26px;
+        }
+
+        /* #step3PositionsSection overrides */
         #step3PositionsSection .logo-overlay-box.apron-low-left {
-            top: calc(70% + 25px);
-            left: 28%;
-            width: 28px;
-            height: 28px;
+            top: 51%;
+            left: 38%;
+            width: 22px;
+            height: 22px;
         }
-        
+
         #step3PositionsSection .logo-overlay-box.apron-low-right {
-            top: calc(70% + 25px);
-            left: 72%;
-            width: 28px;
-            height: 28px;
+            top: 51%;
+            left: 52%;
+            width: 22px;
+            height: 22px;
+        }
+
+        body.category-aprons #step3PositionsSection .logo-overlay-box.front-center,
+        body.category-apron #step3PositionsSection .logo-overlay-box.front-center {
+            top: 46%;
+            left: 42%;
+            width: 24px;
+            height: 24px;
         }
 
         /* Modern Submit Quote Button */
@@ -2168,7 +2189,7 @@
     
     <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
         <div class="account-user-avatar">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#8455f4" stroke-width="1">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#C952DE" stroke-width="1">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 14c-2.5 0-4.5-2-4.5-4.5S9.5 5 12 5s4.5 2 4.5 4.5S14.5 14 12 14z"/>
                 <path d="M4.5 19.5c0-3 3.5-5 7.5-5s7.5 2 7.5 5"/>
@@ -2889,6 +2910,7 @@
                 'large-back': { label: 'Center Back', imageKey: 'back', embroidery: '5.00', print: '5.00' },
                 'large-centre-front': { label: 'Nape of Neck', imageKey: 'back', embroidery: '5.00', print: '3.50' }
             },
+            positionOrder: ['left-breast', 'right-breast', 'right-arm', 'left-arm', 'small-centre-front', 'large-back', 'large-centre-front'],
             hidePositions: ['small-centre-front', 'large-front-center']
         },
         'tshirts': {
@@ -2908,6 +2930,7 @@
                 'large-front-center': { label: 'Big Front (Print Only)', imageKey: 'front', embroidery: null, print: '6.00' },
                 'large-back': { label: 'Big Back (Print Only)', imageKey: 'back', embroidery: null, print: '5.00' }
             },
+            positionOrder: ['left-breast', 'right-breast', 'right-arm', 'left-arm', 'small-centre-front', 'large-front-center', 'large-back'],
             hidePositions: ['large-centre-front']
         },
         'aprons': {
@@ -2918,10 +2941,11 @@
                 lowRight: 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/low-right.png'
             },
             positions: {
-                'left-breast': { label: 'Low Left', imageKey: 'lowLeft', embroidery: '5.00', print: '3.50', cssClass: 'apron-low-left' },
+                'small-centre-front': { label: 'Center Front', imageKey: 'front', embroidery: '5.00', print: '3.50', cssClass: 'front-center' },
                 'right-breast': { label: 'Low Right', imageKey: 'lowRight', embroidery: '5.00', print: '3.50', cssClass: 'apron-low-right' },
-                'small-centre-front': { label: 'Center Front', imageKey: 'front', embroidery: '5.00', print: '3.50', cssClass: 'front-center' }
+                'left-breast': { label: 'Low Left', imageKey: 'lowLeft', embroidery: '5.00', print: '3.50', cssClass: 'apron-low-left' }
             },
+            positionOrder: ['small-centre-front', 'right-breast', 'left-breast'],
             hidePositions: ['large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm']
         },
         'default': {
@@ -2936,6 +2960,7 @@
                 'left-arm': { label: 'Left Sleeve', image: 'left-sleeve.jpg' },
                 'right-arm': { label: 'Right Sleeve', image: 'right-sleeve.jpg' }
             },
+            positionOrder: ['left-breast', 'right-breast', 'right-arm', 'left-arm', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back'],
             hidePositions: []
         }
     };
@@ -3062,6 +3087,23 @@
         positionGrids.forEach(grid => {
             const allCards = grid.querySelectorAll('.position-card');
             console.log('🎴 Found', allCards.length, 'position cards in grid');
+
+            // Reorder cards in the DOM if config specifies positionOrder
+            if (config.positionOrder && config.positionOrder.length > 0) {
+                const orderMap = {};
+                config.positionOrder.forEach((pos, idx) => { orderMap[pos] = idx; });
+                const cardsArr = Array.from(allCards);
+                // Sort: positions in positionOrder come first (in order), others at the end
+                cardsArr.sort((a, b) => {
+                    const aPos = a.dataset.position;
+                    const bPos = b.dataset.position;
+                    const aIdx = orderMap.hasOwnProperty(aPos) ? orderMap[aPos] : 999;
+                    const bIdx = orderMap.hasOwnProperty(bPos) ? orderMap[bPos] : 999;
+                    return aIdx - bIdx;
+                });
+                // Re-append in new order
+                cardsArr.forEach(card => grid.appendChild(card));
+            }
             
             allCards.forEach(card => {
                 const position = card.dataset.position;

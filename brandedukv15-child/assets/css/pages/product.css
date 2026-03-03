@@ -347,25 +347,26 @@ html, body {
 
 .tier-pricing-compact {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     margin: 10px 0 14px;
     padding: 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
 .tier-item {
-    flex: 0 0 auto;
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2px 4px;
+    padding: 8px 6px;
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    min-width: 38px;
-    min-height: 46px;
+    border-radius: 10px;
+    min-width: 0;
+    min-height: 56px;
     justify-content: center;
-    gap: 2px;
+    gap: 3px;
     transition: all 0.2s ease;
     cursor: pointer;
 }
@@ -392,13 +393,13 @@ html, body {
 }
 
 .tier-qty {
-    font-size: 0.62rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #6b7280;
 }
 
 .tier-price {
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     font-weight: 900;
     color: #111;
 }
@@ -461,7 +462,7 @@ html, body {
 }
 
 .tier-save {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: #10b981;
     margin-top: 1px;
@@ -3179,13 +3180,13 @@ html, body {
     /* Tier pricing horizontal scroll */
     .tier-pricing-compact {
         margin: 12px 0 20px;
-        padding: 10px;
-        gap: 4px;
+        padding: 0;
+        gap: 6px;
     }
     
     .tier-item {
-        padding: 6px 10px;
-        min-width: 55px;
+        padding: 6px 4px;
+        min-width: 0;
     }
     
     .tier-qty {
@@ -3193,7 +3194,7 @@ html, body {
     }
     
     .tier-price {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     
     .tier-save {
@@ -3322,12 +3323,13 @@ html, body {
     }
     
     .tier-pricing-compact {
-        padding: 8px;
+        padding: 0;
+        gap: 4px;
     }
     
     .tier-item {
-        padding: 5px 8px;
-        min-width: 48px;
+        padding: 5px 3px;
+        min-width: 0;
     }
     
     /* 2 columns for sizes on very small screens */

@@ -1704,7 +1704,7 @@ body {
 }
 
 .promotions-menu {
-    position: relative;
+    position: static;
 }
 
 .promotions-menu > a {
@@ -1731,31 +1731,24 @@ body {
 }
 
 .promo-dropdown {
-    position: absolute;
-    top: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 680px;
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100vw;
     background: #ffffff;
-    border-radius: 20px;
-    border: 1px solid #d6deed;
-    box-shadow: 0 22px 46px rgba(15, 23, 42, 0.22);
-    padding: 24px;
+    border-radius: 0 0 18px 18px;
+    border: 1px solid #e2e8f0;
+    border-top: 3px solid #C952DE;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+    padding: 28px 40px 24px;
     display: none;
     z-index: 55;
 }
 
 .promo-dropdown::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    width: 18px;
-    height: 18px;
-    background: #ffffff;
-    border-top: 1px solid #d6deed;
-    border-left: 1px solid #d6deed;
-    transform: translateX(-50%) rotate(45deg);
+    display: none;
 }
 
 .promotions-menu:hover .promo-dropdown,
@@ -2637,7 +2630,7 @@ body {
     flex-basis: 55%;
 }
 .signin-form {
-    background: linear-gradient(135deg, #8455f4 0%, #6b21a8 100%);
+    background: linear-gradient(135deg, #C952DE 0%, #9b2faf 100%);
 }
 .signup-form {
     background: linear-gradient(135deg, #3e4357 0%, #1f2937 100%);

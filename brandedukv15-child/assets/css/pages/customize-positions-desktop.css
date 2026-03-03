@@ -321,6 +321,14 @@ body.category-apron .position-card[data-position="small-centre-front"] .position
     transform-origin: center center;
 }
 
+/* Apron-specific logo overlay positions */
+body.category-aprons .logo-overlay-box.apron-low-left,
+body.category-apron .logo-overlay-box.apron-low-left  { top: 50%; left: 38%; width: 24px; height: 24px; }
+body.category-aprons .logo-overlay-box.apron-low-right,
+body.category-apron .logo-overlay-box.apron-low-right { top: 50%; left: 52%; width: 24px; height: 24px; }
+body.category-aprons .logo-overlay-box.front-center,
+body.category-apron .logo-overlay-box.front-center    { top: 45%; left: 42%; width: 26px; height: 26px; }
+
 .logo-overlay-box {
     position: absolute;
     display: none;
@@ -341,14 +349,69 @@ body.category-apron .position-card[data-position="small-centre-front"] .position
     to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
-/* Position-specific coordinates */
-.logo-overlay-box.left-chest { top: 22%; left: 62%; width: 32px; height: 32px; }
-.logo-overlay-box.right-chest { top: 22%; left: 38%; width: 32px; height: 32px; }
-.logo-overlay-box.front-center { top: 25%; left: 50%; width: 40px; height: 40px; }
-.logo-overlay-box.large-front { top: 29%; left: 50%; width: 55px; height: 55px; }
-.logo-overlay-box.large-back { top: 28%; left: 50%; width: 60px; height: 60px; }
-.logo-overlay-box.left-sleeve { top: 22%; left: 58%; width: 40px; height: 40px; }
-.logo-overlay-box.right-sleeve { top: 22%; left: 42%; width: 40px; height: 40px; }
+/* Position-specific coordinates - calibrated to garment mockup images */
+.logo-overlay-box.left-chest { top: 30%; left: 58%; width: 28px; height: 28px; }
+.logo-overlay-box.right-chest { top: 30%; left: 42%; width: 28px; height: 28px; }
+.logo-overlay-box.front-center { top: 32%; left: 50%; width: 36px; height: 36px; }
+.logo-overlay-box.large-front { top: 38%; left: 50%; width: 52px; height: 52px; }
+.logo-overlay-box.large-back { top: 35%; left: 50%; width: 55px; height: 55px; }
+.logo-overlay-box.left-sleeve { top: 30%; left: 72%; width: 24px; height: 24px; }
+.logo-overlay-box.right-sleeve { top: 30%; left: 28%; width: 24px; height: 24px; }
+
+/* Category-specific logo positioning overrides */
+/* Polo shirts - collar offset, logo sits slightly lower */
+body.category-polo .logo-overlay-box.left-chest { top: 34%; left: 58%; width: 26px; height: 26px; }
+body.category-polo .logo-overlay-box.right-chest { top: 34%; left: 42%; width: 26px; height: 26px; }
+body.category-polo .logo-overlay-box.left-sleeve { top: 28%; left: 74%; width: 22px; height: 22px; }
+body.category-polo .logo-overlay-box.right-sleeve { top: 28%; left: 26%; width: 22px; height: 22px; }
+
+/* T-shirts - standard garment body */
+body.category-tshirts .logo-overlay-box.left-chest { top: 28%; left: 58%; width: 28px; height: 28px; }
+body.category-tshirts .logo-overlay-box.right-chest { top: 28%; left: 42%; width: 28px; height: 28px; }
+body.category-tshirts .logo-overlay-box.front-center { top: 30%; left: 50%; width: 34px; height: 34px; }
+body.category-tshirts .logo-overlay-box.large-front { top: 36%; left: 50%; width: 50px; height: 50px; }
+body.category-tshirts .logo-overlay-box.left-sleeve { top: 26%; left: 74%; width: 22px; height: 22px; }
+body.category-tshirts .logo-overlay-box.right-sleeve { top: 26%; left: 26%; width: 22px; height: 22px; }
+
+/* Hoodies/Sweatshirts - thicker garment, slightly wider chest area */
+body.category-hoodies .logo-overlay-box.left-chest,
+body.category-sweatshirts .logo-overlay-box.left-chest { top: 30%; left: 58%; width: 28px; height: 28px; }
+body.category-hoodies .logo-overlay-box.right-chest,
+body.category-sweatshirts .logo-overlay-box.right-chest { top: 30%; left: 42%; width: 28px; height: 28px; }
+body.category-hoodies .logo-overlay-box.large-front,
+body.category-sweatshirts .logo-overlay-box.large-front { top: 36%; left: 50%; width: 52px; height: 52px; }
+
+/* Jackets/Softshells - wider shoulders, logo slightly inward */
+body.category-jackets .logo-overlay-box.left-chest,
+body.category-softshells .logo-overlay-box.left-chest { top: 32%; left: 56%; width: 26px; height: 26px; }
+body.category-jackets .logo-overlay-box.right-chest,
+body.category-softshells .logo-overlay-box.right-chest { top: 32%; left: 44%; width: 26px; height: 26px; }
+body.category-jackets .logo-overlay-box.large-back,
+body.category-softshells .logo-overlay-box.large-back { top: 34%; left: 50%; width: 55px; height: 55px; }
+
+/* Fleeces */
+body.category-fleece .logo-overlay-box.left-chest,
+body.category-fleeces .logo-overlay-box.left-chest { top: 30%; left: 56%; width: 26px; height: 26px; }
+body.category-fleece .logo-overlay-box.right-chest,
+body.category-fleeces .logo-overlay-box.right-chest { top: 30%; left: 44%; width: 26px; height: 26px; }
+
+/* Hi-Vis - bulkier garment */
+body.category-hivis .logo-overlay-box.left-chest,
+body.category-safety-vests .logo-overlay-box.left-chest { top: 28%; left: 56%; width: 26px; height: 26px; }
+body.category-hivis .logo-overlay-box.right-chest,
+body.category-safety-vests .logo-overlay-box.right-chest { top: 28%; left: 44%; width: 26px; height: 26px; }
+body.category-hivis .logo-overlay-box.large-back,
+body.category-safety-vests .logo-overlay-box.large-back { top: 32%; left: 50%; width: 55px; height: 55px; }
+
+/* Caps/Headwear - logo centered on front panel */
+body.category-caps .logo-overlay-box.front-center,
+body.category-headwear .logo-overlay-box.front-center { top: 40%; left: 50%; width: 36px; height: 36px; }
+body.category-caps .logo-overlay-box.left-chest,
+body.category-headwear .logo-overlay-box.left-chest { top: 40%; left: 50%; width: 30px; height: 30px; }
+
+/* Beanies */
+body.category-beanies .logo-overlay-box.front-center { top: 50%; left: 50%; width: 34px; height: 34px; }
+body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width: 30px; height: 30px; }
 
 .logo-overlay-img {
     max-width: 100%;
@@ -373,52 +436,52 @@ body.category-apron .position-card[data-position="small-centre-front"] .position
 
 /* Use tablet/mobile sizing for overlays in the inline grid */
 #step3PositionsSection .logo-overlay-box.left-chest {
-    top: calc(22% + 25px);
-    left: 62%;
-    width: 28px;
-    height: 28px;
+    top: calc(30% + 20px);
+    left: 58%;
+    width: 24px;
+    height: 24px;
 }
 
 #step3PositionsSection .logo-overlay-box.right-chest {
-    top: calc(22% + 25px);
-    left: 38%;
-    width: 28px;
-    height: 28px;
+    top: calc(30% + 20px);
+    left: 42%;
+    width: 24px;
+    height: 24px;
 }
 
 #step3PositionsSection .logo-overlay-box.front-center {
-    top: calc(25% + 25px);
+    top: calc(32% + 20px);
     left: 50%;
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
 }
 
 #step3PositionsSection .logo-overlay-box.large-front {
-    top: calc(29% + 25px);
+    top: calc(38% + 20px);
+    left: 50%;
+    width: 44px;
+    height: 44px;
+}
+
+#step3PositionsSection .logo-overlay-box.large-back {
+    top: calc(35% + 20px);
     left: 50%;
     width: 48px;
     height: 48px;
 }
 
-#step3PositionsSection .logo-overlay-box.large-back {
-    top: calc(28% + 25px);
-    left: 50%;
-    width: 55px;
-    height: 55px;
-}
-
 #step3PositionsSection .logo-overlay-box.left-sleeve {
-    top: calc(22% + 25px);
-    left: calc(58% - 8px);
-    width: 35px;
-    height: 35px;
+    top: calc(30% + 20px);
+    left: 72%;
+    width: 22px;
+    height: 22px;
 }
 
 #step3PositionsSection .logo-overlay-box.right-sleeve {
-    top: calc(22% + 25px);
-    left: 42%;
-    width: 35px;
-    height: 35px;
+    top: calc(30% + 20px);
+    left: 28%;
+    width: 22px;
+    height: 22px;
 }
 
 #step3PositionsSection .logo-overlay-img {

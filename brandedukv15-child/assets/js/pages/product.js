@@ -502,22 +502,21 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.warn('⚠️ Product type title element not found');
         }
 
-        // Set initial main image from images array or top-level image field
+        // Set initial main image - ALWAYS prioritize PRODUCT_DATA.image (API primary image)
         if (mainImage && PRODUCT_DATA) {
-            if (PRODUCT_DATA.images && Array.isArray(PRODUCT_DATA.images)) {
+            if (PRODUCT_DATA.image) {
+                // ALWAYS use the top-level API image as the initial display image
+                mainImage.src = PRODUCT_DATA.image;
+                mainImage.alt = PRODUCT_NAME || 'Product';
+            } else if (PRODUCT_DATA.images && Array.isArray(PRODUCT_DATA.images)) {
                 const mainImageData = PRODUCT_DATA.images.find(img => img.type === 'main');
                 if (mainImageData && mainImageData.url) {
                     mainImage.src = mainImageData.url;
                     mainImage.alt = PRODUCT_NAME || 'Product';
                 } else if (PRODUCT_DATA.colors && PRODUCT_DATA.colors.length > 0) {
-                    // Fallback to first color's main image
                     mainImage.src = PRODUCT_DATA.colors[0].main;
                     mainImage.alt = PRODUCT_NAME || 'Product';
                 }
-            } else if (PRODUCT_DATA.image) {
-                // Use top-level image field if images array is not available
-                mainImage.src = PRODUCT_DATA.image;
-                mainImage.alt = PRODUCT_NAME || 'Product';
             } else if (PRODUCT_DATA.colors && PRODUCT_DATA.colors.length > 0) {
                 // Final fallback to first color's main image
                 mainImage.src = PRODUCT_DATA.colors[0].main;
@@ -601,6 +600,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Initialize breadcrumb navigation
         initBreadcrumb();
+
+        // ===== FINAL SAFEGUARD: Ensure primary API image is shown =====
+        // If no color has been actively selected by the user, force the primary image
+        const _finalSavedColor = sessionStorage.getItem('selectedColorName');
+        if (!_finalSavedColor && !selectedColorName && PRODUCT_DATA && PRODUCT_DATA.image && mainImage) {
+            mainImage.src = PRODUCT_DATA.image;
+            mainImage.alt = PRODUCT_NAME || 'Product';
+        }
     }
 
     // Wait a tick to ensure VAT toggle has initialized
@@ -915,9 +922,11 @@ function initThumbnailGallery() {
         });
     });
 
-    const initialActive = thumbButtons.find(btn => btn.classList.contains('active')) || thumbButtons[0];
+    // After cloning, re-query the LIVE buttons in the DOM for initial active detection
+    const liveThumbButtons = Array.from(thumbContainer.querySelectorAll('.thumb-item'));
+    const initialActive = liveThumbButtons.find(btn => btn.classList.contains('active')) || liveThumbButtons[0];
     if (initialActive) {
-        setActive(initialActive);
+        liveThumbButtons.forEach(btn => btn.classList.toggle('active', btn === initialActive));
         if (mainImage && initialActive.dataset.image) {
             mainImage.src = initialActive.dataset.image;
         }
@@ -999,7 +1008,44 @@ function initThumbnailColumn(productColors) {
     thumbInner.className = 'thumb-slider-inner';
     thumbInner.style.cssText = 'display: flex; flex-direction: column; gap: 8px; transition: transform 0.3s ease;';
 
-    // Create all thumbnail buttons
+    // ===== INSERT PRIMARY IMAGE FROM API AS FIRST THUMBNAIL =====
+    const primaryImageUrl = PRODUCT_DATA && PRODUCT_DATA.image ? PRODUCT_DATA.image : null;
+    let primaryInserted = false;
+
+    if (primaryImageUrl) {
+        // Check that the primary image is not already the first color's image
+        const firstColorMain = productColors[0] && (productColors[0].main || productColors[0].thumb || productColors[0].url || '');
+        const isDuplicate = firstColorMain && primaryImageUrl === firstColorMain;
+
+        if (!isDuplicate) {
+            const primaryButton = document.createElement('button');
+            primaryButton.type = 'button';
+            primaryButton.className = 'thumb-item active';
+            primaryButton.setAttribute('data-image', primaryImageUrl);
+            primaryButton.setAttribute('data-color-name', '');
+            primaryButton.setAttribute('data-index', '-1');
+            primaryButton.setAttribute('data-primary', 'true');
+            primaryButton.setAttribute('aria-label', `Primary image of ${PRODUCT_NAME || 'product'}`);
+            primaryButton.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0; border: 2px solid #7c3aed;';
+
+            const primaryImg = document.createElement('img');
+            primaryImg.src = primaryImageUrl;
+            primaryImg.alt = 'Primary product image';
+            primaryImg.style.cssText = 'width: 100%; height: 100%; object-fit: contain; border-radius: 8px;';
+
+            primaryButton.appendChild(primaryImg);
+            thumbInner.appendChild(primaryButton);
+            primaryInserted = true;
+
+            // Set main image to the primary API image
+            if (mainImage) {
+                mainImage.src = primaryImageUrl;
+                mainImage.alt = PRODUCT_NAME || 'Product';
+            }
+        }
+    }
+
+    // Create all thumbnail buttons from colors
     productColors.forEach((color, index) => {
         const colorName = color.name || 'Unknown';
         const thumbUrl = color.thumb || color.main || color.url || '';
@@ -1014,12 +1060,17 @@ function initThumbnailColumn(productColors) {
         button.setAttribute('aria-label', `View ${colorName} ${PRODUCT_NAME || 'product'}`);
         button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0;';
 
-        // Set first thumbnail as active by default (only if no color is already selected)
+        // Set first thumbnail as active by default (only if no primary was inserted and no color is saved)
         const savedColorName = sessionStorage.getItem('selectedColorName');
-        if (index === 0 && !savedColorName) {
+        if (index === 0 && !savedColorName && !primaryInserted) {
             button.classList.add('active');
         } else if (savedColorName === colorName) {
             button.classList.add('active');
+            // If a saved color is selected, also remove primary active state
+            if (primaryInserted) {
+                const primaryBtn = thumbInner.querySelector('[data-primary="true"]');
+                if (primaryBtn) primaryBtn.classList.remove('active');
+            }
         }
 
         const img = document.createElement('img');
@@ -1142,18 +1193,21 @@ function initThumbnailColumn(productColors) {
     // Initialize gallery functionality
     initThumbnailGallery();
 
-    // Set initial main image from first color if main image not already set
-    const savedColorName = sessionStorage.getItem('selectedColorName');
+    // Set initial main image - prioritize: savedColor > primaryImage > first color
+    const _savedColorName = sessionStorage.getItem('selectedColorName');
     if (productColors.length > 0 && mainImage) {
-        if (savedColorName) {
+        if (_savedColorName) {
             // Use saved color
-            const savedColor = productColors.find(c => c.name === savedColorName);
+            const savedColor = productColors.find(c => c.name === _savedColorName);
             if (savedColor) {
                 const savedMainUrl = savedColor.main || savedColor.thumb || savedColor.url;
                 if (savedMainUrl) {
                     mainImage.src = savedMainUrl;
                 }
             }
+        } else if (primaryInserted && primaryImageUrl) {
+            // Primary API image was inserted and is already set as main image
+            // No action needed - already set above
         } else {
             // Use first color
             const firstColor = productColors[0];
@@ -1164,7 +1218,7 @@ function initThumbnailColumn(productColors) {
         }
     }
 
-    console.log('✅ Thumbnail column initialized with', productColors.length, 'colors (slider enabled)');
+    console.log('✅ Thumbnail column initialized with', productColors.length, 'colors' + (primaryInserted ? ' + primary image' : '') + ' (slider enabled)');
 }
 
 function slideThumbnails(direction) {
