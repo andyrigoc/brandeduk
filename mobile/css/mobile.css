@@ -982,46 +982,10 @@ a {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 6px;
-    max-height: 260px;          /* ~5 rows visible */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     padding: 8px;
     background: var(--gray-50, #f9fafb);
     border: 1px solid var(--gray-200, #e5e7eb);
     border-radius: var(--radius-lg, 12px);
-    /* Thin scrollbar for scroll hint */
-    scrollbar-width: thin;           /* Firefox */
-    scrollbar-color: var(--purple, #6B21A8) transparent;
-    position: relative;
-}
-.color-options::-webkit-scrollbar {
-    width: 3px;
-}
-.color-options::-webkit-scrollbar-track {
-    background: transparent;
-}
-.color-options::-webkit-scrollbar-thumb {
-    background: var(--purple, #6B21A8);
-    border-radius: 4px;
-}
-
-/* Color options wrapper with scroll fade */
-.color-options-wrapper {
-    position: relative;
-}
-.color-scroll-fade {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 32px;
-    background: linear-gradient(to bottom, transparent, var(--gray-50, #f9fafb));
-    border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-.color-scroll-fade.hidden {
-    opacity: 0;
 }
 
 .selected-color-name {
