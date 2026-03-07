@@ -1012,7 +1012,7 @@ function initThumbnailColumn(productColors) {
         button.setAttribute('data-color-name', colorName);
         button.setAttribute('data-index', index);
         button.setAttribute('aria-label', `View ${colorName} ${PRODUCT_NAME || 'product'}`);
-        button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0;';
+        button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0; padding: 0; background: #ffffff; box-shadow: none; overflow: hidden;';
 
         // Set first thumbnail as active by default (only if no color is already selected)
         const savedColorName = sessionStorage.getItem('selectedColorName');
@@ -1025,7 +1025,7 @@ function initThumbnailColumn(productColors) {
         const img = document.createElement('img');
         img.src = thumbUrl;
         img.alt = `${colorName} thumbnail`;
-        img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; border-radius: 8px;';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 10px;';
 
         button.appendChild(img);
         thumbInner.appendChild(button);
