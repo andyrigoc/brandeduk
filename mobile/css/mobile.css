@@ -7128,6 +7128,7 @@ a {
     align-items: center;
     gap: 6px;
     padding: 14px 16px 0;
+    margin-top: var(--header-height);
     background: var(--white);
     font-size: 12px;
     font-weight: 600;
@@ -7285,7 +7286,7 @@ a {
 
 .shop-products-container {
     padding: 16px;
-    padding-top: 60px;
+    padding-top: 8px;
     padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
@@ -9043,10 +9044,21 @@ a {
     background: transparent !important;
     box-shadow: none !important;
     color: var(--gray-500) !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 8px 16px !important;
+    border: none !important;
+    cursor: pointer;
 }
 
 .nav-item-center svg {
     stroke: currentColor;
+}
+
+.nav-item-center .nav-item-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gray-500);
 }
 
 /* ===== ACCOUNT PANEL - SIGN IN / SIGN UP ===== */
