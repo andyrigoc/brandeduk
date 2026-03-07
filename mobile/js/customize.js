@@ -1932,6 +1932,18 @@
                         // Ignore
                     }
 
+                    // Sync any unsaved notes from DOM textareas to basket items before processing
+                    document.querySelectorAll('.note-box-input').forEach(textarea => {
+                        const idx = textarea.dataset.index;
+                        if (idx !== 'current' && basket[Number(idx)]) {
+                            const noteVal = textarea.value.trim();
+                            if (noteVal) basket[Number(idx)].note = noteVal;
+                        }
+                    });
+                    // Also grab "current item" note
+                    const currentNoteTextarea = document.querySelector('.note-box-input[data-index="current"]');
+                    const currentItemNote = currentNoteTextarea ? currentNoteTextarea.value.trim() : '';
+
                     // Calculate summary totals and build detailed basket items
                     let totalGarmentCost = 0;
                     let totalQuantity = 0;
@@ -1943,8 +1955,8 @@
                     // Process basket items
                     basket.forEach((item) => {
                         const qtyMap = item.quantities || item.sizes || {};
-                        const itemQuantity = item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
-                        const unitPrice = Number(item.price) || 0;
+                        const itemQuantity = item.totalQty || item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
+                        const unitPrice = Number(item.unitPrice) || Number(item.price) || 0;
                         const itemTotal = unitPrice * itemQuantity;
                         
                         totalGarmentCost += itemTotal;
@@ -1967,18 +1979,22 @@
                         // Get image from correct source
                         const productImage = productData.images ? 
                             (Array.isArray(productData.images) ? productData.images[0] : productData.images) : 
-                            (productData.image || item.image || '');
+                            (productData.image || item.image || item.colorImage || '');
+                        
+                        // Get note from basket item
+                        const itemNote = item.note || '';
                         
                         basketItems.push({
-                            name: item.name || productData.name || 'Product',
-                            code: item.code || productData.code || '',
+                            name: item.productName || item.name || productData.name || 'Product',
+                            code: item.productCode || item.code || productData.code || '',
                             color: item.color || item.selectedColorName || state.selectedColorName || '',
                             quantity: itemQuantity,
                             sizes: sizesBreakdown,
                             sizesSummary: sizesSummary || item.size || 'N/A',
                             unitPrice: unitPrice,
                             itemTotal: itemTotal,
-                            image: productImage
+                            image: productImage,
+                            note: itemNote
                         });
                     });
 
@@ -2000,39 +2016,94 @@
                         return positionMap[positionCode] || positionCode;
                     }
 
-                    // Process customizations
+                    // Process customizations — collect from basket items first (has prices),
+                    // then fall back to positionCustomizations (design data only, no prices)
+                    const seenPositions = new Set();
+                    
+                    // 1) From basket items' positions/customizations (has unitPrice, totalPrice)
+                    basket.forEach((item) => {
+                        // Try item.positions object (has method, unitPrice, totalPrice, name)
+                        if (item.positions && typeof item.positions === 'object') {
+                            Object.entries(item.positions).forEach(([pos, posData]) => {
+                                if (!posData || seenPositions.has(pos)) return;
+                                seenPositions.add(pos);
+                                
+                                const method = (posData.method || 'embroidery').toLowerCase();
+                                const unitPrice = Number(posData.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                const quantity = Number(item.totalQty) || Number(item.quantity) || totalQuantity;
+                                const lineTotal = Number(posData.totalPrice) || (unitPrice * quantity);
+                                const hasLogo = !!(posData.logo || state.positionDesigns?.[pos]?.logo);
+                                
+                                customizationTotal += lineTotal;
+                                
+                                if (hasLogo && method === 'embroidery') {
+                                    digitizingFee = 25.00;
+                                }
+                                
+                                customizationsList.push({
+                                    position: posData.name || getPositionName(pos) || pos,
+                                    method: method === 'print' ? 'Print' : 'Embroidery',
+                                    type: hasLogo ? 'logo' : 'text',
+                                    hasLogo: hasLogo,
+                                    unitPrice: unitPrice,
+                                    lineTotal: lineTotal,
+                                    quantity: quantity
+                                });
+                            });
+                        }
+                        
+                        // Try item.customizations array (has unitPrice, total, qty)
+                        if (Array.isArray(item.customizations)) {
+                            item.customizations.forEach(c => {
+                                const posKey = (c.position || '').toLowerCase().replace(/\s+/g, '-');
+                                if (seenPositions.has(posKey) || seenPositions.has(c.position)) return;
+                                seenPositions.add(c.position);
+                                
+                                const method = (c.method || 'embroidery').toLowerCase();
+                                const unitPrice = Number(c.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                const quantity = Number(c.qty) || Number(c.quantity) || totalQuantity;
+                                const lineTotal = Number(c.total) || Number(c.lineTotal) || (unitPrice * quantity);
+                                
+                                customizationTotal += lineTotal;
+                                
+                                customizationsList.push({
+                                    position: c.position,
+                                    method: method === 'print' ? 'Print' : 'Embroidery',
+                                    type: c.type || 'logo',
+                                    hasLogo: !!c.hasLogo,
+                                    unitPrice: unitPrice,
+                                    lineTotal: lineTotal,
+                                    quantity: quantity
+                                });
+                            });
+                        }
+                    });
+                    
+                    // 2) Also check positionCustomizations for any positions not yet in basket
                     const customizationsEntries = Object.entries(positionCustomizations);
                     customizationsEntries.forEach(([position, customization]) => {
-                        if (!customization) return;
+                        if (!customization || seenPositions.has(position)) return;
+                        seenPositions.add(position);
                         
-                        const method = customization.method || 'embroidery';
-                        const type = customization.type || 'logo';
-                        const unitPrice = Number(customization.unitPrice) || 0;
-                        const quantity = Number(customization.quantity) || totalQuantity;
-                        const hasLogo = !!(customization.logoUrl || customization.logoData || customization.uploadedLogo);
+                        const method = (customization.method || 'embroidery').toLowerCase();
+                        const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                        const quantity = totalQuantity || 1;
+                        const hasLogo = !!(customization.logo || customization.logoUrl || customization.logoData);
+                        const lineTotal = unitPrice * quantity;
                         
-                        let lineTotal = 'POA';
-                        if (customization.lineTotal && customization.lineTotal !== 'POA') {
-                            lineTotal = Number(customization.lineTotal);
-                            customizationTotal += lineTotal;
-                        } else if (unitPrice > 0 && quantity > 0) {
-                            lineTotal = unitPrice * quantity;
-                            customizationTotal += lineTotal;
+                        customizationTotal += lineTotal;
+                        
+                        if (hasLogo && method === 'embroidery') {
+                            digitizingFee = 25.00;
                         }
                         
-                        // Check if digitizing fee applies (first logo upload)
-                        if (hasLogo && method === 'embroidery' && !customization.digitizingFeePaid) {
-                            digitizingFee = 25.00; // Standard digitizing fee
-                        }
-                        
-                        // Get position name (PC ki tarah)
                         const positionName = getPositionName(position) || position;
                         
                         customizationsList.push({
                             position: positionName,
                             method: method === 'print' ? 'Print' : 'Embroidery',
-                            type: type,
-                            hasLogo: hasLogo,  // <-- Yeh PC version me bhi hai
+                            type: hasLogo ? 'logo' : (customization.text ? 'text' : 'logo'),
+                            hasLogo: hasLogo,
                             unitPrice: unitPrice,
                             lineTotal: lineTotal,
                             quantity: quantity
@@ -2149,6 +2220,13 @@
                             lineTotal: c.lineTotal,
                             quantity: c.quantity
                         })),
+                        // Collect all notes from basket items + current item
+                        notes: [
+                            ...basketItems
+                                .filter(bi => bi.note)
+                                .map(bi => `${bi.name} (${bi.color}): ${bi.note}`),
+                            ...(currentItemNote ? [`Current item: ${currentItemNote}`] : [])
+                        ],
                         logoFiles: Object.keys(compressedLogoFiles).length > 0 ? compressedLogoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };
