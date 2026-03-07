@@ -540,7 +540,7 @@ a {
     display: flex;
     flex-direction: column;
     padding: 0;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: none;
     z-index: 100;
 }
 
@@ -5553,7 +5553,7 @@ a {
 
 /* Mobile Main */
 .mobile-main {
-    padding-top: calc(var(--header-height) + 6px);
+    padding-top: calc(var(--header-height) + 24px);
     padding-bottom: 80px;
 }
 
