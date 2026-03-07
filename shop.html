@@ -2388,7 +2388,7 @@
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
     <!-- API Integration Scripts -->
     <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
-    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260107"></script>
+    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260307B"></script>
     <script>
         console.log('=== SHOP SCRIPT STARTED (API MODE) ===');
 
@@ -3734,7 +3734,9 @@
                 if (product.customization && product.customization.includes('embroidery')) {
                     badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
                 }
-                if (product.customization && product.customization.includes('print')) {
+                // Embroidery-only: hide PRINT badge for products with 'beanie' in name
+                const isBeanie = (product.name || '').toLowerCase().includes('beanie');
+                if (!isBeanie && product.customization && product.customization.includes('print')) {
                     badgesHtml += '<span class="badge print">PRINT</span>';
                 }
 

@@ -987,7 +987,7 @@
                 <path d="M2 12l10 5 10-5"/>
             </svg>
         </a>
-        <a href="#orderSummary" class="nav-item" id="basketNavLink">
+        <a href="basket.html" class="nav-item" id="basketNavLink">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
@@ -1049,16 +1049,9 @@
     </div>
 
     <script src="mobile/js/mobile.js?v=20260123b"></script>
-    <script src="mobile/js/customize.js?v=20260123m"></script>
+    <script src="mobile/js/customize.js?v=20260307B"></script>
     <script>
-        // Smooth scroll to order summary when clicking basket link
-        document.getElementById('basketNavLink')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.getElementById('orderSummary');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
+        // Basket link now navigates to basket.html directly
     </script>
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">

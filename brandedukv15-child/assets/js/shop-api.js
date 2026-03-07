@@ -270,7 +270,9 @@ const ShopManager = (function () {
         if (hasEmbroidery) {
             badgesHTML += '<span class="badge embroidery">EMBROIDERY</span>';
         }
-        if (hasPrint) {
+        // Hide PRINT badge for products with 'beanie' in the name (embroidery-only)
+        const isBeanie = (product.name || '').toLowerCase().includes('beanie');
+        if (hasPrint && !isBeanie) {
             badgesHTML += '<span class="badge print">PRINT</span>';
         }
 

@@ -979,9 +979,19 @@ a {
 
 /* === Color Options === */
 .color-options {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 8px;
+    max-height: 160px;          /* ~3 rows visible */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 2px;
+    /* Hide scrollbar but keep scroll */
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE/Edge */
+}
+.color-options::-webkit-scrollbar {
+    display: none;               /* Chrome/Safari */
 }
 
 .selected-color-name {
@@ -996,8 +1006,9 @@ a {
 }
 
 .color-btn {
-    width: 44px;
-    height: 44px;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 48px;
     border-radius: var(--radius);
     position: relative;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -1426,10 +1437,11 @@ a {
     margin: 0;
 }
 
-/* GARMENT SECTION - Neutral styling */
+/* GARMENT SECTION - Orange gradient card */
 .sidebar-costs .section.garment-section {
-    padding-bottom: 14px;
-    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(90deg, #E8913A, #F2A64B);
+    border-radius: 12px;
+    padding: 14px 16px;
     margin-bottom: 10px;
 }
 
@@ -1442,13 +1454,13 @@ a {
 .sidebar-costs .section.garment-section .label {
     font-size: 15px;
     font-weight: 600;
-    color: #7c3aed;
+    color: #fff;
 }
 
 .sidebar-costs .section.garment-section .value {
     font-size: 16px;
     font-weight: 700;
-    color: #222;
+    color: #fff;
 }
 
 .sidebar-costs .section.garment-section .detail {
@@ -1456,12 +1468,16 @@ a {
     justify-content: space-between;
     margin-top: 8px;
     font-size: 13px;
-    color: #666;
+    color: rgba(255,255,255,0.85);
 }
 
 .sidebar-costs .section.garment-section .detail-values {
     display: flex;
     gap: 16px;
+}
+
+.sidebar-costs .section.garment-section .vat-suffix {
+    color: rgba(255,255,255,0.8);
 }
 
 /* CUSTOMIZATION COSTS - Cards */
@@ -1512,18 +1528,25 @@ a {
     font-weight: 700;
 }
 
-/* TOTAL ROW - Green Teal */
+/* TOTAL ROW - Pink gradient card */
 .sidebar-costs .cost-row.total-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 14px;
-    padding-top: 14px;
-    border-top: 2px solid #e5e7eb;
+    background: linear-gradient(90deg, #E8A0BF, #F2B8D0);
+    border-radius: 12px;
+    padding: 14px 16px;
+    border-top: none;
+}
+
+.sidebar-costs .cost-row.total-row strong {
+    color: #1a1a1a;
+    font-size: 15px;
 }
 
 .sidebar-costs .total-amount {
-    color: #14b8a6 !important;
+    color: #1a1a1a !important;
     font-size: 18px;
     font-weight: 700;
 }
@@ -1543,6 +1566,7 @@ a {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     display: flex;
     gap: 12px;
+    position: relative;
 }
 
 .basket-item-image {
@@ -1653,15 +1677,91 @@ a {
     width: 32px;
     height: 32px;
     border: none;
-    background: #fef2f2;
+    background: transparent;
     border-radius: 8px;
-    color: #ef4444;
+    color: #9ca3af;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    align-self: flex-start;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Logo + Note Box below basket item */
+.basket-item-note-box {
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: -4px;
+    margin-bottom: 12px;
+}
+
+.note-box-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.note-box-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.note-box-logo {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.note-box-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.note-box-logo .no-logo {
+    font-size: 10px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.note-box-input {
+    flex: 1;
+    min-height: 56px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #374151;
+    background: #fff;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.note-box-input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}
+
+.note-box-input::placeholder {
+    color: #9ca3af;
+    font-size: 12px;
 }
 
 /* Summary Section Title */
@@ -1713,7 +1813,7 @@ a {
 .garment-cost-value {
     font-size: 20px;
     font-weight: 700;
-    color: var(--gray-900);
+    color: #E8913A;
 }
 
 /* Summary Total Row - OUTSIDE box */
@@ -1735,7 +1835,7 @@ a {
 .summary-total-value {
     font-size: 24px;
     font-weight: 700;
-    color: #00c9a7;
+    color: #E8A0BF;
 }
 
 /* Garment Section - remove old */
@@ -3241,20 +3341,20 @@ a {
     width: 24px;
     height: 24px;
     border: none;
-    background: #fee2e2;
+    background: transparent;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #ef4444;
+    color: #9ca3af;
     padding: 0;
 }
 
 .preview-delete-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: transparent;
+    color: #6b7280;
     transform: scale(1.1);
 }
 
@@ -3422,19 +3522,19 @@ a {
     width: 32px;
     height: 32px;
     border: none;
-    background: #fee2e2;
+    background: transparent;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ef4444;
+    color: #9ca3af;
     transition: all 0.2s;
 }
 
 .delete-logo-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: transparent;
+    color: #6b7280;
 }
 
 .logo-added-pill,
@@ -3493,19 +3593,19 @@ a {
     width: 32px;
     height: 32px;
     border: none;
-    background: #fee2e2;
+    background: transparent;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ef4444;
+    color: #9ca3af;
     transition: all 0.2s;
 }
 
 .delete-text-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: transparent;
+    color: #6b7280;
 }
 
 /* TEXT ADDED green button state */
@@ -8029,8 +8129,8 @@ a {
     width: 28px;
     height: 28px;
     border: none;
-    background: #ef4444;
-    color: #fff;
+    background: transparent;
+    color: #9ca3af;
     border-radius: 50%;
     display: flex;
     align-items: center;

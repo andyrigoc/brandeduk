@@ -385,7 +385,7 @@
         const positions = {};
         
         // Embroidery-only product types (no print option)
-        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+        const EMBROIDERY_ONLY_TYPES = ['Beanies'];
         const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
 
         imageFiles.forEach(filename => {
@@ -542,7 +542,7 @@
         const printKeyBadge = document.querySelector('.key-badge.print');
         if (printKeyBadge) {
             const normalizedType = normalizeProductTypeForFolder(productType);
-            const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+            const EMBROIDERY_ONLY_TYPES = ['Beanies'];
             printKeyBadge.style.display = EMBROIDERY_ONLY_TYPES.includes(normalizedType) ? 'none' : '';
         }
     }
@@ -1554,6 +1554,14 @@
             // Add current selection to basket
             addCurrentSelectionToBasket();
             
+            // Force logo into note box from state
+            const logoSrc = getLogoFromState();
+            if (logoSrc) {
+                document.querySelectorAll('.note-box-logo').forEach(logoBox => {
+                    logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                });
+            }
+            
             // Mark selection as saved
             state.selectionSaved = true;
             
@@ -1652,11 +1660,15 @@
                 };
                 const positionLabel = positionNames[pos] || pos.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
+                // Get logo from positionDesigns if available
+                const designLogo = state.positionDesigns?.[pos]?.logo || null;
+                
                 positions[pos] = {
                     method: methodLabel,
                     unitPrice: unitPrice,
                     totalPrice: totalPrice,
-                    name: positionLabel
+                    name: positionLabel,
+                    logo: designLogo
                 };
                 
                 // Also add to customizations array for basket display
@@ -1683,6 +1695,7 @@
             unitPrice: getCurrentUnitPrice(),
             priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
             positions: positions,
+            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             customizations: customizations,
             addedAt: new Date().toISOString()
         };
@@ -1691,18 +1704,84 @@
         console.log('?? positions object:', JSON.stringify(positions));
         console.log('?? customizations array:', JSON.stringify(customizations));
         
-        // Add to basket
-        basket.push(newItem);
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        // Add to basket — merge if same product+color already exists
+        const existingIdx = basket.findIndex(i =>
+            i.productCode === newItem.productCode &&
+            (i.colorId === newItem.colorId || i.color === newItem.color)
+        );
+
+        if (existingIdx !== -1) {
+            const existing = basket[existingIdx];
+            Object.entries(newItem.quantities).forEach(([size, qty]) => {
+                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
+            });
+            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
+            existing.unitPrice = newItem.unitPrice;
+            if (newItem.positions && Object.keys(newItem.positions).length > 0) {
+                existing.positions = newItem.positions;
+            }
+            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
+                existing.positionDesigns = newItem.positionDesigns;
+            }
+            if (newItem.customizations && newItem.customizations.length > 0) {
+                existing.customizations = newItem.customizations;
+            }
+            existing.colorImage = newItem.colorImage || existing.colorImage;
+        } else {
+            basket.push(newItem);
+        }
         
-        console.log('? Basket saved! Total items:', basket.length);
+        // Save to localStorage SYNCHRONOUSLY first, then compress in background
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            console.log('✅ Basket saved! Total items:', basket.length);
+        } catch (e) {
+            console.warn('⚠️ localStorage full, trying to compress...', e);
+            // Synchronous fallback: strip base64 logos to thumbnail size inline
+            basket.forEach(item => {
+                if (item.positionDesigns) {
+                    Object.values(item.positionDesigns).forEach(d => {
+                        if (d.logo && d.logo.length > 50000) {
+                            // Keep a truncated version rather than nothing
+                            d.logo = d.logo.substring(0, 50000);
+                        }
+                    });
+                }
+            });
+            try {
+                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                console.log('✅ Basket saved after trimming!');
+            } catch (e2) {
+                console.error('❌ Cannot save basket:', e2);
+                showToast('Storage full — please submit your quote', true);
+            }
+        }
+        
+        // Background: compress images for future saves (non-blocking)
+        setTimeout(async () => {
+            try {
+                const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let changed = false;
+                for (let i = 0; i < bsk.length; i++) {
+                    const before = JSON.stringify(bsk[i]).length;
+                    bsk[i] = await compressItemImages(bsk[i]);
+                    if (JSON.stringify(bsk[i]).length < before) changed = true;
+                }
+                if (changed) {
+                    localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    console.log('✅ Basket images compressed in background');
+                }
+            } catch (err) {
+                console.warn('Background compression failed:', err);
+            }
+        }, 100);
         
         // Update UI
         updateCartBadge();
         updateBasketCount();
         updatePricingSummary();
         
-        console.log('? Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
+        console.log('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
     }
     
     // Reset size selection form (but keep color)
@@ -3178,20 +3257,17 @@
                 }
             }
             
-            // Update gallery thumbnails with new color
+            // Update gallery thumbnails – just highlight the matching color thumb
             const galleryThumbs = document.querySelectorAll('.gallery-thumbs .thumb');
             if (galleryThumbs.length > 0) {
-                const thumbImage = colorData.thumb || colorData.image;
                 galleryThumbs.forEach((thumb) => {
-                    const thumbImg = thumb.querySelector('img');
-                    if (thumbImg && thumbImage) {
-                        thumbImg.src = '';
-                        const cacheBuster = '_t=' + Date.now();
-                        thumbImg.src = thumbImage + (thumbImage.includes('?') ? '&' : '?') + cacheBuster;
-                        const view = thumb.getAttribute('data-view') || 'product';
-                        thumbImg.alt = `${state.product?.name || 'Product'} - ${view.charAt(0).toUpperCase() + view.slice(1)}`;
-                    }
+                    thumb.classList.toggle('active', thumb.getAttribute('data-color-id') === colorData.id);
                 });
+                // Scroll active thumb into view
+                const activeThumb = document.querySelector('.gallery-thumbs .thumb.active');
+                if (activeThumb) {
+                    activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
             }
         }
         
@@ -3581,6 +3657,9 @@
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
                 if (state.quantity > 0) {
+                    // Actually save to basket
+                    addToQuote({ silent: true });
+                    
                     // Change button to green "Saved to Quote"
                     saveBtn.classList.add('saved');
                     saveBtn.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
@@ -3591,6 +3670,9 @@
                         Saved to Quote
                     `;
                     state.selectionSaved = true;
+                    
+                    // Update summary to show the saved items
+                    updatePricingSummary();
                     
                     if (navigator.vibrate) navigator.vibrate(15);
                 }
@@ -3799,8 +3881,8 @@
         
         // Set flag to prevent auto-scroll when updating quantities
         state.isUpdatingQuantity = true;
-        updatePricingTiers();  // Rebuild tiers with correct active state
-        updatePricingSummary();
+        try { updatePricingTiers(); } catch (e) { console.error('updatePricingTiers error:', e); }
+        try { updatePricingSummary(); } catch (e) { console.error('updatePricingSummary error:', e); }
         state.isUpdatingQuantity = false;
         
         // Update live badge with current selection
@@ -4833,30 +4915,65 @@
         // Other badge (becomes "Add Logo" with cloud animation)
         const addBadge = method === 'embroidery' ? printBadge : embBadge;
         
-        if (methodBadge) {
-            methodBadge.classList.add('active');
-            methodBadge.dataset.role = 'method';
-        }
+        // Check if the other badge is hidden (e.g. embroidery-only products like beanies)
+        const otherBadgeHidden = addBadge && (addBadge.style.display === 'none' || addBadge.offsetParent === null);
         
-        if (addBadge) {
-            addBadge.classList.remove('active');
-            addBadge.classList.add('add-logo-btn');
-            addBadge.dataset.role = 'add-logo';
-            addBadge.dataset.activeMethod = method;
-            // Cloud upload animation SVG - unique ID per badge
-            const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            addBadge.innerHTML = `
-                <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <clipPath id="${uniqueId}">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
-                        </clipPath>
-                    </defs>
-                    <g clip-path="url(#${uniqueId})">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
-                    </g>
-                </svg>
-            `;
+        if (otherBadgeHidden) {
+            // Only one method available: transform the METHOD badge itself into "Upload Logo"
+            if (methodBadge) {
+                methodBadge.classList.add('active', 'add-logo-btn');
+                methodBadge.dataset.role = 'add-logo';
+                methodBadge.dataset.activeMethod = method;
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                const origPrice = methodBadge.querySelector('.price-value')?.textContent || (method === 'embroidery' ? '+ \u00A35.00' : '+ \u00A33.50');
+                methodBadge.innerHTML = `
+                    <span class="price-value" style="display:none;">${origPrice}</span>
+                    <span class="price-label" style="font-size:9px;">UPLOAD LOGO</span>
+                    <svg class="add-logo-cloud-icon" width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+                
+                // Store the method so the position is counted correctly
+                const position = card.dataset.position;
+                if (position) {
+                    state.positionMethods[position] = method;
+                }
+            }
+        } else {
+            // Normal two-badge flow
+            if (methodBadge) {
+                methodBadge.classList.add('active');
+                methodBadge.dataset.role = 'method';
+            }
+            
+            if (addBadge) {
+                addBadge.classList.remove('active');
+                addBadge.classList.add('add-logo-btn');
+                addBadge.dataset.role = 'add-logo';
+                addBadge.dataset.activeMethod = method;
+                // Cloud upload animation SVG - unique ID per badge
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                addBadge.innerHTML = `
+                    <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+            }
         }
     }
 
@@ -5480,7 +5597,91 @@
             
             if (pill) {
                 pill.hidden = false;
-                pill.textContent = 'CUSTOMIZATION READY';
+                pill.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    SAVE & CONTINUE
+                `;
+                
+                // Attach save handler to the pill
+                pill.onclick = () => {
+                    // Check quantity first
+                    if (state.quantity <= 0) {
+                        showToast('Please select at least one size first');
+                        return;
+                    }
+                    
+                    // Save to basket
+                    addCurrentSelectionToBasket();
+                    
+                    // Mark as saved
+                    state.selectionSaved = true;
+                    
+                    // Visual feedback on pill
+                    pill.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                            <path d="M5 13l4 4L19 7"/>
+                        </svg>
+                        SAVED!
+                    `;
+                    pill.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                    pill.style.boxShadow = '0 4px 12px rgba(22, 163, 74, 0.35)';
+                    
+                    // Also update the top Save button
+                    const topSaveBtn = document.getElementById('saveSelectionBtn');
+                    if (topSaveBtn) {
+                        topSaveBtn.classList.add('saved');
+                        topSaveBtn.innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Saved!
+                        `;
+                    }
+                    
+                    // Force logo into note box from state
+                    const logoSrc = getLogoFromState();
+                    if (logoSrc) {
+                        const noteBoxLogos = document.querySelectorAll('.note-box-logo');
+                        noteBoxLogos.forEach(logoBox => {
+                            logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                        });
+                    }
+                    
+                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                    
+                    // Reset after delay
+                    setTimeout(() => {
+                        resetSizeSelectionForm();
+                        pill.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            SAVE & CONTINUE
+                        `;
+                        pill.style.background = '';
+                        pill.style.boxShadow = '';
+                        
+                        if (topSaveBtn) {
+                            topSaveBtn.classList.remove('saved');
+                            topSaveBtn.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Save & Continue
+                            `;
+                        }
+                        
+                        showToast('Ready to add more items!');
+                    }, 1200);
+                };
             }
             
             // Transform "ADD LOGO" button to green "LOGO ADDED" when logo is uploaded
@@ -5507,6 +5708,20 @@
         
         // Update pricing
         updatePricingSummary();
+        
+        // IMMEDIATELY inject logo into the summary note box (current item)
+        if (designData.logo) {
+            const currentItemLogo = document.getElementById('currentItemLogo');
+            if (currentItemLogo) {
+                currentItemLogo.innerHTML = `<img src="${designData.logo}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+            }
+            // Also update any existing note-box-logo elements
+            document.querySelectorAll('.note-box-logo').forEach(logoBox => {
+                if (logoBox.querySelector('.no-logo')) {
+                    logoBox.innerHTML = `<img src="${designData.logo}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                }
+            });
+        }
         
         // Update logos list in order card
         updateOrderCardLogosList();
@@ -5675,58 +5890,85 @@
             // CRITICAL FIX: Customizations apply to ALL items with same productCode
             const cumulativeQtyForThisProduct = productCodeGroups[itemCode]?.totalQty || itemQty;
             
-            // Collect basket customizations
-            if (item.positions && Array.isArray(item.positions)) {
-                item.positions.forEach(pos => {
-                    if (pos.method) {
-                        const custUnitPrice = pos.unitPrice || (pos.method === 'embroidery' ? 5.00 : 3.50);
-                        // Check if this customization was already added for this productCode
-                        const existingCustom = allBasketCustomizations.find(c => 
-                            c.productCode === itemCode && 
-                            (c.position === (pos.name || pos.position)) && 
-                            c.method === (pos.method === 'embroidery' ? 'Embroidery' : 'Print')
-                        );
-                        
-                        if (!existingCustom) {
-                            allBasketCustomizations.push({
-                                productCode: itemCode,
-                                position: pos.name || pos.position,
-                                method: pos.method === 'embroidery' ? 'Embroidery' : 'Print',
-                                unitPrice: custUnitPrice,
-                                qty: cumulativeQtyForThisProduct,
-                                total: custUnitPrice * cumulativeQtyForThisProduct,
-                                color: item.color || item.colorName
-                            });
-                        }
-                        if (pos.method === 'embroidery') hasEmbroidery = true;
+            // Track whether we found customization data from positions (to avoid double-counting with customizations)
+            let foundPositionData = false;
+            
+            // Helper: normalize method string to canonical form
+            const normalizeMethod = (m) => (m || '').toLowerCase() === 'embroidery' ? 'Embroidery' : 'Print';
+            const isEmbroidery = (m) => (m || '').toLowerCase() === 'embroidery';
+            
+            // Collect basket customizations from positions (handles BOTH array and object formats)
+            const positionsArr = Array.isArray(item.positions)
+                ? item.positions
+                : (item.positions && typeof item.positions === 'object')
+                    ? Object.entries(item.positions).map(([key, val]) => ({ ...val, _posKey: key }))
+                    : [];
+            
+            positionsArr.forEach(pos => {
+                const posMethod = pos.method;
+                if (!posMethod) return;
+                foundPositionData = true;
+                
+                const methodLabel = normalizeMethod(posMethod);
+                const custUnitPrice = pos.unitPrice || (isEmbroidery(posMethod) ? 5.00 : 3.50);
+                const positionName = pos.name || pos.position || pos._posKey || 'Position';
+                
+                // Check if this customization was already added for this productCode
+                const existingCustom = allBasketCustomizations.find(c => 
+                    c.productCode === itemCode && 
+                    c.position === positionName && 
+                    c.method === methodLabel
+                );
+                
+                if (!existingCustom) {
+                    allBasketCustomizations.push({
+                        productCode: itemCode,
+                        position: positionName,
+                        method: methodLabel,
+                        unitPrice: custUnitPrice,
+                        qty: cumulativeQtyForThisProduct,
+                        total: custUnitPrice * cumulativeQtyForThisProduct,
+                        color: item.color || item.colorName
+                    });
+                }
+                if (isEmbroidery(posMethod)) hasEmbroidery = true;
+            });
+            
+            // Only check customizations if positions didn't already provide data (avoid double-counting)
+            if (!foundPositionData && item.customizations) {
+                // Handle both array format and object format
+                const custEntries = Array.isArray(item.customizations)
+                    ? item.customizations.map((c, i) => ({ ...c, _idx: i }))
+                    : (typeof item.customizations === 'object')
+                        ? Object.entries(item.customizations).map(([k, v]) => ({ ...v, _posKey: k }))
+                        : [];
+                
+                custEntries.forEach(posData => {
+                    if (!posData || !posData.method) return;
+                    
+                    const methodLabel = normalizeMethod(posData.method);
+                    const custUnitPrice = posData.unitPrice || (isEmbroidery(posData.method) ? 5.00 : 3.50);
+                    const positionName = posData.position || posData.name || posData._posKey || 'Position';
+                    
+                    // Check if already added
+                    const existingCustom = allBasketCustomizations.find(c => 
+                        c.productCode === itemCode && 
+                        c.position === positionName && 
+                        c.method === methodLabel
+                    );
+                    
+                    if (!existingCustom) {
+                        allBasketCustomizations.push({
+                            productCode: itemCode,
+                            position: positionName,
+                            method: methodLabel,
+                            unitPrice: custUnitPrice,
+                            qty: cumulativeQtyForThisProduct,
+                            total: custUnitPrice * cumulativeQtyForThisProduct,
+                            color: item.color || item.colorName
+                        });
                     }
-                });
-            }
-            // Also check customizations object format
-            if (item.customizations && typeof item.customizations === 'object') {
-                Object.entries(item.customizations).forEach(([posKey, posData]) => {
-                    if (posData && posData.method) {
-                        const custUnitPrice = posData.unitPrice || (posData.method === 'embroidery' ? 5.00 : 3.50);
-                        // Check if this customization was already added for this productCode
-                        const existingCustom = allBasketCustomizations.find(c => 
-                            c.productCode === itemCode && 
-                            (c.position === (posData.name || posKey)) && 
-                            c.method === (posData.method === 'embroidery' ? 'Embroidery' : 'Print')
-                        );
-                        
-                        if (!existingCustom) {
-                            allBasketCustomizations.push({
-                                productCode: itemCode,
-                                position: posData.name || posKey,
-                                method: posData.method === 'embroidery' ? 'Embroidery' : 'Print',
-                                unitPrice: custUnitPrice,
-                                qty: cumulativeQtyForThisProduct,
-                                total: custUnitPrice * cumulativeQtyForThisProduct,
-                                color: item.color || item.colorName
-                            });
-                        }
-                        if (posData.method === 'embroidery') hasEmbroidery = true;
-                    }
+                    if (isEmbroidery(posData.method)) hasEmbroidery = true;
                 });
             }
         });
@@ -5757,8 +5999,9 @@
                 console.log('?? Active badge found:', activeBadge, 'for method:', method);
                 
                 if (activeBadge) {
-                    const priceText = activeBadge.querySelector('.price-value').textContent;
-                    const priceMatch = priceText.match(/[\d.]+/);
+                    const priceText = activeBadge.querySelector('.price-value')?.textContent || '';
+                    const fallbackPrice = method === 'embroidery' ? '5.00' : '3.50';
+                    const priceMatch = priceText.match(/[\d.]+/) || fallbackPrice.match(/[\d.]+/);
                     if (priceMatch) {
                         const pricePerItem = parseFloat(priceMatch[0]);
                         const totalForPosition = pricePerItem * totalQtyForCustomizations;
@@ -5981,7 +6224,7 @@
         // GRAND TOTAL (ALL basket + current)
         const summaryTotal = document.getElementById('summaryTotal');
         if (summaryTotal) {
-            summaryTotal.innerHTML = `<span style="color: #10b981; font-weight: 600;">${formatCurrency(grandTotal)}</span> <span class="vat-suffix">${vatSuffix()}</span>`;
+            summaryTotal.innerHTML = `<span style="color: #E8A0BF; font-weight: 600;">${formatCurrency(grandTotal)}</span> <span class="vat-suffix">${vatSuffix()}</span>`;
         }
         
         // Also update the card header total to match
@@ -6081,6 +6324,22 @@
                     </div>
                 </div>
             `;
+            
+            // Add note box with logo for CURRENT item (pulled from live state)
+            const currentLogoSrc = getLogoFromState();
+            itemsHtml += `
+                <div class="basket-item-note-box current-note-box" data-index="current">
+                    <div class="note-box-header">NOTE / LOGO SIZE</div>
+                    <div class="note-box-body">
+                        <div class="note-box-logo" id="currentItemLogo">
+                            ${currentLogoSrc 
+                                ? '<img src="' + currentLogoSrc + '" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">'
+                                : '<span class="no-logo">No logo</span>'}
+                        </div>
+                        <textarea class="note-box-input" data-index="current" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200"></textarea>
+                    </div>
+                </div>
+            `;
         }
         
         // THEN: Show basket items
@@ -6132,6 +6391,26 @@
                         </button>
                     </div>
                 `;
+
+                // Logo + Note box
+                const logoSrc = getItemLogoSrc(item);
+                console.log('🖼️ NOTE BOX - item index:', index, 'logoSrc found:', !!logoSrc, 'logoSrc length:', logoSrc?.length || 0);
+                console.log('🖼️ item.positionDesigns:', item.positionDesigns ? Object.keys(item.positionDesigns) : 'NONE');
+                console.log('🖼️ item.positions:', item.positions ? (Array.isArray(item.positions) ? item.positions.length + ' array' : Object.keys(item.positions).join(',')) : 'NONE');
+                const savedNote = item.note || '';
+                itemsHtml += `
+                    <div class="basket-item-note-box" data-index="${index}">
+                        <div class="note-box-header">NOTE / LOGO SIZE</div>
+                        <div class="note-box-body">
+                            <div class="note-box-logo">
+                                ${logoSrc 
+                                    ? `<img src="${logoSrc}" alt="Logo" onerror="this.parentElement.innerHTML='<span class=\\'no-logo\\'>No logo</span>'">`
+                                    : '<span class="no-logo">No logo</span>'}
+                            </div>
+                            <textarea class="note-box-input" data-index="${index}" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200">${savedNote}</textarea>
+                        </div>
+                    </div>
+                `;
             });
         }
         
@@ -6146,6 +6425,71 @@
                 removeBasketItem(index);
             });
         });
+
+        // Attach note save listeners
+        basketItemsList.querySelectorAll('.note-box-input').forEach(textarea => {
+            let debounceTimer;
+            textarea.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const idx = parseInt(textarea.dataset.index);
+                    const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    if (bsk[idx]) {
+                        bsk[idx].note = textarea.value.trim();
+                        localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    }
+                }, 400);
+            });
+        });
+    }
+
+    // Extract logo image src from a basket item
+    function getItemLogoSrc(item) {
+        // Check customizations array (preferred)
+        if (item.customizations && Array.isArray(item.customizations)) {
+            const logo = item.customizations.find(c => c.type === 'logo' && c.content);
+            if (logo) return logo.content;
+            // Also check for logoUrl / logoData fields
+            const withLogo = item.customizations.find(c => c.logoUrl || c.logoData || c.uploadedLogo);
+            if (withLogo) return withLogo.logoUrl || withLogo.logoData || withLogo.uploadedLogo;
+        }
+        // Check positionDesigns
+        if (item.positionDesigns) {
+            for (const design of Object.values(item.positionDesigns)) {
+                if (design.logo) return design.logo;
+                if (design.logoUrl) return design.logoUrl;
+            }
+        }
+        // Check positions for logo data
+        if (item.positions) {
+            const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+            for (const pos of posArr) {
+                if (pos.logo) return pos.logo;
+                if (pos.logoUrl) return pos.logoUrl;
+            }
+        }
+        return null;
+    }
+    
+    // Get logo from current in-memory state (not localStorage)
+    function getLogoFromState() {
+        // Check positionDesigns
+        if (state.positionDesigns) {
+            for (const design of Object.values(state.positionDesigns)) {
+                if (design && design.logo) return design.logo;
+            }
+        }
+        // Check the design preview img as fallback
+        const previewImg = document.getElementById('designPreviewImg');
+        if (previewImg && previewImg.src && previewImg.src !== window.location.href) {
+            return previewImg.src;
+        }
+        // Check any logo overlay on position cards
+        const overlayImg = document.querySelector('.logo-overlay-img[src]');
+        if (overlayImg && overlayImg.src && overlayImg.src !== window.location.href) {
+            return overlayImg.src;
+        }
+        return null;
     }
     
     // Handle +/- quantity changes in basket
@@ -6602,11 +6946,16 @@
                     }
                 }
                 
+                // Include logo data from positionDesigns
+                const designData = state.positionDesigns?.[position];
+                const logoSrc = designData?.logo || null;
+
                 positions.push({
                     position: position,
                     name: positionName,
                     method: method, // 'print' or 'embroidery'
-                    unitPrice: unitPrice
+                    unitPrice: unitPrice,
+                    logo: logoSrc
                 });
             }
         });
@@ -6625,6 +6974,8 @@
             priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
             // Branding positions with method and pricing
             positions: positions,
+            // Design data per position (logos, text, etc.)
+            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             // Customization zones (logos/text) - legacy format
             customizations: getActiveCustomizations(),
             addedAt: new Date().toISOString()
@@ -6637,10 +6988,39 @@
             positions: newItem.positions
         });
         
-        // Add to basket
-        basket.push(newItem);
+        // Add to basket — merge if same product+color already exists
+        const existingIdx = basket.findIndex(i =>
+            i.productCode === newItem.productCode &&
+            (i.colorId === newItem.colorId || i.color === newItem.color)
+        );
+
+        if (existingIdx !== -1) {
+            const existing = basket[existingIdx];
+            // Merge quantities per size
+            Object.entries(newItem.quantities).forEach(([size, qty]) => {
+                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
+            });
+            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
+            // Update unit price to latest tier
+            existing.unitPrice = newItem.unitPrice;
+            // Overwrite customizations / positions with latest selection
+            if (newItem.positions && newItem.positions.length > 0) {
+                existing.positions = newItem.positions;
+            }
+            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
+                existing.positionDesigns = newItem.positionDesigns;
+            }
+            if (newItem.customizations && newItem.customizations.length > 0) {
+                existing.customizations = newItem.customizations;
+            }
+            // Keep latest image
+            existing.colorImage = newItem.colorImage || existing.colorImage;
+            console.log('🔄 Merged into existing basket item at index', existingIdx, 'totalQty:', existing.totalQty);
+        } else {
+            basket.push(newItem);
+        }
         
-        console.log('? Basket after push:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
+        console.log('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
         
         // Save to localStorage with error handling
         try {

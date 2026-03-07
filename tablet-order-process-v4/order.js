@@ -710,19 +710,43 @@ $(function() {
         $badges.each(function() { resetPriceBadge($(this)); });
         $selected.addClass('active');
 
-        $other
-            .attr('data-role', 'add-logo')
-            .addClass('add-logo-btn')
-            .html(
-                '<svg class="add-logo-cloud-icon" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-                '  <path d="M46 26c-.9-6.4-6.4-11.4-13.1-11.4-5.1 0-9.6 2.8-11.8 7-5.5.6-9.8 5.2-9.8 10.9 0 6.1 4.9 11.1 11.1 11.1h23.2c5.3 0 9.6-4.3 9.6-9.6 0-5-3.8-9.1-8.8-10z" fill="none" stroke="currentColor" stroke-width="3"/>' +
-                '  <g class="cloud-arrow-anim">' +
-                '    <path d="M30 23v18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>' +
-                '    <path d="M22 31l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
-                '  </g>' +
-                '</svg>' +
-                '<div class="add-logo-text">Add Logo</div>'
-            );
+        // Check if the other badge is hidden (e.g. embroidery-only products like beanies)
+        const otherBadgeHidden = $other.length === 0 || $other.css('display') === 'none' || $other.is(':hidden');
+
+        if (otherBadgeHidden) {
+            // Only one method available: transform the SELECTED badge itself into "Upload Logo"
+            var origPrice = $selected.find('.price-value').text() || (method === 'embroidery' ? '+ \u00A35.00' : '+ \u00A33.50');
+            $selected
+                .addClass('add-logo-btn')
+                .attr('data-role', 'add-logo')
+                .attr('data-active-method', method)
+                .html(
+                    '<span class="price-value" style="display:none;">' + origPrice + '</span>' +
+                    '<span class="price-label" style="font-size:9px;">UPLOAD LOGO</span>' +
+                    '<svg class="add-logo-cloud-icon" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+                    '  <path d="M46 26c-.9-6.4-6.4-11.4-13.1-11.4-5.1 0-9.6 2.8-11.8 7-5.5.6-9.8 5.2-9.8 10.9 0 6.1 4.9 11.1 11.1 11.1h23.2c5.3 0 9.6-4.3 9.6-9.6 0-5-3.8-9.1-8.8-10z" fill="none" stroke="currentColor" stroke-width="3"/>' +
+                    '  <g class="cloud-arrow-anim">' +
+                    '    <path d="M30 23v18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>' +
+                    '    <path d="M22 31l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '  </g>' +
+                    '</svg>'
+                );
+        } else {
+            // Normal two-badge flow
+            $other
+                .attr('data-role', 'add-logo')
+                .addClass('add-logo-btn')
+                .html(
+                    '<svg class="add-logo-cloud-icon" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+                    '  <path d="M46 26c-.9-6.4-6.4-11.4-13.1-11.4-5.1 0-9.6 2.8-11.8 7-5.5.6-9.8 5.2-9.8 10.9 0 6.1 4.9 11.1 11.1 11.1h23.2c5.3 0 9.6-4.3 9.6-9.6 0-5-3.8-9.1-8.8-10z" fill="none" stroke="currentColor" stroke-width="3"/>' +
+                    '  <g class="cloud-arrow-anim">' +
+                    '    <path d="M30 23v18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>' +
+                    '    <path d="M22 31l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '  </g>' +
+                    '</svg>' +
+                    '<div class="add-logo-text">Add Logo</div>'
+                );
+        }
 
         // Preserve logo-added state if a logo already exists
         const position = $card.data('position');
