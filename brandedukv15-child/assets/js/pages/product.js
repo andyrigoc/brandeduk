@@ -167,24 +167,66 @@ async function loadProductData() {
 
     let productData = null;
 
-    // ALWAYS fetch fresh data from API to ensure prices are up-to-date
+    // Fetch from BOTH endpoints: detail (/products/CODE) for full data (colors, sizes, description)
+    // and listing (/products?q=CODE) for correct/up-to-date pricing.
+    // The listing endpoint often has fresher sell prices than the detail endpoint.
     if (productCode) {
         console.log('Fetching product from API...', productCode);
         try {
-            const response = await fetch(`${API_BASE_URL}/products/${productCode}`);
-            if (response.ok) {
-                productData = await response.json();
-                console.log('✅ Loaded product from API:', productData);
-                // Save to sessionStorage for next time
+            // Fetch detail and listing in parallel
+            const [detailRes, listingRes] = await Promise.allSettled([
+                fetch(`${API_BASE_URL}/products/${productCode}`),
+                fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+            ]);
+
+            // Process detail endpoint (full product data)
+            if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
+                productData = await detailRes.value.json();
+                console.log('✅ Loaded product from detail API:', productData);
+            }
+
+            // Process listing endpoint (accurate pricing)
+            let listingProduct = null;
+            if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
+                const listingData = await listingRes.value.json();
+                const items = listingData.items || listingData.products || [];
+                listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                if (listingProduct) {
+                    console.log('✅ Listing price data:', {
+                        price: listingProduct.price,
+                        breaks: listingProduct.priceBreaks?.length || 0
+                    });
+                }
+            }
+
+            // Merge: use listing prices if available (they are more up-to-date)
+            if (productData && listingProduct) {
+                const detailPrice = Number(productData.price) || 0;
+                const listingPrice = Number(listingProduct.price) || 0;
+                if (listingPrice > 0 && listingPrice !== detailPrice) {
+                    console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                    productData.price = listingProduct.price;
+                    productData.basePrice = listingProduct.price;
+                    productData.sell_price = listingProduct.price;
+                }
+                if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
+                    productData.priceBreaks = listingProduct.priceBreaks;
+                }
+            } else if (!productData && listingProduct) {
+                // Detail failed, use listing data entirely
+                productData = listingProduct;
+                console.warn('⚠️ Using listing data (detail endpoint failed)');
+            }
+
+            if (productData) {
                 sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
             } else {
-                console.error('❌ API returned error:', response.status);
-                // Fallback to cached data only if API fails
+                // Both failed — try sessionStorage cache
                 const savedProductData = sessionStorage.getItem('selectedProductData');
                 if (savedProductData) {
                     try {
                         productData = JSON.parse(savedProductData);
-                        console.warn('⚠️ Using cached data due to API error');
+                        console.warn('⚠️ Using cached data (both endpoints failed)');
                     } catch (e) {
                         console.warn('Failed to parse saved product data:', e);
                     }
@@ -192,7 +234,6 @@ async function loadProductData() {
             }
         } catch (error) {
             console.error('❌ Failed to fetch product from API:', error);
-            // Fallback to cached data only if API fails
             const savedProductData = sessionStorage.getItem('selectedProductData');
             if (savedProductData) {
                 try {

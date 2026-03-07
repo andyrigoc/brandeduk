@@ -765,15 +765,20 @@
             }
 
             // ALWAYS fetch fresh product detail from API to get complete sizes
-            // The products list endpoint only returns partial size data
+            // Also fetch from listing endpoint for up-to-date pricing
             const productCode = savedProductCode || (cachedData ? cachedData.code : null);
             
             if (productCode) {
                 try {
                     console.log('📦 Fetching fresh product detail from API for:', productCode);
-                    const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
-                    if (res.ok) {
-                        productData = await res.json();
+                    // Fetch detail (full data) and listing (accurate prices) in parallel
+                    const [detailRes, listingRes] = await Promise.allSettled([
+                        fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`),
+                        fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+                    ]);
+
+                    if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
+                        productData = await detailRes.value.json();
                         // CRITICAL: API detail endpoint doesn't return top-level 'image' (model shot)
                         // Preserve it from the cached shop data if available
                         if (!productData.image && cachedData && cachedData.image) {
@@ -783,10 +788,40 @@
                         console.log('✅ Fetched product from API:', productData.code);
                         console.log('📐 Product sizes from API:', productData.sizes);
                         console.log('🎨 Product colors count:', (productData.colors || []).length);
+                    }
+
+                    // Merge listing prices (more up-to-date than detail endpoint)
+                    let listingProduct = null;
+                    if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
+                        const listingData = await listingRes.value.json();
+                        const items = listingData.items || listingData.products || [];
+                        listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                    }
+
+                    if (productData && listingProduct) {
+                        const detailPrice = Number(productData.price) || 0;
+                        const listingPrice = Number(listingProduct.price) || 0;
+                        if (listingPrice > 0 && listingPrice !== detailPrice) {
+                            console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                            productData.price = listingProduct.price;
+                            productData.basePrice = listingProduct.price;
+                        }
+                        if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
+                            productData.priceBreaks = listingProduct.priceBreaks;
+                        }
+                    } else if (!productData && listingProduct) {
+                        productData = listingProduct;
+                        if (!productData.image && cachedData && cachedData.image) {
+                            productData.image = cachedData.image;
+                        }
+                        console.warn('⚠️ Using listing data (detail endpoint failed)');
+                    }
+
+                    if (productData) {
                         // Update cache with complete data
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
-                        console.warn('Product API returned', res.status, '- falling back to cached data');
+                        console.warn('Product API returned error - falling back to cached data');
                     }
                 } catch (e) {
                     console.warn('Failed to fetch product from API, using cached data if available', e);
