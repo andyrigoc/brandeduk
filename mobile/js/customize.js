@@ -3329,6 +3329,18 @@
             colorCount.textContent = `${PRODUCT_COLORS.length} colors`;
         }
         
+        // Setup scroll fade indicator (hide when scrolled to bottom)
+        const scrollFade = document.getElementById('colorScrollFade');
+        if (scrollFade && colorOptions) {
+            const updateFade = () => {
+                const atBottom = colorOptions.scrollTop + colorOptions.clientHeight >= colorOptions.scrollHeight - 8;
+                scrollFade.classList.toggle('hidden', atBottom);
+            };
+            colorOptions.addEventListener('scroll', updateFade, { passive: true });
+            // Initial check after render
+            requestAnimationFrame(updateFade);
+        }
+        
         // Re-render color thumbnails in gallery when colors are updated
         renderColorThumbnails();
         

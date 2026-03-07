@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20260307A">
+    <link rel="stylesheet" href="css/mobile.css?v=20260307B">
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
@@ -220,8 +220,11 @@
                 <span class="color-count">37 colors</span>
             </h2>
             <div class="selected-color-name">Selected: <span id="selectedColor">Aquatic</span></div>
-            <div class="color-options" id="colorOptions">
-                <!-- Colors rendered dynamically by JS -->
+            <div class="color-options-wrapper">
+                <div class="color-options" id="colorOptions">
+                    <!-- Colors rendered dynamically by JS -->
+                </div>
+                <div class="color-scroll-fade" id="colorScrollFade"></div>
             </div>
         </section>
 
@@ -955,7 +958,7 @@
     </div>
 
     <script src="js/mobile.js?v=20260221c"></script>
-    <script src="js/customize.js?v=20260307B"></script>
+    <script src="js/customize.js?v=20260307C"></script>
     <script src="../brandedukv15-child/assets/js/api.js"></script>
     <script>
         // Basket link now navigates to basket.html directly
