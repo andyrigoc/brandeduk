@@ -266,11 +266,12 @@ function initMobileMenu() {
 }
 
 // ============================================
-// SEARCH
+// SEARCH (with live suggestions like main page)
 // ============================================
 function initSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchNavBtn = document.getElementById('searchNavBtn');
+    const _HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];
 
     if (searchNavBtn) {
         searchNavBtn.addEventListener('click', (e) => {
@@ -280,19 +281,100 @@ function initSearch() {
         });
     }
 
-    if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
+    // --- Search Suggestions Helper ---
+    function setupSearchSuggestions(inputEl, wrapperEl) {
+        if (!inputEl) return;
+
+        // Create suggestion box
+        let suggestionBox = wrapperEl.querySelector('.search-suggestions');
+        if (!suggestionBox) {
+            suggestionBox = document.createElement('div');
+            suggestionBox.className = 'search-suggestions';
+            wrapperEl.style.position = 'relative';
+            wrapperEl.appendChild(suggestionBox);
+        }
+
+        inputEl.setAttribute('autocomplete', 'off');
+
+        let debounceTimer;
+        const debounce = (cb, ms) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(cb, ms); };
+
+        const renderSuggestions = (data, query) => {
+            let { products = [] } = data;
+            // Strip hidden brand names
+            products = products.map(p => {
+                let label = p.label || '';
+                _HIDDEN_BRANDS.forEach(b => { label = label.replace(new RegExp(b, 'gi'), '').trim(); });
+                return { ...p, label };
+            });
+            if (products.length === 0) { suggestionBox.classList.remove('active'); return; }
+
+            const highlight = (text) => {
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                return text.replace(regex, '<mark>$1</mark>');
+            };
+
+            let html = '<div class="suggestion-group-title">Product Results</div>';
+            products.slice(0, 8).forEach(product => {
+                const detailUrl = `customize-mobile.html?code=${product.value}`;
+                const imgUrl = product.image || '../brandedukv15-child/assets/images/ui/no-image.png';
+                const safeName = (product.label || '').replace(/'/g, "\\'");
+                html += `
+                    <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}"
+                       onclick="sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${safeName}'}));">
+                        <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='../brandedukv15-child/assets/images/ui/no-image.png'">
+                        <div class="suggestion-item-content">
+                            <div class="suggestion-item-label">${highlight(product.label)}</div>
+                            <div class="suggestion-item-sub"><span>Code: ${product.value}</span></div>
+                        </div>
+                    </a>`;
+            });
+            html += `<a href="shop-mobile.html?q=${encodeURIComponent(query)}" class="view-all-results">View all results for "${query}" →</a>`;
+            suggestionBox.innerHTML = html;
+            suggestionBox.classList.add('active');
+        };
+
+        const fetchSuggestions = async (query) => {
+            if (query.length < 2) { suggestionBox.classList.remove('active'); return; }
+            try {
+                const res = await fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(query)}`);
+                if (!res.ok) throw new Error('API Error');
+                const data = await res.json();
+                renderSuggestions(data, query);
+            } catch (err) { console.error('Search Suggestion Error:', err); }
+        };
+
+        inputEl.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            debounce(() => fetchSuggestions(query), 300);
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!inputEl.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.classList.remove('active');
+            }
+        });
+
+        // Enter key → go to shop
+        inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
+                const query = e.target.value.trim();
                 if (query) {
-                    // Navigate to shop.html with 'q' parameter (not shop-mobile.html with 'search')
-                    window.location.href = `shop.html?q=${encodeURIComponent(query)}`;
+                    suggestionBox.classList.remove('active');
+                    window.location.href = `shop-mobile.html?q=${encodeURIComponent(query)}`;
                 }
             }
         });
     }
 
-    // Handle search wrapper (mobile header search) - perform search on icon click if query exists
+    // Attach suggestions to main #searchInput
+    if (searchInput) {
+        const wrapper = searchInput.closest('.search-wrapper-expand') || searchInput.parentElement;
+        setupSearchSuggestions(searchInput, wrapper);
+    }
+
+    // Handle search wrapper icon click (toggle focus / perform search)
     document.querySelectorAll('.search-wrapper-expand').forEach((wrapper) => {
         const input = wrapper.querySelector('.search-input-expand');
         const icon = wrapper.querySelector('.search-icon-expand');
@@ -300,11 +382,15 @@ function initSearch() {
         if (icon.dataset.searchToggleBound === 'true') return;
         icon.dataset.searchToggleBound = 'true';
 
+        // Also attach suggestions to this input if different from #searchInput
+        if (input !== searchInput) {
+            setupSearchSuggestions(input, wrapper);
+        }
+
         const performSearch = () => {
             const query = input.value.trim();
             if (query) {
-                // Navigate to shop.html with 'q' parameter
-                window.location.href = `shop.html?q=${encodeURIComponent(query)}`;
+                window.location.href = `shop-mobile.html?q=${encodeURIComponent(query)}`;
             }
         };
 
@@ -326,10 +412,8 @@ function initSearch() {
             event.stopPropagation();
             const isOpen = document.activeElement === input;
             if (isOpen && input.value.trim()) {
-                // If input is focused and has text, perform search
                 performSearch();
             } else {
-                // Otherwise, toggle focus
                 toggle(event);
             }
         });

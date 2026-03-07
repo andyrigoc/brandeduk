@@ -1577,7 +1577,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 32px;
+    gap: 24px;
     margin: 0;
     padding: 0 20px;
     font-weight: 600;
@@ -1862,6 +1862,170 @@ body {
     }
     .exclusives-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ── Brand dropdown (alphabetical list of all brands) ── */
+.brands-menu {
+    position: relative;
+}
+
+.brands-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 560px;
+    max-height: 480px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #d6deed;
+    box-shadow: 0 22px 46px rgba(15, 23, 42, 0.22);
+    display: none;
+    z-index: 55;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.brands-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
+    border-top: 1px solid #d6deed;
+    border-left: 1px solid #d6deed;
+    transform: translateX(-50%) rotate(45deg);
+    z-index: 1;
+}
+
+.brands-menu:hover .brands-dropdown,
+.brands-menu:focus-within .brands-dropdown,
+.brands-menu.is-open .brands-dropdown {
+    display: flex;
+}
+
+.brands-dropdown-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.brands-dropdown-title {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.brands-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 13px;
+    outline: none;
+    background: #f9fafb;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.brands-search-input:focus {
+    border-color: var(--brandeduk-header-teal, #14b8a6);
+    background: #fff;
+}
+
+.brands-dropdown-body {
+    overflow-y: auto;
+    padding: 12px 20px 16px;
+    flex: 1;
+}
+
+.brands-dropdown-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.brands-dropdown-body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.brands-letter-heading {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brandeduk-header-teal, #14b8a6);
+    padding: 8px 0 4px;
+    margin-top: 4px;
+    border-bottom: 1px solid #f3f4f6;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+}
+
+.brands-letter-heading:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.brands-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+}
+
+.brands-list a {
+    display: block;
+    padding: 5px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.brands-list a:hover {
+    background: #f0fdfa;
+    color: var(--brandeduk-header-teal, #14b8a6);
+}
+
+.brands-loading {
+    text-align: center;
+    padding: 32px 0;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.brands-no-results {
+    text-align: center;
+    padding: 24px 0;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+@media (max-width: 767px) {
+    .brands-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 60px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        transform: none;
+        max-height: 60vh;
+    }
+    .brands-dropdown::before {
+        display: none;
+    }
+    .brands-list {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -2894,4 +3058,46 @@ body {
 }
 .search-suggestions::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+}
+
+/* ── Mobile: widen suggestions dropdown to full screen width ── */
+@media (max-width: 767px) {
+    .search-suggestions {
+        position: fixed;
+        top: auto;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-height: 60vh;
+        border-radius: 14px;
+    }
+
+    .suggestion-item {
+        padding: 10px 14px;
+        gap: 12px;
+    }
+
+    .suggestion-item-image {
+        width: 56px;
+        height: 56px;
+        flex-shrink: 0;
+    }
+
+    .suggestion-item-label {
+        font-size: 13px;
+        white-space: normal;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .suggestion-item-sub {
+        font-size: 12px;
+    }
+
+    .suggestion-group-title {
+        padding: 10px 14px 6px;
+    }
 }

@@ -303,12 +303,61 @@
 
         const lower = raw.toLowerCase();
 
-        // Ensure ALL apron products (e.g. "Colours Bib Apron", "apron", "aprons") use bib apron images
-        if (lower === 'apron' || lower === 'aprons' || lower.includes('apron')) {
-            return 'Aprons';
-        }
+        // Normalize all known product type variants to their PRODUCT_TYPE_TO_FOLDER key
+        if (lower.includes('apron')) return 'Aprons';
+        if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat') || lower.includes('knitted hat')) return 'Beanies';
+        if (lower.includes('cap') || lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+        if (lower.includes('hoodie') || lower.includes('hooded')) return 'Hoodies';
+        if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan')) return 'Sweatshirts';
+        if (lower.includes('fleece')) return 'Fleece';
+        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('t-shirt') || lower.includes('tshirt') || lower.includes('tee ') || lower === 'tee' || lower.includes('vest top')) return 'T-shirts';
+        if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak') || lower.includes('windbreaker')) return 'Jackets';
+        if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
+        if (lower.includes('gilet') || lower.includes('body warmer') || lower.includes('bodywarmer')) return 'Gilets & Body Warmers';
+        if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('high vis') || lower.includes('safety vest')) return 'Safety Vests';
+        if (lower.includes('trouser') || lower.includes('pant') || lower.includes('chino')) return 'Trousers';
+        if (lower.includes('short') && !lower.includes('shirt')) return 'Shorts';
+        if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall') || lower.includes('duffle') || lower.includes('duffel')) return 'Bags';
+        if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+        if (lower.includes('rugby')) return 'Rugby Shirts';
+        if (lower.includes('cardigan')) return 'Cardigans';
+        if (lower.includes('jumper') || lower.includes('knitted')) return 'Knitted Jumpers';
 
         return raw;
+    }
+
+    // Infer product type from product name/description when API doesn't provide productType
+    function inferProductTypeFromName(text) {
+        if (!text) return '';
+        const lower = String(text).toLowerCase();
+
+        // Order matters: more specific matches first
+        if (lower.includes('apron')) return 'Aprons';
+        if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+        if (lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+        if (lower.includes('cap') && !lower.includes('capsule')) return 'Caps';
+        if (lower.includes('hoodie') || lower.includes('hooded sweat') || lower.includes('hooded top') || lower.includes('zip hood')) return 'Hoodies';
+        if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan sweat')) return 'Sweatshirts';
+        if (lower.includes('fleece')) return 'Fleece';
+        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('t-shirt') || lower.includes('tshirt') || (lower.includes('tee') && !lower.includes('steel'))) return 'T-shirts';
+        if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
+        if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak')) return 'Jackets';
+        if (lower.includes('gilet') || lower.includes('body warmer') || lower.includes('bodywarmer')) return 'Gilets & Body Warmers';
+        if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('high vis') || lower.includes('safety vest')) return 'Safety Vests';
+        if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+        if (lower.includes('short') && !lower.includes('shirt') && !lower.includes('sleeve')) return 'Shorts';
+        if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall')) return 'Bags';
+        if (lower.includes('blouse')) return 'Shirts';
+        if (lower.includes('rugby')) return 'Rugby Shirts';
+        if (lower.includes('cardigan')) return 'Cardigans';
+        if (lower.includes('jumper')) return 'Knitted Jumpers';
+        if (lower.includes('shirt')) return 'Shirts';
+
+        return '';
     }
     
     // Build positions dynamically from productType
@@ -332,7 +381,7 @@
             return null;
         }
         
-        const basePath = `brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+        const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
         const positions = {};
         
         imageFiles.forEach(filename => {
@@ -379,11 +428,13 @@
         }
 
         let productType = productData.productType || productData.category || productData.type;
-        // Last-resort inference from product name (fixes cases like "Colours Bib Apron")
+        // Last-resort inference from product name/description
         if ((!productType || String(productType).trim() === '') && productData.name) {
-            if (String(productData.name).toLowerCase().includes('apron')) {
-                productType = 'Aprons';
-            }
+            productType = inferProductTypeFromName(productData.name);
+        }
+        // If still empty, try from description
+        if ((!productType || String(productType).trim() === '') && productData.description) {
+            productType = inferProductTypeFromName(productData.description);
         }
         console.log('🎯 Updating position cards for productType:', productType);
         
@@ -836,13 +887,24 @@
     // Update visible product DOM elements after dynamic load
     function refreshProductDOM() {
         try {
+            // Bestseller badge - show only if API says so
+            const bestsellerBadge = document.getElementById('bestsellerBadge');
+            if (bestsellerBadge) {
+                const raw = state.product?.rawData;
+                const isBestSeller = raw && (raw.is_best_seller === true || raw.is_best_seller === 'true' || raw.is_best_seller === 1);
+                bestsellerBadge.style.display = isBestSeller ? '' : 'none';
+            }
+
             // Title and SKU
             const titleEl = document.querySelector('.product-title');
             const skuEl = document.querySelector('.product-sku');
             if (titleEl) titleEl.textContent = state.product?.name || titleEl.textContent;
             if (skuEl) {
-                const brandName = state.product?.brand || state.product?.name?.split(' ')[0] || '';
-                skuEl.textContent = `#${state.product?.code || ''} ${brandName}`;
+                let brandName = state.product?.brand || state.product?.name?.split(' ')[0] || '';
+                // Hide excluded brands
+                const _EXCL_CZ = ['absolute', 'ralawise'];
+                if (_EXCL_CZ.some(b => brandName.toLowerCase().includes(b))) brandName = '';
+                skuEl.textContent = `#${state.product?.code || ''}${brandName ? ' ' + brandName : ''}`;
             }
 
             // Main image - use model/hero image from API as default (product.image),

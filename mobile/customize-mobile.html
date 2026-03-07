@@ -164,7 +164,7 @@
         <!-- Product Gallery -->
         <section class="product-gallery">
             <div class="gallery-main" style="padding: 5px !important;">
-                <div class="gallery-badge bestseller">BESTSELLER</div>
+                <div class="gallery-badge bestseller" id="bestsellerBadge" style="display: none;">BESTSELLER</div>
                 <div class="product-img-placeholder large" id="productPreviewContainer">
                     <img src="" alt="Product" id="mainImage" style="width: 100%; height: 100%; object-fit: contain;">
                     <!-- Logo Overlay Box - posizioni predefinite -->
@@ -1103,15 +1103,56 @@
         function normalizeProductTypeForFolder(productType) {
             const raw = String(productType || '').trim();
             if (!raw) return '';
-
             const lower = raw.toLowerCase();
-
-            // Ensure ALL apron products (e.g. "Colours Bib Apron", "apron", "aprons") use bib apron images
-            if (lower === 'apron' || lower === 'aprons' || lower.includes('apron')) {
-                return 'Aprons';
-            }
-
+            if (lower.includes('apron')) return 'Aprons';
+            if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+            if (lower.includes('cap') || lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+            if (lower.includes('hoodie') || lower.includes('hooded')) return 'Hoodies';
+            if (lower.includes('sweatshirt') || lower.includes('crew neck sweat')) return 'Sweatshirts';
+            if (lower.includes('fleece')) return 'Fleece';
+            if (lower.includes('polo')) return 'Polos';
+            if (lower.includes('t-shirt') || lower.includes('tshirt') || lower.includes('tee ') || lower === 'tee') return 'T-shirts';
+            if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat')) return 'Jackets';
+            if (lower.includes('softshell') || lower.includes('soft shell')) return 'Softshells';
+            if (lower.includes('gilet') || lower.includes('body warmer')) return 'Gilets & Body Warmers';
+            if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('safety vest')) return 'Safety Vests';
+            if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+            if (lower.includes('short') && !lower.includes('shirt')) return 'Shorts';
+            if (lower.includes('sweatpant') || lower.includes('jogger')) return 'Sweatpants';
+            if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote')) return 'Bags';
+            if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+            if (lower.includes('rugby')) return 'Rugby Shirts';
+            if (lower.includes('cardigan')) return 'Cardigans';
+            if (lower.includes('jumper')) return 'Knitted Jumpers';
             return raw;
+        }
+
+        // Infer product type from product name when API doesn't provide productType
+        function inferProductTypeFromName(text) {
+            if (!text) return '';
+            const lower = String(text).toLowerCase();
+            if (lower.includes('apron')) return 'Aprons';
+            if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+            if (lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+            if (lower.includes('cap') && !lower.includes('capsule')) return 'Caps';
+            if (lower.includes('hoodie') || lower.includes('hooded sweat') || lower.includes('zip hood')) return 'Hoodies';
+            if (lower.includes('sweatshirt') || lower.includes('crew neck sweat')) return 'Sweatshirts';
+            if (lower.includes('fleece')) return 'Fleece';
+            if (lower.includes('polo')) return 'Polos';
+            if (lower.includes('t-shirt') || lower.includes('tshirt') || (lower.includes('tee') && !lower.includes('steel'))) return 'T-shirts';
+            if (lower.includes('softshell') || lower.includes('soft shell')) return 'Softshells';
+            if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat')) return 'Jackets';
+            if (lower.includes('gilet') || lower.includes('body warmer')) return 'Gilets & Body Warmers';
+            if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('safety vest')) return 'Safety Vests';
+            if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+            if (lower.includes('short') && !lower.includes('shirt') && !lower.includes('sleeve')) return 'Shorts';
+            if (lower.includes('sweatpant') || lower.includes('jogger')) return 'Sweatpants';
+            if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote')) return 'Bags';
+            if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+            if (lower.includes('rugby')) return 'Rugby Shirts';
+            if (lower.includes('cardigan')) return 'Cardigans';
+            if (lower.includes('jumper')) return 'Knitted Jumpers';
+            return '';
         }
         
         // Build positions dynamically from productType
@@ -1539,8 +1580,25 @@
                 return false;
             }
             
-            // Use productType directly from API (same as product-detail.html)
-            const productType = productData.productType;
+            // Use productType directly from API, or infer from product name
+            let productType = productData.productType;
+            
+            // If API doesn't provide productType, infer from product name
+            if (!productType || String(productType).trim() === '') {
+                productType = inferProductTypeFromName(productData.name);
+                if (productType) {
+                    console.log('🔍 Inferred productType from name:', productType);
+                    productData.productType = productType; // Set it so downstream code can use it
+                }
+            }
+            // If still empty, try from description
+            if (!productType || String(productType).trim() === '') {
+                productType = inferProductTypeFromName(productData.description);
+                if (productType) {
+                    console.log('🔍 Inferred productType from description:', productType);
+                    productData.productType = productType;
+                }
+            }
             
             if (productType) {
                 const mappedCategory = productTypeToCategory(productType) || 'default';

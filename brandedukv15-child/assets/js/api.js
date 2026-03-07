@@ -162,6 +162,9 @@ const BrandedAPI = (function () {
         return CATEGORY_SLUG_MAP[normalized] || normalized;
     }
 
+    // ── Brands whose NAME we hide from the UI (products still appear) ──
+    const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
+
     /**
      * Transform API product to frontend format
      */
@@ -207,9 +210,20 @@ const BrandedAPI = (function () {
         // Build price breaks from API data
         const priceBreaks = apiProduct.priceBreaks || apiProduct.price_breaks || [];
 
+        // Hide excluded brand names from the UI (products still appear)
+        let rawBrand = apiProduct.brand || apiProduct.brand_name || '';
+        let rawName = apiProduct.name || apiProduct.product_name || '';
+        if (HIDDEN_BRAND_NAMES.some(b => rawBrand.toLowerCase().includes(b))) {
+            rawBrand = '';
+        }
+        // Strip brand text from product name (e.g. "Absolute Apparel AA89 ..." → "AA89 ...")
+        HIDDEN_BRAND_NAMES.forEach(b => {
+            rawName = rawName.replace(new RegExp(b + '\\s*apparel', 'gi'), '').replace(new RegExp(b, 'gi'), '').replace(/^\s*[-–—]\s*/, '').trim();
+        });
+
         return {
             code: apiProduct.code || apiProduct.style_code || '',
-            name: apiProduct.name || apiProduct.product_name || '',
+            name: rawName,
             price: price,
             priceBreaks: priceBreaks,
             category: apiProduct.product_type || apiProduct.category || '',
@@ -217,7 +231,7 @@ const BrandedAPI = (function () {
             colors: colors,
             sizes: apiProduct.sizes || [],
             customization: customization,
-            brand: apiProduct.brand || apiProduct.brand_name || '',
+            brand: rawBrand,
             // Additional fields from API
             description: apiProduct.description || '',
             fabric: apiProduct.fabric || '',
@@ -253,7 +267,7 @@ const BrandedAPI = (function () {
 
         // Search query (mutually exclusive with productType)
         if (options.q || options.search) {
-            params.q = options.q || options.search;
+            params.q = (options.q || options.search || '').trim();
         } else if (options.productType) {
             // Only add productType if there's no search query
             params.productType = options.productType;
@@ -308,8 +322,10 @@ const BrandedAPI = (function () {
         const fetchOptions = options.signal ? { signal: options.signal } : {};
         const response = await apiRequest('/api/products', params, fetchOptions);
 
+        const allItems = (response.items || []).map(transformProduct);
+
         return {
-            items: (response.items || []).map(transformProduct),
+            items: allItems,
             page: response.page || params.page,
             limit: response.limit || params.limit,
             total: response.total || 0,

@@ -351,7 +351,7 @@ const ShopManager = (function () {
             <div class="product-info">
                 <div class="product-code">
                     ${product.code}
-                    ${brandLogo ? `<img src="${brandLogo}" alt="${brandName}" class="brand-logo" title="${brandName}">` : `<span class="brand-name">${brandName}</span>`}
+                    ${brandName && !['absolute','ralawise'].some(ex => brandName.toLowerCase().includes(ex)) ? (brandLogo ? `<img src="${brandLogo}" alt="${brandName}" class="brand-logo" title="${brandName}">` : `<span class="brand-name">${brandName}</span>`) : ''}
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">

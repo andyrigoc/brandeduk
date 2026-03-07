@@ -2438,6 +2438,21 @@
                                 <li><a href="#">Winter Workwear</a></li>
                             </ul>
                         </li>
+                        <li class="has-megamenu brands-menu">
+                            <a href="#" aria-haspopup="true">
+                                Brand
+                                <span class="nav-caret" aria-hidden="true"></span>
+                            </a>
+                            <div class="brands-dropdown" id="brandsDropdown" role="region" aria-label="Filter by brand">
+                                <div class="brands-dropdown-header">
+                                    <span class="brands-dropdown-title">All Brands</span>
+                                    <input type="text" class="brands-search-input" id="brandsSearchInput" placeholder="Search brands…" autocomplete="off">
+                                </div>
+                                <div class="brands-dropdown-body" id="brandsDropdownBody">
+                                    <div class="brands-loading">Loading brands…</div>
+                                </div>
+                            </div>
+                        </li>
                         <li><a href="index.html">BrandedUK</a></li>
                         <li class="has-megamenu exclusives-menu">
                             <a href="#" aria-haspopup="true">
@@ -4150,6 +4165,7 @@
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
                         data = await response.json();
+
                     }
 
                     // ── Hi-Vis merge: combine Safety Vests + "high visibility" + "hi-viz" + Yoko brand ──
@@ -5218,7 +5234,7 @@
             <div class="product-info">
                 <div class="product-code-row">
                     <span class="product-code">${product.code}</span>
-                    <span class="brand-name">${product.brand}</span>
+                    ${(product.brand && !['absolute','ralawise'].some(ex => product.brand.toLowerCase().includes(ex))) ? `<span class="brand-name">${product.brand}</span>` : ''}
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
@@ -6619,6 +6635,99 @@
                 }
             });
         });
+    </script>
+
+    <!-- ── Brand Dropdown: fetch brands from API and render A-Z ── -->
+    <script>
+    (function() {
+        'use strict';
+
+        const EXCLUDED = ['absolute', 'ralawise'];
+        const API_URL  = 'https://api.brandeduk.com/api/filters/brands';
+        let allBrands  = [];   // [{name:'Adidas', slug:'adidas'}, …]
+        let fetched    = false;
+
+        function slugify(name) {
+            return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+
+        async function loadBrands() {
+            if (fetched) return;
+            fetched = true;
+            try {
+                const res  = await fetch(API_URL);
+                const data = await res.json();
+                const raw  = data.brands || data || [];
+                // Normalize: API may return strings or {name,slug} objects
+                allBrands = raw.map(b => {
+                    const name = typeof b === 'string' ? b : (b.name || b.label || '');
+                    const slug = typeof b === 'string' ? slugify(b) : (b.slug || b.value || slugify(name));
+                    return { name, slug };
+                })
+                .filter(b => b.name && !EXCLUDED.some(ex => b.name.toLowerCase().includes(ex)))
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+                renderBrands(allBrands);
+            } catch (err) {
+                console.error('Brand dropdown fetch error:', err);
+                const body = document.getElementById('brandsDropdownBody');
+                if (body) body.innerHTML = '<div class="brands-no-results">Could not load brands</div>';
+            }
+        }
+
+        function renderBrands(brands) {
+            const body = document.getElementById('brandsDropdownBody');
+            if (!body) return;
+
+            if (brands.length === 0) {
+                body.innerHTML = '<div class="brands-no-results">No brands found</div>';
+                return;
+            }
+
+            let html = '';
+            let currentLetter = '';
+
+            brands.forEach(b => {
+                const letter = (b.name[0] || '#').toUpperCase();
+                if (letter !== currentLetter) {
+                    // Close previous grid
+                    if (currentLetter) html += '</div>';
+                    currentLetter = letter;
+                    html += `<div class="brands-letter-heading">${letter}</div>`;
+                    html += '<div class="brands-list">';
+                }
+                html += `<a href="shop-pc.html?brand=${encodeURIComponent(b.slug)}" title="${b.name}">${b.name}</a>`;
+            });
+            if (currentLetter) html += '</div>';
+
+            body.innerHTML = html;
+        }
+
+        // Search filter within dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('brandsSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const q = this.value.toLowerCase().trim();
+                    if (!q) {
+                        renderBrands(allBrands);
+                        return;
+                    }
+                    renderBrands(allBrands.filter(b => b.name.toLowerCase().includes(q)));
+                });
+                // Prevent clicks on input from closing/navigating
+                searchInput.addEventListener('click', e => e.stopPropagation());
+            }
+
+            // Fetch brands eagerly on first hover or on page load (deferred)
+            const brandsMenu = document.querySelector('.brands-menu');
+            if (brandsMenu) {
+                brandsMenu.addEventListener('mouseenter', loadBrands, { once: true });
+            }
+            // Also start loading after 1s idle as fallback
+            setTimeout(loadBrands, 1000);
+        });
+    })();
     </script>
 
     <script src="../brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>

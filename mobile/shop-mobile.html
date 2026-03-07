@@ -571,7 +571,7 @@
                 <div class="product-info">
                     <div class="product-code">
                         ${product.code}
-                        ${product.brand ? `<span class="brand-name">${product.brand}</span>` : ''}
+                        ${(product.brand && !['absolute','ralawise'].some(ex => product.brand.toLowerCase().includes(ex))) ? `<span class="brand-name">${product.brand}</span>` : ''}
                     </div>
                     <div class="product-name">${product.name}</div>
                     <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
