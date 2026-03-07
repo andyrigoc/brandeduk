@@ -2781,6 +2781,10 @@
         
         // Map images to positions
         const positions = {};
+        // Embroidery-only product types (no print option)
+        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+        const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
+
         imageFiles.forEach(filename => {
             const positionInfo = FILENAME_TO_POSITION[filename];
             if (positionInfo) {
@@ -2791,7 +2795,7 @@
                     label: positionInfo.label,
                     image: `${basePath}/${filename}`,
                     embroidery: prices.embroidery,
-                    print: prices.print,
+                    print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
                 };
             } else {
@@ -3258,6 +3262,16 @@
 
                 cardsArray.forEach(card => grid.appendChild(card));
             }
+        });
+        
+        // Hide/show PRINT legend badge and step-3 PRINT badge based on product type
+        const normalizedType = productData && productData.productType 
+            ? normalizeProductTypeForFolder(String(productData.productType).trim()) 
+            : '';
+        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+        const isEmbOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedType);
+        document.querySelectorAll('.key-badge.print, .cust-badge.print').forEach(badge => {
+            badge.style.display = isEmbOnly ? 'none' : '';
         });
     }
     

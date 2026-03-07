@@ -384,6 +384,10 @@
         const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
         const positions = {};
         
+        // Embroidery-only product types (no print option)
+        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+        const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
+
         imageFiles.forEach(filename => {
             const positionInfo = FILENAME_TO_POSITION[filename];
             if (positionInfo) {
@@ -394,7 +398,7 @@
                     label: positionInfo.label,
                     image: `${basePath}/${filename}`,
                     embroidery: prices.embroidery,
-                    print: prices.print,
+                    print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
                 };
             } else {
@@ -509,10 +513,16 @@
                             if (valueEl) valueEl.textContent = value;
                         }
                     }
-                    if (positionConfig.print) {
+                    if (positionConfig.print === null) {
+                        // Embroidery-only product: hide PRINT button
+                        card.dataset.print = '';
+                        const printBtn = card.querySelector('.price-print');
+                        if (printBtn) printBtn.style.display = 'none';
+                    } else if (positionConfig.print) {
                         card.dataset.print = positionConfig.print;
                         const printBtn = card.querySelector('.price-print');
                         if (printBtn) {
+                            printBtn.style.display = '';
                             const value = '£' + positionConfig.print;
                             printBtn.setAttribute('data-default-price', value);
                             const valueEl = printBtn.querySelector('.price-value');
@@ -527,6 +537,14 @@
         });
         
         console.log('✅ Position cards updated for productType:', productType);
+        
+        // Hide/show PRINT legend badge based on product type
+        const printKeyBadge = document.querySelector('.key-badge.print');
+        if (printKeyBadge) {
+            const normalizedType = normalizeProductTypeForFolder(productType);
+            const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Caps'];
+            printKeyBadge.style.display = EMBROIDERY_ONLY_TYPES.includes(normalizedType) ? 'none' : '';
+        }
     }
 
     // === State ===
