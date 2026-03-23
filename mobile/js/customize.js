@@ -766,7 +766,19 @@
 
             // ALWAYS fetch fresh product detail from API to get complete sizes
             // Also fetch from listing endpoint for up-to-date pricing
-            const productCode = savedProductCode || (cachedData ? cachedData.code : null);
+            // Read from sessionStorage first, then fall back to URL ?code= parameter
+            let productCode = savedProductCode || (cachedData ? cachedData.code : null);
+            
+            // Fallback: read code from URL parameter (for direct/shared links)
+            if (!productCode) {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    productCode = urlParams.get('code') || null;
+                    if (productCode) {
+                        console.log('🔗 Product code from URL parameter:', productCode);
+                    }
+                } catch (e) { /* ignore */ }
+            }
             
             if (productCode) {
                 try {
@@ -809,10 +821,18 @@
                         if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
                             productData.priceBreaks = listingProduct.priceBreaks;
                         }
+                        // For direct links: use listing image if detail has no model image
+                        if (!productData.image && listingProduct.image) {
+                            productData.image = listingProduct.image;
+                        }
                     } else if (!productData && listingProduct) {
                         productData = listingProduct;
                         if (!productData.image && cachedData && cachedData.image) {
                             productData.image = cachedData.image;
+                        }
+                        // Use listing image as main image for direct links (no cached shop data)
+                        if (!productData.image && listingProduct.image) {
+                            productData.image = listingProduct.image;
                         }
                         console.warn('⚠️ Using listing data (detail endpoint failed)');
                     }
@@ -3403,11 +3423,11 @@
         // Update summary
         updatePricingSummary();
 
-        // Scroll down to size & quantity section so the customer can choose
-        const sizeSection = document.getElementById('sizeQtySection');
-        if (sizeSection) {
+        // Scroll down to product info (title) so the customer sees pricing + sizes
+        const productInfo = document.querySelector('.product-info') || document.getElementById('productTitle');
+        if (productInfo) {
             setTimeout(() => {
-                sizeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                productInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 150);
         }
     }
