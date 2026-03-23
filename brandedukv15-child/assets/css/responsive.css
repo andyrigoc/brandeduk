@@ -532,6 +532,259 @@
 }
 
 /* ========================================
+   TABLET SIZE ADJUSTMENTS (768px - 1023px)
+   Keep mobile layout, scale up elements
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+    /* === General spacing === */
+    body {
+        font-size: 16px;
+    }
+
+    .mobile-main {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    /* === Estimated Delivery === */
+    .delivery-timeline {
+        gap: 16px;
+        padding: 16px 20px;
+    }
+
+    /* === Discount / Tier Pricing === */
+    .discount-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        overflow-x: visible;
+        margin: 20px 0 24px;
+    }
+
+    .disc-box {
+        min-width: auto;
+        padding: 14px 10px;
+    }
+
+    .disc-box .qty {
+        font-size: 0.82rem;
+    }
+
+    .disc-box .price {
+        font-size: 1.2rem;
+    }
+
+    .disc-box .badge {
+        font-size: 0.6rem;
+        padding: 5px 8px;
+    }
+
+    /* Tier pricing compact */
+    .tier-pricing-compact {
+        gap: 8px;
+        margin: 14px 0 20px;
+        padding: 12px;
+    }
+
+    .tier-item {
+        padding: 8px 12px;
+        min-width: 65px;
+        min-height: 56px;
+    }
+
+    .tier-qty {
+        font-size: 0.72rem;
+    }
+
+    .tier-price {
+        font-size: 1rem;
+    }
+
+    .tier-save {
+        font-size: 0.7rem;
+    }
+
+    /* === Size & Quantity === */
+    .sizes-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .size-box {
+        padding: 16px 12px;
+        min-height: 95px;
+    }
+
+    .size-header {
+        font-size: 0.95rem;
+    }
+
+    .qty-controls {
+        gap: 8px;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .qty-input {
+        width: 44px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    /* === Technique / Method Buttons === */
+    .method-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .method-btn {
+        padding: 14px 20px;
+        font-size: 1.05rem;
+    }
+
+    .type-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .type-btn {
+        padding: 18px 14px;
+        font-size: 1.05rem;
+    }
+
+    /* === Customization Badges === */
+    .cust-badge {
+        font-size: 0.82rem;
+        padding: 6px 14px;
+    }
+
+    /* === Color grid === */
+    .color-grid {
+        gap: 12px;
+    }
+
+    .color-thumb {
+        width: 52px;
+        height: 52px;
+    }
+
+    /* === Section headers === */
+    .right-column h3,
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    /* === Summary === */
+    .below-summary {
+        padding: 20px 24px;
+        gap: 16px;
+    }
+
+    .summary-items {
+        font-size: 1rem;
+    }
+
+    .summary-total {
+        font-size: 1.1rem;
+    }
+
+    .total-green {
+        font-size: 1.5rem;
+    }
+
+    /* === Save & Continue / CTA Buttons === */
+    .btn-add-to-quote,
+    .quote-button,
+    .btn-next {
+        padding: 18px 24px;
+        font-size: 1.05rem;
+    }
+
+    /* === Products Grid (home / shop) === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px;
+        padding: 16px 24px;
+    }
+
+    .bestseller-grid {
+        gap: 14px;
+        padding: 0 24px;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    /* === Product Card === */
+    .product-card {
+        padding: 14px;
+    }
+
+    .product-card-image {
+        height: 200px;
+    }
+
+    /* === Footer === */
+    .mobile-footer {
+        padding: 28px 24px;
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+    }
+
+    /* === Step Progress === */
+    .step-progress {
+        padding: 16px 24px;
+    }
+
+    .step-num {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+    }
+
+    /* === Page container (customize-detail) === */
+    .page-container {
+        padding: 0 24px;
+    }
+
+    .main-content {
+        padding: 24px;
+    }
+
+    /* === Upload dropzone === */
+    .upload-dropzone {
+        padding: 48px 24px;
+    }
+
+    /* === Nav buttons === */
+    .nav-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .btn-secondary,
+    .btn-next {
+        width: auto;
+        flex: 1;
+    }
+}
+
+/* ========================================
    DESKTOP OVERRIDES (1024px+)
    ======================================== */
 @media (min-width: 1024px) {
