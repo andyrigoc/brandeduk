@@ -925,6 +925,29 @@
     .hero-el__heading {
         font-size: 10px;
     }
+
+    /* Hero panels – center subjects in wider cards */
+    .hero-el .hero-el__bg:before {
+        background-position: center top;
+    }
+
+    /* Hoodie: shift right to keep girl centered */
+    .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+        background-position: calc(50% + 80px) top;
+    }
+
+    .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+        background-position: calc(50% + 30px) top;
+    }
+
+    /* Apron: shift right to keep person visible */
+    .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
+        background-position: calc(50% + 80px) top;
+    }
+
+    .hero-el:nth-child(1).s--active .hero-el__bg:before {
+        background-position: calc(50% + 25px) top;
+    }
 }
 
 /* ========================================
