@@ -23,7 +23,7 @@
   
   /* Hoodie non espanso */
   .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-    background-position: calc(50% - 55px) top !important;
+    background-position: calc(50% - 75px) top !important;
   }
   
   /* Hoodie espanso */
