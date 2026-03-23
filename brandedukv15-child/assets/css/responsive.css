@@ -933,7 +933,7 @@
 
     /* Hoodie: tablet position */
     .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-        background-position: calc(50% - 55px) center !important;
+        background-position: calc(50% - 5px) center !important;
     }
 
     /* Apron: shift right to keep person visible */
