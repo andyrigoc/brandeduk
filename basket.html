@@ -1538,7 +1538,7 @@
             }));
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html';
+            window.location.href = 'customize.html?code=' + encodeURIComponent(item.code || '');
         }
         
         // Customize multiple selected items with the same logo
@@ -1582,7 +1582,7 @@
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html';
+            window.location.href = 'customize.html?code=' + encodeURIComponent(firstItem.code || '');
         }
     </script>
 
