@@ -2372,8 +2372,8 @@
     <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
 
     <style>
-    /* Hero 1: mobile auto-scroll (marquee) + hide scrollbar */
-    @media (max-width: 767px) {
+    /* Hero 1: auto-scroll (marquee) + hide scrollbar */
+    @media (max-width: 1023px) {
         #hero1.hero-auto-scroll {
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch;
@@ -2398,7 +2398,7 @@
 
     <script>
     (function () {
-        if (!window.matchMedia || !window.matchMedia('(max-width: 767px)').matches) return;
+        if (!window.matchMedia || !window.matchMedia('(max-width: 1023px)').matches) return;
 
         var hero = document.getElementById('hero1');
         if (!hero) return;
