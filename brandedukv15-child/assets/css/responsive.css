@@ -547,13 +547,104 @@
         padding-right: 24px;
     }
 
+    /* === Header – scale up ~20% === */
+    .mobile-header .social-icons-mobile {
+        gap: 4px !important;
+    }
+
+    .mobile-header .social-icons-mobile .social-icon {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        border-radius: 9px !important;
+    }
+
+    .mobile-header .social-icons-mobile .social-icon i {
+        font-size: 14px !important;
+    }
+
+    .header-top-row {
+        padding: 8px 20px 3px 16px;
+    }
+
+    .vat-toggle-mobile {
+        gap: 8px;
+    }
+
+    .vat-label {
+        font-size: 12px;
+    }
+
+    .vat-toggle-label {
+        transform: scale(1.15);
+    }
+
+    .header-logo-row {
+        padding: 0px 20px 8px;
+        gap: 14px;
+    }
+
+    .mobile-logo-center .logo-badge-img {
+        height: 92px !important;
+        width: auto !important;
+    }
+
+    .header-logo-row .search-input-expand {
+        padding: 12px 17px;
+        font-size: 17px;
+    }
+
+    .header-logo-row .search-icon-expand {
+        width: 24px;
+        height: 24px;
+    }
+
+    .hamburger-btn {
+        width: 48px;
+        height: 48px;
+        gap: 6px;
+    }
+
+    .hamburger-btn span {
+        width: 24px;
+        height: 2.5px;
+    }
+
+    /* Bottom navigation – scale up ~20% */
+    .bottom-nav {
+        height: 77px;
+    }
+
+    .nav-item {
+        gap: 5px;
+        padding: 10px 19px;
+    }
+
+    .nav-item svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .nav-item-label {
+        font-size: 12px;
+    }
+
+    .nav-badge {
+        min-width: 22px;
+        height: 22px;
+        font-size: 13px;
+    }
+
     /* === Estimated Delivery === */
     .delivery-timeline {
         gap: 16px;
         padding: 16px 20px;
     }
 
-    /* === Discount / Tier Pricing === */
+    /* === Discount / Tier Pricing – FULL WIDTH === */
     .discount-row {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
@@ -580,6 +671,43 @@
         padding: 5px 8px;
     }
 
+    /* Pricing tiers grid – fill full width */
+    .pricing-tiers-grid {
+        display: grid !important;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        overflow-x: visible;
+        padding: 8px 4px 10px;
+    }
+
+    .tier-card {
+        min-width: 0;
+        flex-shrink: unset;
+        padding: 12px 8px;
+    }
+
+    .tier-qty {
+        font-size: 12px;
+    }
+
+    .tier-card .tier-price {
+        font-size: 17px;
+    }
+
+    .tier-card .tier-suffix {
+        font-size: 10px;
+    }
+
+    .tier-save {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .tier-best-label {
+        font-size: 9px;
+        padding: 2px 8px;
+    }
+
     /* Tier pricing compact */
     .tier-pricing-compact {
         gap: 8px;
@@ -593,15 +721,15 @@
         min-height: 56px;
     }
 
-    .tier-qty {
+    .tier-pricing-compact .tier-qty {
         font-size: 0.72rem;
     }
 
-    .tier-price {
+    .tier-pricing-compact .tier-price {
         font-size: 1rem;
     }
 
-    .tier-save {
+    .tier-pricing-compact .tier-save {
         font-size: 0.7rem;
     }
 
