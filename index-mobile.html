@@ -2952,12 +2952,8 @@
         // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
 
         window.Tawk_API = window.Tawk_API || {};
-        // Hide default bubble; open only from our in-site trigger.
         window.Tawk_API.onLoad = function () {
-            try {
-                document.body.classList.remove('tawk-open');
-                if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
-            } catch (e) {}
+            // Chat bubble now always visible
         };
         window.Tawk_API.onChatMaximized = function () {
             try { document.body.classList.add('tawk-open'); } catch (e) {}
@@ -2965,7 +2961,6 @@
         window.Tawk_API.onChatMinimized = function () {
             try {
                 document.body.classList.remove('tawk-open');
-                if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget();
             } catch (e) {}
         };
         window.Tawk_API.onChatHidden = function () {
@@ -3062,14 +3057,8 @@
             }, 5000);
         }
 
-        // Behave like a "popup": hide default bubble and open only from our UI.
-        waitForTawk(function (api) {
-            try { document.body.classList.remove('tawk-open'); } catch (e) {}
-            if (typeof api.hideWidget === 'function') { api.hideWidget(); return true; }
-            return false;
-        }, 8000);
-
-        // Header icon / any element marked as launcher
+        // Tawk bubble always visible – no need to hide/show from UI triggers
+        // Header icon opens chat maximized
         document.addEventListener('click', function (e) {
             var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
             if (!trigger) return;
@@ -3092,27 +3081,12 @@
         <script src="mobile/footer/footer.js?v=20260126" defer></script>
 
     <style>
-    /* Hide the Tawk launcher bubble by default (only show when user opens chat). */
-    body:not(.tawk-open) iframe[title="chat widget"],
-    body:not(.tawk-open) .tawk-min-container,
-    body:not(.tawk-open) #tawk-bubble-container {
-        opacity: 0 !important;
-        pointer-events: none !important;
-        transform: translateY(120px) !important;
-    }
-    body.tawk-open iframe[title="chat widget"],
-    body.tawk-open .tawk-min-container,
-    body.tawk-open #tawk-bubble-container {
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        transform: none !important;
-    }
-
+    /* Tawk chat bubble – always visible, positioned above bottom nav on mobile */
     @media (max-width: 1279px) {
         iframe[title="chat widget"],
         .tawk-min-container,
         #tawk-bubble-container {
-            bottom: 75px !important;
+            bottom: 85px !important;
         }
     }
     </style>
