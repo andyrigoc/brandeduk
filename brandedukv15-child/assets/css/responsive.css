@@ -5,7 +5,7 @@
    APPROCCIO MOBILE-FIRST:
    - Base styles = Mobile (< 768px)
    - @media (min-width: 768px) = Tablet
-   - @media (min-width: 1024px) = Desktop
+   - @media (min-width: 1280px) = Desktop
    
    ============================================ */
 
@@ -14,8 +14,8 @@
    ========================================
    
    Mobile:  0 - 767px (default/base)
-   Tablet:  768px - 1023px
-   Desktop: 1024px+
+   Tablet:  768px - 1279px
+   Desktop: 1280px+
    
    ======================================== */
 
@@ -532,10 +532,10 @@
 }
 
 /* ========================================
-   TABLET SIZE ADJUSTMENTS (768px - 1023px)
+   TABLET SIZE ADJUSTMENTS (768px - 1279px)
    Keep mobile layout, scale up elements
    ======================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1279px) {
 
     /* === General spacing === */
     body {
@@ -951,9 +951,9 @@
 }
 
 /* ========================================
-   DESKTOP OVERRIDES (1024px+)
+   DESKTOP OVERRIDES (1280px+)
    ======================================== */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     
     /* Hide tablet-top-bar on desktop */
     .tablet-top-bar {
