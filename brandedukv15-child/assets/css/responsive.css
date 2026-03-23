@@ -910,6 +910,21 @@
         width: auto;
         flex: 1;
     }
+
+    /* === Hero 1 – hide scrollbar, scale up for tablet === */
+    .hero-cont {
+        height: 290px;
+        scrollbar-width: none;           /* Firefox */
+        -ms-overflow-style: none;        /* IE/Edge */
+    }
+
+    .hero-cont::-webkit-scrollbar {
+        display: none;                   /* Chrome/Safari */
+    }
+
+    .hero-el__heading {
+        font-size: 10px;
+    }
 }
 
 /* ========================================
