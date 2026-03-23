@@ -27,9 +27,9 @@
 }
 
 /* ========================================
-   TABLET OVERRIDES (768px+)
+   TABLET OVERRIDES (768px+) - DISABLED
    ======================================== */
-@media (min-width: 768px) {
+@media (min-width: 99999px) {
     
     /* === Tablet Top Bar === */
     .tablet-top-bar {
@@ -368,10 +368,10 @@
 }
 
 /* ========================================
-   TABLET HERO 1 (768px–1023px)
+   TABLET HERO 1 (768px–1023px) - DISABLED
    - show ALL cards, no horizontal scroll
    ======================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .hero-cont {
         overflow-x: hidden;
     }
@@ -489,14 +489,14 @@
 }
 
 /* ========================================
-   TABLET HOME: LEFT ORDER SUMMARY SIDEBAR
+   TABLET HOME: LEFT ORDER SUMMARY SIDEBAR - DISABLED
    (index-mobile.html)
    ======================================== */
 .tablet-order-summary {
     display: none;
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .tablet-summary-layout {
         display: block;
         max-width: var(--container-max, 1280px);
@@ -514,10 +514,10 @@
 }
 
 /* ========================================
-   TABLET ONLY (768px - 1023px)
+   TABLET ONLY (768px - 1023px) - DISABLED
    Hero Banner 1: Get In Touch - maximize text height in its box
    ======================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .hero-banner .neon-container {
         padding: 0;
     }
