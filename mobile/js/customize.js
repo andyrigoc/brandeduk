@@ -872,8 +872,18 @@
             console.log('?? Cleared old color selection to prevent showing previous product image');
 
             // Map productData into our state
+            // Update URL with product code so the link is shareable
+            const finalCode = productData.code || productData.productCode || productData.sku || productData.id;
+            if (finalCode) {
+                const url = new URL(window.location);
+                if (url.searchParams.get('code') !== finalCode) {
+                    url.searchParams.set('code', finalCode);
+                    history.replaceState(null, '', url);
+                }
+            }
+
             state.product = state.product || {};
-            state.product.code = productData.code || productData.productCode || productData.sku || productData.id || state.product.code;
+            state.product.code = finalCode || state.product.code;
             state.product.sku = productData.sku || productData.code || productData.productCode || productData.id || state.product.sku;
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;

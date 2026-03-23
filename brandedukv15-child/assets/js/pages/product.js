@@ -257,6 +257,15 @@ async function loadProductData() {
     PRODUCT_CODE = productData.code;
     PRODUCT_NAME = productData.name;
 
+    // Update URL with product code so the link is shareable
+    if (PRODUCT_CODE) {
+        const url = new URL(window.location);
+        if (url.searchParams.get('code') !== PRODUCT_CODE) {
+            url.searchParams.set('code', PRODUCT_CODE);
+            history.replaceState(null, '', url);
+        }
+    }
+
     // Dispatch event so other scripts know product data is ready
     window.dispatchEvent(new CustomEvent('productDataLoaded', { detail: productData }));
 
