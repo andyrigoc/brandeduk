@@ -933,10 +933,12 @@
 
     /* Hoodie: shift right to keep girl centered */
     .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+        background-size: cover !important;
         background-position: calc(50% + 230px) top;
     }
 
     .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
+        background-size: cover !important;
         background-position: calc(50% + 180px) top;
     }
 
