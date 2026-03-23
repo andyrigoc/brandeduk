@@ -931,6 +931,11 @@
         background-position: center top;
     }
 
+    /* Hoodie: shift 50px right from mobile base */
+    .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+        background-position: calc(50% + 195px) center !important;
+    }
+
     /* Apron: shift right to keep person visible */
     .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
         background-position: calc(50% + 80px) top;
