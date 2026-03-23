@@ -2932,151 +2932,28 @@
 
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
-        var host = window.location.hostname;
-        // Tawk often blocks localhost; avoid noisy console errors during local dev.
-        // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
-        var allowLocal = false;
-        try {
-            var params = new URLSearchParams(window.location.search);
-            allowLocal = params.get('tawk') === '1' || params.get('chat') === '1';
-        } catch (e) {
-            allowLocal = false;
-        }
-        if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
-
-        var propertyId = '69628dafb346e51985794182';
-        var widgetId = '1jekfitse';
-
-        // If you create a separate Tawk property for staging, set it here:
-        // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
-
-        window.Tawk_API = window.Tawk_API || {};
-        window.Tawk_API.onLoad = function () {
-            // Force bubble visible (clears any previous hidden state from cookies)
-            try { if (typeof window.Tawk_API.showWidget === 'function') window.Tawk_API.showWidget(); } catch (e) {}
-        };
-        window.Tawk_API.onChatMaximized = function () {
-            try { document.body.classList.add('tawk-open'); } catch (e) {}
-        };
-        window.Tawk_API.onChatMinimized = function () {
-            try {
-                document.body.classList.remove('tawk-open');
-            } catch (e) {}
-        };
-        window.Tawk_API.onChatHidden = function () {
-            try { document.body.classList.remove('tawk-open'); } catch (e) {}
-        };
-        window.Tawk_LoadStart = new Date();
-
-        var s1 = document.createElement('script');
-        var s0 = document.getElementsByTagName('script')[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/' + propertyId + '/' + widgetId;
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin','*');
-        s0.parentNode.insertBefore(s1, s0);
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
     })();
     </script>
     <!--End of Tawk.to Script-->
 
+    <!-- Header chat icon opens Tawk maximized -->
     <script>
-    (function () {
-        var host = window.location.hostname;
-        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '';
-        var allowLocal = false;
-        try {
-            var params = new URLSearchParams(window.location.search);
-            allowLocal = params.get('tawk') === '1' || params.get('chat') === '1';
-        } catch (e) {
-            allowLocal = false;
+    document.addEventListener('click', function (e) {
+        var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
+        if (!trigger) return;
+        e.preventDefault();
+        if (window.Tawk_API && typeof Tawk_API.maximize === 'function') {
+            Tawk_API.maximize();
         }
-        var tawkExpected = !isLocal || allowLocal;
-
-        function waitForTawk(fn, timeoutMs) {
-            var start = Date.now();
-            (function tick() {
-                try {
-                    if (window.Tawk_API && typeof fn === 'function') {
-                        var res = fn(window.Tawk_API);
-                        if (res === true) return;
-                    }
-                } catch (e) {}
-                if (Date.now() - start >= timeoutMs) return;
-                setTimeout(tick, 150);
-            })();
-        }
-
-        function showLocalTawkHintOnce() {
-            if (window.__tawkLocalHintShown) return;
-            window.__tawkLocalHintShown = true;
-            alert('Chat is disabled on localhost.\n\nTo test locally, add ?tawk=1 (or ?chat=1) to the URL.\nOr test on the live domain.');
-        }
-
-        if (!tawkExpected) {
-            document.addEventListener('click', function (e) {
-                var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
-                if (!trigger) return;
-                e.preventDefault();
-                showLocalTawkHintOnce();
-            });
-
-            var fab = document.getElementById('chatbotBtn');
-            if (fab) {
-                try { fab.disabled = false; } catch (e) {}
-                fab.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    showLocalTawkHintOnce();
-                });
-            }
-            return;
-        }
-
-        var openInFlight = false;
-        var openResetTimer = null;
-
-        function openTawkPopup() {
-            if (openInFlight) return;
-            openInFlight = true;
-            if (openResetTimer) clearTimeout(openResetTimer);
-            openResetTimer = setTimeout(function () {
-                openInFlight = false;
-                try { document.body.classList.remove('tawk-open'); } catch (e) {}
-            }, 5500);
-
-            try { document.body.classList.add('tawk-open'); } catch (e) {}
-            waitForTawk(function (api) {
-                if (typeof api.showWidget === 'function') api.showWidget();
-                if (typeof api.maximize === 'function') {
-                    api.maximize();
-                    openInFlight = false;
-                    if (openResetTimer) clearTimeout(openResetTimer);
-                    openResetTimer = null;
-                    return true;
-                }
-                return false;
-            }, 5000);
-        }
-
-        // Tawk bubble always visible – no need to hide/show from UI triggers
-        // Header icon opens chat maximized
-        document.addEventListener('click', function (e) {
-            var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
-            if (!trigger) return;
-            e.preventDefault();
-            openTawkPopup();
-        });
-
-        // Mobile floating button
-        var fab = document.getElementById('chatbotBtn');
-        if (fab) {
-            try { fab.disabled = false; } catch (e) {}
-            fab.addEventListener('click', function (e) {
-                e.preventDefault();
-                openTawkPopup();
-            });
-        }
-    })();
+    });
     </script>
 
         <script src="mobile/footer/footer.js?v=20260126" defer></script>
