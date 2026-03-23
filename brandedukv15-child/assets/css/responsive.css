@@ -933,11 +933,11 @@
 
     /* Hoodie: shift right to keep girl centered */
     .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-        background-position: calc(50% + 80px) top;
+        background-position: calc(50% + 130px) top;
     }
 
     .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
-        background-position: calc(50% + 30px) top;
+        background-position: calc(50% + 80px) top;
     }
 
     /* Apron: shift right to keep person visible */
