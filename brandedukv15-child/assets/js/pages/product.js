@@ -1728,12 +1728,12 @@ function changeColor(name, url, colorDiv) {
     // Update step progress - step 1 completed
     updateStepProgress(1);
 
-    // Natural scroll to color section
-    const colorSection = document.querySelector('.color-grid');
-    if (colorSection) {
-        const rect = colorSection.getBoundingClientRect();
+    // Scroll down to size section so the customer can choose quantity
+    const sizeSection = document.getElementById('step2SizeSection') || document.querySelector('.sizes-grid')?.closest('section') || document.querySelector('.size-section');
+    if (sizeSection) {
+        const rect = sizeSection.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const targetY = rect.top + scrollTop - 150;
+        const targetY = rect.top + scrollTop - 100;
         window.scrollTo({
             top: targetY,
             behavior: 'smooth'

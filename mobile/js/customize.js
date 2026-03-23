@@ -3376,10 +3376,13 @@
                 galleryThumbs.forEach((thumb) => {
                     thumb.classList.toggle('active', thumb.getAttribute('data-color-id') === colorData.id);
                 });
-                // Scroll active thumb into view
+                // Scroll active thumb into view within the horizontal strip only (no vertical page scroll)
                 const activeThumb = document.querySelector('.gallery-thumbs .thumb.active');
-                if (activeThumb) {
-                    activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                const thumbsContainer = document.querySelector('.gallery-thumbs');
+                if (activeThumb && thumbsContainer) {
+                    const thumbLeft = activeThumb.offsetLeft - thumbsContainer.offsetLeft;
+                    const centerOffset = thumbLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.offsetWidth / 2);
+                    thumbsContainer.scrollTo({ left: centerOffset, behavior: 'smooth' });
                 }
             }
         }
@@ -3399,6 +3402,14 @@
 
         // Update summary
         updatePricingSummary();
+
+        // Scroll down to size & quantity section so the customer can choose
+        const sizeSection = document.getElementById('sizeQtySection');
+        if (sizeSection) {
+            setTimeout(() => {
+                sizeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
+        }
     }
 
     // Render color buttons with product thumbnails
