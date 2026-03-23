@@ -121,8 +121,10 @@
                 return new Promise(function (resolve) {
                     try {
                         window.Tawk_API = window.Tawk_API || {};
-                        // Let the bubble stay visible – destination pages control visibility
-                        window.Tawk_API.onLoad = function () {};
+                        // Force bubble visible to clear any stale hidden state
+                        window.Tawk_API.onLoad = function () {
+                            try { if (typeof window.Tawk_API.showWidget === 'function') window.Tawk_API.showWidget(); } catch (e) {}
+                        };
                         window.Tawk_API.onChatMinimized = function () {};
                         window.Tawk_LoadStart = new Date();
 

@@ -2953,7 +2953,8 @@
 
         window.Tawk_API = window.Tawk_API || {};
         window.Tawk_API.onLoad = function () {
-            // Chat bubble now always visible
+            // Force bubble visible (clears any previous hidden state from cookies)
+            try { if (typeof window.Tawk_API.showWidget === 'function') window.Tawk_API.showWidget(); } catch (e) {}
         };
         window.Tawk_API.onChatMaximized = function () {
             try { document.body.classList.add('tawk-open'); } catch (e) {}
