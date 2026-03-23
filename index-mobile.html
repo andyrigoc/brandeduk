@@ -924,68 +924,124 @@
             </a>
         </section>
 
-        <!-- Categories Section -->
-        <!-- Categories Section -->
+        <!-- Categories Section – Infinite Carousel -->
         <section class="section-block">
             <div class="section-header">
                 <h2 class="section-title">Shop by Category</h2>
                 <a href="shop.html?category=all" class="see-all-link">See All</a>
             </div>
-            <div class="categories-scroll">
-                <a href="shop.html?category=t-shirts" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
-                    </div>
-                    <span>T-Shirts</span>
-                </a>
-                <a href="shop.html?category=polos" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
-                    </div>
-                    <span>Polos</span>
-                </a>
-                <a href="shop.html?category=hoodies" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
-                    </div>
-                    <span>Hoodies</span>
-                </a>
-                <a href="shop.html?category=jackets" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
-                    </div>
-                    <span>Jackets</span>
-                </a>
-                <a href="shop.html?category=hi-vis" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
-                    </div>
-                    <span>Hi-Vis</span>
-                </a>
-                <a href="shop.html?category=fleece" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
-                    </div>
-                    <span>Fleeces</span>
-                </a>
-                <a href="shop.html?category=bags" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
-                    </div>
-                    <span>Bags</span>
-                </a>
-                <a href="shop.html?category=caps" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
-                    </div>
-                    <span>Caps</span>
-                </a>
-                <a href="shop.html?category=aprons" class="category-card">
-                    <div class="category-icon">
-                        <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
-                    </div>
-                    <span>Aprons</span>
-                </a>
+            <div class="categories-marquee" id="categoriesMarquee">
+                <div class="categories-track" id="categoriesTrack">
+                    <a href="shop.html?category=t-shirts" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                        </div>
+                        <span>T-Shirts</span>
+                    </a>
+                    <a href="shop.html?category=polos" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                        </div>
+                        <span>Polos</span>
+                    </a>
+                    <a href="shop.html?category=hoodies" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                        </div>
+                        <span>Hoodies</span>
+                    </a>
+                    <a href="shop.html?category=jackets" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                        </div>
+                        <span>Jackets</span>
+                    </a>
+                    <a href="shop.html?category=hi-vis" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                        </div>
+                        <span>Hi-Vis</span>
+                    </a>
+                    <a href="shop.html?category=fleece" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                        </div>
+                        <span>Fleeces</span>
+                    </a>
+                    <a href="shop.html?category=bags" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                        </div>
+                        <span>Bags</span>
+                    </a>
+                    <a href="shop.html?category=caps" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                        </div>
+                        <span>Caps</span>
+                    </a>
+                    <a href="shop.html?category=aprons" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                        </div>
+                        <span>Aprons</span>
+                    </a>
+                    <!-- Duplicated set for seamless infinite loop -->
+                    <a href="shop.html?category=t-shirts" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt="">
+                        </div>
+                        <span>T-Shirts</span>
+                    </a>
+                    <a href="shop.html?category=polos" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt="">
+                        </div>
+                        <span>Polos</span>
+                    </a>
+                    <a href="shop.html?category=hoodies" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="">
+                        </div>
+                        <span>Hoodies</span>
+                    </a>
+                    <a href="shop.html?category=jackets" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt="">
+                        </div>
+                        <span>Jackets</span>
+                    </a>
+                    <a href="shop.html?category=hi-vis" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt="">
+                        </div>
+                        <span>Hi-Vis</span>
+                    </a>
+                    <a href="shop.html?category=fleece" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt="">
+                        </div>
+                        <span>Fleeces</span>
+                    </a>
+                    <a href="shop.html?category=bags" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt="">
+                        </div>
+                        <span>Bags</span>
+                    </a>
+                    <a href="shop.html?category=caps" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt="">
+                        </div>
+                        <span>Caps</span>
+                    </a>
+                    <a href="shop.html?category=aprons" class="category-card">
+                        <div class="category-icon">
+                            <img src="brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt="">
+                        </div>
+                        <span>Aprons</span>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -3065,6 +3121,119 @@
         }
     }
     </style>
+
+    <!-- Categories Marquee – drag/swipe support -->
+    <script>
+    (function () {
+        var marquee = document.getElementById('categoriesMarquee');
+        var track = document.getElementById('categoriesTrack');
+        if (!marquee || !track) return;
+
+        var isDragging = false;
+        var startX = 0;
+        var currentTranslate = 0;
+        var prevTranslate = 0;
+        var animId = 0;
+        var dragMoved = false;
+
+        function getTranslateX() {
+            var st = window.getComputedStyle(track);
+            var matrix = st.transform || st.webkitTransform;
+            if (matrix && matrix !== 'none') {
+                var vals = matrix.match(/matrix.*\((.+)\)/);
+                if (vals) {
+                    var parts = vals[1].split(', ');
+                    return parseFloat(parts[4]) || 0;
+                }
+            }
+            return 0;
+        }
+
+        function halfWidth() {
+            return track.scrollWidth / 2;
+        }
+
+        function wrapTranslate(val) {
+            var hw = halfWidth();
+            while (val > 0) val -= hw;
+            while (val < -hw) val += hw;
+            return val;
+        }
+
+        function setPosition() {
+            currentTranslate = wrapTranslate(currentTranslate);
+            track.style.transform = 'translateX(' + currentTranslate + 'px)';
+        }
+
+        function startDrag(x) {
+            isDragging = true;
+            dragMoved = false;
+            startX = x;
+            track.style.animation = 'none';
+            prevTranslate = getTranslateX();
+            currentTranslate = prevTranslate;
+            marquee.classList.add('is-dragging');
+            animId = requestAnimationFrame(animateLoop);
+        }
+
+        function moveDrag(x) {
+            if (!isDragging) return;
+            var diff = x - startX;
+            if (Math.abs(diff) > 3) dragMoved = true;
+            currentTranslate = prevTranslate + diff;
+            setPosition();
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            cancelAnimationFrame(animId);
+            marquee.classList.remove('is-dragging');
+            currentTranslate = wrapTranslate(currentTranslate);
+            track.style.transform = 'translateX(' + currentTranslate + 'px)';
+            track.style.animation = '';
+            track.style.animationDelay = '';
+            var hw = halfWidth();
+            var duration = 25;
+            var fraction = (currentTranslate + hw) / hw;
+            var offset = -(fraction * duration);
+            track.style.animationDelay = offset + 's';
+        }
+
+        function animateLoop() {
+            if (isDragging) {
+                animId = requestAnimationFrame(animateLoop);
+            }
+        }
+
+        // Prevent link clicks after drag
+        marquee.addEventListener('click', function (e) {
+            if (dragMoved) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
+
+        // Mouse events
+        marquee.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            startDrag(e.clientX);
+        });
+        window.addEventListener('mousemove', function (e) {
+            moveDrag(e.clientX);
+        });
+        window.addEventListener('mouseup', endDrag);
+
+        // Touch events
+        marquee.addEventListener('touchstart', function (e) {
+            startDrag(e.touches[0].clientX);
+        }, { passive: true });
+        marquee.addEventListener('touchmove', function (e) {
+            moveDrag(e.touches[0].clientX);
+        }, { passive: true });
+        marquee.addEventListener('touchend', endDrag);
+    })();
+    </script>
 
 </body>
 </html>

@@ -8533,8 +8533,42 @@ a {
 }
 
 /* ============================================
-   CATEGORIES - SIMPLE SCROLL
+   CATEGORIES - INFINITE MARQUEE CAROUSEL
    ============================================ */
+.categories-marquee {
+    overflow: hidden;
+    position: relative;
+    padding: 0 0 8px;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.categories-marquee:active {
+    cursor: grabbing;
+}
+
+.categories-track {
+    display: flex;
+    gap: 5px;
+    width: max-content;
+    animation: marqueeScroll 25s linear infinite;
+}
+
+.categories-marquee:hover .categories-track,
+.categories-marquee.is-dragging .categories-track {
+    animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 .categories-scroll {
     display: flex;
     gap: 5px;
