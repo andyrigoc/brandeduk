@@ -17,6 +17,230 @@
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260109e">
     <style>
+        /* ============================================
+           FEATURED PRODUCTS CAROUSEL & CARDS
+           ============================================ */
+        .featured-products-wrapper {
+            position: relative;
+            margin: 20px 0;
+            padding: 0 10px; /* space for absolute buttons if they go outside */
+        }
+        .featured-products-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: auto; /* native jump for infinite looping */
+            gap: 24px;
+            padding: 15px 4px 30px 4px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            /* Removed scroll-snap so smooth linear movement isn't jerky */
+            will-change: transform, scroll-position;
+        }
+        .featured-products-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Navigation Buttons */
+        .featured-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: #374151;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+        }
+        .featured-control:hover {
+            background: #7c3aed;
+            color: #fff;
+            border-color: #7c3aed;
+        }
+        .featured-control.prev { left: -15px; }
+        .featured-control.next { right: -15px; }
+
+        /* -- Card -- */
+        .featured-card {
+            width: 280px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f0f0f0;
+        }
+        .featured-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 44px rgba(0,0,0,0.12);
+        }
+
+        /* Media */
+        .featured-card .fc-media {
+            position: relative;
+        }
+        .featured-card .fc-figure {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #fafafa, #f1f1f1);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+        .featured-card .fc-figure img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+        .featured-card:hover .fc-figure img {
+            transform: scale(1.04);
+        }
+
+        /* Badges */
+        .featured-card .fc-badges {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            z-index: 3;
+        }
+        .featured-card .fc-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .fc-badge.best-seller  { background: #dc2626; }
+        .fc-badge.featured     { background: #7c3aed; }
+        .fc-badge.embroidery   { background: #3b82f6; }
+        .fc-badge.print        { background: #eab308; }
+        .fc-badge.recommended  { background: #059669; }
+
+        /* Info */
+        .featured-card .fc-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .featured-card .fc-code {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .featured-card .fc-code .fc-brand-name {
+            font-size: 10px;
+            font-weight: 500;
+            color: #b0b0b0;
+            letter-spacing: 0.5px;
+        }
+        .featured-card .fc-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .featured-card .fc-price {
+            margin-top: 4px;
+        }
+        .featured-card .fc-price-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-right: 4px;
+        }
+        .featured-card .fc-price-value {
+            font-size: 17px;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+        .featured-card .fc-price-suffix {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-left: 4px;
+        }
+
+        .featured-card-skeleton {
+            width: 280px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+        }
+        .featured-card-skeleton .skeleton-img {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: fcShimmer 1.4s ease-in-out infinite;
+        }
+        .featured-card-skeleton .skeleton-line {
+            height: 14px;
+            margin: 10px 16px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: fcShimmer 1.4s ease-in-out infinite;
+        }
+        .skeleton-line.w60 { width: 60%; }
+        .skeleton-line.w80 { width: 80%; }
+        .skeleton-line.w40 { width: 40%; }
+        @keyframes fcShimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Error state */
+        .featured-error {
+            width: 100%;
+            text-align: center;
+            padding: 48px 20px;
+            color: #6b7280;
+        }
+        .featured-error h3 { font-size: 18px; color: #374151; margin-bottom: 8px; }
+        .featured-error p  { font-size: 14px; }
+        .featured-error button {
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+    </style>
+    <style>
         /* Reduce searchbar header gap - PC only */
         .searchbar-header {
             padding: 0 !important;
@@ -1717,57 +1941,24 @@
         </div>
     </section>
 
-    <!-- Best Sellers Section -->
-    <section class="bestsellers-section">
+    <!-- Home Highlights (Featured Products) - Dynamic from API -->
+    <section class="bestsellers-section" id="featuredSection">
         <div class="section-container">
             <div class="section-header">
-                <h2 class="section-title">Best Sellers</h2>
-                <a href="shop-pc.html?sort=bestsellers" class="see-all-link">View All →</a>
+                <h2 class="section-title">Featured Products</h2>
+                <a href="shop-pc.html?sort=featured" class="see-all-link">View All →</a>
             </div>
-            <div class="products-grid">
-                <div class="product-card" data-product="UC101">
-                    <div class="product-image">
-                        <img src="hero/images/Polo.jpg" alt="Work Polo">
-                        <span class="product-badge bestseller">Best Seller</span>
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-name">Work Polo</h4>
-                        <p class="product-price" data-price-exc="8.95">£8.95</p>
-                        <a href="customize.html?product=UC101" class="product-btn">Add Logo</a>
-                    </div>
+            <div class="featured-products-wrapper">
+                <button type="button" class="featured-control prev" id="featPrev" aria-label="Previous Products"><i class="fas fa-chevron-left"></i></button>
+                <div class="featured-products-carousel" id="featuredProductsCarousel">
+                    <!-- Skeleton loading cards -->
+                    <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+                    <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+                    <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+                    <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+                    <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
                 </div>
-                <div class="product-card" data-product="JH001">
-                    <div class="product-image">
-                        <img src="hero/images/hoodies.jpg" alt="Grey Hoodie" style="object-position: 0% top;">
-                        <span class="product-badge bestseller">Best Seller</span>
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-name">Grey Hoodie</h4>
-                        <p class="product-price" data-price-exc="14.50">£14.50</p>
-                        <a href="customize.html?product=JH001" class="product-btn">Add Logo</a>
-                    </div>
-                </div>
-                <div class="product-card" data-product="HV001">
-                    <div class="product-image">
-                        <img src="hero/images/Hi-Viz.jpg" alt="Hi-Vis Vest">
-                        <span class="product-badge new">New</span>
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-name">Hi-Vis Vest</h4>
-                        <p class="product-price" data-price-exc="9.95">£9.95</p>
-                        <a href="customize.html?product=HV001" class="product-btn">Add Logo</a>
-                    </div>
-                </div>
-                <div class="product-card" data-product="UC301">
-                    <div class="product-image">
-                        <img src="hero/images/beanie.jpg" alt="Beanie">
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-name">Beanie Hat</h4>
-                        <p class="product-price" data-price-exc="6.99">£6.99</p>
-                        <a href="customize.html?product=UC301" class="product-btn">Add Logo</a>
-                    </div>
-                </div>
+                <button type="button" class="featured-control next" id="featNext" aria-label="Next Products"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </section>
@@ -3090,6 +3281,219 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script src="brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
+
+<!-- Featured Products (Home Highlights) -->
+<script>
+(function() {
+    'use strict';
+
+    // VAT helpers (reuse page-level if available)
+    var VAT_KEY = 'brandeduk-vat-mode';
+    function _isVatOn() {
+        try { return localStorage.getItem(VAT_KEY) === 'on'; } catch(e) { return false; }
+    }
+    function _fmtCurrency(base) {
+        var v = Number(base) || 0;
+        if (_isVatOn()) v *= 1.20;
+        return '\u00A3' + v.toFixed(2);
+    }
+    function _vatSuffix() { return _isVatOn() ? 'inc VAT' : 'ex VAT'; }
+    function _priceRange(min, max) {
+        if (Math.abs(min - max) < 0.005) return _fmtCurrency(min);
+        return _fmtCurrency(min) + ' \u2013 ' + _fmtCurrency(max);
+    }
+    function _productMinMax(product) {
+        var breaks = product.priceBreaks || [];
+        if (!breaks.length) { var b = Number(product.price)||0; return {min:b, max:b}; }
+        var vals = breaks.map(function(s){return Number(s.price);}).filter(function(p){return p>0;});
+        if (!vals.length) { var f = Number(product.price)||0; return {min:f, max:f}; }
+        return { min: Math.min.apply(null, vals), max: Math.max.apply(null, vals) };
+    }
+
+    // Hidden brands
+    var HIDDEN = ['absolute','ralawise'];
+    function _shouldHideBrand(name) {
+        var n = (name||'').toLowerCase();
+        return HIDDEN.some(function(h){ return n.includes(h); });
+    }
+
+    // Build a single featured product card
+    function buildCard(item) {
+        var card = document.createElement('div');
+        card.className = 'featured-card';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+
+        // Badges
+        var badges = '';
+        if (item.is_best_seller) badges += '<span class="fc-badge best-seller">BEST SELLER</span>';
+        if (item.is_featured)   badges += '<span class="fc-badge featured">FEATURED</span>';
+        if (item.is_recommended) badges += '<span class="fc-badge recommended">RECOMMENDED</span>';
+
+        // Price
+        var priceVal = Number(item.price) || 0;
+        var displayPrice = _fmtCurrency(priceVal);
+
+        // Brand
+        var brand = _shouldHideBrand(item.brand_name) ? '' : (item.brand_name || '');
+        var brandHTML = brand ? '<span class="fc-brand-name">' + brand + '</span>' : '';
+
+        card.innerHTML =
+            '<div class="fc-media">' +
+                '<div class="fc-badges">' + badges + '</div>' +
+                '<div class="fc-figure">' +
+                    '<img src="' + (item.image || '') + '" alt="' + (item.style_name||'') + '" loading="lazy">' +
+                '</div>' +
+            '</div>' +
+            '<div class="fc-info">' +
+                '<div class="fc-code">' + (item.style_code||'') + ' ' + brandHTML + '</div>' +
+                '<div class="fc-name">' + (item.style_name||'') + '</div>' +
+                '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
+                    '<span class="fc-price-label">From</span>' +
+                    '<span class="fc-price-value">' + displayPrice + '</span>' +
+                    '<span class="fc-price-suffix">' + _vatSuffix() + '</span>' +
+                '</div>' +
+                '<a class="fc-cta" href="product-detail.html?code=' + encodeURIComponent(item.style_code||'') + '">View Product</a>' +
+            '</div>';
+
+        // Card click → product detail
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('.fc-cta')) return;
+            sessionStorage.setItem('selectedProduct', item.style_code);
+            window.location.href = 'product-detail.html?code=' + encodeURIComponent(item.style_code);
+        });
+
+        return card;
+    }
+
+    // Refresh price labels on VAT toggle
+    function refreshPrices() {
+        document.querySelectorAll('.featured-card .fc-price').forEach(function(el) {
+            var min = Number(el.dataset.priceMin);
+            var max = Number(el.dataset.priceMax);
+            var valEl  = el.querySelector('.fc-price-value');
+            var sufEl  = el.querySelector('.fc-price-suffix');
+            if (valEl && Number.isFinite(min) && Number.isFinite(max)) valEl.textContent = _priceRange(min, max);
+            if (sufEl) sufEl.textContent = _vatSuffix();
+        });
+    }
+    document.addEventListener('brandeduk:vat-change', refreshPrices);
+
+    // Fetch & render
+    async function loadFeaturedProducts() {
+        var carouselContainer = document.getElementById('featuredProductsCarousel');
+        var prevBtn = document.getElementById('featPrev');
+        var nextBtn = document.getElementById('featNext');
+        if (!carouselContainer) return;
+
+        try {
+            var res = await fetch('https://api.brandeduk.com/api/admin/products/featured?type=featured&limit=500');
+            if (!res.ok) throw new Error('Network response was not ok');
+            var data = await res.json();
+
+            carouselContainer.innerHTML = '';
+            var items = data.items || [];
+
+            if (items.length === 0) {
+                carouselContainer.parentElement.innerHTML = '<div class="featured-error"><h3>No featured products yet</h3><p>Check back soon for our top picks!</p></div>';
+                return;
+            }
+
+            // Create enough duplicates to fill the track at least once fully, then double it for exact infinite half-wrapping
+            var originalItems = items;
+            while(originalItems.length < 8) { originalItems = originalItems.concat(items); }
+            var renderItems = originalItems.concat(originalItems); // array is now doubled perfectly
+
+            renderItems.forEach(function(item) {
+                var card = buildCard(item);
+                carouselContainer.appendChild(card);
+            });
+
+            // Smooth infinite continuous scroll logic + Manual override
+            var isHovered = false;
+            var isManualScrolling = false;
+            var manualTimeout;
+            var cardWidth = 280 + 24; // card width + gap
+
+            // Wait brief moment for layout/images to be processed
+            setTimeout(function() {
+                var halfWidth = carouselContainer.scrollWidth / 2;
+
+                // 1) Continuous Auto Scroll Frame Loop
+                function loopScroll() {
+                    if (!isHovered && !isManualScrolling) {
+                        carouselContainer.scrollLeft += 0.8; // Slow, smooth speed
+                        // Wrap at half to be seamless
+                        if (carouselContainer.scrollLeft >= halfWidth) {
+                            carouselContainer.scrollLeft -= halfWidth;
+                        }
+                    }
+                    requestAnimationFrame(loopScroll);
+                }
+
+                // 2) Manual Jump
+                function doManualScroll(direction) {
+                    isManualScrolling = true;
+                    carouselContainer.style.scrollBehavior = 'smooth';
+                    carouselContainer.scrollLeft += direction * cardWidth;
+
+                    clearTimeout(manualTimeout);
+                    manualTimeout = setTimeout(function() {
+                        carouselContainer.style.scrollBehavior = 'auto'; // Revert to instant jump
+                        // Immediately correct bounds if out of sync
+                        if (carouselContainer.scrollLeft >= halfWidth) {
+                            carouselContainer.scrollLeft -= halfWidth;
+                        } else if (carouselContainer.scrollLeft <= 5) {
+                            // If they rapidly clicked backward and hit 0
+                            carouselContainer.scrollLeft += halfWidth;
+                        }
+                        isManualScrolling = false;
+                    }, 400); // 400ms is standard for smooth scroll finish
+                }
+
+                // Setup Listeners
+                if (prevBtn) prevBtn.addEventListener('click', function() { doManualScroll(-1); });
+                if (nextBtn) nextBtn.addEventListener('click', function() { doManualScroll(1); });
+
+                carouselContainer.addEventListener('mouseenter', function() { isHovered = true; });
+                carouselContainer.addEventListener('mouseleave', function() { isHovered = false; });
+                carouselContainer.addEventListener('touchstart', function() { isHovered = true; }, {passive:true});
+                carouselContainer.addEventListener('touchend', function() { isHovered = false; }, {passive:true});
+
+                // 3) Swipe Support (allow native looping)
+                carouselContainer.addEventListener('scroll', function() {
+                    if (isManualScrolling) return; // let smooth jump finish
+                    // Handle edge bouncing when swiped
+                    if (carouselContainer.scrollLeft >= halfWidth) {
+                        carouselContainer.scrollLeft -= halfWidth;
+                    } else if (carouselContainer.scrollLeft <= 0) {
+                        carouselContainer.scrollLeft += halfWidth;
+                    }
+                }, {passive:true});
+
+                // Start loop
+                requestAnimationFrame(loopScroll);
+            }, 100);
+
+            console.log('[Home] Featured products loaded (continuous scroll + manual):', items.length);
+
+        } catch (err) {
+            console.error('[Home] Failed to load featured products:', err);
+            var errWrapper = document.querySelector('.featured-products-wrapper');
+            if (errWrapper) {
+                errWrapper.innerHTML = '<div class="featured-error"><h3>Could not load featured products</h3><p>' + (err.message||'') + '</p><button onclick="location.reload()">Retry</button></div>';
+            }
+        }
+    }
+
+    // Run after DOM + API script ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { setTimeout(loadFeaturedProducts, 100); });
+    } else {
+        setTimeout(loadFeaturedProducts, 100);
+    }
+})();
+</script>
 
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">

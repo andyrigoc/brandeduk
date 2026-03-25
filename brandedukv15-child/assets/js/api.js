@@ -241,7 +241,8 @@ const BrandedAPI = (function () {
             ageGroup: apiProduct.age_group || apiProduct.ageGroup || '',
             // Product badges
             is_best_seller: apiProduct.is_best_seller || apiProduct.isBestSeller || false,
-            is_recommended: apiProduct.is_recommended || apiProduct.isRecommended || false
+            is_recommended: apiProduct.is_recommended || apiProduct.isRecommended || false,
+            is_featured: apiProduct.is_featured || apiProduct.isFeatured || false
         };
     }
 
@@ -317,6 +318,11 @@ const BrandedAPI = (function () {
         // Brand filter (from URL, e.g., ?brand=nike)
         if (options.brand) {
             params.brand = options.brand;
+        }
+
+        // Featured products filter
+        if (options.isFeatured === true || options.isFeatured === 'true') {
+            params.isFeatured = 'true';
         }
 
         const fetchOptions = options.signal ? { signal: options.signal } : {};
