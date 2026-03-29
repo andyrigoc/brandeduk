@@ -844,19 +844,13 @@
 
     /* Push content below fixed header */
     .shop-category-heading {
-        margin-top: calc(var(--header-height) + 28px);
         padding: 12px 24px 10px;
     }
     .shop-category-title {
         font-size: 28px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 800;
-        color: #6B21A8;
     }
     .shop-category-desc {
         font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        color: #6b7280;
     }
     .categories-filter-scroll {
         padding: 10px 24px;
@@ -867,11 +861,6 @@
         font-size: 16px;
         font-family: 'Inter', sans-serif;
         font-weight: 700;
-    }
-
-    /* Hide the title bar (hamburger shows the same info) */
-    .shop-title-bar {
-        display: none !important;
     }
 
     /* === Products Grid (home / shop) === */
