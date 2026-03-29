@@ -44,9 +44,21 @@
                 margin-top: -10px;
             }
 
-            /* Category heading - hidden on mobile, info already in title bar + breadcrumbs */
+            /* Category heading - visible on all sizes */
             .shop-category-heading {
-                display: none !important;
+                padding: 12px 16px 8px;
+            }
+            .shop-category-title {
+                font-size: 20px;
+                font-weight: 800;
+                color: #1e293b;
+                margin: 0;
+            }
+            .shop-category-desc {
+                font-size: 13px;
+                color: #6b7280;
+                margin: 4px 0 0;
+                line-height: 1.4;
             }
 
             /* Mobile breadcrumbs: compact with back arrow */
@@ -1850,7 +1862,10 @@
         <span class="breadcrumb-current" id="shopBreadcrumbCategory">All Products</span>
     </p>
 
-    <h2 class="shop-category-heading" id="shopCategoryHeading">All Products</h2>
+    <div class="shop-category-heading" id="shopCategoryHeading">
+        <h2 class="shop-category-title" id="shopCategoryTitle">All Products</h2>
+        <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
+    </div>
 
     <!-- Mobile Product Controls -->
     <div class="shop-products-controls">
@@ -3650,6 +3665,33 @@
 
         // Setup category filter buttons - NEW FUNCTION
         function setupCategoryFilters() {
+            // Category metadata (titles + descriptions)
+            var CATEGORY_INFO = {
+                'all': { title: 'All Products', desc: 'Browse our full range of customisable workwear and uniforms.' },
+                'tshirts': { title: 'Personalised T-Shirts', desc: 'Perfect for on-site and off-site work, conferences and client visits.' },
+                'polo': { title: 'Personalised Polo Shirts', desc: 'Smart, professional polos ideal for corporate and casual workwear.' },
+                'hoodies': { title: 'Personalised Hoodies', desc: 'Comfortable branded hoodies for teams, events and everyday wear.' },
+                'jackets': { title: 'Personalised Jackets', desc: 'Durable jackets with your logo for outdoor and on-site work.' },
+                'hivis': { title: 'Hi-Vis Workwear', desc: 'Stay safe and visible with branded hi-vis clothing and accessories.' },
+                'trousers': { title: 'Work Trousers', desc: 'Hard-wearing trousers built for comfort on the job.' },
+                'fleeces': { title: 'Personalised Fleeces', desc: 'Warm, lightweight fleeces perfect for layering with your branding.' },
+                'bags': { title: 'Personalised Bags', desc: 'Branded bags, backpacks and holdalls for work and events.' },
+                'caps': { title: 'Personalised Caps', desc: 'Embroidered caps and hats to complete your branded look.' },
+                'beanies': { title: 'Personalised Beanies', desc: 'Keep warm in style with custom embroidered beanies.' },
+                'aprons': { title: 'Personalised Aprons', desc: 'Professional aprons for hospitality, catering and retail.' },
+                'sustainable': { title: 'Sustainable Workwear', desc: 'Eco-friendly and recycled garments for a greener workplace.' }
+            };
+
+            function updateCategoryHeading(catSlug) {
+                var info = CATEGORY_INFO[catSlug] || CATEGORY_INFO['all'];
+                var titleEl = document.getElementById('shopCategoryTitle');
+                var descEl = document.getElementById('shopCategoryDesc');
+                var breadcrumbEl = document.getElementById('shopBreadcrumbCategory');
+                if (titleEl) titleEl.textContent = info.title;
+                if (descEl) descEl.textContent = info.desc;
+                if (breadcrumbEl) breadcrumbEl.textContent = info.title;
+            }
+
             // ── Hamburger toggle ──
             const hamBtn = document.getElementById('categoryHamburgerBtn');
             const dropdown = document.getElementById('categoriesDropdown');
@@ -3678,6 +3720,7 @@
                     // Update state
                     currentState.category = normalizeCategory(btn.dataset.category) || 'all';
                     currentState.page = 1;
+                    updateCategoryHeading(currentState.category);
                     updateURL();
                     await renderProducts();
                     await fetchFilterCounts();
@@ -3824,6 +3867,32 @@
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
+
+            // Set initial category heading from URL
+            (function() {
+                var CATEGORY_INFO = {
+                    'all': { title: 'All Products', desc: 'Browse our full range of customisable workwear and uniforms.' },
+                    'tshirts': { title: 'Personalised T-Shirts', desc: 'Perfect for on-site and off-site work, conferences and client visits.' },
+                    'polo': { title: 'Personalised Polo Shirts', desc: 'Smart, professional polos ideal for corporate and casual workwear.' },
+                    'hoodies': { title: 'Personalised Hoodies', desc: 'Comfortable branded hoodies for teams, events and everyday wear.' },
+                    'jackets': { title: 'Personalised Jackets', desc: 'Durable jackets with your logo for outdoor and on-site work.' },
+                    'hivis': { title: 'Hi-Vis Workwear', desc: 'Stay safe and visible with branded hi-vis clothing and accessories.' },
+                    'trousers': { title: 'Work Trousers', desc: 'Hard-wearing trousers built for comfort on the job.' },
+                    'fleeces': { title: 'Personalised Fleeces', desc: 'Warm, lightweight fleeces perfect for layering with your branding.' },
+                    'bags': { title: 'Personalised Bags', desc: 'Branded bags, backpacks and holdalls for work and events.' },
+                    'caps': { title: 'Personalised Caps', desc: 'Embroidered caps and hats to complete your branded look.' },
+                    'beanies': { title: 'Personalised Beanies', desc: 'Keep warm in style with custom embroidered beanies.' },
+                    'aprons': { title: 'Personalised Aprons', desc: 'Professional aprons for hospitality, catering and retail.' },
+                    'sustainable': { title: 'Sustainable Workwear', desc: 'Eco-friendly and recycled garments for a greener workplace.' }
+                };
+                var info = CATEGORY_INFO[currentState.category] || CATEGORY_INFO['all'];
+                var titleEl = document.getElementById('shopCategoryTitle');
+                var descEl = document.getElementById('shopCategoryDesc');
+                var breadcrumbEl = document.getElementById('shopBreadcrumbCategory');
+                if (titleEl) titleEl.textContent = info.title;
+                if (descEl) descEl.textContent = info.desc;
+                if (breadcrumbEl) breadcrumbEl.textContent = info.title;
+            })();
 
             // Handle accreditation=recycled URL parameter (adds to quickFilters, which maps to flag[]=['recycled-organic'])
             const accreditationParam = urlParams.get('accreditation');

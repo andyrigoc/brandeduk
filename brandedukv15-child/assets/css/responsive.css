@@ -836,7 +836,7 @@
     /* === Products Grid (home / shop) === */
     .products-grid,
     .products-grid-shop {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 16px;
         padding: 16px 24px;
     }
