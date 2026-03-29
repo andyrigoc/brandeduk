@@ -3766,7 +3766,7 @@
             products.forEach((product, idx) => {
                 const card = document.createElement('div');
                 card.className = 'product-card-shop';
-                const img = (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || product.image || '';
+                const img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || '';
                 const price = (product.priceBreaks && product.priceBreaks.length) ? product.priceBreaks[0].price : product.price;
                 let badgesHtml = '';
                 if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
