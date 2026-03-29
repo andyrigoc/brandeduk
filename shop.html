@@ -8,7 +8,7 @@
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260221">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329b">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20260114">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260107">
@@ -45,14 +45,18 @@
             }
 
             /* Category heading - visible on all sizes */
+            .shop-title-bar {
+                display: none !important;
+            }
             .shop-category-heading {
                 padding: 12px 16px 8px;
             }
             .shop-category-title {
-                font-size: 20px;
+                font-size: 22px;
                 font-weight: 800;
-                color: #1e293b;
+                color: #6B21A8;
                 margin: 0;
+                font-family: 'Inter', sans-serif;
             }
             .shop-category-desc {
                 font-size: 13px;
@@ -3749,6 +3753,20 @@
             const resultsEl = document.getElementById('resultsCount');
             if (titleEl) titleEl.textContent = (currentState.category && currentState.category !== 'all') ? currentState.category : 'All Products';
             if (resultsEl) resultsEl.textContent = `${currentState.total} items`;
+
+            // Ensure visible heading always shows CATEGORY_INFO title (not raw slug)
+            const HEADING_MAP = {
+                'all': 'All Products', 'tshirts': 'Personalised T-Shirts', 'polo': 'Personalised Polo Shirts',
+                'hoodies': 'Personalised Hoodies', 'jackets': 'Personalised Jackets', 'hivis': 'Hi-Vis Workwear',
+                'trousers': 'Work Trousers', 'fleeces': 'Personalised Fleeces', 'bags': 'Personalised Bags',
+                'caps': 'Personalised Caps', 'beanies': 'Personalised Beanies', 'aprons': 'Personalised Aprons',
+                'sustainable': 'Sustainable Workwear'
+            };
+            const headingEl = document.getElementById('shopCategoryTitle');
+            if (headingEl) {
+                const friendlyTitle = HEADING_MAP[currentState.category] || HEADING_MAP['all'];
+                headingEl.textContent = friendlyTitle;
+            }
 
             // Update product count next to hamburger label
             const catCountEl = document.getElementById('catProductCount');
