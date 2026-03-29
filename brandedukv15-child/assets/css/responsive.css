@@ -550,6 +550,7 @@
     /* === Header – scale up ~20% === */
     .mobile-header .social-icons-mobile {
         gap: 4px !important;
+        margin-left: 0 !important;
     }
 
     .mobile-header .social-icons-mobile .social-icon {
@@ -567,7 +568,7 @@
     }
 
     .header-top-row {
-        padding: 8px 20px 3px 16px;
+        padding: 8px 24px 3px 24px;
     }
 
     .vat-toggle-mobile {
@@ -583,8 +584,9 @@
     }
 
     .header-logo-row {
-        padding: 0px 20px 8px;
+        padding: 0px 24px 8px;
         gap: 14px;
+        justify-content: flex-start;
     }
 
     .mobile-logo-center .logo-badge-img {
@@ -831,6 +833,45 @@
     .btn-next {
         padding: 18px 24px;
         font-size: 1.05rem;
+    }
+
+    /* === Shop: tablet layout fixes === */
+
+    /* Hide redundant breadcrumb (heading below is enough) */
+    .shop-breadcrumbs {
+        display: none !important;
+    }
+
+    /* Push content below fixed header */
+    .shop-category-heading {
+        margin-top: calc(var(--header-height) + 28px);
+        padding: 12px 24px 10px;
+    }
+    .shop-category-title {
+        font-size: 26px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    .shop-category-desc {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #6b7280;
+    }
+    .categories-filter-scroll {
+        padding: 10px 24px;
+        position: relative;
+        z-index: 50;
+    }
+    .category-hamburger-btn {
+        font-size: 16px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+    }
+
+    /* Hide the title bar (hamburger shows the same info) */
+    .shop-title-bar {
+        display: none !important;
     }
 
     /* === Products Grid (home / shop) === */

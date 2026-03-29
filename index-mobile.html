@@ -2984,7 +2984,147 @@
             bottom: 85px !important;
         }
     }
+    /* When bubble is being dragged, remove transitions and allow free positioning */
+    .tawk-draggable {
+        transition: none !important;
+        position: fixed !important;
+        z-index: 2147483647 !important;
+    }
     </style>
+
+    <!-- Make Tawk bubble draggable -->
+    <script>
+    (function () {
+        var STORAGE_KEY = 'tawk-bubble-pos';
+        var bubble = null;
+        var isDragging = false;
+        var startX, startY, startLeft, startTop;
+        var moved = false;
+
+        function getSavedPos() {
+            try {
+                var raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return null;
+        }
+
+        function savePos(x, y) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: x, y: y })); } catch (e) {}
+        }
+
+        function clamp(val, min, max) {
+            return Math.max(min, Math.min(max, val));
+        }
+
+        function applyPosition(el, x, y) {
+            var w = el.offsetWidth || 60;
+            var h = el.offsetHeight || 60;
+            x = clamp(x, 0, window.innerWidth - w);
+            y = clamp(y, 0, window.innerHeight - h);
+            el.style.setProperty('left', x + 'px', 'important');
+            el.style.setProperty('top', y + 'px', 'important');
+            el.style.setProperty('right', 'auto', 'important');
+            el.style.setProperty('bottom', 'auto', 'important');
+            return { x: x, y: y };
+        }
+
+        function initDrag(el) {
+            if (bubble) return; // already inited
+            bubble = el;
+            bubble.classList.add('tawk-draggable');
+
+            // Restore saved position
+            var saved = getSavedPos();
+            if (saved) {
+                applyPosition(bubble, saved.x, saved.y);
+            }
+
+            // --- Touch events ---
+            bubble.addEventListener('touchstart', function (e) {
+                if (e.touches.length !== 1) return;
+                isDragging = true;
+                moved = false;
+                var touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                var rect = bubble.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+            }, { passive: true });
+
+            bubble.addEventListener('touchmove', function (e) {
+                if (!isDragging) return;
+                var touch = e.touches[0];
+                var dx = touch.clientX - startX;
+                var dy = touch.clientY - startY;
+                if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+                if (moved) {
+                    e.preventDefault();
+                    applyPosition(bubble, startLeft + dx, startTop + dy);
+                }
+            }, { passive: false });
+
+            bubble.addEventListener('touchend', function () {
+                if (isDragging && moved) {
+                    var rect = bubble.getBoundingClientRect();
+                    savePos(rect.left, rect.top);
+                }
+                isDragging = false;
+            }, { passive: true });
+
+            // --- Mouse events (for desktop testing) ---
+            bubble.addEventListener('mousedown', function (e) {
+                isDragging = true;
+                moved = false;
+                startX = e.clientX;
+                startY = e.clientY;
+                var rect = bubble.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', function (e) {
+                if (!isDragging) return;
+                var dx = e.clientX - startX;
+                var dy = e.clientY - startY;
+                if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+                if (moved) {
+                    applyPosition(bubble, startLeft + dx, startTop + dy);
+                }
+            });
+
+            window.addEventListener('mouseup', function () {
+                if (isDragging && moved) {
+                    var rect = bubble.getBoundingClientRect();
+                    savePos(rect.left, rect.top);
+                }
+                isDragging = false;
+            });
+        }
+
+        // Wait for Tawk bubble to appear in the DOM
+        var observer = new MutationObserver(function () {
+            var el = document.querySelector('#tawk-bubble-container') ||
+                     document.querySelector('.tawk-min-container');
+            if (el && el.offsetWidth > 0) {
+                observer.disconnect();
+                // Small delay to let Tawk finish its own positioning
+                setTimeout(function () { initDrag(el); }, 500);
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Reposition on resize to keep bubble in viewport
+        window.addEventListener('resize', function () {
+            if (!bubble) return;
+            var rect = bubble.getBoundingClientRect();
+            var pos = applyPosition(bubble, rect.left, rect.top);
+            savePos(pos.x, pos.y);
+        });
+    })();
+    </script>
 
     <!-- Categories auto-scroll (native scroll + JS ticker) -->
     <script>

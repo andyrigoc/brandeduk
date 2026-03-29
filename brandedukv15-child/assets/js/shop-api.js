@@ -420,7 +420,7 @@ const ShopManager = (function () {
 
             // Determine if we're on mobile or desktop
             const isMobile = window.location.pathname.includes('mobile/') ||
-                window.innerWidth < 768;
+                window.innerWidth < 1280;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
             const url = new URL(targetPage, window.location.origin);

@@ -8,7 +8,7 @@
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260221">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20260114">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260107">
@@ -632,7 +632,7 @@
         /* Logo spacing for back button - Tablet */
         @media (min-width: 768px) {
             .mobile-logo-center {
-                margin-left: 40px;
+                margin-left: 0;
             }
         }
 
@@ -1749,6 +1749,12 @@
         <span class="results-count" id="resultsCount">0 items</span>
     </div>
 
+    <!-- Category Heading (moved before hamburger for proper tablet layout) -->
+    <div class="shop-category-heading" id="shopCategoryHeading">
+        <h2 class="shop-category-title" id="shopCategoryTitle">All Products</h2>
+        <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
+    </div>
+
     <!-- Category Filters (Hamburger Dropdown) -->
     <div class="categories-filter-scroll">
         <!-- Hamburger trigger -->
@@ -1861,11 +1867,6 @@
         <span class="breadcrumb-sep" aria-hidden="true">&rsaquo;</span>
         <span class="breadcrumb-current" id="shopBreadcrumbCategory">All Products</span>
     </p>
-
-    <div class="shop-category-heading" id="shopCategoryHeading">
-        <h2 class="shop-category-title" id="shopCategoryTitle">All Products</h2>
-        <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
-    </div>
 
     <!-- Mobile Product Controls -->
     <div class="shop-products-controls">
@@ -2646,6 +2647,7 @@
                 't-shirt': 'tshirts', 't-shirts': 'tshirts', 'tees': 'tshirts', 'tee': 'tshirts',
                 'polo-shirts': 'polo', 'polos': 'polo',
                 'hi-viz': 'hivis', 'hi-vis': 'hivis', 'hi-vis clothing': 'hivis', 'hi-viz clothing': 'hivis',
+                'safety-vests': 'hivis',
                 'fleece': 'fleeces'
             };
             return aliases[value] || value;
@@ -2691,13 +2693,8 @@
             if (currentState.search && currentState.search.trim()) {
                 params.q = currentState.search.trim();
             } else if (currentState.category !== 'all') {
-                // Map category slug to API productType name only if no search
-                const apiCategoryName = getApiCategoryName(currentState.category);
-                if (apiCategoryName) {
-                    params.productType = apiCategoryName;
-                } else {
-                    params.productType = currentState.category;
-                }
+                // Pass category slug directly - BrandedAPI.getProducts() handles the mapping
+                params.category = currentState.category;
             }
 
             // Price range (numeric values)
@@ -2774,7 +2771,7 @@
                 const data = await BrandedAPI.getProducts(params);
 
                 // ── Hi-Vis merge: combine Safety Vests + "high visibility" + "hi-viz" + Yoko brand ──
-                const isHiVisCategory = (params.productType === 'Safety Vests' || params.productType === 'safety-vests' || params.productType === 'Hi-Vis');
+                const isHiVisCategory = (currentState.category === 'hivis');
                 if (isHiVisCategory && data && data.items) {
                     console.log('🦺 Hi-Vis merge (mobile): fetching additional hi-vis/high-visibility/yoko products…');
                     const extraUrls = [
@@ -2847,12 +2844,16 @@
 
                     // Add productType if set (category maps to productType for filter API)
                     if (currentState.category && currentState.category !== 'all') {
-                        const apiCategoryName = getApiCategoryName(currentState.category);
-                        if (apiCategoryName) {
-                            params.append('productType', apiCategoryName);
-                        } else {
-                            // If not in mapping, pass raw category value as productType
-                            params.append('productType', currentState.category);
+                        // Use CATEGORY_SLUG_MAP from api.js for consistent mapping
+                        const slugMap = {
+                            'tshirts': 't-shirts', 'polo': 'polos', 'fleeces': 'fleece',
+                            'hivis': 'safety-vests', 'sustainable': null
+                        };
+                        const apiSlug = slugMap[currentState.category] !== undefined
+                            ? slugMap[currentState.category]
+                            : currentState.category;
+                        if (apiSlug) {
+                            params.append('productType', apiSlug);
                         }
                     }
 
@@ -3801,7 +3802,7 @@
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code || '');
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
-                    window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code || '');
+                    window.location.href = 'customize.html?code=' + encodeURIComponent(product.code || '');
                 });
 
                 grid.appendChild(card);

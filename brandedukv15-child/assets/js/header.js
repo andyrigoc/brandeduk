@@ -540,15 +540,17 @@
                 };
 
                 // Premium UI for Products
-                const isMobile = window.innerWidth < 768;
+                const isMobile = window.innerWidth < 1280;
                 let html = '<div class="suggestion-group-title">Product Results</div>';
 
                 products.slice(0, 8).forEach(product => {
-                    const detailUrl = `product-detail.html?code=${product.value}`;
+                    const detailUrl = isMobile
+                        ? `customize.html?code=${product.value}`
+                        : `product-detail.html?code=${product.value}`;
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
 
                     html += `
-                        <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<768){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
+                        <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<1280){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
                             <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='/brandedukv15-child/assets/images/ui/no-image.png'">
                             <div class="suggestion-item-content">
                                 <div class="suggestion-item-label">${highlight(product.label)}</div>
@@ -561,7 +563,7 @@
 
                 // View all results link
                 const viewAllUrl = isMobile
-                    ? `mobile/shop-mobile.html?q=${encodeURIComponent(query)}`
+                    ? `shop.html?q=${encodeURIComponent(query)}`
                     : `shop-pc.html?q=${encodeURIComponent(query)}`;
                 html += `
                     <a href="${viewAllUrl}" class="view-all-results">
@@ -605,9 +607,9 @@
                 if (e.key === 'Enter') {
                     const query = e.target.value.trim();
                     if (query) {
-                        const isMobile = window.innerWidth < 768;
+                        const isMobile = window.innerWidth < 1280;
                         window.location.href = isMobile
-                            ? `mobile/shop-mobile.html?q=${encodeURIComponent(query)}`
+                            ? `shop.html?q=${encodeURIComponent(query)}`
                             : `shop-pc.html?q=${encodeURIComponent(query)}`;
                     }
                 }
