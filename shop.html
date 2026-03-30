@@ -82,24 +82,61 @@
         }
 
         /* ═══ GLOBAL: Category heading (all screen sizes) ═══ */
+        /* Contact info: hidden by default (mobile), shown on tablet */
+        .header-contact-tablet {
+            display: none;
+        }
+        @media (min-width: 768px) and (max-width: 1279px) {
+            .header-contact-tablet {
+                display: inline-flex;
+                align-items: center;
+                gap: 16px;
+                margin-left: 14px;
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .header-contact-tablet a {
+                color: #4b5563;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: color 0.2s;
+            }
+            .header-contact-tablet a:hover {
+                color: #6B21A8;
+            }
+            .header-contact-tablet i {
+                font-size: 11px;
+                color: #6B21A8;
+            }
+        }
         .shop-title-bar {
             display: none !important;
         }
         .shop-category-heading {
-            padding: 20px 16px 8px;
+            display: block !important;
+            visibility: visible !important;
+            padding: 20px 16px 16px !important;
+            margin-top: 155px; /* clear the fixed mobile-header */
+            margin-bottom: 12px;
+            background: #fff;
         }
         .shop-category-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #6B21A8;
-            margin: 0;
-            font-family: 'Inter', sans-serif;
+            display: block !important;
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #111827 !important;
+            margin: 0 !important;
+            font-family: 'Inter', sans-serif !important;
+            line-height: 1.3 !important;
         }
         .shop-category-desc {
-            font-size: 13px;
-            color: #4b5563;
-            margin: 8px 0 0;
-            line-height: 1.5;
+            display: block !important;
+            font-size: 13px !important;
+            color: #4b5563 !important;
+            margin: 8px 0 0 !important;
+            line-height: 1.5 !important;
         }
         .shop-breadcrumbs {
             display: none !important;
@@ -325,7 +362,7 @@
             font-weight: 600;
         }
 
-        @media (min-width: 1024px) {
+        @media (min-width: 1280px) {
             .desktop-site-header {
                 display: block;
             }
@@ -334,6 +371,12 @@
             .tablet-top-bar,
             header.mobile-header {
                 display: none !important;
+            }
+
+            /* Reset heading margin (no fixed header on desktop) */
+            .shop-category-heading {
+                margin-top: 0;
+                padding: 12px 24px 8px !important;
             }
 
             /* Keep the category scroller below the taller desktop header */
@@ -610,7 +653,7 @@
         /* Logo spacing for back button - Tablet */
         @media (min-width: 768px) {
             .mobile-logo-center {
-                margin-left: 0;
+                margin-left: -20px;
             }
         }
 
@@ -1693,6 +1736,11 @@
                     class="social-icon pinterest" target="_blank" rel="noopener">
                     <i class="fab fa-pinterest-p"></i>
                 </a>
+                <!-- Contact info (tablet only) -->
+                <span class="header-contact-tablet">
+                    <a href="mailto:info@brandeduk.com"><i class="fas fa-envelope"></i> info@brandeduk.com</a>
+                    <a href="tel:02089742722"><i class="fas fa-phone"></i> 0208 974 2722</a>
+                </span>
             </div>
 
             <!-- VAT Toggle Right -->
@@ -1722,15 +1770,15 @@
     </header>
 
     <!-- Category Title -->
-    <div class="shop-title-bar">
+    <div class="shop-title-bar" style="display:none!important;">
         <h1 class="shop-title" id="categoryTitle">All Products</h1>
         <span class="results-count" id="resultsCount">0 items</span>
     </div>
 
     <!-- Category Heading (moved before hamburger for proper tablet layout) -->
-    <div class="shop-category-heading" id="shopCategoryHeading">
-        <h2 class="shop-category-title" id="shopCategoryTitle">All Products</h2>
-        <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
+    <div class="shop-category-heading" id="shopCategoryHeading" style="display:block!important;visibility:visible!important;padding:20px 16px 8px;background:#fff;">
+        <h2 class="shop-category-title" id="shopCategoryTitle" style="font-size:22px!important;font-weight:800!important;color:#111827!important;margin:0;font-family:'Inter',sans-serif;line-height:1.3;">All Products</h2>
+        <p class="shop-category-desc" id="shopCategoryDesc" style="display:block!important;font-size:13px!important;color:#4b5563!important;margin:8px 0 0;line-height:1.5;">Browse our full range of customisable workwear and uniforms.</p>
     </div>
 
     <!-- Category Filters (Hamburger Dropdown) -->
@@ -3653,8 +3701,8 @@
                 'jackets': { title: 'Personalised Jackets', desc: 'Custom jackets and outerwear built for performance and brand exposure. Weather-resistant options ideal for outdoor teams and work environments. Advanced embroidery and print techniques ensure premium logo presentation.' },
                 'hivis': { title: 'Hi-Vis Workwear', desc: 'Certified high-visibility clothing compliant with UK safety standards. Essential for construction, logistics, and industrial workplaces. Custom branding available without compromising safety or compliance.' },
                 'trousers': { title: 'Work Trousers', desc: 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.' },
-                'fleeces': { title: 'Personalised Fleeces', desc: 'Warm, lightweight custom fleeces ideal for layering and everyday workwear. Professional embroidery and print options for clean, lasting branding. Perfect for outdoor teams, corporate events, and casual uniforms.' },
-                'bags': { title: 'Personalised Bags', desc: 'Custom branded bags for promotions, events, and corporate gifting. Durable materials with high-quality embroidery or print finishes. A practical, high-visibility branding solution for any business.' },
+                'fleeces': { title: 'Personalised Fleeces', desc: '' },
+                'bags': { title: 'Personalised Bags', desc: '' },
                 'caps': { title: 'Personalised Caps', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
                 'beanies': { title: 'Personalised Beanies', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
                 'aprons': { title: 'Personalised Aprons', desc: 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.' },
@@ -3748,8 +3796,8 @@
                 'tshirts': 'Cost-effective custom t-shirts for promotions, staff uniforms, and events. Available in a wide range of fabrics and fits with multiple print methods. Optimised for large orders with consistent quality and fast turnaround.',
                 'trousers': 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.',
                 'sustainable': 'Eco-friendly clothing options made from organic and recycled materials. Ideal for brands focused on sustainability and ethical sourcing. Custom branding available with reduced environmental impact.',
-                'fleeces': 'Warm, lightweight custom fleeces ideal for layering and everyday workwear. Professional embroidery and print options for clean, lasting branding. Perfect for outdoor teams, corporate events, and casual uniforms.',
-                'bags': 'Custom branded bags for promotions, events, and corporate gifting. Durable materials with high-quality embroidery or print finishes. A practical, high-visibility branding solution for any business.'
+                'fleeces': '',
+                'bags': ''
             };
             const headingEl = document.getElementById('shopCategoryTitle');
             const descEl = document.getElementById('shopCategoryDesc');
@@ -3890,8 +3938,8 @@
                     'jackets': { title: 'Personalised Jackets', desc: 'Custom jackets and outerwear built for performance and brand exposure. Weather-resistant options ideal for outdoor teams and work environments. Advanced embroidery and print techniques ensure premium logo presentation.' },
                     'hivis': { title: 'Hi-Vis Workwear', desc: 'Certified high-visibility clothing compliant with UK safety standards. Essential for construction, logistics, and industrial workplaces. Custom branding available without compromising safety or compliance.' },
                     'trousers': { title: 'Work Trousers', desc: 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.' },
-                    'fleeces': { title: 'Personalised Fleeces', desc: 'Warm, lightweight custom fleeces ideal for layering and everyday workwear. Professional embroidery and print options for clean, lasting branding. Perfect for outdoor teams, corporate events, and casual uniforms.' },
-                    'bags': { title: 'Personalised Bags', desc: 'Custom branded bags for promotions, events, and corporate gifting. Durable materials with high-quality embroidery or print finishes. A practical, high-visibility branding solution for any business.' },
+                    'fleeces': { title: 'Personalised Fleeces', desc: '' },
+                    'bags': { title: 'Personalised Bags', desc: '' },
                     'caps': { title: 'Personalised Caps', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
                     'beanies': { title: 'Personalised Beanies', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
                     'aprons': { title: 'Personalised Aprons', desc: 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.' },

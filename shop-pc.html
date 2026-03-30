@@ -3338,7 +3338,6 @@
                         Back
                     </button>
                     <h1 id="categoryTitle">Hoodies</h1>
-                    <p id="categoryDescription" style="font-size:14px;color:#4b5563;margin:4px 0 0;line-height:1.5;max-width:700px;"></p>
                     <span class="products-count" id="productsCount">0 products</span>
                 </div>
                 <div class="products-header-right">
@@ -3382,6 +3381,8 @@
                     </div>
                 </div>
             </div>
+
+            <p id="categoryDescription" style="font-size:13px;color:#4b5563;margin:0 0 16px;line-height:1.6;padding:0 4px;"></p>
 
             <div class="products-grid" id="productsGrid">
                 <!-- Products will be rendered by JavaScript -->
@@ -4919,7 +4920,6 @@
 
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
-            const categoryDescEl = document.getElementById('categoryDescription');
             const productsCountEl = document.getElementById('productsCount');
 
             // ALWAYS show loader before fetching products - better UX
@@ -5016,10 +5016,10 @@
                     categoryTitleEl.style.opacity = '1';
                 }
             }
-            if (categoryDescEl) {
-                var DESC_MAP = {
-                    'all': 'Browse our full range of customisable workwear and uniforms.',
-                    'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.',
+            var descEl = document.getElementById('categoryDescription');
+            if (descEl) {
+                var DESC = {
+                    'all': '', 'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.',
                     'hoodies': 'Premium custom hoodies for workwear, events, and corporate teams. Available with embroidery, screen printing, or DTF for sharp, durable logos. Comfortable, hard-wearing garments suitable for daily use and brand visibility.',
                     'beanies': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
                     'caps': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
@@ -5029,10 +5029,10 @@
                     'tshirts': 'Cost-effective custom t-shirts for promotions, staff uniforms, and events. Available in a wide range of fabrics and fits with multiple print methods. Optimised for large orders with consistent quality and fast turnaround.',
                     'trousers': 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.',
                     'sustainable': 'Eco-friendly clothing options made from organic and recycled materials. Ideal for brands focused on sustainability and ethical sourcing. Custom branding available with reduced environmental impact.',
-                    'fleeces': 'Warm, lightweight custom fleeces ideal for layering and everyday workwear. Professional embroidery and print options for clean, lasting branding. Perfect for outdoor teams, corporate events, and casual uniforms.',
-                    'bags': 'Custom branded bags for promotions, events, and corporate gifting. Durable materials with high-quality embroidery or print finishes. A practical, high-visibility branding solution for any business.'
+                    'fleeces': '',
+                    'bags': ''
                 };
-                categoryDescEl.textContent = DESC_MAP[currentState.category] || DESC_MAP['all'];
+                descEl.textContent = DESC[currentState.category] || '';
             }
             if (productsCountEl) {
                 productsCountEl.textContent = `${currentState.total} products`;
