@@ -7,6 +7,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BrandedUK - Custom Workwear & Embroidery</title>
+    <script>
+        // Clean URL: show just '/' in address bar
+        if (window.location.pathname !== '/') {
+            history.replaceState(null, '', '/');
+        }
+    </script>
     <!-- Mobile-First CSS -->
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260307A">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20260307A">

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrandedUK - Custom Workwear & Promotional Clothing</title>
     <script>
+        // Clean URL: show just '/' in address bar
+        if (window.location.pathname !== '/') {
+            history.replaceState(null, '', '/');
+        }
         // Redirect to mobile version on smaller screens (mobile + tablet)
         if (window.innerWidth < 1024) {
             window.location.href = 'index-mobile.html?force=mobile';

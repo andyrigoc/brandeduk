@@ -20,17 +20,7 @@
   "redirects": [
     {
       "source": "/mobile",
-      "destination": "/m",
-      "permanent": true
-    },
-    {
-      "source": "/index-mobile.html",
-      "destination": "/m",
-      "permanent": true
-    },
-    {
-      "source": "/home-pc.html",
-      "destination": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
