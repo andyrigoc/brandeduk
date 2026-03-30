@@ -146,7 +146,7 @@
                     var params = new URLSearchParams(window.location.search);
                     var force = (params.get('force') || '').toLowerCase();
                     if (force === 'mobile') return 'index-mobile.html';
-                    if (force === 'desktop') return '/home';
+                    if (force === 'desktop') return 'home-pc.html';
                 } catch (e) {}
                 return null;
             }
@@ -169,7 +169,7 @@
                     ? window.matchMedia('(max-width: ' + (BREAKPOINT - 1) + 'px)').matches
                     : (window.innerWidth < BREAKPOINT);
                 var shouldUseMobile = isMobileUA || isTabletUA || isViewportMobile;
-                return shouldUseMobile ? 'index-mobile.html' : '/home';
+                return shouldUseMobile ? 'index-mobile.html' : 'home-pc.html';
             }
 
             function redirectIfNeeded() {
