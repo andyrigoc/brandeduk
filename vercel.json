@@ -9,6 +9,7 @@
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
 
+    { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
 
@@ -19,12 +20,12 @@
   "redirects": [
     {
       "source": "/mobile",
-      "destination": "/",
+      "destination": "/m",
       "permanent": true
     },
     {
-      "source": "/m",
-      "destination": "/",
+      "source": "/index-mobile.html",
+      "destination": "/m",
       "permanent": true
     },
     {
