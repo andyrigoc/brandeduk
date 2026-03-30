@@ -97,9 +97,9 @@
         }
         .shop-category-desc {
             font-size: 13px;
-            color: #6b7280;
-            margin: 4px 0 0;
-            line-height: 1.4;
+            color: #4b5563;
+            margin: 8px 0 0;
+            line-height: 1.5;
         }
         .shop-breadcrumbs {
             display: none !important;
@@ -3736,10 +3736,29 @@
                 'caps': 'Personalised Caps', 'beanies': 'Personalised Beanies', 'aprons': 'Personalised Aprons',
                 'sustainable': 'Sustainable Workwear'
             };
+            const DESCRIPTION_MAP = {
+                'all': 'Browse our full range of customisable workwear and uniforms.',
+                'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.',
+                'hoodies': 'Premium custom hoodies for workwear, events, and corporate teams. Available with embroidery, screen printing, or DTF for sharp, durable logos. Comfortable, hard-wearing garments suitable for daily use and brand visibility.',
+                'beanies': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
+                'caps': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
+                'hivis': 'Certified high-visibility clothing compliant with UK safety standards. Essential for construction, logistics, and industrial workplaces. Custom branding available without compromising safety or compliance.',
+                'polo': 'Professional custom polo shirts for corporate, trade, and hospitality sectors. High-quality embroidery or print for a clean, long-lasting finish. A versatile uniform solution balancing comfort, durability, and brand image.',
+                'jackets': 'Custom jackets and outerwear built for performance and brand exposure. Weather-resistant options ideal for outdoor teams and work environments. Advanced embroidery and print techniques ensure premium logo presentation.',
+                'tshirts': 'Cost-effective custom t-shirts for promotions, staff uniforms, and events. Available in a wide range of fabrics and fits with multiple print methods. Optimised for large orders with consistent quality and fast turnaround.',
+                'trousers': 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.',
+                'sustainable': 'Eco-friendly clothing options made from organic and recycled materials. Ideal for brands focused on sustainability and ethical sourcing. Custom branding available with reduced environmental impact.',
+                'fleeces': 'Warm, lightweight custom fleeces ideal for layering and everyday workwear. Professional embroidery and print options for clean, lasting branding. Perfect for outdoor teams, corporate events, and casual uniforms.',
+                'bags': 'Custom branded bags for promotions, events, and corporate gifting. Durable materials with high-quality embroidery or print finishes. A practical, high-visibility branding solution for any business.'
+            };
             const headingEl = document.getElementById('shopCategoryTitle');
+            const descEl = document.getElementById('shopCategoryDesc');
             if (headingEl) {
                 const friendlyTitle = HEADING_MAP[currentState.category] || HEADING_MAP['all'];
                 headingEl.textContent = friendlyTitle;
+            }
+            if (descEl) {
+                descEl.textContent = DESCRIPTION_MAP[currentState.category] || DESCRIPTION_MAP['all'];
             }
 
             // Update product count next to hamburger label
