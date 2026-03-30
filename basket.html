@@ -1438,7 +1438,7 @@
                     }
                     
                     // Navigate to quote form
-                    window.location.href = 'quote-form.html';
+                    window.location.href = '/quote';
                 });
             }
             
@@ -1538,7 +1538,7 @@
             }));
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html?code=' + encodeURIComponent(item.code || '');
+            window.location.href = '/customize?code=' + encodeURIComponent(item.code || '');
         }
         
         // Customize multiple selected items with the same logo
@@ -1582,7 +1582,7 @@
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html?code=' + encodeURIComponent(firstItem.code || '');
+            window.location.href = '/customize?code=' + encodeURIComponent(firstItem.code || '');
         }
     </script>
 

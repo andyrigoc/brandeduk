@@ -1592,15 +1592,15 @@
                             </div>
                         </li>
                         <li><a href="#">More</a></li>
-                        <li><a href="services.html">Services</a></li>
+                        <li><a href="/services">Services</a></li>
                         <li class="catalogue-menu"><a href="#" aria-expanded="false">Catalogue <span class="nav-caret"
                                     aria-hidden="true"></span></a>
                             <ul class="catalogue-dropdown">
-                                <li><a href="catalogue.html"><svg viewBox="0 0 24 24" aria-hidden="true">
+                                <li><a href="/catalogue"><svg viewBox="0 0 24 24" aria-hidden="true">
                                             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20">
                                             </path>
                                         </svg> Catalogue 1</a></li>
-                                <li><a href="catalogue2.html"><svg viewBox="0 0 24 24" aria-hidden="true">
+                                <li><a href="/catalogue2"><svg viewBox="0 0 24 24" aria-hidden="true">
                                             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20">
                                             </path>
                                         </svg> Catalogue 2</a></li>
@@ -1928,7 +1928,7 @@
             <span class="nav-item-label">Filter</span>
         </button>
 
-        <a href="basket.html" class="nav-item">
+        <a href="/basket" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
@@ -3794,7 +3794,7 @@
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code || '');
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
-                    window.location.href = 'customize.html?code=' + encodeURIComponent(product.code || '');
+                    window.location.href = '/customize?code=' + encodeURIComponent(product.code || '');
                 });
 
                 grid.appendChild(card);
