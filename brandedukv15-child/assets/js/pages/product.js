@@ -641,6 +641,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             initColors(PRODUCT_DATA.colors);
         }
 
+        // ── Size overrides: API may be missing sizes for certain products ──
+        const SIZE_OVERRIDES = {
+            'YK001': ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL']
+        };
+        if (PRODUCT_DATA && SIZE_OVERRIDES[PRODUCT_DATA.code]) {
+            PRODUCT_DATA.sizes = SIZE_OVERRIDES[PRODUCT_DATA.code];
+        }
+
         // Initialize sizes from API data
         if (PRODUCT_DATA && PRODUCT_DATA.sizes) {
             initSizes(PRODUCT_DATA.sizes);

@@ -1316,9 +1316,9 @@
             'aprons': {
                 imagePath: '../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron',
                 positions: {
+                    'small-centre-front': { label: 'Center Front', image: 'center-front.png', embroidery: '5.00', print: '3.50' },
                     'left-breast': { label: 'Low Left', image: 'low-left.png', embroidery: '5.00', print: '3.50' },
-                    'right-breast': { label: 'Low Right', image: 'low-right.png', embroidery: '5.00', print: '3.50' },
-                    'small-centre-front': { label: 'Center Front', image: 'center-front.png', embroidery: '5.00', print: '3.50' }
+                    'right-breast': { label: 'Low Right', image: 'low-right.png', embroidery: '5.00', print: '3.50' }
                 },
                 hidePositions: ['large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm']
             },
@@ -1534,6 +1534,28 @@
                         }
                     }
                 });
+
+                // Reorder cards for Aprons (Center Front must be first)
+                if ((category || '').toLowerCase() === 'aprons') {
+                    const preferredOrder = [
+                        'small-centre-front',   // Center Front
+                        'left-breast',          // Low Left
+                        'right-breast'          // Low Right
+                    ];
+
+                    const cardsArray = Array.from(allCards);
+                    cardsArray.sort((a, b) => {
+                        const aPos = a.dataset.position;
+                        const bPos = b.dataset.position;
+                        const aIdx = preferredOrder.indexOf(aPos);
+                        const bIdx = preferredOrder.indexOf(bPos);
+                        const aRank = aIdx === -1 ? 999 : aIdx;
+                        const bRank = bIdx === -1 ? 999 : bIdx;
+                        return aRank - bRank;
+                    });
+
+                    cardsArray.forEach(card => grid.appendChild(card));
+                }
             });
 
             // Hide/show PRINT key-badge for embroidery-only products
