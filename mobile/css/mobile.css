@@ -7465,10 +7465,12 @@ a {
 
 .product-info {
     padding: 10px;
+    padding-bottom: 6px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     flex: 1;
+    overflow: visible;
     /* Push colors to bottom */
 }
 
@@ -7546,17 +7548,17 @@ a {
 
 /* Color Scrolling Bar - Identical to Desktop */
 .product-colors {
-    --color-gap: 6px;
-    --color-size: 32px;
+    --color-gap: 5px;
+    --color-size: 28px;
     display: flex;
     flex-wrap: nowrap;
     gap: var(--color-gap);
     margin-top: auto;
     /* Push to bottom */
-    padding: 6px 0;
+    padding: 6px 5px;
     width: 100%;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     scrollbar-width: thin;
     scrollbar-color: #7a2ee6 rgba(248, 250, 252, 0.8);
     -webkit-overflow-scrolling: touch;
@@ -7602,7 +7604,7 @@ a {
 
 .color-dot.active {
     border-color: #7a2ee6;
-    box-shadow: 0 0 0 2px white, 0 0 0 4px #7a2ee6;
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #7a2ee6;
     transform: scale(1.05);
 }
 

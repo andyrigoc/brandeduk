@@ -31,11 +31,11 @@
 
   function getSummaryHref() {
     var pathname = String(window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
-    // Pages under these folders need to go one level up to reach quote-form.html
+    // Pages under these folders need to go one level up to reach basket.html
     if (/\/brandeduk\.com(-pc-OLD)?\//.test(pathname) || /\/mobile\//.test(pathname)) {
-      return '../quote-form.html';
+      return '../basket.html#orderSummary';
     }
-    return 'quote-form.html';
+    return 'basket.html#orderSummary';
   }
 
   function getBasketSafe() {
