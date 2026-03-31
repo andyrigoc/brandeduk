@@ -5490,17 +5490,15 @@ a {
    HOME PAGE ADDITIONAL STYLES
    ============================================ */
 
-/* Mobile Header */
+/* Mobile Header - keep column layout for 2-row header */
 .mobile-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--header-height);
-    padding: 0 12px;
+    flex-direction: column;
+    padding: 0;
     background: var(--white);
     z-index: 100;
 }
@@ -5679,7 +5677,7 @@ a {
 
 /* Mobile Main */
 .mobile-main {
-    padding-top: calc(var(--header-height) + 24px);
+    padding-top: calc(var(--header-height) + 12px);
     padding-bottom: 80px;
 }
 

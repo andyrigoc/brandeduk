@@ -1822,14 +1822,15 @@
             }
         }, 100);
         
-        // Update UI
-        updateCartBadge();
-        updateBasketCount();
-        
-        // Reset current selection state so it's not double-counted
+        // Reset current selection state BEFORE updating badges so it's not double-counted
         state.quantity = 0;
         state.sizeQuantities = {};
         state.selectionSaved = true;
+        
+        // Update UI
+        updateCartBadge();
+        updateBasketCount();
+        updateLiveBadge();
         
         updatePricingSummary();
         
@@ -1958,6 +1959,24 @@
                         basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
                     } catch {
                         basket = [];
+                    }
+
+                    // If basket is empty but we have a current product, build item from state
+                    if (basket.length === 0 && state.product) {
+                        const currentQty = state.quantity || Object.values(state.sizeQuantities || {}).reduce((s, q) => s + q, 0);
+                        if (currentQty > 0) {
+                            basket.push({
+                                productCode: state.product.code || '',
+                                productName: state.product.name || 'Product',
+                                color: state.selectedColorName || '',
+                                colorImage: state.selectedColorImage || '',
+                                quantities: { ...state.sizeQuantities },
+                                totalQty: currentQty,
+                                unitPrice: getCurrentUnitPrice(),
+                                positions: {},
+                                customizations: []
+                            });
+                        }
                     }
 
                     // Get product data from sessionStorage
@@ -2378,26 +2397,48 @@
                             }
                         }
                     } catch (apiError) {
-                        console.error('Quote API error:', apiError);
+                        console.error('Quote API error, trying PHP fallback:', apiError);
                         
-                        // Provide more specific error messages
-                        let errorMessage = 'Failed to send quote. Please contact info@brandeduk.com directly.';
-                        if (apiError.message) {
-                            if (apiError.message.includes('413') || apiError.message.toLowerCase().includes('too large')) {
-                                errorMessage = 'Logo file is too large. Please use a smaller image (under 1MB) or contact us directly.';
-                            } else if (apiError.message.includes('Failed to fetch') || apiError.message.includes('NetworkError')) {
-                                errorMessage = 'Network error. Please check your connection and try again.';
-                            } else if (apiError.message.includes('CORS')) {
-                                errorMessage = 'Server connection issue. Please try again or contact info@brandeduk.com';
+                        // Fallback to PHP send-quote.php
+                        try {
+                            const phpResponse = await fetch('brandedukv15-child/includes/send-quote.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(quoteData)
+                            });
+                            
+                            if (phpResponse.ok) {
+                                const phpResult = await phpResponse.json();
+                                if (phpResult.success) {
+                                    result = phpResult;
+                                } else {
+                                    throw new Error(phpResult.message || 'PHP fallback failed');
+                                }
+                            } else {
+                                throw new Error(`PHP fallback error: ${phpResponse.status}`);
                             }
+                        } catch (phpError) {
+                            console.error('PHP fallback also failed:', phpError);
+                            
+                            // Provide more specific error messages
+                            let errorMessage = 'Failed to send quote. Please contact info@brandeduk.com directly.';
+                            if (apiError.message) {
+                                if (apiError.message.includes('413') || apiError.message.toLowerCase().includes('too large')) {
+                                    errorMessage = 'Logo file is too large. Please use a smaller image (under 1MB) or contact us directly.';
+                                } else if (apiError.message.includes('Failed to fetch') || apiError.message.includes('NetworkError')) {
+                                    errorMessage = 'Network error. Please check your connection and try again.';
+                                } else if (apiError.message.includes('CORS')) {
+                                    errorMessage = 'Server connection issue. Please try again or contact info@brandeduk.com';
+                                }
+                            }
+                            
+                            showToastOrAlert(errorMessage);
+                            if (popupSubmitBtn) {
+                                popupSubmitBtn.textContent = 'Submit Quote Request';
+                                popupSubmitBtn.disabled = false;
+                            }
+                            return;
                         }
-                        
-                        showToastOrAlert(errorMessage);
-                        if (popupSubmitBtn) {
-                            popupSubmitBtn.textContent = 'Submit Quote Request';
-                            popupSubmitBtn.disabled = false;
-                        }
-                        return;
                     }
 
                     if (result.success) {

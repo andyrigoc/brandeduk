@@ -2374,7 +2374,7 @@ body {
 
 /* Mobile logo (header-logo-row pattern) */
 .mobile-logo-center .logo-badge-img {
-    height: 77px;
+    height: 50px;
     width: auto;
     object-fit: contain;
 }
