@@ -5,7 +5,7 @@
    APPROCCIO MOBILE-FIRST:
    - Base styles = Mobile (< 768px)
    - @media (min-width: 768px) = Tablet
-   - @media (min-width: 1024px) = Desktop
+   - @media (min-width: 1280px) = Desktop
    
    ============================================ */
 
@@ -14,8 +14,8 @@
    ========================================
    
    Mobile:  0 - 767px (default/base)
-   Tablet:  768px - 1023px
-   Desktop: 1024px+
+   Tablet:  768px - 1279px
+   Desktop: 1280px+
    
    ======================================== */
 
@@ -27,9 +27,9 @@
 }
 
 /* ========================================
-   TABLET OVERRIDES (768px+)
+   TABLET OVERRIDES (768px+) - DISABLED
    ======================================== */
-@media (min-width: 768px) {
+@media (min-width: 99999px) {
     
     /* === Tablet Top Bar === */
     .tablet-top-bar {
@@ -368,10 +368,10 @@
 }
 
 /* ========================================
-   TABLET HERO 1 (768px–1023px)
+   TABLET HERO 1 (768px–1023px) - DISABLED
    - show ALL cards, no horizontal scroll
    ======================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .hero-cont {
         overflow-x: hidden;
     }
@@ -489,14 +489,14 @@
 }
 
 /* ========================================
-   TABLET HOME: LEFT ORDER SUMMARY SIDEBAR
+   TABLET HOME: LEFT ORDER SUMMARY SIDEBAR - DISABLED
    (index-mobile.html)
    ======================================== */
 .tablet-order-summary {
     display: none;
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .tablet-summary-layout {
         display: block;
         max-width: var(--container-max, 1280px);
@@ -514,10 +514,10 @@
 }
 
 /* ========================================
-   TABLET ONLY (768px - 1023px)
+   TABLET ONLY (768px - 1023px) - DISABLED
    Hero Banner 1: Get In Touch - maximize text height in its box
    ======================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 99999px) {
     .hero-banner .neon-container {
         padding: 0;
     }
@@ -532,9 +532,457 @@
 }
 
 /* ========================================
-   DESKTOP OVERRIDES (1024px+)
+   TABLET SIZE ADJUSTMENTS (768px - 1279px)
+   Keep mobile layout, scale up elements
    ======================================== */
-@media (min-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1279px) {
+
+    /* === General spacing === */
+    body {
+        font-size: 16px;
+    }
+
+    .mobile-main {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    /* === Header – scale up ~20% === */
+    .mobile-header .social-icons-mobile {
+        gap: 4px !important;
+        margin-left: 0 !important;
+    }
+
+    .mobile-header .social-icons-mobile .social-icon {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        border-radius: 9px !important;
+    }
+
+    .mobile-header .social-icons-mobile .social-icon i {
+        font-size: 14px !important;
+    }
+
+    .header-top-row {
+        padding: 8px 24px 3px 24px;
+    }
+
+    .vat-toggle-mobile {
+        gap: 8px;
+    }
+
+    .vat-label {
+        font-size: 12px;
+    }
+
+    .vat-toggle-label {
+        transform: scale(1.15);
+    }
+
+    .header-logo-row {
+        padding: 0px 24px 8px;
+        gap: 14px;
+        justify-content: flex-start;
+    }
+
+    .mobile-logo-center .logo-badge-img {
+        height: 92px !important;
+        width: auto !important;
+    }
+
+    .header-logo-row .search-input-expand {
+        padding: 12px 17px;
+        font-size: 17px;
+    }
+
+    .header-logo-row .search-icon-expand {
+        width: 24px;
+        height: 24px;
+    }
+
+    .hamburger-btn {
+        width: 48px;
+        height: 48px;
+        gap: 6px;
+    }
+
+    .hamburger-btn span {
+        width: 24px;
+        height: 2.5px;
+    }
+
+    /* Bottom navigation – scale up ~20% */
+    .bottom-nav {
+        height: 77px;
+    }
+
+    .nav-item {
+        gap: 5px;
+        padding: 10px 19px;
+    }
+
+    .nav-item svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .nav-item-label {
+        font-size: 12px;
+    }
+
+    .nav-badge {
+        min-width: 22px;
+        height: 22px;
+        font-size: 13px;
+    }
+
+    /* === Estimated Delivery === */
+    .delivery-timeline {
+        gap: 16px;
+        padding: 16px 20px;
+    }
+
+    /* === Discount / Tier Pricing – FULL WIDTH === */
+    .discount-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        overflow-x: visible;
+        margin: 20px 0 24px;
+    }
+
+    .disc-box {
+        min-width: auto;
+        padding: 14px 10px;
+    }
+
+    .disc-box .qty {
+        font-size: 0.82rem;
+    }
+
+    .disc-box .price {
+        font-size: 1.2rem;
+    }
+
+    .disc-box .badge {
+        font-size: 0.6rem;
+        padding: 5px 8px;
+    }
+
+    /* Pricing tiers grid – fill full width */
+    .pricing-tiers-grid {
+        display: grid !important;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        overflow-x: visible;
+        padding: 8px 4px 10px;
+    }
+
+    .tier-card {
+        min-width: 0;
+        flex-shrink: unset;
+        padding: 12px 8px;
+    }
+
+    .tier-qty {
+        font-size: 12px;
+    }
+
+    .tier-card .tier-price {
+        font-size: 17px;
+    }
+
+    .tier-card .tier-suffix {
+        font-size: 10px;
+    }
+
+    .tier-save {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .tier-best-label {
+        font-size: 9px;
+        padding: 2px 8px;
+    }
+
+    /* Tier pricing compact */
+    .tier-pricing-compact {
+        gap: 8px;
+        margin: 14px 0 20px;
+        padding: 12px;
+    }
+
+    .tier-item {
+        padding: 8px 12px;
+        min-width: 65px;
+        min-height: 56px;
+    }
+
+    .tier-pricing-compact .tier-qty {
+        font-size: 0.72rem;
+    }
+
+    .tier-pricing-compact .tier-price {
+        font-size: 1rem;
+    }
+
+    .tier-pricing-compact .tier-save {
+        font-size: 0.7rem;
+    }
+
+    /* === Size & Quantity === */
+    .sizes-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .size-box {
+        padding: 16px 12px;
+        min-height: 95px;
+    }
+
+    .size-header {
+        font-size: 0.95rem;
+    }
+
+    .qty-controls {
+        gap: 8px;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .qty-input {
+        width: 44px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    /* === Technique / Method Buttons === */
+    .method-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .method-btn {
+        padding: 14px 20px;
+        font-size: 1.05rem;
+    }
+
+    .type-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .type-btn {
+        padding: 18px 14px;
+        font-size: 1.05rem;
+    }
+
+    /* === Customization Badges === */
+    .cust-badge {
+        font-size: 0.82rem;
+        padding: 6px 14px;
+    }
+
+    /* === Color grid === */
+    .color-grid {
+        gap: 12px;
+    }
+
+    .color-thumb {
+        width: 52px;
+        height: 52px;
+    }
+
+    /* === Section headers === */
+    .right-column h3,
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    /* === Summary === */
+    .below-summary {
+        padding: 20px 24px;
+        gap: 16px;
+    }
+
+    .summary-items {
+        font-size: 1rem;
+    }
+
+    .summary-total {
+        font-size: 1.1rem;
+    }
+
+    .total-green {
+        font-size: 1.5rem;
+    }
+
+    /* === Save & Continue / CTA Buttons === */
+    .btn-add-to-quote,
+    .quote-button,
+    .btn-next {
+        padding: 18px 24px;
+        font-size: 1.05rem;
+    }
+
+    /* === Shop: tablet layout fixes === */
+
+    /* Hide redundant breadcrumb (heading below is enough) */
+    .shop-breadcrumbs {
+        display: none !important;
+    }
+
+    /* Push content below fixed header */
+    .shop-category-heading {
+        padding: 16px 24px 10px !important;
+    }
+    .shop-category-title {
+        font-size: 28px !important;
+        font-weight: 800 !important;
+        color: #111827 !important;
+    }
+    .shop-category-desc {
+        font-size: 14px !important;
+        display: block !important;
+    }
+    .categories-filter-scroll {
+        padding: 10px 24px;
+        position: relative;
+        z-index: 50;
+    }
+    .category-hamburger-btn {
+        font-size: 16px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+    }
+
+    /* === Products Grid (home / shop) === */
+    .products-grid,
+    .products-grid-shop {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px;
+        padding: 16px 24px;
+    }
+
+    .bestseller-grid {
+        gap: 14px;
+        padding: 0 24px;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    /* === Product Card === */
+    .product-card {
+        padding: 14px;
+    }
+
+    .product-card-image {
+        height: 200px;
+    }
+
+    /* === Footer === */
+    .mobile-footer {
+        padding: 28px 24px;
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+    }
+
+    /* === Step Progress === */
+    .step-progress {
+        padding: 16px 24px;
+    }
+
+    .step-num {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+    }
+
+    /* === Page container (customize-detail) === */
+    .page-container {
+        padding: 0 24px;
+    }
+
+    .main-content {
+        padding: 24px;
+    }
+
+    /* === Upload dropzone === */
+    .upload-dropzone {
+        padding: 48px 24px;
+    }
+
+    /* === Nav buttons === */
+    .nav-buttons {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .btn-secondary,
+    .btn-next {
+        width: auto;
+        flex: 1;
+    }
+
+    /* === Hero 1 – hide scrollbar, scale up for tablet === */
+    .hero-cont {
+        height: 290px;
+        scrollbar-width: none;           /* Firefox */
+        -ms-overflow-style: none;        /* IE/Edge */
+    }
+
+    .hero-cont::-webkit-scrollbar {
+        display: none;                   /* Chrome/Safari */
+    }
+
+    .hero-el__heading {
+        font-size: 10px;
+    }
+
+    /* Hero panels – center subjects in wider cards */
+    .hero-el .hero-el__bg:before {
+        background-position: center top;
+    }
+
+    /* Hoodie: tablet position */
+    .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
+        background-position: calc(50% - 5px) center !important;
+    }
+
+    /* Apron: shift right to keep person visible */
+    .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
+        background-position: calc(50% + 80px) top;
+    }
+
+    .hero-el:nth-child(1).s--active .hero-el__bg:before {
+        background-position: calc(50% + 25px) top;
+    }
+}
+
+/* ========================================
+   DESKTOP OVERRIDES (1280px+)
+   ======================================== */
+@media (min-width: 1280px) {
     
     /* Hide tablet-top-bar on desktop */
     .tablet-top-bar {

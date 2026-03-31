@@ -566,20 +566,20 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     width: 32px;
     height: 32px;
     border: none;
-    background: #fee2e2;
+    background: transparent;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #ef4444;
+    color: #9ca3af;
     padding: 0;
 }
 
 .delete-logo-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: transparent;
+    color: #6b7280;
     transform: scale(1.05);
 }
 
@@ -749,19 +749,19 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     width: 28px;
     height: 28px;
     border: none;
-    background: #fee2e2;
+    background: transparent;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #ef4444;
+    color: #9ca3af;
     transition: all 0.2s ease;
 }
 
 .upload-remove-btn:hover {
-    background: #fecaca;
-    color: #dc2626;
+    background: transparent;
+    color: #6b7280;
 }
 
 /* Remove Background Button */

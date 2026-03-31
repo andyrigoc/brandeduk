@@ -136,38 +136,71 @@
         const methodBadge = method === 'embroidery' ? embBadge : printBadge;
         const addBadge = method === 'embroidery' ? printBadge : embBadge;
         
-        // Make method badge active
-        if (methodBadge && !methodBadge.classList.contains('poa-badge')) {
-            methodBadge.classList.add('active');
-            methodBadge.dataset.role = 'method';
-        }
+        // Check if the other badge is hidden (e.g. embroidery-only products like beanies)
+        const otherBadgeHidden = addBadge && (addBadge.style.display === 'none' || addBadge.offsetParent === null);
         
-        // Transform other badge to "Add Logo" button
-        if (addBadge && !addBadge.classList.contains('poa-badge')) {
-            addBadge.classList.remove('active');
-            addBadge.classList.add('add-logo-btn');
-            addBadge.dataset.role = 'add-logo';
-            addBadge.dataset.activeMethod = method;
+        if (otherBadgeHidden) {
+            // Only one method available: transform the METHOD badge itself into "Upload Logo"
+            if (methodBadge && !methodBadge.classList.contains('poa-badge')) {
+                methodBadge.classList.add('active', 'add-logo-btn');
+                methodBadge.dataset.role = 'add-logo';
+                methodBadge.dataset.activeMethod = method;
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                const origPrice = methodBadge.querySelector('.price-value')?.textContent || (method === 'embroidery' ? '+ \u00A35.00' : '+ \u00A33.50');
+                methodBadge.innerHTML = `
+                    <span class="price-value" style="display:none;">${origPrice}</span>
+                    <span class="price-label" style="font-size:9px;">UPLOAD LOGO</span>
+                    <svg class="add-logo-cloud-icon" width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+                const position = card.querySelector('input[type="checkbox"]')?.value || card.dataset.position;
+                if (state.positionDesigns[position]?.logo) {
+                    transformToLogoAdded(methodBadge);
+                }
+            }
+        } else {
+            // Normal two-badge flow
+            // Make method badge active
+            if (methodBadge && !methodBadge.classList.contains('poa-badge')) {
+                methodBadge.classList.add('active');
+                methodBadge.dataset.role = 'method';
+            }
             
-            // Cloud upload animation SVG - unique ID per badge (SAME AS MOBILE)
-            const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            addBadge.innerHTML = `
-                <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <clipPath id="${uniqueId}">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
-                        </clipPath>
-                    </defs>
-                    <g clip-path="url(#${uniqueId})">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
-                    </g>
-                </svg>
-            `;
-            
-            // Check if logo already exists for this position
-            const position = card.querySelector('input[type="checkbox"]')?.value || card.dataset.position;
-            if (state.positionDesigns[position]?.logo) {
-                transformToLogoAdded(addBadge);
+            // Transform other badge to "Add Logo" button
+            if (addBadge && !addBadge.classList.contains('poa-badge')) {
+                addBadge.classList.remove('active');
+                addBadge.classList.add('add-logo-btn');
+                addBadge.dataset.role = 'add-logo';
+                addBadge.dataset.activeMethod = method;
+                
+                // Cloud upload animation SVG - unique ID per badge (SAME AS MOBILE)
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                addBadge.innerHTML = `
+                    <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+                
+                // Check if logo already exists for this position
+                const position = card.querySelector('input[type="checkbox"]')?.value || card.dataset.position;
+                if (state.positionDesigns[position]?.logo) {
+                    transformToLogoAdded(addBadge);
+                }
             }
         }
     }

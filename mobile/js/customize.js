@@ -303,12 +303,61 @@
 
         const lower = raw.toLowerCase();
 
-        // Ensure ALL apron products (e.g. "Colours Bib Apron", "apron", "aprons") use bib apron images
-        if (lower === 'apron' || lower === 'aprons' || lower.includes('apron')) {
-            return 'Aprons';
-        }
+        // Normalize all known product type variants to their PRODUCT_TYPE_TO_FOLDER key
+        if (lower.includes('apron')) return 'Aprons';
+        if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat') || lower.includes('knitted hat')) return 'Beanies';
+        if (lower.includes('cap') || lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+        if (lower.includes('hoodie') || lower.includes('hooded')) return 'Hoodies';
+        if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan')) return 'Sweatshirts';
+        if (lower.includes('fleece')) return 'Fleece';
+        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('t-shirt') || lower.includes('tshirt') || lower.includes('tee ') || lower === 'tee' || lower.includes('vest top')) return 'T-shirts';
+        if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak') || lower.includes('windbreaker')) return 'Jackets';
+        if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
+        if (lower.includes('gilet') || lower.includes('body warmer') || lower.includes('bodywarmer')) return 'Gilets & Body Warmers';
+        if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('high vis') || lower.includes('safety vest')) return 'Safety Vests';
+        if (lower.includes('trouser') || lower.includes('pant') || lower.includes('chino')) return 'Trousers';
+        if (lower.includes('short') && !lower.includes('shirt')) return 'Shorts';
+        if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall') || lower.includes('duffle') || lower.includes('duffel')) return 'Bags';
+        if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+        if (lower.includes('rugby')) return 'Rugby Shirts';
+        if (lower.includes('cardigan')) return 'Cardigans';
+        if (lower.includes('jumper') || lower.includes('knitted')) return 'Knitted Jumpers';
 
         return raw;
+    }
+
+    // Infer product type from product name/description when API doesn't provide productType
+    function inferProductTypeFromName(text) {
+        if (!text) return '';
+        const lower = String(text).toLowerCase();
+
+        // Order matters: more specific matches first
+        if (lower.includes('apron')) return 'Aprons';
+        if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+        if (lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+        if (lower.includes('cap') && !lower.includes('capsule')) return 'Caps';
+        if (lower.includes('hoodie') || lower.includes('hooded sweat') || lower.includes('hooded top') || lower.includes('zip hood')) return 'Hoodies';
+        if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan sweat')) return 'Sweatshirts';
+        if (lower.includes('fleece')) return 'Fleece';
+        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('t-shirt') || lower.includes('tshirt') || (lower.includes('tee') && !lower.includes('steel'))) return 'T-shirts';
+        if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
+        if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak')) return 'Jackets';
+        if (lower.includes('gilet') || lower.includes('body warmer') || lower.includes('bodywarmer')) return 'Gilets & Body Warmers';
+        if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('high vis') || lower.includes('safety vest')) return 'Safety Vests';
+        if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+        if (lower.includes('short') && !lower.includes('shirt') && !lower.includes('sleeve')) return 'Shorts';
+        if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall')) return 'Bags';
+        if (lower.includes('blouse')) return 'Shirts';
+        if (lower.includes('rugby')) return 'Rugby Shirts';
+        if (lower.includes('cardigan')) return 'Cardigans';
+        if (lower.includes('jumper')) return 'Knitted Jumpers';
+        if (lower.includes('shirt')) return 'Shirts';
+
+        return '';
     }
     
     // Build positions dynamically from productType
@@ -332,9 +381,13 @@
             return null;
         }
         
-        const basePath = `brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+        const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
         const positions = {};
         
+        // Embroidery-only product types (no print option)
+        const EMBROIDERY_ONLY_TYPES = ['Beanies'];
+        const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
+
         imageFiles.forEach(filename => {
             const positionInfo = FILENAME_TO_POSITION[filename];
             if (positionInfo) {
@@ -345,7 +398,7 @@
                     label: positionInfo.label,
                     image: `${basePath}/${filename}`,
                     embroidery: prices.embroidery,
-                    print: prices.print,
+                    print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
                 };
             } else {
@@ -379,11 +432,13 @@
         }
 
         let productType = productData.productType || productData.category || productData.type;
-        // Last-resort inference from product name (fixes cases like "Colours Bib Apron")
+        // Last-resort inference from product name/description
         if ((!productType || String(productType).trim() === '') && productData.name) {
-            if (String(productData.name).toLowerCase().includes('apron')) {
-                productType = 'Aprons';
-            }
+            productType = inferProductTypeFromName(productData.name);
+        }
+        // If still empty, try from description
+        if ((!productType || String(productType).trim() === '') && productData.description) {
+            productType = inferProductTypeFromName(productData.description);
         }
         console.log('🎯 Updating position cards for productType:', productType);
         
@@ -458,10 +513,16 @@
                             if (valueEl) valueEl.textContent = value;
                         }
                     }
-                    if (positionConfig.print) {
+                    if (positionConfig.print === null) {
+                        // Embroidery-only product: hide PRINT button
+                        card.dataset.print = '';
+                        const printBtn = card.querySelector('.price-print');
+                        if (printBtn) printBtn.style.display = 'none';
+                    } else if (positionConfig.print) {
                         card.dataset.print = positionConfig.print;
                         const printBtn = card.querySelector('.price-print');
                         if (printBtn) {
+                            printBtn.style.display = '';
                             const value = '£' + positionConfig.print;
                             printBtn.setAttribute('data-default-price', value);
                             const valueEl = printBtn.querySelector('.price-value');
@@ -476,6 +537,14 @@
         });
         
         console.log('✅ Position cards updated for productType:', productType);
+        
+        // Hide/show PRINT legend badge based on product type
+        const printKeyBadge = document.querySelector('.key-badge.print');
+        if (printKeyBadge) {
+            const normalizedType = normalizeProductTypeForFolder(productType);
+            const EMBROIDERY_ONLY_TYPES = ['Beanies'];
+            printKeyBadge.style.display = EMBROIDERY_ONLY_TYPES.includes(normalizedType) ? 'none' : '';
+        }
     }
 
     // === State ===
@@ -696,15 +765,32 @@
             }
 
             // ALWAYS fetch fresh product detail from API to get complete sizes
-            // The products list endpoint only returns partial size data
-            const productCode = savedProductCode || (cachedData ? cachedData.code : null);
+            // Also fetch from listing endpoint for up-to-date pricing
+            // Read from sessionStorage first, then fall back to URL ?code= parameter
+            let productCode = savedProductCode || (cachedData ? cachedData.code : null);
+            
+            // Fallback: read code from URL parameter (for direct/shared links)
+            if (!productCode) {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    productCode = urlParams.get('code') || null;
+                    if (productCode) {
+                        console.log('🔗 Product code from URL parameter:', productCode);
+                    }
+                } catch (e) { /* ignore */ }
+            }
             
             if (productCode) {
                 try {
                     console.log('📦 Fetching fresh product detail from API for:', productCode);
-                    const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
-                    if (res.ok) {
-                        productData = await res.json();
+                    // Fetch detail (full data) and listing (accurate prices) in parallel
+                    const [detailRes, listingRes] = await Promise.allSettled([
+                        fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`),
+                        fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+                    ]);
+
+                    if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
+                        productData = await detailRes.value.json();
                         // CRITICAL: API detail endpoint doesn't return top-level 'image' (model shot)
                         // Preserve it from the cached shop data if available
                         if (!productData.image && cachedData && cachedData.image) {
@@ -714,10 +800,48 @@
                         console.log('✅ Fetched product from API:', productData.code);
                         console.log('📐 Product sizes from API:', productData.sizes);
                         console.log('🎨 Product colors count:', (productData.colors || []).length);
+                    }
+
+                    // Merge listing prices (more up-to-date than detail endpoint)
+                    let listingProduct = null;
+                    if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
+                        const listingData = await listingRes.value.json();
+                        const items = listingData.items || listingData.products || [];
+                        listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                    }
+
+                    if (productData && listingProduct) {
+                        const detailPrice = Number(productData.price) || 0;
+                        const listingPrice = Number(listingProduct.price) || 0;
+                        if (listingPrice > 0 && listingPrice !== detailPrice) {
+                            console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                            productData.price = listingProduct.price;
+                            productData.basePrice = listingProduct.price;
+                        }
+                        if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
+                            productData.priceBreaks = listingProduct.priceBreaks;
+                        }
+                        // For direct links: use listing image if detail has no model image
+                        if (!productData.image && listingProduct.image) {
+                            productData.image = listingProduct.image;
+                        }
+                    } else if (!productData && listingProduct) {
+                        productData = listingProduct;
+                        if (!productData.image && cachedData && cachedData.image) {
+                            productData.image = cachedData.image;
+                        }
+                        // Use listing image as main image for direct links (no cached shop data)
+                        if (!productData.image && listingProduct.image) {
+                            productData.image = listingProduct.image;
+                        }
+                        console.warn('⚠️ Using listing data (detail endpoint failed)');
+                    }
+
+                    if (productData) {
                         // Update cache with complete data
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
-                        console.warn('Product API returned', res.status, '- falling back to cached data');
+                        console.warn('Product API returned error - falling back to cached data');
                     }
                 } catch (e) {
                     console.warn('Failed to fetch product from API, using cached data if available', e);
@@ -748,8 +872,18 @@
             console.log('?? Cleared old color selection to prevent showing previous product image');
 
             // Map productData into our state
+            // Update URL with product code so the link is shareable
+            const finalCode = productData.code || productData.productCode || productData.sku || productData.id;
+            if (finalCode) {
+                const url = new URL(window.location);
+                if (url.searchParams.get('code') !== finalCode) {
+                    url.searchParams.set('code', finalCode);
+                    history.replaceState(null, '', url);
+                }
+            }
+
             state.product = state.product || {};
-            state.product.code = productData.code || productData.productCode || productData.sku || productData.id || state.product.code;
+            state.product.code = finalCode || state.product.code;
             state.product.sku = productData.sku || productData.code || productData.productCode || productData.id || state.product.sku;
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
@@ -836,13 +970,24 @@
     // Update visible product DOM elements after dynamic load
     function refreshProductDOM() {
         try {
+            // Bestseller badge - show only if API says so
+            const bestsellerBadge = document.getElementById('bestsellerBadge');
+            if (bestsellerBadge) {
+                const raw = state.product?.rawData;
+                const isBestSeller = raw && (raw.is_best_seller === true || raw.is_best_seller === 'true' || raw.is_best_seller === 1);
+                bestsellerBadge.style.display = isBestSeller ? '' : 'none';
+            }
+
             // Title and SKU
             const titleEl = document.querySelector('.product-title');
             const skuEl = document.querySelector('.product-sku');
             if (titleEl) titleEl.textContent = state.product?.name || titleEl.textContent;
             if (skuEl) {
-                const brandName = state.product?.brand || state.product?.name?.split(' ')[0] || '';
-                skuEl.textContent = `#${state.product?.code || ''} ${brandName}`;
+                let brandName = state.product?.brand || state.product?.name?.split(' ')[0] || '';
+                // Hide excluded brands
+                const _EXCL_CZ = ['absolute', 'ralawise'];
+                if (_EXCL_CZ.some(b => brandName.toLowerCase().includes(b))) brandName = '';
+                skuEl.textContent = `#${state.product?.code || ''}${brandName ? ' ' + brandName : ''}`;
             }
 
             // Main image - use model/hero image from API as default (product.image),
@@ -1474,6 +1619,14 @@
             // Add current selection to basket
             addCurrentSelectionToBasket();
             
+            // Force logo into note box from state
+            const logoSrc = getLogoFromState();
+            if (logoSrc) {
+                document.querySelectorAll('.note-box-logo').forEach(logoBox => {
+                    logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                });
+            }
+            
             // Mark selection as saved
             state.selectionSaved = true;
             
@@ -1572,11 +1725,15 @@
                 };
                 const positionLabel = positionNames[pos] || pos.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
+                // Get logo from positionDesigns if available
+                const designLogo = state.positionDesigns?.[pos]?.logo || null;
+                
                 positions[pos] = {
                     method: methodLabel,
                     unitPrice: unitPrice,
                     totalPrice: totalPrice,
-                    name: positionLabel
+                    name: positionLabel,
+                    logo: designLogo
                 };
                 
                 // Also add to customizations array for basket display
@@ -1603,6 +1760,7 @@
             unitPrice: getCurrentUnitPrice(),
             priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
             positions: positions,
+            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             customizations: customizations,
             addedAt: new Date().toISOString()
         };
@@ -1611,18 +1769,84 @@
         console.log('?? positions object:', JSON.stringify(positions));
         console.log('?? customizations array:', JSON.stringify(customizations));
         
-        // Add to basket
-        basket.push(newItem);
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        // Add to basket — merge if same product+color already exists
+        const existingIdx = basket.findIndex(i =>
+            i.productCode === newItem.productCode &&
+            (i.colorId === newItem.colorId || i.color === newItem.color)
+        );
+
+        if (existingIdx !== -1) {
+            const existing = basket[existingIdx];
+            Object.entries(newItem.quantities).forEach(([size, qty]) => {
+                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
+            });
+            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
+            existing.unitPrice = newItem.unitPrice;
+            if (newItem.positions && Object.keys(newItem.positions).length > 0) {
+                existing.positions = newItem.positions;
+            }
+            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
+                existing.positionDesigns = newItem.positionDesigns;
+            }
+            if (newItem.customizations && newItem.customizations.length > 0) {
+                existing.customizations = newItem.customizations;
+            }
+            existing.colorImage = newItem.colorImage || existing.colorImage;
+        } else {
+            basket.push(newItem);
+        }
         
-        console.log('? Basket saved! Total items:', basket.length);
+        // Save to localStorage SYNCHRONOUSLY first, then compress in background
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            console.log('✅ Basket saved! Total items:', basket.length);
+        } catch (e) {
+            console.warn('⚠️ localStorage full, trying to compress...', e);
+            // Synchronous fallback: strip base64 logos to thumbnail size inline
+            basket.forEach(item => {
+                if (item.positionDesigns) {
+                    Object.values(item.positionDesigns).forEach(d => {
+                        if (d.logo && d.logo.length > 50000) {
+                            // Keep a truncated version rather than nothing
+                            d.logo = d.logo.substring(0, 50000);
+                        }
+                    });
+                }
+            });
+            try {
+                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                console.log('✅ Basket saved after trimming!');
+            } catch (e2) {
+                console.error('❌ Cannot save basket:', e2);
+                showToast('Storage full — please submit your quote', true);
+            }
+        }
+        
+        // Background: compress images for future saves (non-blocking)
+        setTimeout(async () => {
+            try {
+                const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                let changed = false;
+                for (let i = 0; i < bsk.length; i++) {
+                    const before = JSON.stringify(bsk[i]).length;
+                    bsk[i] = await compressItemImages(bsk[i]);
+                    if (JSON.stringify(bsk[i]).length < before) changed = true;
+                }
+                if (changed) {
+                    localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    console.log('✅ Basket images compressed in background');
+                }
+            } catch (err) {
+                console.warn('Background compression failed:', err);
+            }
+        }, 100);
         
         // Update UI
         updateCartBadge();
         updateBasketCount();
         updatePricingSummary();
         
-        console.log('? Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
+        console.log('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
     }
     
     // Reset size selection form (but keep color)
@@ -1773,6 +1997,18 @@
                         // Ignore
                     }
 
+                    // Sync any unsaved notes from DOM textareas to basket items before processing
+                    document.querySelectorAll('.note-box-input').forEach(textarea => {
+                        const idx = textarea.dataset.index;
+                        if (idx !== 'current' && basket[Number(idx)]) {
+                            const noteVal = textarea.value.trim();
+                            if (noteVal) basket[Number(idx)].note = noteVal;
+                        }
+                    });
+                    // Also grab "current item" note
+                    const currentNoteTextarea = document.querySelector('.note-box-input[data-index="current"]');
+                    const currentItemNote = currentNoteTextarea ? currentNoteTextarea.value.trim() : '';
+
                     // Calculate summary totals and build detailed basket items
                     let totalGarmentCost = 0;
                     let totalQuantity = 0;
@@ -1784,8 +2020,8 @@
                     // Process basket items
                     basket.forEach((item) => {
                         const qtyMap = item.quantities || item.sizes || {};
-                        const itemQuantity = item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
-                        const unitPrice = Number(item.price) || 0;
+                        const itemQuantity = item.totalQty || item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
+                        const unitPrice = Number(item.unitPrice) || Number(item.price) || 0;
                         const itemTotal = unitPrice * itemQuantity;
                         
                         totalGarmentCost += itemTotal;
@@ -1808,18 +2044,22 @@
                         // Get image from correct source
                         const productImage = productData.images ? 
                             (Array.isArray(productData.images) ? productData.images[0] : productData.images) : 
-                            (productData.image || item.image || '');
+                            (productData.image || item.image || item.colorImage || '');
+                        
+                        // Get note from basket item
+                        const itemNote = item.note || '';
                         
                         basketItems.push({
-                            name: item.name || productData.name || 'Product',
-                            code: item.code || productData.code || '',
+                            name: item.productName || item.name || productData.name || 'Product',
+                            code: item.productCode || item.code || productData.code || '',
                             color: item.color || item.selectedColorName || state.selectedColorName || '',
                             quantity: itemQuantity,
                             sizes: sizesBreakdown,
                             sizesSummary: sizesSummary || item.size || 'N/A',
                             unitPrice: unitPrice,
                             itemTotal: itemTotal,
-                            image: productImage
+                            image: productImage,
+                            note: itemNote
                         });
                     });
 
@@ -1841,39 +2081,94 @@
                         return positionMap[positionCode] || positionCode;
                     }
 
-                    // Process customizations
+                    // Process customizations — collect from basket items first (has prices),
+                    // then fall back to positionCustomizations (design data only, no prices)
+                    const seenPositions = new Set();
+                    
+                    // 1) From basket items' positions/customizations (has unitPrice, totalPrice)
+                    basket.forEach((item) => {
+                        // Try item.positions object (has method, unitPrice, totalPrice, name)
+                        if (item.positions && typeof item.positions === 'object') {
+                            Object.entries(item.positions).forEach(([pos, posData]) => {
+                                if (!posData || seenPositions.has(pos)) return;
+                                seenPositions.add(pos);
+                                
+                                const method = (posData.method || 'embroidery').toLowerCase();
+                                const unitPrice = Number(posData.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                const quantity = Number(item.totalQty) || Number(item.quantity) || totalQuantity;
+                                const lineTotal = Number(posData.totalPrice) || (unitPrice * quantity);
+                                const hasLogo = !!(posData.logo || state.positionDesigns?.[pos]?.logo);
+                                
+                                customizationTotal += lineTotal;
+                                
+                                if (hasLogo && method === 'embroidery') {
+                                    digitizingFee = 25.00;
+                                }
+                                
+                                customizationsList.push({
+                                    position: posData.name || getPositionName(pos) || pos,
+                                    method: method === 'print' ? 'Print' : 'Embroidery',
+                                    type: hasLogo ? 'logo' : 'text',
+                                    hasLogo: hasLogo,
+                                    unitPrice: unitPrice,
+                                    lineTotal: lineTotal,
+                                    quantity: quantity
+                                });
+                            });
+                        }
+                        
+                        // Try item.customizations array (has unitPrice, total, qty)
+                        if (Array.isArray(item.customizations)) {
+                            item.customizations.forEach(c => {
+                                const posKey = (c.position || '').toLowerCase().replace(/\s+/g, '-');
+                                if (seenPositions.has(posKey) || seenPositions.has(c.position)) return;
+                                seenPositions.add(c.position);
+                                
+                                const method = (c.method || 'embroidery').toLowerCase();
+                                const unitPrice = Number(c.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                const quantity = Number(c.qty) || Number(c.quantity) || totalQuantity;
+                                const lineTotal = Number(c.total) || Number(c.lineTotal) || (unitPrice * quantity);
+                                
+                                customizationTotal += lineTotal;
+                                
+                                customizationsList.push({
+                                    position: c.position,
+                                    method: method === 'print' ? 'Print' : 'Embroidery',
+                                    type: c.type || 'logo',
+                                    hasLogo: !!c.hasLogo,
+                                    unitPrice: unitPrice,
+                                    lineTotal: lineTotal,
+                                    quantity: quantity
+                                });
+                            });
+                        }
+                    });
+                    
+                    // 2) Also check positionCustomizations for any positions not yet in basket
                     const customizationsEntries = Object.entries(positionCustomizations);
                     customizationsEntries.forEach(([position, customization]) => {
-                        if (!customization) return;
+                        if (!customization || seenPositions.has(position)) return;
+                        seenPositions.add(position);
                         
-                        const method = customization.method || 'embroidery';
-                        const type = customization.type || 'logo';
-                        const unitPrice = Number(customization.unitPrice) || 0;
-                        const quantity = Number(customization.quantity) || totalQuantity;
-                        const hasLogo = !!(customization.logoUrl || customization.logoData || customization.uploadedLogo);
+                        const method = (customization.method || 'embroidery').toLowerCase();
+                        const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                        const quantity = totalQuantity || 1;
+                        const hasLogo = !!(customization.logo || customization.logoUrl || customization.logoData);
+                        const lineTotal = unitPrice * quantity;
                         
-                        let lineTotal = 'POA';
-                        if (customization.lineTotal && customization.lineTotal !== 'POA') {
-                            lineTotal = Number(customization.lineTotal);
-                            customizationTotal += lineTotal;
-                        } else if (unitPrice > 0 && quantity > 0) {
-                            lineTotal = unitPrice * quantity;
-                            customizationTotal += lineTotal;
+                        customizationTotal += lineTotal;
+                        
+                        if (hasLogo && method === 'embroidery') {
+                            digitizingFee = 25.00;
                         }
                         
-                        // Check if digitizing fee applies (first logo upload)
-                        if (hasLogo && method === 'embroidery' && !customization.digitizingFeePaid) {
-                            digitizingFee = 25.00; // Standard digitizing fee
-                        }
-                        
-                        // Get position name (PC ki tarah)
                         const positionName = getPositionName(position) || position;
                         
                         customizationsList.push({
                             position: positionName,
                             method: method === 'print' ? 'Print' : 'Embroidery',
-                            type: type,
-                            hasLogo: hasLogo,  // <-- Yeh PC version me bhi hai
+                            type: hasLogo ? 'logo' : (customization.text ? 'text' : 'logo'),
+                            hasLogo: hasLogo,
                             unitPrice: unitPrice,
                             lineTotal: lineTotal,
                             quantity: quantity
@@ -1990,6 +2285,13 @@
                             lineTotal: c.lineTotal,
                             quantity: c.quantity
                         })),
+                        // Collect all notes from basket items + current item
+                        notes: [
+                            ...basketItems
+                                .filter(bi => bi.note)
+                                .map(bi => `${bi.name} (${bi.color}): ${bi.note}`),
+                            ...(currentItemNote ? [`Current item: ${currentItemNote}`] : [])
+                        ],
                         logoFiles: Object.keys(compressedLogoFiles).length > 0 ? compressedLogoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };
@@ -3098,20 +3400,20 @@
                 }
             }
             
-            // Update gallery thumbnails with new color
+            // Update gallery thumbnails – just highlight the matching color thumb
             const galleryThumbs = document.querySelectorAll('.gallery-thumbs .thumb');
             if (galleryThumbs.length > 0) {
-                const thumbImage = colorData.thumb || colorData.image;
                 galleryThumbs.forEach((thumb) => {
-                    const thumbImg = thumb.querySelector('img');
-                    if (thumbImg && thumbImage) {
-                        thumbImg.src = '';
-                        const cacheBuster = '_t=' + Date.now();
-                        thumbImg.src = thumbImage + (thumbImage.includes('?') ? '&' : '?') + cacheBuster;
-                        const view = thumb.getAttribute('data-view') || 'product';
-                        thumbImg.alt = `${state.product?.name || 'Product'} - ${view.charAt(0).toUpperCase() + view.slice(1)}`;
-                    }
+                    thumb.classList.toggle('active', thumb.getAttribute('data-color-id') === colorData.id);
                 });
+                // Scroll active thumb into view within the horizontal strip only (no vertical page scroll)
+                const activeThumb = document.querySelector('.gallery-thumbs .thumb.active');
+                const thumbsContainer = document.querySelector('.gallery-thumbs');
+                if (activeThumb && thumbsContainer) {
+                    const thumbLeft = activeThumb.offsetLeft - thumbsContainer.offsetLeft;
+                    const centerOffset = thumbLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.offsetWidth / 2);
+                    thumbsContainer.scrollTo({ left: centerOffset, behavior: 'smooth' });
+                }
             }
         }
         
@@ -3130,6 +3432,14 @@
 
         // Update summary
         updatePricingSummary();
+
+        // Scroll down to product info (title) so the customer sees pricing + sizes
+        const productInfo = document.querySelector('.product-info') || document.getElementById('productTitle');
+        if (productInfo) {
+            setTimeout(() => {
+                productInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
+        }
     }
 
     // Render color buttons with product thumbnails
@@ -3501,6 +3811,9 @@
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
                 if (state.quantity > 0) {
+                    // Actually save to basket
+                    addToQuote({ silent: true });
+                    
                     // Change button to green "Saved to Quote"
                     saveBtn.classList.add('saved');
                     saveBtn.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
@@ -3511,6 +3824,9 @@
                         Saved to Quote
                     `;
                     state.selectionSaved = true;
+                    
+                    // Update summary to show the saved items
+                    updatePricingSummary();
                     
                     if (navigator.vibrate) navigator.vibrate(15);
                 }
@@ -3719,8 +4035,8 @@
         
         // Set flag to prevent auto-scroll when updating quantities
         state.isUpdatingQuantity = true;
-        updatePricingTiers();  // Rebuild tiers with correct active state
-        updatePricingSummary();
+        try { updatePricingTiers(); } catch (e) { console.error('updatePricingTiers error:', e); }
+        try { updatePricingSummary(); } catch (e) { console.error('updatePricingSummary error:', e); }
         state.isUpdatingQuantity = false;
         
         // Update live badge with current selection
@@ -4753,30 +5069,65 @@
         // Other badge (becomes "Add Logo" with cloud animation)
         const addBadge = method === 'embroidery' ? printBadge : embBadge;
         
-        if (methodBadge) {
-            methodBadge.classList.add('active');
-            methodBadge.dataset.role = 'method';
-        }
+        // Check if the other badge is hidden (e.g. embroidery-only products like beanies)
+        const otherBadgeHidden = addBadge && (addBadge.style.display === 'none' || addBadge.offsetParent === null);
         
-        if (addBadge) {
-            addBadge.classList.remove('active');
-            addBadge.classList.add('add-logo-btn');
-            addBadge.dataset.role = 'add-logo';
-            addBadge.dataset.activeMethod = method;
-            // Cloud upload animation SVG - unique ID per badge
-            const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            addBadge.innerHTML = `
-                <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <clipPath id="${uniqueId}">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
-                        </clipPath>
-                    </defs>
-                    <g clip-path="url(#${uniqueId})">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
-                    </g>
-                </svg>
-            `;
+        if (otherBadgeHidden) {
+            // Only one method available: transform the METHOD badge itself into "Upload Logo"
+            if (methodBadge) {
+                methodBadge.classList.add('active', 'add-logo-btn');
+                methodBadge.dataset.role = 'add-logo';
+                methodBadge.dataset.activeMethod = method;
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                const origPrice = methodBadge.querySelector('.price-value')?.textContent || (method === 'embroidery' ? '+ \u00A35.00' : '+ \u00A33.50');
+                methodBadge.innerHTML = `
+                    <span class="price-value" style="display:none;">${origPrice}</span>
+                    <span class="price-label" style="font-size:9px;">UPLOAD LOGO</span>
+                    <svg class="add-logo-cloud-icon" width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+                
+                // Store the method so the position is counted correctly
+                const position = card.dataset.position;
+                if (position) {
+                    state.positionMethods[position] = method;
+                }
+            }
+        } else {
+            // Normal two-badge flow
+            if (methodBadge) {
+                methodBadge.classList.add('active');
+                methodBadge.dataset.role = 'method';
+            }
+            
+            if (addBadge) {
+                addBadge.classList.remove('active');
+                addBadge.classList.add('add-logo-btn');
+                addBadge.dataset.role = 'add-logo';
+                addBadge.dataset.activeMethod = method;
+                // Cloud upload animation SVG - unique ID per badge
+                const uniqueId = 'cloud-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                addBadge.innerHTML = `
+                    <svg class="add-logo-cloud-icon" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="${uniqueId}">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z" />
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#${uniqueId})">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim" />
+                        </g>
+                    </svg>
+                `;
+            }
         }
     }
 
@@ -5400,7 +5751,91 @@
             
             if (pill) {
                 pill.hidden = false;
-                pill.textContent = 'CUSTOMIZATION READY';
+                pill.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    SAVE & CONTINUE
+                `;
+                
+                // Attach save handler to the pill
+                pill.onclick = () => {
+                    // Check quantity first
+                    if (state.quantity <= 0) {
+                        showToast('Please select at least one size first');
+                        return;
+                    }
+                    
+                    // Save to basket
+                    addCurrentSelectionToBasket();
+                    
+                    // Mark as saved
+                    state.selectionSaved = true;
+                    
+                    // Visual feedback on pill
+                    pill.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                            <path d="M5 13l4 4L19 7"/>
+                        </svg>
+                        SAVED!
+                    `;
+                    pill.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                    pill.style.boxShadow = '0 4px 12px rgba(22, 163, 74, 0.35)';
+                    
+                    // Also update the top Save button
+                    const topSaveBtn = document.getElementById('saveSelectionBtn');
+                    if (topSaveBtn) {
+                        topSaveBtn.classList.add('saved');
+                        topSaveBtn.innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Saved!
+                        `;
+                    }
+                    
+                    // Force logo into note box from state
+                    const logoSrc = getLogoFromState();
+                    if (logoSrc) {
+                        const noteBoxLogos = document.querySelectorAll('.note-box-logo');
+                        noteBoxLogos.forEach(logoBox => {
+                            logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                        });
+                    }
+                    
+                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                    
+                    // Reset after delay
+                    setTimeout(() => {
+                        resetSizeSelectionForm();
+                        pill.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            SAVE & CONTINUE
+                        `;
+                        pill.style.background = '';
+                        pill.style.boxShadow = '';
+                        
+                        if (topSaveBtn) {
+                            topSaveBtn.classList.remove('saved');
+                            topSaveBtn.innerHTML = `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Save & Continue
+                            `;
+                        }
+                        
+                        showToast('Ready to add more items!');
+                    }, 1200);
+                };
             }
             
             // Transform "ADD LOGO" button to green "LOGO ADDED" when logo is uploaded
@@ -5427,6 +5862,20 @@
         
         // Update pricing
         updatePricingSummary();
+        
+        // IMMEDIATELY inject logo into the summary note box (current item)
+        if (designData.logo) {
+            const currentItemLogo = document.getElementById('currentItemLogo');
+            if (currentItemLogo) {
+                currentItemLogo.innerHTML = `<img src="${designData.logo}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+            }
+            // Also update any existing note-box-logo elements
+            document.querySelectorAll('.note-box-logo').forEach(logoBox => {
+                if (logoBox.querySelector('.no-logo')) {
+                    logoBox.innerHTML = `<img src="${designData.logo}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                }
+            });
+        }
         
         // Update logos list in order card
         updateOrderCardLogosList();
@@ -5595,58 +6044,85 @@
             // CRITICAL FIX: Customizations apply to ALL items with same productCode
             const cumulativeQtyForThisProduct = productCodeGroups[itemCode]?.totalQty || itemQty;
             
-            // Collect basket customizations
-            if (item.positions && Array.isArray(item.positions)) {
-                item.positions.forEach(pos => {
-                    if (pos.method) {
-                        const custUnitPrice = pos.unitPrice || (pos.method === 'embroidery' ? 5.00 : 3.50);
-                        // Check if this customization was already added for this productCode
-                        const existingCustom = allBasketCustomizations.find(c => 
-                            c.productCode === itemCode && 
-                            (c.position === (pos.name || pos.position)) && 
-                            c.method === (pos.method === 'embroidery' ? 'Embroidery' : 'Print')
-                        );
-                        
-                        if (!existingCustom) {
-                            allBasketCustomizations.push({
-                                productCode: itemCode,
-                                position: pos.name || pos.position,
-                                method: pos.method === 'embroidery' ? 'Embroidery' : 'Print',
-                                unitPrice: custUnitPrice,
-                                qty: cumulativeQtyForThisProduct,
-                                total: custUnitPrice * cumulativeQtyForThisProduct,
-                                color: item.color || item.colorName
-                            });
-                        }
-                        if (pos.method === 'embroidery') hasEmbroidery = true;
+            // Track whether we found customization data from positions (to avoid double-counting with customizations)
+            let foundPositionData = false;
+            
+            // Helper: normalize method string to canonical form
+            const normalizeMethod = (m) => (m || '').toLowerCase() === 'embroidery' ? 'Embroidery' : 'Print';
+            const isEmbroidery = (m) => (m || '').toLowerCase() === 'embroidery';
+            
+            // Collect basket customizations from positions (handles BOTH array and object formats)
+            const positionsArr = Array.isArray(item.positions)
+                ? item.positions
+                : (item.positions && typeof item.positions === 'object')
+                    ? Object.entries(item.positions).map(([key, val]) => ({ ...val, _posKey: key }))
+                    : [];
+            
+            positionsArr.forEach(pos => {
+                const posMethod = pos.method;
+                if (!posMethod) return;
+                foundPositionData = true;
+                
+                const methodLabel = normalizeMethod(posMethod);
+                const custUnitPrice = pos.unitPrice || (isEmbroidery(posMethod) ? 5.00 : 3.50);
+                const positionName = pos.name || pos.position || pos._posKey || 'Position';
+                
+                // Check if this customization was already added for this productCode
+                const existingCustom = allBasketCustomizations.find(c => 
+                    c.productCode === itemCode && 
+                    c.position === positionName && 
+                    c.method === methodLabel
+                );
+                
+                if (!existingCustom) {
+                    allBasketCustomizations.push({
+                        productCode: itemCode,
+                        position: positionName,
+                        method: methodLabel,
+                        unitPrice: custUnitPrice,
+                        qty: cumulativeQtyForThisProduct,
+                        total: custUnitPrice * cumulativeQtyForThisProduct,
+                        color: item.color || item.colorName
+                    });
+                }
+                if (isEmbroidery(posMethod)) hasEmbroidery = true;
+            });
+            
+            // Only check customizations if positions didn't already provide data (avoid double-counting)
+            if (!foundPositionData && item.customizations) {
+                // Handle both array format and object format
+                const custEntries = Array.isArray(item.customizations)
+                    ? item.customizations.map((c, i) => ({ ...c, _idx: i }))
+                    : (typeof item.customizations === 'object')
+                        ? Object.entries(item.customizations).map(([k, v]) => ({ ...v, _posKey: k }))
+                        : [];
+                
+                custEntries.forEach(posData => {
+                    if (!posData || !posData.method) return;
+                    
+                    const methodLabel = normalizeMethod(posData.method);
+                    const custUnitPrice = posData.unitPrice || (isEmbroidery(posData.method) ? 5.00 : 3.50);
+                    const positionName = posData.position || posData.name || posData._posKey || 'Position';
+                    
+                    // Check if already added
+                    const existingCustom = allBasketCustomizations.find(c => 
+                        c.productCode === itemCode && 
+                        c.position === positionName && 
+                        c.method === methodLabel
+                    );
+                    
+                    if (!existingCustom) {
+                        allBasketCustomizations.push({
+                            productCode: itemCode,
+                            position: positionName,
+                            method: methodLabel,
+                            unitPrice: custUnitPrice,
+                            qty: cumulativeQtyForThisProduct,
+                            total: custUnitPrice * cumulativeQtyForThisProduct,
+                            color: item.color || item.colorName
+                        });
                     }
-                });
-            }
-            // Also check customizations object format
-            if (item.customizations && typeof item.customizations === 'object') {
-                Object.entries(item.customizations).forEach(([posKey, posData]) => {
-                    if (posData && posData.method) {
-                        const custUnitPrice = posData.unitPrice || (posData.method === 'embroidery' ? 5.00 : 3.50);
-                        // Check if this customization was already added for this productCode
-                        const existingCustom = allBasketCustomizations.find(c => 
-                            c.productCode === itemCode && 
-                            (c.position === (posData.name || posKey)) && 
-                            c.method === (posData.method === 'embroidery' ? 'Embroidery' : 'Print')
-                        );
-                        
-                        if (!existingCustom) {
-                            allBasketCustomizations.push({
-                                productCode: itemCode,
-                                position: posData.name || posKey,
-                                method: posData.method === 'embroidery' ? 'Embroidery' : 'Print',
-                                unitPrice: custUnitPrice,
-                                qty: cumulativeQtyForThisProduct,
-                                total: custUnitPrice * cumulativeQtyForThisProduct,
-                                color: item.color || item.colorName
-                            });
-                        }
-                        if (posData.method === 'embroidery') hasEmbroidery = true;
-                    }
+                    if (isEmbroidery(posData.method)) hasEmbroidery = true;
                 });
             }
         });
@@ -5677,8 +6153,9 @@
                 console.log('?? Active badge found:', activeBadge, 'for method:', method);
                 
                 if (activeBadge) {
-                    const priceText = activeBadge.querySelector('.price-value').textContent;
-                    const priceMatch = priceText.match(/[\d.]+/);
+                    const priceText = activeBadge.querySelector('.price-value')?.textContent || '';
+                    const fallbackPrice = method === 'embroidery' ? '5.00' : '3.50';
+                    const priceMatch = priceText.match(/[\d.]+/) || fallbackPrice.match(/[\d.]+/);
                     if (priceMatch) {
                         const pricePerItem = parseFloat(priceMatch[0]);
                         const totalForPosition = pricePerItem * totalQtyForCustomizations;
@@ -5901,7 +6378,7 @@
         // GRAND TOTAL (ALL basket + current)
         const summaryTotal = document.getElementById('summaryTotal');
         if (summaryTotal) {
-            summaryTotal.innerHTML = `<span style="color: #10b981; font-weight: 600;">${formatCurrency(grandTotal)}</span> <span class="vat-suffix">${vatSuffix()}</span>`;
+            summaryTotal.innerHTML = `<span style="color: #E8A0BF; font-weight: 600;">${formatCurrency(grandTotal)}</span> <span class="vat-suffix">${vatSuffix()}</span>`;
         }
         
         // Also update the card header total to match
@@ -6001,6 +6478,22 @@
                     </div>
                 </div>
             `;
+            
+            // Add note box with logo for CURRENT item (pulled from live state)
+            const currentLogoSrc = getLogoFromState();
+            itemsHtml += `
+                <div class="basket-item-note-box current-note-box" data-index="current">
+                    <div class="note-box-header">NOTE / LOGO SIZE</div>
+                    <div class="note-box-body">
+                        <div class="note-box-logo" id="currentItemLogo">
+                            ${currentLogoSrc 
+                                ? '<img src="' + currentLogoSrc + '" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">'
+                                : '<span class="no-logo">No logo</span>'}
+                        </div>
+                        <textarea class="note-box-input" data-index="current" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200"></textarea>
+                    </div>
+                </div>
+            `;
         }
         
         // THEN: Show basket items
@@ -6052,6 +6545,26 @@
                         </button>
                     </div>
                 `;
+
+                // Logo + Note box
+                const logoSrc = getItemLogoSrc(item);
+                console.log('🖼️ NOTE BOX - item index:', index, 'logoSrc found:', !!logoSrc, 'logoSrc length:', logoSrc?.length || 0);
+                console.log('🖼️ item.positionDesigns:', item.positionDesigns ? Object.keys(item.positionDesigns) : 'NONE');
+                console.log('🖼️ item.positions:', item.positions ? (Array.isArray(item.positions) ? item.positions.length + ' array' : Object.keys(item.positions).join(',')) : 'NONE');
+                const savedNote = item.note || '';
+                itemsHtml += `
+                    <div class="basket-item-note-box" data-index="${index}">
+                        <div class="note-box-header">NOTE / LOGO SIZE</div>
+                        <div class="note-box-body">
+                            <div class="note-box-logo">
+                                ${logoSrc 
+                                    ? `<img src="${logoSrc}" alt="Logo" onerror="this.parentElement.innerHTML='<span class=\\'no-logo\\'>No logo</span>'">`
+                                    : '<span class="no-logo">No logo</span>'}
+                            </div>
+                            <textarea class="note-box-input" data-index="${index}" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200">${savedNote}</textarea>
+                        </div>
+                    </div>
+                `;
             });
         }
         
@@ -6066,6 +6579,71 @@
                 removeBasketItem(index);
             });
         });
+
+        // Attach note save listeners
+        basketItemsList.querySelectorAll('.note-box-input').forEach(textarea => {
+            let debounceTimer;
+            textarea.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const idx = parseInt(textarea.dataset.index);
+                    const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    if (bsk[idx]) {
+                        bsk[idx].note = textarea.value.trim();
+                        localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    }
+                }, 400);
+            });
+        });
+    }
+
+    // Extract logo image src from a basket item
+    function getItemLogoSrc(item) {
+        // Check customizations array (preferred)
+        if (item.customizations && Array.isArray(item.customizations)) {
+            const logo = item.customizations.find(c => c.type === 'logo' && c.content);
+            if (logo) return logo.content;
+            // Also check for logoUrl / logoData fields
+            const withLogo = item.customizations.find(c => c.logoUrl || c.logoData || c.uploadedLogo);
+            if (withLogo) return withLogo.logoUrl || withLogo.logoData || withLogo.uploadedLogo;
+        }
+        // Check positionDesigns
+        if (item.positionDesigns) {
+            for (const design of Object.values(item.positionDesigns)) {
+                if (design.logo) return design.logo;
+                if (design.logoUrl) return design.logoUrl;
+            }
+        }
+        // Check positions for logo data
+        if (item.positions) {
+            const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+            for (const pos of posArr) {
+                if (pos.logo) return pos.logo;
+                if (pos.logoUrl) return pos.logoUrl;
+            }
+        }
+        return null;
+    }
+    
+    // Get logo from current in-memory state (not localStorage)
+    function getLogoFromState() {
+        // Check positionDesigns
+        if (state.positionDesigns) {
+            for (const design of Object.values(state.positionDesigns)) {
+                if (design && design.logo) return design.logo;
+            }
+        }
+        // Check the design preview img as fallback
+        const previewImg = document.getElementById('designPreviewImg');
+        if (previewImg && previewImg.src && previewImg.src !== window.location.href) {
+            return previewImg.src;
+        }
+        // Check any logo overlay on position cards
+        const overlayImg = document.querySelector('.logo-overlay-img[src]');
+        if (overlayImg && overlayImg.src && overlayImg.src !== window.location.href) {
+            return overlayImg.src;
+        }
+        return null;
     }
     
     // Handle +/- quantity changes in basket
@@ -6522,11 +7100,16 @@
                     }
                 }
                 
+                // Include logo data from positionDesigns
+                const designData = state.positionDesigns?.[position];
+                const logoSrc = designData?.logo || null;
+
                 positions.push({
                     position: position,
                     name: positionName,
                     method: method, // 'print' or 'embroidery'
-                    unitPrice: unitPrice
+                    unitPrice: unitPrice,
+                    logo: logoSrc
                 });
             }
         });
@@ -6545,6 +7128,8 @@
             priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
             // Branding positions with method and pricing
             positions: positions,
+            // Design data per position (logos, text, etc.)
+            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             // Customization zones (logos/text) - legacy format
             customizations: getActiveCustomizations(),
             addedAt: new Date().toISOString()
@@ -6557,10 +7142,39 @@
             positions: newItem.positions
         });
         
-        // Add to basket
-        basket.push(newItem);
+        // Add to basket — merge if same product+color already exists
+        const existingIdx = basket.findIndex(i =>
+            i.productCode === newItem.productCode &&
+            (i.colorId === newItem.colorId || i.color === newItem.color)
+        );
+
+        if (existingIdx !== -1) {
+            const existing = basket[existingIdx];
+            // Merge quantities per size
+            Object.entries(newItem.quantities).forEach(([size, qty]) => {
+                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
+            });
+            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
+            // Update unit price to latest tier
+            existing.unitPrice = newItem.unitPrice;
+            // Overwrite customizations / positions with latest selection
+            if (newItem.positions && newItem.positions.length > 0) {
+                existing.positions = newItem.positions;
+            }
+            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
+                existing.positionDesigns = newItem.positionDesigns;
+            }
+            if (newItem.customizations && newItem.customizations.length > 0) {
+                existing.customizations = newItem.customizations;
+            }
+            // Keep latest image
+            existing.colorImage = newItem.colorImage || existing.colorImage;
+            console.log('🔄 Merged into existing basket item at index', existingIdx, 'totalQty:', existing.totalQty);
+        } else {
+            basket.push(newItem);
+        }
         
-        console.log('? Basket after push:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
+        console.log('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
         
         // Save to localStorage with error handling
         try {

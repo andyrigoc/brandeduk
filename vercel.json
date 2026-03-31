@@ -7,27 +7,68 @@
   "framework": null,
 
   "rewrites": [
-    { "source": "/", "destination": "/home-pc.html" },
+    { "source": "/", "destination": "/index.html" },
 
+    { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop-pc.html" },
 
-    { "source": "/product", "destination": "/product-detail.html" },
-    { "source": "/product/:code", "destination": "/product-detail.html" },
+    { "source": "/basket", "destination": "/basket.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/customize", "destination": "/customize.html" },
+    { "source": "/quote", "destination": "/quote-form.html" },
+    { "source": "/services", "destination": "/services.html" },
+    { "source": "/catalogue", "destination": "/catalogue.html" },
+    { "source": "/catalogue2", "destination": "/catalogue2.html" },
 
-    { "source": "/mobile", "destination": "/index-mobile.html" },
-    { "source": "/mobile/customize", "destination": "/mobile/customize-mobile.html" }
+    { "source": "/product", "destination": "/product-detail.html" },
+    { "source": "/product/:code", "destination": "/product-detail.html" }
   ],
 
   "redirects": [
     {
-      "source": "/home-pc.html",
-      "destination": "/home",
+      "source": "/mobile",
+      "destination": "/",
       "permanent": true
     },
     {
       "source": "/shop-pc.html",
       "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/basket.html",
+      "destination": "/basket",
+      "permanent": true
+    },
+    {
+      "source": "/checkout.html",
+      "destination": "/checkout",
+      "permanent": true
+    },
+    {
+      "source": "/customize.html",
+      "destination": "/customize",
+      "permanent": true
+    },
+    {
+      "source": "/quote-form.html",
+      "destination": "/quote",
+      "permanent": true
+    },
+    {
+      "source": "/services.html",
+      "destination": "/services",
+      "permanent": true
+    },
+    {
+      "source": "/catalogue.html",
+      "destination": "/catalogue",
+      "permanent": true
+    },
+    {
+      "source": "/catalogue2.html",
+      "destination": "/catalogue2",
       "permanent": true
     },
     {
@@ -38,31 +79,6 @@
     {
       "source": "/shop/product-detail.html",
       "destination": "/product",
-      "permanent": true
-    },
-    {
-      "source": "/index-mobile.html",
-      "destination": "/mobile",
-      "permanent": true
-    },
-    {
-      "source": "/mobile/customize-mobile.html",
-      "destination": "/mobile/customize",
-      "permanent": true
-    },
-    {
-      "source": "/m",
-      "destination": "/mobile",
-      "permanent": true
-    },
-    {
-      "source": "/m/shop",
-      "destination": "/mobile",
-      "permanent": true
-    },
-    {
-      "source": "/m/customize",
-      "destination": "/mobile/customize",
       "permanent": true
     }
   ],

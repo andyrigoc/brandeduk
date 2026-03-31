@@ -543,6 +543,144 @@
             border: 2px solid #7c3aed;
         }
         
+        /* Logo thumbnail in basket item */
+        .basket-item-logo {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .basket-item-logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+        .basket-item-logo .logo-label {
+            font-size: 11px;
+            color: #6b7280;
+        }
+        .basket-item-note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6b7280;
+            font-style: italic;
+            padding: 4px 8px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            border-left: 3px solid #7c3aed;
+        }
+
+        /* Quote Popup Overlay */
+        .quote-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .quote-popup-overlay.active {
+            display: flex;
+        }
+        .quote-popup {
+            background: #fff;
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px 20px 40px;
+            animation: slideUpPopup 0.3s ease;
+        }
+        @keyframes slideUpPopup {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .quote-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .quote-popup-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        .quote-popup-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .quote-popup .form-group {
+            margin-bottom: 14px;
+        }
+        .quote-popup .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .quote-popup .form-group input,
+        .quote-popup .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .quote-popup .form-group input:focus,
+        .quote-popup .form-group textarea:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+        }
+        .quote-popup .submit-quote-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .quote-popup .submit-quote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .quote-popup .submit-quote-btn.submitted {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .quote-popup .email-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
         /* Customize badge on item */
         .item-customize-badge {
             display: inline-flex;
@@ -864,6 +1002,53 @@
         </button>
     </div>
 
+    <!-- Quote Popup Overlay -->
+    <div class="quote-popup-overlay" id="quotePopupOverlay">
+        <div class="quote-popup">
+            <div class="quote-popup-header">
+                <h3>Request a Quote</h3>
+                <button class="quote-popup-close" id="closeQuotePopup">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="basketQuoteForm">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="bqName" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" id="bqCompany" placeholder="Company name (optional)">
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="bqPhone" required placeholder="07xxx xxx xxx">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="bqEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="bqAddress" placeholder="Delivery address (optional)">
+                </div>
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea id="bqNotes" rows="3" placeholder="Any special requirements..."></textarea>
+                </div>
+                <button type="submit" class="submit-quote-btn" id="bqSubmitBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    Submit Quote Request
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Bottom Action Bar -->
     <div class="basket-action-bar">
         <div class="action-bar-summary">
@@ -956,6 +1141,30 @@
             updateItemCount(basket);
         }
         
+        // Extract logos from item data
+        function getItemLogoHtml(item) {
+            const logos = [];
+            // Check positionDesigns first
+            if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                Object.entries(item.positionDesigns).forEach(([pos, pd]) => {
+                    if (pd && pd.logo) logos.push({ position: pos, src: pd.logo });
+                });
+            }
+            // If no positionDesigns, check positions
+            if (logos.length === 0 && item.positions && typeof item.positions === 'object') {
+                Object.entries(item.positions).forEach(([pos, pd]) => {
+                    if (pd && pd.logo) logos.push({ position: pd.name || pos, src: pd.logo });
+                });
+            }
+            if (logos.length === 0) return '';
+            return logos.map(l => `
+                <div class="basket-item-logo">
+                    <img src="${l.src}" alt="Logo">
+                    <span class="logo-label">${l.position}</span>
+                </div>
+            `).join('');
+        }
+        
         // Render basket items
         function renderBasketItems(basket) {
             const container = document.getElementById('basketItemsList');
@@ -1011,6 +1220,8 @@
                             <div class="item-sizes">
                                 ${sizesHtml}
                             </div>
+                            ${getItemLogoHtml(item)}
+                            ${item.note ? `<div class="basket-item-note">📝 ${item.note}</div>` : ''}
                             <span class="${customBadgeClass}">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M12 20h9"/>
@@ -1284,18 +1495,188 @@
                 });
             }
             
-            // Request quote button
+            // Request quote button — open popup
             const quoteBtn = document.getElementById('requestQuoteBtn');
-            if (quoteBtn) {
+            const quoteOverlay = document.getElementById('quotePopupOverlay');
+            const closeQuoteBtn = document.getElementById('closeQuotePopup');
+            
+            if (quoteBtn && quoteOverlay) {
                 quoteBtn.addEventListener('click', () => {
                     const basket = getBasket();
                     if (basket.length === 0) {
                         alert('Please add items to your basket first');
                         return;
                     }
+                    quoteOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            }
+            if (closeQuoteBtn && quoteOverlay) {
+                closeQuoteBtn.addEventListener('click', () => {
+                    quoteOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                quoteOverlay.addEventListener('click', (e) => {
+                    if (e.target === quoteOverlay) {
+                        quoteOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+            
+            // Quote form submission
+            const basketQuoteForm = document.getElementById('basketQuoteForm');
+            const bqSubmitBtn = document.getElementById('bqSubmitBtn');
+            if (basketQuoteForm) {
+                basketQuoteForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (bqSubmitBtn.classList.contains('submitted')) return;
                     
-                    // Navigate to quote form
-                    window.location.href = '../quote-form.html';
+                    const name = document.getElementById('bqName').value.trim();
+                    const company = document.getElementById('bqCompany').value.trim();
+                    const phone = document.getElementById('bqPhone').value.trim();
+                    const email = document.getElementById('bqEmail').value.trim();
+                    const address = document.getElementById('bqAddress').value.trim();
+                    const notes = document.getElementById('bqNotes').value.trim();
+                    
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        let errEl = document.querySelector('.email-error');
+                        if (!errEl) {
+                            errEl = document.createElement('span');
+                            errEl.className = 'email-error';
+                            errEl.textContent = 'Please enter a valid email';
+                            document.getElementById('bqEmail').parentElement.appendChild(errEl);
+                        }
+                        return;
+                    }
+                    if (!name || !phone) { alert('Please fill in all required fields'); return; }
+                    
+                    bqSubmitBtn.textContent = 'Sending...';
+                    bqSubmitBtn.disabled = true;
+                    
+                    try {
+                        const basket = getBasket();
+                        let totalQty = 0;
+                        let garmentCost = 0;
+                        let customCost = 0;
+                        const basketItems = [];
+                        const customizationsList = [];
+                        const allNotes = [];
+                        
+                        basket.forEach(item => {
+                            const sizes = item.sizes || item.quantities || {};
+                            const qty = item.totalQty || Object.values(sizes).reduce((s,q) => s + (Number(q)||0), 0);
+                            const up = Number(item.unitPrice) || Number(item.price) || 0;
+                            totalQty += qty;
+                            garmentCost += up * qty;
+                            
+                            basketItems.push({
+                                name: item.productName || item.name || 'Product',
+                                code: item.productCode || item.code || '',
+                                color: item.color || '',
+                                quantity: qty,
+                                sizes: sizes,
+                                sizesSummary: Object.entries(sizes).filter(([,q])=>q>0).map(([s,q])=>`${s}: ${q}`).join(', ') || 'N/A',
+                                unitPrice: up,
+                                itemTotal: up * qty,
+                                note: item.note || ''
+                            });
+                            
+                            if (item.note) allNotes.push(`${item.productName||item.name} (${item.color}): ${item.note}`);
+                            
+                            if (item.positions && typeof item.positions === 'object') {
+                                Object.entries(item.positions).forEach(([pos, pd]) => {
+                                    if (!pd) return;
+                                    const m = (pd.method||'embroidery').toLowerCase();
+                                    const uP = Number(pd.unitPrice) || (m==='embroidery'?5:3.5);
+                                    const lt = Number(pd.totalPrice) || uP*qty;
+                                    customCost += lt;
+                                    customizationsList.push({
+                                        position: pd.name || pos,
+                                        method: m==='print'?'Print':'Embroidery',
+                                        type: pd.logo?'logo':'text',
+                                        hasLogo: !!pd.logo,
+                                        unitPrice: uP,
+                                        lineTotal: lt,
+                                        quantity: qty
+                                    });
+                                });
+                            } else if (Array.isArray(item.customizations)) {
+                                item.customizations.forEach(c => {
+                                    const uP = Number(c.unitPrice) || 0;
+                                    const lt = Number(c.total) || Number(c.lineTotal) || uP*qty;
+                                    customCost += lt;
+                                    customizationsList.push({
+                                        position: c.position,
+                                        method: c.method || 'Embroidery',
+                                        type: c.type || 'logo',
+                                        hasLogo: !!c.hasLogo,
+                                        unitPrice: uP,
+                                        lineTotal: lt,
+                                        quantity: c.qty || qty
+                                    });
+                                });
+                            }
+                        });
+                        
+                        if (notes) allNotes.push(`Customer notes: ${notes}`);
+                        
+                        const totalExVat = garmentCost + customCost;
+                        const vatAmount = totalExVat * 0.20;
+                        
+                        const quoteData = {
+                            customer: { fullName: name, company, phone, email, address },
+                            summary: {
+                                totalQuantity: totalQty,
+                                totalItems: basket.length,
+                                garmentCost,
+                                customizationCost: customCost,
+                                subtotal: totalExVat,
+                                vatAmount,
+                                totalExVat,
+                                totalIncVat: totalExVat + vatAmount,
+                                vatMode: includeVAT ? 'inc' : 'ex',
+                                displayTotal: includeVAT ? totalExVat + vatAmount : totalExVat
+                            },
+                            basket: basketItems,
+                            customizations: customizationsList,
+                            notes: allNotes,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        const response = await fetch('https://api.brandeduk.com/api/quotes', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(quoteData)
+                        });
+                        
+                        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            bqSubmitBtn.classList.add('submitted');
+                            bqSubmitBtn.innerHTML = '✓ Quote Submitted!';
+                            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                            
+                            setTimeout(() => {
+                                localStorage.removeItem('quoteBasket');
+                                localStorage.setItem('quoteBasket', '[]');
+                                sessionStorage.clear();
+                                quoteOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                                renderBasket();
+                            }, 1500);
+                        } else {
+                            throw new Error(result.message || 'Failed');
+                        }
+                    } catch (err) {
+                        console.error('Quote error:', err);
+                        alert('Failed to send quote. Please try again or contact info@brandeduk.com');
+                        bqSubmitBtn.textContent = 'Submit Quote Request';
+                        bqSubmitBtn.disabled = false;
+                    }
                 });
             }
             

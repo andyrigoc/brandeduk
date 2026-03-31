@@ -1067,8 +1067,8 @@ body {
 .delete-logo-btn {
     width: 32px;
     height: 32px;
-    background: #fee2e2;
-    color: #ef4444;
+    background: transparent;
+    color: #9ca3af;
     border: none;
     border-radius: 6px;
     font-size: 18px;
@@ -1077,7 +1077,8 @@ body {
 }
 
 .delete-logo-btn:hover {
-    background: #fecaca;
+    background: transparent;
+    color: #6b7280;
 }
 
 /* Submit Button */

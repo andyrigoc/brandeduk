@@ -439,7 +439,7 @@ function goToProduct(code, evt = null, selectedColor = null) {
             sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
         }
     }
-    window.location.href = 'product-detail.html';
+    window.location.href = 'product-detail.html?code=' + encodeURIComponent(code);
 }
 
 // ===== BASKET COUNT =====

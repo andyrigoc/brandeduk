@@ -55,24 +55,24 @@ const ShopManager = (function () {
     // Category title mappings
     const CATEGORY_TITLES = {
         'all': 'All Products',
-        'tshirts': 'T-Shirts',
-        't-shirts': 'T-Shirts',
-        'polo': 'Polo Shirts',
-        'polos': 'Polo Shirts',
-        'hoodies': 'Hoodies & Sweatshirts',
-        'jackets': 'Jackets & Softshell',
-        'hivis': 'Hi-Viz',
-        'safety-vests': 'Hi-Viz',
+        'tshirts': 'Personalised T-Shirts',
+        't-shirts': 'Personalised T-Shirts',
+        'polo': 'Personalised Polo Shirts',
+        'polos': 'Personalised Polo Shirts',
+        'hoodies': 'Personalised Hoodies',
+        'jackets': 'Personalised Jackets',
+        'hivis': 'Hi-Vis Workwear',
+        'safety-vests': 'Hi-Vis Workwear',
         'trousers': 'Work Trousers',
-        'fleeces': 'Fleeces',
-        'fleece': 'Fleece',
-        'bags': 'Bags',
-        'caps': 'Caps',
-        'beanies': 'Beanies',
-        'headwear': 'Headwear / Accessories',
-        'hats': 'Hats',
-        'aprons': 'Aprons',
-        'sustainable': 'Sustainable / Recycled & Organic',
+        'fleeces': 'Personalised Fleeces',
+        'fleece': 'Personalised Fleeces',
+        'bags': 'Personalised Bags',
+        'caps': 'Personalised Caps',
+        'beanies': 'Personalised Beanies',
+        'headwear': 'Personalised Headwear',
+        'hats': 'Personalised Hats',
+        'aprons': 'Personalised Aprons',
+        'sustainable': 'Sustainable Workwear',
         'workwear': 'Workwear',
         'sweatshirts': 'Sweatshirts',
         'softshells': 'Softshell Jackets',
@@ -157,20 +157,11 @@ const ShopManager = (function () {
     }
 
     function updatePageTitle() {
+        // Title and description are managed by shop.html inline JS (CATEGORY_INFO maps)
+        // Only update breadcrumb here
         const title = CATEGORY_TITLES[currentState.category] ||
             CATEGORY_TITLES[currentState.category.toLowerCase()] ||
             'Products';
-
-        // Update various title elements
-        const categoryTitleEl = document.getElementById('categoryTitle');
-        if (categoryTitleEl) {
-            categoryTitleEl.textContent = title;
-        }
-
-        const shopCategoryHeading = document.getElementById('shopCategoryHeading');
-        if (shopCategoryHeading) {
-            shopCategoryHeading.textContent = title;
-        }
 
         const breadcrumbCategoryEl = document.getElementById('shopBreadcrumbCategory') ||
             document.getElementById('breadcrumbCategory');
@@ -270,7 +261,9 @@ const ShopManager = (function () {
         if (hasEmbroidery) {
             badgesHTML += '<span class="badge embroidery">EMBROIDERY</span>';
         }
-        if (hasPrint) {
+        // Hide PRINT badge for products with 'beanie' in the name (embroidery-only)
+        const isBeanie = (product.name || '').toLowerCase().includes('beanie');
+        if (hasPrint && !isBeanie) {
             badgesHTML += '<span class="badge print">PRINT</span>';
         }
 
@@ -351,7 +344,7 @@ const ShopManager = (function () {
             <div class="product-info">
                 <div class="product-code">
                     ${product.code}
-                    ${brandLogo ? `<img src="${brandLogo}" alt="${brandName}" class="brand-logo" title="${brandName}">` : `<span class="brand-name">${brandName}</span>`}
+                    ${brandName && !['absolute','ralawise'].some(ex => brandName.toLowerCase().includes(ex)) ? (brandLogo ? `<img src="${brandLogo}" alt="${brandName}" class="brand-logo" title="${brandName}">` : `<span class="brand-name">${brandName}</span>`) : ''}
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
@@ -418,7 +411,7 @@ const ShopManager = (function () {
 
             // Determine if we're on mobile or desktop
             const isMobile = window.location.pathname.includes('mobile/') ||
-                window.innerWidth < 768;
+                window.innerWidth < 1280;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
             const url = new URL(targetPage, window.location.origin);

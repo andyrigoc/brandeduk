@@ -23,7 +23,7 @@
   
   /* Hoodie non espanso */
   .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-    background-position: calc(50% + 145px) top !important;
+    background-position: calc(50% - 70px) top !important;
   }
   
   /* Hoodie espanso */
@@ -433,9 +433,9 @@
 }
 
 /* Tablet: hoodie non-expanded - fix for real tablet aspect ratio */
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1279px) {
   .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-    background-size: auto 100%;
+    background-size: cover;
     background-position: calc(50% + 100px) center;
   }
 }
@@ -445,8 +445,8 @@
   background-position: calc(50% + 30px) calc(50% + 12px);
 }
 
-/* Tablet (incl. 1024px): when expanded - fill entire box, no purple visible */
-@media (min-width: 768px) and (max-width: 1024px) {
+/* Tablet (up to 1279px): when expanded - fill entire box, no purple visible */
+@media (min-width: 768px) and (max-width: 1279px) {
   .hero-el[data-category="hoodies"].s--active .hero-el__bg:before {
     background-size: cover !important;
     background-position: center top !important;

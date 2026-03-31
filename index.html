@@ -75,25 +75,18 @@
             <div class="dot"></div>
             <div class="dot"></div>
         </section>
-        <p>Loading…</p>
-        <p id="debugInfo" style="font-size:12px; color:#666; margin:6px 0 10px;"></p>
-        <p style="margin:0; font-size:13px;">
-            <a href="index-mobile.html" id="mobileLink">Mobile/Tablet</a>
-            &nbsp;|&nbsp;
-            <a href="home-pc.html" id="desktopLink">Desktop</a>
-        </p>
+        <p id="debugInfo" style="display:none;"></p>
         <noscript>
             <p>
-                JavaScript is required for automatic redirect.<br>
-                <a href="index-mobile.html">Go to Mobile/Tablet Site</a> | 
-                <a href="home-pc.html">Go to Desktop Site</a>
+                <a href="index-mobile.html">Mobile/Tablet</a> | 
+                <a href="home-pc.html">Desktop</a>
             </p>
         </noscript>
     </div>
 
     <script>
         (function () {
-            var BREAKPOINT = 1024;
+            var BREAKPOINT = 1280;
             var lastTarget = null;
             var autoTimer = null;
             var debugInfoEl = document.getElementById('debugInfo');
@@ -121,13 +114,11 @@
                 return new Promise(function (resolve) {
                     try {
                         window.Tawk_API = window.Tawk_API || {};
-                        // Hide default bubble; open only from our in-site trigger on destination pages.
+                        // Force bubble visible to clear any stale hidden state
                         window.Tawk_API.onLoad = function () {
-                            try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
+                            try { if (typeof window.Tawk_API.showWidget === 'function') window.Tawk_API.showWidget(); } catch (e) {}
                         };
-                        window.Tawk_API.onChatMinimized = function () {
-                            try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-                        };
+                        window.Tawk_API.onChatMinimized = function () {};
                         window.Tawk_LoadStart = new Date();
 
                         var s1 = document.createElement('script');

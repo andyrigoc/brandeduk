@@ -173,13 +173,17 @@
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
-        <a href="customize-mobile.html" class="nav-item-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
+        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
+            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <line x1="6" y1="21" x2="6" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="3"></line>
+                <line x1="18" y1="21" x2="18" y2="3"></line>
+                <circle cx="6" cy="8" r="2"></circle>
+                <circle cx="12" cy="14" r="2"></circle>
+                <circle cx="18" cy="10" r="2"></circle>
             </svg>
-        </a>
+            <span class="nav-item-label">Filter</span>
+        </button>
 
         <a href="basket-mobile.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -571,7 +575,7 @@
                 <div class="product-info">
                     <div class="product-code">
                         ${product.code}
-                        ${product.brand ? `<span class="brand-name">${product.brand}</span>` : ''}
+                        ${(product.brand && !['absolute','ralawise'].some(ex => product.brand.toLowerCase().includes(ex))) ? `<span class="brand-name">${product.brand}</span>` : ''}
                     </div>
                     <div class="product-name">${product.name}</div>
                     <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">

@@ -6,7 +6,7 @@
     <title>Product Details - Branded UK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=20260307A">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions.css?v=20260107">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions-desktop.css?v=20260107">
     <style>
@@ -1306,11 +1306,11 @@
                         </div>
                     </li>
                     <li><a href="#">More</a></li>
-                    <li><a href="services.html">Services</a></li>
+                    <li><a href="/services">Services</a></li>
                     <li class="catalogue-menu"><a href="#" aria-expanded="false">Catalogue <span class="nav-caret" aria-hidden="true"></span></a>
                         <ul class="catalogue-dropdown">
-                            <li><a href="catalogue.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 1</a></li>
-                            <li><a href="catalogue2.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 2</a></li>
+                            <li><a href="/catalogue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 1</a></li>
+                            <li><a href="/catalogue2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Catalogue 2</a></li>
                         </ul>
                     </li>
                     <li><a href="#">About</a></li>
@@ -2213,7 +2213,7 @@
 <script src="brandedukv15-child/assets/js/core.js?v=20251230"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
 <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-<script src="brandedukv15-child/assets/js/pages/product.js?v=20260123c"></script>
+<script src="brandedukv15-child/assets/js/pages/product.js?v=20260307A"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260124f"></script>
 <script src="brandedukv15-child/assets/js/pages/customize-positions-inline.js?v=20260124d"></script>
 <!-- Color Change Confirmation Modal -->
@@ -2802,6 +2802,10 @@
         
         // Map images to positions
         const positions = {};
+        // Embroidery-only product types (no print option)
+        const EMBROIDERY_ONLY_TYPES = ['Beanies'];
+        const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
+
         imageFiles.forEach(filename => {
             const positionInfo = FILENAME_TO_POSITION[filename];
             if (positionInfo) {
@@ -2812,7 +2816,7 @@
                     label: positionInfo.label,
                     image: `${basePath}/${filename}`,
                     embroidery: prices.embroidery,
-                    print: prices.print,
+                    print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
                 };
             } else {
@@ -3300,6 +3304,16 @@
 
                 cardsArray.forEach(card => grid.appendChild(card));
             }
+        });
+        
+        // Hide/show PRINT legend badge and step-3 PRINT badge based on product type
+        const normalizedType = productData && productData.productType 
+            ? normalizeProductTypeForFolder(String(productData.productType).trim()) 
+            : '';
+        const EMBROIDERY_ONLY_TYPES = ['Beanies'];
+        const isEmbOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedType);
+        document.querySelectorAll('.key-badge.print, .cust-badge.print').forEach(badge => {
+            badge.style.display = isEmbOnly ? 'none' : '';
         });
     }
     

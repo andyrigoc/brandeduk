@@ -100,9 +100,9 @@ html, body {
     z-index: 1;
 }
 
-/* TEMPORARILY HIDDEN - gallery thumbnails disabled until new images available */
+/* Gallery thumbnails - color variant images */
 .thumb-column {
-    display: none !important;
+    display: flex !important;
     flex-direction: column;
     gap: 8px;
     margin-left: 0;
@@ -113,21 +113,22 @@ html, body {
     height: 72px;
     border-radius: 12px;
     border: 2px solid transparent;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    padding: 4px;
+    background: #ffffff;
+    box-shadow: none;
+    padding: 0;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .thumb-item img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 8px;
+    object-fit: cover;
+    border-radius: 10px;
 }
 
 .thumb-item:hover {
@@ -1851,10 +1852,38 @@ html, body {
     }
 
     .thumb-item {
-        width: 60px;
-        height: 60px;
-        min-width: 60px;
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
         flex-shrink: 0;
+        padding: 0 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .thumb-item img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 10px !important;
+    }
+
+    /* Override JS inline styles for mobile horizontal layout */
+    .thumb-slider-wrapper {
+        flex-direction: row !important;
+    }
+
+    .thumb-slider-container {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .thumb-slider-inner {
+        flex-direction: row !important;
+        gap: 8px !important;
+        flex-wrap: nowrap;
     }
 
     .product-main .main-img {

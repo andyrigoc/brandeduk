@@ -167,24 +167,66 @@ async function loadProductData() {
 
     let productData = null;
 
-    // ALWAYS fetch fresh data from API to ensure prices are up-to-date
+    // Fetch from BOTH endpoints: detail (/products/CODE) for full data (colors, sizes, description)
+    // and listing (/products?q=CODE) for correct/up-to-date pricing.
+    // The listing endpoint often has fresher sell prices than the detail endpoint.
     if (productCode) {
         console.log('Fetching product from API...', productCode);
         try {
-            const response = await fetch(`${API_BASE_URL}/products/${productCode}`);
-            if (response.ok) {
-                productData = await response.json();
-                console.log('✅ Loaded product from API:', productData);
-                // Save to sessionStorage for next time
+            // Fetch detail and listing in parallel
+            const [detailRes, listingRes] = await Promise.allSettled([
+                fetch(`${API_BASE_URL}/products/${productCode}`),
+                fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+            ]);
+
+            // Process detail endpoint (full product data)
+            if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
+                productData = await detailRes.value.json();
+                console.log('✅ Loaded product from detail API:', productData);
+            }
+
+            // Process listing endpoint (accurate pricing)
+            let listingProduct = null;
+            if (listingRes.status === 'fulfilled' && listingRes.value.ok) {
+                const listingData = await listingRes.value.json();
+                const items = listingData.items || listingData.products || [];
+                listingProduct = items.find(p => p.code === productCode) || items[0] || null;
+                if (listingProduct) {
+                    console.log('✅ Listing price data:', {
+                        price: listingProduct.price,
+                        breaks: listingProduct.priceBreaks?.length || 0
+                    });
+                }
+            }
+
+            // Merge: use listing prices if available (they are more up-to-date)
+            if (productData && listingProduct) {
+                const detailPrice = Number(productData.price) || 0;
+                const listingPrice = Number(listingProduct.price) || 0;
+                if (listingPrice > 0 && listingPrice !== detailPrice) {
+                    console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                    productData.price = listingProduct.price;
+                    productData.basePrice = listingProduct.price;
+                    productData.sell_price = listingProduct.price;
+                }
+                if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
+                    productData.priceBreaks = listingProduct.priceBreaks;
+                }
+            } else if (!productData && listingProduct) {
+                // Detail failed, use listing data entirely
+                productData = listingProduct;
+                console.warn('⚠️ Using listing data (detail endpoint failed)');
+            }
+
+            if (productData) {
                 sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
             } else {
-                console.error('❌ API returned error:', response.status);
-                // Fallback to cached data only if API fails
+                // Both failed — try sessionStorage cache
                 const savedProductData = sessionStorage.getItem('selectedProductData');
                 if (savedProductData) {
                     try {
                         productData = JSON.parse(savedProductData);
-                        console.warn('⚠️ Using cached data due to API error');
+                        console.warn('⚠️ Using cached data (both endpoints failed)');
                     } catch (e) {
                         console.warn('Failed to parse saved product data:', e);
                     }
@@ -192,7 +234,6 @@ async function loadProductData() {
             }
         } catch (error) {
             console.error('❌ Failed to fetch product from API:', error);
-            // Fallback to cached data only if API fails
             const savedProductData = sessionStorage.getItem('selectedProductData');
             if (savedProductData) {
                 try {
@@ -215,6 +256,15 @@ async function loadProductData() {
     PRODUCT_DATA = productData;
     PRODUCT_CODE = productData.code;
     PRODUCT_NAME = productData.name;
+
+    // Update URL with product code so the link is shareable
+    if (PRODUCT_CODE) {
+        const url = new URL(window.location);
+        if (url.searchParams.get('code') !== PRODUCT_CODE) {
+            url.searchParams.set('code', PRODUCT_CODE);
+            history.replaceState(null, '', url);
+        }
+    }
 
     // Dispatch event so other scripts know product data is ready
     window.dispatchEvent(new CustomEvent('productDataLoaded', { detail: productData }));
@@ -588,6 +638,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Initialize colors from API data
         if (PRODUCT_DATA && PRODUCT_DATA.colors) {
             initColors(PRODUCT_DATA.colors);
+        }
+
+        // ── Size overrides: API may be missing sizes for certain products ──
+        const SIZE_OVERRIDES = {
+            'YK001': ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL']
+        };
+        if (PRODUCT_DATA && SIZE_OVERRIDES[PRODUCT_DATA.code]) {
+            PRODUCT_DATA.sizes = SIZE_OVERRIDES[PRODUCT_DATA.code];
         }
 
         // Initialize sizes from API data
@@ -1058,7 +1116,7 @@ function initThumbnailColumn(productColors) {
         button.setAttribute('data-color-name', colorName);
         button.setAttribute('data-index', index);
         button.setAttribute('aria-label', `View ${colorName} ${PRODUCT_NAME || 'product'}`);
-        button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0;';
+        button.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0; padding: 0; background: #ffffff; box-shadow: none; overflow: hidden;';
 
         // Set first thumbnail as active by default (only if no primary was inserted and no color is saved)
         const savedColorName = sessionStorage.getItem('selectedColorName');
@@ -1076,7 +1134,7 @@ function initThumbnailColumn(productColors) {
         const img = document.createElement('img');
         img.src = thumbUrl;
         img.alt = `${colorName} thumbnail`;
-        img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; border-radius: 8px;';
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 10px;';
 
         button.appendChild(img);
         thumbInner.appendChild(button);
@@ -1741,12 +1799,12 @@ function changeColor(name, url, colorDiv) {
     // Update step progress - step 1 completed
     updateStepProgress(1);
 
-    // Natural scroll to color section
-    const colorSection = document.querySelector('.color-grid');
-    if (colorSection) {
-        const rect = colorSection.getBoundingClientRect();
+    // Scroll down to size section so the customer can choose quantity
+    const sizeSection = document.getElementById('step2SizeSection') || document.querySelector('.sizes-grid')?.closest('section') || document.querySelector('.size-section');
+    if (sizeSection) {
+        const rect = sizeSection.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const targetY = rect.top + scrollTop - 150;
+        const targetY = rect.top + scrollTop - 100;
         window.scrollTo({
             top: targetY,
             behavior: 'smooth'

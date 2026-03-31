@@ -519,7 +519,15 @@
             };
 
             const renderSuggestions = (data, query) => {
-                const { products = [] } = data;
+                let { products = [] } = data;
+
+                // Strip hidden brand names from suggestion labels
+                const _HIDDEN_HDR = ['absolute apparel', 'ralawise'];
+                products = products.map(p => {
+                    let label = p.label || '';
+                    _HIDDEN_HDR.forEach(b => { label = label.replace(new RegExp(b, 'gi'), '').trim(); });
+                    return { ...p, label };
+                });
 
                 if (products.length === 0) {
                     suggestionBox.classList.remove('active');
@@ -532,14 +540,17 @@
                 };
 
                 // Premium UI for Products
+                const isMobile = window.innerWidth < 1280;
                 let html = '<div class="suggestion-group-title">Product Results</div>';
 
                 products.slice(0, 8).forEach(product => {
-                    const detailUrl = `product-detail.html?code=${product.value}`;
+                    const detailUrl = isMobile
+                        ? `customize.html?code=${product.value}`
+                        : `product-detail.html?code=${product.value}`;
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
 
                     html += `
-                        <a href="${detailUrl}" class="suggestion-item">
+                        <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<1280){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
                             <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='/brandedukv15-child/assets/images/ui/no-image.png'">
                             <div class="suggestion-item-content">
                                 <div class="suggestion-item-label">${highlight(product.label)}</div>
@@ -551,8 +562,11 @@
                 });
 
                 // View all results link
+                const viewAllUrl = isMobile
+                    ? `shop.html?q=${encodeURIComponent(query)}`
+                    : `shop-pc.html?q=${encodeURIComponent(query)}`;
                 html += `
-                    <a href="shop-pc.html?q=${encodeURIComponent(query)}" class="view-all-results">
+                    <a href="${viewAllUrl}" class="view-all-results">
                         View all results for "${query}" →
                     </a>`;
 
@@ -593,7 +607,10 @@
                 if (e.key === 'Enter') {
                     const query = e.target.value.trim();
                     if (query) {
-                        window.location.href = `shop-pc.html?q=${encodeURIComponent(query)}`;
+                        const isMobile = window.innerWidth < 1280;
+                        window.location.href = isMobile
+                            ? `shop.html?q=${encodeURIComponent(query)}`
+                            : `shop-pc.html?q=${encodeURIComponent(query)}`;
                     }
                 }
             });
