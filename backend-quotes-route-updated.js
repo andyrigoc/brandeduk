@@ -9,6 +9,7 @@ router.post('/', async (req, res) => {
       summary,
       basket,
       customizations,
+      notes,
       timestamp,
     } = req.body;
 
@@ -47,6 +48,7 @@ router.post('/', async (req, res) => {
         unitPrice: item.unitPrice,
         itemTotal: item.itemTotal,
         image: item.image || null,
+        note: item.note || '',
       })),
 
       customizations: Array.isArray(customizations)
@@ -63,6 +65,8 @@ router.post('/', async (req, res) => {
         : [],
 
       timestamp: timestamp || new Date().toISOString(),
+
+      notes: Array.isArray(notes) ? notes : [],
     };
 
     const emailResult = await sendQuoteEmail(emailData);

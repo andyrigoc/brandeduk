@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $customerPhone = isset($customer['phone']) ? $customer['phone'] : '';
     
     // Email settings
-    $to = 'devfaizanarshad@gmail.com'; // Test email - change back to 'info@brandeduk.com' for production
+    $to = 'info@brandeduk.com';
     $subject = 'New Quote Request from ' . $customerName;
     
     // Build email body
@@ -107,7 +107,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $message .= "
                     <tr><td class='label'>Unit Price:</td><td class='value'>£{$unitPrice}</td></tr>
-                    <tr><td class='label'>Item Total:</td><td class='value'><strong>£{$itemTotal}</strong></td></tr>
+                    <tr><td class='label'>Item Total:</td><td class='value'><strong>£{$itemTotal}</strong></td></tr>";
+            
+            // Include customer note for this item
+            $itemNote = isset($item['note']) ? trim($item['note']) : '';
+            if ($itemNote) {
+                $itemNote = htmlspecialchars($itemNote);
+                $message .= "
+                    <tr><td class='label'>📝 Customer Note:</td><td class='value' style='color:#7c3aed;font-weight:600;'>{$itemNote}</td></tr>";
+            }
+            
+            $message .= "
                 </table>
             </div>";
         }
@@ -222,8 +232,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class='section'>
             <h2>📅 Request Date</h2>
             <p>" . date('d/m/Y H:i:s') . "</p>
-        </div>
-        
+        </div>";
+    
+    // Customer Notes section (from notes array + individual item notes)
+    $notes = isset($data['notes']) ? $data['notes'] : [];
+    // Also collect notes from basket items
+    if (!empty($basket)) {
+        foreach ($basket as $idx => $item) {
+            $n = isset($item['note']) ? trim($item['note']) : '';
+            if ($n && !in_array($n, $notes)) {
+                $itemLabel = isset($item['name']) ? $item['name'] : ('Item #' . ($idx + 1));
+                $notes[] = $itemLabel . ': ' . $n;
+            }
+        }
+    }
+    
+    if (!empty($notes)) {
+        $message .= "
+        <div class='section' style='border-left-color: #f59e0b;'>
+            <h2>📝 Customer Notes / Logo Instructions</h2>
+            <ul style='margin:0;padding-left:20px;'>";
+        foreach ($notes as $note) {
+            $message .= "<li style='padding:4px 0;'>" . htmlspecialchars($note) . "</li>";
+        }
+        $message .= "</ul>
+        </div>";
+    }
+    
+    $message .= "
         <p style='color: #6b7280; font-size: 12px; margin-top: 20px;'>This quote was automatically generated from the BrandedUK website.</p>
     </body>
     </html>
