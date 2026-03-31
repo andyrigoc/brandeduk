@@ -1103,6 +1103,23 @@
                     });
                 }
                 
+                // Get logo from positionDesigns or positions
+                let logoSrc = '';
+                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                    const firstDesign = Object.values(item.positionDesigns).find(d => d && d.logo);
+                    if (firstDesign) logoSrc = firstDesign.logo;
+                }
+                if (!logoSrc && item.positions && typeof item.positions === 'object') {
+                    const firstPos = Object.values(item.positions).find(p => p && p.logo);
+                    if (firstPos) logoSrc = firstPos.logo;
+                }
+                const logoHtml = logoSrc 
+                    ? `<div class="basket-item-logo" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+                         <img src="${logoSrc}" alt="Logo" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;">
+                         <span style="font-size:11px;color:#6b7280;">Logo uploaded</span>
+                       </div>`
+                    : '';
+                
                 html += `
                     <div class="basket-item-card" data-index="${index}">
                         <label class="item-select-checkbox" onclick="event.stopPropagation()">
@@ -1129,6 +1146,7 @@
                                 </svg>
                                 ${customBadgeText}
                             </span>
+                            ${logoHtml}
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1235,15 +1253,12 @@
                     garmentsTotal += qty * unitPrice;
                 }
                 
-                // Calculate customization total from customizations array
-                if (item.customizations && Array.isArray(item.customizations)) {
+                // Calculate customization total (use customizations array first, fallback to positions)
+                if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
                     item.customizations.forEach(custom => {
                         customTotal += custom.total || 0;
                     });
-                }
-                
-                // Also check positions object for branding costs
-                if (item.positions && typeof item.positions === 'object') {
+                } else if (item.positions && typeof item.positions === 'object') {
                     Object.values(item.positions).forEach(pos => {
                         if (pos.totalPrice) {
                             customTotal += pos.totalPrice;

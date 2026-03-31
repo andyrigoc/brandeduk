@@ -109,7 +109,7 @@
     };
 
     // === API ===
-    // Minimal API base used by desktop product.js � reuse here for mobile fetches
+    // Minimal API base used by desktop product.js — reuse here for mobile fetches
     const API_BASE_URL = 'https://api.brandeduk.com/api';
 
     // === DYNAMIC POSITION MAPPING SYSTEM ===
@@ -855,7 +855,7 @@
             }
 
             if (!productData) {
-                // No product data available � leave default state (fallback product)
+                // No product data available — leave default state (fallback product)
                 console.warn('?? No product data available, using fallback');
                 return false;
             }
@@ -1066,7 +1066,7 @@
                     specs.push('276 gsm'); // Fallback
                 }
                 
-                // Convert GSM to oz (approximate: 1 oz � 28.35 g)
+                // Convert GSM to oz (approximate: 1 oz — 28.35 g)
                 // Try to extract numeric GSM value for conversion
                 const weightValue = state.product.weight || '276';
                 const gsmMatch = String(weightValue).match(/(\d+)/);
@@ -1146,7 +1146,7 @@
             value = value * (1 + VAT_RATE);
         }
         
-        const currency = options.currency || '�';
+        const currency = options.currency || '£';
         const decimals = options.decimals !== undefined ? options.decimals : 2;
         return currency + value.toFixed(decimals);
     }
@@ -1641,25 +1641,6 @@
             
             // Vibrate feedback
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-            
-            // Reset the size selection form after a moment
-            setTimeout(() => {
-                // Reset the form for a new selection
-                resetSizeSelectionForm();
-                
-                // Reset button to initial state
-                saveBtn.classList.remove('saved');
-                saveBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    Save & Continue
-                `;
-                
-                showToast('Ready to add more items!');
-            }, 1200);
         });
     }
     
@@ -1751,7 +1732,7 @@
         const newItem = {
             id: Date.now().toString(),
             productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle� Midweight Hoodie',
+            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
             color: state.selectedColorName || state.selectedColor || 'Black',
             colorId: state.selectedColor,
             colorImage: state.selectedColorImage,
@@ -1844,6 +1825,12 @@
         // Update UI
         updateCartBadge();
         updateBasketCount();
+        
+        // Reset current selection state so it's not double-counted
+        state.quantity = 0;
+        state.sizeQuantities = {};
+        state.selectionSaved = true;
+        
         updatePricingSummary();
         
         console.log('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
@@ -2668,7 +2655,7 @@
         if (row2) {
             const sizes = Object.entries(state.sizeQuantities || {})
                 .filter(([_, qty]) => qty > 0)
-                .map(([size, qty]) => `${qty}�${size}`)
+                .map(([size, qty]) => `${qty}£${size}`)
                 .join(', ');
             
             if (sizes) {
@@ -2722,7 +2709,7 @@
                         <div class="customization-badge-mini">
                             <span class="badge-icon">${methodName === 'Embroidery' ? '??' : '???'}</span>
                             <span class="badge-text">${posName} - ${methodName}</span>
-                            <span class="badge-price">${custQty} � ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
+                            <span class="badge-price">${custQty} × ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
                         </div>
                     `;
                 });
@@ -2742,14 +2729,14 @@
                             <div class="order-item-details">
                                 <div class="order-item-name">${productName}</div>
                                 <div class="order-item-meta">${itemCode} - ${colorName}</div>
-                                <div class="order-item-size">${sizeQty}�${size}</div>
+                                <div class="order-item-size">${sizeQty}£${size}</div>
                                 ${customizationsHtml}
                                 <div class="order-item-qty-control">
                                     <button class="order-item-qty-btn basket-qty-btn" data-action="decrease" data-basket-index="${basketIndex}" data-size="${size}">-</button>
                                     <span class="order-item-qty-value">${sizeQty}</span>
                                     <button class="order-item-qty-btn basket-qty-btn" data-action="increase" data-basket-index="${basketIndex}" data-size="${size}">+</button>
                                 </div>
-                                <div class="order-item-price">${sizeQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(sizeTotal)}</strong> ${vatSuffix()}</div>
+                                <div class="order-item-price">${sizeQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(sizeTotal)}</strong> ${vatSuffix()}</div>
                             </div>
                             <button class="order-item-delete basket-delete" data-basket-index="${basketIndex}" data-size="${size}" title="Remove size">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2762,7 +2749,7 @@
                 });
             } else {
                 // Single size item (legacy format)
-                const sizesStr = item.size ? `${itemQty}�${item.size}` : `${itemQty} pcs`;
+                const sizesStr = item.size ? `${itemQty}£${item.size}` : `${itemQty} pcs`;
                 const itemTotal = itemQty * unitPrice;
                 
                 itemsHtml += `
@@ -2773,7 +2760,7 @@
                             <div class="order-item-meta">${itemCode} - ${colorName}</div>
                             <div class="order-item-size">${sizesStr}</div>
                             ${customizationsHtml}
-                            <div class="order-item-price">${itemQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
+                            <div class="order-item-price">${itemQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
                         </div>
                         <button class="order-item-delete basket-delete" data-basket-index="${basketIndex}" title="Remove from basket">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2807,7 +2794,7 @@
                     <div class="customization-badge-mini">
                         <span class="badge-icon">${methodName === 'Embroidery' ? '??' : '???'}</span>
                         <span class="badge-text">${posName} - ${methodName}</span>
-                        <span class="badge-price">${currentQty} � ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
+                        <span class="badge-price">${currentQty} × ${formatCurrency(custPrice)} = ${formatCurrency(custTotal)}</span>
                     </div>
                 `;
             });
@@ -2826,14 +2813,14 @@
                     <div class="order-item-details">
                         <div class="order-item-name">${productName}</div>
                         <div class="order-item-meta">${productCode} - ${colorName}</div>
-                        <div class="order-item-size">${qty}�${size}</div>
+                        <div class="order-item-size">${qty}£${size}</div>
                         ${currentCustomizationsHtml}
                         <div class="order-item-qty-control">
                             <button class="order-item-qty-btn" data-action="decrease" data-size="${size}">-</button>
                             <span class="order-item-qty-value">${qty}</span>
                             <button class="order-item-qty-btn" data-action="increase" data-size="${size}">+</button>
                         </div>
-                        <div class="order-item-price">${qty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
+                        <div class="order-item-price">${qty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(itemTotal)}</strong> ${vatSuffix()}</div>
                     </div>
                     <button class="order-item-delete" data-size="${size}" title="Remove">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2921,7 +2908,7 @@
                     const unitPrice = parseFloat(item.unitPrice || item.price) || 0;
                     const newTotal = newQty * unitPrice;
                     if (priceEl) {
-                        priceEl.innerHTML = `${newQty} � ${formatCurrency(unitPrice)} = <strong>${formatCurrency(newTotal)}</strong> ${vatSuffix()}`;
+                        priceEl.innerHTML = `${newQty} × ${formatCurrency(unitPrice)} = <strong>${formatCurrency(newTotal)}</strong> ${vatSuffix()}`;
                     }
                 }
                 
@@ -3080,7 +3067,7 @@
             return `
                 <div class="tier-card ${isActive ? 'active' : ''}" data-min="${tier.min}" data-max="${tier.max === Infinity ? '999999' : tier.max}">
                     <div class="tier-qty">${tier.label}</div>
-                    <div class="tier-price">�${displayPrice.toFixed(2)}</div>
+                    <div class="tier-price">£${displayPrice.toFixed(2)}</div>
                     <div class="tier-suffix">${vatSuffix()}</div>
                     ${discount > 0 ? `<div class="tier-save">SAVE ${discount}%</div>` : ''}
                 </div>
@@ -4096,7 +4083,25 @@
     }
 
     function getCurrentUnitPrice() {
-        return getDiscountedUnitPrice(state.quantity);
+        const calculated = getDiscountedUnitPrice(state.quantity);
+        
+        // Fallback: read price from active tier badge in the UI
+        // (ensures we always use the price the user SEES)
+        const activeTier = document.querySelector('.tier-card.active .tier-price, .pricing-tier.active .tier-price');
+        if (activeTier) {
+            const tierText = activeTier.textContent || '';
+            const match = tierText.match(/[\d.]+/);
+            if (match) {
+                const uiPrice = parseFloat(match[0]);
+                // Use UI price if calculated seems wrong (equals base price but tier is active)
+                if (uiPrice > 0 && uiPrice < calculated) {
+                    console.log('?? Using UI tier price:', uiPrice, 'instead of calculated:', calculated);
+                    return uiPrice;
+                }
+            }
+        }
+        
+        return calculated;
     }
 
     // === Technique Selection ===
@@ -5142,7 +5147,7 @@
         // Restore original content
         const method = badge.dataset.method;
         const defaultLabel = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
-        const defaultPrice = badge.dataset.defaultPrice || '+ �0.00';
+        const defaultPrice = badge.dataset.defaultPrice || '+ £0.00';
         
         badge.innerHTML = `
             <span class="price-label">${defaultLabel}</span>
@@ -5258,7 +5263,7 @@
         const previewImg = document.getElementById('designPreviewImg');
         const fileInput = document.getElementById('designLogoUpload');
         
-        // Ripristina la dropzone (visibilit� e display)
+        // Ripristina la dropzone (visibilità e display)
         if (uploadZone) {
             uploadZone.hidden = false;
             uploadZone.style.display = '';
@@ -5762,14 +5767,54 @@
                 
                 // Attach save handler to the pill
                 pill.onclick = () => {
-                    // Check quantity first
-                    if (state.quantity <= 0) {
-                        showToast('Please select at least one size first');
-                        return;
+                    // ALWAYS merge branding/logo into existing basket item (never add qty again)
+                    const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    const code = state.product?.code;
+                    const color = state.selectedColorName || state.selectedColor;
+                    const idx = basket.findIndex(i =>
+                        i.productCode === code &&
+                        (i.colorId === state.selectedColor || i.color === color)
+                    );
+                    if (idx === -1) {
+                        // No existing item yet — do a full save (first time)
+                        if (state.quantity > 0) {
+                            addCurrentSelectionToBasket();
+                        } else {
+                            showToast('Please select at least one size first');
+                            return;
+                        }
+                    } else {
+                        // Merge branding into existing item (no qty change)
+                        const existing = basket[idx];
+                        const updatedCustomizations = [];
+                        if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
+                            existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                        }
+                        if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
+                            Object.entries(state.positionMethods).forEach(([pos, method]) => {
+                                const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                                const posNames = {'left-breast':'Left Chest','right-breast':'Right Chest','small-centre-front':'Small Centre Front','front-center':'Front Center','large-centre-front':'Front Centre','back-large':'Back Large','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve'};
+                                const posLabel = posNames[pos] || pos.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+                                const logo = state.positionDesigns?.[pos]?.logo || null;
+                                const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
+                                const totalPrice = unitPrice * existing.totalQty;
+                                if (!existing.positions) existing.positions = {};
+                                existing.positions[pos] = { method: methodLabel, unitPrice, totalPrice, name: posLabel, logo };
+                                updatedCustomizations.push({
+                                    position: posLabel,
+                                    method: methodLabel,
+                                    unitPrice: unitPrice,
+                                    total: totalPrice,
+                                    qty: existing.totalQty
+                                });
+                            });
+                        }
+                        if (updatedCustomizations.length > 0) {
+                            existing.customizations = updatedCustomizations;
+                        }
+                        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                        console.log('✅ Updated existing basket item with branding');
                     }
-                    
-                    // Save to basket
-                    addCurrentSelectionToBasket();
                     
                     // Mark as saved
                     state.selectionSaved = true;
@@ -5805,36 +5850,10 @@
                         });
                     }
                     
-                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+                    // Refresh pricing summary and basket items list
+                    updatePricingSummary();
                     
-                    // Reset after delay
-                    setTimeout(() => {
-                        resetSizeSelectionForm();
-                        pill.innerHTML = `
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
-                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                <polyline points="17 21 17 13 7 13 7 21"/>
-                                <polyline points="7 3 7 8 15 8"/>
-                            </svg>
-                            SAVE & CONTINUE
-                        `;
-                        pill.style.background = '';
-                        pill.style.boxShadow = '';
-                        
-                        if (topSaveBtn) {
-                            topSaveBtn.classList.remove('saved');
-                            topSaveBtn.innerHTML = `
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                                    <polyline points="17 21 17 13 7 13 7 21"/>
-                                    <polyline points="7 3 7 8 15 8"/>
-                                </svg>
-                                Save & Continue
-                            `;
-                        }
-                        
-                        showToast('Ready to add more items!');
-                    }, 1200);
+                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
                 };
             }
             
@@ -5989,15 +6008,17 @@
         const tiers = PRICING_RULES[state.product.code]?.tiers || [];
         
         // Find correct tier for total quantity
+        // Tiers are sorted DESCENDING by min (250, 100, 50, 25, 10, 1)
+        // Iterate from highest to lowest, first match = best tier
         let unitPrice = basePrice;
-        for (let i = tiers.length - 1; i >= 0; i--) {
+        for (let i = 0; i < tiers.length; i++) {
             if (totalQty >= tiers[i].min) {
                 unitPrice = tiers[i].price;
                 break;
             }
         }
         
-        console.log('?? UNIT PRICE:', unitPrice, 'for', totalQty, 'items');
+        console.log('?? UNIT PRICE:', unitPrice, 'for', totalQty, 'items, tiers:', JSON.stringify(tiers));
         
         const currentTier = getCurrentTier();
         
@@ -6027,14 +6048,20 @@
             const itemCode = item.productCode || item.code;
             const itemQty = item.totalQty || item.quantity || 0;
             
-            // Get the correct unit price for this item based on cumulative tier
-            let itemUnitPrice = basePrice;
-            if (itemCode === state.product.code) {
-                // Same product - use cumulative tier price
-                itemUnitPrice = unitPrice;
-            } else {
-                // Different product - use its own pricing
-                itemUnitPrice = parseFloat(item.unitPrice || item.price) || 17.58;
+            // ALWAYS use the saved unitPrice from the basket item (tier-calculated at save time)
+            // Only override with fresh tier data if explicitly available AND different product qty
+            const savedUnitPrice = parseFloat(item.unitPrice || item.price) || 0;
+            let itemUnitPrice = savedUnitPrice;
+            
+            // If same product and PRICING_RULES has actual tier data loaded, recalculate
+            // (qty may have changed since save, so fresh tier is more accurate)
+            if (itemCode === state.product.code && tiers.length > 0) {
+                itemUnitPrice = unitPrice; // unitPrice already tier-calculated above
+            }
+            
+            // Final safety: if calculated price is 0 but saved price exists, use saved
+            if (itemUnitPrice <= 0 && savedUnitPrice > 0) {
+                itemUnitPrice = savedUnitPrice;
             }
             
             console.log('?? BASKET ITEM:', itemCode, 'qty:', itemQty, 'unitPrice:', itemUnitPrice, 'total:', itemUnitPrice * itemQty);
@@ -6077,6 +6104,7 @@
                 if (!existingCustom) {
                     allBasketCustomizations.push({
                         productCode: itemCode,
+                        posKey: pos._posKey || '',
                         position: positionName,
                         method: methodLabel,
                         unitPrice: custUnitPrice,
@@ -6135,6 +6163,9 @@
         // Calculate TOTAL quantity (basket + current) for customization calculations
         let totalQtyForCustomizations = basketQty + currentQty;
         
+        // Build set of position keys already in basket customizations (to avoid dupes)
+        const basketPositionKeys = new Set(allBasketCustomizations.map(c => c.posKey).filter(Boolean));
+        
         // Get all checked position cards
         const checkedCards = document.querySelectorAll('.position-card input[type="checkbox"]:checked');
         console.log('?? Checked position cards:', checkedCards.length);
@@ -6144,6 +6175,12 @@
             const position = checkbox.value;
             const positionName = checkbox.parentElement.querySelector('span').textContent.trim();
             const method = state.positionMethods && state.positionMethods[position];
+            
+            // Skip if this position is already accounted for in basket customizations
+            if (basketPositionKeys.has(position)) {
+                console.log('?? Skipping position (already in basket):', position);
+                return;
+            }
             
             console.log('?? Analyzing position:', { position, positionName, method, totalQtyForCustomizations });
             
@@ -6183,7 +6220,7 @@
         let grandCustomTotal = 0;
         allCustomizations.forEach(c => grandCustomTotal += c.total);
         
-        // Setup fee (�25 one-time for embroidery only)
+        // Setup fee (£25 one-time for embroidery only)
         const setupFeeBase = hasEmbroidery ? 25.00 : 0;
         
         // GRAND TOTAL (ex VAT)
@@ -6211,7 +6248,7 @@
             if (state.sizeQuantities && Object.keys(state.sizeQuantities).length > 0) {
                 Object.entries(state.sizeQuantities).forEach(([size, sizeQty]) => {
                     if (sizeQty > 0) {
-                        sizesHtml += `<div class="size-row"><span>${size}</span><span>�${sizeQty}</span></div>`;
+                        sizesHtml += `<div class="size-row"><span>${size}</span><span>£${sizeQty}</span></div>`;
                     }
                 });
             } else {
@@ -6285,7 +6322,7 @@
                         <div class="customization-card ${methodClass}">
                             <div class="customization-card-header">
                                 <span class="customization-position">${item.position} ${item.method}</span>
-                                <span class="customization-total">${item.qty} � ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.total)} <span class="vat-suffix">${vatSuffix()}</span></span>
+                                <span class="customization-total">${item.qty} × ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.total)} <span class="vat-suffix">${vatSuffix()}</span></span>
                             </div>
                         </div>
                     `;
@@ -6303,14 +6340,36 @@
             sidebarGarmentCost.textContent = formatCurrency(grandGarmentTotal);
         }
         
-        const garmentUnitPriceEl = document.getElementById('garmentUnitPrice');
-        if (garmentUnitPriceEl) {
-            garmentUnitPriceEl.textContent = formatCurrency(unitPrice);
+        const garmentDetailCalc = document.getElementById('garmentDetailCalc');
+        if (garmentDetailCalc) {
+            // Derive effective unit price from actual totals (most reliable)
+            const effectiveUnitPrice = displayQty > 0 ? grandGarmentTotal / displayQty : 0;
+            garmentDetailCalc.textContent = `${formatCurrency(effectiveUnitPrice)} × ${displayQty} = ${formatCurrency(grandGarmentTotal)}`;
         }
         
-        const garmentQtyEl = document.getElementById('garmentQty');
-        if (garmentQtyEl) {
-            garmentQtyEl.textContent = `Qty: ${displayQty}`;
+        // Also update legacy detail elements (old HTML may still be cached)
+        const garmentUnitPrice = document.getElementById('garmentUnitPrice');
+        if (garmentUnitPrice) {
+            const effectiveUnitPrice = displayQty > 0 ? grandGarmentTotal / displayQty : 0;
+            garmentUnitPrice.textContent = formatCurrency(effectiveUnitPrice);
+        }
+        const garmentQty = document.getElementById('garmentQty');
+        if (garmentQty) {
+            garmentQty.textContent = `Qty: ${displayQty}`;
+        }
+        
+        // Update Step Discount row in sidebar
+        const sidebarDiscountRow = document.getElementById('sidebarDiscountRow');
+        if (sidebarDiscountRow) {
+            if (currentTier && currentTier.discount > 0 && displayQty > 0) {
+                sidebarDiscountRow.style.display = 'block';
+                document.getElementById('sidebarDiscountPercent').textContent = `${currentTier.discount}%`;
+                const fullPriceTotal = basePrice * displayQty;
+                const discountSaving = fullPriceTotal - grandGarmentTotal;
+                document.getElementById('sidebarDiscountAmount').textContent = `-${formatCurrency(discountSaving)}`;
+            } else {
+                sidebarDiscountRow.style.display = 'none';
+            }
         }
         
         // Update customization costs list with colored cards
@@ -6330,8 +6389,7 @@
                                 <span class="value white">${formatCurrency(item.total)}</span>
                             </div>
                             <div class="row detail white">
-                                <span>Unit Price: ${formatCurrency(item.unitPrice)}</span>
-                                <span>Qty: ${item.qty}</span>
+                                <span>${formatCurrency(item.unitPrice)} × ${item.qty} = ${formatCurrency(item.total)}</span>
                             </div>
                         </div>
                     `;
@@ -6342,7 +6400,7 @@
                     costsHtml += `
                         <div class="row detail" style="padding: 10px 0; border-top: 1px dashed #e5e7eb; margin-top: 8px;">
                             <span style="color: #666;">Digitizing Fee (one-time)</span>
-                            <span style="color: #666;">�25.00 ${vatSuffix()}</span>
+                            <span style="color: #666;">£25.00 ${vatSuffix()}</span>
                         </div>
                     `;
                 }
@@ -6420,10 +6478,15 @@
         let totalItems = 0;
         
         basket.forEach(item => {
-            if (item.sizes) {
-                Object.values(item.sizes).forEach(qty => {
-                    totalItems += qty;
+            const sizes = item.sizes || item.quantities || {};
+            if (Object.keys(sizes).length > 0) {
+                Object.values(sizes).forEach(qty => {
+                    totalItems += Number(qty) || 0;
                 });
+            } else if (item.totalQty) {
+                totalItems += Number(item.totalQty) || 0;
+            } else if (item.quantity) {
+                totalItems += Number(item.quantity) || 0;
             }
         });
         
@@ -6463,12 +6526,18 @@
                 currentSizesHtml = `<span class="sizes-text">${sizesList}</span>`;
             }
             
+            // Get logo for current item
+            const currentCardLogo = getLogoFromState();
+            const currentLogoHtml = currentCardLogo
+                ? `<img src="${currentCardLogo}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">`
+                : '';
+            
             itemsHtml += `
                 <div class="basket-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
                     <div class="basket-item-image">
                         <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                     </div>
-                    <div class="basket-item-info">
+                    <div class="basket-item-info" style="flex:1;min-width:0;">
                         <h4>${currentName} <span style="color: #7c3aed; font-size: 11px;">(Current)</span></h4>
                         <p class="item-code" style="font-size: 11px; color: #6b7280;">${currentCode}</p>
                         <p class="item-color">Color: ${currentColor}</p>
@@ -6476,6 +6545,7 @@
                             ${currentSizesHtml}
                         </div>
                     </div>
+                    ${currentLogoHtml ? `<div class="basket-item-logo-preview" style="width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid #e5e7eb;background:#fff;margin-left:auto;">${currentLogoHtml}</div>` : ''}
                 </div>
             `;
             
@@ -6514,6 +6584,12 @@
                 // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
                 
+                // Get logo for this basket item
+                const basketItemLogo = getItemLogoSrc(item);
+                const basketLogoHtml = basketItemLogo
+                    ? `<div class="basket-item-logo-preview" style="width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid #e5e7eb;background:#fff;margin-left:auto;"><img src="${basketItemLogo}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"></div>`
+                    : '';
+                
                 // Build sizes display (read-only, no +/- controls)
                 let sizesHtml = '';
                 if (Object.keys(sizes).length > 0) {
@@ -6536,6 +6612,7 @@
                                 ${sizesHtml}
                             </div>
                         </div>
+                        ${basketLogoHtml}
                         <button type="button" class="basket-item-remove" data-index="${index}">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -7118,7 +7195,7 @@
         const newItem = {
             id: Date.now().toString(),
             productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle� Midweight Hoodie',
+            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
             color: state.selectedColorName || state.selectedColor,
             colorId: state.selectedColor,
             colorImage: state.selectedColorImage,
@@ -7260,7 +7337,7 @@
                 </div>
                 <h3>Added to Quote!</h3>
                 <p class="quote-added-summary">
-                    ${item.totalQty}� ${item.productName}<br>
+                    ${item.totalQty}× ${item.productName}<br>
                     <span class="text-muted">${item.color}</span>
                 </p>
                 <div class="quote-added-actions">
