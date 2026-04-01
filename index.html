@@ -52,50 +52,6 @@
             var debugInfoEl = document.getElementById('debugInfo');
             var redirected = false;
 
-            function loadTawkIfAllowed() {
-                try {
-                    var host = window.location.hostname;
-                    var allowLocal = false;
-                    try {
-                        var params = new URLSearchParams(window.location.search);
-                        allowLocal = params.has('tawk') || params.has('chat');
-                    } catch (e) {
-                        allowLocal = false;
-                    }
-
-                    if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) {
-                        return Promise.resolve({ skipped: true });
-                    }
-                } catch (e) {
-                    // If we can't read hostname for some reason, don't block redirect.
-                    return Promise.resolve({ skipped: true });
-                }
-
-                return new Promise(function (resolve) {
-                    try {
-                        window.Tawk_API = window.Tawk_API || {};
-                        // Force bubble visible to clear any stale hidden state
-                        window.Tawk_API.onLoad = function () {
-                            try { if (typeof window.Tawk_API.showWidget === 'function') window.Tawk_API.showWidget(); } catch (e) {}
-                        };
-                        window.Tawk_API.onChatMinimized = function () {};
-                        window.Tawk_LoadStart = new Date();
-
-                        var s1 = document.createElement('script');
-                        var s0 = document.getElementsByTagName('script')[0];
-                        s1.async = true;
-                        s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-                        s1.charset = 'UTF-8';
-                        s1.setAttribute('crossorigin', '*');
-                        s1.onload = function () { resolve({ loaded: true }); };
-                        s1.onerror = function () { resolve({ loaded: false }); };
-                        s0.parentNode.insertBefore(s1, s0);
-                    } catch (e) {
-                        resolve({ loaded: false });
-                    }
-                });
-            }
-
             function updateDebug(mode) {
                 if (!debugInfoEl) return;
                 debugInfoEl.textContent = 'width=' + window.innerWidth + ' • dpr=' + (window.devicePixelRatio || 1) + ' • mode=' + mode;
@@ -144,8 +100,7 @@
                 }
             }
 
-            // Load Tawk quickly (online only), then redirect.
-            // This prevents the redirect from cutting off the network request immediately.
+            // Redirect after splash screen delay.
             updateDebug('pending');
 
             var MAX_WAIT_MS = 3000;
@@ -162,17 +117,6 @@
             autoTimer = setTimeout(function () {
                 safeRedirect('timeout');
             }, MAX_WAIT_MS);
-
-            // Start Tawk loading in the background (won't trigger redirect).
-            var start = function () {
-                loadTawkIfAllowed();
-            };
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', start);
-            } else {
-                start();
-            }
         })();
     </script>
 </body>
