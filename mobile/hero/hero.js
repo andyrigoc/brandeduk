@@ -8,6 +8,36 @@
   var $elsArr = [].slice.call($cont.querySelectorAll('.hero-el'));
   var $closeBtnsArr = [].slice.call($cont.querySelectorAll('.hero-el__close-btn'));
 
+  // ── Touch/swipe detection: suppress click when user was scrolling ──
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var touchStartTime = 0;
+  var wasDragging = false;
+  var DRAG_THRESHOLD = 10; // px movement to count as a drag
+
+  $cont.addEventListener('touchstart', function(e) {
+    wasDragging = false;
+    if (e.touches.length > 0) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }
+  }, { passive: true });
+
+  $cont.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 0) {
+      var dx = Math.abs(e.touches[0].clientX - touchStartX);
+      var dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
+        wasDragging = true;
+      }
+    }
+  }, { passive: true });
+
+  $cont.addEventListener('touchend', function() {
+    // wasDragging stays true until next touchstart
+  }, { passive: true });
+
   // Remove s--inactive after a short delay to trigger animation
   setTimeout(function() {
     $cont.classList.remove('s--inactive');
@@ -17,6 +47,12 @@
     $el.addEventListener('click', function(e) {
       // Don't navigate if clicking close button or CTA link
       if (e.target.closest('.hero-el__close-btn') || e.target.closest('.hero-el__cta')) {
+        return;
+      }
+
+      // ── Suppress click if the user was swiping/dragging ──
+      if (wasDragging) {
+        wasDragging = false;
         return;
       }
       
