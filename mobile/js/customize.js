@@ -3351,6 +3351,45 @@
         updatePricingSummary();
         updateLiveBadge();
         updateQuoteButtonState();
+
+        // Re-build the size rows so user can pick sizes for the new colour
+        rebuildSizeRows();
+    }
+
+    // Lightweight: re-create size rows without re-attaching container event listeners
+    function rebuildSizeRows() {
+        const container = document.querySelector('.size-qty-compact');
+        if (!container) return;
+
+        const selectedSizes = container.querySelector('.selected-sizes');
+        if (selectedSizes) selectedSizes.innerHTML = '';
+
+        const productSizes = getProductSizes();
+        const isOneSize = productSizes.length === 1 &&
+            (productSizes[0].toLowerCase() === 'one size' ||
+             productSizes[0].toLowerCase() === 'onesize' ||
+             productSizes[0].toLowerCase() === 'os');
+
+        const addBtn = container.querySelector('.add-size-btn');
+
+        if (isOneSize) {
+            if (addBtn) addBtn.style.display = 'none';
+            setTimeout(() => addOneSizeRow(container), 100);
+        } else {
+            if (addBtn) {
+                addBtn.style.display = 'flex';
+                // Re-clone to reset listener
+                const newBtn = addBtn.cloneNode(true);
+                addBtn.parentNode.replaceChild(newBtn, addBtn);
+                newBtn.addEventListener('click', () => {
+                    addSizeRow(container);
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+            }
+            setTimeout(() => addSizeRow(container), 100);
+        }
+
+        updateSizeQuantities();
     }
     
     // Apply color change
@@ -7249,13 +7288,16 @@
         // Clear ALL size rows
         const container = document.querySelector('.selected-sizes');
         if (container) {
-            container.innerHTML = '<!-- Size rows will be added dynamically -->';
+            container.innerHTML = '';
         }
         
         // Update displays
         updateSizeQuantities();
         updatePricingSummary();
         updateLiveBadge();
+
+        // Re-build size rows so user can pick sizes for the next colour
+        rebuildSizeRows();
         
         // Show toast
         showToast('Ready for next item!');
