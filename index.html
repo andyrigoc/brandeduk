@@ -12,69 +12,29 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: #f7f7f7;
+            background: #ffffff;
             color: #333;
         }
         .loader-container {
             text-align: center;
             padding: 20px;
         }
-        
-        /* Dots Animation */
-        .dots-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+        .splash-logo {
+            width: 220px;
+            height: auto;
+            animation: fadeInScale 0.6s ease-out;
         }
-        .dots-container .dot {
-            height: 20px;
-            width: 20px;
-            margin-right: 10px;
-            border-radius: 10px;
-            background-color: #c4b5fd;
-            animation: pulse 1.5s infinite ease-in-out;
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
         }
-        .dots-container .dot:last-child {
-            margin-right: 0;
-        }
-        .dots-container .dot:nth-child(1) { animation-delay: -0.3s; }
-        .dots-container .dot:nth-child(2) { animation-delay: -0.1s; }
-        .dots-container .dot:nth-child(3) { animation-delay: 0.1s; }
-        .dots-container .dot:nth-child(4) { animation-delay: 0.3s; }
-        .dots-container .dot:nth-child(5) { animation-delay: 0.5s; }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(0.8);
-                background-color: #c4b5fd;
-                box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
-            }
-            50% {
-                transform: scale(1.2);
-                background-color: #7c3aed;
-                box-shadow: 0 0 0 10px rgba(167, 139, 250, 0);
-            }
-            100% {
-                transform: scale(0.8);
-                background-color: #c4b5fd;
-                box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
-            }
-        }
-        
         a { color: #7c3aed; text-decoration: none; }
         a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="loader-container">
-        <section class="dots-container">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </section>
+        <img class="splash-logo" src="brandedukv15-child/assets/images/ui/brandeduk-logo-full-removebg-preview (1).png" alt="BrandedUK">
         <p id="debugInfo" style="display:none;"></p>
         <noscript>
             <p>
@@ -188,7 +148,7 @@
             // This prevents the redirect from cutting off the network request immediately.
             updateDebug('pending');
 
-            var MAX_WAIT_MS = 700;
+            var MAX_WAIT_MS = 3000;
             var didRedirect = false;
 
             function safeRedirect(reason) {
@@ -198,19 +158,14 @@
                 redirectIfNeeded();
             }
 
-            // Timeout always wins to keep UX snappy.
+            // Always wait the full 3 seconds (splash screen) then redirect.
             autoTimer = setTimeout(function () {
                 safeRedirect('timeout');
             }, MAX_WAIT_MS);
 
-            // Start as early as possible; if DOM isn't ready yet, just wait for it.
+            // Start Tawk loading in the background (won't trigger redirect).
             var start = function () {
-                loadTawkIfAllowed().then(function (result) {
-                    // Redirect immediately after we at least start/finish loading.
-                    // We still keep the timeout as a safety net.
-                    if (result && result.skipped) return safeRedirect('skip:localhost');
-                    return safeRedirect('tawk');
-                });
+                loadTawkIfAllowed();
             };
 
             if (document.readyState === 'loading') {

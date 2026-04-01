@@ -314,6 +314,65 @@ html, body {
 }
 
 /* ---------------------------------------------------
+   START FROM LABEL
+--------------------------------------------------- */
+
+.start-from-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+/* ---------------------------------------------------
+   PRODUCT SPECS TABLE
+--------------------------------------------------- */
+
+.product-specs-table {
+    margin: 14px 0 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.product-specs-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-specs-table tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.product-specs-table tr:last-child {
+    border-bottom: none;
+}
+
+.product-specs-table td {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    vertical-align: top;
+}
+
+.product-specs-table .spec-label {
+    font-weight: 700;
+    color: #374151;
+    white-space: nowrap;
+    width: 90px;
+    background: #f9fafb;
+}
+
+.product-specs-table .spec-value {
+    color: #4b5563;
+    font-weight: 400;
+}
+
+/* ---------------------------------------------------
    CUSTOMIZATION BADGE
 --------------------------------------------------- */
 
@@ -1839,12 +1898,7 @@ html, body {
     }
 
     .thumb-column {
-        flex-direction: row;
-        overflow-x: auto;
-        margin-left: 0;
-        padding-bottom: 8px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        display: none !important;
     }
 
     .thumb-column::-webkit-scrollbar {

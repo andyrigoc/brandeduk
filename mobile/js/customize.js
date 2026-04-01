@@ -889,8 +889,9 @@
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
             state.product.brand = productData.brand || productData.brand_name || state.product.brand;
             state.product.sizes = normalizeProductSizesFromApi(productData);
-            state.product.weight = productData.weight || '';
-            state.product.fabric = productData.fabric || '';
+            state.product.weight = productData.weight || (productData.details && productData.details.weight) || '';
+            state.product.fabric = productData.fabric || (productData.details && productData.details.fabric) || '';
+            state.product.description = productData.description || (productData.details && productData.details.description) || '';
             state.product.image = productData.image || ''; // Top-level product image (model/hero shot)
             state.product.rawData = productData; // Store full product data for reference
             console.log('🔍 PRODUCT IMAGE DEBUG:', { topLevelImage: productData.image, firstColorMain: (productData.colors && productData.colors[0]) ? productData.colors[0].main : 'no colors', sameImage: productData.image === ((productData.colors && productData.colors[0]) ? productData.colors[0].main : null) });
@@ -1091,6 +1092,168 @@
             // Pricing tiers UI will be rebuilt elsewhere, but update title
             if (state.product && state.product.name) {
                 document.title = `${state.product.name} - Branded UK`;
+            }
+
+            // === Populate START FROM price (lowest tier) ===
+            const mainPriceEl = document.getElementById('productMainPrice');
+            if (mainPriceEl && state.product?.priceBreaks?.length > 0) {
+                const lowestTier = state.product.priceBreaks.reduce((min, t) => 
+                    (t.price < min.price) ? t : min, state.product.priceBreaks[0]);
+                const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+                const price = vatOn ? (lowestTier.price * 1.2) : lowestTier.price;
+                const priceFormatted = '£' + price.toFixed(2);
+                const priceEl = mainPriceEl.querySelector('.start-from-price');
+                if (priceEl) priceEl.textContent = priceFormatted;
+                const vatEl = mainPriceEl.querySelector('.start-from-vat');
+                if (vatEl) vatEl.textContent = vatOn ? 'inc VAT' : 'ex VAT';
+            }
+
+            // === Brand Logo (local files) ===
+            const brandLogoEl = document.getElementById('brandLogoCustomize');
+            if (brandLogoEl && state.product?.brand) {
+                const BRAND_LOGO_MAP = {
+                    '2786': '27862020.webp',
+                    'adidas®': 'adidas.jpg',
+                    'afd by dennys': 'add-it-on2020.jpg',
+                    'anthem': 'anthem-logo.jpg',
+                    'asquith & fox': 'asquithfox2020.jpg',
+                    'atlantis': null,
+                    'awdis': 'awdis.webp',
+                    'awdis academy': 'awdisacademy2020.webp',
+                    'awdis ecologie': 'awdisecologie2020.jpg',
+                    'awdis just cool': 'awdisjustcool2020.webp',
+                    'awdis just hoods': 'awdisjusthoods2020.webp',
+                    "awdis just polo's": 'awdisjustpolos2020.jpg',
+                    "awdis just t's": 'awdisjustts2020.webp',
+                    'awdis so denim': 'awdissodenim2020.jpg',
+                    'absolute apparel': null,
+                    'b&c collection': 'bccollp23.png',
+                    'babybugz': 'babybugz2020.jpg',
+                    'bagbase': 'bagbase.jpeg',
+                    'beechfield': 'beechfield.jpeg',
+                    'bella canvas': 'bellapluscanvas.svg',
+                    'bonchef': null,
+                    'build your brand': 'build-your-brand.png',
+                    'build your brand basic': 'build-your-brand-basic-logo-web-2021.jpg',
+                    'build your brandit': 'build-your-brandit-logo.jpeg',
+                    'callaway': 'callaway2020.jpg',
+                    'casual classics': null,
+                    'colortone': 'colortone2020.webp',
+                    'comfort colors®': 'comfort-colors.webp',
+                    'comfy co': null,
+                    'craghoppers': 'craghoppers.jpg',
+                    'dennys': null,
+                    'essentials': 'everydayessentials2020.jpg',
+                    'finden & hales': 'finden-and-hales.png',
+                    'flexfit by yupoong': 'flexfit.webp',
+                    'front row': 'front-row.jpg',
+                    'fruit of the loom': 'fruit-of-the-loom.jpg',
+                    'gildan': 'gildan2020.webp',
+                    'gildan hammer': 'gildan2020.webp',
+                    'henbury': 'henbury2020.webp',
+                    'home & living': 'web-logo-homeandliving-2023.webp',
+                    'jack wolfskin': null,
+                    'jerzees': null,
+                    'kariban': 'kariban2020.webp',
+                    'kariban proact': 'proact.jpg',
+                    'kimood': 'kimood2020.jpg',
+                    'korntex': null,
+                    'kustom kit': 'kustom-kit2020.webp',
+                    'larkwood': 'larkwood.jpeg',
+                    'maddins': 'maddins2020.jpg',
+                    'madeira': 'web-logo-madeira-2022.jpg',
+                    'mumbles': 'mumbles2020.webp',
+                    'new era': null,
+                    'new morning studios': 'web-logo-new-morning-studios.png',
+                    'next level apparel': null,
+                    'nike': 'nike2020.jpg',
+                    'nimbus': 'nimbus2020.webp',
+                    'nutshell®': 'nutshell-bag2020.webp',
+                    'ogio': 'ogio2020.webp',
+                    'onna by premier': 'web-logo-onna-by-premier-2023.jpg',
+                    'portwest': 'portwest.webp',
+                    'premier': 'premier2020.webp',
+                    'prortx': 'pro-rtx2020.jpg',
+                    'prortx high visibility': 'pro-rtx-hv2020.jpg',
+                    'quadra': 'quadra-2020.webp',
+                    'regatta high visibility': 'regattaprofessional-highv2020.webp',
+                    'regatta honestly made': 'regattaprofessional-hones2020.jpg',
+                    'regatta junior': 'regattaprofessional-junio2020.jpg',
+                    'regatta professional': 'regatta-professional2020.webp',
+                    'regatta safety footwear': 'regattaprofessional-safet2020.jpg',
+                    'result': 'result2020.webp',
+                    'result core': 'resultcorevalue2020.webp',
+                    'result genuine recycled': null,
+                    'result headwear': 'resultheadwear2020.webp',
+                    'result safeguard': 'result-safe-guard-2026.webp',
+                    'result urban outdoor': 'resulturbanoutdoorwear2020.webp',
+                    'result winter essentials': 'resultwinteressentials2020.webp',
+                    'result workguard': 'result-workguard-2026.webp',
+                    'rhino': 'rhino2020.jpg',
+                    'ribbon': 'brand-logo-ribbon.jpg',
+                    'russell athletic': 'russel-athletic-2026.webp',
+                    'russell athletic collection': 'russel-athletic-collection-2026.webp',
+                    'russell collection': 'russell.webp',
+                    'russell europe': 'russell.webp',
+                    'scruffs': 'web-logo-scruffs-2023.jpg',
+                    'sf': 'sf-clothing.webp',
+                    'spiro': 'spiro2022.webp',
+                    'spiro recycled': 'web-logo-spiro-recycled.png',
+                    'splashmacs': 'splashmacs2020.jpg',
+                    'stanley workwear': 'stanley-logo.jpg',
+                    'stanley/stella': 'stanley-stella.webp',
+                    'stedman': null,
+                    'stormtech': 'stormtech.webp',
+                    'tee jays': 'tee-jays.jpg',
+                    'tombo': 'tombo2020.webp',
+                    'towel city': 'towel-city2020.jpg',
+                    'tridri®': 'web-logo-tridri-2025.webp',
+                    'under armour': 'under-armour.webp',
+                    'under armour golf': 'under-armour.webp',
+                    'uneek clothing': null,
+                    'westford mill': 'westford-mill-2020.webp',
+                    'wombat': 'wombat-logo.jpg',
+                    'yoko': 'yoko.webp'
+                };
+                const brandKey = state.product.brand.toLowerCase();
+                const logoFile = BRAND_LOGO_MAP[brandKey];
+                if (logoFile) {
+                    const basePath = window.location.pathname.includes('/mobile/') 
+                        ? '../brandedukv15-child/assets/images/brands/' 
+                        : 'brandedukv15-child/assets/images/brands/';
+                    brandLogoEl.src = basePath + logoFile;
+                    brandLogoEl.alt = state.product.brand;
+                    brandLogoEl.style.display = '';
+                } else {
+                    brandLogoEl.style.display = 'none';
+                }
+            }
+
+            // === Specs Table (Fabric, Weight, Size, Key Info) ===
+            const specsTableEl = document.getElementById('productSpecsTableCustomize');
+            if (specsTableEl && state.product) {
+                const rows = [];
+                if (state.product.fabric) {
+                    rows.push({ label: 'Fabric', value: state.product.fabric });
+                }
+                if (state.product.weight) {
+                    rows.push({ label: 'Weight', value: state.product.weight });
+                }
+                if (state.product.sizes && Array.isArray(state.product.sizes) && state.product.sizes.length > 0) {
+                    rows.push({ label: 'Size', value: state.product.sizes.join(', ') });
+                }
+                if (state.product.description) {
+                    rows.push({ label: 'Key Info', value: state.product.description });
+                }
+                if (rows.length > 0) {
+                    let html = '<table>';
+                    rows.forEach(r => {
+                        html += `<tr><td class="spec-label">${r.label}</td><td class="spec-value">${r.value}</td></tr>`;
+                    });
+                    html += '</table>';
+                    specsTableEl.innerHTML = html;
+                    specsTableEl.style.display = '';
+                }
             }
         } catch (e) {
             console.warn('Failed to refresh product DOM', e);
@@ -1527,6 +1690,7 @@
         // setupOrderCard(); // REMOVED - card viola eliminata
         setupSaveSelectionButton();
         setupSubmitQuoteButton();
+        setupContinueShoppingButton();
         setupScrollBlock();
         updateVatToggleUI();
         updatePricingTiers();
@@ -1600,48 +1764,10 @@
         updateOrderCardDate();
     }
     
-    // === Save Selection Button ===
+    // === Save Selection Button (REMOVED) ===
     function setupSaveSelectionButton() {
-        const saveBtn = document.getElementById('saveSelectionBtn');
-        if (!saveBtn) return;
-        
-        saveBtn.addEventListener('click', () => {
-            console.log('?? SAVE BUTTON CLICKED!');
-            console.log('?? state.positionMethods BEFORE save:', JSON.stringify(state.positionMethods));
-            console.log('?? state.quantity:', state.quantity);
-            
-            // Check if there's anything to save
-            if (state.quantity <= 0) {
-                showToast('Please select at least one size first');
-                return;
-            }
-            
-            // Add current selection to basket
-            addCurrentSelectionToBasket();
-            
-            // Force logo into note box from state
-            const logoSrc = getLogoFromState();
-            if (logoSrc) {
-                document.querySelectorAll('.note-box-logo').forEach(logoBox => {
-                    logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
-                });
-            }
-            
-            // Mark selection as saved
-            state.selectionSaved = true;
-            
-            // Update button appearance
-            saveBtn.classList.add('saved');
-            saveBtn.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 13l4 4L19 7"/>
-                </svg>
-                Saved!
-            `;
-            
-            // Vibrate feedback
-            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-        });
+        // Save button removed - selection is auto-saved on color change or Add to Quote
+        return;
     }
     
     // Add current size selection to basket
@@ -2552,47 +2678,25 @@
         }
     }
     
-    // === Block Scroll when selection not saved ===
-    function setupScrollBlock() {
-        let lastScrollTop = 0;
-        const sizeSection = document.querySelector('.size-section');
+    // === Continue Shopping Button — save current selection to basket, then go to home ===
+    function setupContinueShoppingButton() {
+        const btn = document.getElementById('continueShoppingBtnSummary');
+        if (!btn) return;
         
-        window.addEventListener('scroll', (e) => {
-            // Only block if there are unsaved items
-            if (state.quantity > 0 && !state.selectionSaved) {
-                const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                // Check if scrolling down
-                if (currentScrollTop > lastScrollTop) {
-                    // Get the position of the size section
-                    if (sizeSection) {
-                        const sectionBottom = sizeSection.getBoundingClientRect().bottom;
-                        
-                        // If trying to scroll past the size section, block it
-                        if (sectionBottom < 200) {
-                            window.scrollTo({
-                                top: lastScrollTop,
-                                behavior: 'instant'
-                            });
-                            
-                            // Flash the save button to draw attention
-                            const saveBtn = document.getElementById('saveSelectionBtn');
-                            if (saveBtn) {
-                                saveBtn.style.transform = 'scale(1.05)';
-                                saveBtn.style.boxShadow = '0 0 20px rgba(124, 58, 237, 0.6)';
-                                setTimeout(() => {
-                                    saveBtn.style.transform = '';
-                                    saveBtn.style.boxShadow = '';
-                                }, 300);
-                            }
-                            return;
-                        }
-                    }
-                }
-                
-                lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+        btn.addEventListener('click', () => {
+            // Save current selection to basket if there are items
+            if (state.quantity > 0) {
+                addToQuote({ silent: true });
             }
-        }, { passive: false });
+            // Navigate to home page so user can pick another product
+            window.location.href = 'index.html';
+        });
+    }
+    
+    // === Block Scroll (DISABLED — save button removed) ===
+    function setupScrollBlock() {
+        // No longer blocking scroll — auto-save handles this
+        return;
     }
     
     function updateOrderCardDate() {
@@ -3179,174 +3283,17 @@
         });
     }
     
-    // Show confirmation dialog before changing color
+    // Auto-save and change color (no modal)
     function showColorChangeConfirm(btn) {
-        // Remove existing modal to force fresh creation
-        const existingModal = document.getElementById('colorChangeModal');
-        if (existingModal) existingModal.remove();
-        
-        // Create modal
-        const modal = document.createElement('div');
-        modal.id = 'colorChangeModal';
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-content confirm-modal">
-                <div class="confirm-icon">??</div>
-                <h3>Save Your Selection?</h3>
-                <p>You have <strong id="modalQtyCount">0</strong> items selected in <strong id="modalColorName">this colour</strong>.</p>
-                <p class="confirm-subtitle">What would you like to do?</p>
-                <div class="confirm-actions-vertical">
-                    <button class="confirm-btn save-continue">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/>
-                            <polyline points="7 3 7 8 15 8"/>
-                        </svg>
-                        Save to Quote & Continue
-                    </button>
-                    <button class="confirm-btn discard">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                        Discard & Change Colour
-                    </button>
-                    <button class="confirm-btn cancel-link">Cancel</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Add styles if not present
-        if (!document.getElementById('confirmModalStyles')) {
-            const style = document.createElement('style');
-            style.id = 'confirmModalStyles';
-            style.textContent = `
-                .confirm-modal {
-                    text-align: center;
-                    padding: 24px;
-                    max-width: 320px;
-                }
-                .confirm-icon {
-                    font-size: 48px;
-                    margin-bottom: 12px;
-                }
-                .confirm-modal h3 {
-                    margin: 0 0 12px;
-                    font-size: 20px;
-                    font-weight: 700;
-                    color: #1a1a2e;
-                }
-                .confirm-modal p {
-                    margin: 0 0 8px;
-                    font-size: 14px;
-                    color: #666;
-                }
-                .confirm-modal p strong {
-                    color: #7c3aed;
-                }
-                .confirm-subtitle {
-                    margin-top: 12px !important;
-                    font-size: 13px !important;
-                    color: #999 !important;
-                }
-                .confirm-actions-vertical {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    margin-top: 16px;
-                }
-                .confirm-btn {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                    padding: 14px 16px;
-                    border-radius: 12px;
-                    font-weight: 600;
-                    font-size: 14px;
-                    border: none;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                }
-                .confirm-btn.save-continue {
-                    background: linear-gradient(135deg, #7c3aed 0%, #6b21a8 100%);
-                    color: white;
-                }
-                .confirm-btn.save-continue:active {
-                    transform: scale(0.98);
-                }
-                .confirm-btn.discard {
-                    background: #fff;
-                    color: #666;
-                    border: 1px solid #e5e5e5;
-                }
-                .confirm-btn.discard:active {
-                    background: #f5f5f5;
-                }
-                .confirm-btn.cancel-link {
-                    background: transparent;
-                    color: #999;
-                    font-weight: 500;
-                    padding: 8px;
-                }
-            `;
-            document.head.appendChild(style);
+        // Auto-save current selection to basket
+        if (state.quantity > 0) {
+            addToQuote({ silent: true });
+            showToast(`✓ ${state.quantity} pcs of ${state.selectedColorName || 'current colour'} saved to basket.`);
         }
         
-        // Update modal content with current selection info
-        const modalQtyCount = modal.querySelector('#modalQtyCount');
-        const modalColorName = modal.querySelector('#modalColorName');
-        if (modalQtyCount) modalQtyCount.textContent = state.quantity || 0;
-        if (modalColorName) modalColorName.textContent = state.selectedColorName || 'this colour';
-        
-        // Show modal
-        modal.classList.add('active');
-        
-        // Handle buttons
-        const saveBtn = modal.querySelector('.confirm-btn.save-continue');
-        const discardBtn = modal.querySelector('.confirm-btn.discard');
-        const cancelBtn = modal.querySelector('.confirm-btn.cancel-link');
-        
-        const closeModal = () => {
-            modal.classList.remove('active');
-        };
-        
-        cancelBtn.onclick = closeModal;
-        modal.onclick = (e) => {
-            if (e.target === modal) closeModal();
-        };
-        
-        // Save to quote, then change colour
-        saveBtn.onclick = () => {
-            // Add current selection to basket (silent = no second popup)
-            addToQuote({ silent: true });
-            
-            // Visual feedback: change button to "Saved to Quote" with checkmark
-            saveBtn.innerHTML = `
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Saved to Quote!
-            `;
-            saveBtn.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
-            saveBtn.disabled = true;
-            
-            // After a short delay, close modal and change colour
-            setTimeout(() => {
-                closeModal();
-                clearSizeSelection();
-                applyColorChange(btn);
-            }, 800);
-        };
-        
-        // Discard and change colour
-        discardBtn.onclick = () => {
-            closeModal();
-            // Clear size selection and apply color change
-            clearSizeSelection();
-            applyColorChange(btn);
-        };
+        // Clear sizes and apply color change
+        clearSizeSelection();
+        applyColorChange(btn);
     }
     
     // Clear all size selections and optionally positions
@@ -3834,32 +3781,7 @@
             }
         });
 
-        // Save Selection button handler
-        const saveBtn = document.getElementById('saveSelectionBtn');
-        if (saveBtn) {
-            saveBtn.addEventListener('click', () => {
-                if (state.quantity > 0) {
-                    // Actually save to basket
-                    addToQuote({ silent: true });
-                    
-                    // Change button to green "Saved to Quote"
-                    saveBtn.classList.add('saved');
-                    saveBtn.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
-                    saveBtn.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Saved to Quote
-                    `;
-                    state.selectionSaved = true;
-                    
-                    // Update summary to show the saved items
-                    updatePricingSummary();
-                    
-                    if (navigator.vibrate) navigator.vibrate(15);
-                }
-            });
-        }
+        // Save Selection button removed — auto-save on color change / Add to Quote
 
         // Initial update
         updateSizeQuantities();
@@ -4024,42 +3946,14 @@
         // Update global quantity for pricing
         state.quantity = total;
         
-        // Always show Save Selection button, but disable if no selection
+        // Save button removed — hide it if it still exists in DOM
         const saveBtn = document.getElementById('saveSelectionBtn');
         if (saveBtn) {
-            // Always visible
-            saveBtn.style.display = 'flex';
-            
-            if (total > 0) {
-                // Has selection - enable and mark as unsaved
-                console.log('DEBUG: enabling save button, total=', total);
-                saveBtn.disabled = false;
-                saveBtn.classList.remove('saved');
-                saveBtn.style.opacity = '1';
-                saveBtn.style.cursor = 'pointer';
-                saveBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Save & Continue
-                `;
-                state.selectionSaved = false;
-            } else {
-                // No selection - disable button
-                console.log('DEBUG: disabling save button, total=', total);
-                saveBtn.disabled = true;
-                saveBtn.classList.remove('saved');
-                saveBtn.style.opacity = '0.5';
-                saveBtn.style.cursor = 'not-allowed';
-                saveBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Save & Continue
-                `;
-                state.selectionSaved = true;
-            }
+            saveBtn.style.display = 'none';
         }
+        
+        // Track selection state
+        state.selectionSaved = total === 0;
         
         // Set flag to prevent auto-scroll when updating quantities
         state.isUpdatingQuantity = true;
@@ -5796,106 +5690,40 @@
             }
             
             if (pill) {
-                pill.hidden = false;
-                pill.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    SAVE & CONTINUE
-                `;
+                pill.hidden = true; // Pill removed — auto-save branding
                 
-                // Attach save handler to the pill
-                pill.onclick = () => {
-                    // ALWAYS merge branding/logo into existing basket item (never add qty again)
-                    const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                    const code = state.product?.code;
-                    const color = state.selectedColorName || state.selectedColor;
-                    const idx = basket.findIndex(i =>
-                        i.productCode === code &&
-                        (i.colorId === state.selectedColor || i.color === color)
-                    );
-                    if (idx === -1) {
-                        // No existing item yet — do a full save (first time)
-                        if (state.quantity > 0) {
-                            addCurrentSelectionToBasket();
-                        } else {
-                            showToast('Please select at least one size first');
-                            return;
-                        }
-                    } else {
-                        // Merge branding into existing item (no qty change)
-                        const existing = basket[idx];
+                // Auto-save branding to basket immediately
+                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const code = state.product?.code;
+                const color = state.selectedColorName || state.selectedColor;
+                const idx = basket.findIndex(i =>
+                    i.productCode === code &&
+                    (i.colorId === state.selectedColor || i.color === color)
+                );
+                if (idx !== -1) {
+                    const existing = basket[idx];
+                    if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
+                        existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                    }
+                    if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
                         const updatedCustomizations = [];
-                        if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
-                            existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
-                        }
-                        if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-                            Object.entries(state.positionMethods).forEach(([pos, method]) => {
-                                const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
-                                const posNames = {'left-breast':'Left Chest','right-breast':'Right Chest','small-centre-front':'Small Centre Front','front-center':'Front Center','large-centre-front':'Front Centre','back-large':'Back Large','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve'};
-                                const posLabel = posNames[pos] || pos.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
-                                const logo = state.positionDesigns?.[pos]?.logo || null;
-                                const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                                const totalPrice = unitPrice * existing.totalQty;
-                                if (!existing.positions) existing.positions = {};
-                                existing.positions[pos] = { method: methodLabel, unitPrice, totalPrice, name: posLabel, logo };
-                                updatedCustomizations.push({
-                                    position: posLabel,
-                                    method: methodLabel,
-                                    unitPrice: unitPrice,
-                                    total: totalPrice,
-                                    qty: existing.totalQty
-                                });
-                            });
-                        }
-                        if (updatedCustomizations.length > 0) {
-                            existing.customizations = updatedCustomizations;
-                        }
-                        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                        console.log('✅ Updated existing basket item with branding');
-                    }
-                    
-                    // Mark as saved
-                    state.selectionSaved = true;
-                    
-                    // Visual feedback on pill
-                    pill.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
-                            <path d="M5 13l4 4L19 7"/>
-                        </svg>
-                        SAVED!
-                    `;
-                    pill.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
-                    pill.style.boxShadow = '0 4px 12px rgba(22, 163, 74, 0.35)';
-                    
-                    // Also update the top Save button
-                    const topSaveBtn = document.getElementById('saveSelectionBtn');
-                    if (topSaveBtn) {
-                        topSaveBtn.classList.add('saved');
-                        topSaveBtn.innerHTML = `
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Saved!
-                        `;
-                    }
-                    
-                    // Force logo into note box from state
-                    const logoSrc = getLogoFromState();
-                    if (logoSrc) {
-                        const noteBoxLogos = document.querySelectorAll('.note-box-logo');
-                        noteBoxLogos.forEach(logoBox => {
-                            logoBox.innerHTML = `<img src="${logoSrc}" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">`;
+                        Object.entries(state.positionMethods).forEach(([pos, method]) => {
+                            const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                            const posNames = {'left-breast':'Left Chest','right-breast':'Right Chest','small-centre-front':'Small Centre Front','front-center':'Front Center','large-centre-front':'Front Centre','back-large':'Back Large','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve'};
+                            const posLabel = posNames[pos] || pos.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+                            const logo = state.positionDesigns?.[pos]?.logo || null;
+                            const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
+                            const totalPrice = unitPrice * existing.totalQty;
+                            if (!existing.positions) existing.positions = {};
+                            existing.positions[pos] = { method: methodLabel, unitPrice, totalPrice, name: posLabel, logo };
+                            updatedCustomizations.push({ position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
                         });
+                        if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
                     }
-                    
-                    // Refresh pricing summary and basket items list
-                    updatePricingSummary();
-                    
-                    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-                };
+                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                }
+                state.selectionSaved = true;
+                updatePricingSummary();
             }
             
             // Transform "ADD LOGO" button to green "LOGO ADDED" when logo is uploaded

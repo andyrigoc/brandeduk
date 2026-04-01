@@ -350,10 +350,119 @@
         position: sticky;
         top: calc(var(--header-height) + 20px);
         height: fit-content;
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    /* Product Info sits beside gallery on tablet */
+    .product-info {
+        grid-column: 2;
+        grid-row: 1;
+        border-bottom: none;
+        align-self: start;
+        padding: 0 !important;
+    }
+
+    .product-info-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .brand-logo-customize {
+        max-height: 50px;
+        max-width: 120px;
+        object-fit: contain;
+    }
+
+    /* Show brand logo, main price, specs table on tablet */
+    .brand-logo-customize {
+        display: block !important;
+    }
+
+    /* START FROM price - prominent on tablet */
+    .product-main-price {
+        display: block !important;
+        margin: 16px 0;
+    }
+
+    .product-main-price .start-from-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-main-price .start-from-price {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #1f2937;
+    }
+
+    .product-main-price .start-from-vat {
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #6b7280;
+        margin-left: 4px;
+    }
+
+    /* Product Specs Table - Ralawise style */
+    .product-specs-table-customize {
+        display: block !important;
+        margin-top: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .product-specs-table-customize table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .product-specs-table-customize tr {
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .product-specs-table-customize tr:last-child {
+        border-bottom: none;
+    }
+
+    .product-specs-table-customize td {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        vertical-align: top;
+    }
+
+    .product-specs-table-customize .spec-label {
+        font-weight: 700;
+        color: #374151;
+        white-space: nowrap;
+        width: 90px;
+        background: #f9fafb;
+    }
+
+    .product-specs-table-customize .spec-value {
+        color: #4b5563;
+    }
+
+    /* Remaining sections span full width below */
+    .customize-section {
+        grid-column: 1 / -1;
     }
     
     .gallery-main {
         aspect-ratio: 1;
+    }
+
+    .gallery-thumbs {
+        display: flex !important;
+        gap: 8px;
+        margin-top: 8px;
     }
     
     /* === Action Bar === */
@@ -1059,6 +1168,196 @@
     .hero-el:nth-child(1).s--active .hero-el__bg:before {
         background-position: calc(50% + 25px) top;
     }
+
+    /* ================================================
+       CUSTOMIZE PAGE — Ralawise-style layout
+       ================================================ */
+
+    /* Grid: image left, info right — rest full-width */
+    .customize-page .customize-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 24px;
+        padding: 8px 24px 24px;
+    }
+
+    /* Gallery — left column, scrolls normally */
+    .customize-page .product-gallery {
+        grid-column: 1;
+        grid-row: 1;
+        position: relative;
+        align-self: start;
+        max-width: 100%;
+    }
+
+    .customize-page .gallery-main {
+        aspect-ratio: 1;
+        max-height: 360px;
+        overflow: hidden;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .customize-page .product-img-placeholder.large {
+        min-height: 0;
+        height: 100%;
+    }
+
+    .customize-page .product-img-placeholder.large img {
+        width: auto !important;
+        height: auto !important;
+        max-width: 100%;
+        max-height: 350px;
+        object-fit: contain !important;
+    }
+
+    /* Gallery thumbs — HIDDEN */
+    .customize-page .gallery-thumbs {
+        display: none !important;
+    }
+
+    /* ---- Product Info — right column ---- */
+    .customize-page .product-info {
+        grid-column: 2;
+        grid-row: 1;
+        border-bottom: none;
+        align-self: start;
+        padding: 12px 0 !important;
+        background: transparent;
+    }
+
+    /* Product Code — centered, elegant font */
+    .customize-page .product-info .product-sku {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        letter-spacing: 0.5px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 8px;
+    }
+
+    /* Product Name — centered, lighter/italic */
+    .customize-page .product-info .product-title {
+        text-align: center;
+        font-size: 1rem;
+        color: #6b7280;
+        font-weight: 400;
+        font-style: italic;
+        margin: 0 0 16px 0;
+    }
+
+    /* Price + Brand Logo — same row */
+    .customize-page .price-brand-row {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Price — thin elegant "From £X.XX" */
+    .customize-page .product-main-price {
+        display: block !important;
+        margin: 0;
+    }
+
+    .customize-page .product-main-price .start-from-label {
+        display: inline;
+        font-size: 1rem;
+        font-weight: 300;
+        color: #374151;
+    }
+
+    .customize-page .product-main-price .start-from-price {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #1f2937;
+        letter-spacing: -0.5px;
+    }
+
+    /* Brand Logo — right aligned */
+    .customize-page .brand-logo-customize {
+        display: block !important;
+        max-height: 50px;
+        max-width: 120px;
+        object-fit: contain;
+    }
+
+    /* Mobile specs pills — hide on tablet */
+    .customize-page .product-specs {
+        display: none;
+    }
+
+    /* Specs Table — Fabric, Weight, Size */
+    .customize-page .product-specs-table-customize {
+        display: block !important;
+        margin: 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fafafa;
+    }
+
+    .customize-page .product-specs-table-customize table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .customize-page .product-specs-table-customize tr {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .customize-page .product-specs-table-customize tr:last-child {
+        border-bottom: none;
+    }
+
+    .customize-page .product-specs-table-customize td {
+        padding: 9px 14px;
+        font-size: 0.87rem;
+        line-height: 1.4;
+        vertical-align: top;
+    }
+
+    .customize-page .product-specs-table-customize .spec-label {
+        font-weight: 600;
+        color: #374151;
+        white-space: nowrap;
+        width: 80px;
+        background: transparent;
+    }
+
+    .customize-page .product-specs-table-customize .spec-value {
+        color: #4b5563;
+        font-weight: 400;
+    }
+
+    /* ---- All other sections — full width ---- */
+    .customize-page .customize-section,
+    .customize-page .pricing-section,
+    .customize-page .estimated-delivery,
+    .customize-page .order-summary-section {
+        grid-column: 1 / -1;
+    }
+
+    /* Color swatches — more columns */
+    .customize-page .color-options {
+        grid-template-columns: repeat(10, 1fr);
+        gap: 6px;
+    }
+
+    /* Action bar */
+    .customize-page .action-bar-sticky {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        padding: 16px 0;
+        margin-top: 24px;
+        grid-column: 1 / -1;
+    }
+
 }
 
 /* ========================================

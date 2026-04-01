@@ -1415,6 +1415,11 @@
                 <!-- Price breaks will be dynamically loaded from API -->
             </div>
 
+            <!-- PRODUCT SPECS TABLE (Fabric, Weight, Size, Key Info) -->
+            <div id="productSpecsTable" class="product-specs-table" style="display:none;">
+                <!-- Populated dynamically from API -->
+            </div>
+
             <!-- STEP PROGRESS BAR -->
             <div class="step-progress" style="display:flex; align-items:center; justify-content:center; gap:0; margin:24px 0; padding:20px 40px; background:linear-gradient(135deg,#f8f9fa,#f1f5f9); border-radius:18px;">
                 <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
@@ -1449,11 +1454,15 @@
                 <h3 class="step-title"><span class="step-badge">2</span> Choose Sizes &amp; Quantities</h3>
                 <div id="sizesGrid" class="sizes-grid"></div>
 
-                <!-- Add to Basket Button -->
+                <!-- Action Buttons -->
                 <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                    <button id="addContinueButton" class="cta-btn primary" style="min-width:220px; padding:14px 28px; font-size:1rem; font-weight:700; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(124,58,237,0.3); transition:all 0.2s;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                        Add to Basket
+                    <button id="addContinueButton" class="cta-btn primary" style="min-width:200px; padding:14px 24px; font-size:1rem; font-weight:700; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(124,58,237,0.3); transition:all 0.2s;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Add Colour
+                    </button>
+                    <button id="continueShoppingButton" class="cta-btn secondary" style="min-width:200px; padding:14px 24px; font-size:1rem; font-weight:700; background:#10b981; color:#fff; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(16,185,129,0.3); transition:all 0.2s;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        Continue Shopping
                     </button>
                 </div>
 
@@ -1498,6 +1507,15 @@
                                 <strong id="sidebarTotalCost" class="total-amount">£0.00</strong>
                             </div>
                             
+                            <!-- Continue Shopping Button -->
+                            <button id="continueShoppingBtnSummary" onclick="window.location.href='shop.html'" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #7c3aed; background:#fff; color:#7c3aed; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 12H5"></path>
+                                    <path d="M12 19l-7-7 7-7"></path>
+                                </svg>
+                                <span>Continue Shopping</span>
+                            </button>
+
                             <!-- Submit Quote Button -->
                             <button id="submitQuoteBtnSidebar" class="submit-quote-btn-modern">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2216,17 +2234,7 @@
 <script src="brandedukv15-child/assets/js/pages/product.js?v=20260307A"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260124f"></script>
 <script src="brandedukv15-child/assets/js/pages/customize-positions-inline.js?v=20260124d"></script>
-<!-- Color Change Confirmation Modal -->
-<div id="colorChangeModal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px;">
-        <h3 style="margin-top: 0; color: #2E1A47;">Save current selection?</h3>
-        <p style="color: #666; margin-bottom: 25px;">You have unsaved items. Would you like to save them before changing color?</p>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-            <button id="colorChangeSaveBtn" class="btn-primary" style="flex: 1; padding: 12px 20px; background: #7c3aed; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Save & Continue</button>
-            <button id="colorChangeDiscardBtn" class="btn-secondary" style="flex: 1; padding: 12px 20px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Discard</button>
-        </div>
-    </div>
-</div>
+<!-- Color Change Modal removed - auto-save on color change -->
 
 <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
 <script src="brandeduk.com 2/js/main.js?v=20251230"></script>
