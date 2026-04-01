@@ -162,7 +162,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 0px 16px 4px;
+    padding: 5px 16px 4px;
     gap: 12px;
 }
 
@@ -175,8 +175,8 @@
 }
 
 .logo-badge-img {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
 }
 
@@ -196,7 +196,7 @@
 .header-logo-row .search-wrapper-expand {
     position: relative;
     flex: 1;
-    max-width: 100%;
+    max-width: 65%;
 }
 
 .header-logo-row .search-input-expand {

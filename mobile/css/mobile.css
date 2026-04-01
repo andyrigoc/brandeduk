@@ -4890,6 +4890,7 @@ a {
 /* Hero Expanding Wrapper - Always Visible */
 .hero-expanding-wrapper {
     margin-bottom: 16px;
+    position: relative;
 }
 
 /* Hero Banners Carousel - Separate Section */

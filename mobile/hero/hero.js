@@ -11,13 +11,26 @@
   // Remove s--inactive after a short delay to trigger animation
   setTimeout(function() {
     $cont.classList.remove('s--inactive');
+    // Hide loading placeholder once hero panels animate in
+    var placeholder = document.getElementById('heroLoadingPlaceholder');
+    if (placeholder) {
+      placeholder.classList.add('hidden');
+      // Remove from DOM after fade-out completes
+      setTimeout(function() {
+        if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+      }, 500);
+    }
   }, 300);
 
   // ── Touch-aware tap detection ──
   // On touch devices, we handle tap ourselves and block the native click.
-  // A "tap" = finger down + up with < 15px total movement and < 400ms hold.
-  var TAP_MOVE_LIMIT = 15;   // px – anything beyond this is a swipe/scroll
-  var TAP_TIME_LIMIT = 400;  // ms – anything longer is a long-press / scroll
+  // A "tap" = finger down + up with < 10px total movement and < 300ms hold.
+  var TAP_MOVE_LIMIT = 10;   // px – anything beyond this is a swipe/scroll
+  var TAP_TIME_LIMIT = 300;  // ms – anything longer is a long-press / scroll
+
+  // Track the last touch interaction globally so the click handler knows
+  // whether to let the event through.
+  var lastTouchHandledAt = 0;
 
   function handlePanelActivation($el) {
     // If already active, navigate immediately
@@ -83,14 +96,18 @@
       var scrollDelta = Math.abs($cont.scrollLeft - elTouchStartScroll);
       var elapsed = Date.now() - elTouchStartTime;
 
+      // Check if the auto-scroll drag script detected a drag (exposed globally)
+      var autoScrollDragged = !!window._heroAutoscrollDragMoved;
+
       // Only treat as tap if: finger barely moved, scroll didn't change, quick touch
-      if (!elTouchMoved && scrollDelta < TAP_MOVE_LIMIT && elapsed < TAP_TIME_LIMIT) {
+      if (!elTouchMoved && !autoScrollDragged && scrollDelta < TAP_MOVE_LIMIT && elapsed < TAP_TIME_LIMIT) {
         // Check we didn't tap on close button or CTA
         var target = e.target;
         if (target.closest && (target.closest('.hero-el__close-btn') || target.closest('.hero-el__cta'))) {
           return; // let default behavior handle these
         }
         e.preventDefault(); // prevent the upcoming click event
+        lastTouchHandledAt = Date.now();
         handlePanelActivation($el);
       }
     }, { passive: false }); // passive:false needed for preventDefault()

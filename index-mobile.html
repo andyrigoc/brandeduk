@@ -811,6 +811,10 @@
     <main class="mobile-main">
         <!-- Hero 1 - Expanding Panels (Always visible) -->
         <div class="hero-expanding-wrapper">
+            <!-- Loading placeholder: shown while hero panels load -->
+            <div class="hero-loading-placeholder" id="heroLoadingPlaceholder">
+                <img src="brandedukv15-child/assets/images/ui/brandeduk-logo-full-removebg-preview (1).png" alt="BrandedUK" class="hero-loading-logo">
+            </div>
             <div class="hero-cont s--inactive" id="hero1">
                 <div class="hero-cont__inner">
                     <div class="hero-el" data-category="aprons">
@@ -2436,11 +2440,14 @@
         var dragScrollStart = 0;
         var isDragging = false;
         var dragMoved = false;
+        // Expose dragMoved globally so hero.js can check it
+        window._heroAutoscrollDragMoved = false;
 
         hero.addEventListener('touchstart', function (e) {
             touching = true;
             isDragging = true;
             dragMoved = false;
+            window._heroAutoscrollDragMoved = false;
             dragStartX = e.touches[0].clientX;
             dragScrollStart = hero.scrollLeft;
         }, { passive: true });
@@ -2448,7 +2455,10 @@
         hero.addEventListener('touchmove', function (e) {
             if (!isDragging) return;
             var dx = e.touches[0].clientX - dragStartX;
-            if (Math.abs(dx) > 5) dragMoved = true;
+            if (Math.abs(dx) > 5) {
+                dragMoved = true;
+                window._heroAutoscrollDragMoved = true;
+            }
             hero.scrollLeft = dragScrollStart - dx;
         }, { passive: true });
 
@@ -2458,6 +2468,8 @@
             // Longer pause after manual drag so auto-scroll doesn't fight the user
             pauseFor(dragMoved ? 3000 : 800);
             dragMoved = false;
+            // Reset global flag after a brief delay (let hero.js touchend read it first)
+            setTimeout(function() { window._heroAutoscrollDragMoved = false; }, 50);
         }, { passive: true });
 
         hero.addEventListener('touchcancel', function () {
@@ -2950,187 +2962,69 @@
         })();
     </script>
 
-    <script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
-    <!--Start of Tawk.to Script-->
+    <script src="mobile/footer/footer.js?v=20260126" defer></script>
+
+    <!--Tawk.to – mini chat iframe overlay-->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    Tawk_API.onLoad = function(){
-        Tawk_API.showWidget();
-    };
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-    </script>
-    <!--End of Tawk.to Script-->
+        (function() {
+            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
+            var isOpen = false;
 
-    <!-- Header chat icon opens Tawk maximized -->
-    <script>
-    document.addEventListener('click', function (e) {
-        var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
-        if (!trigger) return;
-        e.preventDefault();
-        if (window.Tawk_API && typeof Tawk_API.maximize === 'function') {
-            Tawk_API.maximize();
-        }
-    });
-    </script>
+            var overlay = document.createElement('div');
+            overlay.id = 'tawkOverlay';
+            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
 
-        <script src="mobile/footer/footer.js?v=20260126" defer></script>
+            var chatBox = document.createElement('div');
+            chatBox.id = 'tawkMiniChat';
+            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
 
-    <style>
-    /* Tawk chat bubble – always visible, positioned above bottom nav on mobile */
-    @media (max-width: 1279px) {
-        iframe[title="chat widget"],
-        .tawk-min-container,
-        #tawk-bubble-container {
-            bottom: 85px !important;
-        }
-    }
-    /* When bubble is being dragged, remove transitions and allow free positioning */
-    .tawk-draggable {
-        transition: none !important;
-        position: fixed !important;
-        z-index: 2147483647 !important;
-    }
-    </style>
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
+            chatBox.appendChild(closeBtn);
 
-    <!-- Make Tawk bubble draggable -->
-    <script>
-    (function () {
-        var STORAGE_KEY = 'tawk-bubble-pos';
-        var bubble = null;
-        var isDragging = false;
-        var startX, startY, startLeft, startTop;
-        var moved = false;
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
+            chatBox.appendChild(iframe);
 
-        function getSavedPos() {
-            try {
-                var raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) return JSON.parse(raw);
-            } catch (e) {}
-            return null;
-        }
+            document.body.appendChild(overlay);
+            document.body.appendChild(chatBox);
 
-        function savePos(x, y) {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: x, y: y })); } catch (e) {}
-        }
-
-        function clamp(val, min, max) {
-            return Math.max(min, Math.min(max, val));
-        }
-
-        function applyPosition(el, x, y) {
-            var w = el.offsetWidth || 60;
-            var h = el.offsetHeight || 60;
-            x = clamp(x, 0, window.innerWidth - w);
-            y = clamp(y, 0, window.innerHeight - h);
-            el.style.setProperty('left', x + 'px', 'important');
-            el.style.setProperty('top', y + 'px', 'important');
-            el.style.setProperty('right', 'auto', 'important');
-            el.style.setProperty('bottom', 'auto', 'important');
-            return { x: x, y: y };
-        }
-
-        function initDrag(el) {
-            if (bubble) return; // already inited
-            bubble = el;
-            bubble.classList.add('tawk-draggable');
-
-            // Restore saved position
-            var saved = getSavedPos();
-            if (saved) {
-                applyPosition(bubble, saved.x, saved.y);
+            function openChat() {
+                if (!iframe.src) iframe.src = TAWK_DIRECT;
+                overlay.style.display = 'block';
+                chatBox.style.display = 'block';
+                isOpen = true;
+            }
+            function closeChat() {
+                overlay.style.display = 'none';
+                chatBox.style.display = 'none';
+                isOpen = false;
             }
 
-            // --- Touch events ---
-            bubble.addEventListener('touchstart', function (e) {
-                if (e.touches.length !== 1) return;
-                isDragging = true;
-                moved = false;
-                var touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-                var rect = bubble.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-            }, { passive: true });
+            overlay.addEventListener('click', closeChat);
+            closeBtn.addEventListener('click', closeChat);
 
-            bubble.addEventListener('touchmove', function (e) {
-                if (!isDragging) return;
-                var touch = e.touches[0];
-                var dx = touch.clientX - startX;
-                var dy = touch.clientY - startY;
-                if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
-                if (moved) {
-                    e.preventDefault();
-                    applyPosition(bubble, startLeft + dx, startTop + dy);
-                }
-            }, { passive: false });
+            // Floating chat button
+            var btn = document.createElement('button');
+            btn.id = 'tawkMiniBtn';
+            btn.setAttribute('aria-label', 'Chat with us');
+            btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+            btn.style.cssText = 'position:fixed;bottom:75px;right:14px;z-index:9999;width:50px;height:50px;border-radius:50%;border:none;background:#03C8A8;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.25);transition:transform 0.2s;';
+            btn.addEventListener('click', function() {
+                if (isOpen) closeChat(); else openChat();
+            });
+            document.body.appendChild(btn);
 
-            bubble.addEventListener('touchend', function () {
-                if (isDragging && moved) {
-                    var rect = bubble.getBoundingClientRect();
-                    savePos(rect.left, rect.top);
-                }
-                isDragging = false;
-            }, { passive: true });
-
-            // --- Mouse events (for desktop testing) ---
-            bubble.addEventListener('mousedown', function (e) {
-                isDragging = true;
-                moved = false;
-                startX = e.clientX;
-                startY = e.clientY;
-                var rect = bubble.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
+            // Header chat icon also opens mini chat
+            document.addEventListener('click', function(e) {
+                var trigger = e.target && e.target.closest ? e.target.closest('[data-open-tawk]') : null;
+                if (!trigger) return;
                 e.preventDefault();
+                openChat();
             });
-
-            window.addEventListener('mousemove', function (e) {
-                if (!isDragging) return;
-                var dx = e.clientX - startX;
-                var dy = e.clientY - startY;
-                if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
-                if (moved) {
-                    applyPosition(bubble, startLeft + dx, startTop + dy);
-                }
-            });
-
-            window.addEventListener('mouseup', function () {
-                if (isDragging && moved) {
-                    var rect = bubble.getBoundingClientRect();
-                    savePos(rect.left, rect.top);
-                }
-                isDragging = false;
-            });
-        }
-
-        // Wait for Tawk bubble to appear in the DOM
-        var observer = new MutationObserver(function () {
-            var el = document.querySelector('#tawk-bubble-container') ||
-                     document.querySelector('.tawk-min-container');
-            if (el && el.offsetWidth > 0) {
-                observer.disconnect();
-                // Small delay to let Tawk finish its own positioning
-                setTimeout(function () { initDrag(el); }, 500);
-            }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        // Reposition on resize to keep bubble in viewport
-        window.addEventListener('resize', function () {
-            if (!bubble) return;
-            var rect = bubble.getBoundingClientRect();
-            var pos = applyPosition(bubble, rect.left, rect.top);
-            savePos(pos.x, pos.y);
-        });
-    })();
+        })();
     </script>
 
     <!-- Categories auto-scroll (native scroll + JS ticker) -->

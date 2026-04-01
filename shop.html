@@ -38,10 +38,26 @@
                 font-size: 12px !important;
             }
 
-            /* Move logo row up 10px */
+            /* Logo row spacing */
             .header-logo-row {
-                padding-top: 0 !important;
-                margin-top: -10px;
+                padding-top: 5px !important;
+                margin-top: 0;
+            }
+
+            /* Bigger logo */
+            .mobile-logo-center .logo-badge-img {
+                height: 75px !important;
+                width: auto !important;
+            }
+
+            /* Narrower search bar */
+            .header-logo-row .search-wrapper-expand {
+                max-width: 60% !important;
+            }
+
+            /* Push entire header down from screen edge */
+            .mobile-header {
+                top: 10px !important;
             }
 
 
@@ -118,9 +134,10 @@
             display: block !important;
             visibility: visible !important;
             padding: 20px 16px 16px !important;
-            margin-top: 155px; /* clear the fixed mobile-header */
-            margin-bottom: 12px;
+            margin-top: 110px; /* clear the fixed mobile-header */
+            margin-bottom: 4px;
             background: #fff;
+            text-align: center;
         }
         .shop-category-title {
             display: block !important;
@@ -130,6 +147,7 @@
             margin: 0 !important;
             font-family: 'Inter', sans-serif !important;
             line-height: 1.3 !important;
+            text-align: center !important;
         }
         .shop-category-desc {
             display: block !important;
@@ -4056,20 +4074,64 @@
         });
     </script>
     <script src="mobile/js/mobile.js?v=20251230"></script>
-    <script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
-    <!--Start of Tawk.to Script-->
+    <!--Tawk.to – mini chat iframe overlay-->
     <script type="text/javascript">
-        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-        (function () {
-            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
+        (function() {
+            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
+            var isOpen = false;
+
+            // Create overlay backdrop
+            var overlay = document.createElement('div');
+            overlay.id = 'tawkOverlay';
+            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
+
+            // Create chat container
+            var chatBox = document.createElement('div');
+            chatBox.id = 'tawkMiniChat';
+            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
+
+            // Close button
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
+            chatBox.appendChild(closeBtn);
+
+            // Iframe with sandbox to prevent parent navigation
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
+            chatBox.appendChild(iframe);
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(chatBox);
+
+            function openChat() {
+                if (!iframe.src) iframe.src = TAWK_DIRECT;
+                overlay.style.display = 'block';
+                chatBox.style.display = 'block';
+                isOpen = true;
+            }
+            function closeChat() {
+                overlay.style.display = 'none';
+                chatBox.style.display = 'none';
+                isOpen = false;
+            }
+
+            overlay.addEventListener('click', closeChat);
+            closeBtn.addEventListener('click', closeChat);
+
+            // Floating chat button
+            var btn = document.createElement('button');
+            btn.id = 'tawkMiniBtn';
+            btn.setAttribute('aria-label', 'Chat with us');
+            btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+            btn.style.cssText = 'position:fixed;bottom:75px;right:14px;z-index:9999;width:50px;height:50px;border-radius:50%;border:none;background:#03C8A8;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.25);transition:transform 0.2s;';
+            btn.addEventListener('click', function() {
+                if (isOpen) closeChat(); else openChat();
+            });
+            document.body.appendChild(btn);
         })();
     </script>
-    <!--End of Tawk.to Script-->
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>

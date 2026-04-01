@@ -71,6 +71,36 @@
   }
 }
 
+/* ── Hero Loading Placeholder ── */
+.hero-loading-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 50%, #f5f3ff 100%);
+  transition: opacity 0.4s ease;
+}
+.hero-loading-placeholder.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.hero-loading-logo {
+  width: 180px;
+  height: auto;
+  opacity: 0.7;
+  animation: heroPulse 1.8s ease-in-out infinite;
+}
+@keyframes heroPulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.97); }
+  50% { opacity: 0.85; transform: scale(1); }
+}
+
 .hero-cont {
   position: relative;
   overflow-x: auto;

@@ -3026,7 +3026,7 @@ body {
     display: block;
     padding: 14px;
     text-align: center;
-    background: #C952DE;
+    background: #03C8A8;
     color: white;
     font-size: 13px;
     font-weight: 600;
@@ -3035,7 +3035,7 @@ body {
 }
 
 .view-all-results:hover {
-    background: #a83fb8;
+    background: #02a88e;
 }
 
 /* Custom scrollbar for suggestions */
