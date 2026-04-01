@@ -718,15 +718,11 @@
                 <!-- Garment Cost Section -->
                 <div class="section garment-section">
                     <div class="row">
-                        <span class="label">Garment Cost <span class="vat-suffix">ex VAT</span></span>
+                        <span class="label">Garment Cost <span class="vat-suffix">ex vat</span></span>
                         <span class="value" id="sidebarGarmentCost">�0.00</span>
                     </div>
                     <div class="row detail">
-                        <span>Unit Price:</span>
-                        <span class="detail-values">
-                            <span id="garmentUnitPrice">�0.00</span>
-                            <span id="garmentQty">Qty: 0</span>
-                        </span>
+                        <span id="garmentDetailCalc">�0.00 × 0 = �0.00</span>
                     </div>
                 </div>
                 
@@ -1701,5 +1697,111 @@
         };
     })();
     </script>
+
+<!-- Image Lightbox -->
+<div class="lightbox-overlay" id="imageLightbox">
+    <div class="lightbox-content">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <img src="" alt="Product zoom" id="lightboxImg">
+    </div>
+</div>
+
+<style>
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.lightbox-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+.lightbox-content {
+    position: relative;
+    max-width: 75vw;
+    max-height: 70vh;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    animation: lightboxZoomIn 0.3s ease-out;
+}
+.lightbox-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    z-index: 2;
+    transition: background 0.2s;
+}
+.lightbox-close:hover {
+    background: rgba(0,0,0,0.7);
+}
+.lightbox-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+@keyframes lightboxZoomIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+    var zoomBtn = document.querySelector('.gallery-zoom');
+    var overlay = document.getElementById('imageLightbox');
+    var closeBtn = document.getElementById('lightboxClose');
+    var lbImg = document.getElementById('lightboxImg');
+    if (!zoomBtn || !overlay) return;
+
+    function openLightbox() {
+        var mainImg = document.getElementById('mainImage');
+        if (!mainImg || !mainImg.src) return;
+        lbImg.src = mainImg.src;
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() {
+            overlay.classList.add('active');
+        });
+    }
+    function closeLightbox() {
+        overlay.classList.remove('active');
+        setTimeout(function() { overlay.style.display = 'none'; }, 250);
+    }
+
+    zoomBtn.addEventListener('click', openLightbox);
+    closeBtn.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) closeLightbox();
+    });
+})();
+</script>
+
 </body>
 </html>

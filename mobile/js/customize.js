@@ -2688,8 +2688,8 @@
             if (state.quantity > 0) {
                 addToQuote({ silent: true });
             }
-            // Navigate to home page so user can pick another product
-            window.location.href = 'index.html';
+            // Navigate to shop page so user can pick another product
+            window.location.href = '../shop.html';
         });
     }
     

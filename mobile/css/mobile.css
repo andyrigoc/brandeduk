@@ -872,6 +872,7 @@ a {
     align-items: center;
     justify-content: center;
     box-shadow: var(--shadow-md);
+    cursor: pointer;
 }
 
 .gallery-thumbs {
@@ -5605,48 +5606,41 @@ a {
 /* Expanding Search Wrapper */
 .search-wrapper-expand {
     position: relative;
-    max-width: 48px;
-    transition: max-width 0.3s ease-in-out;
-}
-
-.search-wrapper-expand:focus-within {
-    max-width: 55%;
+    max-width: 100%;
+    flex: 1;
 }
 
 .search-input-expand {
     display: block;
     width: 100%;
-    border: none;
+    border: 1px solid #e5e7eb;
     outline: none;
     border-radius: 9999px;
-    padding: 10px 14px;
+    padding: 10px 40px 10px 14px;
     font-size: 14px;
     background: var(--gray-100);
     color: var(--gray-800);
+    box-sizing: border-box;
+}
+
+.search-input-expand:focus {
+    border-color: #d1d5db;
+    box-shadow: none;
 }
 
 .search-input-expand::placeholder {
-    color: transparent;
-    transition: color 0.2s ease;
-}
-
-.search-wrapper-expand:focus-within .search-input-expand::placeholder {
-    color: var(--gray-400);
+    color: #6b7280;
+    font-weight: 500;
 }
 
 .search-icon-expand {
     position: absolute;
     top: 50%;
-    right: 24px;
-    transform: translateY(-50%) translateX(50%);
+    right: 12px;
+    transform: translateY(-50%);
     pointer-events: auto;
     cursor: pointer;
-    color: var(--gray-500);
-    transition: opacity 0.2s ease;
-}
-
-.search-wrapper-expand:focus-within .search-icon-expand {
-    opacity: 0.5;
+    color: #6b7280;
 }
 
 /* Legacy search wrapper (keep for compatibility) */
@@ -5708,8 +5702,9 @@ a {
 }
 
 .product-img-placeholder.large img {
-    width: 40%;
-    height: 40%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 /* Logo Overlay Box - posizione fissa sul prodotto */

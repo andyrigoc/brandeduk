@@ -240,12 +240,8 @@
     }
     
     .search-wrapper-expand {
-        width: 100px;
-        flex-shrink: 0;
-    }
-    
-    .search-wrapper-expand:focus-within {
-        max-width: 30% !important;
+        flex: 1;
+        max-width: 100% !important;
     }
     
     /* === Hero === */
@@ -1155,9 +1151,9 @@
         background-position: center top;
     }
 
-    /* Hoodie: tablet position */
+    /* Hoodie: tablet position – shift left */
     .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
-        background-position: calc(50% - 5px) center !important;
+        background-position: calc(50% - 70px) center !important;
     }
 
     /* Apron: shift right to keep person visible */
@@ -1191,23 +1187,22 @@
     }
 
     .customize-page .gallery-main {
-        aspect-ratio: 1;
-        max-height: 360px;
-        overflow: hidden;
+        max-height: 450px;
+        overflow: visible;
         background: #f9fafb;
         border-radius: 8px;
     }
 
     .customize-page .product-img-placeholder.large {
         min-height: 0;
-        height: 100%;
+        height: auto;
     }
 
     .customize-page .product-img-placeholder.large img {
         width: auto !important;
         height: auto !important;
         max-width: 100%;
-        max-height: 350px;
+        max-height: 450px;
         object-fit: contain !important;
     }
 

@@ -432,11 +432,18 @@
   background-position: calc(50% + 145px) center;
 }
 
+/* Tablet: apron non-expanded - shift 30px right */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 170px) center !important;
+  }
+}
+
 /* Tablet: hoodie non-expanded - fix for real tablet aspect ratio */
 @media (min-width: 768px) and (max-width: 1279px) {
   .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
     background-size: cover;
-    background-position: calc(50% + 100px) center;
+    background-position: calc(50% + 70px) center !important;
   }
 }
 
