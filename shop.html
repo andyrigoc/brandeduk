@@ -1965,19 +1965,19 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
+        <a href="#" class="nav-item" id="accountNavBtn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
-            <span class="nav-item-label">Home</span>
+            <span class="nav-item-label">Account</span>
         </a>
         <a href="shop.html" class="nav-item active">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
@@ -1993,23 +1993,25 @@
             </svg>
             <span class="nav-item-label">Filter</span>
         </button>
-
-        <a href="basket.html#orderSummary" class="nav-item">
+        <a href="basket.html#orderSummary" class="nav-item" id="basketNavLink">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
             <span class="nav-badge" id="navBasketBadge" style="display: none;">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-
-        <a href="#" class="nav-item">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+        <a href="#" class="nav-item" id="chatNavBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
+                <g fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
+                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
+                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
+                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
+                </g>
             </svg>
-            <span class="nav-item-label">Account</span>
+            <span class="nav-item-label">Chat</span>
         </a>
     </nav>
 
@@ -4120,16 +4122,14 @@
             overlay.addEventListener('click', closeChat);
             closeBtn.addEventListener('click', closeChat);
 
-            // Floating chat button
-            var btn = document.createElement('button');
-            btn.id = 'tawkMiniBtn';
-            btn.setAttribute('aria-label', 'Chat with us');
-            btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
-            btn.style.cssText = 'position:fixed;bottom:72px;right:14px;z-index:9999;width:50px;height:50px;border-radius:50%;border:none;background:#03C8A8;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.25);transition:transform 0.2s;';
-            btn.addEventListener('click', function() {
-                if (isOpen) closeChat(); else openChat();
-            });
-            document.body.appendChild(btn);
+            // Bottom nav Chat button opens mini chat
+            var chatNavBtn = document.getElementById('chatNavBtn');
+            if (chatNavBtn) {
+                chatNavBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openChat();
+                });
+            }
         })();
     </script>
 
