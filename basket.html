@@ -2298,6 +2298,19 @@
 
         let _basketLogoMethod = 'Embroidery';
 
+        // Detect allowed methods from product name/type
+        const EMBROIDERY_ONLY_KEYWORDS = ['beanie', 'bobble hat', 'knit hat', 'knitted hat', 'fleece', 'cap', 'baseball', 'snapback', 'trucker', 'bucket hat'];
+        const PRINT_ONLY_KEYWORDS = ['hi-vis', 'hivis', 'hi vis', 'high vis', 'high-vis', 'safety vest', 'ppe', 'vis vest'];
+
+        function detectAllowedMethods(item) {
+            const name = ((item.productName || item.name || '') + ' ' + (item.productType || item.category || '')).toLowerCase();
+            const isEmbOnly = EMBROIDERY_ONLY_KEYWORDS.some(kw => name.includes(kw));
+            const isPrintOnly = PRINT_ONLY_KEYWORDS.some(kw => name.includes(kw));
+            if (isEmbOnly && !isPrintOnly) return ['Embroidery'];
+            if (isPrintOnly && !isEmbOnly) return ['Print'];
+            return ['Embroidery', 'Print'];
+        }
+
         function getItemLogoSrc(item) {
             if (item.customizations && Array.isArray(item.customizations)) {
                 const logo = item.customizations.find(c => c.type === 'logo' && c.content);
@@ -2364,12 +2377,37 @@
             if (applyBtn) applyBtn.style.display = 'none';
             if (removeBgBtn) { removeBgBtn.querySelector('span').textContent = 'REMOVE BG'; _basketLogoBgRemoved = false; }
 
-            // Reset method selector
-            _basketLogoMethod = 'Embroidery';
+            // Reset method selector based on product type
+            const allowedMethods = detectAllowedMethods(item || {});
             const methodBtnEmb = document.getElementById('methodBtnEmb');
             const methodBtnPrint = document.getElementById('methodBtnPrint');
-            if (methodBtnEmb) { methodBtnEmb.classList.add('selected'); methodBtnEmb.style.border = '2px solid #7c3aed'; methodBtnEmb.style.background = '#f3f0ff'; methodBtnEmb.style.color = '#7c3aed'; }
-            if (methodBtnPrint) { methodBtnPrint.classList.remove('selected'); methodBtnPrint.style.border = '2px solid #e5e7eb'; methodBtnPrint.style.background = '#fff'; methodBtnPrint.style.color = '#6b7280'; }
+            const methodRow = document.getElementById('logoActionMethodRow');
+
+            if (allowedMethods.length === 1) {
+                // Single method — auto-select and hide the other
+                _basketLogoMethod = allowedMethods[0];
+                if (methodRow) methodRow.style.display = 'flex';
+                if (methodBtnEmb) {
+                    methodBtnEmb.style.display = allowedMethods.includes('Embroidery') ? '' : 'none';
+                    if (allowedMethods[0] === 'Embroidery') {
+                        methodBtnEmb.classList.add('selected');
+                        methodBtnEmb.style.border = '2px solid #7c3aed'; methodBtnEmb.style.background = '#f3f0ff'; methodBtnEmb.style.color = '#7c3aed';
+                    }
+                }
+                if (methodBtnPrint) {
+                    methodBtnPrint.style.display = allowedMethods.includes('Print') ? '' : 'none';
+                    if (allowedMethods[0] === 'Print') {
+                        methodBtnPrint.classList.add('selected');
+                        methodBtnPrint.style.border = '2px solid #7c3aed'; methodBtnPrint.style.background = '#f3f0ff'; methodBtnPrint.style.color = '#7c3aed';
+                    }
+                }
+            } else {
+                // Both methods available — show both, Embroidery default
+                _basketLogoMethod = 'Embroidery';
+                if (methodRow) methodRow.style.display = 'flex';
+                if (methodBtnEmb) { methodBtnEmb.style.display = ''; methodBtnEmb.classList.add('selected'); methodBtnEmb.style.border = '2px solid #7c3aed'; methodBtnEmb.style.background = '#f3f0ff'; methodBtnEmb.style.color = '#7c3aed'; }
+                if (methodBtnPrint) { methodBtnPrint.style.display = ''; methodBtnPrint.classList.remove('selected'); methodBtnPrint.style.border = '2px solid #e5e7eb'; methodBtnPrint.style.background = '#fff'; methodBtnPrint.style.color = '#6b7280'; }
+            }
 
             if (allLogos.size > 0 && gallery && existingSection) {
                 existingSection.style.display = 'block';
