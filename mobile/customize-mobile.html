@@ -38,6 +38,17 @@
             body.customize-page {
                 padding-top: 0 !important;
             }
+            .customize-main {
+                padding-top: 82px !important;
+                margin-top: 0 !important;
+            }
+            .gallery-main {
+                aspect-ratio: auto !important;
+                min-height: 0 !important;
+            }
+            .product-img-placeholder.large {
+                min-height: 0 !important;
+            }
         }
 
         /* Apron-specific logo positioning for low-left and low-right */
@@ -163,6 +174,16 @@
                 <div class="gallery-badge bestseller" id="bestsellerBadge" style="display: none;">BESTSELLER</div>
                 <div class="product-img-placeholder large" id="productPreviewContainer">
                     <img src="" alt="Product" id="mainImage" style="max-width: 100%; height: auto; object-fit: contain;">
+                    <!-- Instant image: show product from sessionStorage before JS loads -->
+                    <script>
+                    (function(){
+                        try {
+                            var d = sessionStorage.getItem('selectedProductData');
+                            if(d){var p=JSON.parse(d); var s=p.image||p.photo||(p.colors&&p.colors[0]&&p.colors[0].image)||'';
+                            if(s){document.getElementById('mainImage').src=s;}}
+                        } catch(e){}
+                    })();
+                    </script>
                     <!-- Logo Overlay Box - posizioni predefinite -->
                     <div class="logo-overlay-box" id="logoOverlayBox" hidden>
                         <img src="" alt="Your Logo" id="logoOverlayImg" class="logo-overlay-img">
