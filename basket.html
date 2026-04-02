@@ -2157,21 +2157,23 @@
             if (itemIndex < 0 || itemIndex >= basket.length) return;
             
             const item = basket[itemIndex];
+            const code = item.productCode || item.code || 'CUSTOM';
+            const sizes = item.sizes || item.quantities || {};
             
             // Store the item info for customization
             sessionStorage.setItem('customizingFromBasket', 'true');
             sessionStorage.setItem('customizingBasketIndices', JSON.stringify([itemIndex]));
             sessionStorage.setItem('customizingProduct', JSON.stringify({
-                code: item.code || 'CUSTOM',
-                name: item.name || 'Custom Product',
+                code: code,
+                name: item.productName || item.name || 'Custom Product',
                 color: item.color || 'Black',
-                image: item.image || '',
-                sizes: item.sizes || {},
-                unitPrice: item.unitPrice || 0
+                image: item.colorImage || item.image || '',
+                sizes: sizes,
+                unitPrice: item.unitPrice || item.price || 0
             }));
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html?code=' + encodeURIComponent(item.code || item.productCode || '');
+            window.location.href = 'customize.html?code=' + encodeURIComponent(code);
         }
         
         // Customize multiple selected items with the same logo
@@ -2188,26 +2190,27 @@
                 if (index >= 0 && index < basket.length) {
                     selectedIndices.push(index);
                     const item = basket[index];
-                    if (item.sizes) {
-                        totalQty += Object.values(item.sizes).reduce((sum, q) => sum + q, 0);
-                    }
+                    const sizes = item.sizes || item.quantities || {};
+                    totalQty += Object.values(sizes).reduce((sum, q) => sum + q, 0);
                 }
             });
             
             // Get first item as reference for customization
             const firstItem = basket[selectedIndices[0]];
+            const code = firstItem.productCode || firstItem.code || 'CUSTOM';
+            const sizes = firstItem.sizes || firstItem.quantities || {};
             
             // Store for customization page
             sessionStorage.setItem('customizingFromBasket', 'true');
             sessionStorage.setItem('customizingBasketIndices', JSON.stringify(selectedIndices));
             sessionStorage.setItem('customizingMultipleItems', 'true');
             sessionStorage.setItem('customizingProduct', JSON.stringify({
-                code: firstItem.code || 'CUSTOM',
-                name: selectedIndices.length > 1 ? `${selectedIndices.length} Items Selected` : (firstItem.name || 'Custom Product'),
+                code: code,
+                name: selectedIndices.length > 1 ? `${selectedIndices.length} Items Selected` : (firstItem.productName || firstItem.name || 'Custom Product'),
                 color: selectedIndices.length > 1 ? 'Multiple' : (firstItem.color || 'Black'),
-                image: firstItem.image || '',
-                sizes: firstItem.sizes || {},
-                unitPrice: firstItem.unitPrice || 0,
+                image: firstItem.colorImage || firstItem.image || '',
+                sizes: sizes,
+                unitPrice: firstItem.unitPrice || firstItem.price || 0,
                 totalQty: totalQty
             }));
             
@@ -2215,7 +2218,7 @@
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             
             // Navigate to customize positions page
-            window.location.href = 'customize.html?code=' + encodeURIComponent(firstItem.code || firstItem.productCode || '');
+            window.location.href = 'customize.html?code=' + encodeURIComponent(code);
         }
     </script>
 
