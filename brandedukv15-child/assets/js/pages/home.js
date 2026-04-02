@@ -332,6 +332,11 @@ function renderProducts(productsToRender = PRODUCTS_DB) {
             `<span class="badge ${c}">EMBROIDERY</span>`
         ).join('');
 
+        // Top badges (best seller, recommended)
+        let topBadgesHTML = '';
+        if (product.is_best_seller) topBadgesHTML += '<span class="badge best-seller">BEST SELLER</span>';
+        if (product.is_recommended) topBadgesHTML += '<span class="badge recommended">RECOMMENDED</span>';
+
         // Use different color for each card (cycle through available colors)
         const colorIndex = index % product.colors.length;
         const colorData = product.colors[colorIndex];
@@ -359,6 +364,9 @@ function renderProducts(productsToRender = PRODUCTS_DB) {
         card.innerHTML = `
             <div class="product-media">
                 <div class="product-badges-top">
+                    ${topBadgesHTML}
+                </div>
+                <div class="product-badges-bottom">
                     ${badgesLeft}
                     ${badgesRight}
                 </div>

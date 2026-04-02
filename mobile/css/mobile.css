@@ -9902,6 +9902,17 @@ a {
     z-index: 10;
 }
 
+.product-badges-bottom {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    z-index: 10;
+}
+
 .badge {
     padding: 4px 10px;
     border-radius: 4px;
@@ -9926,4 +9937,39 @@ a {
 
 .badge.recommended {
     background: #059669;
+}
+
+/* === MOBILE: Embroidery & Print badges — bottom-right of product image === */
+@media (max-width: 767px) {
+    .product-badges-bottom {
+        position: absolute !important;
+        bottom: 6px !important;
+        right: 6px !important;
+        top: auto !important;
+        left: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 3px !important;
+        z-index: 3 !important;
+    }
+    .product-badges-bottom .badge {
+        font-size: 6px !important;
+        padding: 2px 5px !important;
+        letter-spacing: 0.2px !important;
+    }
+    /* Shrink top badges (best seller, recommended, etc.) to same size */
+    .product-badges .badge,
+    .product-badges-top .badge {
+        font-size: 6px !important;
+        padding: 2px 5px !important;
+        letter-spacing: 0.2px !important;
+    }
+    /* Hide embroidery/print from original top containers */
+    .product-badges .badge.embroidery,
+    .product-badges .badge.print,
+    .product-badges-top .badge.embroidery,
+    .product-badges-top .badge.print {
+        display: none !important;
+    }
 }

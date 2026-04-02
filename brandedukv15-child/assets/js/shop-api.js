@@ -249,8 +249,9 @@ const ShopManager = (function () {
         const hasPrint = product.customization.includes('print');
 
         let badgesHTML = '';
+        let badgesBottomHTML = '';
 
-        // Add Best Seller / Recommended badges
+        // Add Best Seller / Recommended badges (top-right)
         if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
             badgesHTML += '<span class="badge best-seller">BEST SELLER</span>';
         }
@@ -258,13 +259,14 @@ const ShopManager = (function () {
             badgesHTML += '<span class="badge recommended">RECOMMENDED</span>';
         }
 
-        if (hasEmbroidery) {
-            badgesHTML += '<span class="badge embroidery">EMBROIDERY</span>';
-        }
         // Hide PRINT badge for products with 'beanie' in the name (embroidery-only)
         const isBeanie = (product.name || '').toLowerCase().includes('beanie');
         if (hasPrint && !isBeanie) {
-            badgesHTML += '<span class="badge print">PRINT</span>';
+            badgesBottomHTML += '<span class="badge print">PRINT</span>';
+        }
+
+        if (hasEmbroidery) {
+            badgesBottomHTML += '<span class="badge embroidery">EMBROIDERY</span>';
         }
 
         // Colors / variant selection
@@ -336,6 +338,9 @@ const ShopManager = (function () {
             <div class="product-media">
                 <div class="product-badges">
                     ${badgesHTML}
+                </div>
+                <div class="product-badges-bottom">
+                    ${badgesBottomHTML}
                 </div>
                 <div class="product-figure">
                     <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-main-img" loading="lazy">
