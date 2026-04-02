@@ -1458,11 +1458,13 @@
             basket.forEach((item, index) => {
                 const itemImage = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
                 const itemColor = item.color || 'Black';
-                const hasCustomization = (item.customizations && item.customizations.length > 0) || 
+                const hasLogo = !!(item.positionDesigns && Object.values(item.positionDesigns).some(d => d && d.logo));
+                const hasCustomization = hasLogo ||
+                                          (item.customizations && item.customizations.length > 0) || 
                                           (item.positions && Object.keys(item.positions).length > 0);
                 const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
-                const customBadgeText = hasCustomization ? '✓ Customized' : '+ Add Logo';
-                const customBadgeAction = hasCustomization ? `openCustomizeForItem(${index})` : `openBasketLogoModal(${index})`;
+                const customBadgeText = hasCustomization ? '✓ Logo' : '+ Add Logo';
+                const customBadgeAction = `openBasketLogoModal(${index})`;
                 
                 // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
@@ -2233,7 +2235,7 @@
             const allLogos = new Set();
             basket.forEach(bi => {
                 const l = getItemLogoSrc(bi);
-                if (l && !l.startsWith('data:')) allLogos.add(l);
+                if (l) allLogos.add(l);
             });
             try {
                 const galleryLogos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
