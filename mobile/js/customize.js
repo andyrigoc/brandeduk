@@ -6647,10 +6647,9 @@
                     if (labels.length) logoPosLabels = `<div style="font-size:9px;color:#6b7280;margin-top:2px;text-align:center;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${labels.join(', ')}</div>`;
                 }
                 
-                // Customization badge
-                const hasCust = (item.customizations && item.customizations.length > 0) || (item.positions && Object.keys(item.positions).length > 0);
-                const badgeClass = hasCust ? 'summary-customize-badge has-customization' : 'summary-customize-badge';
-                const badgeText = hasCust ? '\u2713 Customized' : '+ Add Logo';
+                // Logo button - always green, shows EDIT or Add Logo
+                const hasLogo = !!(getItemLogoSrc(item));
+                const logoBadgeText = hasLogo ? '\u270e EDIT' : '+ Add Logo';
                 
                 // Item note
                 const savedNote = item.note || '';
@@ -6674,9 +6673,9 @@
                         </div>
                         <div class="summary-item-sizes">${sizesHtml}</div>
                         <div class="summary-item-actions">
-                            <span class="${badgeClass}" data-index="${index}" style="cursor:pointer;">
+                            <span class="summary-customize-badge has-customization" data-index="${index}" style="cursor:pointer;">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                                ${badgeText}
+                                ${logoBadgeText}
                             </span>
                             <button type="button" class="summary-edit-btn" data-index="${index}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
