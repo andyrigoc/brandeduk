@@ -1654,10 +1654,13 @@
                 // Deduplicate: track which positions we've seen for THIS item
                 const seenPositions = new Set();
                 
-                // Build a lookup from positions object for reliable names
+                // Build a lookup from positions (array or object) for reliable names
                 const posNameLookup = {};
-                if (item.positions && typeof item.positions === 'object' && !Array.isArray(item.positions)) {
-                    Object.entries(item.positions).forEach(([posKey, posData]) => {
+                if (item.positions) {
+                    const posEntries = Array.isArray(item.positions)
+                        ? item.positions.map(p => [p.position || p.name || '', p])
+                        : Object.entries(item.positions);
+                    posEntries.forEach(([posKey, posData]) => {
                         if (posData.name) posNameLookup[posData.name] = posData.name;
                         posNameLookup[posKey] = posData.name || posKey;
                     });
@@ -1695,10 +1698,12 @@
                     });
                 }
                 // ONLY use positions if customizations array is empty
-                else if (item.positions && typeof item.positions === 'object' && Object.keys(item.positions).length > 0) {
-                    Object.entries(item.positions).forEach(([posName, posData]) => {
+                else if (item.positions && (Array.isArray(item.positions) ? item.positions.length > 0 : Object.keys(item.positions).length > 0)) {
+                    const posArr = Array.isArray(item.positions) ? item.positions.map(p => [p.position || p.name || '', p]) : Object.entries(item.positions);
+                    posArr.forEach(([posName, posData]) => {
                         if (posData.method) {
-                            const posKey = (posData.name || posName) + '|' + posData.method;
+                            const methodCapital = posData.method.charAt(0).toUpperCase() + posData.method.slice(1);
+                            const posKey = (posData.name || posName) + '|' + methodCapital;
                             if (seenPositions.has(posKey)) return;
                             seenPositions.add(posKey);
                             
@@ -1706,8 +1711,8 @@
                             const total = unitPrice * actualItemQty;
                             
                             allCustomizations.push({
-                                position: posData.name || posName,
-                                method: posData.method,
+                                position: posData.name || toReadablePosition(posName),
+                                method: methodCapital,
                                 qty: actualItemQty,
                                 unitPrice: unitPrice,
                                 total: total,
@@ -1747,8 +1752,9 @@
             
             let html = '';
             allCustomizations.forEach(item => {
-                const sectionClass = item.method === 'Print' ? 'section print-method' : 'section embroidery';
-                const methodLabel = item.method === 'Embroidery' ? 'Embroidery' : 'Print';
+                const isEmbroidery = item.method && item.method.toLowerCase() === 'embroidery';
+                const sectionClass = isEmbroidery ? 'section embroidery' : 'section print-method';
+                const methodLabel = isEmbroidery ? 'Embroidery' : 'Print';
                 
                 html += `
                     <div class="${sectionClass}">
@@ -1792,10 +1798,11 @@
                         seenPos.add(pk);
                         customTotal += (custom.unitPrice || 0) * itemQty;
                     });
-                } else if (item.positions && typeof item.positions === 'object') {
-                    Object.values(item.positions).forEach(pos => {
+                } else if (item.positions) {
+                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+                    posArr.forEach(pos => {
                         if (pos.method) {
-                            const pk = (pos.name || '') + '|' + pos.method;
+                            const pk = (pos.name || pos.position || '') + '|' + pos.method;
                             if (seenPos.has(pk)) return;
                             seenPos.add(pk);
                             customTotal += (pos.unitPrice || 0) * itemQty;
@@ -1821,18 +1828,22 @@
             let digitizingFee = 0;
             const uniqueEmbroideryLogos = new Set();
             basket.forEach(item => {
+                // Helper: case-insensitive embroidery check
+                const isEmb = (m) => !m || (typeof m === 'string' && m.toLowerCase() === 'embroidery');
+                
                 // Check positionDesigns
                 if (item.positionDesigns && typeof item.positionDesigns === 'object') {
                     Object.values(item.positionDesigns).forEach(design => {
-                        if (design && design.logo && (design.method || 'Embroidery') === 'Embroidery') {
+                        if (design && design.logo && isEmb(design.method)) {
                             uniqueEmbroideryLogos.add(design.logo);
                         }
                     });
                 }
-                // Check positions
-                if (item.positions && typeof item.positions === 'object' && !Array.isArray(item.positions)) {
-                    Object.values(item.positions).forEach(pos => {
-                        if (pos && pos.logo && (pos.method || '') === 'Embroidery') {
+                // Check positions (as array OR object)
+                if (item.positions) {
+                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+                    posArr.forEach(pos => {
+                        if (pos && pos.logo && isEmb(pos.method)) {
                             uniqueEmbroideryLogos.add(pos.logo);
                         }
                     });
@@ -1840,19 +1851,24 @@
                 // Check customizations for embroidery (may not have logo ref, but count method)
                 if (item.customizations && Array.isArray(item.customizations)) {
                     item.customizations.forEach(c => {
-                        if (c.method === 'Embroidery') {
+                        if (isEmb(c.method) && c.method) {
                             // Try to get logo from positionDesigns for this position
                             // If no logo found, still count as 1 unique logo per item with embroidery
                             let found = false;
                             if (item.positionDesigns) {
                                 Object.values(item.positionDesigns).forEach(d => {
-                                    if (d && d.logo && d.method === 'Embroidery') found = true;
+                                    if (d && d.logo && isEmb(d.method)) found = true;
                                 });
                             }
-                            if (!found && item.positions && typeof item.positions === 'object') {
-                                Object.values(item.positions).forEach(p => {
-                                    if (p && p.logo && p.method === 'Embroidery') { uniqueEmbroideryLogos.add(p.logo); found = true; }
+                            if (!found && item.positions) {
+                                const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+                                posArr.forEach(p => {
+                                    if (p && p.logo && isEmb(p.method)) { uniqueEmbroideryLogos.add(p.logo); found = true; }
                                 });
+                            }
+                            // If still no logo found but customization says embroidery, add a placeholder so fee is charged
+                            if (!found) {
+                                uniqueEmbroideryLogos.add('_emb_item_' + (item.id || item.productCode));
                             }
                         }
                     });

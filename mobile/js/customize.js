@@ -720,12 +720,12 @@
                     const pill = card.querySelector('.customization-pill');
                     if (pill) pill.hidden = false;
                     
-                    // Transform "ADD LOGO" button to green "LOGO ADDED" when logo exists
+                    // Transform "ADD LOGO" button to green "EDIT" when logo exists
                     if (designData.logo) {
                         const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
                         if (addLogoBtn) {
                             addLogoBtn.classList.add('logo-added');
-                            addLogoBtn.innerHTML = `<span class="add-logo-text">LOGO ADDED</span>`;
+                            addLogoBtn.innerHTML = `<span class="add-logo-text">✎ EDIT</span>`;
                         }
                     }
                     
@@ -5866,12 +5866,12 @@
                 updatePricingSummary();
             }
             
-            // Transform "ADD LOGO" button to green "LOGO ADDED" when logo is uploaded
+            // Transform "ADD LOGO" button to green "EDIT" when logo is uploaded
             if (designData.logo) {
                 const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
                 if (addLogoBtn) {
                     addLogoBtn.classList.add('logo-added');
-                    addLogoBtn.innerHTML = `<span class="add-logo-text">LOGO ADDED</span>`;
+                    addLogoBtn.innerHTML = `<span class="add-logo-text">✎ EDIT</span>`;
                 }
             }
         }
@@ -6593,7 +6593,7 @@
                     </div>
                     <div class="summary-item-sizes">${currentSizesHtml}</div>
                     <div class="summary-item-actions">
-                        <span class="summary-customize-badge has-customization" style="cursor:default;">
+                        <span class="summary-customize-badge has-customization" id="currentItemLogoBadge" style="cursor:pointer;">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                             Editing Now
                         </span>
@@ -6792,6 +6792,26 @@
                 openLogoActionModal(idx);
             });
         });
+        
+        // "Editing Now" badge click - scroll up to position/logo section
+        const currentBadge = document.getElementById('currentItemLogoBadge');
+        if (currentBadge) {
+            currentBadge.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Scroll to the position cards / upload section
+                const target = document.querySelector('.position-group') 
+                            || document.getElementById('uploadLogoSection')
+                            || document.querySelector('.positions-grid');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Brief highlight to draw attention
+                    target.style.transition = 'box-shadow 0.3s';
+                    target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.4)';
+                    setTimeout(() => { target.style.boxShadow = ''; }, 1500);
+                }
+            });
+        }
     }
 
     // Extract logo image src from a basket item
@@ -6826,12 +6846,157 @@
     let _logoActionTargetIdx = null;
     let _logoActionSelectedSrc = null;
     
+    // Open logo modal for the CURRENT item being customized (in-memory state)
+    function openCurrentItemLogoModal() {
+        _logoActionTargetIdx = 'current';
+        _logoActionSelectedSrc = null;
+        
+        const modal = document.getElementById('logoActionModal');
+        if (!modal) return;
+        
+        const itemName = state.productName || state.name || 'Current Item';
+        
+        // Title
+        const title = document.getElementById('logoActionTitle');
+        if (title) title.textContent = `Logo – ${itemName}`;
+        
+        // Current logo
+        const currentLogo = getLogoFromState();
+        
+        // Show/hide remove button
+        let removeBtn = document.getElementById('logoActionRemoveBtn');
+        if (!removeBtn) {
+            // Create remove button if not exists
+            const header = modal.querySelector('.logo-action-header');
+            if (header) {
+                removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.id = 'logoActionRemoveBtn';
+                removeBtn.className = 'logo-action-remove-btn';
+                removeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Remove Logo';
+                removeBtn.style.cssText = 'display:none;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;';
+                removeBtn.addEventListener('click', () => {
+                    removeCurrentItemLogo();
+                    closeLogoActionModal();
+                });
+                const body = modal.querySelector('.logo-action-body');
+                if (body) body.insertBefore(removeBtn, body.firstChild);
+            }
+        }
+        if (removeBtn) removeBtn.style.display = currentLogo ? 'block' : 'none';
+        
+        // Collect all available logos
+        const allLogos = new Set();
+        const stateLogo = getLogoFromState();
+        if (stateLogo) allLogos.add(stateLogo);
+        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        basket.forEach(bi => {
+            const l = getItemLogoSrc(bi);
+            if (l) allLogos.add(l);
+        });
+        try {
+            const galleryLogos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
+            galleryLogos.forEach(entry => {
+                if (entry.url) allLogos.add(entry.url);
+                if (entry.src) allLogos.add(entry.src);
+            });
+        } catch(e) {}
+        
+        // Render gallery
+        const gallery = document.getElementById('logoActionGallery');
+        const existingSection = document.getElementById('logoActionExisting');
+        const divider = document.getElementById('logoActionDivider');
+        const applyBtn = document.getElementById('logoActionApply');
+        const previewDiv = document.getElementById('logoActionPreview');
+        
+        if (previewDiv) previewDiv.style.display = 'none';
+        if (applyBtn) applyBtn.style.display = 'none';
+        
+        if (allLogos.size > 0 && gallery && existingSection) {
+            existingSection.style.display = 'block';
+            if (divider) divider.style.display = 'block';
+            gallery.innerHTML = '';
+            allLogos.forEach(src => {
+                const div = document.createElement('div');
+                div.className = 'logo-action-gallery-item';
+                if (src === currentLogo) div.className += ' selected';
+                div.innerHTML = `<img src="${src}" alt="Logo">`;
+                div.addEventListener('click', () => {
+                    gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    _logoActionSelectedSrc = src;
+                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (previewDiv) previewDiv.style.display = 'none';
+                });
+                gallery.appendChild(div);
+            });
+        } else {
+            if (existingSection) existingSection.style.display = 'none';
+            if (divider) divider.style.display = 'none';
+        }
+        
+        // File input handler
+        const fileInput = document.getElementById('logoActionFileInput');
+        if (fileInput) {
+            fileInput.value = '';
+            const newInput = fileInput.cloneNode(true);
+            fileInput.parentNode.replaceChild(newInput, fileInput);
+            newInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    _logoActionSelectedSrc = ev.target.result;
+                    if (gallery) gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
+                    const previewImg = document.getElementById('logoActionPreviewImg');
+                    if (previewImg) previewImg.src = ev.target.result;
+                    if (previewDiv) previewDiv.style.display = 'block';
+                    if (applyBtn) applyBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Show modal
+        modal.style.display = 'flex';
+    }
+    
+    // Remove logo from current item in-memory state
+    function removeCurrentItemLogo() {
+        if (state.positionDesigns) {
+            for (const key of Object.keys(state.positionDesigns)) {
+                if (state.positionDesigns[key]) {
+                    state.positionDesigns[key].logo = null;
+                }
+            }
+        }
+        // Clear any logo overlay images on the page
+        document.querySelectorAll('.logo-overlay-img').forEach(img => {
+            img.src = '';
+            img.style.display = 'none';
+        });
+        const previewImg = document.getElementById('designPreviewImg');
+        if (previewImg) {
+            previewImg.src = '';
+            const previewContainer = document.getElementById('designUploadPreview');
+            if (previewContainer) previewContainer.hidden = true;
+            const uploadZone = document.getElementById('designUploadZone');
+            if (uploadZone) uploadZone.style.display = '';
+        }
+        updatePricingSummary();
+        if (typeof showToast === 'function') showToast('Logo removed');
+    }
+    
     function openLogoActionModal(itemIndex) {
         _logoActionTargetIdx = itemIndex;
         _logoActionSelectedSrc = null;
         
         const modal = document.getElementById('logoActionModal');
         if (!modal) return;
+        
+        // Hide remove button for basket items (only for current item)
+        const removeBtn = document.getElementById('logoActionRemoveBtn');
+        if (removeBtn) removeBtn.style.display = 'none';
         
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         const item = basket[itemIndex];
@@ -6928,6 +7093,44 @@
     
     function applyLogoAction() {
         if (_logoActionTargetIdx === null || !_logoActionSelectedSrc) return;
+        
+        if (_logoActionTargetIdx === 'current') {
+            // Apply to current in-memory state
+            if (!state.positionDesigns) state.positionDesigns = {};
+            // Find first position key in state or use default
+            let posKey = Object.keys(state.positionDesigns)[0] || 'small-centre-front';
+            if (!state.positionDesigns[posKey]) {
+                state.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
+            } else {
+                state.positionDesigns[posKey].logo = _logoActionSelectedSrc;
+            }
+            // Update logo overlay on position cards
+            document.querySelectorAll('.logo-overlay-img').forEach(img => {
+                img.src = _logoActionSelectedSrc;
+                img.style.display = 'block';
+            });
+            // Update design preview
+            const previewImg = document.getElementById('designPreviewImg');
+            if (previewImg) {
+                previewImg.src = _logoActionSelectedSrc;
+                const previewContainer = document.getElementById('designUploadPreview');
+                if (previewContainer) previewContainer.hidden = false;
+                const uploadZone = document.getElementById('designUploadZone');
+                if (uploadZone) uploadZone.style.display = 'none';
+            }
+            // Save to logo gallery
+            try {
+                const logos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
+                if (!logos.some(l => l.url === _logoActionSelectedSrc || l.src === _logoActionSelectedSrc)) {
+                    logos.push({ url: _logoActionSelectedSrc, name: 'Logo', date: new Date().toISOString() });
+                    localStorage.setItem('brandeduk-logos', JSON.stringify(logos));
+                }
+            } catch(e) {}
+            closeLogoActionModal();
+            updatePricingSummary();
+            if (typeof showToast === 'function') showToast('Logo applied!');
+            return;
+        }
         
         let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         const item = basket[_logoActionTargetIdx];
@@ -7407,6 +7610,131 @@
             toast.style.transition = 'opacity 0.3s';
             setTimeout(() => toast.remove(), 300);
         }, 2500);
+    }
+
+    // === Auto-Save Timer (3 seconds of inactivity) ===
+    let _autoSaveTimer = null;
+    let _autoSavedItemId = null; // Track the ID of the auto-saved item so we can update it
+
+    /**
+     * Reset the 3-second auto-save timer. Called whenever state changes
+     * (qty change, color change, logo change, position change).
+     * After 3 seconds of no further changes, saves current item to basket silently.
+     */
+    function resetAutoSaveTimer() {
+        if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
+
+        // Only start timer if there are items selected (qty > 0)
+        if (!state.quantity || state.quantity === 0) return;
+
+        _autoSaveTimer = setTimeout(() => {
+            autoSaveToBasket();
+        }, 3000);
+    }
+
+    /**
+     * Silently save/update the current item in localStorage basket.
+     * Uses REPLACE logic (not merge) so repeated saves don't duplicate quantities.
+     */
+    function autoSaveToBasket() {
+        if (!state.quantity || state.quantity === 0) return;
+
+        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+
+        // Build positions array (same logic as addToQuote)
+        const positions = [];
+        const checkedCards = document.querySelectorAll('.position-card input[type="checkbox"]:checked');
+        checkedCards.forEach(checkbox => {
+            const card = checkbox.closest('.position-card');
+            const position = checkbox.value;
+            const positionName = checkbox.parentElement.querySelector('span')?.textContent.trim() || position;
+            const method = state.positionMethods && state.positionMethods[position];
+            if (method) {
+                const activeBadge = card.querySelector(`.price-badge.price-${method === 'embroidery' ? 'emb' : 'print'}.active`);
+                let unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                if (activeBadge) {
+                    const priceText = activeBadge.querySelector('.price-value')?.textContent || '';
+                    const priceMatch = priceText.match(/[\d.]+/);
+                    if (priceMatch) unitPrice = parseFloat(priceMatch[0]);
+                }
+                const designData = state.positionDesigns?.[position];
+                const logoSrc = designData?.logo || null;
+                positions.push({ position, name: positionName, method, unitPrice, logo: logoSrc });
+            }
+        });
+
+        const newItem = {
+            id: _autoSavedItemId || Date.now().toString(),
+            productCode: state.product?.code || '',
+            productName: state.product?.name || 'Product',
+            color: state.selectedColorName || state.selectedColor,
+            colorId: state.selectedColor,
+            colorImage: state.selectedColorImage,
+            quantities: { ...state.sizeQuantities },
+            totalQty: state.quantity,
+            unitPrice: getCurrentUnitPrice(),
+            priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
+            positions: positions,
+            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
+            customizations: getActiveCustomizations(),
+            addedAt: new Date().toISOString(),
+            _autoSaved: true
+        };
+
+        // Find existing auto-saved item for same product+color (REPLACE, not merge)
+        let existingIdx = -1;
+        if (_autoSavedItemId) {
+            existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+        }
+        if (existingIdx === -1) {
+            existingIdx = basket.findIndex(i =>
+                i.productCode === newItem.productCode &&
+                (i.colorId === newItem.colorId || i.color === newItem.color)
+            );
+        }
+
+        if (existingIdx !== -1) {
+            // REPLACE the entire item (not merge quantities)
+            newItem.id = basket[existingIdx].id;
+            basket[existingIdx] = newItem;
+        } else {
+            basket.push(newItem);
+        }
+
+        _autoSavedItemId = newItem.id;
+
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        } catch (e) {
+            console.error('Auto-save failed:', e);
+            return;
+        }
+
+        // Update cart badge
+        updateCartBadge();
+
+        // Show subtle feedback
+        showAutoSaveIndicator();
+
+        console.log('💾 Auto-saved to basket:', newItem.productName, newItem.color, 'qty:', newItem.totalQty);
+    }
+
+    /**
+     * Show a brief "Saved ✓" indicator on the action bar button
+     */
+    function showAutoSaveIndicator() {
+        const btn = document.getElementById('designNowBtn');
+        if (!btn) return;
+
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<span>✓ Saved to Basket</span>';
+        btn.style.background = '#10b981';
+        btn.style.transition = 'background 0.3s';
+
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+        }, 1500);
     }
 
     // === Add to Quote ===
