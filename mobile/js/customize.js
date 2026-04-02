@@ -2687,9 +2687,15 @@
             // Save current selection to basket if there are items
             if (state.quantity > 0) {
                 addToQuote({ silent: true });
+                // Brief toast → auto-redirect after 1.2s so user sees confirmation
+                showToast('Added to basket! Redirecting to shop…');
+                setTimeout(() => {
+                    window.location.href = '../shop.html';
+                }, 1200);
+            } else {
+                // Nothing to save, go straight to shop
+                window.location.href = '../shop.html';
             }
-            // Navigate to shop page so user can pick another product
-            window.location.href = '../shop.html';
         });
     }
     
@@ -5148,6 +5154,54 @@
         // No longer needed - direct logo upload now
     }
 
+    // === Logo Gallery helper (renders saved logos + "Upload new" in design modal) ===
+    function _renderLogoGalleryInModal(position, method) {
+        const container = document.getElementById('logoGalleryContainer');
+        if (!container) return;
+        if (typeof window.BrandedLogoLibrary === 'undefined') {
+            container.innerHTML = '';
+            return;
+        }
+
+        const logos = window.BrandedLogoLibrary.getAll();
+
+        // Only show gallery if there are saved logos
+        if (!logos.length) {
+            container.innerHTML = '';
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = '';
+        window.BrandedLogoLibrary.renderGallery(container, {
+            onSelect: function (logoEntry) {
+                // User picked a saved logo → apply directly to the preview
+                const previewImg = document.getElementById('designPreviewImg');
+                const uploadPreview = document.getElementById('designUploadPreview');
+                const uploadZone = document.getElementById('designUploadZone');
+                const uploadTitle = document.getElementById('uploadLogoTitle');
+
+                if (previewImg) previewImg.src = logoEntry.url;
+                if (uploadZone) { uploadZone.hidden = true; uploadZone.style.display = 'none'; }
+                if (uploadPreview) uploadPreview.hidden = false;
+                if (uploadTitle) uploadTitle.textContent = 'Your Logo';
+
+                // Store in state so it flows to basket unchanged
+                state.originalLogoImage = logoEntry.url;
+                state.backgroundRemoved = false;
+
+                // Haptic
+                if (navigator.vibrate) navigator.vibrate(10);
+                showToast('Logo selected!');
+            },
+            onUploadNew: function () {
+                // Trigger the native file picker
+                const fileInput = document.getElementById('designLogoUpload');
+                if (fileInput) fileInput.click();
+            },
+        });
+    }
+
     // === Open Design Modal (with specific section focus) ===
     function openDesignModal(position, method, section = 'all') {
         const modal = document.getElementById('designModal');
@@ -5158,6 +5212,9 @@
         // Get position name from the card
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
         const positionName = card?.querySelector('.position-checkbox span')?.textContent || position.replace(/-/g, ' ');
+        
+        // ── Render logo gallery if library is available ──
+        _renderLogoGalleryInModal(position, method);
         
         // Update modal title based on section
         if (modalTitle) {
@@ -5358,6 +5415,22 @@
 
                         // Auto-remove background after load
                         setTimeout(() => removeImageBackground(), 150);
+
+                        // ── Upload to server in background & add to gallery ──
+                        if (typeof window.BrandedLogoLibrary !== 'undefined') {
+                            window.BrandedLogoLibrary.uploadToServer(ev.target.result, modal?.dataset?.position, file.name)
+                                .then(result => {
+                                    if (result && result.url && !result.url.startsWith('data:')) {
+                                        console.log('✅ Logo uploaded to server:', result.url);
+                                        // Update preview to use permanent URL
+                                        // (only if user hasn't changed it since)
+                                        if (previewImg && previewImg.src === ev.target.result) {
+                                            previewImg.src = result.url;
+                                        }
+                                    }
+                                })
+                                .catch(err => console.warn('Logo upload bg failed:', err));
+                        }
                     };
                     reader.readAsDataURL(file);
                 }
@@ -7191,9 +7264,59 @@
         // Update the cart badge
         updateCartBadge();
         
+        // ── Background: upgrade base64 logos to server URLs ──
+        _upgradeBasketLogosToServer();
+        
         // Show success message with option to go to basket (unless silent)
         if (!silent) {
             showAddedToQuoteModal(newItem);
+        }
+    }
+
+    /**
+     * Scan quoteBasket for base64 logos and upload them to Vercel Blob in the background.
+     * Replaces data-URLs with permanent URLs to reduce localStorage pressure.
+     */
+    async function _upgradeBasketLogosToServer() {
+        if (typeof window.BrandedLogoLibrary === 'undefined') return;
+        try {
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            let changed = false;
+
+            for (const item of basket) {
+                // Upgrade positions[] logos
+                if (Array.isArray(item.positions)) {
+                    for (const pos of item.positions) {
+                        if (pos.logo && pos.logo.startsWith('data:')) {
+                            const result = await window.BrandedLogoLibrary.uploadToServer(pos.logo, pos.position);
+                            if (result && result.url && !result.url.startsWith('data:')) {
+                                pos.logo = result.url;
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+                // Upgrade positionDesigns logos
+                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                    for (const key of Object.keys(item.positionDesigns)) {
+                        const design = item.positionDesigns[key];
+                        if (design && design.logo && design.logo.startsWith('data:')) {
+                            const result = await window.BrandedLogoLibrary.uploadToServer(design.logo, key);
+                            if (result && result.url && !result.url.startsWith('data:')) {
+                                design.logo = result.url;
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (changed) {
+                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                console.log('✅ Basket logos upgraded to server URLs');
+            }
+        } catch (err) {
+            console.warn('[LogoUpgrade] Background upgrade failed:', err.message);
         }
     }
 
@@ -7232,6 +7355,9 @@
     }
 
     function showAddedToQuoteModal(item) {
+        // Check if any logo was used in this item (for "reuse logo" button label)
+        const hasLogo = !!(item.positions && item.positions.some(p => p.logo));
+
         // Create overlay
         const modal = document.createElement('div');
         modal.className = 'quote-added-modal';
@@ -7249,12 +7375,21 @@
                     <span class="text-muted">${item.color}</span>
                 </p>
                 <div class="quote-added-actions">
-                    <button class="btn-secondary" id="addAnotherBtn">
+                    <button class="btn-secondary" id="addAnotherColorBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"/>
                             <line x1="5" y1="12" x2="19" y2="12"/>
                         </svg>
-                        Add Another Color/Size
+                        Add Another Color
+                    </button>
+                    <button class="btn-secondary" id="chooseAnotherProductBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                        </svg>
+                        Choose Another Product
                     </button>
                     <button class="btn-primary" id="viewQuoteBtn">View Quote Basket</button>
                 </div>
@@ -7269,14 +7404,20 @@
         });
         
         // Button handlers
-        modal.querySelector('#addAnotherBtn').addEventListener('click', () => {
+        modal.querySelector('#addAnotherColorBtn').addEventListener('click', () => {
             modal.remove();
-            // Reset the form for new item
+            // Reset the form for new item (same product, different color)
             resetCustomizationForm();
         });
         
+        modal.querySelector('#chooseAnotherProductBtn').addEventListener('click', () => {
+            modal.remove();
+            // Go to shop to pick a different product (logo stays in gallery)
+            window.location.href = '../shop.html';
+        });
+        
         modal.querySelector('#viewQuoteBtn').addEventListener('click', () => {
-            window.location.href = '/basket-mobile.html';
+            window.location.href = '/basket.html';
         });
     }
 

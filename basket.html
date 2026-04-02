@@ -1103,22 +1103,28 @@
                     });
                 }
                 
-                // Get logo from positionDesigns or positions
-                let logoSrc = '';
+                // Get logos from positionDesigns or positions (show ALL positions)
+                let logosHtml = '';
+                const logosArr = [];
                 if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-                    const firstDesign = Object.values(item.positionDesigns).find(d => d && d.logo);
-                    if (firstDesign) logoSrc = firstDesign.logo;
+                    Object.entries(item.positionDesigns).forEach(([pos, d]) => {
+                        if (d && d.logo) logosArr.push({ src: d.logo, position: d.position || pos, method: d.method || '' });
+                    });
                 }
-                if (!logoSrc && item.positions && typeof item.positions === 'object') {
-                    const firstPos = Object.values(item.positions).find(p => p && p.logo);
-                    if (firstPos) logoSrc = firstPos.logo;
+                if (!logosArr.length && item.positions && Array.isArray(item.positions)) {
+                    item.positions.forEach(p => {
+                        if (p && p.logo) logosArr.push({ src: p.logo, position: p.name || p.position, method: p.method || '' });
+                    });
                 }
-                const logoHtml = logoSrc 
-                    ? `<div class="basket-item-logo" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
-                         <img src="${logoSrc}" alt="Logo" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;">
-                         <span style="font-size:11px;color:#6b7280;">Logo uploaded</span>
-                       </div>`
-                    : '';
+                if (logosArr.length) {
+                    const thumbs = logosArr.map(l =>
+                        `<div class="basket-logo-thumb" title="${l.position} (${l.method})">
+                            <img src="${l.src}" alt="${l.position}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;">
+                            <span style="font-size:9px;color:#6b7280;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.position}</span>
+                         </div>`
+                    ).join('');
+                    logosHtml = `<div class="basket-item-logos" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">${thumbs}</div>`;
+                }
                 
                 html += `
                     <div class="basket-item-card" data-index="${index}">
@@ -1146,7 +1152,7 @@
                                 </svg>
                                 ${customBadgeText}
                             </span>
-                            ${logoHtml}
+                            ${logosHtml}
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

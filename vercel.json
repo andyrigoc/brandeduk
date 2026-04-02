@@ -3,8 +3,14 @@
   "name": "branded-uk-fork-v10",
   "buildCommand": null,
   "outputDirectory": ".",
-  "installCommand": null,
+  "installCommand": "npm install",
   "framework": null,
+
+  "functions": {
+    "api/upload-logo.js": {
+      "maxDuration": 15
+    }
+  },
 
   "rewrites": [
     { "source": "/", "destination": "/index.html" },

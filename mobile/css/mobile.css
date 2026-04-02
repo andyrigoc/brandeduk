@@ -4307,6 +4307,80 @@ a {
     margin: 0 0 12px 0;
 }
 
+/* ── Logo Gallery (saved logos reuse) ── */
+.logo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.logo-gallery__item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 2px solid var(--gray-200, #e5e7eb);
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.logo-gallery__item:active,
+.logo-gallery__item.selected {
+    border-color: var(--purple, #7c3aed);
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.logo-gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+}
+
+/* "[+] Upload new" tile */
+.logo-gallery__upload-new {
+    flex-direction: column;
+    gap: 2px;
+    color: var(--purple, #7c3aed);
+    border-style: dashed;
+    background: #faf5ff;
+    font-size: 10px;
+    font-weight: 600;
+}
+.logo-gallery__upload-new span {
+    pointer-events: none;
+}
+
+/* Delete button on thumbnails */
+.logo-gallery__delete {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.logo-gallery__item:hover .logo-gallery__delete,
+.logo-gallery__item:active .logo-gallery__delete {
+    opacity: 1;
+}
+
 /* Upload Area */
 .upload-area {
     position: relative;
