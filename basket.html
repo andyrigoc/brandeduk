@@ -312,7 +312,6 @@
         .basket-size-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 10px;
         }
         
@@ -324,39 +323,41 @@
         }
         
         .basket-qty-controls {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 0;
             background: #e5e7eb;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
         }
         
         .basket-qty-controls .qty-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
             background: transparent;
             color: #374151;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: background 0.15s;
+            padding: 0;
+            line-height: 1;
         }
         
         .basket-qty-controls .qty-btn:active {
-            background: rgba(0,0,0,0.08);
+            background: rgba(0,0,0,0.1);
         }
         
         .basket-qty-controls .qty-value {
-            min-width: 32px;
+            min-width: 28px;
             text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
         }
         
         .basket-item-remove {
