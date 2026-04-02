@@ -1396,6 +1396,27 @@
         }
         
         // Render basket items
+        // Convert position slugs to readable names
+        function toReadablePosition(slug) {
+            const map = {
+                'left-chest': 'Left Chest',
+                'right-chest': 'Right Chest',
+                'front-center': 'Front Center',
+                'back-large': 'Back Large',
+                'left-sleeve': 'Left Sleeve',
+                'right-sleeve': 'Right Sleeve',
+                'left-breast': 'Left Chest',
+                'right-breast': 'Right Chest',
+                'small-centre-front': 'Centre Front',
+                'large-front-center': 'Front Center',
+                'large-back': 'Back',
+                'left-arm': 'Left Arm',
+                'right-arm': 'Right Arm'
+            };
+            if (!slug) return 'Logo';
+            return map[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
         function renderBasketItems(basket) {
             const container = document.getElementById('basketItemsList');
             if (!container) return;
@@ -1445,13 +1466,13 @@
                     });
                 }
                 if (logosArr.length) {
-                    const thumbs = logosArr.map(l =>
-                        `<div class="basket-card-logo" style="position:relative;">
-                            <img src="${l.src}" alt="${l.position}">
-                            <button class="edit-logo-remove" data-item-idx="${index}" data-pos="${encodeURIComponent(l.position)}" title="Remove">×</button>
-                            <span class="logo-pos-label">${l.position}</span>
-                         </div>`
-                    ).join('');
+                    const thumbs = logosArr.map(l => {
+                        const readableName = toReadablePosition(l.position);
+                        return `<div class="basket-card-logo">
+                            <img src="${l.src}" alt="${readableName}">
+                            <span class="logo-pos-label">${readableName}</span>
+                         </div>`;
+                    }).join('');
                     logosHtml = `<div class="basket-card-logos">${thumbs}</div>`;
                 }
                 
@@ -1464,13 +1485,14 @@
                 const availableSizes = allSizes.filter(s => !existingSizes.includes(s));
                 const addSizeOpts = availableSizes.map(s => `<option value="${s}">${s}</option>`).join('');
                 
-                let editLogosHtml = logosArr.map(l =>
-                    `<div class="edit-logo-item">
-                        <img src="${l.src}" alt="${l.position}">
+                let editLogosHtml = logosArr.map(l => {
+                    const readableName = toReadablePosition(l.position);
+                    return `<div class="edit-logo-item">
+                        <img src="${l.src}" alt="${readableName}">
                         <button class="edit-logo-remove" data-item-idx="${index}" data-pos="${encodeURIComponent(l.position)}" title="Remove">×</button>
-                        <span class="logo-pos-label">${l.position} (${l.method || 'N/A'})</span>
-                    </div>`
-                ).join('');
+                        <span class="logo-pos-label">${readableName} (${l.method || 'N/A'})</span>
+                    </div>`;
+                }).join('');
                 editLogosHtml += `<div class="edit-logo-item">
                     <button class="edit-logo-add-btn" data-item-idx="${index}" title="Add/Edit Logo">+</button>
                     <span class="logo-pos-label">Add Logo</span>

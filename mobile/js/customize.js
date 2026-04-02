@@ -1828,7 +1828,12 @@
                     'left-sleeve': 'Left Sleeve',
                     'right-sleeve': 'Right Sleeve',
                     'left-breast': 'Left Chest',
-                    'right-breast': 'Right Chest'
+                    'right-breast': 'Right Chest',
+                    'small-centre-front': 'Small Centre Front',
+                    'large-front-center': 'Large Front Center',
+                    'large-back': 'Large Back',
+                    'left-arm': 'Left Arm',
+                    'right-arm': 'Right Arm'
                 };
                 const positionLabel = positionNames[pos] || pos.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
