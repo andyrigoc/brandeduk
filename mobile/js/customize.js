@@ -6345,12 +6345,16 @@
                 basket.forEach(item => {
                     const itemQty = item.totalQty || item.quantity || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
                     const itemUp = parseFloat(item.unitPrice || item.price) || 0;
-                    const itemName = (item.productName || item.name || 'Item').substring(0, 20);
-                    perItemLines.push(`${itemName}: ${formatCurrency(itemUp)} \u00d7 ${itemQty} = ${formatCurrency(itemUp * itemQty)}`);
+                    const code = (item.productCode || '').toUpperCase();
+                    const color = item.color || '';
+                    const tag = [code, color].filter(Boolean).join(' ') || 'Item';
+                    perItemLines.push(`${tag}: ${formatCurrency(itemUp)} × ${itemQty} = ${formatCurrency(itemUp * itemQty)}`);
                 });
                 if (state.quantity > 0 && state.product) {
-                    const cName = (state.product.name || 'Current').substring(0, 20);
-                    perItemLines.push(`${cName}: ${formatCurrency(unitPrice)} \u00d7 ${currentQty} = ${formatCurrency(currentGarmentTotal)}`);
+                    const code = (state.product.code || '').toUpperCase();
+                    const color = state.selectedColorName || state.selectedColor || '';
+                    const tag = [code, color].filter(Boolean).join(' ') || 'Current';
+                    perItemLines.push(`${tag}: ${formatCurrency(unitPrice)} × ${currentQty} = ${formatCurrency(currentGarmentTotal)}`);
                 }
                 garmentDetailCalc.innerHTML = perItemLines.join('<br>');
             } else {
