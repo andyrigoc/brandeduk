@@ -3739,6 +3739,7 @@
                 <input type="number" class="item-qty-input" value="0" min="0" max="999" data-size="${sizeKey}">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
+            <button type="button" class="save-color-btn" title="Save selection to basket">Save ✓</button>
         `;
         
         // Store the size value for quantity tracking
@@ -3841,6 +3842,25 @@
                 updateSizeQuantities();
                 if (navigator.vibrate) navigator.vibrate(10);
             }
+
+            // Save button — save current color selection to basket
+            const saveBtn = e.target.closest('.save-color-btn');
+            if (saveBtn) {
+                if (state.quantity > 0) {
+                    addToQuote({ silent: true });
+                    showToast(`✓ ${state.quantity} pcs of ${state.selectedColorName || 'current colour'} saved to basket.`);
+                    // Visual feedback on button
+                    saveBtn.textContent = 'Saved ✓';
+                    saveBtn.classList.add('saved');
+                    setTimeout(() => {
+                        saveBtn.textContent = 'Save ✓';
+                        saveBtn.classList.remove('saved');
+                    }, 2000);
+                } else {
+                    showToast('Add a quantity first', true);
+                }
+                if (navigator.vibrate) navigator.vibrate(10);
+            }
         });
 
     // Extra listeners to ensure any direct input/change triggers a quantities recalculation
@@ -3892,6 +3912,7 @@
                 <input type="number" class="item-qty-input" value="0" min="0" max="999">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
+            <button type="button" class="save-color-btn" title="Save selection to basket">Save ✓</button>
             <button type="button" class="remove-size-btn">×</button>
         `;
         

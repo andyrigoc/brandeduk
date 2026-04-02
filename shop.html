@@ -2015,6 +2015,112 @@
         </a>
     </nav>
 
+    <!-- Account Panel Overlay -->
+    <div class="account-overlay" id="accountOverlay"></div>
+    
+    <!-- Account Sign In / Sign Up Panel -->
+    <div class="account-panel" id="accountPanel">
+        <div class="account-panel-header">
+            <button class="account-close-btn" id="accountCloseBtn" aria-label="Close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="account-forms-container">
+            <!-- Arrow Back -->
+            <div class="account-arrow" id="accountArrow">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            
+            <div class="account-forms-wrapper">
+                <!-- Sign In Form -->
+                <div class="account-form-holder signin-form" id="signinForm">
+                    <div class="account-form-icon">
+                        <i class="fas fa-user"></i>
+                        <span>Sign In</span>
+                    </div>
+                    <div class="account-form-content">
+                        <form id="signinFormData">
+                            <div class="account-input-group">
+                                <input type="email" id="signinEmail" required>
+                                <label for="signinEmail">Email</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="password" id="signinPassword" required>
+                                <label for="signinPassword">Password</label>
+                            </div>
+                            <div class="account-form-actions">
+                                <button type="submit" class="account-submit-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            <a href="#" class="account-forgot-link">Forgot Password?</a>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Sign Up Form -->
+                <div class="account-form-holder signup-form" id="signupForm">
+                    <div class="account-form-icon">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Sign Up</span>
+                    </div>
+                    <div class="account-form-content">
+                        <form id="signupFormData">
+                            <div class="account-input-row">
+                                <div class="account-input-group half">
+                                    <input type="text" id="signupFirstName" required>
+                                    <label for="signupFirstName">First Name</label>
+                                </div>
+                                <div class="account-input-group half">
+                                    <input type="text" id="signupLastName" required>
+                                    <label for="signupLastName">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="email" id="signupEmail" required>
+                                <label for="signupEmail">Email</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="tel" id="signupPhone" required>
+                                <label for="signupPhone">Phone Number</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="text" id="signupCompany">
+                                <label for="signupCompany">Company Name (optional)</label>
+                            </div>
+                            <div class="account-input-group">
+                                <input type="password" id="signupPassword" required>
+                                <label for="signupPassword">Password</label>
+                            </div>
+                            <div class="account-form-actions">
+                                <button type="submit" class="account-submit-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logged In View -->
+        <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
+            <div class="account-user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3 class="account-user-name" id="accountUserName">Welcome!</h3>
+            <p class="account-user-email" id="accountUserEmail"></p>
+            <div class="account-user-details" id="accountUserDetails"></div>
+            <button class="account-logout-btn" id="accountLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
     <!-- FILTERS DROP-UP MENU -->
     <div class="filters-overlay" id="filtersOverlay"></div>
     <div class="filters-dropup" id="filtersDropup">

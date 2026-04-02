@@ -1602,6 +1602,43 @@ function renderSizes() {
         sizesGrid.appendChild(box);
     });
 
+    // Add Save button AFTER the grid (below the size boxes)
+    let saveWrapper = document.getElementById('saveColorWrapper');
+    if (!saveWrapper) {
+        saveWrapper = document.createElement('div');
+        saveWrapper.id = 'saveColorWrapper';
+        saveWrapper.style.cssText = 'margin-top:12px; display:flex; justify-content:center;';
+        sizesGrid.parentNode.insertBefore(saveWrapper, sizesGrid.nextSibling);
+    }
+    saveWrapper.innerHTML = '';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.id = 'saveColorBtn';
+    saveBtn.className = 'save-color-btn' + (colorSelected ? '' : ' disabled');
+    saveBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        Save to Basket
+    `;
+    saveBtn.disabled = !colorSelected;
+    saveBtn.onclick = function() {
+        var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
+        if (total > 0 && selectedColorName) {
+            saveCurrentSelectionToBasket();
+            saveBtn.classList.add('saved');
+            saveBtn.textContent = '\u2713 Saved!';
+            setTimeout(function() {
+                saveBtn.classList.remove('saved');
+                saveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Save to Basket';
+            }, 1500);
+            if (typeof showToast === 'function') showToast('\u2713 ' + total + ' pcs of ' + selectedColorName + ' saved!');
+            if (typeof updateLiveBadge === 'function') updateLiveBadge();
+        }
+    };
+    saveWrapper.appendChild(saveBtn);
+
     // Show message if no color selected
     updateSizesMessage();
 
@@ -1821,6 +1858,12 @@ function resetStepProgress() {
 }
 
 function changeColor(name, url, colorDiv) {
+    // Cancel any pending auto-save for the old color (already saved by color click handler)
+    if (typeof _autoSaveTimer !== 'undefined' && _autoSaveTimer) {
+        clearTimeout(_autoSaveTimer);
+        _autoSaveTimer = null;
+    }
+
     document.querySelectorAll(".color-thumb").forEach(c => c.classList.remove("active"));
     if (colorDiv) colorDiv.classList.add("active");
 
@@ -1938,12 +1981,13 @@ function updateTotals() {
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
     hasBasketItems = basket.length > 0;
 
-    // Calculate TOTAL quantity of THIS PRODUCT in basket (all colors)
+    // Calculate TOTAL quantity of THIS PRODUCT in basket (OTHER colors only)
+    // Exclude current color because we're already counting it via 'total' above
     const basketProductTotal = basket
-        .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
+        .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE && item.color !== selectedColorName)
         .reduce((sum, item) => sum + item.quantity, 0);
 
-    // Grand total = basket quantity + current selection
+    // Grand total = other colors in basket + current selection
     const grandProductTotal = basketProductTotal + total;
 
     updateDiscountBox(grandProductTotal);
@@ -1996,6 +2040,11 @@ function updateTotals() {
 
     // Update sidebar in real-time
     updateSidebarFromProduct(grandProductTotal, unit);
+
+    // Auto-save current selection to basket (debounced)
+    if (typeof scheduleAutoSave === 'function') {
+        scheduleAutoSave();
+    }
 }
 
 // Update sidebar with current product selection
@@ -2150,6 +2199,39 @@ function saveCurrentSelectionToBasket() {
     }
     updateBasketTotalBox();
 }
+
+/* ---------------------------------------------------
+   REAL-TIME AUTO-SAVE: saves current selection to basket
+   after every quantity change (debounced 500ms)
+   This ensures nothing is lost when navigating to basket
+--------------------------------------------------- */
+
+var _autoSaveTimer = null;
+
+function scheduleAutoSave() {
+    if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
+    _autoSaveTimer = setTimeout(function() {
+        if (typeof qty === 'undefined' || typeof selectedColorName === 'undefined') return;
+        var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
+        if (total > 0 && selectedColorName) {
+            saveCurrentSelectionToBasket();
+            console.log('⏱️ Auto-saved', total, 'pcs of', selectedColorName, 'to basket');
+        }
+    }, 500);
+}
+
+// Also save immediately on page leave as safety net
+function autoSaveBeforeLeave() {
+    if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
+    if (typeof qty === 'undefined' || typeof selectedColorName === 'undefined') return;
+    var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
+    if (total > 0 && selectedColorName) {
+        saveCurrentSelectionToBasket();
+    }
+}
+
+window.addEventListener('pagehide', autoSaveBeforeLeave);
+window.addEventListener('beforeunload', autoSaveBeforeLeave);
 
 /* ---------------------------------------------------
    ADD & CUSTOMIZE BUTTON (legacy - button removed, section always visible)
