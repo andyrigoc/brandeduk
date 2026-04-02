@@ -2171,7 +2171,7 @@
             }));
             
             // Navigate to customize positions page
-            window.location.href = '/customize?code=' + encodeURIComponent(item.code || '');
+            window.location.href = 'customize.html?code=' + encodeURIComponent(item.code || item.productCode || '');
         }
         
         // Customize multiple selected items with the same logo
@@ -2215,7 +2215,7 @@
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             
             // Navigate to customize positions page
-            window.location.href = '/customize?code=' + encodeURIComponent(firstItem.code || '');
+            window.location.href = 'customize.html?code=' + encodeURIComponent(firstItem.code || firstItem.productCode || '');
         }
     </script>
 
