@@ -642,6 +642,15 @@
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
 
+    /* === Hero "GET IN TOUCH" neon text – 30% larger than mobile === */
+    .hero-get-in-touch .neon-text,
+    .hero-get-in-touch .flux-text,
+    .hero-banner .neon-container .neon-text,
+    .hero-banner .neon-container .flux-text {
+        font-size: clamp(83px, 23.4vw, 125px);
+        line-height: 1;
+    }
+
     /* === Tablet Top Bar === */
     .tablet-top-bar {
         display: flex;

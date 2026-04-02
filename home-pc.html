@@ -3430,10 +3430,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<a class="fc-cta" href="product-detail.html?code=' + encodeURIComponent(item.style_code||'') + '">View Product</a>' +
             '</div>';
 
-        // Card click → product detail
+        // Helper: store correct product data before navigating
+        function storeProductData() {
+            sessionStorage.setItem('selectedProduct', item.style_code);
+            sessionStorage.setItem('selectedProductData', JSON.stringify({
+                code: item.style_code,
+                name: item.style_name,
+                image: item.image || '',
+                price: item.price,
+                brand: item.brand_name || '',
+                is_best_seller: item.is_best_seller,
+                is_featured: item.is_featured
+            }));
+        }
+
+        // CTA button click
+        var cta = card.querySelector('.fc-cta');
+        if (cta) {
+            cta.addEventListener('click', function(e) {
+                e.preventDefault();
+                storeProductData();
+                window.location.href = this.href;
+            });
+        }
+
+        // Card click (anywhere except CTA)
         card.addEventListener('click', function(e) {
             if (e.target.closest('.fc-cta')) return;
-            sessionStorage.setItem('selectedProduct', item.style_code);
+            storeProductData();
             window.location.href = 'product-detail.html?code=' + encodeURIComponent(item.style_code);
         });
 
