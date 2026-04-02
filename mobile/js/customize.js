@@ -51,6 +51,26 @@
     const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
     const VAT_RATE = 0.20;
 
+    // === Canonical Position Display Names (SINGLE SOURCE OF TRUTH) ===
+    const POSITION_DISPLAY_NAMES = {
+        'left-chest': 'Left Chest',
+        'right-chest': 'Right Chest',
+        'front-center': 'Front Center',
+        'back-large': 'Back Large',
+        'left-sleeve': 'Left Sleeve',
+        'right-sleeve': 'Right Sleeve',
+        'left-breast': 'Left Chest',
+        'right-breast': 'Right Chest',
+        'small-centre-front': 'Centre Front',
+        'large-front-center': 'Front Center',
+        'large-back': 'Back Large',
+        'left-arm': 'Left Arm',
+        'right-arm': 'Right Arm'
+    };
+    function canonicalPositionName(slug) {
+        return POSITION_DISPLAY_NAMES[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
     // === Product Colors (default GD067 fallback) ===
     // Will be replaced at runtime if product API data is available
     let PRODUCT_COLORS = [
@@ -1831,23 +1851,8 @@
                 const totalPrice = unitPrice * state.quantity;
                 const methodLabel = method.toLowerCase() === 'embroidery' ? 'Embroidery' : 'Print';
                 
-                // Convert position ID to readable name
-                const positionNames = {
-                    'left-chest': 'Left Chest',
-                    'right-chest': 'Right Chest',
-                    'front-center': 'Front Center',
-                    'back-large': 'Back Large',
-                    'left-sleeve': 'Left Sleeve',
-                    'right-sleeve': 'Right Sleeve',
-                    'left-breast': 'Left Chest',
-                    'right-breast': 'Right Chest',
-                    'small-centre-front': 'Small Centre Front',
-                    'large-front-center': 'Large Front Center',
-                    'large-back': 'Large Back',
-                    'left-arm': 'Left Arm',
-                    'right-arm': 'Right Arm'
-                };
-                const positionLabel = positionNames[pos] || pos.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                // Convert position ID to readable name (use canonical map)
+                const positionLabel = canonicalPositionName(pos);
                 
                 // Get logo from positionDesigns if available
                 const designLogo = state.positionDesigns?.[pos]?.logo || null;
@@ -1862,6 +1867,7 @@
                 
                 // Also add to customizations array for basket display
                 customizations.push({
+                    posKey: pos,
                     position: positionLabel,
                     method: methodLabel,
                     unitPrice: unitPrice,
@@ -6122,19 +6128,20 @@
                 
                 const methodLabel = normalizeMethod(posMethod);
                 const custUnitPrice = pos.unitPrice || (isEmbroidery(posMethod) ? 5.00 : 3.50);
-                const positionName = pos.name || pos.position || pos._posKey || 'Position';
+                const posSlug = pos._posKey || pos.position || '';
+                const positionName = canonicalPositionName(posSlug);
                 
-                // Check if this customization was already added for this productCode
+                // Check if this customization was already added for this productCode (dedup by SLUG)
                 const existingCustom = allBasketCustomizations.find(c => 
                     c.productCode === itemCode && 
-                    c.position === positionName && 
+                    c.posKey === posSlug && 
                     c.method === methodLabel
                 );
                 
                 if (!existingCustom) {
                     allBasketCustomizations.push({
                         productCode: itemCode,
-                        posKey: pos._posKey || '',
+                        posKey: posSlug,
                         position: positionName,
                         method: methodLabel,
                         unitPrice: custUnitPrice,
@@ -6160,18 +6167,20 @@
                     
                     const methodLabel = normalizeMethod(posData.method);
                     const custUnitPrice = posData.unitPrice || (isEmbroidery(posData.method) ? 5.00 : 3.50);
-                    const positionName = posData.position || posData.name || posData._posKey || 'Position';
+                    const posSlug = posData.posKey || posData._posKey || '';
+                    const positionName = posSlug ? canonicalPositionName(posSlug) : (posData.position || posData.name || 'Position');
                     
-                    // Check if already added
+                    // Check if already added (dedup by SLUG when available, else by display name)
                     const existingCustom = allBasketCustomizations.find(c => 
                         c.productCode === itemCode && 
-                        c.position === positionName && 
+                        (posSlug ? c.posKey === posSlug : c.position === positionName) && 
                         c.method === methodLabel
                     );
                     
                     if (!existingCustom) {
                         allBasketCustomizations.push({
                             productCode: itemCode,
+                            posKey: posSlug,
                             position: positionName,
                             method: methodLabel,
                             unitPrice: custUnitPrice,
@@ -6203,7 +6212,7 @@
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
             const position = checkbox.value;
-            const positionName = checkbox.parentElement.querySelector('span').textContent.trim();
+            const positionName = canonicalPositionName(position);
             const method = state.positionMethods && state.positionMethods[position];
             
             // Skip if this position is already accounted for in basket customizations
@@ -6233,6 +6242,7 @@
                         if (method === 'embroidery') hasEmbroidery = true;
                         
                         currentCustomizations.push({
+                            posKey: position,
                             position: positionName,
                             method: method === 'embroidery' ? 'Embroidery' : 'Print',
                             unitPrice: pricePerItem,
@@ -7667,7 +7677,7 @@
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
             const position = checkbox.value;
-            const positionName = checkbox.parentElement.querySelector('span')?.textContent.trim() || position;
+            const positionName = canonicalPositionName(position);
             const method = state.positionMethods && state.positionMethods[position];
             if (method) {
                 const activeBadge = card.querySelector(`.price-badge.price-${method === 'embroidery' ? 'emb' : 'print'}.active`);
@@ -7776,7 +7786,7 @@
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
             const position = checkbox.value;
-            const positionName = checkbox.parentElement.querySelector('span')?.textContent.trim() || position;
+            const positionName = canonicalPositionName(position);
             const method = state.positionMethods && state.positionMethods[position];
             
             if (method) {

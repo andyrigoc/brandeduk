@@ -1453,7 +1453,7 @@
                 'right-breast': 'Right Chest',
                 'small-centre-front': 'Centre Front',
                 'large-front-center': 'Front Center',
-                'large-back': 'Back',
+                'large-back': 'Back Large',
                 'left-arm': 'Left Arm',
                 'right-arm': 'Right Arm'
             };
@@ -1793,7 +1793,7 @@
                 const seenPos = new Set();
                 if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
                     item.customizations.forEach(custom => {
-                        const pk = (custom.position || '') + '|' + (custom.method || '');
+                        const pk = (custom.posKey || custom.position || '') + '|' + (custom.method || '');
                         if (seenPos.has(pk)) return;
                         seenPos.add(pk);
                         customTotal += (custom.unitPrice || 0) * itemQty;
@@ -1802,7 +1802,7 @@
                     const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
                     posArr.forEach(pos => {
                         if (pos.method) {
-                            const pk = (pos.name || pos.position || '') + '|' + pos.method;
+                            const pk = (pos.position || pos.name || '') + '|' + pos.method;
                             if (seenPos.has(pk)) return;
                             seenPos.add(pk);
                             customTotal += (pos.unitPrice || 0) * itemQty;
@@ -2220,12 +2220,12 @@
             
             // Remove from positions array
             if (item.positions && Array.isArray(item.positions)) {
-                item.positions = item.positions.filter(p => (p.name || p.position) !== position);
+                item.positions = item.positions.filter(p => (p.position || p.name) !== position);
             }
             
-            // Remove from customizations array
+            // Remove from customizations array (match by posKey slug or display name)
             if (item.customizations && Array.isArray(item.customizations)) {
-                item.customizations = item.customizations.filter(c => c.position !== position);
+                item.customizations = item.customizations.filter(c => c.posKey !== position && c.position !== position);
             }
             
             saveBasket(basket);
@@ -2373,13 +2373,11 @@
                 const l = getItemLogoSrc(bi);
                 if (l) allLogos.add(l);
             });
-            try {
-                const galleryLogos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
-                galleryLogos.forEach(entry => {
+            if (window.BrandedLogoLibrary) {
+                window.BrandedLogoLibrary.getAll().forEach(entry => {
                     if (entry.url) allLogos.add(entry.url);
-                    if (entry.src) allLogos.add(entry.src);
                 });
-            } catch(e) {}
+            }
 
             // Render gallery
             const gallery = document.getElementById('logoActionGallery');
@@ -2514,7 +2512,7 @@
                 'front-center': 'Front Center', 'back-large': 'Back Large',
                 'left-sleeve': 'Left Sleeve', 'right-sleeve': 'Right Sleeve',
                 'small-centre-front': 'Centre Front', 'large-front-center': 'Front Center',
-                'large-back': 'Back', 'left-arm': 'Left Arm', 'right-arm': 'Right Arm'
+                'large-back': 'Back Large', 'left-arm': 'Left Arm', 'right-arm': 'Right Arm'
             };
             const posLabel = posNames[posKey] || posKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -2529,14 +2527,16 @@
 
             // Sync to customizations array so costs display correctly
             if (!item.customizations) item.customizations = [];
-            const existingCust = item.customizations.find(c => c.position === posLabel);
+            const existingCust = item.customizations.find(c => c.posKey === posKey || c.position === posLabel);
             if (existingCust) {
+                existingCust.posKey = posKey;
                 existingCust.method = method;
                 existingCust.unitPrice = unitPrice;
                 existingCust.total = unitPrice * itemQty;
                 existingCust.qty = itemQty;
             } else {
                 item.customizations.push({
+                    posKey: posKey,
                     position: posLabel,
                     method: method,
                     unitPrice: unitPrice,
@@ -2557,15 +2557,9 @@
                 };
             }
 
-            // Save logo to gallery for reuse
-            if (_basketLogoSelectedSrc && !_basketLogoSelectedSrc.startsWith('data:')) {
-                try {
-                    let logos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
-                    if (!logos.some(l => l.url === _basketLogoSelectedSrc)) {
-                        logos.push({ url: _basketLogoSelectedSrc, addedAt: new Date().toISOString() });
-                        localStorage.setItem('brandeduk-logos', JSON.stringify(logos));
-                    }
-                } catch(e) {}
+            // Save logo to gallery for reuse (uses library dedup + cap at 20)
+            if (_basketLogoSelectedSrc && !_basketLogoSelectedSrc.startsWith('data:') && window.BrandedLogoLibrary) {
+                window.BrandedLogoLibrary.add({ url: _basketLogoSelectedSrc, filename: 'logo' });
             }
 
             saveBasket(basket);
@@ -2818,6 +2812,7 @@
             </div>
         </div>
     </div>
+<script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
