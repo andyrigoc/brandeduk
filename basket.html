@@ -768,6 +768,316 @@
         .select-all-row input:checked + .checkmark svg {
             opacity: 1;
         }
+
+        /* ===== BASKET EDITING OVERHAUL ===== */
+
+        /* Edit Toggle Button */
+        .basket-item-edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .basket-item-edit-btn:hover,
+        .basket-item-edit-btn.active {
+            background: #ede9fe;
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        /* Expandable Edit Panel */
+        .basket-edit-panel {
+            display: none;
+            padding: 14px 16px;
+            margin: -4px 0 12px 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0 0 14px 14px;
+            animation: panelSlideDown 0.25s ease;
+        }
+
+        .basket-edit-panel.open {
+            display: block;
+        }
+
+        @keyframes panelSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .edit-section {
+            margin-bottom: 14px;
+        }
+
+        .edit-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .edit-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        /* Logo Management in Edit Panel */
+        .edit-logos-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .edit-logo-item {
+            position: relative;
+            width: 64px;
+            text-align: center;
+        }
+
+        .edit-logo-item img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .edit-logo-item .logo-pos-label {
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 2px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .edit-logo-remove {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.85);
+            border: 1.5px solid #fff;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            padding: 0;
+        }
+
+        .edit-logo-add-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            border: 2px dashed #d1d5db;
+            background: #f9fafb;
+            color: #9ca3af;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .edit-logo-add-btn:hover {
+            border-color: #7c3aed;
+            color: #7c3aed;
+            background: #ede9fe;
+        }
+
+        /* Add Size Row */
+        .edit-add-size-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-size-select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #374151;
+            background: #fff;
+        }
+
+        .edit-add-size-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Per-item Note */
+        .basket-item-note {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 40px;
+            max-height: 100px;
+            color: #374151;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .basket-item-note:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .basket-item-note::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Global Order Notes */
+        .order-notes-section {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .order-notes-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .order-notes-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+            color: #374151;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .order-notes-textarea:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .order-notes-textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .order-notes-hint {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        /* Duplicate Item Button */
+        .basket-item-duplicate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 10px;
+            background: none;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .basket-item-duplicate-btn:hover {
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        /* Note preview in card */
+        .item-note-preview {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #7c3aed;
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Logo thumbs in card */
+        .basket-card-logos {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .basket-card-logo {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .basket-card-logo img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .basket-card-logo .logo-pos-label {
+            font-size: 9px;
+            color: #6b7280;
+            max-width: 56px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Item actions row */
+        .item-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -960,6 +1270,23 @@
                     <span class="value" id="grandTotal">£0.00 <span class="vat-suffix">ex VAT</span></span>
                 </div>
             </div>
+
+            <!-- Order Notes -->
+            <div class="order-notes-section">
+                <h4>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    Order Notes
+                </h4>
+                <textarea class="order-notes-textarea" id="orderNotesTextarea" 
+                          placeholder="Special instructions, delivery notes, or any additional information for your quote..."
+                          oninput="saveOrderNotes()"></textarea>
+                <p class="order-notes-hint">These notes will be included with your quote request</p>
+            </div>
         </div>
     </main>
 
@@ -1001,6 +1328,7 @@
             initVATToggle();
             renderBasket();
             initEventListeners();
+            loadOrderNotes();
         });
         
         // VAT Toggle
@@ -1118,13 +1446,35 @@
                 }
                 if (logosArr.length) {
                     const thumbs = logosArr.map(l =>
-                        `<div class="basket-logo-thumb" title="${l.position} (${l.method})">
-                            <img src="${l.src}" alt="${l.position}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;">
-                            <span style="font-size:9px;color:#6b7280;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.position}</span>
+                        `<div class="basket-card-logo" style="position:relative;">
+                            <img src="${l.src}" alt="${l.position}">
+                            <button class="edit-logo-remove" data-item-idx="${index}" data-pos="${encodeURIComponent(l.position)}" title="Remove">×</button>
+                            <span class="logo-pos-label">${l.position}</span>
                          </div>`
                     ).join('');
-                    logosHtml = `<div class="basket-item-logos" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">${thumbs}</div>`;
+                    logosHtml = `<div class="basket-card-logos">${thumbs}</div>`;
                 }
+                
+                // Per-item note & edit panel data
+                const itemNote = item.note || '';
+                const notePreview = itemNote ? `<div class="item-note-preview">\u{1F4DD} ${itemNote.substring(0, 40)}${itemNote.length > 40 ? '...' : ''}</div>` : '';
+                
+                const allSizes = ['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
+                const existingSizes = Object.keys(sizes);
+                const availableSizes = allSizes.filter(s => !existingSizes.includes(s));
+                const addSizeOpts = availableSizes.map(s => `<option value="${s}">${s}</option>`).join('');
+                
+                let editLogosHtml = logosArr.map(l =>
+                    `<div class="edit-logo-item">
+                        <img src="${l.src}" alt="${l.position}">
+                        <button class="edit-logo-remove" data-item-idx="${index}" data-pos="${encodeURIComponent(l.position)}" title="Remove">×</button>
+                        <span class="logo-pos-label">${l.position} (${l.method || 'N/A'})</span>
+                    </div>`
+                ).join('');
+                editLogosHtml += `<div class="edit-logo-item">
+                    <button class="edit-logo-add-btn" data-item-idx="${index}" title="Add/Edit Logo">+</button>
+                    <span class="logo-pos-label">Add Logo</span>
+                </div>`;
                 
                 html += `
                     <div class="basket-item-card" data-index="${index}">
@@ -1139,26 +1489,70 @@
                         <div class="basket-item-image" onclick="openCustomizeForItem(${index})">
                             <img src="${itemImage}" alt="${item.productName || item.name || 'Product'}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
-                        <div class="basket-item-info" onclick="openCustomizeForItem(${index})">
+                        <div class="basket-item-info">
                             <h4>${item.productName || item.name || 'Custom Product'}</h4>
                             <p class="item-color">Color: ${itemColor}</p>
-                            <div class="item-sizes">
+                            <div class="item-sizes" onclick="event.stopPropagation()">
                                 ${sizesHtml}
                             </div>
-                            <span class="${customBadgeClass}">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M12 20h9"/>
-                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                                </svg>
-                                ${customBadgeText}
-                            </span>
+                            <div class="item-actions-row" onclick="event.stopPropagation()">
+                                <span class="${customBadgeClass}" onclick="openCustomizeForItem(${index})" style="cursor:pointer;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                    </svg>
+                                    ${customBadgeText}
+                                </span>
+                                <button class="basket-item-edit-btn" onclick="toggleEditPanel(${index})" id="editBtn-${index}">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                    Edit
+                                </button>
+                                <button class="basket-item-duplicate-btn" onclick="duplicateItem(${index})" title="Duplicate">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                    </svg>
+                                    Copy
+                                </button>
+                            </div>
                             ${logosHtml}
+                            ${notePreview}
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                             </svg>
                         </button>
+                    </div>
+                    <!-- Edit Panel -->
+                    <div class="basket-edit-panel" id="editPanel-${index}">
+                        <div class="edit-section">
+                            <div class="edit-section-title">LOGOS & CUSTOMIZATION</div>
+                            <div class="edit-logos-grid">
+                                ${editLogosHtml}
+                            </div>
+                        </div>
+                        ${availableSizes.length > 0 ? `
+                        <div class="edit-section">
+                            <div class="edit-section-title">ADD SIZE</div>
+                            <div class="edit-add-size-row">
+                                <select class="edit-size-select" id="addSizeSelect-${index}">
+                                    <option value="">Select size...</option>
+                                    ${addSizeOpts}
+                                </select>
+                                <button class="edit-add-size-btn" onclick="event.stopPropagation();addSizeToItem(${index})">+ Add</button>
+                            </div>
+                        </div>` : ''}
+                        <div class="edit-section">
+                            <div class="edit-section-title">ITEM NOTE</div>
+                            <textarea class="basket-item-note" 
+                                      placeholder="Special instructions for this item (e.g., name on back, thread colour)..." 
+                                      data-index="${index}"
+                                      oninput="updateItemNote(${index}, this.value)">${itemNote}</textarea>
+                        </div>
                     </div>
                 `;
             });
@@ -1169,6 +1563,7 @@
             attachQtyListeners();
             attachRemoveListeners();
             attachCheckboxListeners();
+            attachEditPanelListeners();
         }
         
         // Render customization cards with colors
@@ -1182,34 +1577,72 @@
             let allCustomizations = [];
             
             basket.forEach((item, idx) => {
-                console.log('🧺 Item', idx, '- customizations:', item.customizations);
-                console.log('🧺 Item', idx, '- positions:', item.positions);
+                // Calculate the ACTUAL item qty from its sizes/quantities (single source of truth)
+                const sizes = item.sizes || item.quantities || {};
+                const actualItemQty = Object.values(sizes).reduce((s, q) => s + q, 0);
+                const itemName = item.productName || item.name || 'Item';
+                
+                // Deduplicate: track which positions we've seen for THIS item
+                const seenPositions = new Set();
+                
+                // Build a lookup from positions object for reliable names
+                const posNameLookup = {};
+                if (item.positions && typeof item.positions === 'object' && !Array.isArray(item.positions)) {
+                    Object.entries(item.positions).forEach(([posKey, posData]) => {
+                        if (posData.name) posNameLookup[posData.name] = posData.name;
+                        posNameLookup[posKey] = posData.name || posKey;
+                    });
+                }
                 
                 // Check customizations array (preferred format)
                 if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
                     item.customizations.forEach(custom => {
-                        console.log('🧺 Found customization:', custom);
+                        // Fix position name: if it's a number or blank, try to resolve from positions object
+                        let posName = custom.position || 'Unknown';
+                        if (!posName || posName === 'Unknown' || /^\d+$/.test(posName)) {
+                            // Try to find name from positions lookup
+                            const posKeys = Object.keys(posNameLookup);
+                            if (posKeys.length > 0) {
+                                posName = posNameLookup[posKeys[0]] || posKeys[0];
+                            }
+                        }
+                        
+                        const posKey = posName + '|' + (custom.method || 'Print');
+                        if (seenPositions.has(posKey)) return; // skip duplicate
+                        seenPositions.add(posKey);
+                        
+                        const unitPrice = custom.unitPrice || 0;
+                        // ALWAYS recalculate total from actual qty (fixes stale/merged qty bug)
+                        const total = unitPrice * actualItemQty;
+                        
                         allCustomizations.push({
-                            position: custom.position || 'Unknown',
+                            position: posName,
                             method: custom.method || 'Print',
-                            qty: custom.qty || item.totalQty || 1,
-                            unitPrice: custom.unitPrice || 0,
-                            total: custom.total || 0
+                            qty: actualItemQty,
+                            unitPrice: unitPrice,
+                            total: total,
+                            itemName: itemName
                         });
                     });
                 }
                 // ONLY use positions if customizations array is empty
                 else if (item.positions && typeof item.positions === 'object' && Object.keys(item.positions).length > 0) {
-                    const totalQty = item.totalQty || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
-                    
                     Object.entries(item.positions).forEach(([posName, posData]) => {
                         if (posData.method) {
+                            const posKey = (posData.name || posName) + '|' + posData.method;
+                            if (seenPositions.has(posKey)) return;
+                            seenPositions.add(posKey);
+                            
+                            const unitPrice = posData.unitPrice || 0;
+                            const total = unitPrice * actualItemQty;
+                            
                             allCustomizations.push({
-                                position: posName,
+                                position: posData.name || posName,
                                 method: posData.method,
-                                qty: totalQty,
-                                unitPrice: posData.unitPrice || 0,
-                                total: posData.totalPrice || 0
+                                qty: actualItemQty,
+                                unitPrice: unitPrice,
+                                total: total,
+                                itemName: itemName
                             });
                         }
                     });
@@ -1233,8 +1666,7 @@
                             <span class="value white">${formatCurrency(item.total)}</span>
                         </div>
                         <div class="row detail white">
-                            <span>Unit: ${formatCurrency(item.unitPrice)}</span>
-                            <span>Qty: ${item.qty}</span>
+                            <span>${formatCurrency(item.unitPrice)} × ${item.qty} = ${formatCurrency(item.total)}</span>
                         </div>
                     </div>
                 `;
@@ -1259,15 +1691,23 @@
                     garmentsTotal += qty * unitPrice;
                 }
                 
-                // Calculate customization total (use customizations array first, fallback to positions)
+                // Calculate customization total — always recalculate from unitPrice × actual qty
+                const itemQty = Object.values(sizes).reduce((sum, q) => sum + q, 0);
+                const seenPos = new Set();
                 if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
                     item.customizations.forEach(custom => {
-                        customTotal += custom.total || 0;
+                        const pk = (custom.position || '') + '|' + (custom.method || '');
+                        if (seenPos.has(pk)) return;
+                        seenPos.add(pk);
+                        customTotal += (custom.unitPrice || 0) * itemQty;
                     });
                 } else if (item.positions && typeof item.positions === 'object') {
                     Object.values(item.positions).forEach(pos => {
-                        if (pos.totalPrice) {
-                            customTotal += pos.totalPrice;
+                        if (pos.method) {
+                            const pk = (pos.name || '') + '|' + pos.method;
+                            if (seenPos.has(pk)) return;
+                            seenPos.add(pk);
+                            customTotal += (pos.unitPrice || 0) * itemQty;
                         }
                     });
                 }
@@ -1458,6 +1898,9 @@
                         return;
                     }
                     
+                    // Save order notes before navigating
+                    saveOrderNotes();
+                    
                     // Navigate to quote form
                     window.location.href = '/quote';
                 });
@@ -1536,6 +1979,152 @@
             
             if (selectAllCheckbox && allCheckboxes.length > 0) {
                 selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+            }
+        }
+        
+        // ===== NEW BASKET EDITING FUNCTIONS =====
+        
+        // Attach edit panel listeners (logo remove, add logo, add size)
+        function attachEditPanelListeners() {
+            // Logo remove buttons (in cards and edit panels)
+            document.querySelectorAll('.edit-logo-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.itemIdx);
+                    const pos = decodeURIComponent(btn.dataset.pos);
+                    removeLogoFromItem(idx, pos);
+                });
+            });
+            // Add logo buttons in edit panels
+            document.querySelectorAll('.edit-logo-add-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openCustomizeForItem(parseInt(btn.dataset.itemIdx));
+                });
+            });
+        }
+        
+        // Toggle edit panel for an item
+        function toggleEditPanel(index) {
+            const panel = document.getElementById('editPanel-' + index);
+            const btn = document.getElementById('editBtn-' + index);
+            if (!panel) return;
+            
+            const isOpen = panel.classList.contains('open');
+            
+            // Close all panels first
+            document.querySelectorAll('.basket-edit-panel').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.basket-item-edit-btn').forEach(b => b.classList.remove('active'));
+            
+            if (!isOpen) {
+                panel.classList.add('open');
+                if (btn) btn.classList.add('active');
+                // Scroll panel into view
+                setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+            }
+            
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+        
+        // Remove a logo from a specific position in a basket item
+        function removeLogoFromItem(itemIndex, position) {
+            let basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            const item = basket[itemIndex];
+            
+            // Remove from positionDesigns
+            if (item.positionDesigns && item.positionDesigns[position]) {
+                delete item.positionDesigns[position];
+            }
+            
+            // Remove from positions array
+            if (item.positions && Array.isArray(item.positions)) {
+                item.positions = item.positions.filter(p => (p.name || p.position) !== position);
+            }
+            
+            // Remove from customizations array
+            if (item.customizations && Array.isArray(item.customizations)) {
+                item.customizations = item.customizations.filter(c => c.position !== position);
+            }
+            
+            saveBasket(basket);
+            renderBasket();
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+        }
+        
+        // Add a new size to a basket item
+        function addSizeToItem(itemIndex) {
+            const select = document.getElementById('addSizeSelect-' + itemIndex);
+            if (!select || !select.value) return;
+            
+            const newSize = select.value;
+            let basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            const item = basket[itemIndex];
+            const sizesKey = item.sizes ? 'sizes' : 'quantities';
+            if (!item[sizesKey]) item[sizesKey] = {};
+            
+            if (item[sizesKey][newSize]) return; // Already exists
+            
+            item[sizesKey][newSize] = 1;
+            
+            // Update totalQty
+            if (typeof item.totalQty !== 'undefined') {
+                item.totalQty = Object.values(item[sizesKey]).reduce((sum, q) => sum + q, 0);
+            }
+            
+            saveBasket(basket);
+            renderBasket();
+            
+            // Re-open the edit panel after re-render
+            setTimeout(() => toggleEditPanel(itemIndex), 100);
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+        
+        // Update per-item note (debounced save, no re-render)
+        function updateItemNote(itemIndex, note) {
+            let basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            basket[itemIndex].note = note.trim();
+            saveBasket(basket);
+        }
+        
+        // Duplicate an item in the basket
+        function duplicateItem(itemIndex) {
+            let basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            
+            const original = basket[itemIndex];
+            const clone = JSON.parse(JSON.stringify(original));
+            clone.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            clone.addedAt = new Date().toISOString();
+            clone.note = '';
+            
+            basket.splice(itemIndex + 1, 0, clone);
+            saveBasket(basket);
+            renderBasket();
+            
+            if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+        }
+        
+        // Save global order notes to localStorage
+        function saveOrderNotes() {
+            const textarea = document.getElementById('orderNotesTextarea');
+            if (textarea) {
+                localStorage.setItem('orderNotes', textarea.value.trim());
+            }
+        }
+        
+        // Load global order notes from localStorage
+        function loadOrderNotes() {
+            const textarea = document.getElementById('orderNotesTextarea');
+            if (textarea) {
+                textarea.value = localStorage.getItem('orderNotes') || '';
             }
         }
         

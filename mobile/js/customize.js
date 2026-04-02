@@ -1891,12 +1891,23 @@
             existing.unitPrice = newItem.unitPrice;
             if (newItem.positions && Object.keys(newItem.positions).length > 0) {
                 existing.positions = newItem.positions;
+                // Recalculate position totals with merged qty
+                Object.values(existing.positions).forEach(pos => {
+                    if (pos.unitPrice) {
+                        pos.totalPrice = pos.unitPrice * existing.totalQty;
+                    }
+                });
             }
             if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
                 existing.positionDesigns = newItem.positionDesigns;
             }
             if (newItem.customizations && newItem.customizations.length > 0) {
-                existing.customizations = newItem.customizations;
+                // Recalculate customization totals with merged qty
+                existing.customizations = newItem.customizations.map(c => ({
+                    ...c,
+                    qty: existing.totalQty,
+                    total: (c.unitPrice || 0) * existing.totalQty
+                }));
             }
             existing.colorImage = newItem.colorImage || existing.colorImage;
         } else {
@@ -6323,9 +6334,23 @@
         
         const garmentDetailCalc = document.getElementById('garmentDetailCalc');
         if (garmentDetailCalc) {
-            // Derive effective unit price from actual totals (most reliable)
-            const effectiveUnitPrice = displayQty > 0 ? grandGarmentTotal / displayQty : 0;
-            garmentDetailCalc.textContent = `${formatCurrency(effectiveUnitPrice)} × ${displayQty} = ${formatCurrency(grandGarmentTotal)}`;
+            // Show per-item garment breakdown instead of averaged total
+            if (basket.length > 0 || (state.quantity > 0 && state.product)) {
+                let perItemLines = [];
+                basket.forEach(item => {
+                    const itemQty = item.totalQty || item.quantity || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
+                    const itemUp = parseFloat(item.unitPrice || item.price) || 0;
+                    const itemName = (item.productName || item.name || 'Item').substring(0, 20);
+                    perItemLines.push(`${itemName}: ${formatCurrency(itemUp)} \u00d7 ${itemQty} = ${formatCurrency(itemUp * itemQty)}`);
+                });
+                if (state.quantity > 0 && state.product) {
+                    const cName = (state.product.name || 'Current').substring(0, 20);
+                    perItemLines.push(`${cName}: ${formatCurrency(unitPrice)} \u00d7 ${currentQty} = ${formatCurrency(currentGarmentTotal)}`);
+                }
+                garmentDetailCalc.innerHTML = perItemLines.join('<br>');
+            } else {
+                garmentDetailCalc.textContent = `${formatCurrency(0)} \u00d7 0 = ${formatCurrency(0)}`;
+            }
         }
         
         // Also update legacy detail elements (old HTML may still be cached)
