@@ -6517,12 +6517,25 @@
         });
     }
 
-    // === Update Basket Items List with +/- controls ===
+    // === Update Basket Items List with full basket-like controls ===
     function updateBasketItemsList(basket, unitPrice) {
         const basketItemsList = document.getElementById('basketItemsList');
         if (!basketItemsList) return;
         
         let itemsHtml = '';
+        
+        // Position name helper (same as basket.html)
+        const posMap = {
+            'left-chest':'Left Chest','right-chest':'Right Chest','front-center':'Front Center',
+            'back-large':'Back Large','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve',
+            'left-breast':'Left Chest','right-breast':'Right Chest',
+            'small-centre-front':'Centre Front','large-front-center':'Front Center',
+            'large-back':'Back','left-arm':'Left Arm','right-arm':'Right Arm'
+        };
+        function toReadablePos(slug) {
+            if (!slug) return 'Logo';
+            return posMap[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
         
         // FIRST: Show CURRENT product being customized (if any items selected)
         if (state.quantity > 0 && state.product) {
@@ -6531,51 +6544,47 @@
             const currentName = state.product.name || 'Custom Product';
             const currentCode = state.product.code || '';
             
-            // Build sizes display for current product
+            // Build sizes with +/- controls for current product
             let currentSizesHtml = '';
             if (state.sizeQuantities && Object.keys(state.sizeQuantities).length > 0) {
-                const sizesList = Object.entries(state.sizeQuantities)
-                    .filter(([, qty]) => qty > 0)
-                    .map(([size, qty]) => `${size}: ${qty}`)
-                    .join(', ');
-                currentSizesHtml = `<span class="sizes-text">${sizesList}</span>`;
+                Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0).forEach(([size, qty]) => {
+                    currentSizesHtml += `
+                        <div class="summary-size-row">
+                            <span class="summary-size-label">${size}</span>
+                            <div class="summary-qty-controls">
+                                <button type="button" class="summary-qty-btn minus" data-index="current" data-size="${size}">\u2212</button>
+                                <span class="summary-qty-value">${qty}</span>
+                                <button type="button" class="summary-qty-btn plus" data-index="current" data-size="${size}">+</button>
+                            </div>
+                        </div>`;
+                });
             }
             
             // Get logo for current item
-            const currentCardLogo = getLogoFromState();
-            const currentLogoHtml = currentCardLogo
-                ? `<img src="${currentCardLogo}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">`
-                : '';
+            const currentLogo = getLogoFromState();
+            const currentLogoThumb = currentLogo
+                ? `<img src="${currentLogo}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">`
+                : `<span style="font-size:10px;color:#9ca3af;text-align:center;">No logo</span>`;
             
             itemsHtml += `
-                <div class="basket-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
-                    <div class="basket-item-image">
-                        <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
-                    </div>
-                    <div class="basket-item-info" style="flex:1;min-width:0;">
-                        <h4>${currentName} <span style="color: #7c3aed; font-size: 11px;">(Current)</span></h4>
-                        <p class="item-code" style="font-size: 11px; color: #6b7280;">${currentCode}</p>
-                        <p class="item-color">Color: ${currentColor}</p>
-                        <div class="item-sizes">
-                            ${currentSizesHtml}
+                <div class="summary-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
+                    <div class="summary-item-top">
+                        <div class="summary-item-image">
+                            <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
-                    </div>
-                    ${currentLogoHtml ? `<div class="basket-item-logo-preview" style="width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid #e5e7eb;background:#fff;margin-left:auto;">${currentLogoHtml}</div>` : ''}
-                </div>
-            `;
-            
-            // Add note box with logo for CURRENT item (pulled from live state)
-            const currentLogoSrc = getLogoFromState();
-            itemsHtml += `
-                <div class="basket-item-note-box current-note-box" data-index="current">
-                    <div class="note-box-header">NOTE / LOGO SIZE</div>
-                    <div class="note-box-body">
-                        <div class="note-box-logo" id="currentItemLogo">
-                            ${currentLogoSrc 
-                                ? '<img src="' + currentLogoSrc + '" alt="Logo" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">'
-                                : '<span class="no-logo">No logo</span>'}
+                        <div class="summary-item-info">
+                            <h4>${currentName} <span style="color: #7c3aed; font-size: 11px;">(Current)</span></h4>
+                            <p style="font-size: 11px; color: #6b7280;">${currentCode}</p>
+                            <p style="font-size: 12px; color: #6b7280;">Color: ${currentColor}</p>
                         </div>
-                        <textarea class="note-box-input" data-index="current" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200"></textarea>
+                        <div class="summary-item-logo-thumb">${currentLogoThumb}</div>
+                    </div>
+                    <div class="summary-item-sizes">${currentSizesHtml}</div>
+                    <div class="summary-item-actions">
+                        <span class="summary-customize-badge has-customization" style="cursor:default;">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            Editing Now
+                        </span>
                     </div>
                 </div>
             `;
@@ -6589,72 +6598,84 @@
             }
         }
         
-        // Add basket items to itemsHtml
+        // Add basket items
         if (basket && basket.length > 0) {
             basket.forEach((item, index) => {
                 const itemImage = item.colorImage || item.image || 'assets/images/products/default.jpg';
                 const itemColor = item.color || 'Black';
                 const itemName = item.productName || item.name || 'Custom Product';
+                const itemCode = item.productCode || '';
                 
-                // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
                 
-                // Get logo for this basket item
-                const basketItemLogo = getItemLogoSrc(item);
-                const basketLogoHtml = basketItemLogo
-                    ? `<div class="basket-item-logo-preview" style="width:80px;height:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid #e5e7eb;background:#fff;margin-left:auto;"><img src="${basketItemLogo}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"></div>`
-                    : '';
-                
-                // Build sizes display (read-only, no +/- controls)
+                // Build +/- controls for each size
                 let sizesHtml = '';
-                if (Object.keys(sizes).length > 0) {
-                    const sizesList = Object.entries(sizes)
-                        .filter(([, qty]) => qty > 0)
-                        .map(([size, qty]) => `${size}: ${qty}`)
-                        .join(', ');
-                    sizesHtml = `<span class="sizes-text">${sizesList}</span>`;
+                Object.entries(sizes).filter(([, qty]) => qty > 0).forEach(([size, qty]) => {
+                    sizesHtml += `
+                        <div class="summary-size-row">
+                            <span class="summary-size-label">${size}</span>
+                            <div class="summary-qty-controls">
+                                <button type="button" class="summary-qty-btn minus" data-index="${index}" data-size="${size}">\u2212</button>
+                                <span class="summary-qty-value">${qty}</span>
+                                <button type="button" class="summary-qty-btn plus" data-index="${index}" data-size="${size}">+</button>
+                            </div>
+                        </div>`;
+                });
+                
+                // Get logo thumbnail
+                const logoSrc = getItemLogoSrc(item);
+                const logoThumb = logoSrc
+                    ? `<img src="${logoSrc}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">`
+                    : `<span style="font-size:10px;color:#9ca3af;text-align:center;">No logo</span>`;
+                
+                // Logo position labels
+                let logoPosLabels = '';
+                if (item.positionDesigns) {
+                    const labels = Object.keys(item.positionDesigns).map(p => toReadablePos(p));
+                    if (labels.length) logoPosLabels = `<div style="font-size:9px;color:#6b7280;margin-top:2px;text-align:center;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${labels.join(', ')}</div>`;
                 }
                 
-                itemsHtml += `
-                    <div class="basket-item-card" data-index="${index}">
-                        <div class="basket-item-image">
-                            <img src="${itemImage}" alt="${itemName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
-                        </div>
-                        <div class="basket-item-info">
-                            <h4>${itemName}</h4>
-                            <p class="item-color">Color: ${itemColor}</p>
-                            <div class="item-sizes">
-                                ${sizesHtml}
-                            </div>
-                        </div>
-                        ${basketLogoHtml}
-                        <button type="button" class="basket-item-remove" data-index="${index}">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                <line x1="10" y1="11" x2="10" y2="17"/>
-                                <line x1="14" y1="11" x2="14" y2="17"/>
-                            </svg>
-                        </button>
-                    </div>
-                `;
-
-                // Logo + Note box
-                const logoSrc = getItemLogoSrc(item);
-                console.log('🖼️ NOTE BOX - item index:', index, 'logoSrc found:', !!logoSrc, 'logoSrc length:', logoSrc?.length || 0);
-                console.log('🖼️ item.positionDesigns:', item.positionDesigns ? Object.keys(item.positionDesigns) : 'NONE');
-                console.log('🖼️ item.positions:', item.positions ? (Array.isArray(item.positions) ? item.positions.length + ' array' : Object.keys(item.positions).join(',')) : 'NONE');
+                // Customization badge
+                const hasCust = (item.customizations && item.customizations.length > 0) || (item.positions && Object.keys(item.positions).length > 0);
+                const badgeClass = hasCust ? 'summary-customize-badge has-customization' : 'summary-customize-badge';
+                const badgeText = hasCust ? '\u2713 Customized' : '+ Add Logo';
+                
+                // Item note
                 const savedNote = item.note || '';
+                
                 itemsHtml += `
-                    <div class="basket-item-note-box" data-index="${index}">
-                        <div class="note-box-header">NOTE / LOGO SIZE</div>
-                        <div class="note-box-body">
-                            <div class="note-box-logo">
-                                ${logoSrc 
-                                    ? `<img src="${logoSrc}" alt="Logo" onerror="this.parentElement.innerHTML='<span class=\\'no-logo\\'>No logo</span>'">`
-                                    : '<span class="no-logo">No logo</span>'}
+                    <div class="summary-item-card" data-index="${index}">
+                        <div class="summary-item-top">
+                            <div class="summary-item-image">
+                                <img src="${itemImage}" alt="${itemName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                             </div>
-                            <textarea class="note-box-input" data-index="${index}" placeholder="e.g. Logo 8cm wide, centred…" maxlength="200">${savedNote}</textarea>
+                            <div class="summary-item-info">
+                                <h4>${itemName}</h4>
+                                <p style="font-size: 12px; color: #6b7280;">Color: ${itemColor}</p>
+                            </div>
+                            <div class="summary-item-logo-thumb">${logoThumb}${logoPosLabels}</div>
+                            <button type="button" class="summary-item-remove" data-index="${index}">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg>
+                            </button>
                         </div>
+                        <div class="summary-item-sizes">${sizesHtml}</div>
+                        <div class="summary-item-actions">
+                            <span class="${badgeClass}" data-index="${index}" style="cursor:pointer;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                ${badgeText}
+                            </span>
+                            <button type="button" class="summary-edit-btn" data-index="${index}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Edit
+                            </button>
+                            <button type="button" class="summary-copy-btn" data-index="${index}">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                Copy
+                            </button>
+                        </div>
+                        ${savedNote ? `<div class="summary-item-note-preview">\u{1F4DD} ${savedNote.substring(0, 50)}${savedNote.length > 50 ? '...' : ''}</div>` : ''}
                     </div>
                 `;
             });
@@ -6662,29 +6683,100 @@
         
         basketItemsList.innerHTML = itemsHtml;
         
-        // Attach event listeners for remove buttons only
-        basketItemsList.querySelectorAll('.basket-item-remove').forEach(btn => {
+        // --- Attach event listeners ---
+        
+        // Remove buttons
+        basketItemsList.querySelectorAll('.summary-item-remove').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const index = parseInt(btn.dataset.index);
-                removeBasketItem(index);
+                const idx = parseInt(btn.dataset.index);
+                removeBasketItem(idx);
             });
         });
-
-        // Attach note save listeners
-        basketItemsList.querySelectorAll('.note-box-input').forEach(textarea => {
-            let debounceTimer;
-            textarea.addEventListener('input', () => {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    const idx = parseInt(textarea.dataset.index);
-                    const bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                    if (bsk[idx]) {
-                        bsk[idx].note = textarea.value.trim();
-                        localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+        
+        // +/- qty buttons
+        basketItemsList.querySelectorAll('.summary-qty-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const idx = btn.dataset.index;
+                const size = btn.dataset.size;
+                const delta = btn.classList.contains('plus') ? 1 : -1;
+                
+                if (idx === 'current') {
+                    // Modify current state
+                    if (!state.sizeQuantities) return;
+                    const newQty = Math.max(0, (state.sizeQuantities[size] || 0) + delta);
+                    if (newQty === 0) {
+                        delete state.sizeQuantities[size];
+                    } else {
+                        state.sizeQuantities[size] = newQty;
                     }
-                }, 400);
+                    state.quantity = Object.values(state.sizeQuantities).reduce((s, q) => s + q, 0);
+                    updatePricingSummary();
+                } else {
+                    // Modify basket item
+                    let bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    const i = parseInt(idx);
+                    if (!bsk[i]) return;
+                    const sizes = bsk[i].sizes || bsk[i].quantities || {};
+                    const newQty = Math.max(0, (sizes[size] || 0) + delta);
+                    if (newQty === 0) {
+                        delete sizes[size];
+                    } else {
+                        sizes[size] = newQty;
+                    }
+                    // Update totalQty
+                    const totalQ = Object.values(sizes).reduce((s, q) => s + q, 0);
+                    if (totalQ === 0) {
+                        // Remove item if no sizes left
+                        bsk.splice(i, 1);
+                    } else {
+                        bsk[i].totalQty = totalQ;
+                        if (bsk[i].sizes) bsk[i].sizes = sizes;
+                        if (bsk[i].quantities) bsk[i].quantities = sizes;
+                    }
+                    localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                    updateBasketCount();
+                    updatePricingSummary();
+                }
+            });
+        });
+        
+        // Copy buttons
+        basketItemsList.querySelectorAll('.summary-copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const idx = parseInt(btn.dataset.index);
+                let bsk = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                if (!bsk[idx]) return;
+                const copy = JSON.parse(JSON.stringify(bsk[idx]));
+                copy.id = Date.now().toString();
+                copy.addedAt = new Date().toISOString();
+                bsk.splice(idx + 1, 0, copy);
+                localStorage.setItem('quoteBasket', JSON.stringify(bsk));
+                updateBasketCount();
+                updatePricingSummary();
+            });
+        });
+        
+        // Edit buttons - go to basket page for editing
+        basketItemsList.querySelectorAll('.summary-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = 'basket.html';
+            });
+        });
+        
+        // Customize badge click - redirect to basket for customization
+        basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
+            badge.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = 'basket.html';
             });
         });
     }
