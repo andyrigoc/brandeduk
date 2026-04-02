@@ -6762,21 +6762,22 @@
             });
         });
         
-        // Edit buttons - go to basket page for editing
+        // Edit buttons - go to basket page
         basketItemsList.querySelectorAll('.summary-edit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.href = 'basket.html';
+                window.location.href = '../basket.html';
             });
         });
         
-        // Customize badge click - redirect to basket for customization
+        // Customize badge click - open logo action modal
         basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.href = 'basket.html';
+                const idx = parseInt(badge.dataset.index);
+                openLogoActionModal(idx);
             });
         });
     }
@@ -6809,6 +6810,152 @@
         return null;
     }
     
+    // === Logo Action Modal ===
+    let _logoActionTargetIdx = null;
+    let _logoActionSelectedSrc = null;
+    
+    function openLogoActionModal(itemIndex) {
+        _logoActionTargetIdx = itemIndex;
+        _logoActionSelectedSrc = null;
+        
+        const modal = document.getElementById('logoActionModal');
+        if (!modal) return;
+        
+        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const item = basket[itemIndex];
+        const itemName = item ? (item.productName || item.name || 'Item') : 'Item';
+        
+        // Title
+        const title = document.getElementById('logoActionTitle');
+        if (title) title.textContent = `Add Logo – ${itemName}`;
+        
+        // Collect all available logos: current state + basket items + gallery
+        const allLogos = new Set();
+        // From current state
+        const stateLogo = getLogoFromState();
+        if (stateLogo) allLogos.add(stateLogo);
+        // From all basket items
+        basket.forEach(bi => {
+            const l = getItemLogoSrc(bi);
+            if (l) allLogos.add(l);
+        });
+        // From logo gallery (localStorage)
+        try {
+            const galleryLogos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
+            galleryLogos.forEach(entry => {
+                if (entry.url) allLogos.add(entry.url);
+                if (entry.src) allLogos.add(entry.src);
+            });
+        } catch(e) {}
+        
+        // Render gallery
+        const gallery = document.getElementById('logoActionGallery');
+        const existingSection = document.getElementById('logoActionExisting');
+        const divider = document.getElementById('logoActionDivider');
+        const applyBtn = document.getElementById('logoActionApply');
+        const previewDiv = document.getElementById('logoActionPreview');
+        
+        if (previewDiv) previewDiv.style.display = 'none';
+        if (applyBtn) applyBtn.style.display = 'none';
+        
+        if (allLogos.size > 0 && gallery && existingSection) {
+            existingSection.style.display = 'block';
+            if (divider) divider.style.display = 'block';
+            gallery.innerHTML = '';
+            allLogos.forEach(src => {
+                const div = document.createElement('div');
+                div.className = 'logo-action-gallery-item';
+                div.innerHTML = `<img src="${src}" alt="Logo">`;
+                div.addEventListener('click', () => {
+                    gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    _logoActionSelectedSrc = src;
+                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (previewDiv) previewDiv.style.display = 'none';
+                });
+                gallery.appendChild(div);
+            });
+        } else {
+            if (existingSection) existingSection.style.display = 'none';
+            if (divider) divider.style.display = 'none';
+        }
+        
+        // File input handler
+        const fileInput = document.getElementById('logoActionFileInput');
+        if (fileInput) {
+            fileInput.value = '';
+            // Clone to remove old listeners
+            const newInput = fileInput.cloneNode(true);
+            fileInput.parentNode.replaceChild(newInput, fileInput);
+            newInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    _logoActionSelectedSrc = ev.target.result;
+                    if (gallery) gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
+                    const previewImg = document.getElementById('logoActionPreviewImg');
+                    if (previewImg) previewImg.src = ev.target.result;
+                    if (previewDiv) previewDiv.style.display = 'block';
+                    if (applyBtn) applyBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Show modal
+        modal.style.display = 'flex';
+    }
+    
+    function closeLogoActionModal() {
+        const modal = document.getElementById('logoActionModal');
+        if (modal) modal.style.display = 'none';
+        _logoActionTargetIdx = null;
+        _logoActionSelectedSrc = null;
+    }
+    
+    function applyLogoAction() {
+        if (_logoActionTargetIdx === null || !_logoActionSelectedSrc) return;
+        
+        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const item = basket[_logoActionTargetIdx];
+        if (!item) { closeLogoActionModal(); return; }
+        
+        // Find first position key or create a default one
+        let posKey = 'small-centre-front';
+        if (item.positions && typeof item.positions === 'object') {
+            const keys = Object.keys(item.positions);
+            if (keys.length) posKey = keys[0];
+        }
+        
+        // Set logo in positionDesigns
+        if (!item.positionDesigns) item.positionDesigns = {};
+        if (!item.positionDesigns[posKey]) {
+            item.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
+        } else {
+            item.positionDesigns[posKey].logo = _logoActionSelectedSrc;
+        }
+        
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        closeLogoActionModal();
+        updatePricingSummary();
+        if (typeof showToast === 'function') showToast('Logo applied!');
+    }
+    
+    // Wire up modal close/apply on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeBtn = document.getElementById('logoActionClose');
+        if (closeBtn) closeBtn.addEventListener('click', closeLogoActionModal);
+        
+        const applyBtn = document.getElementById('logoActionApply');
+        if (applyBtn) applyBtn.addEventListener('click', applyLogoAction);
+        
+        const overlay = document.getElementById('logoActionModal');
+        if (overlay) overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeLogoActionModal();
+        });
+    });
+
     // Get logo from current in-memory state (not localStorage)
     function getLogoFromState() {
         // Check positionDesigns

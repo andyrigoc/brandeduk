@@ -835,6 +835,32 @@
 
     </main>
 
+    <!-- Logo Action Modal for basket items -->
+    <div class="logo-action-overlay" id="logoActionModal" style="display:none;">
+        <div class="logo-action-sheet">
+            <div class="logo-action-header">
+                <h3 id="logoActionTitle">Add Logo</h3>
+                <button type="button" id="logoActionClose" class="logo-action-close-btn">&times;</button>
+            </div>
+            <div class="logo-action-body">
+                <div id="logoActionExisting" style="display:none;">
+                    <p style="font-size:12px;color:#6b7280;margin:0 0 8px;">Use an existing logo:</p>
+                    <div id="logoActionGallery" class="logo-action-gallery"></div>
+                </div>
+                <div class="logo-action-divider" id="logoActionDivider" style="display:none;"><span>or</span></div>
+                <label class="logo-action-upload-btn" id="logoActionUploadBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload New Logo
+                    <input type="file" id="logoActionFileInput" accept="image/*" style="display:none;">
+                </label>
+                <div id="logoActionPreview" style="display:none;margin-top:12px;text-align:center;">
+                    <img id="logoActionPreviewImg" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">
+                </div>
+            </div>
+            <button type="button" class="logo-action-apply-btn" id="logoActionApply" style="display:none;">Apply Logo</button>
+        </div>
+    </div>
+
     <!-- Fixed Action Bar -->
     <div class="action-bar">
         <div class="action-price">
