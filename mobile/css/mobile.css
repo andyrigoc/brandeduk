@@ -817,6 +817,12 @@ a {
     padding-top: calc(var(--header-height) + 10px);
 }
 
+@media (max-width: 767px) {
+    .customize-main {
+        padding-top: var(--header-height);
+    }
+}
+
 /* === Product Gallery === */
 .product-gallery {
     background: var(--gray-50);

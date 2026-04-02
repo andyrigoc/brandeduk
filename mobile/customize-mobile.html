@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20260307C">
+    <link rel="stylesheet" href="css/mobile.css?v=20260402a">
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260401a">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
@@ -33,16 +33,10 @@
             font-size: 12px !important;
         }
 
-        /* Reduce gap between header and product image — MOBILE ONLY */
+        /* FIX: header.css sets body { padding-top: 220px } — override for mobile */
         @media (max-width: 767px) {
-            .customize-main {
-                padding-top: 80px !important;
-            }
-            .gallery-main {
-                padding: 8px !important;
-            }
-            .product-gallery {
-                margin-top: -10px;
+            body.customize-page {
+                padding-top: 0 !important;
             }
         }
 
@@ -891,12 +885,12 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="home-mobile.html" class="nav-item">
+        <a href="#" class="nav-item" id="accountNavBtn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
-            <span class="nav-item-label">Home</span>
+            <span class="nav-item-label">Account</span>
         </a>
         <a href="shop-mobile.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -907,14 +901,18 @@
             </svg>
             <span class="nav-item-label">Shop</span>
         </a>
-        <a href="customize-mobile.html" class="nav-item-center active">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
+        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
+            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="6" y1="21" x2="6" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="3"></line>
+                <line x1="18" y1="21" x2="18" y2="3"></line>
+                <circle cx="6" cy="8" r="2"></circle>
+                <circle cx="12" cy="14" r="2"></circle>
+                <circle cx="18" cy="10" r="2"></circle>
             </svg>
-        </a>
-        <a href="../basket.html" class="nav-item" id="basketNavLink">
+            <span class="nav-item-label">Filter</span>
+        </button>
+        <a href="../basket.html#orderSummary" class="nav-item" id="basketNavLink">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
@@ -923,12 +921,16 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+        <a href="#" class="nav-item" id="chatNavBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
+                <g fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
+                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
+                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
+                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
+                </g>
             </svg>
-            <span class="nav-item-label">Account</span>
+            <span class="nav-item-label">Chat</span>
         </a>
     </nav>
 
@@ -1802,6 +1804,68 @@
     });
 })();
 </script>
+
+    <!-- Tawk.to mini-chat iframe overlay -->
+    <script type="text/javascript">
+        (function() {
+            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
+            var isOpen = false;
+
+            var overlay = document.createElement('div');
+            overlay.id = 'tawkOverlay';
+            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
+
+            var chatBox = document.createElement('div');
+            chatBox.id = 'tawkMiniChat';
+            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
+
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
+            chatBox.appendChild(closeBtn);
+
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
+            chatBox.appendChild(iframe);
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(chatBox);
+
+            function openChat() {
+                if (!iframe.src) iframe.src = TAWK_DIRECT;
+                overlay.style.display = 'block';
+                chatBox.style.display = 'block';
+                isOpen = true;
+            }
+            function closeChat() {
+                overlay.style.display = 'none';
+                chatBox.style.display = 'none';
+                isOpen = false;
+            }
+
+            overlay.addEventListener('click', closeChat);
+            closeBtn.addEventListener('click', closeChat);
+
+            var chatNavBtn = document.getElementById('chatNavBtn');
+            if (chatNavBtn) {
+                chatNavBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openChat();
+                });
+            }
+
+            // Update basket badge
+            try {
+                var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                var badge = document.getElementById('navCartBadge');
+                if (badge && basket.length > 0) {
+                    badge.textContent = basket.length;
+                    badge.style.display = 'flex';
+                }
+            } catch(e) {}
+        })();
+    </script>
 
 </body>
 </html>

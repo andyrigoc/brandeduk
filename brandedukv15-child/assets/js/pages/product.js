@@ -250,7 +250,8 @@ async function loadProductData() {
 
     if (!productData) {
         console.error('❌ No product data available!');
-        alert('Product not found. Please go back and select a product.');
+        // No blocking alert – redirect to homepage so user isn't stuck
+        window.location.replace('index.html');
         return false;
     }
 

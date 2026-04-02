@@ -3008,9 +3008,9 @@ body {
 }
 
 .suggestion-item mark {
-    background: #C952DE20;
-    color: #C952DE;
-    font-weight: 700;
+    background: rgba(0, 0, 0, 0.06);
+    color: #1f2937;
+    font-weight: 600;
     padding: 0 2px;
     border-radius: 2px;
 }
