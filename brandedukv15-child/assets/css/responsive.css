@@ -657,7 +657,7 @@
         justify-content: space-between;
         align-items: center;
         background: #f3f4f6;
-        padding: 4px 24px;
+        padding: 6px 24px;
         font-size: 12px;
         position: fixed;
         top: 0;
@@ -726,6 +726,16 @@
         min-width: 24px !important;
         min-height: 24px !important;
         border-radius: 6px;
+        box-shadow: 2px 2px 5px #b5b5b5, -2px -2px 5px #ffffff;
+    }
+
+    .tablet-top-bar .social-icon::after {
+        display: none;
+    }
+
+    .tablet-top-bar .social-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: inset 1px 1px 3px #b5b5b5, inset -1px -1px 3px #ffffff;
     }
 
     .tablet-top-bar .social-icon i {
@@ -1033,7 +1043,7 @@
 
     /* === Shop: tablet layout fixes === */
 
-    /* Hide redundant breadcrumb (heading below is enough) */
+    /* Hide old shop-breadcrumbs (site-breadcrumbs used instead) */
     .shop-breadcrumbs {
         display: none !important;
     }

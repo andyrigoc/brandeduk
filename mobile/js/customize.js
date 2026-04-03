@@ -3745,7 +3745,6 @@
                 <input type="number" class="item-qty-input" value="0" min="0" max="999" data-size="${sizeKey}">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
-            <button type="button" class="save-color-btn" title="Save selection to basket">Save ✓</button>
         `;
         
         // Store the size value for quantity tracking
@@ -3825,6 +3824,14 @@
             const btn = e.target.closest('.item-qty-btn');
             if (btn) {
                 const row = btn.closest('.size-qty-item');
+                const sizeSelect = row.querySelector('.size-select');
+                // Block qty change if no size selected
+                if (sizeSelect && (!sizeSelect.value || sizeSelect.value === '')) {
+                    showToast('Please select a size first', true, row);
+                    sizeSelect.focus();
+                    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                    return;
+                }
                 const input = row.querySelector('.item-qty-input');
                 const isPlus = btn.classList.contains('plus');
                 let value = parseInt(input.value) || 0;
@@ -3849,28 +3856,24 @@
                 if (navigator.vibrate) navigator.vibrate(10);
             }
 
-            // Save button — save current color selection to basket
-            const saveBtn = e.target.closest('.save-color-btn');
-            if (saveBtn) {
-                if (state.quantity > 0) {
-                    addToQuote({ silent: true });
-                    showToast(`✓ ${state.quantity} pcs of ${state.selectedColorName || 'current colour'} saved to basket.`);
-                    // Visual feedback on button
-                    saveBtn.textContent = 'Saved ✓';
-                    saveBtn.classList.add('saved');
-                    setTimeout(() => {
-                        saveBtn.textContent = 'Save ✓';
-                        saveBtn.classList.remove('saved');
-                    }, 2000);
-                } else {
-                    showToast('Add a quantity first', true);
-                }
-                if (navigator.vibrate) navigator.vibrate(10);
-            }
+
         });
 
     // Extra listeners to ensure any direct input/change triggers a quantities recalculation
-    container.addEventListener('input', () => updateSizeQuantities());
+    container.addEventListener('input', (e) => {
+        if (e.target.classList.contains('item-qty-input')) {
+            const row = e.target.closest('.size-qty-item');
+            const sizeSelect = row && row.querySelector('.size-select');
+            if (sizeSelect && (!sizeSelect.value || sizeSelect.value === '')) {
+                e.target.value = 0;
+                showToast('Please select a size first', true, row);
+                sizeSelect.focus();
+                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                return;
+            }
+        }
+        updateSizeQuantities();
+    });
     container.addEventListener('change', () => updateSizeQuantities());
 
         // Event delegation for select and input changes
@@ -3918,7 +3921,6 @@
                 <input type="number" class="item-qty-input" value="0" min="0" max="999">
                 <button type="button" class="item-qty-btn plus">+</button>
             </div>
-            <button type="button" class="save-color-btn" title="Save selection to basket">Save ✓</button>
             <button type="button" class="remove-size-btn">×</button>
         `;
         
@@ -4066,6 +4068,9 @@
         
         // Update Add to Quote button state
         updateQuoteButtonState();
+
+        // Restart auto-save timer (saves to basket after 3s of inactivity)
+        resetAutoSaveTimer();
     }
 
     // === Quantity Control ===
@@ -6028,9 +6033,13 @@
     // Uses SAME logic as updateOrderCard() for consistency
     function updatePricingSummary() {
         // Read basket EXACTLY like updateOrderCard does
-        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const fullBasket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         
-        // Calculate total qty from basket (SAME keys as updateOrderCard)
+        // Exclude the item currently being edited to avoid double-counting
+        // (its quantities are live in state.quantity / currentQty)
+        const basket = fullBasket.filter(item => !(_autoSavedItemId && item.id === _autoSavedItemId));
+        
+        // Calculate total qty from basket
         let basketQty = 0;
         basket.forEach(item => {
             basketQty += item.totalQty || item.quantity || 0;
@@ -6391,26 +6400,10 @@
         
         const garmentDetailCalc = document.getElementById('garmentDetailCalc');
         if (garmentDetailCalc) {
-            // Show per-item garment breakdown instead of averaged total
-            if (basket.length > 0 || (state.quantity > 0 && state.product)) {
-                let perItemLines = [];
-                basket.forEach(item => {
-                    const itemQty = item.totalQty || item.quantity || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
-                    const itemUp = parseFloat(item.unitPrice || item.price) || 0;
-                    const code = (item.productCode || '').toUpperCase();
-                    const color = item.color || '';
-                    const tag = [code, color].filter(Boolean).join(' ') || 'Item';
-                    perItemLines.push(`${tag}: ${formatCurrency(itemUp)} × ${itemQty} = ${formatCurrency(itemUp * itemQty)}`);
-                });
-                if (state.quantity > 0 && state.product) {
-                    const code = (state.product.code || '').toUpperCase();
-                    const color = state.selectedColorName || state.selectedColor || '';
-                    const tag = [code, color].filter(Boolean).join(' ') || 'Current';
-                    perItemLines.push(`${tag}: ${formatCurrency(unitPrice)} × ${currentQty} = ${formatCurrency(currentGarmentTotal)}`);
-                }
-                garmentDetailCalc.innerHTML = perItemLines.join('<br>');
+            if (displayQty > 0) {
+                garmentDetailCalc.textContent = `${formatCurrency(unitPrice)} × ${displayQty} = ${formatCurrency(grandGarmentTotal)}`;
             } else {
-                garmentDetailCalc.textContent = `${formatCurrency(0)} \u00d7 0 = ${formatCurrency(0)}`;
+                garmentDetailCalc.textContent = `${formatCurrency(0)} × 0 = ${formatCurrency(0)}`;
             }
         }
         
@@ -7767,7 +7760,7 @@
     }
 
     // === Toast Notification ===
-    function showToast(message) {
+    function showToast(message, isError, anchorEl) {
         // Remove existing toast
         const existing = document.querySelector('.toast');
         if (existing) existing.remove();
@@ -7776,20 +7769,47 @@
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            background: rgba(31, 41, 55, 0.95);
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-        `;
+
+        if (anchorEl) {
+            // Position near the anchor element
+            const rect = anchorEl.getBoundingClientRect();
+            toast.style.cssText = `
+                position: fixed;
+                top: ${rect.top - 48}px;
+                left: 0;
+                right: 0;
+                width: fit-content;
+                margin: 0 auto;
+                padding: 10px 22px;
+                background: ${isError ? '#ffffff' : 'rgba(31, 41, 55, 0.95)'};
+                color: ${isError ? '#222' : 'white'};
+                font-size: 13px;
+                font-weight: 600;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+                white-space: nowrap;
+                box-shadow: ${isError ? '0 2px 12px rgba(0,0,0,0.15)' : 'none'};
+            `;
+        } else {
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 0;
+                right: 0;
+                width: fit-content;
+                margin: 0 auto;
+                padding: 12px 24px;
+                background: ${isError ? '#ffffff' : 'rgba(31, 41, 55, 0.95)'};
+                color: ${isError ? '#222' : 'white'};
+                font-size: 14px;
+                font-weight: 500;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+                box-shadow: ${isError ? '0 2px 12px rgba(0,0,0,0.15)' : 'none'};
+            `;
+        }
 
         document.body.appendChild(toast);
 
@@ -7937,6 +7957,9 @@
     // === Add to Quote ===
     function addToQuote(options = {}) {
         const { silent = false } = options; // silent = true skips the success modal
+
+        // Cancel any pending auto-save to prevent race-condition duplicates
+        if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
         
         // Validate that we have items
         if (state.quantity === 0) {
@@ -7984,7 +8007,7 @@
         
         // Create item object with all customization data
         const newItem = {
-            id: Date.now().toString(),
+            id: _autoSavedItemId || Date.now().toString(),
             productCode: state.product?.code || 'GD067',
             productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
             color: state.selectedColorName || state.selectedColor,

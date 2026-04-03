@@ -1380,10 +1380,10 @@ a {
 }
 
 .tier-card.active {
-    border-color: var(--purple);
-    border-width: 2px;
-    background: rgba(107, 33, 168, 0.05);
-    box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.3), 0 0 0 5px rgba(107, 33, 168, 0.15);
+    border-color: var(--gray-200);
+    border-width: 1px;
+    background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
     opacity: 1;
     transform: scale(1.02);
 }
@@ -3113,8 +3113,9 @@ a {
 }
 
 .pricing-tier.active {
-    border-color: var(--purple);
-    background: rgba(107, 33, 168, 0.05);
+    border-color: var(--gray-200);
+    background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .tier-range {
