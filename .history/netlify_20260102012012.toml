@@ -1,4 +1,0 @@
-[build]
-  publish = "."
-
-# Mobile-first: index.html è già responsive, nessun redirect necessario

@@ -1,4 +1,92 @@
 [build]
   publish = "."
 
-# Mobile-first: index.html è già responsive, nessun redirect necessario
+# Hide .html extensions – redirect /page.html → /page (301)
+[[redirects]]
+  from = "/shop.html"
+  to = "/shop"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/basket.html"
+  to = "/basket"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/checkout.html"
+  to = "/checkout"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/customize.html"
+  to = "/customize"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/quote-form.html"
+  to = "/quote"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/product-detail.html"
+  to = "/product"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services.html"
+  to = "/services"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/catalogue.html"
+  to = "/catalogue"
+  status = 301
+  force = true
+
+# Clean URL rewrites (internal – serve the HTML file)
+[[redirects]]
+  from = "/shop"
+  to = "/shop.html"
+  status = 200
+
+[[redirects]]
+  from = "/basket"
+  to = "/basket.html"
+  status = 200
+
+[[redirects]]
+  from = "/checkout"
+  to = "/checkout.html"
+  status = 200
+
+[[redirects]]
+  from = "/customize"
+  to = "/customize.html"
+  status = 200
+
+[[redirects]]
+  from = "/quote"
+  to = "/quote-form.html"
+  status = 200
+
+[[redirects]]
+  from = "/product"
+  to = "/product-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/services"
+  to = "/services.html"
+  status = 200
+
+[[redirects]]
+  from = "/catalogue"
+  to = "/catalogue.html"
+  status = 200
