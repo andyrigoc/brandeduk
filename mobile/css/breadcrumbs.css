@@ -7,9 +7,10 @@
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    align-items: center;
+    align-items: center !important;
     gap: 6px;
-    margin-top: calc(var(--header-height, 82px) + 30px);
+    margin-top: calc(var(--header-height, 82px) + 8px);
+    margin-bottom: 0;
     padding: 6px 14px;
     background: #f5f5f5;
     border-bottom: 1px solid #e0e0e0;
@@ -19,7 +20,7 @@
     letter-spacing: 0.5px;
     position: relative;
     z-index: 90;
-    height: 36px;
+    min-height: 36px;
     box-sizing: border-box;
     white-space: nowrap;
     overflow: hidden;
@@ -27,20 +28,19 @@
 
 /* Back arrow button */
 .breadcrumb-back-btn {
-    display: flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: auto;
-    height: auto;
     border: none;
     border-radius: 0;
     background: transparent;
     cursor: pointer;
     flex-shrink: 0;
-    margin-right: 4px;
+    margin: 0 4px 0 0;
     padding: 0;
     -webkit-appearance: none;
     appearance: none;
+    line-height: 1;
 }
 .breadcrumb-back-btn:hover,
 .breadcrumb-back-btn:active {
@@ -50,11 +50,19 @@
     width: 13px;
     height: 13px;
     stroke: #333;
+    display: block;
 }
 
-/* Breadcrumb trail container – use contents so children join parent flex row */
+/* Breadcrumb trail container – inline flex to stay on same row as back button */
 .breadcrumb-trail {
-    display: contents;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 /* Links */
@@ -89,20 +97,12 @@
     max-width: 180px;
 }
 
-/* ─── Basket page: no margin-top since fixed header is hidden ─── */
-
 /* ─── Tablet (768px+) ─── */
 @media (min-width: 768px) {
     .site-breadcrumbs {
-        /* Tablet: top-bar 36px + header 80px + 6px buffer */
         margin-top: calc(36px + var(--header-height, 80px) + 6px);
         padding: 6px 20px;
         font-size: 11px;
-        height: 36px;
-    }
-    .breadcrumb-back-btn {
-        width: auto;
-        height: auto;
     }
     .breadcrumb-current {
         max-width: 300px;
@@ -116,15 +116,13 @@
         padding: 8px 36px;
         font-size: 12px;
         gap: 8px;
-        height: 38px;
-    }
-    .breadcrumb-back-btn {
-        width: auto;
-        height: auto;
     }
     .breadcrumb-back-btn svg {
         width: 14px;
         height: 14px;
+    }
+    .breadcrumb-trail {
+        gap: 8px;
     }
     .breadcrumb-current {
         max-width: 400px;
