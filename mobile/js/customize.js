@@ -5569,16 +5569,14 @@
                 
                 // Reset completo dello state per nuovo logo
                 const logoSrc = previewImg ? previewImg.src : null;
+                const originalSrc = state.originalLogoImage;
                 state.originalLogoImage = null;
                 state._pendingGalleryFile = null;
                 
                 // Remove from gallery and cache
-                if (logoSrc && typeof window.BrandedLogoLibrary !== 'undefined') {
-                    window.BrandedLogoLibrary.remove(logoSrc);
-                    // Also remove original if BG was removed
-                    if (state.originalLogoImage) {
-                        window.BrandedLogoLibrary.remove(state.originalLogoImage);
-                    }
+                if (typeof window.BrandedLogoLibrary !== 'undefined') {
+                    if (logoSrc) window.BrandedLogoLibrary.remove(logoSrc);
+                    if (originalSrc && originalSrc !== logoSrc) window.BrandedLogoLibrary.remove(originalSrc);
                 }
 
                 // Show gallery again and re-render
