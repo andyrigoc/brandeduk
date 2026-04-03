@@ -5232,28 +5232,24 @@
             return;
         }
 
-        const logos = window.BrandedLogoLibrary.getAll();
-
-        // Only show gallery if there are saved logos
-        if (!logos.length) {
-            container.innerHTML = '';
-            container.style.display = 'none';
-            return;
-        }
-
         container.style.display = '';
         window.BrandedLogoLibrary.renderGallery(container, {
             onSelect: function (logoEntry) {
-                // User picked a saved logo → apply directly to the preview
+                // User picked/uploaded a logo → apply directly to the preview
                 const previewImg = document.getElementById('designPreviewImg');
                 const uploadPreview = document.getElementById('designUploadPreview');
                 const uploadZone = document.getElementById('designUploadZone');
                 const uploadTitle = document.getElementById('uploadLogoTitle');
+                const addMoreBtn = document.getElementById('addMoreLogosBtn');
 
                 if (previewImg) previewImg.src = logoEntry.url;
                 if (uploadZone) { uploadZone.hidden = true; uploadZone.style.display = 'none'; }
                 if (uploadPreview) uploadPreview.hidden = false;
                 if (uploadTitle) uploadTitle.textContent = 'Your Logo';
+
+                // Hide gallery, show "Add More Logos" button
+                if (container) container.style.display = 'none';
+                if (addMoreBtn) addMoreBtn.style.display = 'flex';
 
                 // Store in state so it flows to basket unchanged
                 state.originalLogoImage = logoEntry.url;
@@ -5263,12 +5259,25 @@
                 if (navigator.vibrate) navigator.vibrate(10);
                 showToast('Logo selected!');
             },
-            onUploadNew: function () {
-                // Trigger the native file picker
-                const fileInput = document.getElementById('designLogoUpload');
-                if (fileInput) fileInput.click();
-            },
         });
+
+        // Wire up "Add More Logos" button
+        const addMoreBtn = document.getElementById('addMoreLogosBtn');
+        if (addMoreBtn) {
+            // Clone to remove old listeners
+            const newBtn = addMoreBtn.cloneNode(true);
+            addMoreBtn.parentNode.replaceChild(newBtn, addMoreBtn);
+            newBtn.addEventListener('click', () => {
+                // Show gallery again (keeps existing logos)
+                if (container) container.style.display = '';
+                // Scroll gallery into view
+                container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+
+        // Hide the old upload dropzone since the gallery has its own
+        const oldUploadZone = document.getElementById('designUploadZone');
+        if (oldUploadZone) { oldUploadZone.hidden = true; oldUploadZone.style.display = 'none'; }
     }
 
     // === Open Design Modal (with specific section focus) ===
@@ -6705,10 +6714,6 @@
                     if (labels.length) logoPosLabels = `<div style="font-size:9px;color:#6b7280;margin-top:2px;text-align:center;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${labels.join(', ')}</div>`;
                 }
                 
-                // Logo button - always green, shows EDIT or Add Logo
-                const hasLogo = !!logoSrc;
-                const logoBadgeText = hasLogo ? '\u270e EDIT' : '+ Add Logo';
-                
                 // Item note
                 const savedNote = item.note || '';
                 
@@ -6723,7 +6728,12 @@
                                 <h4>${itemName}</h4>
                                 <p style="font-size: 12px; color: #6b7280;">Color: ${itemColor}</p>
                             </div>
-                            <div class="summary-item-logo-thumb">${logoThumb}${logoPosLabels}</div>
+                            <div class="summary-logo-col">
+                                <div class="summary-item-logo-thumb">${logoThumb}${logoPosLabels}</div>
+                                <span class="summary-customize-badge" data-index="${index}">
+                                    ${logoSrc ? '✎ Edit' : '+ Add Logo'}
+                                </span>
+                            </div>
                             <button type="button" class="summary-item-remove" data-index="${index}">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -6732,10 +6742,6 @@
                         </div>
                         <div class="summary-item-sizes">${sizesHtml}</div>
                         <div class="summary-item-actions">
-                            <span class="summary-customize-badge has-customization" data-index="${index}" style="cursor:pointer;">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                                ${logoBadgeText}
-                            </span>
                             <button type="button" class="summary-edit-btn" data-index="${index}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                 Edit
@@ -6883,13 +6889,33 @@
             });
         });
         
-        // Customize badge click - open logo action modal
+        // Customize badge click - open design modal (same as position card EDIT)
         basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const idx = parseInt(badge.dataset.index);
-                openLogoActionModal(idx);
+                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const item = basket[idx];
+                // Get position from basket item
+                let position = 'small-centre-front';
+                let method = 'embroidery';
+                if (item) {
+                    if (item.positionDesigns) {
+                        const keys = Object.keys(item.positionDesigns);
+                        if (keys.length) position = keys[0];
+                    } else if (item.positions && typeof item.positions === 'object') {
+                        const keys = Object.keys(item.positions);
+                        if (keys.length) position = keys[0];
+                    }
+                    if (item.customizations && item.customizations.length) {
+                        const m = item.customizations[0].method;
+                        if (m) method = m.toLowerCase();
+                    }
+                }
+                // Store target basket index so apply can save back
+                _logoActionTargetIdx = idx;
+                openDesignModal(position, method, 'logo');
             });
         });
         
@@ -7109,14 +7135,13 @@
         const itemName = item ? (item.productName || item.name || 'Item') : 'Item';
         const existingLogo = item ? getItemLogoSrc(item) : null;
         
-        // Title - dynamic based on existing logo
+        // Title
         const title = document.getElementById('logoActionTitle');
         if (title) title.textContent = existingLogo ? `Change Logo – ${itemName}` : `Add Logo – ${itemName}`;
         
-        // Show/hide remove button (also for basket items if they have a logo)
+        // Show/hide remove button
         let removeBtn = document.getElementById('logoActionRemoveBtn');
         if (!removeBtn) {
-            // Create remove button if not exists
             const body = modal.querySelector('.logo-action-body');
             if (body) {
                 removeBtn = document.createElement('button');
@@ -7130,7 +7155,6 @@
         }
         if (removeBtn) {
             removeBtn.style.display = existingLogo ? 'block' : 'none';
-            // Re-bind click handler for basket item removal
             const newRemoveBtn = removeBtn.cloneNode(true);
             removeBtn.parentNode.replaceChild(newRemoveBtn, removeBtn);
             newRemoveBtn.addEventListener('click', () => {
@@ -7139,84 +7163,39 @@
             });
         }
         
-        // Show/hide notes textarea
+        // Notes
         let notesArea = document.getElementById('logoActionNote');
-        if (notesArea) {
-            notesArea.value = item?.note || '';
-        }
+        if (notesArea) notesArea.value = item?.note || '';
         
-        // Collect all available logos: current state + basket items + gallery
-        const allLogos = new Set();
-        // From current state
-        const stateLogo = getLogoFromState();
-        if (stateLogo) allLogos.add(stateLogo);
-        // From all basket items
-        basket.forEach(bi => {
-            const l = getItemLogoSrc(bi);
-            if (l) allLogos.add(l);
-        });
-        // From logo gallery (localStorage)
-        try {
-            const galleryLogos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
-            galleryLogos.forEach(entry => {
-                if (entry.url) allLogos.add(entry.url);
-                if (entry.src) allLogos.add(entry.src);
-            });
-        } catch(e) {}
-        
-        // Render gallery
-        const gallery = document.getElementById('logoActionGallery');
+        // Hide old small gallery sections
         const existingSection = document.getElementById('logoActionExisting');
         const divider = document.getElementById('logoActionDivider');
-        const applyBtn = document.getElementById('logoActionApply');
+        const uploadBtn = document.getElementById('logoActionUploadBtn');
         const previewDiv = document.getElementById('logoActionPreview');
-        
+        if (existingSection) existingSection.style.display = 'none';
+        if (divider) divider.style.display = 'none';
+        if (uploadBtn) uploadBtn.style.display = 'none';
         if (previewDiv) previewDiv.style.display = 'none';
-        // Always show Apply/Save button (user can save notes even without logo)
-        if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Save'; }
         
-        if (allLogos.size > 0 && gallery && existingSection) {
-            existingSection.style.display = 'block';
-            if (divider) divider.style.display = 'block';
-            gallery.innerHTML = '';
-            allLogos.forEach(src => {
-                const div = document.createElement('div');
-                div.className = 'logo-action-gallery-item';
-                div.innerHTML = `<img src="${src}" alt="Logo">`;
-                div.addEventListener('click', () => {
-                    gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
-                    div.classList.add('selected');
-                    _logoActionSelectedSrc = src;
-                    if (applyBtn) applyBtn.textContent = 'Apply Logo';
-                    if (previewDiv) previewDiv.style.display = 'none';
-                });
-                gallery.appendChild(div);
-            });
-        } else {
-            if (existingSection) existingSection.style.display = 'none';
-            if (divider) divider.style.display = 'none';
+        // Render the full gallery (drag-drop + thumbnails) inside the modal body
+        let galleryContainer = document.getElementById('logoActionFullGallery');
+        if (!galleryContainer) {
+            galleryContainer = document.createElement('div');
+            galleryContainer.id = 'logoActionFullGallery';
+            const body = modal.querySelector('.logo-action-body');
+            if (body) body.insertBefore(galleryContainer, body.firstChild.nextSibling || null);
         }
         
-        // File input handler
-        const fileInput = document.getElementById('logoActionFileInput');
-        if (fileInput) {
-            fileInput.value = '';
-            // Clone to remove old listeners
-            const newInput = fileInput.cloneNode(true);
-            fileInput.parentNode.replaceChild(newInput, fileInput);
-            newInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    _logoActionSelectedSrc = ev.target.result;
-                    if (gallery) gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
-                    const previewImg = document.getElementById('logoActionPreviewImg');
-                    if (previewImg) previewImg.src = ev.target.result;
-                    if (previewDiv) previewDiv.style.display = 'block';
+        const applyBtn = document.getElementById('logoActionApply');
+        if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Save'; }
+        
+        if (typeof window.BrandedLogoLibrary !== 'undefined') {
+            window.BrandedLogoLibrary.renderGallery(galleryContainer, {
+                onSelect: function(logoEntry) {
+                    _logoActionSelectedSrc = logoEntry.url;
                     if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Apply Logo'; }
-                };
-                reader.readAsDataURL(file);
+                    if (navigator.vibrate) navigator.vibrate(10);
+                },
             });
         }
         

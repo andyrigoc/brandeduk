@@ -117,6 +117,8 @@
 
   /**
    * Build a gallery of previously uploaded logos inside `containerEl`.
+   * Includes a drag-and-drop upload zone and a thumbnail grid with
+   * hover overlays, delete buttons, and selection state.
    *
    * @param {HTMLElement} containerEl  – the wrapper that will receive the grid
    * @param {Object}      opts
@@ -127,59 +129,202 @@
     if (!containerEl) return;
     const logos = _load();
 
-    containerEl.innerHTML = '';                       // clear old content
+    containerEl.innerHTML = '';
     containerEl.classList.add('logo-gallery');
 
-    // "[+] Upload new" button — always first
-    const uploadBox = document.createElement('div');
-    uploadBox.className = 'logo-gallery__item logo-gallery__upload-new';
-    uploadBox.innerHTML = `
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      <span>Upload new</span>
+    /* ── Drag & Drop Upload Zone ────────────────────── */
+    const dropzone = document.createElement('div');
+    dropzone.className = 'logo-gallery__dropzone';
+    dropzone.innerHTML = `
+      <div class="logo-gallery__dropzone-content">
+        <div class="logo-gallery__upload-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+        </div>
+        <h4>Drag &amp; Drop Your Logo</h4>
+        <p>or click to browse from your device</p>
+        <label class="logo-gallery__browse-btn">
+          <span>Browse Files</span>
+        </label>
+        <div class="logo-gallery__file-types">
+          JPG, PNG, GIF, WebP, SVG, PDF, AI, EPS
+        </div>
+      </div>
     `;
-    uploadBox.addEventListener('click', () => {
-      if (typeof opts.onUploadNew === 'function') opts.onUploadNew();
+
+    // Hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,.pdf,.ai,.svg,.eps';
+    fileInput.style.display = 'none';
+    fileInput.multiple = true;
+    dropzone.appendChild(fileInput);
+
+    // Browse btn / dropzone click → open file picker
+    dropzone.addEventListener('click', (e) => {
+      if (e.target === fileInput) return;
+      fileInput.click();
     });
-    containerEl.appendChild(uploadBox);
 
-    // Logo thumbnails
-    logos.forEach(logo => {
-      const item = document.createElement('div');
-      item.className = 'logo-gallery__item';
-      item.dataset.url = logo.url;
-
-      const img = document.createElement('img');
-      img.src = logo.url;
-      img.alt = logo.filename || 'Saved logo';
-      img.loading = 'lazy';
-      img.draggable = false;
-
-      // Delete button (top right)
-      const delBtn = document.createElement('button');
-      delBtn.className = 'logo-gallery__delete';
-      delBtn.innerHTML = '&times;';
-      delBtn.title = 'Remove from library';
-      delBtn.addEventListener('click', (e) => {
+    // Drag events
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        remove(logo.url);
-        item.remove();
+        dropzone.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    // Drop handler
+    dropzone.addEventListener('drop', (e) => {
+      const files = [...e.dataTransfer.files].filter(f =>
+        f.type.startsWith('image/') || /\.(pdf|ai|svg|eps)$/i.test(f.name)
+      );
+      if (files.length) _processFiles(files, containerEl, opts);
+    });
+
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
+      const files = [...e.target.files];
+      if (files.length) _processFiles(files, containerEl, opts);
+      fileInput.value = '';
+    });
+
+    containerEl.appendChild(dropzone);
+
+    /* ── Gallery Grid (if logos exist) ───────────────── */
+    if (logos.length > 0) {
+      // Header
+      const header = document.createElement('div');
+      header.className = 'logo-gallery__header';
+      header.innerHTML = `
+        <h4>Your Logos <span class="logo-gallery__count">${logos.length}</span></h4>
+        <button type="button" class="logo-gallery__clear-all">Clear All</button>
+      `;
+      header.querySelector('.logo-gallery__clear-all').addEventListener('click', () => {
+        clear();
+        renderGallery(containerEl, opts);
+      });
+      containerEl.appendChild(header);
+
+      // Grid
+      const grid = document.createElement('div');
+      grid.className = 'logo-gallery__grid';
+
+      logos.forEach(logo => {
+        const item = document.createElement('div');
+        item.className = 'logo-gallery__item';
+        item.dataset.url = logo.url;
+
+        const img = document.createElement('img');
+        img.src = logo.url;
+        img.alt = logo.filename || 'Saved logo';
+        img.loading = 'lazy';
+        img.draggable = false;
+
+        // Overlay with delete button
+        const overlay = document.createElement('div');
+        overlay.className = 'logo-gallery__item-overlay';
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'logo-gallery__delete';
+        delBtn.title = 'Remove from library';
+        delBtn.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        `;
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          remove(logo.url);
+          item.style.animation = 'logoGalleryScaleIn 0.25s ease reverse';
+          setTimeout(() => {
+            item.remove();
+            // Update count
+            const count = containerEl.querySelector('.logo-gallery__count');
+            const remaining = _load().length;
+            if (count) count.textContent = remaining;
+            if (remaining === 0) renderGallery(containerEl, opts);
+          }, 250);
+        });
+
+        overlay.appendChild(delBtn);
+
+        // Filename label
+        const fname = document.createElement('div');
+        fname.className = 'logo-gallery__filename';
+        fname.textContent = logo.filename || 'logo';
+
+        item.appendChild(img);
+        item.appendChild(overlay);
+        item.appendChild(fname);
+
+        // Select handler
+        item.addEventListener('click', () => {
+          grid.querySelectorAll('.logo-gallery__item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          if (typeof opts.onSelect === 'function') opts.onSelect(logo);
+        });
+
+        grid.appendChild(item);
       });
 
-      item.appendChild(img);
-      item.appendChild(delBtn);
+      containerEl.appendChild(grid);
+    }
+  }
 
-      item.addEventListener('click', () => {
-        // Visual feedback: highlight selected
-        containerEl.querySelectorAll('.logo-gallery__item').forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        if (typeof opts.onSelect === 'function') opts.onSelect(logo);
-      });
+  /**
+   * Process dropped/selected files: read → optional compress → add to gallery
+   */
+  function _processFiles(files, containerEl, opts) {
+    files.forEach(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        if (typeof window.showToast === 'function') {
+          window.showToast(file.name + ' is too large (max 10MB)');
+        }
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        // Add to local gallery immediately
+        const entry = {
+          url: dataUrl,
+          filename: file.name,
+          uploadedAt: new Date().toISOString(),
+        };
+        add(entry);
 
-      containerEl.appendChild(item);
+        // Re-render gallery to show the new logo
+        renderGallery(containerEl, opts);
+
+        // Auto-select + trigger onSelect callback
+        if (typeof opts.onSelect === 'function') opts.onSelect(entry);
+
+        // Attempt server upload in background
+        uploadToServer(dataUrl, null, file.name).then(serverResult => {
+          if (serverResult && serverResult.url && serverResult.url !== dataUrl) {
+            // Replace local data-URL with CDN URL
+            const logos = _load();
+            const idx = logos.findIndex(l => l.url === dataUrl);
+            if (idx !== -1) {
+              logos[idx].url = serverResult.url;
+              _save(logos);
+            }
+          }
+        }).catch(() => {});
+      };
+      reader.readAsDataURL(file);
     });
   }
 
