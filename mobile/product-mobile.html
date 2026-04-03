@@ -8,6 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>Premium Workwear Hoodie - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20260307A">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260403b">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260104A">
@@ -419,51 +420,26 @@
             </div>
         </section>
 
-        <!-- Related Products -->
         <section class="product-section">
-            <h2 class="section-title">
-                <span>You May Also Like</span>
-                <a href="shop-mobile.html" class="see-all">See All</a>
-            </h2>
-            <div class="related-scroll">
-                <div class="related-product">
-                    <div class="related-image">
-                        <div class="product-img-placeholder">
-                            <img src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png"
-                                alt="Premium Polo Shirt">
-                        </div>
-                    </div>
-                    <div class="related-info">
-                        <span class="related-sku">#PL456</span>
-                        <h4>Premium Polo Shirt</h4>
-                        <span class="related-price" data-base-price="9.99">From £9.99</span>
-                    </div>
+            <div class="product-recommendations" id="productRecommendationsMobile" aria-labelledby="productRecommendationsMobileTitle" data-expanded="false">
+                <div class="product-recommendations__topline">
+                    <h2 class="product-recommendations__title" id="productRecommendationsMobileTitle">Explore Similar Styles</h2>
+                    <span class="product-recommendations__rule" aria-hidden="true"></span>
                 </div>
-                <div class="related-product">
-                    <div class="related-image">
-                        <div class="product-img-placeholder">
-                            <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png"
-                                alt="Classic T-Shirt">
-                        </div>
-                    </div>
-                    <div class="related-info">
-                        <span class="related-sku">#TS789</span>
-                        <h4>Classic T-Shirt</h4>
-                        <span class="related-price" data-base-price="5.99">From £5.99</span>
-                    </div>
+                <div class="product-recommendations__tabs" aria-label="Similar mobile product suggestions">
+                    <button type="button" class="product-recommendations__tab" id="productRecommendationsMobileTabRelated" data-tab="related" aria-pressed="false" aria-controls="productRecommendationsMobilePanelRelated">
+                        <span>Related</span>
+                        <span class="product-recommendations__tab-count" data-count-for="related">0</span>
+                    </button>
+                    <button type="button" class="product-recommendations__tab" id="productRecommendationsMobileTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="productRecommendationsMobilePanelAlternatives">
+                        <span>Alternative</span>
+                        <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
+                    </button>
                 </div>
-                <div class="related-product">
-                    <div class="related-image">
-                        <div class="product-img-placeholder">
-                            <img src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png"
-                                alt="Softshell Jacket">
-                        </div>
-                    </div>
-                    <div class="related-info">
-                        <span class="related-sku">#SJ321</span>
-                        <h4>Softshell Jacket</h4>
-                        <span class="related-price" data-base-price="24.99">From £24.99</span>
-                    </div>
+                <div class="product-recommendations__body" id="productRecommendationsMobileBody" data-recommendation-body hidden>
+                    <div class="product-recommendations__status" aria-live="polite">Finding related and alternative styles for this product…</div>
+                    <div class="product-recommendations__panel" id="productRecommendationsMobilePanelRelated" data-panel="related" aria-labelledby="productRecommendationsMobileTabRelated"></div>
+                    <div class="product-recommendations__panel" id="productRecommendationsMobilePanelAlternatives" data-panel="alternatives" aria-labelledby="productRecommendationsMobileTabAlternatives" hidden></div>
                 </div>
             </div>
         </section>
@@ -487,16 +463,73 @@
 
     <script src="js/mobile.js?v=20251230"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>
+    <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260403b"></script>
     <script>
         // Product page specific JS
         (function () {
-            const API_BASE_URL = 'https://api.brandeduk.com/api';
+            const API_BASE_URL = window.BrandedProductRecommendations?.resolveApiBaseUrl?.() || 'https://api.brandeduk.com/api';
             let PRICING_TIERS = [];
             let productBasePrice = 0;
+            let recommendationsController = null;
+
+            function getProductCodeFromLocation() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const fromQuery = params.get('code');
+                    if (fromQuery) {
+                        sessionStorage.setItem('selectedProduct', fromQuery);
+                        return fromQuery;
+                    }
+                } catch (error) {
+                    // Ignore malformed query strings
+                }
+
+                return sessionStorage.getItem('selectedProduct');
+            }
+
+            function formatRecommendationPrice(basePrice) {
+                const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+                const displayPrice = vatOn ? (Number(basePrice) || 0) * 1.20 : (Number(basePrice) || 0);
+                return `From £${displayPrice.toFixed(2)}`;
+            }
+
+            function recommendationVatNote() {
+                return localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc VAT' : 'ex VAT';
+            }
+
+            function initProductRecommendations(productCode) {
+                if (!productCode || !window.BrandedProductRecommendations) {
+                    return;
+                }
+
+                recommendationsController = window.BrandedProductRecommendations.init('#productRecommendationsMobile', {
+                    productCode,
+                    pageType: 'mobile',
+                    priceFormatter: formatRecommendationPrice,
+                    priceNoteFormatter: recommendationVatNote,
+                    onSelect: function (product) {
+                        try {
+                            sessionStorage.setItem('selectedProduct', product.code || '');
+                            sessionStorage.setItem('selectedProductData', JSON.stringify({
+                                code: product.code || '',
+                                name: product.name || '',
+                                price: product.price || 0,
+                                image: product.image || '',
+                                brand: product.brand || '',
+                                productType: product.productType || ''
+                            }));
+                            sessionStorage.removeItem('selectedColorName');
+                            sessionStorage.removeItem('selectedColorUrl');
+                        } catch (error) {
+                            console.warn('Failed to store selected recommendation:', error);
+                        }
+                    }
+                });
+            }
 
             // Fetch product data from API and build pricing tiers dynamically
             async function loadProductPricing() {
-                const productCode = sessionStorage.getItem('selectedProduct');
+                const productCode = getProductCodeFromLocation();
                 let productData = null;
 
                 if (productCode) {
@@ -559,6 +592,9 @@
 
                 // Update pricing display (handles VAT)
                 updateProductPricing();
+                if (productData?.code || productCode) {
+                    initProductRecommendations(productData?.code || productCode);
+                }
                 setActiveTier(1);
             }
 
@@ -630,6 +666,8 @@
                 document.querySelectorAll('.vat-suffix').forEach(el => {
                     el.textContent = vatSuffix;
                 });
+
+                recommendationsController?.refreshPricing?.();
             }
 
             // Set active tier based on quantity (default = first tier)

@@ -447,7 +447,13 @@ function goToProduct(code, evt = null, selectedColor = null) {
             sessionStorage.setItem('selectedColorUrl', activeColorDot.dataset.main);
         }
     }
-    window.location.href = 'product-detail.html?code=' + encodeURIComponent(code);
+    // Detect if we're on mobile (mobile pages are in /mobile/ or served as index-mobile.html)
+    var isMobile = window.innerWidth < 1280 || /index-mobile\.html/i.test(window.location.pathname) || /\/mobile\//i.test(window.location.pathname);
+    if (isMobile) {
+        window.location.href = 'mobile/customize-mobile.html?code=' + encodeURIComponent(code);
+    } else {
+        window.location.href = 'product-detail.html?code=' + encodeURIComponent(code);
+    }
 }
 
 // ===== BASKET COUNT =====

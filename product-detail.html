@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=20260402B">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/product-recommendations.css?v=20260403b">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions.css?v=20260107">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/customize-positions-desktop.css?v=20260107">
     <style>
@@ -1452,6 +1453,28 @@
             </p>
         </div>
 
+        <section class="product-recommendations" id="productRecommendations" aria-labelledby="productRecommendationsTitle" data-expanded="false">
+            <div class="product-recommendations__topline">
+                <h2 class="product-recommendations__title" id="productRecommendationsTitle">Explore Similar Styles</h2>
+                <span class="product-recommendations__rule" aria-hidden="true"></span>
+            </div>
+            <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
+                <button type="button" class="product-recommendations__tab" id="productRecommendationsTabRelated" data-tab="related" aria-pressed="false" aria-controls="productRecommendationsPanelRelated">
+                    <span>Related</span>
+                    <span class="product-recommendations__tab-count" data-count-for="related">0</span>
+                </button>
+                <button type="button" class="product-recommendations__tab" id="productRecommendationsTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="productRecommendationsPanelAlternatives">
+                    <span>Alternative</span>
+                    <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
+                </button>
+            </div>
+            <div class="product-recommendations__body" id="productRecommendationsBody" data-recommendation-body hidden>
+                <div class="product-recommendations__status" aria-live="polite">Finding related and alternative styles for this product…</div>
+                <div class="product-recommendations__panel" id="productRecommendationsPanelRelated" data-panel="related" aria-labelledby="productRecommendationsTabRelated"></div>
+                <div class="product-recommendations__panel" id="productRecommendationsPanelAlternatives" data-panel="alternatives" aria-labelledby="productRecommendationsTabAlternatives" hidden></div>
+            </div>
+        </section>
+
         <!-- Step 3 Order Summary Mount (Desktop: left column) -->
         <div id="step3SidebarLeftMount" class="step3-sidebar-left-mount" style="display:none;"></div>
 
@@ -2310,6 +2333,7 @@
 <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
 <script src="brandedukv15-child/assets/js/pages/product.js?v=20260402B"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260124f"></script>
+<script src="brandedukv15-child/assets/js/product-recommendations.js?v=20260403b"></script>
 <script src="brandedukv15-child/assets/js/pages/customize-positions-inline.js?v=20260124d"></script>
 <!-- Color Change Modal removed - auto-save on color change -->
 

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260401a">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260403a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -312,6 +313,31 @@
                     <div class="tier-price">�12.59</div>
                     <div class="tier-suffix">ex VAT</div>
                     <div class="tier-save">SAVE 28%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related & Alternative Products -->
+        <section class="customize-section" id="custRecommendationsSection" style="display:none;">
+            <div class="product-recommendations" id="custProductRecommendations" aria-labelledby="custRecommendationsTitle" data-expanded="false">
+                <div class="product-recommendations__topline">
+                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">You May Also Like</h2>
+                    <span class="product-recommendations__rule" aria-hidden="true"></span>
+                </div>
+                <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
+                    <button type="button" class="product-recommendations__tab" id="custRecTabRelated" data-tab="related" aria-pressed="false" aria-controls="custRecPanelRelated">
+                        <span>Related</span>
+                        <span class="product-recommendations__tab-count" data-count-for="related">0</span>
+                    </button>
+                    <button type="button" class="product-recommendations__tab" id="custRecTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="custRecPanelAlternatives">
+                        <span>Alternative</span>
+                        <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
+                    </button>
+                </div>
+                <div class="product-recommendations__body" id="custRecBody" data-recommendation-body hidden>
+                    <div class="product-recommendations__status" aria-live="polite">Finding similar styles…</div>
+                    <div class="product-recommendations__panel" id="custRecPanelRelated" data-panel="related" aria-labelledby="custRecTabRelated"></div>
+                    <div class="product-recommendations__panel" id="custRecPanelAlternatives" data-panel="alternatives" aria-labelledby="custRecTabAlternatives" hidden></div>
                 </div>
             </div>
         </section>
@@ -1008,6 +1034,77 @@
     <script src="../brandedukv15-child/assets/js/upload/logo-upload.js?v=20260402a"></script>
     <script src="js/customize.js?v=20260402c"></script>
     <script src="../brandedukv15-child/assets/js/api.js"></script>
+    <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260403c"></script>
+    <script>
+    // Initialize Related & Alternative Recommendations on Customize page
+    (function () {
+        'use strict';
+
+        function getProductCode() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var code = params.get('code');
+                if (code) return code;
+            } catch (e) {}
+            return sessionStorage.getItem('selectedProduct') || '';
+        }
+
+        function formatPrice(basePrice) {
+            var vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            var price = vatOn ? (Number(basePrice) || 0) * 1.20 : (Number(basePrice) || 0);
+            return 'From \u00A3' + price.toFixed(2);
+        }
+
+        function vatNote() {
+            return localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc VAT' : 'ex VAT';
+        }
+
+        var controller = null;
+
+        function initCustRecommendations() {
+            var productCode = getProductCode();
+            if (!productCode || !window.BrandedProductRecommendations) return;
+
+            // Show the section wrapper
+            var section = document.getElementById('custRecommendationsSection');
+            if (section) section.style.display = '';
+
+            controller = window.BrandedProductRecommendations.init('#custProductRecommendations', {
+                productCode: productCode,
+                pageType: 'mobile',
+                priceFormatter: formatPrice,
+                priceNoteFormatter: vatNote,
+                onSelect: function (product) {
+                    try {
+                        sessionStorage.setItem('selectedProduct', product.code || '');
+                        sessionStorage.setItem('selectedProductData', JSON.stringify({
+                            code: product.code || '',
+                            name: product.name || '',
+                            price: product.price || 0,
+                            image: product.image || '',
+                            brand: product.brand || '',
+                            productType: product.productType || ''
+                        }));
+                    } catch (err) {}
+                }
+            });
+        }
+
+        // Wait for DOM + product-recommendations.js to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(initCustRecommendations, 100);
+            });
+        } else {
+            setTimeout(initCustRecommendations, 100);
+        }
+
+        // Refresh pricing when VAT is toggled
+        window.addEventListener('vatToggleChanged', function () {
+            if (controller && controller.refreshPricing) controller.refreshPricing();
+        });
+    })();
+    </script>
     <script>
         // Basket link now navigates to basket.html directly
     </script>

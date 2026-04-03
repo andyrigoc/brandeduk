@@ -699,10 +699,6 @@ const BrandedAPI = (function () {
      * @returns {Promise<Object>} - { success: boolean, message: string }
      */
     async function submitQuote(quoteData) {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:ENTRY', message: 'submitQuote function ENTERED', data: { hasCustomer: !!quoteData?.customer, customerName: quoteData?.customer?.fullName, hasLogoFiles: !!quoteData?.logoFiles, logoFilesCount: quoteData?.logoFiles ? Object.keys(quoteData.logoFiles).length : 0, currentOrigin: window.location.origin }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-        // #endregion
-
         const url = `${BASE_URL}/api/quotes`;
 
         // Log the current origin for CORS debugging

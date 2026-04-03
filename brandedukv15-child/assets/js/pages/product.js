@@ -8,6 +8,7 @@ let PRODUCT_NAME = null;
 let BASE_PRICE = null;
 let PRODUCT_DATA = null;
 let DISCOUNTS = [];
+let recommendationsController = null;
 
 // Expose PRODUCT_DATA globally for other scripts
 Object.defineProperty(window, 'PRODUCT_DATA', {
@@ -26,7 +27,9 @@ Object.defineProperty(window, 'PRODUCT_CODE', {
 });
 
 // API Configuration
-const API_BASE_URL = 'https://api.brandeduk.com/api';
+function getApiBaseUrl() {
+    return window.BrandedProductRecommendations?.resolveApiBaseUrl?.() || 'https://api.brandeduk.com/api';
+}
 
 const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
 const VAT_FALLBACK_RATE = 0.20;
@@ -128,6 +131,7 @@ document.addEventListener('brandeduk:vat-change', function (event) {
     console.log('💰 VAT changed, updating prices. isVatOn():', isVatOn(), 'suffix:', vatSuffix());
     updateAllPricing();
     updateBasketTotalBox(); // Refresh basket box on VAT change
+    recommendationsController?.refreshPricing?.();
 });
 
 function getProductCodeFromLocation() {
@@ -177,8 +181,8 @@ async function loadProductData() {
         try {
             // Fetch detail and listing in parallel
             const [detailRes, listingRes] = await Promise.allSettled([
-                fetch(`${API_BASE_URL}/products/${productCode}`),
-                fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+                fetch(`${getApiBaseUrl()}/products/${productCode}`),
+                fetch(`${getApiBaseUrl()}/products?q=${encodeURIComponent(productCode)}&limit=1`)
             ]);
 
             // Process detail endpoint (full product data)
@@ -384,6 +388,42 @@ function populateProductSpecsTable() {
 
     specsEl.innerHTML = html;
     specsEl.style.display = '';
+}
+
+function initProductRecommendationsSection() {
+    const root = document.getElementById('productRecommendations');
+
+    if (!root || !PRODUCT_CODE || !window.BrandedProductRecommendations) {
+        return;
+    }
+
+    recommendationsController = window.BrandedProductRecommendations.init(root, {
+        productCode: PRODUCT_CODE,
+        pageType: 'desktop',
+        priceFormatter: function (basePrice) {
+            return 'From ' + formatCurrency(basePrice);
+        },
+        priceNoteFormatter: function () {
+            return vatSuffix();
+        },
+        onSelect: function (product) {
+            try {
+                sessionStorage.setItem('selectedProduct', product.code || '');
+                sessionStorage.setItem('selectedProductData', JSON.stringify({
+                    code: product.code || '',
+                    name: product.name || '',
+                    price: product.price || 0,
+                    image: product.image || '',
+                    brand: product.brand || '',
+                    productType: product.productType || ''
+                }));
+                sessionStorage.removeItem('selectedColorName');
+                sessionStorage.removeItem('selectedColorUrl');
+            } catch (error) {
+                console.warn('Failed to persist recommendation selection:', error);
+            }
+        }
+    });
 }
 
 // Initialize breadcrumb navigation from API data
@@ -701,6 +741,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Initialize breadcrumb navigation
         initBreadcrumb();
+
+        // Load the collapsed comparison drawer for related and alternative products
+        initProductRecommendationsSection();
 
         // ===== FINAL SAFEGUARD: Ensure primary API image is shown =====
         // If no color has been actively selected by the user, force the primary image

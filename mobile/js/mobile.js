@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrandsMarqueeLogos();
 });
 
+// Helper to handle relative paths since this script runs on both root (index-mobile.html) and mobile/ folders
+function getMobileBaseUrl() {
+    return window.location.pathname.indexOf('/mobile/') !== -1 ? '' : 'mobile/';
+}
+
 function initBrandsMarqueeLogos() {
     const brandCards = document.querySelectorAll('.brands-section .brand-card');
     if (!brandCards.length) return;
@@ -315,8 +320,12 @@ function initSearch() {
             };
 
             let html = '<div class="suggestion-group-title">Product Results</div>';
+            
+            // Check if we're not already in the mobile folder (e.g. from index-mobile.html)
+            const baseUrl = getMobileBaseUrl();
+
             products.slice(0, 8).forEach(product => {
-                const detailUrl = `customize-mobile.html?code=${product.value}`;
+                const detailUrl = `${baseUrl}customize-mobile.html?code=${product.value}`;
                 const imgUrl = product.image || '../brandedukv15-child/assets/images/ui/no-image.png';
                 const safeName = (product.label || '').replace(/'/g, "\\'");
                 html += `
@@ -329,7 +338,7 @@ function initSearch() {
                         </div>
                     </a>`;
             });
-            html += `<a href="shop-mobile.html?q=${encodeURIComponent(query)}" class="view-all-results">View all results for "${query}" →</a>`;
+            html += `<a href="${baseUrl}shop-mobile.html?q=${encodeURIComponent(query)}" class="view-all-results">View all results for "${query}" →</a>`;
             suggestionBox.innerHTML = html;
             suggestionBox.classList.add('active');
         };
@@ -362,7 +371,7 @@ function initSearch() {
                 const query = e.target.value.trim();
                 if (query) {
                     suggestionBox.classList.remove('active');
-                    window.location.href = `shop-mobile.html?q=${encodeURIComponent(query)}`;
+                    window.location.href = `${getMobileBaseUrl()}shop-mobile.html?q=${encodeURIComponent(query)}`;
                 }
             }
         });
@@ -390,7 +399,7 @@ function initSearch() {
         const performSearch = () => {
             const query = input.value.trim();
             if (query) {
-                window.location.href = `shop-mobile.html?q=${encodeURIComponent(query)}`;
+                window.location.href = `${getMobileBaseUrl()}shop-mobile.html?q=${encodeURIComponent(query)}`;
             }
         };
 
@@ -440,7 +449,7 @@ function initCategories() {
         item.addEventListener('click', () => {
             const category = item.dataset.category;
             if (category) {
-                window.location.href = `shop-mobile.html?category=${category}`;
+                window.location.href = `${getMobileBaseUrl()}shop-mobile.html?category=${category}`;
             }
         });
     });
