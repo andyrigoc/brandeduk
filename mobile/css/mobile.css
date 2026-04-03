@@ -8844,9 +8844,9 @@ a {
     position: absolute;
     top: 6px;
     right: 6px;
-    border: 1px dashed #ef4444;
-    background: rgba(254,226,226,0.95);
-    color: #dc2626;
+    border: 1px solid #d1d5db;
+    background: #f3f4f6;
+    color: #6b7280;
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 10px;
@@ -8860,7 +8860,7 @@ a {
 
 .upload-remove-btn:active {
     transform: scale(0.95);
-    background: #fecaca;
+    background: #e5e7eb;
 }
 
 /* Toggle Background Button - positioned top left, compact but readable */
