@@ -1531,10 +1531,19 @@
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
+
+                // Detect transparency: if source is PNG, keep PNG format to preserve alpha
+                const isPNG = base64.startsWith('data:image/png');
+                if (isPNG) {
+                    // Clear canvas (transparent) before drawing
+                    ctx.clearRect(0, 0, width, height);
+                }
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Compress as JPEG (smaller than PNG)
-                const compressed = canvas.toDataURL('image/jpeg', quality);
+                // Keep PNG for transparent images, use JPEG for others (smaller)
+                const compressed = isPNG
+                    ? canvas.toDataURL('image/png')
+                    : canvas.toDataURL('image/jpeg', quality);
                 resolve(compressed);
             };
             img.onerror = () => reject(new Error('Failed to load image'));
@@ -6673,8 +6682,18 @@
                         </div>`;
                 });
                 
-                // Get logo thumbnail
-                const logoSrc = getItemLogoSrc(item);
+                // Get logo thumbnail — fallback to sibling with same productCode, or current state
+                let logoSrc = getItemLogoSrc(item);
+                if (!logoSrc && itemCode) {
+                    const currentLogo = getLogoFromState();
+                    if (currentLogo && state.product?.code === itemCode) {
+                        logoSrc = currentLogo;
+                    }
+                    if (!logoSrc) {
+                        const sibling = basket.find(b => (b.productCode || '') === itemCode && b !== item && getItemLogoSrc(b));
+                        if (sibling) logoSrc = getItemLogoSrc(sibling);
+                    }
+                }
                 const logoThumb = logoSrc
                     ? `<img src="${logoSrc}" alt="Logo" style="width:100%;height:100%;object-fit:contain;">`
                     : `<span style="font-size:10px;color:#9ca3af;text-align:center;">No logo</span>`;
@@ -6687,7 +6706,7 @@
                 }
                 
                 // Logo button - always green, shows EDIT or Add Logo
-                const hasLogo = !!(getItemLogoSrc(item));
+                const hasLogo = !!logoSrc;
                 const logoBadgeText = hasLogo ? '\u270e EDIT' : '+ Add Logo';
                 
                 // Item note
