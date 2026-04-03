@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260331E">
+    <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403a">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260116a">
@@ -46,51 +47,6 @@
 
         body.customize-page .header-logo-row .back-btn-header {
             display: none !important;
-        }
-
-        /* Back button square above gallery */
-        .back-btn-gallery {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            padding: 0;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            color: #111827;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin: 6px 0 6px 16px;
-            overflow: visible;
-        }
-        
-        .back-btn-gallery:hover {
-            background: #e5e7eb;
-            color: #000;
-        }
-        
-        .back-btn-gallery svg {
-            flex-shrink: 0;
-            width: 14px;
-            height: 14px;
-        }
-        
-        /* MOBILE ONLY - only arrow, no box */
-        @media (max-width: 767px) {
-            .back-btn-gallery {
-                width: auto;
-                height: auto;
-                background: transparent;
-                border: none;
-                border-radius: 0;
-                margin: 4px 0 4px 12px;
-            }
-            .back-btn-gallery svg {
-                width: 18px;
-                height: 18px;
-            }
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -193,6 +149,16 @@
         </div>
     </header>
 
+    <!-- Breadcrumbs -->
+    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
+        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+        </button>
+        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+    </nav>
+
     <!-- Main Content -->
     <main class="customize-main">
 
@@ -201,13 +167,6 @@
         
         <!-- Product Gallery -->
         <section class="product-gallery">
-            <!-- Back Button -->
-            <button type="button" class="back-btn-gallery" onclick="history.back()" aria-label="Go back">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5"/>
-                    <polyline points="12 19 5 12 12 5"/>
-                </svg>
-            </button>
             
             <div class="gallery-main">
                 <div class="gallery-badge bestseller" style="display:none;">BESTSELLER</div>
@@ -856,6 +815,11 @@
                 <div id="logoActionPreview" style="display:none;margin-top:12px;text-align:center;">
                     <img id="logoActionPreviewImg" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">
                 </div>
+                <!-- Client Notes -->
+                <div class="logo-action-notes-section" style="margin-top:12px;">
+                    <label for="logoActionNote" style="font-size:12px;color:#6b7280;font-weight:600;display:block;margin-bottom:4px;">Client Notes</label>
+                    <textarea id="logoActionNote" placeholder="Special instructions (e.g., thread colour, placement, size)..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+                </div>
             </div>
             <button type="button" class="logo-action-apply-btn" id="logoActionApply" style="display:none;">Apply Logo</button>
         </div>
@@ -1317,5 +1281,6 @@ body.tawk-open #tawk-bubble-container {
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
+    <script src="mobile/js/breadcrumbs.js?v=20260403a"></script>
 </body>
 </html>

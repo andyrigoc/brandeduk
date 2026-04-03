@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Your Quote Basket - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260402b">
+    <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403a">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -22,6 +23,11 @@
 
         body.basket-page {
             padding-top: 0 !important;
+        }
+
+        /* Breadcrumbs: no margin-top since fixed header is hidden on basket page */
+        body.basket-page .site-breadcrumbs {
+            margin-top: 0;
         }
 
         /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
@@ -1180,6 +1186,16 @@
             </div>
         </div>
     </header>
+
+    <!-- Breadcrumbs -->
+    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
+        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+        </button>
+        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+    </nav>
 
     <!-- Basket Header -->
     <header class="basket-header">
@@ -2885,5 +2901,6 @@ body.tawk-open #tawk-bubble-container {
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
+    <script src="mobile/js/breadcrumbs.js?v=20260403a"></script>
 </body>
 </html>

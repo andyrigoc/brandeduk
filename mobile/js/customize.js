@@ -924,6 +924,7 @@
             state.product.weight = productData.weight || (productData.details && productData.details.weight) || '';
             state.product.fabric = productData.fabric || (productData.details && productData.details.fabric) || '';
             state.product.description = productData.description || (productData.details && productData.details.description) || '';
+            state.product.productType = productData.productType || productData.category || productData.type || inferProductTypeFromName(productData.name || '') || '';
             state.product.image = productData.image || ''; // Top-level product image (model/hero shot)
             state.product.rawData = productData; // Store full product data for reference
             console.log('🔍 PRODUCT IMAGE DEBUG:', { topLevelImage: productData.image, firstColorMain: (productData.colors && productData.colors[0]) ? productData.colors[0].main : 'no colors', sameImage: productData.image === ((productData.colors && productData.colors[0]) ? productData.colors[0].main : null) });
@@ -1124,6 +1125,13 @@
             // Pricing tiers UI will be rebuilt elsewhere, but update title
             if (state.product && state.product.name) {
                 document.title = `${state.product.name} - Branded UK`;
+
+                // Update shared breadcrumbs (breadcrumbs.js)
+                const category = state.product.productType || 'Shop';
+                if (typeof updateBreadcrumbCategory === 'function') updateBreadcrumbCategory(category);
+                if (state.product.code && typeof updateBreadcrumbProduct === 'function') {
+                    updateBreadcrumbProduct(state.product.code);
+                }
             }
 
             // === Populate START FROM price (lowest tier) ===
@@ -2231,20 +2239,8 @@
 
                     // Helper function for position name (ISKO OUTER SCOPE ME RAKHO)
                     function getPositionName(positionCode) {
-                        const positionMap = {
-                            'left-breast': 'Left Chest',
-                            'right-breast': 'Right Chest', 
-                            'small-centre-front': 'Small Centre Front',
-                            'large-front-center': 'Large Front Center',
-                            'large-centre-front': 'Large Centre Front',
-                            'large-back': 'Back',
-                            'left-arm': 'Left Sleeve',
-                            'right-arm': 'Right Sleeve',
-                            'back-center': 'Back Center',
-                            'left-sleeve': 'Left Sleeve',
-                            'right-sleeve': 'Right Sleeve'
-                        };
-                        return positionMap[positionCode] || positionCode;
+                        // Use the global canonical name for consistency
+                        return canonicalPositionName(positionCode);
                     }
 
                     // Process customizations — collect from basket items first (has prices),
@@ -3330,6 +3326,10 @@
             addToQuote({ silent: true });
             showToast(`✓ ${state.quantity} pcs of ${state.selectedColorName || 'current colour'} saved to basket.`);
         }
+        
+        // CRITICAL: Reset save tracking so the NEW color doesn't overwrite the OLD one
+        _autoSavedItemId = null;
+        _sessionSavedIds.clear();
         
         // Clear sizes and apply color change
         clearSizeSelection();
@@ -5873,18 +5873,19 @@
                         existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
                     }
                     if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
+                        // Rebuild positions as ARRAY (must match addToQuote/autoSaveToBasket format)
+                        const updatedPositions = [];
                         const updatedCustomizations = [];
                         Object.entries(state.positionMethods).forEach(([pos, method]) => {
                             const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
-                            const posNames = {'left-breast':'Left Chest','right-breast':'Right Chest','small-centre-front':'Small Centre Front','front-center':'Front Center','large-centre-front':'Front Centre','back-large':'Back Large','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve'};
-                            const posLabel = posNames[pos] || pos.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+                            const posLabel = canonicalPositionName(pos);
                             const logo = state.positionDesigns?.[pos]?.logo || null;
                             const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
                             const totalPrice = unitPrice * existing.totalQty;
-                            if (!existing.positions) existing.positions = {};
-                            existing.positions[pos] = { method: methodLabel, unitPrice, totalPrice, name: posLabel, logo };
-                            updatedCustomizations.push({ position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
+                            updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
+                            updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
                         });
+                        existing.positions = updatedPositions;
                         if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
                     }
                     localStorage.setItem('quoteBasket', JSON.stringify(basket));
@@ -6169,12 +6170,18 @@
                     const custUnitPrice = posData.unitPrice || (isEmbroidery(posData.method) ? 5.00 : 3.50);
                     const posSlug = posData.posKey || posData._posKey || '';
                     const positionName = posSlug ? canonicalPositionName(posSlug) : (posData.position || posData.name || 'Position');
+                    // Also derive canonical name for robust dedup
+                    const canonName = canonicalPositionName(posSlug || positionName);
                     
-                    // Check if already added (dedup by SLUG when available, else by display name)
+                    // Check if already added (dedup by SLUG when available, ALSO by canonical display name)
                     const existingCustom = allBasketCustomizations.find(c => 
                         c.productCode === itemCode && 
-                        (posSlug ? c.posKey === posSlug : c.position === positionName) && 
-                        c.method === methodLabel
+                        c.method === methodLabel &&
+                        (
+                            (posSlug && c.posKey === posSlug) ||
+                            c.position === canonName ||
+                            c.position === positionName
+                        )
                     );
                     
                     if (!existingCustom) {
@@ -6202,8 +6209,9 @@
         // Calculate TOTAL quantity (basket + current) for customization calculations
         let totalQtyForCustomizations = basketQty + currentQty;
         
-        // Build set of position keys already in basket customizations (to avoid dupes)
+        // Build set of position keys AND canonical names already in basket customizations (to avoid dupes)
         const basketPositionKeys = new Set(allBasketCustomizations.map(c => c.posKey).filter(Boolean));
+        const basketPositionNames = new Set(allBasketCustomizations.map(c => c.position).filter(Boolean));
         
         // Get all checked position cards
         const checkedCards = document.querySelectorAll('.position-card input[type="checkbox"]:checked');
@@ -6216,7 +6224,8 @@
             const method = state.positionMethods && state.positionMethods[position];
             
             // Skip if this position is already accounted for in basket customizations
-            if (basketPositionKeys.has(position)) {
+            // Check BOTH by slug key AND by canonical display name (handles inconsistent formats)
+            if (basketPositionKeys.has(position) || basketPositionNames.has(positionName)) {
                 console.log('?? Skipping position (already in basket):', position);
                 return;
             }
@@ -6612,6 +6621,7 @@
             itemsHtml += `
                 <div class="summary-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
                     <div class="summary-item-top">
+                        <label class="summary-item-checkbox"><input type="checkbox" class="summary-select-cb" data-index="current"></label>
                         <div class="summary-item-image">
                             <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
@@ -6621,6 +6631,11 @@
                             <p style="font-size: 12px; color: #6b7280;">Color: ${currentColor}</p>
                         </div>
                         <div class="summary-item-logo-thumb">${currentLogoThumb}</div>
+                        <button type="button" class="summary-item-remove" data-index="current">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
                     </div>
                     <div class="summary-item-sizes">${currentSizesHtml}</div>
                     <div class="summary-item-actions">
@@ -6688,6 +6703,7 @@
                 itemsHtml += `
                     <div class="summary-item-card" data-index="${index}">
                         <div class="summary-item-top">
+                            <label class="summary-item-checkbox"><input type="checkbox" class="summary-select-cb" data-index="${index}"></label>
                             <div class="summary-item-image">
                                 <img src="${itemImage}" alt="${itemName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                             </div>
@@ -6725,14 +6741,56 @@
         
         basketItemsList.innerHTML = itemsHtml;
         
+        // --- Floating "Delete Selected" bar ---
+        let deleteBar = document.getElementById('summaryDeleteBar');
+        if (!deleteBar) {
+            deleteBar = document.createElement('div');
+            deleteBar.id = 'summaryDeleteBar';
+            deleteBar.style.cssText = 'display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.25);cursor:pointer;gap:8px;align-items:center;';
+            deleteBar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> <span id="deleteBarText">Delete Selected (0)</span>';
+            document.body.appendChild(deleteBar);
+            deleteBar.addEventListener('click', () => {
+                deleteSelectedSummaryItems();
+            });
+        }
+        
+        function updateDeleteBar() {
+            const checked = basketItemsList.querySelectorAll('.summary-select-cb:checked');
+            if (checked.length > 0) {
+                deleteBar.style.display = 'flex';
+                document.getElementById('deleteBarText').textContent = 'Delete Selected (' + checked.length + ')';
+            } else {
+                deleteBar.style.display = 'none';
+            }
+        }
+        
         // --- Attach event listeners ---
+        
+        // Checkbox change
+        basketItemsList.querySelectorAll('.summary-select-cb').forEach(cb => {
+            cb.addEventListener('change', () => { updateDeleteBar(); });
+        });
         
         // Remove buttons
         basketItemsList.querySelectorAll('.summary-item-remove').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const idx = parseInt(btn.dataset.index);
+                const idxRaw = btn.dataset.index;
+                if (idxRaw === 'current') {
+                    // Clear current selection
+                    state.sizeQuantities = {};
+                    state.quantity = 0;
+                    // Reset size UI
+                    const sizeRows = document.querySelectorAll('.size-qty-value');
+                    sizeRows.forEach(el => { el.textContent = '0'; });
+                    const totalSpan = document.getElementById('totalQty');
+                    if (totalSpan) totalSpan.textContent = '0';
+                    updatePricingSummary();
+                    if (typeof showToast === 'function') showToast('Current selection cleared');
+                    return;
+                }
+                const idx = parseInt(idxRaw);
                 removeBasketItem(idx);
             });
         });
@@ -6823,23 +6881,13 @@
             });
         });
         
-        // "Editing Now" badge click - scroll up to position/logo section
+        // "Editing Now" badge click - open logo modal for current item
         const currentBadge = document.getElementById('currentItemLogoBadge');
         if (currentBadge) {
             currentBadge.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Scroll to the position cards / upload section
-                const target = document.querySelector('.position-group') 
-                            || document.getElementById('uploadLogoSection')
-                            || document.querySelector('.positions-grid');
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Brief highlight to draw attention
-                    target.style.transition = 'box-shadow 0.3s';
-                    target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.4)';
-                    setTimeout(() => { target.style.boxShadow = ''; }, 1500);
-                }
+                openCurrentItemLogoModal();
             });
         }
     }
@@ -6884,14 +6932,18 @@
         const modal = document.getElementById('logoActionModal');
         if (!modal) return;
         
-        const itemName = state.productName || state.name || 'Current Item';
-        
-        // Title
-        const title = document.getElementById('logoActionTitle');
-        if (title) title.textContent = `Logo – ${itemName}`;
+        const itemName = state.product?.name || state.productName || 'Current Item';
         
         // Current logo
         const currentLogo = getLogoFromState();
+        
+        // Title - dynamic based on existing logo
+        const title = document.getElementById('logoActionTitle');
+        if (title) title.textContent = currentLogo ? `Change Logo – ${itemName}` : `Add Logo – ${itemName}`;
+        
+        // Populate notes textarea
+        const notesArea = document.getElementById('logoActionNote');
+        if (notesArea) notesArea.value = state.itemNote || '';
         
         // Show/hide remove button
         let removeBtn = document.getElementById('logoActionRemoveBtn');
@@ -6940,7 +6992,8 @@
         const previewDiv = document.getElementById('logoActionPreview');
         
         if (previewDiv) previewDiv.style.display = 'none';
-        if (applyBtn) applyBtn.style.display = 'none';
+        // Always show Apply/Save button (user can save notes even without logo)
+        if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Save'; }
         
         if (allLogos.size > 0 && gallery && existingSection) {
             existingSection.style.display = 'block';
@@ -6955,7 +7008,7 @@
                     gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                     _logoActionSelectedSrc = src;
-                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (applyBtn) applyBtn.textContent = 'Apply Logo';
                     if (previewDiv) previewDiv.style.display = 'none';
                 });
                 gallery.appendChild(div);
@@ -6981,7 +7034,7 @@
                     const previewImg = document.getElementById('logoActionPreviewImg');
                     if (previewImg) previewImg.src = ev.target.result;
                     if (previewDiv) previewDiv.style.display = 'block';
-                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Apply Logo'; }
                 };
                 reader.readAsDataURL(file);
             });
@@ -7017,6 +7070,21 @@
         if (typeof showToast === 'function') showToast('Logo removed');
     }
     
+    // Remove logo from a saved basket item in localStorage
+    function removeBasketItemLogo(itemIndex) {
+        let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const item = basket[itemIndex];
+        if (!item) return;
+        if (item.positionDesigns) {
+            Object.keys(item.positionDesigns).forEach(key => {
+                if (item.positionDesigns[key]) item.positionDesigns[key].logo = null;
+            });
+        }
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        updatePricingSummary();
+        if (typeof showToast === 'function') showToast('Logo removed');
+    }
+    
     function openLogoActionModal(itemIndex) {
         _logoActionTargetIdx = itemIndex;
         _logoActionSelectedSrc = null;
@@ -7024,17 +7092,46 @@
         const modal = document.getElementById('logoActionModal');
         if (!modal) return;
         
-        // Hide remove button for basket items (only for current item)
-        const removeBtn = document.getElementById('logoActionRemoveBtn');
-        if (removeBtn) removeBtn.style.display = 'none';
-        
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         const item = basket[itemIndex];
         const itemName = item ? (item.productName || item.name || 'Item') : 'Item';
+        const existingLogo = item ? getItemLogoSrc(item) : null;
         
-        // Title
+        // Title - dynamic based on existing logo
         const title = document.getElementById('logoActionTitle');
-        if (title) title.textContent = `Add Logo – ${itemName}`;
+        if (title) title.textContent = existingLogo ? `Change Logo – ${itemName}` : `Add Logo – ${itemName}`;
+        
+        // Show/hide remove button (also for basket items if they have a logo)
+        let removeBtn = document.getElementById('logoActionRemoveBtn');
+        if (!removeBtn) {
+            // Create remove button if not exists
+            const body = modal.querySelector('.logo-action-body');
+            if (body) {
+                removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.id = 'logoActionRemoveBtn';
+                removeBtn.className = 'logo-action-remove-btn';
+                removeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Remove Logo';
+                removeBtn.style.cssText = 'display:none;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;';
+                body.insertBefore(removeBtn, body.firstChild);
+            }
+        }
+        if (removeBtn) {
+            removeBtn.style.display = existingLogo ? 'block' : 'none';
+            // Re-bind click handler for basket item removal
+            const newRemoveBtn = removeBtn.cloneNode(true);
+            removeBtn.parentNode.replaceChild(newRemoveBtn, removeBtn);
+            newRemoveBtn.addEventListener('click', () => {
+                removeBasketItemLogo(itemIndex);
+                closeLogoActionModal();
+            });
+        }
+        
+        // Show/hide notes textarea
+        let notesArea = document.getElementById('logoActionNote');
+        if (notesArea) {
+            notesArea.value = item?.note || '';
+        }
         
         // Collect all available logos: current state + basket items + gallery
         const allLogos = new Set();
@@ -7063,7 +7160,8 @@
         const previewDiv = document.getElementById('logoActionPreview');
         
         if (previewDiv) previewDiv.style.display = 'none';
-        if (applyBtn) applyBtn.style.display = 'none';
+        // Always show Apply/Save button (user can save notes even without logo)
+        if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Save'; }
         
         if (allLogos.size > 0 && gallery && existingSection) {
             existingSection.style.display = 'block';
@@ -7077,7 +7175,7 @@
                     gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                     _logoActionSelectedSrc = src;
-                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (applyBtn) applyBtn.textContent = 'Apply Logo';
                     if (previewDiv) previewDiv.style.display = 'none';
                 });
                 gallery.appendChild(div);
@@ -7104,7 +7202,7 @@
                     const previewImg = document.getElementById('logoActionPreviewImg');
                     if (previewImg) previewImg.src = ev.target.result;
                     if (previewDiv) previewDiv.style.display = 'block';
-                    if (applyBtn) applyBtn.style.display = 'block';
+                    if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Apply Logo'; }
                 };
                 reader.readAsDataURL(file);
             });
@@ -7122,43 +7220,56 @@
     }
     
     function applyLogoAction() {
-        if (_logoActionTargetIdx === null || !_logoActionSelectedSrc) return;
+        // Get notes value (always saveable, even without logo)
+        const notesArea = document.getElementById('logoActionNote');
+        const noteValue = notesArea ? notesArea.value.trim() : '';
+        
+        const hasLogo = !!_logoActionSelectedSrc;
+        const hasNote = noteValue.length > 0;
+        
+        if (_logoActionTargetIdx === null || (!hasLogo && !hasNote)) return;
         
         if (_logoActionTargetIdx === 'current') {
-            // Apply to current in-memory state
-            if (!state.positionDesigns) state.positionDesigns = {};
-            // Find first position key in state or use default
-            let posKey = Object.keys(state.positionDesigns)[0] || 'small-centre-front';
-            if (!state.positionDesigns[posKey]) {
-                state.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
-            } else {
-                state.positionDesigns[posKey].logo = _logoActionSelectedSrc;
-            }
-            // Update logo overlay on position cards
-            document.querySelectorAll('.logo-overlay-img').forEach(img => {
-                img.src = _logoActionSelectedSrc;
-                img.style.display = 'block';
-            });
-            // Update design preview
-            const previewImg = document.getElementById('designPreviewImg');
-            if (previewImg) {
-                previewImg.src = _logoActionSelectedSrc;
-                const previewContainer = document.getElementById('designUploadPreview');
-                if (previewContainer) previewContainer.hidden = false;
-                const uploadZone = document.getElementById('designUploadZone');
-                if (uploadZone) uploadZone.style.display = 'none';
+            // Save note to state
+            state.itemNote = noteValue;
+            
+            // Apply logo to current in-memory state (if selected)
+            if (hasLogo) {
+                if (!state.positionDesigns) state.positionDesigns = {};
+                let posKey = Object.keys(state.positionDesigns)[0] || 'small-centre-front';
+                if (!state.positionDesigns[posKey]) {
+                    state.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
+                } else {
+                    state.positionDesigns[posKey].logo = _logoActionSelectedSrc;
+                }
+                // Update logo overlay on position cards
+                document.querySelectorAll('.logo-overlay-img').forEach(img => {
+                    img.src = _logoActionSelectedSrc;
+                    img.style.display = 'block';
+                });
+                // Update design preview
+                const previewImg = document.getElementById('designPreviewImg');
+                if (previewImg) {
+                    previewImg.src = _logoActionSelectedSrc;
+                    const previewContainer = document.getElementById('designUploadPreview');
+                    if (previewContainer) previewContainer.hidden = false;
+                    const uploadZone = document.getElementById('designUploadZone');
+                    if (uploadZone) uploadZone.style.display = 'none';
+                }
             }
             // Save to logo gallery
-            try {
-                const logos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
-                if (!logos.some(l => l.url === _logoActionSelectedSrc || l.src === _logoActionSelectedSrc)) {
-                    logos.push({ url: _logoActionSelectedSrc, name: 'Logo', date: new Date().toISOString() });
-                    localStorage.setItem('brandeduk-logos', JSON.stringify(logos));
-                }
-            } catch(e) {}
+            if (hasLogo) {
+                try {
+                    const logos = JSON.parse(localStorage.getItem('brandeduk-logos') || '[]');
+                    if (!logos.some(l => l.url === _logoActionSelectedSrc || l.src === _logoActionSelectedSrc)) {
+                        logos.push({ url: _logoActionSelectedSrc, name: 'Logo', date: new Date().toISOString() });
+                        localStorage.setItem('brandeduk-logos', JSON.stringify(logos));
+                    }
+                } catch(e) {}
+            }
             closeLogoActionModal();
             updatePricingSummary();
-            if (typeof showToast === 'function') showToast('Logo applied!');
+            if (typeof showToast === 'function') showToast(hasLogo ? 'Logo applied!' : 'Note saved!');
             return;
         }
         
@@ -7166,25 +7277,28 @@
         const item = basket[_logoActionTargetIdx];
         if (!item) { closeLogoActionModal(); return; }
         
-        // Find first position key or create a default one
-        let posKey = 'small-centre-front';
-        if (item.positions && typeof item.positions === 'object') {
-            const keys = Object.keys(item.positions);
-            if (keys.length) posKey = keys[0];
-        }
+        // Save note to basket item
+        item.note = noteValue;
         
-        // Set logo in positionDesigns
-        if (!item.positionDesigns) item.positionDesigns = {};
-        if (!item.positionDesigns[posKey]) {
-            item.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
-        } else {
-            item.positionDesigns[posKey].logo = _logoActionSelectedSrc;
+        // Apply logo (if selected)
+        if (hasLogo) {
+            let posKey = 'small-centre-front';
+            if (item.positions && typeof item.positions === 'object') {
+                const keys = Object.keys(item.positions);
+                if (keys.length) posKey = keys[0];
+            }
+            if (!item.positionDesigns) item.positionDesigns = {};
+            if (!item.positionDesigns[posKey]) {
+                item.positionDesigns[posKey] = { logo: _logoActionSelectedSrc, position: posKey };
+            } else {
+                item.positionDesigns[posKey].logo = _logoActionSelectedSrc;
+            }
         }
         
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
         closeLogoActionModal();
         updatePricingSummary();
-        if (typeof showToast === 'function') showToast('Logo applied!');
+        if (typeof showToast === 'function') showToast(hasLogo ? 'Logo applied!' : 'Note saved!');
     }
     
     // Wire up modal close/apply on DOM ready
@@ -7259,6 +7373,51 @@
         basket.splice(itemIndex, 1);
         localStorage.setItem('quoteBasket', JSON.stringify(basket));
         updateBasketCount();
+        updatePricingSummary();
+    }
+
+    /** Delete all selected items from summary (multi-select delete) */
+    function deleteSelectedSummaryItems() {
+        const checked = document.querySelectorAll('.summary-select-cb:checked');
+        if (!checked.length) return;
+
+        const basketIndices = [];
+        let clearCurrent = false;
+
+        checked.forEach(cb => {
+            const idx = cb.dataset.index;
+            if (idx === 'current') {
+                clearCurrent = true;
+            } else {
+                basketIndices.push(parseInt(idx));
+            }
+        });
+
+        // Clear current selection if checked
+        if (clearCurrent) {
+            state.sizeQuantities = {};
+            state.quantity = 0;
+            const sizeRows = document.querySelectorAll('.size-qty-value');
+            sizeRows.forEach(el => { el.textContent = '0'; });
+            const totalSpan = document.getElementById('totalQty');
+            if (totalSpan) totalSpan.textContent = '0';
+        }
+
+        // Remove basket items (in reverse order to preserve indices)
+        if (basketIndices.length > 0) {
+            let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            basketIndices.sort((a, b) => b - a).forEach(idx => {
+                if (idx >= 0 && idx < basket.length) basket.splice(idx, 1);
+            });
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            updateBasketCount();
+        }
+
+        // Hide delete bar
+        const bar = document.getElementById('summaryDeleteBar');
+        if (bar) bar.style.display = 'none';
+
+        if (typeof showToast === 'function') showToast('Deleted ' + checked.length + ' item(s)');
         updatePricingSummary();
     }
 
@@ -7645,6 +7804,8 @@
     // === Auto-Save Timer (3 seconds of inactivity) ===
     let _autoSaveTimer = null;
     let _autoSavedItemId = null; // Track the ID of the auto-saved item so we can update it
+    // Track item IDs saved in THIS customize session (to prevent qty doubling)
+    const _sessionSavedIds = new Set();
 
     /**
      * Reset the 3-second auto-save timer. Called whenever state changes
@@ -7707,19 +7868,24 @@
             positions: positions,
             positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             customizations: getActiveCustomizations(),
+            note: state.itemNote || '',
             addedAt: new Date().toISOString(),
             _autoSaved: true
         };
 
-        // Find existing auto-saved item for same product+color (REPLACE, not merge)
+        // Find existing item for same product+color (REPLACE, not merge)
         let existingIdx = -1;
         if (_autoSavedItemId) {
             existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
         }
         if (existingIdx === -1) {
+            existingIdx = basket.findIndex(i => _sessionSavedIds.has(i.id));
+        }
+        // Fallback: EXACT product+color (colorId must match)
+        if (existingIdx === -1) {
             existingIdx = basket.findIndex(i =>
                 i.productCode === newItem.productCode &&
-                (i.colorId === newItem.colorId || i.color === newItem.color)
+                i.colorId === newItem.colorId
             );
         }
 
@@ -7732,6 +7898,7 @@
         }
 
         _autoSavedItemId = newItem.id;
+        _sessionSavedIds.add(newItem.id);
 
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
@@ -7833,6 +8000,7 @@
             positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
             // Customization zones (logos/text) - legacy format
             customizations: getActiveCustomizations(),
+            note: state.itemNote || '',
             addedAt: new Date().toISOString()
         };
         
@@ -7843,35 +8011,34 @@
             positions: newItem.positions
         });
         
-        // Add to basket — merge if same product+color already exists
-        const existingIdx = basket.findIndex(i =>
-            i.productCode === newItem.productCode &&
-            (i.colorId === newItem.colorId || i.color === newItem.color)
-        );
+        // Add to basket — ALWAYS REPLACE same product+color (never merge/double quantities)
+        let existingIdx = -1;
+        // First check if we have a tracked item from this session
+        if (_autoSavedItemId) {
+            existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+        }
+        // Check session-saved IDs
+        if (existingIdx === -1) {
+            existingIdx = basket.findIndex(i => _sessionSavedIds.has(i.id));
+        }
+        // Fallback: find by EXACT product+color (colorId must match exactly)
+        if (existingIdx === -1) {
+            existingIdx = basket.findIndex(i =>
+                i.productCode === newItem.productCode &&
+                i.colorId === newItem.colorId
+            );
+        }
 
         if (existingIdx !== -1) {
-            const existing = basket[existingIdx];
-            // Merge quantities per size
-            Object.entries(newItem.quantities).forEach(([size, qty]) => {
-                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
-            });
-            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
-            // Update unit price to latest tier
-            existing.unitPrice = newItem.unitPrice;
-            // Overwrite customizations / positions with latest selection
-            if (newItem.positions && newItem.positions.length > 0) {
-                existing.positions = newItem.positions;
-            }
-            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
-                existing.positionDesigns = newItem.positionDesigns;
-            }
-            if (newItem.customizations && newItem.customizations.length > 0) {
-                existing.customizations = newItem.customizations;
-            }
-            // Keep latest image
-            existing.colorImage = newItem.colorImage || existing.colorImage;
-            console.log('🔄 Merged into existing basket item at index', existingIdx, 'totalQty:', existing.totalQty);
+            // ALWAYS replace — never merge quantities within the same session
+            newItem.id = basket[existingIdx].id;
+            basket[existingIdx] = newItem;
+            _sessionSavedIds.add(newItem.id);
+            _autoSavedItemId = newItem.id;
+            console.log('🔄 Replaced basket item at index', existingIdx, 'totalQty:', newItem.totalQty);
         } else {
+            _sessionSavedIds.add(newItem.id);
+            _autoSavedItemId = newItem.id;
             basket.push(newItem);
         }
         
