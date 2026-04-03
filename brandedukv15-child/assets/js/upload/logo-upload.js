@@ -26,7 +26,7 @@
 
   const STORAGE_KEY = 'brandeduk-logos';
   const UPLOAD_ENDPOINT = '/api/upload-logo';   // Vercel serverless
-  const MAX_LOGOS = 20;                          // prevent unbounded growth
+  const MAX_LOGOS = 4;                           // max 4 logos in gallery
 
   /* ── localStorage helpers ──────────────────────────── */
 
@@ -230,43 +230,12 @@
         img.loading = 'lazy';
         img.draggable = false;
 
-        // Overlay with delete button
-        const overlay = document.createElement('div');
-        overlay.className = 'logo-gallery__item-overlay';
-
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'logo-gallery__delete';
-        delBtn.title = 'Remove from library';
-        delBtn.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        `;
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          remove(logo.url);
-          item.style.animation = 'logoGalleryScaleIn 0.25s ease reverse';
-          setTimeout(() => {
-            item.remove();
-            // Update count
-            const count = containerEl.querySelector('.logo-gallery__count');
-            const remaining = _load().length;
-            if (count) count.textContent = remaining;
-            if (remaining === 0) renderGallery(containerEl, opts);
-          }, 250);
-        });
-
-        overlay.appendChild(delBtn);
-
         // Filename label
         const fname = document.createElement('div');
         fname.className = 'logo-gallery__filename';
         fname.textContent = logo.filename || 'logo';
 
         item.appendChild(img);
-        item.appendChild(overlay);
         item.appendChild(fname);
 
         // Select handler
@@ -287,6 +256,11 @@
    * Process dropped/selected files: read → optional compress → add to gallery
    */
   function _processFiles(files, containerEl, opts) {
+    const currentCount = _load().length;
+    if (currentCount >= MAX_LOGOS) {
+      if (typeof window.showToast === 'function') window.showToast('Max ' + MAX_LOGOS + ' logos allowed');
+      return;
+    }
     files.forEach(file => {
       if (file.size > 10 * 1024 * 1024) {
         if (typeof window.showToast === 'function') {
@@ -297,7 +271,14 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         const dataUrl = ev.target.result;
-        // Add to local gallery immediately
+
+        // If caller wants to handle the file first (e.g. preview + BG removal)
+        if (typeof opts.onFileUploaded === 'function') {
+          opts.onFileUploaded(dataUrl, file);
+          return;
+        }
+
+        // Default: add to local gallery immediately
         const entry = {
           url: dataUrl,
           filename: file.name,
@@ -305,11 +286,15 @@
         };
         add(entry);
 
-        // Re-render gallery to show the new logo
-        renderGallery(containerEl, opts);
+        // Check max limit
+        const current = _load();
+        if (current.length > MAX_LOGOS) {
+          if (typeof window.showToast === 'function') window.showToast('Max ' + MAX_LOGOS + ' logos allowed');
+          return;
+        }
 
-        // Auto-select + trigger onSelect callback
-        if (typeof opts.onSelect === 'function') opts.onSelect(entry);
+        // Re-render gallery to show the new logo (don't auto-select)
+        renderGallery(containerEl, opts);
 
         // Attempt server upload in background
         uploadToServer(dataUrl, null, file.name).then(serverResult => {

@@ -4854,7 +4854,7 @@ a {
 /* Gallery grid */
 .logo-gallery__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
 }
 
@@ -8842,24 +8842,25 @@ a {
 
 .upload-remove-btn {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: transparent;
-    color: #9ca3af;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 6px;
+    right: 6px;
+    border: 1px dashed #ef4444;
+    background: rgba(254,226,226,0.95);
+    color: #dc2626;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: all 0.2s ease;
     z-index: 2;
+    line-height: 1;
+    transition: all 0.2s ease;
 }
 
 .upload-remove-btn:active {
-    transform: scale(0.9);
+    transform: scale(0.95);
+    background: #fecaca;
 }
 
 /* Toggle Background Button - positioned top left, compact but readable */

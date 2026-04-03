@@ -5259,6 +5259,37 @@
                 if (navigator.vibrate) navigator.vibrate(10);
                 showToast('Logo selected!');
             },
+            onFileUploaded: function (dataUrl, file) {
+                // Show in large preview with REMOVE BG button before saving to gallery
+                const previewImg = document.getElementById('designPreviewImg');
+                const uploadPreview = document.getElementById('designUploadPreview');
+                const uploadZone = document.getElementById('designUploadZone');
+                const uploadTitle = document.getElementById('uploadLogoTitle');
+
+                if (previewImg) previewImg.src = dataUrl;
+                if (uploadZone) { uploadZone.hidden = true; uploadZone.style.display = 'none'; }
+                if (uploadPreview) uploadPreview.hidden = false;
+                if (uploadTitle) uploadTitle.textContent = 'Your Logo';
+
+                // Store original for BG removal toggle
+                state.originalLogoImage = dataUrl;
+                state.backgroundRemoved = false;
+
+                // Reset Remove BG button
+                const removeBgBtn = document.getElementById('removeBgBtn');
+                if (removeBgBtn) {
+                    removeBgBtn.classList.remove('processing', 'done');
+                    removeBgBtn.disabled = false;
+                    const spanEl = removeBgBtn.querySelector('span');
+                    if (spanEl) spanEl.textContent = 'KEEP BACKGROUND';
+                }
+
+                // Mark pending → will be added to gallery after BG removal
+                state._pendingGalleryFile = { filename: file.name, originalDataUrl: dataUrl };
+
+                // Auto-remove background
+                setTimeout(() => removeImageBackground(), 150);
+            },
         });
 
         // Wire up "Add More Logos" button
@@ -5537,8 +5568,26 @@
                 if (logoOverlayImg) logoOverlayImg.src = '';
                 
                 // Reset completo dello state per nuovo logo
+                const logoSrc = previewImg ? previewImg.src : null;
                 state.originalLogoImage = null;
+                state._pendingGalleryFile = null;
                 
+                // Remove from gallery and cache
+                if (logoSrc && typeof window.BrandedLogoLibrary !== 'undefined') {
+                    window.BrandedLogoLibrary.remove(logoSrc);
+                    // Also remove original if BG was removed
+                    if (state.originalLogoImage) {
+                        window.BrandedLogoLibrary.remove(state.originalLogoImage);
+                    }
+                }
+
+                // Show gallery again and re-render
+                const gc = document.getElementById('logoGalleryContainer');
+                if (gc) {
+                    gc.style.display = '';
+                    _renderLogoGalleryInModal();
+                }
+
                 // Reset Remove BG button
                 const removeBgBtn = document.getElementById('removeBgBtn');
                 if (removeBgBtn) {
@@ -5723,6 +5772,25 @@
 
             state.backgroundRemoved = true;
 
+            // If file is pending gallery add, save processed image now
+            if (state._pendingGalleryFile) {
+                const pending = state._pendingGalleryFile;
+                state._pendingGalleryFile = null;
+                const processedUrl = previewImg.src;
+                if (typeof window.BrandedLogoLibrary !== 'undefined') {
+                    window.BrandedLogoLibrary.add({
+                        url: processedUrl,
+                        filename: pending.filename,
+                        uploadedAt: new Date().toISOString()
+                    });
+                    // Upload processed image to server in background
+                    window.BrandedLogoLibrary.uploadToServer(processedUrl, null, pending.filename).catch(() => {});
+                    // Re-render gallery quietly
+                    const gc = document.getElementById('logoGalleryContainer');
+                    if (gc) _renderLogoGalleryInModal();
+                }
+            }
+
             if (undoBgBtn) {
                 undoBgBtn.hidden = true;
             }
@@ -5736,6 +5804,22 @@
                 removeBgBtn.disabled = false;
                 const spanEl = removeBgBtn.querySelector('span');
                 if (spanEl) spanEl.textContent = 'REMOVE BG';
+            }
+            // If pending gallery add, save original image anyway
+            if (state._pendingGalleryFile) {
+                const pending = state._pendingGalleryFile;
+                state._pendingGalleryFile = null;
+                if (typeof window.BrandedLogoLibrary !== 'undefined') {
+                    window.BrandedLogoLibrary.add({
+                        url: pending.originalDataUrl,
+                        filename: pending.filename,
+                        uploadedAt: new Date().toISOString()
+                    });
+                    window.BrandedLogoLibrary.uploadToServer(pending.originalDataUrl, null, pending.filename).catch(() => {});
+                    // Re-render gallery quietly
+                    const gc = document.getElementById('logoGalleryContainer');
+                    if (gc) _renderLogoGalleryInModal();
+                }
             }
         };
 
@@ -6641,7 +6725,12 @@
                             <p style="font-size: 11px; color: #6b7280;">${currentCode}</p>
                             <p style="font-size: 12px; color: #6b7280;">Color: ${currentColor}</p>
                         </div>
-                        <div class="summary-item-logo-thumb">${currentLogoThumb}</div>
+                        <div class="summary-logo-col">
+                            <div class="summary-item-logo-thumb">${currentLogoThumb}</div>
+                            <span class="summary-customize-badge" data-index="current">
+                                ${currentLogo ? '✎ Edit' : '+ Add Logo'}
+                            </span>
+                        </div>
                         <button type="button" class="summary-item-remove" data-index="current">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -6889,7 +6978,53 @@
             });
         });
         
-        // Customize badge click - open design modal (same as position card EDIT)
+        // --- Method picker mini popup ---
+        function _showMethodPicker(position, itemIndex) {
+            // Remove existing picker if any
+            let existing = document.getElementById('methodPickerOverlay');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'methodPickerOverlay';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+            const sheet = document.createElement('div');
+            sheet.style.cssText = 'background:#fff;border-radius:20px;padding:24px 20px;max-width:320px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.18);text-align:center;animation:logoGalleryScaleIn 0.3s ease;';
+            sheet.innerHTML = `
+                <h4 style="font-size:16px;font-weight:700;color:#111827;margin:0 0 6px;">Choose Method</h4>
+                <p style="font-size:12px;color:#6b7280;margin:0 0 16px;">Select customisation type for this logo</p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button type="button" id="mpEmb" style="flex:1;padding:14px 8px;border-radius:12px;border:none;background:linear-gradient(135deg,#4f7df9,#3b6ce7);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(59,108,231,0.3);transition:transform 0.15s;">
+                        EMBROIDERY<br><span style="font-size:11px;font-weight:400;opacity:0.85;">£5.00 /item</span>
+                    </button>
+                    <button type="button" id="mpPrint" style="flex:1;padding:14px 8px;border-radius:12px;border:none;background:linear-gradient(135deg,#f0c040,#daa520);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(218,165,32,0.3);transition:transform 0.15s;">
+                        PRINT<br><span style="font-size:11px;font-weight:400;opacity:0.85;">£3.50 /item</span>
+                    </button>
+                </div>
+            `;
+
+            overlay.appendChild(sheet);
+            document.body.appendChild(overlay);
+
+            // Close on overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+
+            // Embroidery
+            sheet.querySelector('#mpEmb').addEventListener('click', () => {
+                overlay.remove();
+                openDesignModal(position, 'embroidery', 'logo');
+            });
+
+            // Print
+            sheet.querySelector('#mpPrint').addEventListener('click', () => {
+                overlay.remove();
+                openDesignModal(position, 'print', 'logo');
+            });
+        }
+
+        // Customize badge click - show method picker then open design modal
         basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -6897,9 +7032,7 @@
                 const idx = parseInt(badge.dataset.index);
                 const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
                 const item = basket[idx];
-                // Get position from basket item
                 let position = 'small-centre-front';
-                let method = 'embroidery';
                 if (item) {
                     if (item.positionDesigns) {
                         const keys = Object.keys(item.positionDesigns);
@@ -6908,14 +7041,9 @@
                         const keys = Object.keys(item.positions);
                         if (keys.length) position = keys[0];
                     }
-                    if (item.customizations && item.customizations.length) {
-                        const m = item.customizations[0].method;
-                        if (m) method = m.toLowerCase();
-                    }
                 }
-                // Store target basket index so apply can save back
                 _logoActionTargetIdx = idx;
-                openDesignModal(position, method, 'logo');
+                _showMethodPicker(position, idx);
             });
         });
         
