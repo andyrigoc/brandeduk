@@ -1,8 +1,25 @@
 /* ═══════════════════════════════════════════════════════
    SITE BREADCRUMBS – Shared across all pages
-   Mobile-first: 0-767px base, 768px+ tablet, 1024px+ desktop
+   Mobile-first: 0-767px base, 768px+ tablet, 1280px+ desktop
    Uses display:block + inline children (most reliable single-line)
    ═══════════════════════════════════════════════════════ */
+
+/* Override header.css body padding-top (220px) which is only for WP static header.
+   Our prototype pages use position:fixed header, so body needs 0 padding-top. */
+body:has(.site-breadcrumbs) {
+    padding-top: 0 !important;
+}
+/* Fallback for browsers that don't support :has() */
+body.customize-page {
+    padding-top: 0 !important;
+}
+
+/* Kill any gap between breadcrumbs and content below */
+.site-breadcrumbs + .customize-main,
+.site-breadcrumbs + main {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
 
 .site-breadcrumbs {
     display: block !important;
@@ -87,19 +104,20 @@
     white-space: nowrap;
 }
 
-/* ─── Tablet (768px+) ─── */
-@media (min-width: 768px) {
+/* ─── Tablet (768px – 1279px) ─── */
+@media (min-width: 768px) and (max-width: 1279px) {
     .site-breadcrumbs {
-        margin-top: calc(36px + var(--header-height, 80px) + 6px);
+        /* tablet-top-bar ~36px + header 80px + small gap */
+        margin-top: calc(36px + var(--header-height, 80px) + 4px);
         padding: 6px 20px;
         font-size: 11px;
     }
 }
 
-/* ─── Desktop (1024px+) ─── */
-@media (min-width: 1024px) {
+/* ─── Desktop (1280px+) ─── */
+@media (min-width: 1280px) {
     .site-breadcrumbs {
-        margin-top: calc(36px + var(--header-height, 140px) + 6px);
+        margin-top: calc(var(--header-height, 140px) + 8px);
         padding: 8px 36px;
         font-size: 12px;
     }
