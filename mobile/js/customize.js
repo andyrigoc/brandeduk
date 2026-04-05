@@ -624,6 +624,7 @@
     function saveCustomizationState() {
         try {
             const stateToSave = {
+                productCode: state.product?.code || '',
                 positionMethods: state.positionMethods || {},
                 positionCustomizations: state.positionCustomizations || {},
                 positionDesigns: state.positionDesigns || {},
@@ -654,11 +655,26 @@
             const savedState = JSON.parse(saved);
             console.log('?? Restoring customization state:', savedState);
             
-            // Restore state properties
-            if (savedState.positionMethods) state.positionMethods = savedState.positionMethods;
-            if (savedState.positionCustomizations) state.positionCustomizations = savedState.positionCustomizations;
-            if (savedState.positionDesigns) state.positionDesigns = savedState.positionDesigns;
-            if (savedState.positions) state.positions = savedState.positions;
+            // Check if the saved state is for the SAME product
+            const currentProductCode = state.product?.code || sessionStorage.getItem('selectedProduct') || '';
+            const savedProductCode = savedState.productCode || '';
+            const isSameProduct = savedProductCode && currentProductCode && savedProductCode === currentProductCode;
+            
+            if (isSameProduct) {
+                // Same product — restore position designs/methods
+                if (savedState.positionMethods) state.positionMethods = savedState.positionMethods;
+                if (savedState.positionCustomizations) state.positionCustomizations = savedState.positionCustomizations;
+                if (savedState.positionDesigns) state.positionDesigns = savedState.positionDesigns;
+                if (savedState.positions) state.positions = savedState.positions;
+                console.log('? Same product — restored position designs/methods');
+            } else {
+                // Different product — do NOT restore logos/positions from old product
+                console.log('?? Different product (saved:', savedProductCode, 'current:', currentProductCode, ') — skipping position restore');
+                state.positionMethods = {};
+                state.positionCustomizations = {};
+                state.positionDesigns = {};
+                state.positions = [];
+            }
             
             // CRITICAL FIX: Don't restore selectedColorImage from sessionStorage
             // It will be set from the new product's colors in loadProductFromSessionOrApi()
@@ -5356,8 +5372,165 @@
     // === Open Customization Type Modal (Choose Your Customization) ===
     // Now directly opens the design modal since only logo upload option exists
     function openCustomizationTypeModal(position, method) {
-        // Open design modal directly for logo upload
-        openDesignModal(position, method, 'logo');
+        // Check if other basket items already have logos
+        const existingLogos = _getExistingLogosFromBasket();
+        if (existingLogos.length > 0) {
+            _showExistingLogoPopup(position, method, existingLogos);
+        } else {
+            openDesignModal(position, method, 'logo');
+        }
+    }
+
+    /** Scan quoteBasket for logos from OTHER items (not the current one) */
+    function _getExistingLogosFromBasket() {
+        try {
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const currentCode = state.product?.code || '';
+            const currentColor = state.selectedColorName || state.selectedColor || '';
+            const seen = new Set();
+            const logos = [];
+
+            basket.forEach(item => {
+                if (!item.positionDesigns) return;
+                Object.values(item.positionDesigns).forEach(d => {
+                    if (d && d.logo && !seen.has(d.logo)) {
+                        seen.add(d.logo);
+                        logos.push({ url: d.logo, productName: item.productName || '', color: item.color || '' });
+                    }
+                });
+            });
+            return logos;
+        } catch (e) {
+            return [];
+        }
+    }
+
+    /** Show popup: "Use existing logo or upload new?" */
+    function _showExistingLogoPopup(position, method, logos) {
+        // Remove any existing popup
+        const old = document.getElementById('existingLogoPopup');
+        if (old) old.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'existingLogoPopup';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);';
+
+        const card = document.createElement('div');
+        card.style.cssText = 'background:#fff;border-radius:16px;padding:24px 20px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25);';
+
+        // Title
+        const title = document.createElement('h3');
+        title.textContent = 'Logo already uploaded';
+        title.style.cssText = 'margin:0 0 6px;font-size:17px;color:#1a1a2e;';
+        card.appendChild(title);
+
+        const subtitle = document.createElement('p');
+        subtitle.textContent = 'Would you like to use an existing logo or upload a new one?';
+        subtitle.style.cssText = 'margin:0 0 16px;font-size:13px;color:#666;';
+        card.appendChild(subtitle);
+
+        // Logo thumbnails
+        const thumbRow = document.createElement('div');
+        thumbRow.style.cssText = 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;';
+
+        logos.forEach(logo => {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'cursor:pointer;border:2px solid #ddd;border-radius:12px;padding:6px;transition:border .2s;';
+
+            const img = document.createElement('img');
+            img.src = logo.url;
+            img.alt = 'Logo';
+            img.style.cssText = 'width:72px;height:72px;object-fit:contain;border-radius:8px;display:block;';
+            wrapper.appendChild(img);
+
+            const label = document.createElement('span');
+            label.textContent = logo.productName ? logo.productName.substring(0, 18) : 'Logo';
+            label.style.cssText = 'display:block;font-size:10px;color:#888;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px;';
+            wrapper.appendChild(label);
+
+            wrapper.addEventListener('click', () => {
+                // Apply this logo directly
+                _applyExistingLogoToPosition(position, method, logo.url);
+                overlay.remove();
+            });
+            wrapper.addEventListener('mouseenter', () => { wrapper.style.borderColor = '#6c3fff'; });
+            wrapper.addEventListener('mouseleave', () => { wrapper.style.borderColor = '#ddd'; });
+
+            thumbRow.appendChild(wrapper);
+        });
+        card.appendChild(thumbRow);
+
+        // "Upload new" button
+        const uploadBtn = document.createElement('button');
+        uploadBtn.textContent = '⬆ Upload New Logo';
+        uploadBtn.style.cssText = 'width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#6c3fff,#9b59b6);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px;';
+        uploadBtn.addEventListener('click', () => {
+            overlay.remove();
+            openDesignModal(position, method, 'logo');
+        });
+        card.appendChild(uploadBtn);
+
+        // Cancel
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.style.cssText = 'width:100%;padding:10px;border:none;border-radius:10px;background:#f0f0f0;color:#666;font-weight:600;font-size:13px;cursor:pointer;';
+        cancelBtn.addEventListener('click', () => { overlay.remove(); });
+        card.appendChild(cancelBtn);
+
+        overlay.appendChild(card);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+        document.body.appendChild(overlay);
+    }
+
+    /** Apply a previously-uploaded logo to the current position */
+    function _applyExistingLogoToPosition(position, method, logoUrl) {
+        // Save in state
+        if (!state.positionDesigns) state.positionDesigns = {};
+        state.positionDesigns[position] = { logo: logoUrl };
+
+        if (!state.positionMethods) state.positionMethods = {};
+        state.positionMethods[position] = method;
+
+        // Ensure position is checked
+        const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
+        if (card) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox && !checkbox.checked) {
+                checkbox.checked = true;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+            card.classList.add('selected');
+            applyMethodUI(card, method);
+
+            // Show logo preview on position card
+            const logoOverlayBox = card.querySelector('.logo-overlay-box');
+            const logoOverlayImg = card.querySelector('.logo-overlay-img');
+            if (logoOverlayBox && logoOverlayImg) {
+                logoOverlayImg.src = logoUrl;
+                logoOverlayBox.hidden = false;
+            }
+            const previewContent = card.querySelector('.position-preview-content');
+            const previewImage = card.querySelector('.preview-image');
+            if (previewContent && previewImage) {
+                previewImage.src = logoUrl;
+                previewImage.hidden = false;
+                previewContent.hidden = false;
+            }
+            const pill = card.querySelector('.customization-pill');
+            if (pill) pill.hidden = false;
+
+            // Transform badge to green "EDIT"
+            const addLogoBtn = card.querySelector('.price-badge.add-logo-btn');
+            if (addLogoBtn) {
+                addLogoBtn.classList.add('logo-added');
+                addLogoBtn.innerHTML = `<span class="add-logo-text">✎ EDIT</span>`;
+            }
+        }
+
+        saveCustomizationState();
+        updatePricingSummary();
+        showToast('Logo applied!');
+        if (navigator.vibrate) navigator.vibrate(10);
     }
     
     function closeCustomizationTypeModal() {
