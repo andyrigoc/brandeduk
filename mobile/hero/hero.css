@@ -11,14 +11,14 @@
     background-position: center top !important;
   }
   
-  /* Apron - spostato a destra per mostrare la persona */
+  /* Bag - centered */
   .hero-el:nth-child(1) .hero-el__bg:before {
-    background-position: calc(50% + 140px) top !important;
+    background-position: center top !important;
   }
   
-  /* Apron espanso */
+  /* Bag espanso */
   .hero-el:nth-child(1).s--active .hero-el__bg:before {
-    background-position: calc(50% + 25px) top !important;
+    background-position: center top !important;
   }
   
   /* Hoodie non espanso */
@@ -424,8 +424,8 @@
 .hero-el:nth-child(1) .hero-el__bg { transform: none; }
 .hero-el:nth-child(1) .hero-el__bg:before { 
   transition-delay: 0s;
-  background-image: url('../../hero/images/apron.jpg');
-  background-position: calc(50% + 140px) center;
+  background-image: url('../../hero/images/bag.jpg');
+  background-position: center center;
 }
 
 /* Sustainable panel (expanded): move image 5px down */
@@ -433,15 +433,15 @@
   background-position: center calc(50% + 85px);
 }
 
-/* Apron panel (expanded): shift image 70px left */
+/* Bag panel (expanded): center image */
 .hero-el:nth-child(1).s--active .hero-el__bg:before {
-  background-position: calc(50% + 25px) calc(50% + 60px);
+  background-position: center center;
 }
 
-/* Apron panel (expanded): close X should be black */
+/* Bag panel (expanded): close X should be white (dark bg) */
 .hero-el:nth-child(1).s--active .hero-el__close-btn:before,
 .hero-el:nth-child(1).s--active .hero-el__close-btn:after {
-  background: #000;
+  background: #fff;
 }
 
 .hero-el:nth-child(2) {
@@ -462,10 +462,10 @@
   background-position: calc(50% + 145px) center;
 }
 
-/* Tablet: apron non-expanded - shift 30px right */
+/* Tablet: bag non-expanded - center */
 @media (min-width: 768px) and (max-width: 1279px) {
   .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
-    background-position: calc(50% + 170px) center !important;
+    background-position: center center !important;
   }
 }
 
