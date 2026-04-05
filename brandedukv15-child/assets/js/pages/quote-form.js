@@ -105,26 +105,169 @@ document.addEventListener('brandeduk:vat-change', () => {
 
 // LOAD ORDER SUMMARY
 function loadOrderSummary() {
+    // 1) Single-product flow (from customize page)
     const productData = JSON.parse(sessionStorage.getItem('customizingProduct'));
-    const positionCustomizations = JSON.parse(sessionStorage.getItem('positionCustomizations')) || [];
-    
-    if (!productData) {
-        alert('No product data found. Please start from the product page.');
-        window.location.href = 'index.html';
+    if (productData) {
+        const positionCustomizations = JSON.parse(sessionStorage.getItem('positionCustomizations')) || [];
+        renderProductSummary(productData);
+        renderCustomizationSummary(positionCustomizations);
+        calculateSummaryBreakdown(productData, positionCustomizations);
+        setupFormSubmission(productData, positionCustomizations);
         return;
     }
-    
-    // Populate product summary
-    renderProductSummary(productData);
-    
-    // Populate customization summary
-    renderCustomizationSummary(positionCustomizations);
-    
-    // Calculate and display breakdown
-    calculateSummaryBreakdown(productData, positionCustomizations);
-    
-    // Setup form submission
-    setupFormSubmission(productData, positionCustomizations);
+
+    // 2) Basket flow (from basket page)
+    var basket;
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket')) || []; } catch(e) { basket = []; }
+    if (basket.length > 0) {
+        renderBasketProductSummary(basket);
+        renderBasketCustomizationSummary(basket);
+        calculateBasketBreakdown(basket);
+        setupFormSubmission(null, null, basket);
+        return;
+    }
+
+    alert('No product data found. Please start from the product page.');
+    window.location.href = 'index.html';
+}
+
+// ───── BASKET-MODE RENDERERS ─────
+
+function renderBasketProductSummary(basket) {
+    var container = document.getElementById('productSummary');
+    var html = '<h3>Product Details</h3>';
+    basket.forEach(function(item) {
+        var qty = 0;
+        var sizes = item.sizes || item.quantities || {};
+        if (Object.keys(sizes).length > 0) {
+            qty = Object.values(sizes).reduce(function(s,q){ return s+q; }, 0);
+        } else {
+            qty = parseInt(item.quantity) || 1;
+        }
+        var unitPrice = Number(item.unitPrice || item.price) || 0;
+        var sizeStr = item.size || Object.keys(sizes).map(function(s){ return s+'×'+sizes[s]; }).join(', ') || '-';
+        html += '<div class="product-info-row" style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">' +
+            '<img src="' + (item.image || item.colorImage || '') + '" alt="' + (item.name || '') + '" class="product-image-small">' +
+            '<div class="product-details">' +
+                '<h4>' + (item.name || 'Product') + '</h4>' +
+                '<p>Code: ' + (item.code || item.productCode || '-') + '</p>' +
+                '<p>Colour: ' + (item.color || 'N/A') + '</p>' +
+                '<p>Sizes: ' + sizeStr + '</p>' +
+                '<p>Quantity: ' + qty + ' pcs &times; ' + formatCurrency(unitPrice) + ' = <strong>' + formatCurrency(unitPrice * qty) + '</strong></p>' +
+            '</div></div>';
+    });
+    container.innerHTML = html;
+}
+
+function renderBasketCustomizationSummary(basket) {
+    var container = document.getElementById('customizationSummary');
+    var allCustom = [];
+    basket.forEach(function(item) {
+        var itemName = item.name || item.code || 'Product';
+        var sizes = item.sizes || item.quantities || {};
+        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.quantity) || 1);
+
+        // Collect from customizations array
+        if (item.customizations && item.customizations.length > 0) {
+            item.customizations.forEach(function(c) {
+                allCustom.push({ position: c.position || c.posKey, method: c.method, unitPrice: c.unitPrice || 0, qty: qty, itemName: itemName });
+            });
+        } else if (item.positions && (Array.isArray(item.positions) ? item.positions.length : Object.keys(item.positions).length)) {
+            var posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+            posArr.forEach(function(p) {
+                if (p.method) allCustom.push({ position: p.position || p.name, method: p.method, unitPrice: p.unitPrice || 0, qty: qty, itemName: itemName });
+            });
+        } else if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+            Object.entries(item.positionDesigns).forEach(function(entry) {
+                var design = entry[1];
+                if (design && design.logo) {
+                    allCustom.push({ position: design.position || entry[0], method: design.method || 'Embroidery', unitPrice: design.unitPrice || 5, qty: qty, itemName: itemName });
+                }
+            });
+        }
+    });
+
+    if (allCustom.length === 0) {
+        container.innerHTML = '<h3>Customizations</h3><p style="color:#6b7280;font-size:14px;">No customizations added</p>';
+        return;
+    }
+    var html = '<h3>Customizations</h3>';
+    allCustom.forEach(function(c) {
+        var isEmb = c.method && c.method.toLowerCase() === 'embroidery';
+        html += '<div class="position-item">' +
+            '<div class="position-header">' +
+                '<span class="position-name">' + (c.position || '-') + ' <small style="color:#9ca3af;">(' + c.itemName + ')</small></span>' +
+                '<span class="method-badge ' + (isEmb ? 'embroidery' : 'print') + '">' + (isEmb ? 'EMBROIDERY' : 'PRINT') + '</span>' +
+            '</div>' +
+            '<div class="position-type">' + formatCurrency(c.unitPrice) + ' × ' + c.qty + ' = ' + formatCurrency(c.unitPrice * c.qty) + '</div>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function calculateBasketBreakdown(basket) {
+    var garmentsTotal = 0;
+    var applicationTotal = 0;
+    var uniqueEmbLogos = {};
+
+    basket.forEach(function(item) {
+        var sizes = item.sizes || item.quantities || {};
+        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.quantity) || 1);
+        var unitPrice = Number(item.unitPrice || item.price) || 0;
+        garmentsTotal += unitPrice * qty;
+
+        // Application costs
+        var seenPos = {};
+        if (item.customizations && item.customizations.length > 0) {
+            item.customizations.forEach(function(c) {
+                var pk = (c.posKey || c.position || '') + '|' + (c.method || '');
+                if (seenPos[pk]) return; seenPos[pk] = true;
+                applicationTotal += (c.unitPrice || 0) * qty;
+            });
+        } else if (item.positions) {
+            var posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+            posArr.forEach(function(p) {
+                if (p.method) {
+                    var pk = (p.position || p.name || '') + '|' + p.method;
+                    if (seenPos[pk]) return; seenPos[pk] = true;
+                    applicationTotal += (p.unitPrice || 0) * qty;
+                }
+            });
+        } else if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+            Object.entries(item.positionDesigns).forEach(function(entry) {
+                var d = entry[1];
+                if (d && d.logo) {
+                    var up = d.unitPrice || (d.method && d.method.toLowerCase() !== 'embroidery' ? 3.50 : 5);
+                    applicationTotal += up * qty;
+                }
+            });
+        }
+
+        // Embroidery logo setup fee (£25 per unique logo)
+        var isEmb = function(m){ return !m || (typeof m==='string' && m.toLowerCase()==='embroidery'); };
+        if (item.positionDesigns) Object.values(item.positionDesigns).forEach(function(d){ if(d&&d.logo&&isEmb(d.method)) uniqueEmbLogos[d.logo]=true; });
+        if (item.positions) { var pa=Array.isArray(item.positions)?item.positions:Object.values(item.positions); pa.forEach(function(p){ if(p&&p.logo&&isEmb(p.method)) uniqueEmbLogos[p.logo]=true; }); }
+    });
+
+    var logoSetupCost = Object.keys(uniqueEmbLogos).length * 25;
+    var subtotal = garmentsTotal + applicationTotal + logoSetupCost;
+    var vatCost = subtotal * vatRate();
+
+    var garmentEl = document.getElementById('summaryGarmentCost');
+    var appEl = document.getElementById('summaryApplicationCost');
+    var logoEl = document.getElementById('summaryLogoSetupCost');
+    var deliveryEl = document.getElementById('summaryDeliveryCost');
+    var vatEl = document.getElementById('summaryVatCost');
+    var totalEl = document.getElementById('summaryTotalCost');
+
+    if (garmentEl) garmentEl.dataset.base = garmentsTotal;
+    if (appEl) appEl.dataset.base = applicationTotal;
+    if (logoEl) logoEl.dataset.base = logoSetupCost;
+    if (deliveryEl) deliveryEl.dataset.base = 0;
+    if (vatEl) vatEl.dataset.base = vatCost;
+    if (totalEl) totalEl.dataset.base = subtotal;
+
+    refreshSummaryBreakdown();
 }
 
 // RENDER PRODUCT SUMMARY
@@ -237,7 +380,7 @@ function calculateSummaryBreakdown(productData, positionCustomizations) {
 }
 
 // SETUP FORM SUBMISSION
-function setupFormSubmission(productData, positionCustomizations) {
+function setupFormSubmission(productData, positionCustomizations, basketItems) {
     const form = document.getElementById('quoteForm');
     
     form.addEventListener('submit', async (e) => {
@@ -283,13 +426,18 @@ function setupFormSubmission(productData, positionCustomizations) {
         // Show loading
         showLoading();
         
-        // Prepare quote data
+        // Prepare quote data — basket mode or single-product mode
         const quoteData = {
             customer: formData,
-            product: productData,
-            customizations: positionCustomizations,
             timestamp: new Date().toISOString()
         };
+        if (basketItems && basketItems.length > 0) {
+            quoteData.basketItems = basketItems;
+            quoteData.orderNotes = localStorage.getItem('orderNotes') || '';
+        } else {
+            quoteData.product = productData;
+            quoteData.customizations = positionCustomizations;
+        }
         
         // ===== METODO 1: PHP BACKEND (Consigliato per Zoho Mail) =====
         try {

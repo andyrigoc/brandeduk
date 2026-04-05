@@ -2596,6 +2596,16 @@
             sessionStorage.setItem('selectedProduct', item.productCode || item.code || '');
             if (item.color) sessionStorage.setItem('selectedColorName', item.color);
 
+            // Set selectedProductData for customize page
+            sessionStorage.setItem('selectedProductData', JSON.stringify({
+                code: item.code || item.productCode || '',
+                name: item.name || '',
+                price: item.unitPrice || item.price || 0,
+                image: item.image || item.colorImage || '',
+                brand: item.brand || '',
+                productType: item.productType || ''
+            }));
+
             const isMobile = window.innerWidth < 1024;
             window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
         }
