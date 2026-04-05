@@ -36,10 +36,12 @@
     var category = $el.getAttribute('data-category');
     if (!category) return;
 
-    // Expand visually and navigate immediately
+    // Expand visually first, then navigate after animation completes
     $cont.classList.add('s--el-active');
     $el.classList.add('s--active');
-    window.location.href = 'shop.html?category=' + category;
+    setTimeout(function() {
+      window.location.href = 'shop.html?category=' + category;
+    }, 800);
   }
 
   $elsArr.forEach(function($el) {
