@@ -1085,6 +1085,325 @@
             flex-wrap: wrap;
             margin-top: 6px;
         }
+
+        /* ===== LOGO ROWS IN BASKET CARD ===== */
+        .basket-logo-rows {
+            margin-top: 10px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }
+
+        .basket-logo-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .basket-logo-row:last-child {
+            border-bottom: none;
+        }
+
+        .basket-logo-row .logo-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            object-fit: contain;
+            background: #f9fafb;
+            flex-shrink: 0;
+        }
+
+        .basket-logo-row .logo-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .basket-logo-row .logo-method {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .basket-logo-row .logo-position {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 1px;
+        }
+
+        .basket-logo-row .logo-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+
+        .basket-logo-row .logo-row-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .basket-logo-row .logo-row-actions button {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #fff;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .basket-logo-row .logo-row-actions button:hover {
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        .basket-logo-row .logo-row-actions .remove-logo-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Add logo / Add another logo button */
+        .basket-add-logo-btn {
+            margin-top: 8px;
+            width: 100%;
+            padding: 10px 16px;
+            background: #1f2937;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+
+        .basket-add-logo-btn:hover {
+            background: #374151;
+        }
+
+        /* Item total cost */
+        .basket-item-total {
+            margin-top: 10px;
+            text-align: right;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ea580c;
+        }
+
+        /* Product code in card */
+        .basket-item-info .item-code {
+            font-size: 12px;
+            color: #9ca3af;
+            margin: 0 0 2px;
+        }
+
+        /* Unit price display */
+        .basket-item-unit-price {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* ===== COPY LOGO MODAL ===== */
+        .copy-logo-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.55);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .copy-logo-overlay.active {
+            display: flex;
+        }
+
+        .copy-logo-modal {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .copy-logo-modal .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .copy-logo-modal .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .copy-logo-modal .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+
+        .copy-logo-modal .source-logo {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .copy-logo-modal .source-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            object-fit: contain;
+        }
+
+        .copy-logo-modal .source-logo .source-info {
+            font-size: 13px;
+        }
+
+        .copy-logo-modal .source-logo .source-info strong {
+            display: block;
+            color: #1f2937;
+        }
+
+        .copy-logo-modal .source-logo .source-info span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .copy-logo-modal .garment-list {
+            padding: 12px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .copy-logo-modal .garment-list h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            margin: 0 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .copy-logo-modal .garment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+        }
+
+        .copy-logo-modal .garment-item:last-child {
+            border-bottom: none;
+        }
+
+        .copy-logo-modal .garment-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7c3aed;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .copy-logo-modal .garment-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            object-fit: contain;
+        }
+
+        .copy-logo-modal .garment-item .garment-info {
+            font-size: 13px;
+            color: #1f2937;
+            flex: 1;
+        }
+
+        .copy-logo-modal .garment-item .garment-info span {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .copy-logo-modal .modal-actions {
+            padding: 12px 20px 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .copy-logo-modal .copy-btn {
+            width: 100%;
+            padding: 14px;
+            background: #ea580c;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .copy-logo-modal .copy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .copy-logo-modal .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* ===== REDESIGNED ORDER SUMMARY ===== */
+        .basket-totals .total-row.product-costs .label,
+        .basket-totals .total-row.logo-costs .label {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .basket-totals .total-row.vat-row .label {
+            color: #6b7280;
+        }
+
+        .basket-totals .total-row.vat-row .value {
+            color: #6b7280;
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -1274,21 +1593,29 @@
             
             <!-- Totals -->
             <div class="basket-totals">
-                <div class="total-row">
-                    <span class="label">Garments Subtotal</span>
+                <div class="total-row product-costs">
+                    <span class="label">Product Costs</span>
                     <span class="value" id="garmentsSubtotal">£0.00</span>
                 </div>
-                <div class="total-row">
-                    <span class="label">Customization Subtotal</span>
+                <div class="total-row logo-costs">
+                    <span class="label">Costs To Add Logo</span>
                     <span class="value" id="customSubtotal">£0.00</span>
                 </div>
                 <div class="total-row" id="digitizingFeeRow" style="display:none;">
                     <span class="label">Embroidery Digitizing <span id="digitizingCount"></span></span>
                     <span class="value" id="digitizingFee">£0.00</span>
                 </div>
+                <div class="total-row">
+                    <span class="label">Total (exc. VAT)</span>
+                    <span class="value" id="subtotalExVat">£0.00</span>
+                </div>
+                <div class="total-row vat-row">
+                    <span class="label">VAT (20%)</span>
+                    <span class="value" id="vatAmount">£0.00</span>
+                </div>
                 <div class="total-row grand-total">
-                    <span class="label">Order Total</span>
-                    <span class="value" id="grandTotal">£0.00 <span class="vat-suffix">ex VAT</span></span>
+                    <span class="label">Your total (inc. VAT)</span>
+                    <span class="value" id="grandTotal">£0.00</span>
                 </div>
             </div>
 
@@ -1350,6 +1677,27 @@
         </div>
     </div>
 
+    <!-- Copy Logo To Another Garment Modal -->
+    <div class="copy-logo-overlay" id="copyLogoOverlay">
+        <div class="copy-logo-modal">
+            <div class="modal-header">
+                <h3>Copy Logo To Another Garment</h3>
+                <button class="modal-close" id="copyLogoClose">&times;</button>
+            </div>
+            <div class="source-logo" id="copyLogoSource">
+                <!-- Populated by JS -->
+            </div>
+            <div class="garment-list" id="copyLogoGarmentList">
+                <h4>Choose Garment</h4>
+                <!-- Populated by JS -->
+            </div>
+            <div class="modal-actions">
+                <button class="copy-btn" id="copyLogoCopyBtn" disabled>Copy Customisation</button>
+                <button class="cancel-link" id="copyLogoCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Customize Selected Bar (floating) -->
     <div class="customize-selected-bar" id="customizeSelectedBar">
         <span class="selected-count"><span id="selectedCount">0</span> items selected</span>
@@ -1373,7 +1721,7 @@
                 <path d="M22 2L11 13"/>
                 <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
             </svg>
-            Request Quote
+            Continue to checkout
         </button>
     </div>
 
@@ -1486,125 +1834,133 @@
             basket.forEach((item, index) => {
                 const itemImage = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
                 const itemColor = item.color || 'Black';
-                const hasLogo = !!(item.positionDesigns && Object.values(item.positionDesigns).some(d => d && d.logo));
-                const hasCustomization = hasLogo ||
-                                          (item.customizations && item.customizations.length > 0) || 
-                                          (item.positions && Object.keys(item.positions).length > 0);
-                const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
-                const customBadgeText = hasCustomization ? '✓ Logo' : '+ Add Logo';
-                const customBadgeAction = `openBasketLogoModal(${index})`;
-                
+                const productCode = item.productCode || item.code || '';
+                const productName = item.productName || item.name || 'Custom Product';
+
                 // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
-                
+                const totalQty = Object.values(sizes).reduce((s, q) => s + q, 0);
+                const unitPrice = item.unitPrice || item.price || 0;
+
+                // Size display
+                const sizeStr = Object.entries(sizes)
+                    .filter(([, q]) => q > 0)
+                    .map(([s, q]) => `${s}(${q})`)
+                    .join(', ');
+
+                // Sizes with qty +/-
                 let sizesHtml = '';
-                if (Object.keys(sizes).length > 0) {
-                    Object.entries(sizes).forEach(([size, qty]) => {
-                        if (qty > 0) {
-                            sizesHtml += `
-                                <div class="basket-size-row">
-                                    <span class="size-label">${size}</span>
-                                    <div class="basket-qty-controls">
-                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
-                                        <span class="qty-value">${qty}</span>
-                                        <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
-                                    </div>
+                Object.entries(sizes).forEach(([size, qty]) => {
+                    if (qty > 0) {
+                        sizesHtml += `
+                            <div class="basket-size-row">
+                                <span class="size-label">${size}</span>
+                                <div class="basket-qty-controls">
+                                    <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
+                                    <span class="qty-value">${qty}</span>
+                                    <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
                                 </div>
-                            `;
+                            </div>
+                        `;
+                    }
+                });
+
+                // Collect logo rows from positionDesigns or positions
+                const logoRows = [];
+                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                    Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
+                        if (d && d.logo) {
+                            const method = d.method || 'Embroidery';
+                            const posName = toReadablePosition(d.position || posKey);
+                            const up = d.unitPrice || (method.toLowerCase() === 'embroidery' ? 5.00 : 3.50);
+                            logoRows.push({ src: d.logo, position: posKey, posName, method, unitPrice: up });
                         }
                     });
                 }
-                
-                // Get logos from positionDesigns or positions (show ALL positions)
-                let logosHtml = '';
-                const logosArr = [];
-                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-                    Object.entries(item.positionDesigns).forEach(([pos, d]) => {
-                        if (d && d.logo) logosArr.push({ src: d.logo, position: d.position || pos, method: d.method || '' });
+                if (!logoRows.length && item.positions) {
+                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+                    posArr.forEach(p => {
+                        if (p && p.logo) {
+                            const method = p.method || 'Embroidery';
+                            const posName = toReadablePosition(p.name || p.position);
+                            const up = p.unitPrice || (method.toLowerCase() === 'embroidery' ? 5.00 : 3.50);
+                            logoRows.push({ src: p.logo, position: p.position || p.name, posName, method, unitPrice: up });
+                        }
                     });
                 }
-                if (!logosArr.length && item.positions && Array.isArray(item.positions)) {
-                    item.positions.forEach(p => {
-                        if (p && p.logo) logosArr.push({ src: p.logo, position: p.name || p.position, method: p.method || '' });
+
+                // Build logo rows HTML
+                let logoRowsHtml = '';
+                let logoCostTotal = 0;
+                if (logoRows.length > 0) {
+                    logoRowsHtml = '<div class="basket-logo-rows">';
+                    logoRows.forEach((lr, lrIdx) => {
+                        const methodIcon = lr.method.toLowerCase() === 'embroidery' ? '🧵' : '🖨️';
+                        const methodLabel = lr.method.toLowerCase() === 'embroidery' ? 'Embroidered Logo' : 'Printed Logo';
+                        const logoTotal = lr.unitPrice * totalQty;
+                        logoCostTotal += logoTotal;
+                        logoRowsHtml += `
+                            <div class="basket-logo-row">
+                                <img class="logo-thumb" src="${lr.src}" alt="${lr.posName}">
+                                <div class="logo-details">
+                                    <div class="logo-method">${methodIcon} ${methodLabel}</div>
+                                    <div class="logo-position">${lr.posName}</div>
+                                    <div class="logo-row-actions">
+                                        <button class="edit-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Edit</button>
+                                        <button class="copy-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Copy</button>
+                                        <button class="remove-logo-btn remove-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Remove</button>
+                                    </div>
+                                </div>
+                                <div class="logo-price">${formatCurrency(logoTotal)}</div>
+                            </div>
+                        `;
                     });
+                    logoRowsHtml += '</div>';
                 }
-                if (logosArr.length) {
-                    const thumbs = logosArr.map(l => {
-                        const readableName = toReadablePosition(l.position);
-                        return `<div class="basket-card-logo">
-                            <img src="${l.src}" alt="${readableName}">
-                            <span class="logo-pos-label">${readableName}</span>
-                         </div>`;
-                    }).join('');
-                    logosHtml = `<div class="basket-card-logos">${thumbs}</div>`;
-                }
-                
-                // Per-item note & edit panel data
+
+                // Add logo button
+                const addLogoBtnText = logoRows.length > 0 ? 'Add another logo to this item' : 'Add logo to this item';
+                const addLogoBtnHtml = `
+                    <button class="basket-add-logo-btn" data-index="${index}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 20h9"/>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                        ${addLogoBtnText}
+                    </button>
+                `;
+
+                // Item total (garment + logo costs)
+                const garmentCost = totalQty * unitPrice;
+                const itemTotal = garmentCost + logoCostTotal;
+
+                // Item note
                 const itemNote = item.note || '';
                 const notePreview = itemNote ? `<div class="item-note-preview">\u{1F4DD} ${itemNote.substring(0, 40)}${itemNote.length > 40 ? '...' : ''}</div>` : '';
-                
+
+                // Edit panel data
                 const allSizes = ['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
                 const existingSizes = Object.keys(sizes);
                 const availableSizes = allSizes.filter(s => !existingSizes.includes(s));
                 const addSizeOpts = availableSizes.map(s => `<option value="${s}">${s}</option>`).join('');
-                
-                let editLogosHtml = logosArr.map(l => {
-                    const readableName = toReadablePosition(l.position);
-                    return `<div class="edit-logo-item">
-                        <img src="${l.src}" alt="${readableName}">
-                        <button class="edit-logo-remove" data-item-idx="${index}" data-pos="${encodeURIComponent(l.position)}" title="Remove">×</button>
-                        <span class="logo-pos-label">${readableName} (${l.method || 'N/A'})</span>
-                    </div>`;
-                }).join('');
-                editLogosHtml += `<div class="edit-logo-item">
-                    <button class="edit-logo-add-btn" data-item-idx="${index}" title="Add/Edit Logo">+</button>
-                    <span class="logo-pos-label">Add Logo</span>
-                </div>`;
-                
+
                 html += `
                     <div class="basket-item-card" data-index="${index}">
-                        <label class="item-select-checkbox" onclick="event.stopPropagation()">
-                            <input type="checkbox" class="item-checkbox" data-index="${index}">
-                            <span class="checkmark">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                    <path d="M20 6L9 17l-5-5"/>
-                                </svg>
-                            </span>
-                        </label>
-                        <div class="basket-item-image" onclick="${customBadgeAction}">
-                            <img src="${itemImage}" alt="${item.productName || item.name || 'Product'}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                        <div class="basket-item-image">
+                            <img src="${itemImage}" alt="${productName}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="basket-item-info">
-                            <h4>${item.productName || item.name || 'Custom Product'}</h4>
+                            <h4>${productName}</h4>
+                            <p class="item-code">${productCode}</p>
                             <p class="item-color">Color: ${itemColor}</p>
                             <div class="item-sizes" onclick="event.stopPropagation()">
                                 ${sizesHtml}
                             </div>
-                            <div class="item-actions-row" onclick="event.stopPropagation()">
-                                <span class="${customBadgeClass}" onclick="${customBadgeAction}" style="cursor:pointer;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M12 20h9"/>
-                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                                    </svg>
-                                    ${customBadgeText}
-                                </span>
-                                <button class="basket-item-edit-btn" onclick="toggleEditPanel(${index})" id="editBtn-${index}">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
-                                    Edit
-                                </button>
-                                <button class="basket-item-duplicate-btn" onclick="duplicateItem(${index})" title="Duplicate">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                                    </svg>
-                                    Copy
-                                </button>
-                            </div>
-                            ${logosHtml}
+                            <div class="basket-item-unit-price">${formatCurrency(unitPrice)} each <span class="vat-suffix">${vatSuffix()}</span></div>
+                            ${logoRowsHtml}
+                            ${addLogoBtnHtml}
                             ${notePreview}
+                            <div class="basket-item-total">Total: ${formatCurrency(itemTotal)}</div>
                         </div>
                         <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1614,12 +1970,6 @@
                     </div>
                     <!-- Edit Panel -->
                     <div class="basket-edit-panel" id="editPanel-${index}">
-                        <div class="edit-section">
-                            <div class="edit-section-title">LOGOS & CUSTOMIZATION</div>
-                            <div class="edit-logos-grid">
-                                ${editLogosHtml}
-                            </div>
-                        </div>
                         ${availableSizes.length > 0 ? `
                         <div class="edit-section">
                             <div class="edit-section-title">ADD SIZE</div>
@@ -1633,8 +1983,8 @@
                         </div>` : ''}
                         <div class="edit-section">
                             <div class="edit-section-title">ITEM NOTE</div>
-                            <textarea class="basket-item-note" 
-                                      placeholder="Special instructions for this item (e.g., name on back, thread colour)..." 
+                            <textarea class="basket-item-note"
+                                      placeholder="Special instructions for this item (e.g., name on back, thread colour)..."
                                       data-index="${index}"
                                       oninput="updateItemNote(${index}, this.value)">${itemNote}</textarea>
                         </div>
@@ -1647,8 +1997,7 @@
             // Attach event listeners
             attachQtyListeners();
             attachRemoveListeners();
-            attachCheckboxListeners();
-            attachEditPanelListeners();
+            attachLogoActionListeners();
         }
         
         // Render customization cards with colors
@@ -1892,19 +2241,23 @@
             });
             digitizingFee = uniqueEmbroideryLogos.size * 25.00;
 
-            const grandTotal = garmentsTotal + customTotal + digitizingFee;
+            const subtotalExVat = garmentsTotal + customTotal + digitizingFee;
+            const vatAmount = subtotalExVat * 0.20;
+            const grandTotal = subtotalExVat + vatAmount;
             
             // Update DOM
             const garmentsSubtotal = document.getElementById('garmentsSubtotal');
             const customSubtotal = document.getElementById('customSubtotal');
+            const subtotalExVatEl = document.getElementById('subtotalExVat');
+            const vatAmountEl = document.getElementById('vatAmount');
             const grandTotalEl = document.getElementById('grandTotal');
             const actionBarTotal = document.getElementById('actionBarTotal');
             const digitizingRow = document.getElementById('digitizingFeeRow');
             const digitizingFeeEl = document.getElementById('digitizingFee');
             const digitizingCount = document.getElementById('digitizingCount');
             
-            if (garmentsSubtotal) garmentsSubtotal.textContent = formatCurrency(garmentsTotal);
-            if (customSubtotal) customSubtotal.textContent = formatCurrency(customTotal);
+            if (garmentsSubtotal) garmentsSubtotal.textContent = '£' + garmentsTotal.toFixed(2);
+            if (customSubtotal) customSubtotal.textContent = '£' + customTotal.toFixed(2);
             
             // Show/hide digitizing fee row
             if (digitizingRow) {
@@ -1917,8 +2270,10 @@
                 }
             }
             
-            if (grandTotalEl) grandTotalEl.innerHTML = `${formatCurrency(grandTotal)} <span class="vat-suffix">${vatSuffix()}</span>`;
-            if (actionBarTotal) actionBarTotal.textContent = formatCurrency(grandTotal);
+            if (subtotalExVatEl) subtotalExVatEl.textContent = '£' + subtotalExVat.toFixed(2);
+            if (vatAmountEl) vatAmountEl.textContent = '£' + vatAmount.toFixed(2);
+            if (grandTotalEl) grandTotalEl.textContent = '£' + grandTotal.toFixed(2);
+            if (actionBarTotal) actionBarTotal.textContent = '£' + grandTotal.toFixed(2);
         }
         
         // Update item count
@@ -1991,8 +2346,66 @@
             if (typeof item.totalQty !== 'undefined') {
                 item.totalQty = Object.values(item[sizesKey]).reduce((sum, q) => sum + q, 0);
             }
+            // Also update quantity field (product.js format)
+            if (typeof item.quantity !== 'undefined') {
+                item.quantity = Object.values(item[sizesKey]).reduce((sum, q) => sum + q, 0);
+            }
             
             // Remove item if no sizes left
+            if (Object.keys(item[sizesKey]).length === 0) {
+                basket.splice(itemIndex, 1);
+            } else {
+                // Tier recalculation: aggregate qty across all items with same product code
+                recalcTierPricing(basket, item.code || item.productCode);
+            }
+            
+            saveBasket(basket);
+            renderBasket();
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        // Recalculate tier pricing for all items sharing the same product code
+        function recalcTierPricing(basket, productCode) {
+            if (!productCode) return;
+
+            // Find all items with this product code
+            const relatedItems = basket.filter(i => (i.code || i.productCode) === productCode);
+            if (relatedItems.length === 0) return;
+
+            // Aggregate total qty across all colors of this product
+            const grandTotal = relatedItems.reduce((sum, item) => {
+                const sizes = item.sizes || item.quantities || {};
+                return sum + Object.values(sizes).reduce((s, q) => s + q, 0);
+            }, 0);
+
+            // Find priceBreaks from any of the related items
+            let priceBreaks = null;
+            for (const item of relatedItems) {
+                if (item.priceBreaks && item.priceBreaks.length > 0) {
+                    priceBreaks = item.priceBreaks;
+                    break;
+                }
+            }
+
+            if (!priceBreaks || priceBreaks.length === 0) return;
+
+            // Find the tier that matches the grand total
+            let tierPrice = priceBreaks[0].price;
+            for (const tier of priceBreaks) {
+                if (grandTotal >= tier.min && (grandTotal <= tier.max || !tier.max)) {
+                    tierPrice = tier.price;
+                    break;
+                }
+            }
+
+            // Update price on all related items
+            relatedItems.forEach(item => {
+                if (item.price !== undefined) item.price = tierPrice.toFixed ? tierPrice.toFixed(2) : tierPrice;
+                if (item.unitPrice !== undefined) item.unitPrice = parseFloat(tierPrice);
+            });
+        }
             if (Object.keys(item[sizesKey]).length === 0) {
                 basket.splice(itemIndex, 1);
             }
@@ -2121,9 +2534,265 @@
                     customizeSelectedItems();
                 });
             }
+
+            // Copy Logo modal buttons
+            const copyLogoClose = document.getElementById('copyLogoClose');
+            const copyLogoCancelBtn = document.getElementById('copyLogoCancelBtn');
+            const copyLogoCopyBtn = document.getElementById('copyLogoCopyBtn');
+            const copyLogoOverlay = document.getElementById('copyLogoOverlay');
+
+            if (copyLogoClose) copyLogoClose.addEventListener('click', closeCopyLogoModal);
+            if (copyLogoCancelBtn) copyLogoCancelBtn.addEventListener('click', closeCopyLogoModal);
+            if (copyLogoCopyBtn) copyLogoCopyBtn.addEventListener('click', executeCopyLogo);
+            if (copyLogoOverlay) {
+                copyLogoOverlay.addEventListener('click', (e) => {
+                    if (e.target === copyLogoOverlay) closeCopyLogoModal();
+                });
+            }
         }
         
         // Attach checkbox listeners
+        // Attach logo row action listeners (Edit, Copy, Remove, Add Logo)
+        function attachLogoActionListeners() {
+            // "Add logo to this item" / "Add another logo" buttons
+            document.querySelectorAll('.basket-add-logo-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.index);
+                    navigateToCustomize(idx);
+                });
+            });
+
+            // Edit logo buttons
+            document.querySelectorAll('.edit-logo-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.item);
+                    const pos = decodeURIComponent(btn.dataset.pos);
+                    sessionStorage.setItem('editingPosition', pos);
+                    navigateToCustomize(idx);
+                });
+            });
+
+            // Copy logo buttons
+            document.querySelectorAll('.copy-logo-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.item);
+                    const pos = decodeURIComponent(btn.dataset.pos);
+                    openCopyLogoModal(idx, pos);
+                });
+            });
+
+            // Remove logo buttons
+            document.querySelectorAll('.remove-logo-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.item);
+                    const pos = decodeURIComponent(btn.dataset.pos);
+                    removeLogoFromItem(idx, pos);
+                });
+            });
+        }
+
+        // Navigate to customize page for a specific basket item
+        function navigateToCustomize(itemIndex) {
+            const basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            const item = basket[itemIndex];
+
+            sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
+            sessionStorage.setItem('returnAfterCustomize', 'basket');
+            sessionStorage.setItem('selectedProduct', item.productCode || item.code || '');
+            if (item.color) sessionStorage.setItem('selectedColorName', item.color);
+
+            const isMobile = window.innerWidth < 768;
+            window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+        }
+
+        // Remove a logo from a specific position of a basket item
+        function removeLogoFromItem(itemIndex, positionKey) {
+            let basket = getBasket();
+            if (itemIndex < 0 || itemIndex >= basket.length) return;
+            const item = basket[itemIndex];
+
+            // Remove from positionDesigns
+            if (item.positionDesigns && item.positionDesigns[positionKey]) {
+                delete item.positionDesigns[positionKey];
+            }
+
+            // Remove from positions array
+            if (Array.isArray(item.positions)) {
+                item.positions = item.positions.filter(p => p.position !== positionKey && p.name !== positionKey);
+            } else if (item.positions && typeof item.positions === 'object') {
+                delete item.positions[positionKey];
+            }
+
+            // Remove from customizations array
+            if (Array.isArray(item.customizations)) {
+                item.customizations = item.customizations.filter(c => c.posKey !== positionKey && c.position !== toReadablePosition(positionKey));
+            }
+
+            // Remove positionMethods entry if it exists
+            if (item.positionMethods) {
+                delete item.positionMethods[positionKey];
+            }
+
+            saveBasket(basket);
+            renderBasket();
+        }
+
+        // Open Copy Logo modal
+        function openCopyLogoModal(sourceItemIndex, positionKey) {
+            const basket = getBasket();
+            if (sourceItemIndex < 0 || sourceItemIndex >= basket.length) return;
+            const sourceItem = basket[sourceItemIndex];
+
+            // Find the design to copy
+            let design = null;
+            if (sourceItem.positionDesigns && sourceItem.positionDesigns[positionKey]) {
+                design = sourceItem.positionDesigns[positionKey];
+            }
+            if (!design && Array.isArray(sourceItem.positions)) {
+                design = sourceItem.positions.find(p => p.position === positionKey || p.name === positionKey);
+            }
+            if (!design) return;
+
+            const method = design.method || 'Embroidery';
+            const methodIcon = method.toLowerCase() === 'embroidery' ? '🧵' : '🖨️';
+            const posName = toReadablePosition(design.position || positionKey);
+
+            // Populate source logo info
+            const sourceEl = document.getElementById('copyLogoSource');
+            sourceEl.innerHTML = `
+                <img src="${design.logo || ''}" alt="Logo">
+                <div class="source-info">
+                    <strong>${methodIcon} ${method}</strong>
+                    <span>Location: ${posName}</span>
+                </div>
+            `;
+
+            // Build garment list (all basket items except source)
+            const listEl = document.getElementById('copyLogoGarmentList');
+            let listHtml = '<h4>Choose Garment</h4>';
+            basket.forEach((item, idx) => {
+                if (idx === sourceItemIndex) return;
+                // Skip if item already has this logo at this position
+                if (item.positionDesigns && item.positionDesigns[positionKey] && item.positionDesigns[positionKey].logo) return;
+
+                const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
+                const name = item.productName || item.name || 'Product';
+                const code = item.productCode || item.code || '';
+                const color = item.color || '';
+                const sizes = item.sizes || item.quantities || {};
+                const sizeStr = Object.entries(sizes).filter(([,q]) => q > 0).map(([s,q]) => `${s}(${q})`).join(', ');
+
+                listHtml += `
+                    <label class="garment-item">
+                        <input type="checkbox" data-target-index="${idx}">
+                        <img src="${img}" alt="${name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                        <div class="garment-info">
+                            ${name} · ${code} · ${color}
+                            <span>${sizeStr}</span>
+                        </div>
+                    </label>
+                `;
+            });
+            listEl.innerHTML = listHtml;
+
+            // Store context on the modal for the copy action
+            const overlay = document.getElementById('copyLogoOverlay');
+            overlay.dataset.sourceIndex = sourceItemIndex;
+            overlay.dataset.positionKey = positionKey;
+
+            // Enable/disable copy button based on checkbox selection
+            const copyBtn = document.getElementById('copyLogoCopyBtn');
+            copyBtn.disabled = true;
+            listEl.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    copyBtn.disabled = !listEl.querySelector('input[type="checkbox"]:checked');
+                });
+            });
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Copy Logo modal
+        function closeCopyLogoModal() {
+            const overlay = document.getElementById('copyLogoOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Execute Copy Logo action
+        function executeCopyLogo() {
+            const overlay = document.getElementById('copyLogoOverlay');
+            const sourceIdx = parseInt(overlay.dataset.sourceIndex);
+            const posKey = overlay.dataset.positionKey;
+            const basket = getBasket();
+            const sourceItem = basket[sourceIdx];
+
+            let design = null;
+            if (sourceItem.positionDesigns && sourceItem.positionDesigns[posKey]) {
+                design = { ...sourceItem.positionDesigns[posKey] };
+            }
+            if (!design && Array.isArray(sourceItem.positions)) {
+                const p = sourceItem.positions.find(p => p.position === posKey || p.name === posKey);
+                if (p) design = { logo: p.logo, method: p.method, position: p.position || p.name, unitPrice: p.unitPrice };
+            }
+            if (!design) { closeCopyLogoModal(); return; }
+
+            // Get checked garments
+            const checkedBoxes = document.querySelectorAll('#copyLogoGarmentList input[type="checkbox"]:checked');
+            let copyCount = 0;
+
+            checkedBoxes.forEach(cb => {
+                const targetIdx = parseInt(cb.dataset.targetIndex);
+                if (targetIdx < 0 || targetIdx >= basket.length) return;
+                const targetItem = basket[targetIdx];
+
+                // Add to positionDesigns
+                if (!targetItem.positionDesigns) targetItem.positionDesigns = {};
+                targetItem.positionDesigns[posKey] = { ...design };
+
+                // Add to positions array
+                if (Array.isArray(targetItem.positions)) {
+                    if (!targetItem.positions.find(p => p.position === posKey)) {
+                        targetItem.positions.push({
+                            position: posKey,
+                            name: design.position || toReadablePosition(posKey),
+                            method: design.method || 'Embroidery',
+                            unitPrice: design.unitPrice || 5.00,
+                            logo: design.logo
+                        });
+                    }
+                }
+
+                copyCount++;
+            });
+
+            saveBasket(basket);
+            closeCopyLogoModal();
+            renderBasket();
+
+            // Toast feedback
+            showBasketToast(`Logo copied to ${copyCount} item${copyCount !== 1 ? 's' : ''}`);
+        }
+
+        // Simple toast for basket page
+        function showBasketToast(message) {
+            const existing = document.querySelector('.basket-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'basket-toast';
+            toast.textContent = message;
+            toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:10001;animation:fadeInUp .3s ease;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
         function attachCheckboxListeners() {
             document.querySelectorAll('.item-checkbox').forEach(cb => {
                 cb.addEventListener('change', () => {

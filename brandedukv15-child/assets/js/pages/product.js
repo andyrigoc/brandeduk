@@ -492,6 +492,15 @@ function initBreadcrumb() {
 
 // Initialize product data and then update page
 document.addEventListener('DOMContentLoaded', async function () {
+    // Clear stale customize state so each customize session starts fresh
+    sessionStorage.removeItem('customizingBasketIndex');
+    sessionStorage.removeItem('returnAfterCustomize');
+    sessionStorage.removeItem('customizingProduct');
+    sessionStorage.removeItem('selectedPositions');
+    sessionStorage.removeItem('positionCustomizations');
+    sessionStorage.removeItem('brandeduk-customize-state');
+    sessionStorage.removeItem('editingPosition');
+
     const loaded = await loadProductData();
     if (loaded) {
         // Update page title
@@ -987,11 +996,12 @@ const sizesGrid = document.getElementById("sizesGrid");
 const colorGrid = document.getElementById("colorGrid");
 
 /* POPUP */
-const popup = document.getElementById("quotePopup");
-const popupContent = document.getElementById("popupContent");
-const popupSummary = document.getElementById("popupSummary");
-const closePopup = document.getElementById("closePopup");
+const popup = document.getElementById("quotePopup") || document.getElementById("addedToBasketPopup");
+const popupContent = document.getElementById("popupContent") || document.getElementById("addedPopupContent");
+const popupSummary = document.getElementById("popupSummary") || document.getElementById("addedPopupSummary");
+const closePopup = document.getElementById("closePopup") || document.getElementById("closeAddedPopup");
 
+// Legacy elements (may not exist on new pages)
 const uploadBtnPopup = document.getElementById("uploadLogoBtn");
 const logoInputHidden = document.getElementById("logoInput");
 const logoPreviewPopup = document.getElementById("logoPreview");
@@ -2062,21 +2072,33 @@ function updateTotals() {
     if (continueShoppingButton) continueShoppingButton.disabled = continueDisabled;
     if (addCustomizeButton) addCustomizeButton.disabled = continueDisabled;
 
-    // Sync mobile sticky bar
-    const mobileAddCustomize = document.getElementById("mobileAddCustomize");
-    const stickyItemCount = document.getElementById("stickyItemCount");
+    // Sync mobile sticky bar — show CURRENT color total + "Add to basket"
+    const stickyAddToBasket = document.getElementById("stickyAddToBasket");
     const stickyTotal = document.getElementById("stickyTotal");
 
-    if (mobileAddCustomize) mobileAddCustomize.disabled = continueDisabled;
+    // Mobile action bar elements
+    const mobileActionPrice = document.getElementById("actionPrice");
+    const mobileAddToBasket = document.getElementById("mobileAddToBasket");
 
-    // Update sticky bar summary
-    if (stickyItemCount) {
-        const displayTotal = grandProductTotal > 0 ? grandProductTotal : total;
-        stickyItemCount.textContent = `${displayTotal} item${displayTotal !== 1 ? 's' : ''}`;
-    }
+    const currentLineTotal = unit * total;
+
+    // Desktop sticky bar
+    if (stickyAddToBasket) stickyAddToBasket.disabled = total === 0;
     if (stickyTotal) {
-        const lineTotal = unit * grandProductTotal;
-        stickyTotal.textContent = formatCurrency(lineTotal);
+        stickyTotal.textContent = formatCurrency(currentLineTotal);
+    }
+
+    // Mobile action bar
+    if (mobileActionPrice) {
+        mobileActionPrice.textContent = formatCurrency(currentLineTotal);
+    }
+    if (mobileAddToBasket) {
+        mobileAddToBasket.disabled = total === 0;
+        if (total > 0) {
+            mobileAddToBasket.classList.add('enabled');
+        } else {
+            mobileAddToBasket.classList.remove('enabled');
+        }
     }
 
     updateBelowSummary(total, unit);
@@ -2143,20 +2165,7 @@ addContinueButton.onclick = () => {
     if (total === 0) return;
 
     saveCurrentSelectionToBasket();
-
-    // Show success toast
-    showToast(`✓ ${total} pcs of ${selectedColorName} added! Now pick another colour.`);
-
-    // Reset for new color selection
-    hasBasketItems = true;
-    resetSizes();
-    resetColorSelection();
-
-    // Scroll back to color grid
-    const colorGridEl = document.getElementById('colorGrid');
-    if (colorGridEl) {
-        colorGridEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    openPopup();
 };
 } // end if (addContinueButton)
 
@@ -2218,13 +2227,25 @@ function saveCurrentSelectionToBasket() {
         quantity: total,
         size: getSizesSummary(),
         price: newUnitPrice.toFixed(2),
-        sizes: cleanSizes
+        sizes: cleanSizes,
+        priceBreaks: typeof DISCOUNTS !== 'undefined' ? DISCOUNTS : []
     };
 
     if (existingIndex !== -1) {
-        // REPLACE existing entry (prevents duplication)
+        // REPLACE existing entry but PRESERVE customizations (logos)
+        const existing = basket[existingIndex];
+        productData.positionDesigns = existing.positionDesigns || {};
+        productData.positions = existing.positions || [];
+        productData.selectedPositions = existing.selectedPositions || [];
+        productData.customizations = existing.customizations || [];
+        productData.notes = existing.notes || '';
         basket[existingIndex] = productData;
     } else {
+        // New item — no customizations yet
+        productData.positionDesigns = {};
+        productData.positions = [];
+        productData.selectedPositions = [];
+        productData.customizations = [];
         basket.push(productData);
     }
 
@@ -2321,88 +2342,130 @@ function getSizesSummaryFromSizes(sizes) {
 }
 
 /* ---------------------------------------------------
-   MOBILE STICKY BAR BUTTON
+   MOBILE STICKY BAR BUTTON — "Add to basket"
 --------------------------------------------------- */
 
-const mobileAddCustomize = document.getElementById("mobileAddCustomize");
+const stickyAddToBasketBtn = document.getElementById("stickyAddToBasket");
+if (stickyAddToBasketBtn) {
+    stickyAddToBasketBtn.onclick = () => {
+        const total = Object.values(qty).reduce((a, b) => a + b, 0);
+        if (total === 0) return;
+        saveCurrentSelectionToBasket();
+        openPopup();
+    };
+}
 
-if (mobileAddCustomize) {
-    mobileAddCustomize.onclick = () => {
-        // Scroll to positions section directly (button no longer exists)
-        const positionsSection = document.getElementById('step3PositionsSection');
-        if (positionsSection) {
-            positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            updateStepProgress(3);
-        }
+// Mobile "Add to basket" button in action bar
+const mobileAddToBasketBtn = document.getElementById("mobileAddToBasket");
+if (mobileAddToBasketBtn) {
+    mobileAddToBasketBtn.onclick = () => {
+        const total = Object.values(qty).reduce((a, b) => a + b, 0);
+        if (total === 0) return;
+        saveCurrentSelectionToBasket();
+        openPopup();
     };
 }
 
 function openPopup() {
     const total = Object.values(qty).reduce((a, b) => a + b, 0);
-    const unit = getUnitPrice(total);
+    if (total === 0) return;
+
+    // Calculate tier using grand total (all colors of this product)
+    const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+    const grandTotal = basket
+        .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
+        .reduce((sum, item) => sum + item.quantity, 0);
+
+    const unit = getUnitPrice(grandTotal);
     const lineTotal = unit * total;
 
     const sizeLines = Object.entries(qty)
         .filter(([s, q]) => q > 0)
-        .map(([s, q]) => `${selectedColorName}, ${s}: ${q}`)
-        .join("<br>");
+        .map(([s, q]) => `${s}: ${q}`)
+        .join(', ');
 
-    popupContent.innerHTML = `
-        <div class="popup-content-fixed">
-            <img src="${selectedColorURL}" alt="Product preview">
-            <div>
-                <h2>${PRODUCT_NAME}</h2>
-                <div class="pc-small">
-                    <b>${PRODUCT_CODE}</b> — ${selectedColorName}<br>
-                    ${sizeLines}
+    if (popupContent) {
+        popupContent.innerHTML = `
+            <img src="${selectedColorURL}" alt="${PRODUCT_NAME}">
+            <div class="popup-product-info">
+                <h3>${PRODUCT_NAME}</h3>
+                <div class="popup-meta">
+                    ${PRODUCT_CODE} &middot; ${selectedColorName}<br>
+                    ${sizeLines} &middot; Qty: ${total}
                 </div>
             </div>
-        </div>
-    `;
+        `;
+    }
 
-    popupSummary.innerHTML = `
-        <div>
-            <b>${total} items</b><br>
-            ${formatCurrency(unit)} per item ${vatSuffix()}
-        </div>
-        <div>
-            Total: <span class="green">${formatCurrency(lineTotal)}</span> ${vatSuffix()}
-        </div>
-    `;
+    if (popupSummary) {
+        popupSummary.innerHTML = `
+            <div>
+                <div class="popup-qty">${total} items</div>
+                <div class="popup-unit-price">${formatCurrency(unit)} per item ${vatSuffix()}</div>
+            </div>
+            <div class="popup-total">
+                <div class="popup-total-label">Total:</div>
+                <div class="popup-total-value">${formatCurrency(lineTotal)} ${vatSuffix()}</div>
+            </div>
+        `;
+    }
 
-    popup.style.display = "flex";
+    if (popup) popup.style.display = "flex";
+
+    // Reset sizes after adding to basket so bar goes back to £0.00
+    resetSizes();
+    resetColorSelection();
+    hasBasketItems = true;
+    updateTotals();
 }
 
-closePopup.onclick = () => {
-    popup.style.display = "none";
-};
+if (closePopup) {
+    closePopup.onclick = () => {
+        if (popup) popup.style.display = "none";
+    };
+}
 
 window.addEventListener("click", (e) => {
     if (e.target === popup) {
-        popup.style.display = "none";
+        if (popup) popup.style.display = "none";
     }
 });
 
-/* ---------------------------------------------------
-   LOGO UPLOAD
---------------------------------------------------- */
+// "Add your logo now" button in popup — navigate to customize page
+const popupAddLogoBtn = document.getElementById('popupAddLogoBtn');
+if (popupAddLogoBtn) {
+    popupAddLogoBtn.onclick = () => {
+        // Find the basket item we just saved
+        const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
+        const itemIndex = basket.length - 1; // Last added item
+        if (itemIndex >= 0) {
+            sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
+            sessionStorage.setItem('returnAfterCustomize', 'basket');
 
-uploadBtnPopup.onclick = () => {
-    logoInputHidden.click();
-};
+            // Store product data for customize page
+            const item = basket[itemIndex];
+            sessionStorage.setItem('selectedProduct', item.code);
+            sessionStorage.setItem('selectedColorName', item.color);
+        }
+        // Navigate to customize page
+        const isMobile = window.innerWidth < 768;
+        window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+    };
+}
 
-logoInputHidden.onchange = () => {
-    [...logoInputHidden.files].forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const div = document.createElement("div");
-            div.className = "logo-thumb";
-            div.style.backgroundImage = `url('${e.target.result}')`;
-            logoPreviewPopup.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-};
+// "Continue Shopping" link in popup — close popup and stay on page
+const popupContinueShopping = document.getElementById('popupContinueShopping');
+if (popupContinueShopping) {
+    popupContinueShopping.onclick = (e) => {
+        e.preventDefault();
+        if (popup) popup.style.display = "none";
+        // Scroll back to color grid for next selection
+        const colorGridEl = document.getElementById('colorGrid');
+        if (colorGridEl) {
+            colorGridEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+}
 
 /* ---------------------------------------------------
    CUSTOMIZATION MODAL

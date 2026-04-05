@@ -1711,7 +1711,73 @@
             sessionStorage.removeItem('selectedColorName');
             sessionStorage.removeItem('selectedColorUrl');
         }
-        
+
+        // === Phase 2.1: Load basket item context when coming from "Add your logo" ===
+        const basketIdx = sessionStorage.getItem('customizingBasketIndex');
+        if (basketIdx !== null) {
+            try {
+                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const basketItem = basket[parseInt(basketIdx, 10)];
+                if (basketItem) {
+                    console.log('🛒 Loading basket item for customization:', basketItem.productName, basketItem.color);
+
+                    // Link auto-save to this specific basket item
+                    _autoSavedItemId = basketItem.id;
+                    _sessionSavedIds.add(basketItem.id);
+
+                    // Pre-populate color from basket item
+                    const itemColorName = basketItem.color || '';
+                    const itemColorId = basketItem.colorId || '';
+                    const matchColor = PRODUCT_COLORS.find(c =>
+                        c.id === itemColorId ||
+                        c.name.toLowerCase() === itemColorName.toLowerCase()
+                    );
+                    if (matchColor) {
+                        state.selectedColor = matchColor.id;
+                        state.selectedColorName = matchColor.name;
+                        state.selectedColorImage = matchColor.image;
+                        console.log('🎨 Set color from basket item:', matchColor.name);
+                    }
+
+                    // Pre-populate size quantities
+                    if (basketItem.quantities && typeof basketItem.quantities === 'object') {
+                        state.sizeQuantities = { ...basketItem.quantities };
+                        state.quantity = basketItem.totalQty || Object.values(basketItem.quantities).reduce((s, q) => s + q, 0);
+                    } else if (basketItem.sizes && typeof basketItem.sizes === 'object') {
+                        // Handle product.js format (sizes instead of quantities)
+                        state.sizeQuantities = { ...basketItem.sizes };
+                        state.quantity = basketItem.quantity || Object.values(basketItem.sizes).reduce((s, q) => s + q, 0);
+                    }
+
+                    // Pre-populate existing designs/positions if editing
+                    if (basketItem.positionDesigns && Object.keys(basketItem.positionDesigns).length > 0) {
+                        state.positionDesigns = { ...basketItem.positionDesigns };
+                    }
+                    if (basketItem.positions) {
+                        // positions can be array (new format) or object (old format)
+                        if (Array.isArray(basketItem.positions)) {
+                            basketItem.positions.forEach(pos => {
+                                if (pos.position && pos.method) {
+                                    state.positionMethods[pos.position] = pos.method.toLowerCase();
+                                }
+                            });
+                        } else if (typeof basketItem.positions === 'object') {
+                            Object.entries(basketItem.positions).forEach(([posKey, posData]) => {
+                                if (posData.method) {
+                                    state.positionMethods[posKey] = posData.method.toLowerCase();
+                                }
+                            });
+                        }
+                    }
+
+                    console.log('✅ Basket item loaded into customize state');
+                }
+            } catch (e) {
+                console.warn('Failed to load basket item for customization:', e);
+            }
+            // Don't clear customizingBasketIndex yet — needed by addToQuote for return navigation
+        }
+
         // Setup state persistence for when user navigates away
         setupStatePersistence();
         
@@ -2726,13 +2792,27 @@
             // Save current selection to basket if there are items
             if (state.quantity > 0) {
                 addToQuote({ silent: true });
-                // Brief toast → auto-redirect after 1.2s so user sees confirmation
+            }
+
+            // Phase 2.2: If coming from basket, return there
+            const returnTarget = sessionStorage.getItem('returnAfterCustomize');
+            if (returnTarget === 'basket') {
+                sessionStorage.removeItem('customizingBasketIndex');
+                sessionStorage.removeItem('returnAfterCustomize');
+                showToast('Saved! Returning to basket…');
+                setTimeout(() => {
+                    window.location.href = '../basket.html';
+                }, 800);
+                return;
+            }
+
+            // Default: go to shop
+            if (state.quantity > 0) {
                 showToast('Added to basket! Redirecting to shop…');
                 setTimeout(() => {
                     window.location.href = '../shop.html';
                 }, 1200);
             } else {
-                // Nothing to save, go straight to shop
                 window.location.href = '../shop.html';
             }
         });
@@ -6622,6 +6702,12 @@
             actionBarTotal.textContent = formatCurrency(grandTotal);
         }
         
+        // Update action bar qty
+        const actionBarQty = document.getElementById('actionBarQty');
+        if (actionBarQty) {
+            actionBarQty.textContent = displayQty;
+        }
+        
         // Update action bar suffix
         const actionVatSuffix = document.querySelector('.action-bar .price-suffix');
         if (actionVatSuffix) {
@@ -8223,6 +8309,18 @@
         
         // ── Background: upgrade base64 logos to server URLs ──
         _upgradeBasketLogosToServer();
+        
+        // Phase 2.2: If coming from basket "Add logo", return to basket after save
+        const returnTarget = sessionStorage.getItem('returnAfterCustomize');
+        if (returnTarget === 'basket') {
+            sessionStorage.removeItem('customizingBasketIndex');
+            sessionStorage.removeItem('returnAfterCustomize');
+            showToast('Logo saved! Returning to basket…');
+            setTimeout(() => {
+                window.location.href = '../basket.html';
+            }, 800);
+            return;
+        }
         
         // Show success message with option to go to basket (unless silent)
         if (!silent) {

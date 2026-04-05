@@ -449,16 +449,29 @@
     <!-- Fixed Action Bar -->
     <div class="action-bar product-action-bar">
         <div class="action-price">
-            <span class="price-label">From</span>
-            <span class="price-value" id="actionPrice" data-base-price="17.58">£17.58</span>
-            <span class="price-unit">per piece <span class="vat-suffix">ex VAT</span></span>
+            <span class="price-value" id="actionPrice">£0.00</span>
         </div>
-        <a href="customize-mobile.html" class="design-btn">
-            <span>Customize Now</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-        </a>
+        <button id="mobileAddToBasket" class="design-btn" disabled>
+            <span>Add to basket</span>
+        </button>
+    </div>
+
+    <!-- Added to Basket Popup -->
+    <div id="addedToBasketPopup" class="popup-overlay" style="display:none;">
+        <div class="popup-box">
+            <div class="popup-header">
+                <span class="popup-title" style="color:#16a34a;">✓ Added to basket</span>
+                <span id="closeAddedPopup" class="close-x">✕</span>
+            </div>
+            <div id="addedPopupContent" class="popup-content-fixed"></div>
+            <hr class="popup-divider">
+            <div id="addedPopupSummary" class="popup-summary-fixed"></div>
+            <div class="popup-buttons">
+                <button id="popupAddLogoBtn" class="popup-btn popup-btn-orange">Add your logo now</button>
+                <button class="popup-btn popup-btn-grey" onclick="window.location.href='basket.html'">View Basket</button>
+            </div>
+            <a href="#" id="popupContinueShopping" class="continue-shopping">Continue Shopping</a>
+        </div>
     </div>
 
     <script src="js/mobile.js?v=20251230"></script>

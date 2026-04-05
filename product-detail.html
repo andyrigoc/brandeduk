@@ -1888,11 +1888,10 @@
 <!-- MOBILE STICKY BAR -->
 <div id="mobileStickyBar" class="mobile-sticky-bar">
     <div class="sticky-summary">
-        <span id="stickyItemCount">0 items</span>
-        <span id="stickyTotal">£0.00</span>
+        <span id="stickyTotal" class="sticky-price">£0.00</span>
     </div>
-    <button id="mobileAddCustomize" class="sticky-cta" disabled>
-        Add Logo →
+    <button id="stickyAddToBasket" class="sticky-cta" disabled>
+        Add to basket
     </button>
 </div>
 
@@ -1928,14 +1927,11 @@
         <div id="popupSummary" class="popup-summary-fixed"></div>
 
         <div class="popup-buttons">
-            <button id="uploadLogoBtn" class="popup-btn popup-btn-purple">Add your logo now</button>
-            <button class="popup-btn popup-btn-grey" onclick="window.location.href='basket.html#orderSummary'">View Basket</button>
+            <button id="popupAddLogoBtn" class="popup-btn popup-btn-orange">Add your logo now</button>
+            <button class="popup-btn popup-btn-grey" onclick="window.location.href='basket.html'">View Basket</button>
         </div>
 
-        <input type="file" id="logoInput" multiple hidden>
-        <div id="logoPreview" class="logo-preview"></div>
-
-        <a href="home-pc.html" class="continue-shopping">Continue Shopping</a>
+        <a href="#" id="popupContinueShopping" class="continue-shopping">Continue Shopping</a>
     </div>
 </div>
 
