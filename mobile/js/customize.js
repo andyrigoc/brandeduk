@@ -5976,6 +5976,9 @@
         const modal = document.getElementById('designModal');
         if (!modal) return;
         
+        // Close modal IMMEDIATELY so it never stays open
+        closeCustomizationModal();
+        
         const position = modal.dataset.position;
         const method = modal.dataset.method;
         
@@ -6088,9 +6091,6 @@
         
         // Update order card logo preview
         updateOrderCardLogo(designData);
-        
-        // Close modal
-        closeCustomizationModal();
         
         // Haptic feedback
         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);

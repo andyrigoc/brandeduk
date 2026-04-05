@@ -375,6 +375,65 @@
             </div>
         </section>
 
+        <!-- Order Summary Section (Like PC Version) -->
+        <section class="order-summary-section" id="orderSummary">
+            <h2 class="section-title">Your Order Summary:</h2>
+            
+            <div class="sidebar-costs">
+                <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+                
+                <!-- Garment Cost Section -->
+                <div class="section garment-section">
+                    <div class="row">
+                        <span class="label">Garment Cost <span class="vat-suffix">ex vat</span></span>
+                        <span class="value" id="sidebarGarmentCost">£0.00</span>
+                    </div>
+                    <div class="row detail">
+                        <span id="garmentDetailCalc">£0.00 × 0 = £0.00</span>
+                    </div>
+                </div>
+                
+                <!-- Customization Costs (populated by JS) -->
+                <div id="customizationCostsList">
+                    <!-- Populated dynamically with embroidery/print cards -->
+                </div>
+                
+                <!-- Total Cost Row -->
+                <div class="cost-row total-row">
+                    <strong>Total Cost</strong>
+                    <strong id="sidebarTotalCost" class="total-amount">£0.00 <span class="vat-suffix">ex VAT</span></strong>
+                </div>
+            </div>
+            
+            <!-- Basket Items List with +/- controls -->
+            <div id="basketItemsList" class="basket-items-scroll">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <p class="summary-note">Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.</p>
+            
+            <!-- Continue Shopping Button -->
+            <button class="continue-shopping-btn" id="continueShoppingBtnSummary" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #7c3aed; background:#fff; color:#7c3aed; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                </svg>
+                Continue Shopping
+            </button>
+
+            <!-- Submit Quote Button -->
+            <button class="submit-quote-btn" id="submitQuoteBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                </svg>
+                Submit your QUOTE
+            </button>
+        </section>
+
+        <!-- Customize: Logo Positions -->
+        <h2 class="section-title" style="margin: 24px 16px 8px; font-size: 1.25rem; font-weight: 700; color: #1e293b;">Customize: Logo Positions</h2>
+
         <!-- Customization Options - Simplified -->
         <section class="customize-section customization-options">
             <!-- Position Selection - Full Cards -->
@@ -758,62 +817,6 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Order Summary Section (Like PC Version) -->
-        <section class="order-summary-section" id="orderSummary">
-            <h2 class="section-title">Your Order Summary:</h2>
-            
-            <div class="sidebar-costs">
-                <h4 class="cost-breakdown-title">Cost Breakdown</h4>
-                
-                <!-- Garment Cost Section -->
-                <div class="section garment-section">
-                    <div class="row">
-                        <span class="label">Garment Cost <span class="vat-suffix">ex vat</span></span>
-                        <span class="value" id="sidebarGarmentCost">�0.00</span>
-                    </div>
-                    <div class="row detail">
-                        <span id="garmentDetailCalc">�0.00 × 0 = �0.00</span>
-                    </div>
-                </div>
-                
-                <!-- Customization Costs (populated by JS) -->
-                <div id="customizationCostsList">
-                    <!-- Populated dynamically with embroidery/print cards -->
-                </div>
-                
-                <!-- Total Cost Row -->
-                <div class="cost-row total-row">
-                    <strong>Total Cost</strong>
-                    <strong id="sidebarTotalCost" class="total-amount">�0.00 <span class="vat-suffix">ex VAT</span></strong>
-                </div>
-            </div>
-            
-            <!-- Basket Items List with +/- controls -->
-            <div id="basketItemsList" class="basket-items-scroll">
-                <!-- Populated by JavaScript -->
-            </div>
-            
-            <p class="summary-note">Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.</p>
-            
-            <!-- Continue Shopping Button -->
-            <button class="continue-shopping-btn" id="continueShoppingBtnSummary" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #7c3aed; background:#fff; color:#7c3aed; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5"></path>
-                    <path d="M12 19l-7-7 7-7"></path>
-                </svg>
-                Continue Shopping
-            </button>
-
-            <!-- Submit Quote Button -->
-            <button class="submit-quote-btn" id="submitQuoteBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 2L11 13"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
-                </svg>
-                Submit your QUOTE
-            </button>
         </section>
 
     </main>
