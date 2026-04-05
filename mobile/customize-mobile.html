@@ -1917,7 +1917,7 @@
 /* ===== Add to Basket Action Bar ===== */
 .action-bar {
     position: fixed;
-    bottom: 56px;
+    bottom: 56px !important;
     left: 0;
     right: 0;
     height: 56px;
@@ -1938,8 +1938,8 @@
     gap: 8px;
     height: 42px;
     padding: 0 24px;
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+    color: #fff !important;
     font-size: 15px;
     font-weight: 700;
     border: none;
@@ -1950,7 +1950,7 @@
 }
 
 .add-to-basket-btn:hover {
-    background: #5b21b6;
+    background: #5b21b6 !important;
 }
 
 .add-to-basket-btn:active {
@@ -1961,12 +1961,14 @@
     display: flex;
     align-items: baseline;
     gap: 4px;
+    flex-direction: row !important;
 }
 
-.action-bar .price-value {
-    font-size: 22px;
-    font-weight: 800;
-    color: #7c3aed;
+.action-bar .price-value,
+.action-bar .price-value.total-green {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #7c3aed !important;
 }
 
 .action-bar .price-suffix {
