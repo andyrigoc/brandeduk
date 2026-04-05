@@ -3950,7 +3950,10 @@
                 const age = (product.ageGroup || '').toLowerCase();
                 if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
                 const gender = (product.gender || '').toLowerCase();
+                const n = (product.name || '').toLowerCase();
                 if (gender.includes('ladies') || gender.includes('female') || gender.includes('women') || gender.includes('womens')) return 'women';
+                if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
+                if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
                 return 'men';
             }
 

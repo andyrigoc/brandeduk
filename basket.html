@@ -259,26 +259,32 @@
         }
         
         .basket-item-card {
-            display: flex;
-            gap: 14px;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 14px;
-            margin-bottom: 12px;
+            display: block;
+            padding: 20px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0;
             position: relative;
         }
         
         .basket-item-card:last-child {
-            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .basket-item-main {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
         }
         
         .basket-item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
             overflow: hidden;
             background: #fff;
             flex-shrink: 0;
+            border: 1px solid #e5e7eb;
         }
         
         .basket-item-image img {
@@ -287,20 +293,53 @@
             object-fit: contain;
         }
         
+        .basket-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
         .basket-item-info {
             flex: 1;
             min-width: 0;
         }
         
         .basket-item-info h4 {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: #1f2937;
             margin: 0 0 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-right: 30px;
+        }
+        
+        .basket-item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        
+        .basket-item-meta .item-code {
+            font-weight: 500;
+        }
+        
+        .basket-item-meta .item-color-size {
+            color: #6b7280;
+        }
+        
+        .basket-item-meta .remove-link {
+            color: #22c55e;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 13px;
+        }
+        
+        .basket-item-meta .remove-link:hover {
+            text-decoration: underline;
         }
         
         .basket-item-info .item-color {
@@ -310,48 +349,46 @@
         }
         
         .item-sizes {
+            display: none; /* Hidden - qty shown in right panel */
+        }
+        
+        /* Right side: Qty controls + Pricing */
+        .basket-item-right {
             display: flex;
             flex-direction: column;
+            align-items: flex-end;
             gap: 8px;
-        }
-        
-        .basket-size-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .size-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            min-width: 24px;
+            margin-left: auto;
+            min-width: 120px;
         }
         
         .basket-qty-controls {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: #e5e7eb;
-            border-radius: 16px;
-            padding: 2px 6px;
+            gap: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
         }
         
         .basket-qty-controls .qty-btn {
-            width: 22px;
-            height: 22px;
+            width: 32px;
+            height: 32px;
             border: none;
-            background: transparent;
+            background: #f9fafb;
             color: #374151;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
             padding: 0;
             line-height: 1;
+        }
+        
+        .basket-qty-controls .qty-btn:hover {
+            background: #e5e7eb;
         }
         
         .basket-qty-controls .qty-btn:active {
@@ -359,27 +396,52 @@
         }
         
         .basket-qty-controls .qty-value {
-            min-width: 16px;
+            min-width: 40px;
+            padding: 0 4px;
             text-align: center;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
+            color: #1f2937;
+            background: #fff;
+            border-left: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            height: 32px;
+            line-height: 32px;
+        }
+        
+        .basket-item-price-block {
+            text-align: right;
+        }
+        
+        .basket-item-unit-price-val {
+            font-size: 16px;
+            font-weight: 700;
             color: #1f2937;
         }
         
+        .basket-item-unit-price-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .basket-item-total-row {
+            text-align: right;
+            margin-top: 8px;
+        }
+        
+        .basket-item-total-label {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .basket-item-total-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ea580c;
+        }
+        
         .basket-item-remove {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: transparent;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: none; /* Hidden - using text link instead */
         }
         
         /* Customization Cards - Colored */
@@ -631,22 +693,20 @@
             opacity: 1;
         }
         
-        /* Basket item card - adjusted for checkbox */
+        /* Basket item card */
         .basket-item-card {
-            display: flex;
-            gap: 14px;
-            padding: 16px;
-            padding-left: 48px;
-            background: #f9fafb;
-            border-radius: 14px;
-            margin-bottom: 12px;
+            display: block;
+            padding: 20px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0;
             position: relative;
-            cursor: pointer;
+            cursor: default;
             transition: all 0.2s;
         }
         
         .basket-item-card:hover {
-            background: #f3f4f6;
+            background: #fafafa;
         }
         
         .basket-item-card.selected {
@@ -1169,19 +1229,17 @@
 
         /* Add logo / Add another logo button */
         .basket-add-logo-btn {
-            margin-top: 8px;
-            width: 100%;
-            padding: 10px 16px;
+            margin-top: 10px;
+            display: inline-flex;
+            padding: 10px 20px;
             background: #1f2937;
             color: #fff;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            display: flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
             transition: background 0.15s;
         }
@@ -1190,27 +1248,19 @@
             background: #374151;
         }
 
-        /* Item total cost */
+        /* Item total cost - OLD - hidden */
         .basket-item-total {
-            margin-top: 10px;
-            text-align: right;
-            font-size: 15px;
-            font-weight: 700;
-            color: #ea580c;
+            display: none;
         }
 
-        /* Product code in card */
+        /* Product code in card - OLD - hidden, using meta row now */
         .basket-item-info .item-code {
-            font-size: 12px;
-            color: #9ca3af;
-            margin: 0 0 2px;
+            display: none;
         }
 
-        /* Unit price display */
+        /* Unit price display - OLD - hidden, using right panel now */
         .basket-item-unit-price {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 4px;
+            display: none;
         }
 
         /* ===== COPY LOGO MODAL ===== */
@@ -1403,6 +1453,67 @@
 
         .basket-totals .total-row.vat-row .value {
             color: #6b7280;
+        }
+
+        /* =========================================
+           Customize Popup (iframe overlay)
+           ========================================= */
+        .customize-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .customize-popup-overlay[hidden] {
+            display: none;
+        }
+        .customize-popup-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background: #fff;
+        }
+        @media (min-width: 768px) {
+            .customize-popup-container {
+                width: 90%;
+                height: 90%;
+                max-width: 600px;
+                max-height: 90vh;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+        }
+        .customize-popup-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .customize-popup-close:hover {
+            background: #fff;
+        }
+        .customize-popup-close svg {
+            stroke: #333;
+        }
+        #customizePopupIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -1638,42 +1749,16 @@
         </div>
     </main>
 
-    <!-- Logo Action Modal (same as customize page) -->
-    <div class="logo-action-overlay" id="logoActionModal" style="display:none;">
-        <div class="logo-action-sheet">
-            <div class="logo-action-header">
-                <h3 id="logoActionTitle">Add Logo</h3>
-                <button type="button" id="logoActionClose" class="logo-action-close-btn">&times;</button>
-            </div>
-            <div class="logo-action-body">
-                <!-- Method selector -->
-                <div style="margin-bottom:12px;">
-                    <p style="font-size:12px;color:#6b7280;margin:0 0 6px;">Customisation method:</p>
-                    <div id="logoActionMethodRow" style="display:flex;gap:8px;">
-                        <button type="button" class="logo-method-btn selected" data-method="Embroidery" id="methodBtnEmb" style="flex:1;padding:8px;border-radius:8px;border:2px solid #7c3aed;background:#f3f0ff;color:#7c3aed;font-size:12px;font-weight:600;cursor:pointer;">🧵 Embroidery<br><span style="font-weight:400;font-size:11px;">£5.00/item</span></button>
-                        <button type="button" class="logo-method-btn" data-method="Print" id="methodBtnPrint" style="flex:1;padding:8px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;font-size:12px;font-weight:600;cursor:pointer;">🖨️ Print<br><span style="font-weight:400;font-size:11px;">£3.50/item</span></button>
-                    </div>
-                </div>
-                <div id="logoActionExisting" style="display:none;">
-                    <p style="font-size:12px;color:#6b7280;margin:0 0 8px;">Use an existing logo:</p>
-                    <div id="logoActionGallery" class="logo-action-gallery"></div>
-                </div>
-                <div class="logo-action-divider" id="logoActionDivider" style="display:none;"><span>or</span></div>
-                <label class="logo-action-upload-btn" id="logoActionUploadBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Upload New Logo
-                    <input type="file" id="logoActionFileInput" accept="image/*" style="display:none;">
-                </label>
-                <div id="logoActionPreview" style="display:none;margin-top:12px;text-align:center;">
-                    <img id="logoActionPreviewImg" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">
-                    <div style="margin-top:8px;">
-                      <button type="button" id="logoActionRemoveBg" style="font-size:11px;padding:4px 10px;border:1px solid #7c3aed;border-radius:6px;background:#fff;color:#7c3aed;cursor:pointer;">
-                        <span>REMOVE BG</span>
-                      </button>
-                    </div>
-                </div>
-            </div>
-            <button type="button" class="logo-action-apply-btn" id="logoActionApply" style="display:none;">Apply Logo</button>
+    <!-- Customize Popup (iframe to existing customize page) -->
+    <div class="customize-popup-overlay" id="customizePopupOverlay" hidden>
+        <div class="customize-popup-container">
+            <button type="button" class="customize-popup-close" id="customizePopupClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <iframe id="customizePopupIframe" src="" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -1944,29 +2029,49 @@
                 const availableSizes = allSizes.filter(s => !existingSizes.includes(s));
                 const addSizeOpts = availableSizes.map(s => `<option value="${s}">${s}</option>`).join('');
 
+                // Build size string for display (e.g., "M, L, XL" or "One Size")
+                const sizeKeys = Object.entries(sizes).filter(([,q]) => q > 0).map(([s]) => s);
+                const sizeDisplayStr = sizeKeys.join(', ') || 'One Size';
+
                 html += `
                     <div class="basket-item-card" data-index="${index}">
-                        <div class="basket-item-image">
-                            <img src="${itemImage}" alt="${productName}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
-                        </div>
-                        <div class="basket-item-info">
-                            <h4>${productName}</h4>
-                            <p class="item-code">${productCode}</p>
-                            <p class="item-color">Color: ${itemColor}</p>
-                            <div class="item-sizes" onclick="event.stopPropagation()">
-                                ${sizesHtml}
+                        <div class="basket-item-main">
+                            <div class="basket-item-image">
+                                <img src="${itemImage}" alt="${productName}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                             </div>
-                            <div class="basket-item-unit-price">${formatCurrency(unitPrice)} each <span class="vat-suffix">${vatSuffix()}</span></div>
-                            ${logoRowsHtml}
-                            ${addLogoBtnHtml}
-                            ${notePreview}
-                            <div class="basket-item-total">Total: ${formatCurrency(itemTotal)}</div>
+                            <div class="basket-item-content">
+                                <div class="basket-item-info">
+                                    <h4>${productName}</h4>
+                                    <div class="basket-item-meta">
+                                        <span class="item-code">${productCode}</span>
+                                        <span class="item-color-size">${itemColor}, ${sizeDisplayStr}</span>
+                                        <button type="button" class="remove-link" data-index="${index}">Remove</button>
+                                    </div>
+                                    ${addLogoBtnHtml}
+                                </div>
+                            </div>
+                            <div class="basket-item-right">
+                                <div class="basket-qty-controls">
+                                    <button type="button" class="qty-btn minus" data-index="${index}">−</button>
+                                    <span class="qty-value">${totalQty}</span>
+                                    <button type="button" class="qty-btn plus" data-index="${index}">+</button>
+                                </div>
+                                <div class="basket-item-price-block">
+                                    <div class="basket-item-unit-price-val">${formatCurrency(unitPrice)}</div>
+                                    <div class="basket-item-unit-price-label">each ${vatSuffix()}</div>
+                                </div>
+                                <div class="basket-item-total-row">
+                                    <div class="basket-item-total-label">Total item cost:</div>
+                                    <div class="basket-item-total-value">${formatCurrency(itemTotal)}</div>
+                                </div>
+                            </div>
                         </div>
-                        <button type="button" class="basket-item-remove" data-index="${index}" onclick="event.stopPropagation()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            </svg>
-                        </button>
+                        ${logoRowsHtml}
+                        ${notePreview}
+                        <!-- Hidden sizes data for JS -->
+                        <div class="item-sizes" style="display:none;" onclick="event.stopPropagation()">
+                            ${sizesHtml}
+                        </div>
                     </div>
                     <!-- Edit Panel -->
                     <div class="basket-edit-panel" id="editPanel-${index}">
@@ -2299,7 +2404,7 @@
                     e.stopPropagation();
                     
                     const index = parseInt(btn.dataset.index);
-                    const size = btn.dataset.size;
+                    const size = btn.dataset.size; // May be undefined for main qty control
                     const isPlus = btn.classList.contains('plus');
                     
                     handleQtyChange(index, size, isPlus);
@@ -2307,9 +2412,9 @@
             });
         }
         
-        // Attach remove button listeners
+        // Attach remove button listeners (both icon button and text link)
         function attachRemoveListeners() {
-            document.querySelectorAll('.basket-item-remove').forEach(btn => {
+            document.querySelectorAll('.basket-item-remove, .remove-link').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -2331,6 +2436,15 @@
             // Support both 'sizes' and 'quantities' keys
             const sizesKey = item.sizes ? 'sizes' : 'quantities';
             if (!item[sizesKey]) item[sizesKey] = {};
+            
+            // If no size specified, use the first available size 
+            // (for the main qty control that affects total)
+            if (!size) {
+                const availableSizes = Object.keys(item[sizesKey]).filter(s => item[sizesKey][s] > 0);
+                if (availableSizes.length === 0) return;
+                size = availableSizes[0]; // Use first size
+            }
+            
             if (!item[sizesKey][size]) return;
             
             if (isIncrement) {
@@ -2606,9 +2720,40 @@
                 productType: item.productType || ''
             }));
 
+            // Open customize page in popup iframe instead of redirect
             const isMobile = window.innerWidth < 1024;
-            window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+            const customizeUrl = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+            openCustomizePopup(customizeUrl);
         }
+
+        // Open customize page in iframe popup
+        function openCustomizePopup(url) {
+            const overlay = document.getElementById('customizePopupOverlay');
+            const iframe = document.getElementById('customizePopupIframe');
+            if (!overlay || !iframe) return;
+            
+            iframe.src = url;
+            overlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close customize popup
+        function closeCustomizePopup() {
+            const overlay = document.getElementById('customizePopupOverlay');
+            const iframe = document.getElementById('customizePopupIframe');
+            if (overlay) overlay.hidden = true;
+            if (iframe) iframe.src = '';
+            document.body.style.overflow = '';
+            
+            // Refresh basket to show any customizations applied
+            renderBasket();
+        }
+
+        // Init customize popup close button
+        document.getElementById('customizePopupClose')?.addEventListener('click', closeCustomizePopup);
+        document.getElementById('customizePopupOverlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'customizePopupOverlay') closeCustomizePopup();
+        });
 
         // Remove a logo from a specific position of a basket item
         function removeLogoFromItem(itemIndex, positionKey) {

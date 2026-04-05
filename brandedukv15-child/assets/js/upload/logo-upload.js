@@ -79,6 +79,7 @@
   /**
    * Upload a base64 data-URL logo to Vercel Blob.
    * Falls back to keeping the data-URL if the server is unreachable.
+   * NOTE: Does NOT auto-add to gallery - caller handles that.
    */
   async function uploadToServer(base64DataUrl, position, filename) {
     // Guard: if already a remote URL, return as-is
@@ -99,19 +100,16 @@
       }
 
       const data = await res.json();
-      // Auto-add to local gallery
-      add({ url: data.url, filename: data.filename });
+      // DO NOT auto-add here - _processFiles handles gallery updates
       return data;                       // { url, filename, size }
     } catch (err) {
       console.warn('[LogoLibrary] Server upload failed, keeping data-URL:', err.message);
-      // Fallback: save data-URL locally (old behaviour)
-      const fallback = {
+      // Fallback: return data-URL (caller already added to gallery)
+      return {
         url: base64DataUrl,
         filename: filename || `logo-${Date.now()}`,
         size: base64DataUrl.length,
       };
-      add(fallback);
-      return fallback;
     }
   }
 
@@ -145,7 +143,7 @@
         <h4>Drag &amp; Drop Your Logo</h4>
         <p>or click to browse from your device</p>
         <label class="logo-gallery__browse-btn">
-          <span>Browse Files</span>
+          <span>Add Logo</span>
         </label>
         <div class="logo-gallery__file-types">
           JPG, PNG, GIF, WebP, SVG, PDF, AI, EPS

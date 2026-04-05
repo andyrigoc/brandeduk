@@ -601,75 +601,114 @@
             color: #6b7280;
         }
 
-        /* Search Autocomplete Dropdown */
+        /* Search Autocomplete Dropdown — 3-column product grid */
         .search-autocomplete {
             display: none;
             position: absolute;
             top: 100%;
-            left: 0;
-            right: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 780px;
             background: #fff;
             border: 1px solid #e5e7eb;
             border-top: none;
             border-radius: 0 0 16px 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             z-index: 9999;
-            max-height: 320px;
+            max-height: 520px;
             overflow-y: auto;
         }
-        .search-autocomplete.open {
-            display: block;
+        .search-autocomplete.open { display: block; }
+
+        /* Products grid (3 columns) */
+        .ac-products {
+            padding: 12px 16px;
         }
-        .search-autocomplete .ac-section-label {
-            font-size: 10px;
+        .ac-products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+        }
+        /* Column */
+        .ac-col {
+            min-width: 0;
+        }
+        .ac-col-title {
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            color: #9ca3af;
-            padding: 8px 16px 4px;
-            letter-spacing: 0.5px;
+            color: #6b7280;
+            padding: 0 8px 6px;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #7c3aed;
+            margin-bottom: 4px;
         }
-        .search-autocomplete .ac-item {
+        /* Product row inside a column */
+        .ac-prod {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
+            gap: 8px;
+            padding: 6px 8px;
             cursor: pointer;
-            font-size: 14px;
-            color: #374151;
-            transition: background 0.15s;
+            border-radius: 6px;
+            transition: background 0.12s;
+            text-decoration: none;
+            color: inherit;
         }
-        .search-autocomplete .ac-item:hover,
-        .search-autocomplete .ac-item.ac-active {
-            background: #f3f0ff;
-        }
-        .search-autocomplete .ac-item .ac-icon {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-            color: #a855f7;
-        }
-        .search-autocomplete .ac-item .ac-thumb {
-            width: 32px;
-            height: 32px;
+        .ac-prod:hover { background: #f3f0ff; }
+        .ac-prod-img {
+            width: 40px;
+            height: 40px;
             border-radius: 4px;
             object-fit: contain;
             flex-shrink: 0;
             background: #f9fafb;
         }
-        .search-autocomplete .ac-item .ac-match {
-            font-weight: 700;
-            color: #7c3aed;
+        .ac-prod-info {
+            min-width: 0;
+            flex: 1;
         }
-        .search-autocomplete .ac-item .ac-brand {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-left: auto;
-        }
-        .search-autocomplete .ac-item .ac-price {
+        .ac-prod-name {
             font-size: 12px;
-            color: #6b7280;
-            margin-left: auto;
             font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ac-prod-name .ac-match { color: #7c3aed; font-weight: 700; }
+        .ac-prod-price {
+            font-size: 11px;
+            color: #374151;
+        }
+        .ac-prod-price .ac-price-val { color: #7c3aed; font-weight: 700; }
+
+        /* View all results link */
+        .ac-view-all {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #7c3aed;
+            border-top: 1px solid #f3f4f6;
+            text-decoration: none;
+            transition: background 0.12s;
+        }
+        .ac-view-all:hover { background: #f3f0ff; }
+
+        /* Loading state */
+        .ac-loading {
+            text-align: center;
+            padding: 24px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        .ac-no-results {
+            text-align: center;
+            padding: 24px;
+            color: #9ca3af;
+            font-size: 13px;
         }
 
         /* Logo viola con immagine */
@@ -1100,7 +1139,7 @@
 
                 <div class="searchbar-header__actions">
                     <div class="searchbar-header__search-expand">
-                        <input type="text" class="search-input-expand" autocomplete="off" placeholder="Search products, brands, categories..." id="searchbarHeaderInput">
+                        <input type="text" class="search-input-expand" autocomplete="off" placeholder="Search products, brands, categories..." id="searchbarHeaderInput" data-ac-custom="true">
                         <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
@@ -3219,31 +3258,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Search Autocomplete (isolated script - same as tablet/mobile) -->
 <script>
 (function() {
-    var PRODUCT_TYPES = [
-        'Accessories','Aprons','Arm Guards','Armbands',
-        'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
-        'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
-        'Document Wallets','Dog Vests','Dresses','Dungarees',
-        'Ear Muffs','Embroidery Accessories','Embroidery Backing',
-        'First Aid Boxes','Fleece','Freezer Blocks',
-        'Gilets & Body Warmers','Glasses','Gloves','Gowns',
-        'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
-        'Jackets','Jeans',
-        'Keyrings','Kneepads','Knitted Jumpers',
-        'Laptop Cases','Leggings','Loungewear Bottoms',
-        'Mail Order Bags',
-        'Onesies',
-        'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
-        'Quad Guards',
-        'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
-        'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
-        'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
-        'Umbrellas','Unitards',
-        'Vests (t-shirt)',
-        'Waistcoats','Wallets','Winter Accessory Sets',
-        'Yoga Mats',
-        'Zips Pulls'
-    ];
+    var HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];
+    var debounceTimer = null;
+    var currentRequest = null;
 
     function highlightMatch(text, query) {
         var idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -3251,81 +3268,187 @@ document.addEventListener('DOMContentLoaded', function() {
         return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
     }
 
+    function getGenderGroup(product) {
+        var age = (product.ageGroup || product.age_group || '').toLowerCase();
+        if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
+        var g = (product.gender || '').toLowerCase();
+        var n = (product.name || '').toLowerCase();
+        // Check gender field first, then fall back to product name
+        if (g.includes('ladies') || g.includes('female') || g.includes('women') || g.includes('womens')) return 'women';
+        if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
+        if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
+        return 'men';
+    }
+
+    function getLowestPrice(product) {
+        var breaks = product.priceBreaks || product.price_breaks || [];
+        if (breaks.length > 0) {
+            var prices = breaks.map(function(b) { return Number(b.price) || 999; });
+            return Math.min.apply(null, prices);
+        }
+        return Number(product.price) || 0;
+    }
+
+    function formatPrice(amount) {
+        return '£' + Number(amount).toFixed(2);
+    }
+
+    function stripBrands(name) {
+        var n = name || '';
+        HIDDEN_BRANDS.forEach(function(b) {
+            n = n.replace(new RegExp(b, 'gi'), '').trim();
+        });
+        return n;
+    }
+
     function setupSearchAutocomplete(inputId, dropdownId) {
         var input = document.getElementById(inputId);
         var dropdown = document.getElementById(dropdownId);
         if (!input || !dropdown) return;
 
-        var acActiveIndex = -1;
-        var acItems = [];
-
         function closeAC() {
             dropdown.classList.remove('open');
             dropdown.innerHTML = '';
-            acActiveIndex = -1;
-            acItems = [];
         }
 
-        function highlightItem() {
-            dropdown.querySelectorAll('.ac-item').forEach(function(el, i) {
-                el.classList.toggle('ac-active', i === acActiveIndex);
-            });
-        }
-
-        function showSuggestions(query) {
-            var q = query.toLowerCase();
-            var matches = PRODUCT_TYPES.filter(function(pt) {
-                return pt.toLowerCase().indexOf(q) === 0;
-            });
-            var html = '';
-            if (matches.length > 0) {
-                matches.forEach(function(pt) {
-                    html += '<div class="ac-item" data-label="' + pt + '">' +
-                        '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
-                        '<span>' + highlightMatch(pt, query) + '</span></div>';
-                });
+        // Delegated click handler for product links — sets sessionStorage
+        dropdown.addEventListener('click', function(e) {
+            var prod = e.target.closest('.ac-prod');
+            if (prod && prod.dataset.code) {
+                sessionStorage.setItem('selectedProduct', decodeURIComponent(prod.dataset.code));
+                sessionStorage.setItem('selectedProductData', JSON.stringify({
+                    code: decodeURIComponent(prod.dataset.code),
+                    name: prod.dataset.name || ''
+                }));
             }
-            dropdown.innerHTML = html;
-            if (html) dropdown.classList.add('open'); else dropdown.classList.remove('open');
-            acItems = [].slice.call(dropdown.querySelectorAll('.ac-item'));
-            acActiveIndex = -1;
+        });
 
-            acItems.forEach(function(item) {
-                item.addEventListener('click', function() {
-                    closeAC();
-                    window.location.href = 'shop.html?q=' + encodeURIComponent(item.dataset.label);
-                });
+        function renderResults(products, query) {
+            // Group products by gender
+            var men = [], women = [], kids = [];
+            products.forEach(function(p) {
+                var group = getGenderGroup(p);
+                if (group === 'women') women.push(p);
+                else if (group === 'kids') kids.push(p);
+                else men.push(p);
             });
+
+            var html = '<div class="ac-products">';
+
+            if (products.length === 0) {
+                html += '<div class="ac-no-results">No products found</div>';
+            } else {
+                html += '<div class="ac-products-grid">';
+
+                // Column 1: Unisex/Men
+                html += '<div class="ac-col">';
+                html += '<div class="ac-col-title">Unisex / Men</div>';
+                if (men.length === 0) {
+                    html += '<div style="padding:8px;font-size:11px;color:#9ca3af;">—</div>';
+                }
+                men.slice(0, 8).forEach(function(p) {
+                    html += buildProductRow(p, query);
+                });
+                html += '</div>';
+
+                // Column 2: Women
+                html += '<div class="ac-col">';
+                html += '<div class="ac-col-title">Women</div>';
+                if (women.length === 0) {
+                    html += '<div style="padding:8px;font-size:11px;color:#9ca3af;">—</div>';
+                }
+                women.slice(0, 8).forEach(function(p) {
+                    html += buildProductRow(p, query);
+                });
+                html += '</div>';
+
+                // Column 3: Kids
+                html += '<div class="ac-col">';
+                html += '<div class="ac-col-title">Kids</div>';
+                if (kids.length === 0) {
+                    html += '<div style="padding:8px;font-size:11px;color:#9ca3af;">—</div>';
+                }
+                kids.slice(0, 8).forEach(function(p) {
+                    html += buildProductRow(p, query);
+                });
+                html += '</div>';
+
+                html += '</div>'; // ac-products-grid
+            }
+            html += '</div>'; // ac-products
+
+            // View all results
+            html += '<a class="ac-view-all" href="shop.html?q=' + encodeURIComponent(query) + '">View all results for "' + query + '" →</a>';
+
+            dropdown.innerHTML = html;
+            dropdown.classList.add('open');
+        }
+
+        function buildProductRow(product, query) {
+            var img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || 'brandedukv15-child/assets/images/ui/no-image.png';
+            var name = stripBrands(product.name || '');
+            var price = getLowestPrice(product);
+            var code = product.code || product.style_code || '';
+            // Escape HTML attributes
+            var safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            var safeImg = img.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+
+            return '<a class="ac-prod" href="shop.html?q=' + encodeURIComponent(code) + '" data-code="' + encodeURIComponent(code) + '" data-name="' + safeName + '">' +
+                '<img class="ac-prod-img" src="' + safeImg + '" alt="" onerror="this.src=\'brandedukv15-child/assets/images/ui/no-image.png\'">' +
+                '<div class="ac-prod-info">' +
+                    '<div class="ac-prod-name">' + highlightMatch(name, query) + '</div>' +
+                    '<div class="ac-prod-price">From <span class="ac-price-val">' + formatPrice(price) + '</span> ex. VAT</div>' +
+                '</div>' +
+            '</a>';
+        }
+
+        async function fetchAndShow(query) {
+            if (currentRequest) { try { currentRequest.abort(); } catch(e){} }
+            var controller = new AbortController();
+            currentRequest = controller;
+
+            dropdown.innerHTML = '<div class="ac-loading">Searching...</div>';
+            dropdown.classList.add('open');
+
+            try {
+                var res = await fetch('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(query) + '&limit=100', { signal: controller.signal });
+                if (!res.ok) throw new Error('API error');
+                var data = await res.json();
+                var items = (data.items || []).map(function(p) {
+                    // Apply same transform as BrandedAPI
+                    var name = p.name || p.product_name || '';
+                    HIDDEN_BRANDS.forEach(function(b) {
+                        name = name.replace(new RegExp(b + '\\s*apparel', 'gi'), '').replace(new RegExp(b, 'gi'), '').trim();
+                    });
+                    return {
+                        code: p.code || p.style_code || '',
+                        name: name,
+                        price: p.price,
+                        priceBreaks: p.priceBreaks || p.price_breaks || [],
+                        image: p.image || p.main_image || '',
+                        gender: p.gender || '',
+                        ageGroup: p.age_group || p.ageGroup || '',
+                        colors: p.colors || []
+                    };
+                });
+                currentRequest = null;
+                renderResults(items, query);
+            } catch(err) {
+                if (err.name === 'AbortError') return;
+                currentRequest = null;
+                renderResults([], query);
+            }
         }
 
         input.addEventListener('input', function() {
             var q = input.value.trim();
-            if (q.length < 1) { closeAC(); return; }
-            showSuggestions(q);
-        });
-
-        input.addEventListener('keydown', function(e) {
-            if (!dropdown.classList.contains('open')) return;
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
-                highlightItem();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                acActiveIndex = Math.max(acActiveIndex - 1, -1);
-                highlightItem();
-            } else if (e.key === 'Enter' && acActiveIndex >= 0) {
-                e.preventDefault();
-                var activeEl = dropdown.querySelector('.ac-item.ac-active');
-                if (activeEl) activeEl.click();
-                return;
-            } else if (e.key === 'Escape') {
-                closeAC();
-            }
+            if (q.length < 2) { closeAC(); return; }
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() { fetchAndShow(q); }, 300);
         });
 
         input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && acActiveIndex < 0) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 closeAC();
                 var searchQuery = input.value.trim();
@@ -3333,6 +3456,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = 'shop.html?q=' + encodeURIComponent(searchQuery);
                 }
             }
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAC();
         });
 
         document.addEventListener('click', function(e) {

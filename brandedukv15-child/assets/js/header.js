@@ -493,6 +493,9 @@
             const searchInput = document.getElementById(id);
             if (!searchInput) return;
 
+            // Skip if a custom autocomplete is already attached (e.g. home-pc 3-column dropdown)
+            if (searchInput.dataset.acCustom === 'true') return;
+
             // Ensure parent has relative positioning
             const inputWrap = searchInput.parentElement;
             if (inputWrap) {

@@ -530,8 +530,11 @@ const ShopManager = (function () {
                     function getGenderGroup(product) {
                         var g = (product.gender || '').toLowerCase();
                         var age = (product.ageGroup || '').toLowerCase();
+                        var n = (product.name || '').toLowerCase();
                         if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
                         if (g.includes('ladies') || g.includes('female') || g.includes('women') || g.includes('womens')) return 'women';
+                        if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
+                        if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
                         return 'men'; // men, unisex, or default
                     }
 

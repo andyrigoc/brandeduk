@@ -317,31 +317,6 @@
             </div>
         </section>
 
-        <!-- Related & Alternative Products -->
-        <section class="customize-section" id="custRecommendationsSection" style="display:none;">
-            <div class="product-recommendations" id="custProductRecommendations" aria-labelledby="custRecommendationsTitle" data-expanded="false">
-                <div class="product-recommendations__topline">
-                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">You May Also Like</h2>
-                    <span class="product-recommendations__rule" aria-hidden="true"></span>
-                </div>
-                <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
-                    <button type="button" class="product-recommendations__tab" id="custRecTabRelated" data-tab="related" aria-pressed="false" aria-controls="custRecPanelRelated">
-                        <span>Related</span>
-                        <span class="product-recommendations__tab-count" data-count-for="related">0</span>
-                    </button>
-                    <button type="button" class="product-recommendations__tab" id="custRecTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="custRecPanelAlternatives">
-                        <span>Alternative</span>
-                        <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
-                    </button>
-                </div>
-                <div class="product-recommendations__body" id="custRecBody" data-recommendation-body hidden>
-                    <div class="product-recommendations__status" aria-live="polite">Finding similar styles…</div>
-                    <div class="product-recommendations__panel" id="custRecPanelRelated" data-panel="related" aria-labelledby="custRecTabRelated"></div>
-                    <div class="product-recommendations__panel" id="custRecPanelAlternatives" data-panel="alternatives" aria-labelledby="custRecTabAlternatives" hidden></div>
-                </div>
-            </div>
-        </section>
-
         <!-- Size & Quantity Selection -->
         <section class="customize-section" id="sizeQtySection">
             <h2 class="section-title">
@@ -815,6 +790,31 @@
                         <span class="timeline-label">Delivered by</span>
                         <span class="timeline-value" id="deliveryDate">Jan 2 - Jan 5</span>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related & Alternative Products — bottom of page -->
+        <section class="customize-section" id="custRecommendationsSection" style="display:none;">
+            <div class="product-recommendations" id="custProductRecommendations" aria-labelledby="custRecommendationsTitle" data-expanded="false">
+                <div class="product-recommendations__topline">
+                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">You May Also Like</h2>
+                    <span class="product-recommendations__rule" aria-hidden="true"></span>
+                </div>
+                <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
+                    <button type="button" class="product-recommendations__tab" id="custRecTabRelated" data-tab="related" aria-pressed="false" aria-controls="custRecPanelRelated">
+                        <span>Related</span>
+                        <span class="product-recommendations__tab-count" data-count-for="related">0</span>
+                    </button>
+                    <button type="button" class="product-recommendations__tab" id="custRecTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="custRecPanelAlternatives">
+                        <span>Alternative</span>
+                        <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
+                    </button>
+                </div>
+                <div class="product-recommendations__body" id="custRecBody" data-recommendation-body hidden>
+                    <div class="product-recommendations__status" aria-live="polite">Finding similar styles…</div>
+                    <div class="product-recommendations__panel" id="custRecPanelRelated" data-panel="related" aria-labelledby="custRecTabRelated"></div>
+                    <div class="product-recommendations__panel" id="custRecPanelAlternatives" data-panel="alternatives" aria-labelledby="custRecTabAlternatives" hidden></div>
                 </div>
             </div>
         </section>

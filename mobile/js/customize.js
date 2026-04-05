@@ -2800,7 +2800,12 @@
                 sessionStorage.removeItem('returnAfterCustomize');
                 showToast('Saved! Returning to basket…');
                 setTimeout(() => {
-                    window.location.href = '../basket.html';
+                    // If in iframe popup, close popup instead of redirect
+                    if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                        window.parent.closeCustomizePopup();
+                    } else {
+                        window.location.href = '../basket.html';
+                    }
                 }, 800);
                 return;
             }
@@ -8314,7 +8319,12 @@
             sessionStorage.removeItem('returnAfterCustomize');
             showToast('Logo saved! Returning to basket…');
             setTimeout(() => {
-                window.location.href = '../basket.html';
+                // If in iframe popup, close popup instead of redirect
+                if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                    window.parent.closeCustomizePopup();
+                } else {
+                    window.location.href = '../basket.html';
+                }
             }, 800);
             return;
         }
@@ -8577,6 +8587,36 @@
 
     // Update cart badge with live quantities
     updateLiveBadge();
+
+    // === Handle Back Button (for iframe popup from basket) ===
+    document.addEventListener('DOMContentLoaded', () => {
+        const backBtn = document.getElementById('breadcrumbBackBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                // Check if coming from basket customization
+                const returnTarget = sessionStorage.getItem('returnAfterCustomize');
+                
+                // If in iframe popup, close the popup
+                if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                    sessionStorage.removeItem('customizingBasketIndex');
+                    sessionStorage.removeItem('returnAfterCustomize');
+                    window.parent.closeCustomizePopup();
+                } else if (returnTarget === 'basket') {
+                    // Navigate back to basket
+                    sessionStorage.removeItem('customizingBasketIndex');
+                    sessionStorage.removeItem('returnAfterCustomize');
+                    window.location.href = '../basket.html';
+                } else {
+                    // Otherwise, go back in history or to shop
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '../shop.html';
+                    }
+                }
+            });
+        }
+    });
 
 })();
 
