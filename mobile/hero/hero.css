@@ -50,6 +50,11 @@
     background-position: center top !important;
   }
   
+  /* Bags non espanso - mostra la modella */
+  .hero-el[data-category="bags"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 80px) top !important;
+  }
+  
   /* Polo espanso */
   .hero-el[data-category="polo"].s--active .hero-el__bg:before {
     background-position: center top !important;
@@ -529,6 +534,18 @@
 /* Bags panel (expanded): center image */
 .hero-el[data-category="bags"].s--active .hero-el__bg:before {
   background-position: center center;
+}
+
+/* Bags panel: shift image right in non-expanded state to show model */
+.hero-el[data-category="bags"]:not(.s--active) .hero-el__bg:before {
+  background-position: calc(50% + 80px) center;
+}
+
+/* Tablet: bag non-expanded - show model */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .hero-el[data-category="bags"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 50px) center !important;
+  }
 }
 
 /* Hi-Viz panel: shift image 10px right in non-expanded state */
