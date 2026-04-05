@@ -405,7 +405,7 @@
         const positions = {};
         
         // Embroidery-only product types (no print option)
-        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Fleece', 'Caps'];
+        const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Fleece'];
         // Print-only product types (no embroidery option)
         const PRINT_ONLY_TYPES = ['Safety Vests'];
         const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
@@ -572,7 +572,7 @@
         const embKeyBadge = document.querySelector('.key-badge.embroidery');
         if (printKeyBadge || embKeyBadge) {
             const normalizedType = normalizeProductTypeForFolder(productType);
-            const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Fleece', 'Caps'];
+            const EMBROIDERY_ONLY_TYPES = ['Beanies', 'Fleece'];
             const PRINT_ONLY_TYPES = ['Safety Vests'];
             if (printKeyBadge) printKeyBadge.style.display = EMBROIDERY_ONLY_TYPES.includes(normalizedType) ? 'none' : '';
             if (embKeyBadge) embKeyBadge.style.display = PRINT_ONLY_TYPES.includes(normalizedType) ? 'none' : '';
