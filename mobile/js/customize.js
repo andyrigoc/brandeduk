@@ -6464,8 +6464,8 @@
         let currentCustomTotal = 0;
         const currentCustomizations = [];
         
-        // Calculate TOTAL quantity (basket + current) for customization calculations
-        let totalQtyForCustomizations = basketQty + currentQty;
+        // Use only current item quantity for customization calculations
+        let totalQtyForCustomizations = currentQty;
         
         // Build set of position keys AND canonical names already in basket customizations (to avoid dupes)
         const basketPositionKeys = new Set(allBasketCustomizations.map(c => c.posKey).filter(Boolean));
@@ -6521,7 +6521,14 @@
             }
         });
         
-        // ===== GRAND TOTALS =====
+        // ===== CURRENT-ITEM-ONLY TOTALS (for Cost Breakdown sidebar) =====
+        let currentHasEmbroidery = currentCustomizations.some(c => c.method === 'Embroidery');
+        let currentCustomTotalOnly = 0;
+        currentCustomizations.forEach(c => currentCustomTotalOnly += c.total);
+        const currentSetupFee = currentHasEmbroidery ? 25.00 : 0;
+        const currentItemTotal = currentGarmentTotal + currentCustomTotalOnly + currentSetupFee;
+
+        // ===== GRAND TOTALS (basket + current, for action bar) =====
         const grandGarmentTotal = totalBasketGarmentCost + currentGarmentTotal;
         const allCustomizations = [...allBasketCustomizations, ...currentCustomizations];
         let grandCustomTotal = 0;
@@ -6640,17 +6647,17 @@
             }
         }
         
-        // ===== UPDATE NEW SIDEBAR-COSTS (PC-style) =====
-        // Update Garment Cost in sidebar
+        // ===== UPDATE NEW SIDEBAR-COSTS (current item only) =====
+        // Update Garment Cost in sidebar — show CURRENT item only
         const sidebarGarmentCost = document.getElementById('sidebarGarmentCost');
         if (sidebarGarmentCost) {
-            sidebarGarmentCost.textContent = formatCurrency(grandGarmentTotal);
+            sidebarGarmentCost.textContent = formatCurrency(currentGarmentTotal);
         }
         
         const garmentDetailCalc = document.getElementById('garmentDetailCalc');
         if (garmentDetailCalc) {
-            if (displayQty > 0) {
-                garmentDetailCalc.textContent = `${formatCurrency(unitPrice)} × ${displayQty} = ${formatCurrency(grandGarmentTotal)}`;
+            if (currentQty > 0) {
+                garmentDetailCalc.textContent = `${formatCurrency(unitPrice)} × ${currentQty} = ${formatCurrency(currentGarmentTotal)}`;
             } else {
                 garmentDetailCalc.textContent = `${formatCurrency(0)} × 0 = ${formatCurrency(0)}`;
             }
@@ -6681,12 +6688,12 @@
             }
         }
         
-        // Update customization costs list with colored cards
+        // Update customization costs list with colored cards — current item only
         const customizationCostsList = document.getElementById('customizationCostsList');
         if (customizationCostsList) {
-            if (allCustomizations.length > 0) {
+            if (currentCustomizations.length > 0) {
                 let costsHtml = '';
-                allCustomizations.forEach(item => {
+                currentCustomizations.forEach(item => {
                     // Use different class for print vs embroidery
                     const sectionClass = item.method === 'Print' ? 'section print-method' : 'section embroidery';
                     const methodLabel = item.method === 'Embroidery' ? 'Embroidery' : 'Print';
@@ -6704,8 +6711,8 @@
                     `;
                 });
                 
-                // Add digitizing fee if embroidery
-                if (hasEmbroidery) {
+                // Add digitizing fee if current item has embroidery
+                if (currentHasEmbroidery) {
                     costsHtml += `
                         <div class="row detail" style="padding: 10px 0; border-top: 1px dashed #e5e7eb; margin-top: 8px;">
                             <span style="color: #666;">Digitizing Fee (one-time)</span>
@@ -6720,10 +6727,10 @@
             }
         }
         
-        // Update sidebar total
+        // Update sidebar total — current item only
         const sidebarTotalCost = document.getElementById('sidebarTotalCost');
         if (sidebarTotalCost) {
-            sidebarTotalCost.innerHTML = `${formatCurrency(grandTotal)} <span class="vat-suffix">${vatSuffix()}</span>`;
+            sidebarTotalCost.innerHTML = `${formatCurrency(currentItemTotal)} <span class="vat-suffix">${vatSuffix()}</span>`;
         }
         
         // Update basket items list
@@ -6765,10 +6772,10 @@
             el.textContent = vatSuffix();
         });
 
-        // Update action bar total - GRAND TOTAL (basket + current)
+        // Update action bar total — current item only
         const actionBarTotal = document.getElementById('actionBarTotal');
         if (actionBarTotal) {
-            actionBarTotal.textContent = formatCurrency(grandTotal);
+            actionBarTotal.textContent = formatCurrency(currentItemTotal);
         }
         
         // Update action bar qty
