@@ -1498,6 +1498,7 @@
         
         // Action bar
         designNowBtn: document.getElementById('designNowBtn'),
+        addToBasketBtn: document.getElementById('addToBasketBtn'),
         
         // Modals
         sizeGuideBtn: document.getElementById('sizeGuideBtn'),
@@ -7632,15 +7633,28 @@
 
     function updateQuoteButtonState() {
         const quoteBtn = document.getElementById('designNowBtn');
-        if (!quoteBtn) return;
+        const addBtn = document.getElementById('addToBasketBtn');
 
         const hasSizes = state.quantity > 0;
         const hasDesign = hasUploadedDesign();
         
-        if (hasSizes && hasDesign) {
-            quoteBtn.classList.add('enabled');
-        } else {
-            quoteBtn.classList.remove('enabled');
+        if (quoteBtn) {
+            if (hasSizes && hasDesign) {
+                quoteBtn.classList.add('enabled');
+            } else {
+                quoteBtn.classList.remove('enabled');
+            }
+        }
+
+        // Add to Basket: enable as soon as sizes are selected
+        if (addBtn) {
+            if (hasSizes) {
+                addBtn.disabled = false;
+                addBtn.style.opacity = '1';
+            } else {
+                addBtn.disabled = true;
+                addBtn.style.opacity = '0.5';
+            }
         }
     }
 
@@ -7689,11 +7703,20 @@
             closeModal(elements.sizeGuideModal);
         });
 
-        // Design Editor Modal
+        // Design Editor Modal (legacy designNowBtn)
         elements.designNowBtn?.addEventListener('click', () => {
             openModal(elements.designEditorModal);
             updateZoneVisibility();
             setupZoneDeleteButtons();
+        });
+
+        // Add to Basket button
+        elements.addToBasketBtn?.addEventListener('click', () => {
+            addToQuote({ silent: true });
+            // Navigate to basket
+            setTimeout(() => {
+                window.location.href = '../basket.html';
+            }, 300);
         });
 
         elements.closeEditor?.addEventListener('click', () => {
@@ -8138,7 +8161,7 @@
      * Show a brief "Saved ✓" indicator on the action bar button
      */
     function showAutoSaveIndicator() {
-        const btn = document.getElementById('designNowBtn');
+        const btn = document.getElementById('addToBasketBtn') || document.getElementById('designNowBtn');
         if (!btn) return;
 
         const originalHTML = btn.innerHTML;
