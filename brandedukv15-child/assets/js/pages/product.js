@@ -2448,7 +2448,7 @@ if (popupAddLogoBtn) {
             sessionStorage.setItem('selectedColorName', item.color);
         }
         // Navigate to customize page
-        const isMobile = window.innerWidth < 768;
+        const isMobile = window.innerWidth < 1024;
         window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
     };
 }
