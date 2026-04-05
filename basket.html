@@ -1717,6 +1717,176 @@
             border: none;
         }
 
+        /* =========================================
+           Quote Request Popup
+           ========================================= */
+        .quote-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        .quote-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .quote-popup {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .quote-popup-overlay.active .quote-popup {
+            transform: translateY(0) scale(1);
+        }
+        .quote-popup-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #64748b;
+            padding: 4px;
+            transition: color 0.2s ease;
+        }
+        .quote-popup-close:hover {
+            color: #1e293b;
+        }
+        .quote-popup-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin: 0 0 8px 0;
+        }
+        .quote-popup-subtitle {
+            font-size: 0.95rem;
+            color: #64748b;
+            text-align: center;
+            margin: 0 0 28px 0;
+            line-height: 1.5;
+        }
+        .quote-popup-form .form-group {
+            margin-bottom: 20px;
+        }
+        .quote-popup-form label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .quote-popup-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #1e293b;
+            background: #fff;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .quote-popup-form input::placeholder {
+            color: #94a3b8;
+        }
+        .quote-popup-form input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        .quote-popup-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .quote-popup-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+        .quote-popup-submit:active {
+            transform: translateY(0);
+        }
+        .quote-popup-submit.submitted {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        .phone-input-wrapper:focus-within {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        .phone-prefix {
+            padding: 14px 12px 14px 16px;
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-right: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .phone-input-wrapper input {
+            flex: 1;
+            border: none;
+            padding: 14px 16px;
+            font-size: 1rem;
+            color: #1e293b;
+            background: transparent;
+            outline: none;
+        }
+        .phone-input-wrapper input::placeholder {
+            color: #94a3b8;
+        }
+        .quote-popup-form input[type="email"].invalid-email {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+        .quote-popup-form input[type="email"].invalid-email:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+        .email-error {
+            display: block;
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
         /* ======================================
            PC DESKTOP: Two-column layout
            ====================================== */
@@ -2177,6 +2347,41 @@
                 </svg>
             </button>
             <iframe id="customizePopupIframe" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- Quote Request Popup -->
+    <div class="quote-popup-overlay" id="quotePopupOverlay">
+        <div class="quote-popup">
+            <button class="quote-popup-close" id="closeQuotePopup">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <h2 class="quote-popup-title">Request Your Quote</h2>
+            <p class="quote-popup-subtitle">Enter your details and we'll send you a personalised quote</p>
+            
+            <form id="quoteRequestForm" class="quote-popup-form">
+                <div class="form-group">
+                    <label for="quoteName">Full Name</label>
+                    <input type="text" id="quoteName" name="name" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="quotePhone">Phone Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+44</span>
+                        <input type="tel" id="quotePhone" name="phone" placeholder="7700 900000" pattern="[0-9\s]{10,11}" inputmode="numeric" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="quoteEmail">E-mail</label>
+                    <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
+                </div>
+                <button type="submit" class="quote-popup-submit" id="quotePopupSubmitBtn">
+                    Submit Quote Request
+                </button>
+            </form>
         </div>
     </div>
 
@@ -2958,7 +3163,7 @@
                 });
             }
             
-            // Request quote button
+            // Request quote button — open popup instead of redirecting
             const quoteBtn = document.getElementById('requestQuoteBtn');
             if (quoteBtn) {
                 quoteBtn.addEventListener('click', () => {
@@ -2968,11 +3173,290 @@
                         return;
                     }
                     
-                    // Save order notes before navigating
+                    // Save order notes before opening popup
                     saveOrderNotes();
                     
-                    // Navigate to quote form
-                    window.location.href = 'quote-form.html';
+                    // Open quote popup
+                    const popupOverlay = document.getElementById('quotePopupOverlay');
+                    if (popupOverlay) {
+                        popupOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        if (navigator.vibrate) navigator.vibrate(10);
+                    }
+                });
+            }
+
+            // Quote popup: close button
+            const closeQuotePopupBtn = document.getElementById('closeQuotePopup');
+            if (closeQuotePopupBtn) {
+                closeQuotePopupBtn.addEventListener('click', () => {
+                    const popupOverlay = document.getElementById('quotePopupOverlay');
+                    if (popupOverlay) {
+                        popupOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // Quote popup: close on overlay click
+            const quoteOverlay = document.getElementById('quotePopupOverlay');
+            if (quoteOverlay) {
+                quoteOverlay.addEventListener('click', (e) => {
+                    if (e.target === quoteOverlay) {
+                        quoteOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // Quote popup: form submission
+            const quoteForm = document.getElementById('quoteRequestForm');
+            if (quoteForm) {
+                quoteForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const popupSubmitBtn = document.getElementById('quotePopupSubmitBtn');
+                    if (popupSubmitBtn && popupSubmitBtn.classList.contains('submitted')) return;
+
+                    const name = document.getElementById('quoteName').value.trim();
+                    const phone = document.getElementById('quotePhone').value.trim();
+                    const emailValue = document.getElementById('quoteEmail').value.trim();
+
+                    // Validate email
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailValue || !emailRegex.test(emailValue)) {
+                        const emailInput = document.getElementById('quoteEmail');
+                        emailInput.classList.add('invalid-email');
+                        let errorMsg = emailInput.parentElement.querySelector('.email-error');
+                        if (!errorMsg) {
+                            errorMsg = document.createElement('span');
+                            errorMsg.className = 'email-error';
+                            errorMsg.textContent = 'Insert valid email address';
+                            emailInput.parentElement.appendChild(errorMsg);
+                        }
+                        if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                        return;
+                    }
+
+                    if (!name || !phone) {
+                        alert('Please fill in all fields');
+                        return;
+                    }
+
+                    if (popupSubmitBtn) {
+                        popupSubmitBtn.textContent = 'Sending...';
+                        popupSubmitBtn.disabled = true;
+                    }
+
+                    try {
+                        const basket = getBasket();
+                        let totalGarmentCost = 0;
+                        let totalQuantity = 0;
+                        let customizationTotal = 0;
+                        let digitizingFee = 0;
+                        const basketItems = [];
+                        const customizationsList = [];
+
+                        basket.forEach((item) => {
+                            const qtyMap = item.quantities || item.sizes || {};
+                            const itemQuantity = item.totalQty || item.quantity || Object.values(qtyMap).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
+                            const unitPrice = Number(item.unitPrice) || Number(item.price) || 0;
+                            const itemTotal = unitPrice * itemQuantity;
+                            totalGarmentCost += itemTotal;
+                            totalQuantity += itemQuantity;
+
+                            const sizesSummary = Object.entries(qtyMap)
+                                .filter(([, qty]) => Number(qty) > 0)
+                                .map(([size, qty]) => `${size}: ${qty}`)
+                                .join(', ');
+
+                            const itemNote = item.note || '';
+
+                            basketItems.push({
+                                name: item.productName || item.name || 'Product',
+                                code: item.productCode || item.code || '',
+                                color: item.color || '',
+                                quantity: itemQuantity,
+                                sizesSummary: sizesSummary || 'N/A',
+                                unitPrice: unitPrice,
+                                itemTotal: itemTotal,
+                                image: item.image || item.colorImage || '',
+                                note: itemNote
+                            });
+
+                            // Process customizations from item.positions
+                            if (item.positions && typeof item.positions === 'object') {
+                                Object.entries(item.positions).forEach(([pos, posData]) => {
+                                    if (!posData) return;
+                                    const method = (posData.method || 'embroidery').toLowerCase();
+                                    const uPrice = Number(posData.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                    const qty = itemQuantity;
+                                    const lineTotal = Number(posData.totalPrice) || (uPrice * qty);
+                                    customizationTotal += lineTotal;
+                                    const hasLogo = !!(posData.logo);
+                                    if (hasLogo && method === 'embroidery') digitizingFee = 25.00;
+                                    customizationsList.push({
+                                        position: posData.name || pos,
+                                        method: method === 'print' ? 'Print' : 'Embroidery',
+                                        type: hasLogo ? 'logo' : 'text',
+                                        hasLogo: hasLogo,
+                                        unitPrice: uPrice,
+                                        lineTotal: lineTotal,
+                                        quantity: qty
+                                    });
+                                });
+                            }
+                            if (Array.isArray(item.customizations)) {
+                                item.customizations.forEach(c => {
+                                    const method = (c.method || 'embroidery').toLowerCase();
+                                    const uPrice = Number(c.unitPrice) || (method === 'embroidery' ? 5.00 : 3.50);
+                                    const qty = Number(c.qty) || Number(c.quantity) || itemQuantity;
+                                    const lineTotal = Number(c.total) || Number(c.lineTotal) || (uPrice * qty);
+                                    customizationTotal += lineTotal;
+                                    customizationsList.push({
+                                        position: c.position || '',
+                                        method: method === 'print' ? 'Print' : 'Embroidery',
+                                        type: c.type || 'logo',
+                                        hasLogo: !!c.hasLogo,
+                                        unitPrice: uPrice,
+                                        lineTotal: lineTotal,
+                                        quantity: qty
+                                    });
+                                });
+                            }
+                        });
+
+                        const isVatIncluded = includeVAT;
+                        const vatRate = 0.20;
+                        const totalCostExVat = totalGarmentCost + customizationTotal + digitizingFee;
+                        const vatAmount = totalCostExVat * vatRate;
+                        const totalCostIncVat = totalCostExVat + vatAmount;
+
+                        // Collect order notes
+                        const orderNotes = [];
+                        document.querySelectorAll('.order-note-input').forEach(textarea => {
+                            const noteVal = textarea.value.trim();
+                            if (noteVal) {
+                                const idx = textarea.closest('[data-item-index]')?.dataset.itemIndex;
+                                const item = basket[Number(idx)];
+                                const label = item ? `${item.productName || item.name} (${item.color || ''})` : 'Item';
+                                orderNotes.push(`${label}: ${noteVal}`);
+                            }
+                        });
+
+                        const quoteData = {
+                            customer: {
+                                fullName: name,
+                                phone: phone,
+                                email: emailValue
+                            },
+                            summary: {
+                                totalQuantity: totalQuantity,
+                                totalItems: basket.length,
+                                garmentCost: totalGarmentCost,
+                                customizationCost: customizationTotal,
+                                digitizingFee: digitizingFee,
+                                subtotal: totalCostExVat,
+                                vatRate: vatRate,
+                                vatAmount: vatAmount,
+                                totalExVat: totalCostExVat,
+                                totalIncVat: totalCostIncVat,
+                                vatMode: isVatIncluded ? 'inc' : 'ex',
+                                displayTotal: isVatIncluded ? totalCostIncVat : totalCostExVat
+                            },
+                            basket: basketItems,
+                            customizations: customizationsList,
+                            notes: orderNotes,
+                            timestamp: new Date().toISOString()
+                        };
+
+                        // Submit via API with fallbacks
+                        let result = { success: false };
+                        const API_BASE_URL = 'https://api.brandeduk.com';
+
+                        try {
+                            if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
+                                result = await window.BrandedAPI.submitQuote(quoteData);
+                            } else {
+                                const response = await fetch(`${API_BASE_URL}/api/quotes`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(quoteData)
+                                });
+                                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                                result = await response.json();
+                            }
+                        } catch (apiError) {
+                            console.error('Quote API error, trying PHP fallback:', apiError);
+                            try {
+                                const phpResponse = await fetch('brandedukv15-child/includes/send-quote.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(quoteData)
+                                });
+                                if (phpResponse.ok) {
+                                    const phpResult = await phpResponse.json();
+                                    if (phpResult.success) result = phpResult;
+                                    else throw new Error(phpResult.message || 'PHP fallback failed');
+                                } else {
+                                    throw new Error(`PHP fallback error: ${phpResponse.status}`);
+                                }
+                            } catch (phpError) {
+                                console.error('PHP fallback also failed:', phpError);
+                                alert('Failed to send quote. Please contact info@brandeduk.com directly.');
+                                if (popupSubmitBtn) {
+                                    popupSubmitBtn.textContent = 'Submit Quote Request';
+                                    popupSubmitBtn.disabled = false;
+                                }
+                                return;
+                            }
+                        }
+
+                        if (result.success) {
+                            if (popupSubmitBtn) {
+                                popupSubmitBtn.classList.add('submitted');
+                                popupSubmitBtn.textContent = 'Quote Submitted! ✓';
+                            }
+                            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+
+                            setTimeout(() => {
+                                localStorage.removeItem('quoteBasket');
+                                localStorage.setItem('quoteBasket', '[]');
+                                sessionStorage.removeItem('brandeduk-customize-state');
+                                sessionStorage.removeItem('quoteFormData');
+                                sessionStorage.removeItem('selectedProduct');
+                                sessionStorage.removeItem('selectedProductData');
+                                sessionStorage.removeItem('customizingProduct');
+                                sessionStorage.removeItem('selectedPositions');
+                                sessionStorage.removeItem('positionCustomizations');
+
+                                const qOverlay = document.getElementById('quotePopupOverlay');
+                                if (qOverlay) {
+                                    qOverlay.classList.remove('active');
+                                    document.body.style.overflow = '';
+                                }
+                                window.location.replace('index.html');
+                            }, 1500);
+                        } else {
+                            throw new Error(result.message || 'Unknown error');
+                        }
+                    } catch (error) {
+                        console.error('Quote submission error:', error);
+                        alert('Failed to send quote. Please try again or contact info@brandeduk.com directly.');
+                        if (popupSubmitBtn) {
+                            popupSubmitBtn.textContent = 'Submit Quote Request';
+                            popupSubmitBtn.disabled = false;
+                        }
+                    }
+                });
+            }
+
+            // Remove invalid-email class on input
+            const quoteEmailInput = document.getElementById('quoteEmail');
+            if (quoteEmailInput) {
+                quoteEmailInput.addEventListener('input', () => {
+                    quoteEmailInput.classList.remove('invalid-email');
+                    const errMsg = quoteEmailInput.parentElement.querySelector('.email-error');
+                    if (errMsg) errMsg.remove();
                 });
             }
             
