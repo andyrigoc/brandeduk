@@ -148,13 +148,15 @@ html, body {
 
 .product-main .main-img {
     width: 100%;
-    max-width: 560px;
+    max-width: 380px;
     border-radius: 14px;
     display: block;
     margin-top: 0;
     margin-left: 0;
     position: relative;
     z-index: 1;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 .description-box {

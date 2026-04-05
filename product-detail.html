@@ -590,7 +590,9 @@
         .image-lightbox-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -606,15 +608,15 @@
         .image-lightbox-container {
             position: relative;
             background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 600px;
-            max-height: 85vh;
-            width: 90%;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 92vw;
+            max-height: 92vh;
+            width: 900px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
             transform: scale(0.9);
             transition: transform 0.3s ease;
         }
@@ -623,11 +625,11 @@
         }
         .image-lightbox-close {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            background: #f3f4f6;
+            top: 14px;
+            right: 14px;
+            width: 40px;
+            height: 40px;
+            background: rgba(107, 114, 128, 0.75);
             border: none;
             border-radius: 50%;
             cursor: pointer;
@@ -638,32 +640,23 @@
             z-index: 10;
         }
         .image-lightbox-close:hover {
-            background: #e5e7eb;
+            background: rgba(107, 114, 128, 0.95);
             transform: scale(1.1);
         }
         .image-lightbox-close svg {
-            stroke: #6b7280;
+            stroke: #fff;
         }
         .image-lightbox-img {
             max-width: 100%;
-            max-height: 60vh;
+            max-height: 82vh;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 10px;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            filter: contrast(1.03) saturate(1.05);
         }
         .image-lightbox-close-btn {
-            margin-top: 16px;
-            padding: 10px 32px;
-            background: #0ea5e9;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .image-lightbox-close-btn:hover {
-            background: #0284c7;
+            display: none;
         }
         /* Zoom button on main image */
         .product-main {
@@ -701,11 +694,12 @@
         /* Mobile/Tablet responsive */
         @media (max-width: 1023px) {
             .image-lightbox-container {
-                max-width: 90%;
-                padding: 16px;
+                max-width: 96vw;
+                width: 96vw;
+                padding: 12px;
             }
             .image-lightbox-img {
-                max-height: 55vh;
+                max-height: 80vh;
             }
             .zoom-btn {
                 width: 40px;
