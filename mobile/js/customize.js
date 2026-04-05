@@ -1628,6 +1628,65 @@
         }
     }
 
+    // === Positions-Only Popup Mode ===
+    // When opened from basket "Add Logo" button, hide everything except position cards
+    function applyPositionsOnlyMode() {
+        console.log('🎯 Positions-Only mode activated');
+        const style = document.createElement('style');
+        style.textContent = `
+            /* Hide everything except positions section */
+            .mobile-header, .tablet-top-bar, .site-breadcrumbs,
+            .product-gallery, .product-info, .customize-section:not(.customization-options),
+            .order-summary-section, .action-bar, .bottom-nav,
+            .pricing-section, #sizeQtySection,
+            footer, .mobile-footer { display: none !important; }
+            /* Style the positions section for popup */
+            .customize-main { padding: 0 !important; margin: 0 !important; }
+            body { background: #fff !important; overflow-x: hidden !important; }
+            .customization-options { margin-top: 0 !important; padding-top: 8px !important; }
+            /* "Customize: Logo Positions" title */
+            h2.section-title { margin: 12px 16px 4px !important; }
+            /* Done button */
+            .positions-done-bar {
+                position: sticky; bottom: 0; left: 0; right: 0;
+                padding: 12px 16px; background: #fff;
+                border-top: 1px solid #e5e7eb; z-index: 100;
+            }
+            .positions-done-btn {
+                width: 100%; padding: 14px; border-radius: 12px;
+                font-size: 1rem; font-weight: 700; cursor: pointer;
+                border: none; color: #fff;
+                background: linear-gradient(135deg, #7c3aed, #6d28d9);
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add "Done" button at the bottom of the page
+        const doneBar = document.createElement('div');
+        doneBar.className = 'positions-done-bar';
+        doneBar.innerHTML = `<button type="button" class="positions-done-btn" id="positionsDoneBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Done
+        </button>`;
+        document.body.appendChild(doneBar);
+
+        // Done button handler: save to basket and close popup
+        doneBar.querySelector('#positionsDoneBtn').addEventListener('click', () => {
+            // Save current customization to the basket item
+            addToQuote({ silent: true });
+            setTimeout(() => {
+                if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
+                    window.parent.closeCustomizePopup();
+                } else {
+                    window.location.href = '../basket.html';
+                }
+            }, 300);
+        });
+    }
+
     // === Initialize ===
     async function init() {
         // Guard: Only run on customize pages (not homepage)
@@ -1639,6 +1698,13 @@
         if (!isCustomizePage) {
             console.log('?? Customize.js: Not on customize page, skipping init');
             return;
+        }
+
+        // Detect positionsOnly mode (opened from basket "Add Logo" popup)
+        const _urlParams = new URLSearchParams(window.location.search);
+        const isPositionsOnly = _urlParams.get('positionsOnly') === '1';
+        if (isPositionsOnly) {
+            applyPositionsOnlyMode();
         }
         
         console.log('?? INIT STARTED');

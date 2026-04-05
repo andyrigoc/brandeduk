@@ -3014,7 +3014,7 @@
 
             // Open customize page in popup iframe instead of redirect
             const isMobile = window.innerWidth < 1024;
-            const customizeUrl = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+            const customizeUrl = isMobile ? 'mobile/customize-mobile.html?positionsOnly=1' : 'customize.html?positionsOnly=1';
             openCustomizePopup(customizeUrl);
         }
 
