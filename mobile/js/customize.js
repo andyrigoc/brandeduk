@@ -567,6 +567,34 @@
         
         console.log('✅ Position cards updated for productType:', productType);
         
+        // === Reorder position cards based on product type ===
+        const normalizedForOrder = normalizeProductTypeForFolder(productType);
+        const HEADWEAR_TYPES = ['Caps', 'Beanies'];
+        const APRON_TYPES = ['Aprons'];
+        
+        let positionOrder;
+        if (HEADWEAR_TYPES.includes(normalizedForOrder)) {
+            // Caps / Beanies: front center first
+            positionOrder = ['small-centre-front', 'large-front-center', 'left-breast', 'right-breast', 'left-arm', 'right-arm', 'large-back'];
+        } else if (APRON_TYPES.includes(normalizedForOrder)) {
+            // Aprons: center front first
+            positionOrder = ['small-centre-front', 'left-breast', 'right-breast', 'large-front-center', 'left-arm', 'right-arm', 'large-back'];
+        } else {
+            // All clothing: left chest, right chest, left sleeve, right sleeve, back
+            positionOrder = ['left-breast', 'right-breast', 'left-arm', 'right-arm', 'small-centre-front', 'large-front-center', 'large-back'];
+        }
+        
+        positionGrids.forEach(grid => {
+            const cards = Array.from(grid.querySelectorAll('.position-card'));
+            cards.sort((a, b) => {
+                const idxA = positionOrder.indexOf(a.dataset.position);
+                const idxB = positionOrder.indexOf(b.dataset.position);
+                return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+            });
+            cards.forEach(card => grid.appendChild(card));
+        });
+        console.log('🔀 Position cards reordered for:', normalizedForOrder, positionOrder);
+        
         // Hide/show PRINT legend badge based on product type
         const printKeyBadge = document.querySelector('.key-badge.print');
         const embKeyBadge = document.querySelector('.key-badge.embroidery');
