@@ -465,7 +465,7 @@
     --transition: 200ms ease;
     --transition-slow: 300ms ease;
 
-    --header-height: 82px;
+    --header-height: 102px;
     --action-bar-height: 72px;
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
