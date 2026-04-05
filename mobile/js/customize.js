@@ -2811,14 +2811,14 @@
                 return;
             }
 
-            // Default: go to shop
+            // Default: go to shop with bestsellers first
             if (state.quantity > 0) {
                 showToast('Added to basket! Redirecting to shop…');
                 setTimeout(() => {
-                    window.location.href = '../shop.html';
+                    window.location.href = 'shop-mobile.html?bestsellers=1';
                 }, 1200);
             } else {
-                window.location.href = '../shop.html';
+                window.location.href = 'shop-mobile.html?bestsellers=1';
             }
         });
     }

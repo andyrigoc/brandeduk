@@ -220,6 +220,7 @@
         let currentArrayFilters = {};
         let currentFlagFilters = [];
         let totalProducts = 0;
+        let isBestsellerMode = false;
         const LIMIT = 24;
 
         const TOGGLE_FLAG_MAP = {
@@ -737,12 +738,17 @@
             `;
 
             try {
-                const result = await BrandedAPI.getProducts(buildProductsOptions());
+                // In bestseller mode, fetch a larger batch so we can sort client-side
+                const opts = buildProductsOptions();
+                if (isBestsellerMode) {
+                    opts.limit = 100;
+                }
+                const result = await BrandedAPI.getProducts(opts);
 
                 totalProducts = result.total;
 
                 // Update title
-                const baseTitle = CATEGORY_TITLES[currentCategory] || 'Products';
+                const baseTitle = isBestsellerMode ? 'Recommended For You' : (CATEGORY_TITLES[currentCategory] || 'Products');
                 const title = currentColorFilter ? `${baseTitle} (${currentColorFilter.toUpperCase()})` : baseTitle;
                 if (categoryTitle) categoryTitle.textContent = title;
                 if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentCategory);
@@ -765,7 +771,27 @@
                     return;
                 }
 
-                result.items.forEach((product, index) => {
+                // In bestseller mode: sort best sellers & recommended first, then shuffle the rest
+                let items = result.items;
+                if (isBestsellerMode) {
+                    const isFlagged = (p) =>
+                        p.is_best_seller === true || p.is_best_seller === 'true' || p.is_best_seller === 1 ||
+                        p.is_recommended === true || p.is_recommended === 'true' || p.is_recommended === 1;
+
+                    const bestSellers = items.filter(isFlagged);
+                    const others = items.filter(p => !isFlagged(p));
+
+                    // Shuffle the non-bestseller products for variety
+                    for (let i = others.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [others[i], others[j]] = [others[j], others[i]];
+                    }
+
+                    items = [...bestSellers, ...others];
+                    console.log('[MobileShop] Bestseller mode: ' + bestSellers.length + ' featured + ' + others.length + ' others');
+                }
+
+                items.forEach((product, index) => {
                     const card = createProductCard(product, index);
                     card.style.opacity = '0';
                     card.style.transform = 'translateY(15px)';
@@ -779,7 +805,7 @@
                     }, index * 30);
                 });
 
-                console.log('[MobileShop] Loaded', result.items.length, 'products');
+                console.log('[MobileShop] Loaded', items.length, 'products');
 
             } catch (error) {
                 console.error('[MobileShop] Error loading products:', error);
@@ -836,6 +862,7 @@
             currentCategory = urlParams.get('category') || 'all';
             currentSearchQuery = urlParams.get('search') || urlParams.get('q') || '';
             currentColorFilter = urlParams.get('color') || '';
+            isBestsellerMode = urlParams.get('bestsellers') === '1';
 
             applyStoredFiltersIfRequested(urlParams);
 
