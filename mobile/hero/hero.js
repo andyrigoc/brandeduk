@@ -41,7 +41,7 @@
     $el.classList.add('s--active');
     setTimeout(function() {
       window.location.href = 'shop.html?category=' + category;
-    }, 800);
+    }, 1600);
   }
 
   $elsArr.forEach(function($el) {
