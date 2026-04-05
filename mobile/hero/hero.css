@@ -136,7 +136,7 @@
   background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%);
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.6s 0.7s, left 0.7s, width 0.7s, opacity 0.6s 0.7s, z-index 0s 1.3s;
+  transition: transform 0.25s, left 0.25s, width 0.25s, opacity 0.25s, z-index 0s 0.3s;
   will-change: transform, width, opacity;
   cursor: pointer;
 }
@@ -155,7 +155,7 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  transition: transform 1s;
+  transition: transform 0.3s;
 }
 
 .hero-cont.s--inactive .hero-el__inner {
@@ -166,7 +166,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s 0.7s, width 0.6s 0.7s;
+  transition: transform 0.2s, width 0.2s;
   will-change: transform, width;
 }
 
@@ -190,7 +190,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 35% center;
-  transition: transform 1s;
+  transition: transform 0.3s;
   transform: translate3d(0, 0, 0) scale(1);
 }
 
@@ -199,7 +199,7 @@
 }
 
 .hero-el.s--active .hero-el__bg:before {
-  transition: transform 0.8s;
+  transition: transform 0.25s;
 }
 
 .hero-el__bg:after {
@@ -216,7 +216,7 @@
 }
 
 .hero-cont.s--el-active .hero-el__bg:after {
-  transition: opacity 0.5s 1.4s;
+  transition: opacity 0.2s;
   opacity: 0 !important;
 }
 
@@ -231,7 +231,7 @@
   width: 100%;
   height: 100%;
   padding-bottom: 10px;
-  transition: all 0.3s 1.2s;
+  transition: all 0.15s;
 }
 
 .hero-cont.s--inactive .hero-el__preview-cont {
@@ -242,7 +242,7 @@
 .hero-cont.s--el-active .hero-el__preview-cont {
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.5s;
+  transition: all 0.15s;
 }
 
 .hero-el__heading {
@@ -277,7 +277,7 @@
   z-index: 2;
   opacity: 1;
   pointer-events: auto;
-  transition: all 0.5s 1.4s;
+  transition: all 0.15s 0.1s;
 }
 
 /* First panel (CUSTOM APRON) shift right when active */
@@ -366,7 +366,7 @@
   height: 12px;
   opacity: 0;
   pointer-events: none;
-  transition: all 0s 0.45s;
+  transition: all 0s 0.1s;
   cursor: pointer;
 }
 
@@ -374,7 +374,7 @@
   z-index: 5;
   opacity: 1;
   pointer-events: auto;
-  transition: all 0s 1.4s;
+  transition: all 0s 0.15s;
 }
 
 .hero-el__close-btn:before,
@@ -401,7 +401,7 @@
 }
 
 .hero-el.s--active .hero-el__close-btn:before {
-  transition: all 0.3s 1.4s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+  transition: all 0.15s 0.15s cubic-bezier(0.72, 0.09, 0.32, 1.57);
   transform: rotate(45deg) translateX(0);
 }
 
@@ -410,7 +410,7 @@
 }
 
 .hero-el.s--active .hero-el__close-btn:after {
-  transition: all 0.3s 1.55s cubic-bezier(0.72, 0.09, 0.32, 1.57);
+  transition: all 0.15s 0.2s cubic-bezier(0.72, 0.09, 0.32, 1.57);
   transform: rotate(-45deg) translateX(0);
 }
 

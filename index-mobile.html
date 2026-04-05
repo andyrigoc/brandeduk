@@ -2433,7 +2433,7 @@
 
         hero.classList.add('hero-auto-scroll');
 
-        var pausedUntil = 0;
+        var pausedUntil = Date.now() + 3000;
         var touching = false;
         function pauseFor(ms) {
             pausedUntil = Math.max(pausedUntil, Date.now() + (ms || 2500));
@@ -2519,8 +2519,22 @@
         // Also pause briefly on scroll/wheel interactions.
         hero.addEventListener('wheel', function () { pauseFor(2000); }, { passive: true });
 
-        var speedPxPerSec = 28;
+        var speedPxPerSec = 7;
         var lastTs = null;
+        var scrollPos = 0;
+
+        // Calculate actual scrollable width from absolute-positioned children
+        function getMaxScroll() {
+            var inner = hero.querySelector('.hero-cont__inner');
+            if (!inner) return 0;
+            var children = inner.children;
+            var maxRight = 0;
+            for (var i = 0; i < children.length; i++) {
+                var r = children[i].offsetLeft + children[i].offsetWidth;
+                if (r > maxRight) maxRight = r;
+            }
+            return Math.max(0, maxRight - hero.clientWidth);
+        }
 
         var resetting = false;
         function smoothResetToStart() {
@@ -2529,7 +2543,7 @@
             hero.classList.add('hero-scroll-resetting');
             setTimeout(function () {
                 hero.scrollLeft = 0;
-                // Allow a frame for layout, then fade back in.
+                scrollPos = 0;
                 window.requestAnimationFrame(function () {
                     hero.classList.remove('hero-scroll-resetting');
                     resetting = false;
@@ -2542,13 +2556,13 @@
             var dt = (ts - lastTs) / 1000;
             lastTs = ts;
 
-            // Pause while a panel is expanded.
             var paused = touching || Date.now() < pausedUntil;
             if (!paused && !hero.classList.contains('s--el-active')) {
-                var max = hero.scrollWidth - hero.clientWidth;
+                var max = getMaxScroll();
                 if (max > 0) {
-                    hero.scrollLeft += speedPxPerSec * dt;
-                    if (hero.scrollLeft >= max - 1) {
+                    scrollPos += speedPxPerSec * dt;
+                    hero.scrollLeft = scrollPos;
+                    if (scrollPos >= max - 1) {
                         smoothResetToStart();
                     }
                 }

@@ -217,151 +217,399 @@
             text-decoration: none;
         }
         
-        /* Order Summary Section - PC Style */
-        .basket-order-summary {
-            background: #fff;
-            border-radius: 16px;
-            border: 2px solid #7c3aed;
-            overflow: hidden;
-            margin-bottom: 20px;
+        /* ======================================
+           MOBILE/TABLET: Summary-style layout 
+           (matches customize page summary)
+           ====================================== */
+
+        /* Basket page layout wrapper */
+        .basket-layout {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Anchor offset so Order Summary isn't hidden under sticky headers */
-        #orderSummary {
-            scroll-margin-top: 140px;
-        }
-        
-        .basket-order-summary .summary-header {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            color: #fff;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .basket-order-summary .summary-header h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .basket-order-summary .summary-header .item-count {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-        
-        /* Basket Items List */
-        .basket-items {
+        /* Cost Breakdown Box (mobile/tablet) */
+        .basket-cost-breakdown {
+            background: #f9fafb;
+            border: 2px solid #7c3aed;
+            border-radius: 12px;
             padding: 16px;
-        }
-        
-        .basket-item-card {
-            display: block;
-            padding: 20px;
-            background: #fff;
-            border-bottom: 1px solid #e5e7eb;
-            margin-bottom: 0;
+            padding-top: 56px;
+            margin-bottom: 16px;
             position: relative;
         }
-        
-        .basket-item-card:last-child {
-            border-bottom: none;
+
+        .basket-cost-breakdown .cost-breakdown-title {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+            margin: 0;
         }
-        
-        .basket-item-main {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-        
-        .basket-item-image {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-            flex-shrink: 0;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .basket-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .basket-item-content {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .basket-item-info {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .basket-item-info h4 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-            margin: 0 0 4px;
-        }
-        
-        .basket-item-meta {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #6b7280;
+
+        /* Garment Cost - Orange gradient card */
+        .basket-cost-breakdown .garment-cost-card {
+            background: linear-gradient(90deg, #E8913A, #F2A64B);
+            border-radius: 12px;
+            padding: 14px 16px;
             margin-bottom: 10px;
         }
-        
-        .basket-item-meta .item-code {
-            font-weight: 500;
+
+        .basket-cost-breakdown .garment-cost-card .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .basket-item-meta .item-color-size {
+
+        .basket-cost-breakdown .garment-cost-card .cost-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .basket-cost-breakdown .garment-cost-card .cost-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .basket-cost-breakdown .garment-cost-card .cost-detail {
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .basket-cost-breakdown .garment-cost-card .vat-suffix {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Customization cost cards inside breakdown */
+        .basket-cost-breakdown .section.embroidery {
+            background: linear-gradient(90deg, #4566e9, #3a77de);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .basket-cost-breakdown .section.print-method {
+            background: linear-gradient(145deg, #f5c542, #e6b229);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .basket-cost-breakdown .section .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .basket-cost-breakdown .section .row.detail {
+            margin-top: 6px;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .basket-cost-breakdown .section .label,
+        .basket-cost-breakdown .section .value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .basket-cost-breakdown .section .white {
+            color: #fff;
+        }
+
+        /* No customizations text */
+        .basket-cost-breakdown .no-customizations {
+            color: #9ca3af;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        /* Total Cost - Pink gradient card */
+        .basket-cost-breakdown .total-cost-card {
+            background: linear-gradient(90deg, #E8A0BF, #F2B8D0);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 14px;
+        }
+
+        .basket-cost-breakdown .total-cost-card .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .basket-cost-breakdown .total-cost-card .cost-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .basket-cost-breakdown .total-cost-card .cost-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Summary-style item cards (mobile/tablet) */
+        .basket-items {
+            padding: 0;
+        }
+
+        .summary-item-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .summary-item-top {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .summary-item-checkbox {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            padding: 2px 0;
+        }
+
+        .summary-item-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #ef4444;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .summary-item-image {
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f7fb;
+        }
+
+        .summary-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .summary-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .summary-item-info h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 2px;
+            line-height: 1.3;
+        }
+
+        .summary-item-info p {
+            margin: 0;
+        }
+
+        .summary-logo-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .summary-item-logo-thumb {
+            width: 73px;
+            height: 73px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .summary-item-logo-thumb img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .summary-customize-badge {
+            cursor: pointer;
+            font-size: 13px;
+            color: #6b7280;
+            padding: 4px 13px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            transition: all 0.15s ease;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .summary-customize-badge:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        .summary-item-remove {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            padding: 0;
+        }
+
+        .summary-item-remove:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* Sizes with +/- controls */
+        .summary-item-sizes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .summary-size-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        .summary-size-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            min-width: 24px;
+        }
+
+        .summary-qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #e5e7eb;
+            border-radius: 16px;
+            padding: 2px 6px;
+        }
+
+        .summary-qty-btn {
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: transparent;
+            color: #374151;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .summary-qty-btn:hover {
+            background: #d1d5db;
+        }
+
+        .summary-qty-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2937;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        /* Price info under item (mobile) */
+        .summary-item-pricing {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .summary-item-pricing .unit-price {
             color: #6b7280;
         }
-        
-        .basket-item-meta .remove-link {
+
+        .summary-item-pricing .item-total {
+            font-weight: 700;
+            color: #ea580c;
+            margin-left: auto;
+        }
+
+        /* Remove link in summary card */
+        .summary-remove-link {
             color: #22c55e;
             font-weight: 600;
             cursor: pointer;
             background: none;
             border: none;
             padding: 0;
-            font-size: 13px;
+            font-size: 12px;
         }
-        
-        .basket-item-meta .remove-link:hover {
+
+        .summary-remove-link:hover {
             text-decoration: underline;
         }
-        
-        .basket-item-info .item-color {
-            font-size: 13px;
-            color: #6b7280;
-            margin: 0 0 10px;
+
+        /* ======================================
+           HIDDEN LEGACY STYLES (kept for compat)
+           ====================================== */
+        .basket-order-summary {
+            display: none;
         }
-        
-        .item-sizes {
-            display: none; /* Hidden - qty shown in right panel */
+
+        .basket-item-card,
+        .basket-item-main,
+        .basket-item-image,
+        .basket-item-content,
+        .basket-item-info,
+        .basket-item-meta,
+        .basket-item-right,
+        .basket-item-price-block,
+        .basket-item-total-row,
+        .basket-item-remove,
+        .basket-item-total,
+        .basket-item-unit-price,
+        .customization-breakdown,
+        .basket-totals {
+            display: none;
         }
-        
-        /* Right side: Qty controls + Pricing */
-        .basket-item-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            margin-left: auto;
-            min-width: 120px;
-        }
-        
+
         .basket-qty-controls {
             display: inline-flex;
             align-items: center;
@@ -370,7 +618,7 @@
             border-radius: 6px;
             overflow: hidden;
         }
-        
+
         .basket-qty-controls .qty-btn {
             width: 32px;
             height: 32px;
@@ -386,120 +634,45 @@
             padding: 0;
             line-height: 1;
         }
-        
-        .basket-qty-controls .qty-btn:hover {
-            background: #e5e7eb;
+
+        .item-sizes {
+            display: none;
         }
-        
-        .basket-qty-controls .qty-btn:active {
-            background: #d1d5db;
-        }
-        
-        .basket-qty-controls .qty-value {
-            min-width: 40px;
-            padding: 0 4px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 600;
-            color: #1f2937;
-            background: #fff;
-            border-left: 1px solid #e5e7eb;
-            border-right: 1px solid #e5e7eb;
-            height: 32px;
-            line-height: 32px;
-        }
-        
-        .basket-item-price-block {
-            text-align: right;
-        }
-        
-        .basket-item-unit-price-val {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        
-        .basket-item-unit-price-label {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        .basket-item-total-row {
-            text-align: right;
-            margin-top: 8px;
-        }
-        
-        .basket-item-total-label {
-            font-size: 13px;
-            color: #6b7280;
-        }
-        
-        .basket-item-total-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ea580c;
-        }
-        
-        .basket-item-remove {
-            display: none; /* Hidden - using text link instead */
-        }
-        
-        /* Customization Cards - Colored */
-        .customization-breakdown {
-            padding: 0 16px 16px;
-        }
-        
-        .customization-breakdown h4 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7280;
-            margin: 0 0 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .section.embroidery {
-            background: linear-gradient(90deg, #4566e9, #3a77de);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-        }
-        
-        .section.print-method {
-            background: linear-gradient(145deg, #f5c542, #e6b229);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-        }
-        
-        .section .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section .row.detail {
-            margin-top: 6px;
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .section .label,
-        .section .value {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .section .white {
+
+        /* Add logo button in summary card */
+        .basket-add-logo-btn {
+            margin-top: 10px;
+            display: inline-flex;
+            padding: 10px 20px;
+            background: #1f2937;
             color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
         }
-        
+
+        .basket-add-logo-btn:hover {
+            background: #374151;
+        }
+
+        /* VAT Toggle */
+        .vat-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
         /* Total Row */
-        .basket-totals {
-            padding: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
-        
         .total-row {
             display: flex;
             justify-content: space-between;
@@ -1515,6 +1688,185 @@
             height: 100%;
             border: none;
         }
+
+        /* ======================================
+           PC DESKTOP: Two-column layout
+           ====================================== */
+        @media (min-width: 1024px) {
+            .basket-layout {
+                display: flex;
+                gap: 32px;
+                align-items: flex-start;
+            }
+
+            /* Left column: items list */
+            .basket-items-column {
+                flex: 1;
+                min-width: 0;
+            }
+
+            /* Right column: order summary sidebar */
+            .basket-sidebar {
+                width: 340px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 80px;
+            }
+
+            /* Hide mobile cost breakdown on PC */
+            .basket-cost-breakdown {
+                display: none;
+            }
+
+            /* PC sidebar styles */
+            .basket-sidebar-box {
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 20px;
+            }
+
+            .basket-sidebar-box h3 {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0 0 16px;
+            }
+
+            .basket-sidebar-box .sidebar-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 6px 0;
+                font-size: 14px;
+                color: #6b7280;
+            }
+
+            .basket-sidebar-box .sidebar-row .sidebar-value {
+                font-weight: 600;
+                color: #1f2937;
+            }
+
+            .basket-sidebar-box .sidebar-grand-total {
+                display: flex;
+                justify-content: space-between;
+                padding: 12px 0 0;
+                margin-top: 8px;
+                border-top: 2px solid #e5e7eb;
+                font-size: 16px;
+                font-weight: 700;
+                color: #1f2937;
+            }
+
+            .basket-sidebar-box .sidebar-grand-total .sidebar-value {
+                font-size: 22px;
+                font-weight: 800;
+                color: #ef4444;
+            }
+
+            .basket-sidebar-box .sidebar-note {
+                margin-top: 16px;
+                padding: 12px;
+                background: #f0fdf4;
+                border-radius: 8px;
+                font-size: 13px;
+                color: #374151;
+                line-height: 1.4;
+            }
+
+            .basket-sidebar-box .sidebar-note strong {
+                color: #059669;
+            }
+
+            .basket-sidebar-box .sidebar-checkout-btn {
+                width: 100%;
+                margin-top: 16px;
+                padding: 14px;
+                background: #ea580c;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+
+            .basket-sidebar-box .sidebar-checkout-btn:hover {
+                background: #dc2626;
+            }
+
+            .basket-sidebar-box .sidebar-share-btn {
+                width: 100%;
+                margin-top: 8px;
+                padding: 12px;
+                background: #fff;
+                color: #374151;
+                border: 1px solid #e5e7eb;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            /* PC trust badges */
+            .basket-trust-badges {
+                margin-top: 20px;
+                font-size: 13px;
+                color: #374151;
+            }
+
+            .basket-trust-badges .trust-badge {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 0;
+                border-bottom: 1px solid #f3f4f6;
+            }
+
+            .basket-trust-badges .trust-badge:last-child {
+                border-bottom: none;
+            }
+
+            /* PC item cards - clean white style */
+            .summary-item-card {
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 16px;
+                box-shadow: none;
+            }
+
+            .summary-item-image {
+                width: 70px;
+                height: 70px;
+            }
+
+            .summary-item-info h4 {
+                font-size: 15px;
+            }
+
+            .summary-item-logo-thumb {
+                display: none;
+            }
+
+            /* Hide mobile action bar on PC */
+            .basket-action-bar {
+                display: none !important;
+            }
+
+            /* Show PC sidebar, hide on mobile */
+            .basket-sidebar {
+                display: block;
+            }
+        }
+
+        /* Hide PC sidebar on mobile/tablet */
+        @media (max-width: 1023px) {
+            .basket-sidebar {
+                display: none;
+            }
+        }
+
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -1658,93 +2010,118 @@
                 Browse Products
             </a>
         </div>
-        
-        <!-- Order Summary (visible when items exist) -->
-        <div id="orderSummary"></div>
-        <div class="basket-order-summary" id="basketOrderSummary">
-            <div class="summary-header">
-                <h3>YOUR ORDER SUMMARY</h3>
-                <span class="item-count" id="basketItemCount">0 items</span>
-            </div>
-            
-            <!-- VAT Toggle -->
-            <div class="vat-toggle-row">
-                <span>Show prices including VAT</span>
-                <label class="vat-toggle-switch">
-                    <input type="checkbox" id="vatToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <!-- Select All Row -->
-            <div class="select-all-row">
-                <label>
-                    <input type="checkbox" id="selectAllItems">
-                    <span class="checkmark">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <path d="M20 6L9 17l-5-5"/>
+
+        <!-- Basket Content (visible when items exist) -->
+        <div id="basketOrderSummary" class="basket-layout">
+            <!-- LEFT COLUMN: Items -->
+            <div class="basket-items-column">
+                <h2 style="font-size:20px; font-weight:700; margin:0 0 16px; color:#1f2937;">My Basket</h2>
+
+                <!-- VAT Toggle -->
+                <div class="vat-toggle-row">
+                    <span>Show prices including VAT</span>
+                    <label class="vat-toggle-switch">
+                        <input type="checkbox" id="vatToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Cost Breakdown (mobile/tablet only, hidden on PC) -->
+                <div class="basket-cost-breakdown" id="costBreakdownBox">
+                    <h4 class="cost-breakdown-title">Cost Breakdown</h4>
+
+                    <!-- Garment Cost Card (orange) -->
+                    <div class="garment-cost-card">
+                        <div class="cost-row">
+                            <span class="cost-label">Garment Cost <span class="vat-suffix">ex vat</span></span>
+                            <span class="cost-value" id="cbGarmentCost">£0.00</span>
+                        </div>
+                        <div class="cost-detail" id="cbGarmentDetail"></div>
+                    </div>
+
+                    <!-- Customization Costs (dynamically populated) -->
+                    <div id="cbCustomizationCards"></div>
+
+                    <!-- No customizations placeholder -->
+                    <div class="no-customizations" id="cbNoCustomizations">No customizations selected</div>
+
+                    <!-- Total Cost Card (pink) -->
+                    <div class="total-cost-card">
+                        <div class="cost-row">
+                            <strong class="cost-label">Total Cost</strong>
+                            <strong class="cost-value" id="cbTotalCost">£0.00 <span class="vat-suffix">ex vat</span></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item Cards -->
+                <div class="basket-items" id="basketItemsList">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Shipping Note -->
+                <p style="color: #6b7280; text-align: center; font-size: 13px; margin: 16px 0;">
+                    Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.
+                </p>
+
+                <!-- Continue Shopping -->
+                <a href="index.html" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border:1px solid #e5e7eb; border-radius:12px; color:#7c3aed; font-weight:600; font-size:15px; text-decoration:none; margin-bottom:16px;">
+                    ← Continue Shopping
+                </a>
+
+                <!-- Order Notes -->
+                <div class="order-notes-section" style="padding:0; border:none;">
+                    <h4>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
                         </svg>
-                    </span>
-                    Select All Items
-                </label>
-            </div>
-            
-            <!-- Basket Items -->
-            <div class="basket-items" id="basketItemsList">
-                <!-- Items will be populated by JS -->
-            </div>
-            
-            <!-- Customization Breakdown -->
-            <div class="customization-breakdown" id="customizationBreakdown">
-                <h4>Customization Costs</h4>
-                <div id="customizationCardsList">
-                    <!-- Colored cards will be populated by JS -->
-                </div>
-            </div>
-            
-            <!-- Totals -->
-            <div class="basket-totals">
-                <div class="total-row product-costs">
-                    <span class="label">Product Costs</span>
-                    <span class="value" id="garmentsSubtotal">£0.00</span>
-                </div>
-                <div class="total-row logo-costs">
-                    <span class="label">Costs To Add Logo</span>
-                    <span class="value" id="customSubtotal">£0.00</span>
-                </div>
-                <div class="total-row" id="digitizingFeeRow" style="display:none;">
-                    <span class="label">Embroidery Digitizing <span id="digitizingCount"></span></span>
-                    <span class="value" id="digitizingFee">£0.00</span>
-                </div>
-                <div class="total-row">
-                    <span class="label">Total (exc. VAT)</span>
-                    <span class="value" id="subtotalExVat">£0.00</span>
-                </div>
-                <div class="total-row vat-row">
-                    <span class="label">VAT (20%)</span>
-                    <span class="value" id="vatAmount">£0.00</span>
-                </div>
-                <div class="total-row grand-total">
-                    <span class="label">Your total (inc. VAT)</span>
-                    <span class="value" id="grandTotal">£0.00</span>
+                        Order Notes
+                    </h4>
+                    <textarea class="order-notes-textarea" id="orderNotesTextarea"
+                              placeholder="Special instructions, delivery notes, or any additional information for your quote..."
+                              oninput="saveOrderNotes()"></textarea>
+                    <p class="order-notes-hint">These notes will be included with your quote request</p>
                 </div>
             </div>
 
-            <!-- Order Notes -->
-            <div class="order-notes-section">
-                <h4>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    Order Notes
-                </h4>
-                <textarea class="order-notes-textarea" id="orderNotesTextarea" 
-                          placeholder="Special instructions, delivery notes, or any additional information for your quote..."
-                          oninput="saveOrderNotes()"></textarea>
-                <p class="order-notes-hint">These notes will be included with your quote request</p>
+            <!-- RIGHT COLUMN: Sidebar (PC only) -->
+            <div class="basket-sidebar">
+                <div class="basket-sidebar-box">
+                    <h3>Your order summary</h3>
+                    <div class="sidebar-row">
+                        <span>Product Costs</span>
+                        <span class="sidebar-value" id="sidebarProductCosts">£0.00</span>
+                    </div>
+                    <div class="sidebar-row">
+                        <span>Total (exc. VAT)</span>
+                        <span class="sidebar-value" id="sidebarExcVat">£0.00</span>
+                    </div>
+                    <div class="sidebar-row">
+                        <span>VAT (on Total)</span>
+                        <span class="sidebar-value" id="sidebarVat">£0.00</span>
+                    </div>
+                    <div class="sidebar-grand-total">
+                        <span>Your total (inc. VAT)</span>
+                        <span class="sidebar-value" id="sidebarGrandTotal">£0.00</span>
+                    </div>
+
+                    <div class="sidebar-note">
+                        <strong>🛡 Adding a new logo or text?</strong> We'll email a mock up to approve before we begin!
+                    </div>
+
+                    <button class="sidebar-share-btn" id="sidebarShareBtn">Share Basket</button>
+                    <button class="sidebar-checkout-btn" id="sidebarCheckoutBtn" onclick="document.getElementById('requestQuoteBtn').click()">Continue to checkout</button>
+                </div>
+
+                <div class="basket-trust-badges">
+                    <div class="trust-badge">🏢 <strong>In business since 1990</strong></div>
+                    <div class="trust-badge">👥 <strong>300 staff</strong>, based in the UK</div>
+                    <div class="trust-badge">✅ Trusted by over <strong>2 million customers</strong></div>
+                    <div class="trust-badge">⭐ <strong>137,500+ positive reviews</strong> ★★★★★</div>
+                </div>
             </div>
         </div>
     </main>
@@ -1927,172 +2304,81 @@
                 const totalQty = Object.values(sizes).reduce((s, q) => s + q, 0);
                 const unitPrice = item.unitPrice || item.price || 0;
 
-                // Size display
-                const sizeStr = Object.entries(sizes)
-                    .filter(([, q]) => q > 0)
-                    .map(([s, q]) => `${s}(${q})`)
-                    .join(', ');
-
-                // Sizes with qty +/-
-                let sizesHtml = '';
-                Object.entries(sizes).forEach(([size, qty]) => {
-                    if (qty > 0) {
-                        sizesHtml += `
-                            <div class="basket-size-row">
-                                <span class="size-label">${size}</span>
-                                <div class="basket-qty-controls">
-                                    <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
-                                    <span class="qty-value">${qty}</span>
-                                    <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
-                                </div>
-                            </div>
-                        `;
+                // Get logo thumbnail
+                let logoSrc = '';
+                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                    for (const d of Object.values(item.positionDesigns)) {
+                        if (d && d.logo) { logoSrc = d.logo; break; }
                     }
+                }
+                if (!logoSrc && item.positions) {
+                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
+                    for (const p of posArr) {
+                        if (p && p.logo) { logoSrc = p.logo; break; }
+                    }
+                }
+
+                // Logo thumbnail or placeholder
+                const logoThumb = logoSrc
+                    ? `<img src="${logoSrc}" alt="Logo" style="max-width:100%;max-height:100%;object-fit:contain;">`
+                    : `<span style="color:#9ca3af;font-size:11px;text-align:center;">No logo</span>`;
+
+                const addLogoBadge = logoSrc ? '✎ Edit' : '+ Add Logo';
+
+                // Build size rows with +/- controls
+                let sizesHtml = '';
+                Object.entries(sizes).filter(([, qty]) => qty > 0).forEach(([size, qty]) => {
+                    sizesHtml += `
+                        <div class="summary-size-row">
+                            <span class="summary-size-label">${size}</span>
+                            <div class="summary-qty-controls">
+                                <button type="button" class="summary-qty-btn minus" data-index="${index}" data-size="${size}">−</button>
+                                <span class="summary-qty-value">${qty}</span>
+                                <button type="button" class="summary-qty-btn plus" data-index="${index}" data-size="${size}">+</button>
+                            </div>
+                        </div>
+                    `;
                 });
 
-                // Collect logo rows from positionDesigns or positions
-                const logoRows = [];
-                if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-                    Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
-                        if (d && d.logo) {
-                            const method = d.method || 'Embroidery';
-                            const posName = toReadablePosition(d.position || posKey);
-                            const up = d.unitPrice || (method.toLowerCase() === 'embroidery' ? 5.00 : 3.50);
-                            logoRows.push({ src: d.logo, position: posKey, posName, method, unitPrice: up });
-                        }
-                    });
-                }
-                if (!logoRows.length && item.positions) {
-                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
-                    posArr.forEach(p => {
-                        if (p && p.logo) {
-                            const method = p.method || 'Embroidery';
-                            const posName = toReadablePosition(p.name || p.position);
-                            const up = p.unitPrice || (method.toLowerCase() === 'embroidery' ? 5.00 : 3.50);
-                            logoRows.push({ src: p.logo, position: p.position || p.name, posName, method, unitPrice: up });
-                        }
-                    });
-                }
-
-                // Build logo rows HTML
-                let logoRowsHtml = '';
-                let logoCostTotal = 0;
-                if (logoRows.length > 0) {
-                    logoRowsHtml = '<div class="basket-logo-rows">';
-                    logoRows.forEach((lr, lrIdx) => {
-                        const methodIcon = lr.method.toLowerCase() === 'embroidery' ? '🧵' : '🖨️';
-                        const methodLabel = lr.method.toLowerCase() === 'embroidery' ? 'Embroidered Logo' : 'Printed Logo';
-                        const logoTotal = lr.unitPrice * totalQty;
-                        logoCostTotal += logoTotal;
-                        logoRowsHtml += `
-                            <div class="basket-logo-row">
-                                <img class="logo-thumb" src="${lr.src}" alt="${lr.posName}">
-                                <div class="logo-details">
-                                    <div class="logo-method">${methodIcon} ${methodLabel}</div>
-                                    <div class="logo-position">${lr.posName}</div>
-                                    <div class="logo-row-actions">
-                                        <button class="edit-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Edit</button>
-                                        <button class="copy-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Copy</button>
-                                        <button class="remove-logo-btn remove-logo-action" data-item="${index}" data-pos="${encodeURIComponent(lr.position)}">Remove</button>
-                                    </div>
-                                </div>
-                                <div class="logo-price">${formatCurrency(logoTotal)}</div>
-                            </div>
-                        `;
-                    });
-                    logoRowsHtml += '</div>';
-                }
-
-                // Add logo button
-                const addLogoBtnText = logoRows.length > 0 ? 'Add another logo to this item' : 'Add logo to this item';
-                const addLogoBtnHtml = `
-                    <button class="basket-add-logo-btn" data-index="${index}">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M12 20h9"/>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                        </svg>
-                        ${addLogoBtnText}
-                    </button>
-                `;
-
-                // Item total (garment + logo costs)
+                // Item garment cost
                 const garmentCost = totalQty * unitPrice;
-                const itemTotal = garmentCost + logoCostTotal;
 
-                // Item note
-                const itemNote = item.note || '';
-                const notePreview = itemNote ? `<div class="item-note-preview">\u{1F4DD} ${itemNote.substring(0, 40)}${itemNote.length > 40 ? '...' : ''}</div>` : '';
-
-                // Edit panel data
-                const allSizes = ['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
-                const existingSizes = Object.keys(sizes);
-                const availableSizes = allSizes.filter(s => !existingSizes.includes(s));
-                const addSizeOpts = availableSizes.map(s => `<option value="${s}">${s}</option>`).join('');
-
-                // Build size string for display (e.g., "M, L, XL" or "One Size")
-                const sizeKeys = Object.entries(sizes).filter(([,q]) => q > 0).map(([s]) => s);
-                const sizeDisplayStr = sizeKeys.join(', ') || 'One Size';
+                // Add Logo button for PC
+                const addLogoBtnText = logoSrc ? 'Add another logo to this item' : 'Add logo to this item';
 
                 html += `
-                    <div class="basket-item-card" data-index="${index}">
-                        <div class="basket-item-main">
-                            <div class="basket-item-image">
+                    <div class="summary-item-card" data-index="${index}">
+                        <div class="summary-item-top">
+                            <div class="summary-item-image">
                                 <img src="${itemImage}" alt="${productName}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                             </div>
-                            <div class="basket-item-content">
-                                <div class="basket-item-info">
-                                    <h4>${productName}</h4>
-                                    <div class="basket-item-meta">
-                                        <span class="item-code">${productCode}</span>
-                                        <span class="item-color-size">${itemColor}, ${sizeDisplayStr}</span>
-                                        <button type="button" class="remove-link" data-index="${index}">Remove</button>
-                                    </div>
-                                    ${addLogoBtnHtml}
-                                </div>
+                            <div class="summary-item-info">
+                                <h4>${productName}</h4>
+                                <p style="font-size:11px;color:#6b7280;">${productCode}</p>
+                                <p style="font-size:12px;color:#6b7280;">Color: ${itemColor}</p>
                             </div>
-                            <div class="basket-item-right">
-                                <div class="basket-qty-controls">
-                                    <button type="button" class="qty-btn minus" data-index="${index}">−</button>
-                                    <span class="qty-value">${totalQty}</span>
-                                    <button type="button" class="qty-btn plus" data-index="${index}">+</button>
-                                </div>
-                                <div class="basket-item-price-block">
-                                    <div class="basket-item-unit-price-val">${formatCurrency(unitPrice)}</div>
-                                    <div class="basket-item-unit-price-label">each ${vatSuffix()}</div>
-                                </div>
-                                <div class="basket-item-total-row">
-                                    <div class="basket-item-total-label">Total item cost:</div>
-                                    <div class="basket-item-total-value">${formatCurrency(itemTotal)}</div>
-                                </div>
+                            <div class="summary-logo-col">
+                                <div class="summary-item-logo-thumb">${logoThumb}</div>
+                                <span class="summary-customize-badge basket-add-logo-btn-badge" data-index="${index}">${addLogoBadge}</span>
                             </div>
+                            <button type="button" class="summary-item-remove" data-index="${index}">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg>
+                            </button>
                         </div>
-                        ${logoRowsHtml}
-                        ${notePreview}
-                        <!-- Hidden sizes data for JS -->
-                        <div class="item-sizes" style="display:none;" onclick="event.stopPropagation()">
-                            ${sizesHtml}
+                        <div class="summary-item-sizes">${sizesHtml}</div>
+                        <div class="summary-item-pricing">
+                            <span class="unit-price">${formatCurrency(unitPrice)} each ${vatSuffix()}</span>
+                            <span class="item-total">Total item cost: ${formatCurrency(garmentCost)}</span>
                         </div>
-                    </div>
-                    <!-- Edit Panel -->
-                    <div class="basket-edit-panel" id="editPanel-${index}">
-                        ${availableSizes.length > 0 ? `
-                        <div class="edit-section">
-                            <div class="edit-section-title">ADD SIZE</div>
-                            <div class="edit-add-size-row">
-                                <select class="edit-size-select" id="addSizeSelect-${index}">
-                                    <option value="">Select size...</option>
-                                    ${addSizeOpts}
-                                </select>
-                                <button class="edit-add-size-btn" onclick="event.stopPropagation();addSizeToItem(${index})">+ Add</button>
-                            </div>
-                        </div>` : ''}
-                        <div class="edit-section">
-                            <div class="edit-section-title">ITEM NOTE</div>
-                            <textarea class="basket-item-note"
-                                      placeholder="Special instructions for this item (e.g., name on back, thread colour)..."
-                                      data-index="${index}"
-                                      oninput="updateItemNote(${index}, this.value)">${itemNote}</textarea>
-                        </div>
+                        <button class="basket-add-logo-btn" data-index="${index}" style="margin-top:8px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M12 20h9"/>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                            </svg>
+                            ${addLogoBtnText}
+                        </button>
                     </div>
                 `;
             });
@@ -2100,14 +2386,29 @@
             container.innerHTML = html;
             
             // Attach event listeners
-            attachQtyListeners();
+            attachSummaryQtyListeners();
             attachRemoveListeners();
             attachLogoActionListeners();
+        }
+
+        // Attach qty listeners for summary-style +/- buttons
+        function attachSummaryQtyListeners() {
+            document.querySelectorAll('.summary-qty-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const index = parseInt(btn.dataset.index);
+                    const size = btn.dataset.size;
+                    const isPlus = btn.classList.contains('plus');
+                    handleQtyChange(index, size, isPlus);
+                });
+            });
         }
         
         // Render customization cards with colors
         function renderCustomizations(basket) {
-            const container = document.getElementById('customizationCardsList');
+            const container = document.getElementById('cbCustomizationCards');
+            const noCustomMsg = document.getElementById('cbNoCustomizations');
             if (!container) return;
             
             console.log('🧺 BASKET renderCustomizations called with', basket.length, 'items');
@@ -2216,9 +2517,12 @@
             });
             
             if (allCustomizations.length === 0) {
-                container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 12px 0; font-size: 13px;">No customizations yet - tap an item to add your logo</p>';
+                container.innerHTML = '';
+                if (noCustomMsg) noCustomMsg.style.display = '';
                 return;
             }
+            
+            if (noCustomMsg) noCustomMsg.style.display = 'none';
             
             let html = '';
             allCustomizations.forEach(item => {
@@ -2246,19 +2550,19 @@
         function renderTotals(basket) {
             let garmentsTotal = 0;
             let customTotal = 0;
+            let totalQtyAll = 0;
+            let avgUnitPrice = 0;
             
             basket.forEach(item => {
-                // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
                 const unitPrice = item.unitPrice || item.price || 0;
                 
-                // Calculate garment total
                 if (Object.keys(sizes).length > 0 && unitPrice) {
                     const qty = Object.values(sizes).reduce((sum, q) => sum + q, 0);
                     garmentsTotal += qty * unitPrice;
+                    totalQtyAll += qty;
                 }
                 
-                // Calculate customization total — always recalculate from unitPrice × actual qty
                 const itemQty = Object.values(sizes).reduce((sum, q) => sum + q, 0);
                 const seenPos = new Set();
                 if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
@@ -2279,7 +2583,6 @@
                         }
                     });
                 }
-                // Also check positionDesigns
                 if (seenPos.size === 0 && item.positionDesigns && typeof item.positionDesigns === 'object') {
                     Object.entries(item.positionDesigns).forEach(([posKey, design]) => {
                         if (design && design.logo) {
@@ -2294,52 +2597,34 @@
                 }
             });
             
-            // --- Calculate £25 digitizing fee per unique embroidery logo ---
+            // Calculate digitizing fee
             let digitizingFee = 0;
             const uniqueEmbroideryLogos = new Set();
             basket.forEach(item => {
-                // Helper: case-insensitive embroidery check
                 const isEmb = (m) => !m || (typeof m === 'string' && m.toLowerCase() === 'embroidery');
-                
-                // Check positionDesigns
                 if (item.positionDesigns && typeof item.positionDesigns === 'object') {
                     Object.values(item.positionDesigns).forEach(design => {
-                        if (design && design.logo && isEmb(design.method)) {
-                            uniqueEmbroideryLogos.add(design.logo);
-                        }
+                        if (design && design.logo && isEmb(design.method)) uniqueEmbroideryLogos.add(design.logo);
                     });
                 }
-                // Check positions (as array OR object)
                 if (item.positions) {
                     const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
                     posArr.forEach(pos => {
-                        if (pos && pos.logo && isEmb(pos.method)) {
-                            uniqueEmbroideryLogos.add(pos.logo);
-                        }
+                        if (pos && pos.logo && isEmb(pos.method)) uniqueEmbroideryLogos.add(pos.logo);
                     });
                 }
-                // Check customizations for embroidery (may not have logo ref, but count method)
                 if (item.customizations && Array.isArray(item.customizations)) {
                     item.customizations.forEach(c => {
                         if (isEmb(c.method) && c.method) {
-                            // Try to get logo from positionDesigns for this position
-                            // If no logo found, still count as 1 unique logo per item with embroidery
                             let found = false;
                             if (item.positionDesigns) {
-                                Object.values(item.positionDesigns).forEach(d => {
-                                    if (d && d.logo && isEmb(d.method)) found = true;
-                                });
+                                Object.values(item.positionDesigns).forEach(d => { if (d && d.logo && isEmb(d.method)) found = true; });
                             }
                             if (!found && item.positions) {
                                 const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
-                                posArr.forEach(p => {
-                                    if (p && p.logo && isEmb(p.method)) { uniqueEmbroideryLogos.add(p.logo); found = true; }
-                                });
+                                posArr.forEach(p => { if (p && p.logo && isEmb(p.method)) { uniqueEmbroideryLogos.add(p.logo); found = true; } });
                             }
-                            // If still no logo found but customization says embroidery, add a placeholder so fee is charged
-                            if (!found) {
-                                uniqueEmbroideryLogos.add('_emb_item_' + (item.id || item.productCode));
-                            }
+                            if (!found) uniqueEmbroideryLogos.add('_emb_item_' + (item.id || item.productCode));
                         }
                     });
                 }
@@ -2349,54 +2634,61 @@
             const subtotalExVat = garmentsTotal + customTotal + digitizingFee;
             const vatAmount = subtotalExVat * 0.20;
             const grandTotal = subtotalExVat + vatAmount;
-            
-            // Update DOM
-            const garmentsSubtotal = document.getElementById('garmentsSubtotal');
-            const customSubtotal = document.getElementById('customSubtotal');
-            const subtotalExVatEl = document.getElementById('subtotalExVat');
-            const vatAmountEl = document.getElementById('vatAmount');
-            const grandTotalEl = document.getElementById('grandTotal');
-            const actionBarTotal = document.getElementById('actionBarTotal');
-            const digitizingRow = document.getElementById('digitizingFeeRow');
-            const digitizingFeeEl = document.getElementById('digitizingFee');
-            const digitizingCount = document.getElementById('digitizingCount');
-            
-            if (garmentsSubtotal) garmentsSubtotal.textContent = '£' + garmentsTotal.toFixed(2);
-            if (customSubtotal) customSubtotal.textContent = '£' + customTotal.toFixed(2);
-            
-            // Show/hide digitizing fee row
-            if (digitizingRow) {
-                if (uniqueEmbroideryLogos.size > 0) {
-                    digitizingRow.style.display = '';
-                    if (digitizingFeeEl) digitizingFeeEl.textContent = formatCurrency(digitizingFee);
-                    if (digitizingCount) digitizingCount.textContent = uniqueEmbroideryLogos.size > 1 ? `(${uniqueEmbroideryLogos.size} logos × £25)` : '(£25)';
+
+            // Calculate average unit price for garment detail
+            if (totalQtyAll > 0) avgUnitPrice = garmentsTotal / totalQtyAll;
+
+            // ===== Update Mobile Cost Breakdown Box =====
+            const cbGarmentCost = document.getElementById('cbGarmentCost');
+            const cbGarmentDetail = document.getElementById('cbGarmentDetail');
+            const cbTotalCost = document.getElementById('cbTotalCost');
+            const cbNoCustomizations = document.getElementById('cbNoCustomizations');
+            const cbCustomizationCards = document.getElementById('cbCustomizationCards');
+
+            if (cbGarmentCost) cbGarmentCost.textContent = formatCurrency(garmentsTotal);
+            if (cbGarmentDetail) {
+                if (basket.length === 1) {
+                    const up = basket[0].unitPrice || basket[0].price || 0;
+                    cbGarmentDetail.textContent = `${formatCurrency(up)} × ${totalQtyAll} = ${formatCurrency(garmentsTotal)}`;
                 } else {
-                    digitizingRow.style.display = 'none';
+                    cbGarmentDetail.textContent = `${basket.length} items × ${totalQtyAll} qty = ${formatCurrency(garmentsTotal)}`;
                 }
             }
-            
-            if (subtotalExVatEl) subtotalExVatEl.textContent = '£' + subtotalExVat.toFixed(2);
-            if (vatAmountEl) vatAmountEl.textContent = '£' + vatAmount.toFixed(2);
-            if (grandTotalEl) grandTotalEl.textContent = '£' + grandTotal.toFixed(2);
+            if (cbTotalCost) cbTotalCost.innerHTML = `${formatCurrency(subtotalExVat)} <span class="vat-suffix">ex vat</span>`;
+
+            // Customization cards in cost breakdown
+            if (cbCustomizationCards) {
+                if (customTotal > 0) {
+                    // Reuse renderCustomizations logic
+                    if (cbNoCustomizations) cbNoCustomizations.style.display = 'none';
+                } else {
+                    cbCustomizationCards.innerHTML = '';
+                    if (cbNoCustomizations) cbNoCustomizations.style.display = '';
+                }
+            }
+
+            // ===== Update PC Sidebar =====
+            const sidebarProductCosts = document.getElementById('sidebarProductCosts');
+            const sidebarExcVat = document.getElementById('sidebarExcVat');
+            const sidebarVat = document.getElementById('sidebarVat');
+            const sidebarGrandTotal = document.getElementById('sidebarGrandTotal');
+
+            if (sidebarProductCosts) sidebarProductCosts.textContent = '£' + garmentsTotal.toFixed(2);
+            if (sidebarExcVat) sidebarExcVat.textContent = '£' + subtotalExVat.toFixed(2);
+            if (sidebarVat) sidebarVat.textContent = '£' + vatAmount.toFixed(2);
+            if (sidebarGrandTotal) sidebarGrandTotal.textContent = '£' + grandTotal.toFixed(2);
+
+            // ===== Update Mobile Action Bar =====
+            const actionBarTotal = document.getElementById('actionBarTotal');
             if (actionBarTotal) actionBarTotal.textContent = '£' + grandTotal.toFixed(2);
         }
         
-        // Update item count
+        // Update item count (not displayed in new layout but kept for compat)
         function updateItemCount(basket) {
-            const countEl = document.getElementById('basketItemCount');
-            if (!countEl) return;
-            
-            let totalQty = 0;
-            basket.forEach(item => {
-                // Support both 'sizes' and 'quantities' keys
-                const sizes = item.sizes || item.quantities || {};
-                totalQty += Object.values(sizes).reduce((sum, q) => sum + q, 0);
-            });
-            
-            countEl.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+            // No-op in new layout
         }
         
-        // Attach quantity button listeners
+        // Attach quantity button listeners (legacy - kept for back-compat)
         function attachQtyListeners() {
             document.querySelectorAll('.basket-qty-controls .qty-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -2414,7 +2706,7 @@
         
         // Attach remove button listeners (both icon button and text link)
         function attachRemoveListeners() {
-            document.querySelectorAll('.basket-item-remove, .remove-link').forEach(btn => {
+            document.querySelectorAll('.basket-item-remove, .remove-link, .summary-item-remove').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -2659,7 +2951,7 @@
         // Attach logo row action listeners (Edit, Copy, Remove, Add Logo)
         function attachLogoActionListeners() {
             // "Add logo to this item" / "Add another logo" buttons
-            document.querySelectorAll('.basket-add-logo-btn').forEach(btn => {
+            document.querySelectorAll('.basket-add-logo-btn, .basket-add-logo-btn-badge').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const idx = parseInt(btn.dataset.index);

@@ -33,33 +33,13 @@
   var lastTouchHandledAt = 0;
 
   function handlePanelActivation($el) {
-    // If already active, navigate immediately
-    if ($el.classList.contains('s--active')) {
-      var category = $el.getAttribute('data-category');
-      if (category) {
-        window.location.href = 'shop.html?category=' + category;
-      }
-      return;
-    }
+    var category = $el.getAttribute('data-category');
+    if (!category) return;
 
-    // Step 1: Expand the panel (visual effect)
+    // Expand visually and navigate immediately
     $cont.classList.add('s--el-active');
-
-    // Ensure the expanded panel is centered in the visible frame
-    lastScrollLeft = $cont.scrollLeft || 0;
-    try {
-      $cont.scrollLeft = 0;
-    } catch (err) {}
-
     $el.classList.add('s--active');
-
-    // Step 2: After full expansion animation, auto-navigate to the category
-    setTimeout(function() {
-      var category = $el.getAttribute('data-category');
-      if (category) {
-        window.location.href = 'shop.html?category=' + category;
-      }
-    }, 2500);
+    window.location.href = 'shop.html?category=' + category;
   }
 
   $elsArr.forEach(function($el) {

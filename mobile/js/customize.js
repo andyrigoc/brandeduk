@@ -6824,12 +6824,6 @@
                         </button>
                     </div>
                     <div class="summary-item-sizes">${currentSizesHtml}</div>
-                    <div class="summary-item-actions">
-                        <span class="summary-customize-badge has-customization" id="currentItemLogoBadge" style="cursor:pointer;">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                            Editing Now
-                        </span>
-                    </div>
                 </div>
             `;
         }
@@ -7133,15 +7127,7 @@
             });
         });
         
-        // "Editing Now" badge click - open logo modal for current item
-        const currentBadge = document.getElementById('currentItemLogoBadge');
-        if (currentBadge) {
-            currentBadge.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openCurrentItemLogoModal();
-            });
-        }
+
     }
 
     // Extract logo image src from a basket item
