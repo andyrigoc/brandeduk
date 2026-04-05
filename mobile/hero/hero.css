@@ -55,6 +55,16 @@
     background-position: calc(50% + 80px) top !important;
   }
   
+  /* Aprons non espanso */
+  .hero-el[data-category="aprons"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 60px) top !important;
+  }
+  
+  /* Aprons espanso */
+  .hero-el[data-category="aprons"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
   /* Polo espanso */
   .hero-el[data-category="polo"].s--active .hero-el__bg:before {
     background-position: center top !important;
@@ -574,6 +584,18 @@
 /* Apron panel (expanded): center image */
 .hero-el[data-category="aprons"].s--active .hero-el__bg:before {
   background-position: center center;
+}
+
+/* Apron panel: shift image right in non-expanded state to show model */
+.hero-el[data-category="aprons"]:not(.s--active) .hero-el__bg:before {
+  background-position: calc(50% + 60px) center;
+}
+
+/* Tablet: apron non-expanded - show model */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .hero-el[data-category="aprons"]:not(.s--active) .hero-el__bg:before {
+    background-position: calc(50% + 40px) center !important;
+  }
 }
 
 /* Polo panel (expanded): move image 20px down */
