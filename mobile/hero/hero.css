@@ -11,12 +11,12 @@
     background-position: center top !important;
   }
   
-  /* Bag - centered */
+  /* T-Shirts - centered */
   .hero-el:nth-child(1) .hero-el__bg:before {
     background-position: center top !important;
   }
   
-  /* Bag espanso */
+  /* T-Shirts espanso */
   .hero-el:nth-child(1).s--active .hero-el__bg:before {
     background-position: center top !important;
   }
@@ -42,6 +42,11 @@
   }
   
   .hero-el[data-category="hi-viz"].s--active .hero-el__bg:before {
+    background-position: center top !important;
+  }
+  
+  /* Bags espanso */
+  .hero-el[data-category="bags"].s--active .hero-el__bg:before {
     background-position: center top !important;
   }
   
@@ -424,7 +429,7 @@
 .hero-el:nth-child(1) .hero-el__bg { transform: none; }
 .hero-el:nth-child(1) .hero-el__bg:before { 
   transition-delay: 0s;
-  background-image: url('../../hero/images/bag.jpg');
+  background-image: url('../../hero/images/T-shirthero.jpg');
   background-position: center center;
 }
 
@@ -433,12 +438,12 @@
   background-position: center calc(50% + 85px);
 }
 
-/* Bag panel (expanded): center image */
+/* T-Shirts panel (expanded): center image */
 .hero-el:nth-child(1).s--active .hero-el__bg:before {
   background-position: center center;
 }
 
-/* Bag panel (expanded): close X should be white (dark bg) */
+/* T-Shirts panel (expanded): close X should be white (dark bg) */
 .hero-el:nth-child(1).s--active .hero-el__close-btn:before,
 .hero-el:nth-child(1).s--active .hero-el__close-btn:after {
   background: #fff;
@@ -462,7 +467,7 @@
   background-position: calc(50% + 145px) center;
 }
 
-/* Tablet: bag non-expanded - center */
+/* Tablet: T-Shirts non-expanded - center */
 @media (min-width: 768px) and (max-width: 1279px) {
   .hero-el:nth-child(1):not(.s--active) .hero-el__bg:before {
     background-position: center center !important;
@@ -517,7 +522,12 @@
 .hero-el:nth-child(4) .hero-el__bg { transform: none; }
 .hero-el:nth-child(4) .hero-el__bg:before { 
   transition-delay: 0.21s;
-  background-image: url('../../hero/images/Hi-Viz.jpg');
+  background-image: url('../../hero/images/bag.jpg');
+  background-position: center center;
+}
+
+/* Bags panel (expanded): center image */
+.hero-el[data-category="bags"].s--active .hero-el__bg:before {
   background-position: center center;
 }
 
@@ -540,7 +550,7 @@
 .hero-el:nth-child(5) .hero-el__bg { transform: none; }
 .hero-el:nth-child(5) .hero-el__bg:before { 
   transition-delay: 0.28s;
-  background-image: url('../../hero/images/Polo.jpg');
+  background-image: url('../../hero/images/Hi-Viz.jpg');
   background-position: center center;
 }
 
@@ -558,7 +568,7 @@
 .hero-el:nth-child(6) .hero-el__bg { transform: none; }
 .hero-el:nth-child(6) .hero-el__bg:before { 
   transition-delay: 0.35s;
-  background-image: url('../../hero/images/Jacket.jpeg');
+  background-image: url('../../hero/images/Polo.jpg');
   background-position: center center;
 }
 
@@ -576,7 +586,7 @@
 .hero-el:nth-child(7) .hero-el__bg { transform: none; }
 .hero-el:nth-child(7) .hero-el__bg:before { 
   transition-delay: 0.42s;
-  background-image: url('../../hero/images/T-shirthero.jpg');
+  background-image: url('../../hero/images/Jacket.jpeg');
   background-position: center center;
 }
 
@@ -594,8 +604,8 @@
 .hero-el:nth-child(8) .hero-el__bg { transform: none; }
 .hero-el:nth-child(8) .hero-el__bg:before {
   transition-delay: 0.49s;
-  background-image: url('../../hero/images/WorkTrousers.jpg');
-  background-position: center calc(50% + 10px);
+  background-image: url('../../hero/images/Sustainable.jpg');
+  background-position: center center;
 }
 
 /* Work Trousers panel (expanded): move image 30px down */
@@ -612,8 +622,8 @@
 .hero-el:nth-child(9) .hero-el__bg { transform: none; }
 .hero-el:nth-child(9) .hero-el__bg:before {
   transition-delay: 0.56s;
-  background-image: url('../../hero/images/Sustainable.jpg');
-  background-position: center center;
+  background-image: url('../../hero/images/WorkTrousers.jpg');
+  background-position: center calc(50% + 10px);
 }
 
 /* Inactive states for non-active elements */
