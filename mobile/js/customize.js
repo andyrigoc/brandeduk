@@ -253,6 +253,7 @@
         'Trousers': 'pants/workwear-long-trousers',
         'Shorts': 'pants/workwear-shorts',
         'Bags': 'bags/gym-bag',
+        'Tote Bags': 'bags/tote-bag',
         'Fleece': 'adult-tops/hoodies',
         'Gilets & Body Warmers': 'adult-tops/soft-shell-jacket',
         'Knitted Jumpers': 'adult-tops/hoodies',
@@ -314,7 +315,8 @@
         'headwear/beanie': ['front-logo.png'],
         'pants/workwear-long-trousers': ['Blank Work Trouser.png'],
         'pants/workwear-shorts': ['Blank Work short.png'],
-        'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
+        'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png'],
+        'bags/tote-bag': ['front.png', 'back.png']
     };
 
     function normalizeProductTypeForFolder(productType) {
@@ -339,7 +341,8 @@
         if (lower.includes('trouser') || lower.includes('pant') || lower.includes('chino')) return 'Trousers';
         if (lower.includes('short') && !lower.includes('shirt')) return 'Shorts';
         if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
-        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall') || lower.includes('duffle') || lower.includes('duffel')) return 'Bags';
+        if (lower.includes('tote')) return 'Tote Bags';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('holdall') || lower.includes('duffle') || lower.includes('duffel')) return 'Bags';
         if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
         if (lower.includes('rugby')) return 'Rugby Shirts';
         if (lower.includes('cardigan')) return 'Cardigans';
@@ -370,7 +373,8 @@
         if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
         if (lower.includes('short') && !lower.includes('shirt') && !lower.includes('sleeve')) return 'Shorts';
         if (lower.includes('sweatpant') || lower.includes('jogger') || lower.includes('jogging')) return 'Sweatpants';
-        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote') || lower.includes('holdall')) return 'Bags';
+        if (lower.includes('tote')) return 'Tote Bags';
+        if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('holdall')) return 'Bags';
         if (lower.includes('blouse')) return 'Shirts';
         if (lower.includes('rugby')) return 'Rugby Shirts';
         if (lower.includes('cardigan')) return 'Cardigans';
@@ -571,6 +575,7 @@
         const normalizedForOrder = normalizeProductTypeForFolder(productType);
         const HEADWEAR_TYPES = ['Caps', 'Beanies'];
         const APRON_TYPES = ['Aprons'];
+        const BAG_TYPES = ['Bags', 'Tote Bags'];
         
         let positionOrder;
         if (HEADWEAR_TYPES.includes(normalizedForOrder)) {
@@ -579,6 +584,9 @@
         } else if (APRON_TYPES.includes(normalizedForOrder)) {
             // Aprons: center front first
             positionOrder = ['small-centre-front', 'left-breast', 'right-breast', 'large-front-center', 'left-arm', 'right-arm', 'large-back'];
+        } else if (BAG_TYPES.includes(normalizedForOrder)) {
+            // Bags: front first, back second
+            positionOrder = ['small-centre-front', 'large-back', 'left-breast', 'right-breast', 'large-front-center', 'left-arm', 'right-arm'];
         } else {
             // All clothing: left chest, right chest, left sleeve, right sleeve, back
             positionOrder = ['left-breast', 'right-breast', 'left-arm', 'right-arm', 'small-centre-front', 'large-front-center', 'large-back'];
