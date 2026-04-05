@@ -135,7 +135,7 @@
             display: block !important;
             visibility: visible !important;
             padding: 20px 16px 16px !important;
-            margin-top: 0; /* breadcrumbs bar now handles header clearance */
+            margin-top: calc(var(--header-height, 102px) + 16px) !important; /* clearance for fixed header */
             margin-bottom: 4px;
             background: #fff;
             text-align: center;
@@ -1788,16 +1788,6 @@
         </div>
     </header>
 
-    <!-- Breadcrumbs -->
-    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
-        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
-            </svg>
-        </button>
-        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
-    </nav>
-
     <!-- Category Title -->
     <div class="shop-title-bar" style="display:none!important;">
         <h1 class="shop-title" id="categoryTitle">All Products</h1>
@@ -1809,6 +1799,16 @@
         <h2 class="shop-category-title" id="shopCategoryTitle" style="font-size:22px!important;font-weight:800!important;color:#111827!important;margin:0;font-family:'Inter',sans-serif;line-height:1.3;">All Products</h2>
         <p class="shop-category-desc" id="shopCategoryDesc" style="display:block!important;font-size:13px!important;color:#4b5563!important;margin:8px 0 0;line-height:1.5;">Browse our full range of customisable workwear and uniforms.</p>
     </div>
+
+    <!-- Breadcrumbs (positioned between description and hamburger menu) -->
+    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
+        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+        </button>
+        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+    </nav>
 
     <!-- Category Filters (Hamburger Dropdown) -->
     <div class="categories-filter-scroll">
