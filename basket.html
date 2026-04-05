@@ -330,6 +330,34 @@
             font-size: 13px;
         }
 
+        /* Digitizing fee card */
+        .basket-cost-breakdown .digitizing-fee-card {
+            background: linear-gradient(90deg, #6d28d9, #7c3aed);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .basket-cost-breakdown .digitizing-fee-card .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .basket-cost-breakdown .digitizing-fee-card .cost-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .basket-cost-breakdown .digitizing-fee-card .cost-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .basket-cost-breakdown .digitizing-fee-card .cost-detail {
+            margin-top: 6px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.85);
+        }
+
         /* Total Cost - Pink gradient card */
         .basket-cost-breakdown .total-cost-card {
             background: linear-gradient(90deg, #E8A0BF, #F2B8D0);
@@ -2045,6 +2073,15 @@
                     <!-- No customizations placeholder -->
                     <div class="no-customizations" id="cbNoCustomizations">No customizations selected</div>
 
+                    <!-- Digitizing Fee (one-off, shown only for embroidery) -->
+                    <div class="digitizing-fee-card" id="cbDigitizingFee" style="display:none;">
+                        <div class="cost-row">
+                            <span class="cost-label">Digitizing Fee <small style="font-weight:400;opacity:.8">(one-off)</small></span>
+                            <span class="cost-value" id="cbDigitizingValue">£25.00</span>
+                        </div>
+                        <div class="cost-detail" id="cbDigitizingDetail"></div>
+                    </div>
+
                     <!-- Total Cost Card (pink) -->
                     <div class="total-cost-card">
                         <div class="cost-row">
@@ -2094,6 +2131,10 @@
                     <div class="sidebar-row">
                         <span>Product Costs</span>
                         <span class="sidebar-value" id="sidebarProductCosts">£0.00</span>
+                    </div>
+                    <div class="sidebar-row" id="sidebarDigitizingRow" style="display:none;">
+                        <span>Digitizing Fee <small>(one-off)</small></span>
+                        <span class="sidebar-value" id="sidebarDigitizingFee">£25.00</span>
                     </div>
                     <div class="sidebar-row">
                         <span>Total (exc. VAT)</span>
@@ -2656,6 +2697,25 @@
             }
             if (cbTotalCost) cbTotalCost.innerHTML = `${formatCurrency(subtotalExVat)} <span class="vat-suffix">ex vat</span>`;
 
+            // Digitizing fee row
+            const cbDigitizingFee = document.getElementById('cbDigitizingFee');
+            const cbDigitizingValue = document.getElementById('cbDigitizingValue');
+            const cbDigitizingDetail = document.getElementById('cbDigitizingDetail');
+            if (cbDigitizingFee) {
+                if (digitizingFee > 0) {
+                    cbDigitizingFee.style.display = '';
+                    if (cbDigitizingValue) cbDigitizingValue.textContent = formatCurrency(digitizingFee);
+                    if (cbDigitizingDetail) {
+                        const logoCount = uniqueEmbroideryLogos.size;
+                        cbDigitizingDetail.textContent = logoCount === 1
+                            ? '1 logo × £25.00'
+                            : logoCount + ' logos × £25.00 = ' + formatCurrency(digitizingFee);
+                    }
+                } else {
+                    cbDigitizingFee.style.display = 'none';
+                }
+            }
+
             // Customization cards in cost breakdown
             if (cbCustomizationCards) {
                 if (customTotal > 0) {
@@ -2674,6 +2734,13 @@
             const sidebarGrandTotal = document.getElementById('sidebarGrandTotal');
 
             if (sidebarProductCosts) sidebarProductCosts.textContent = '£' + garmentsTotal.toFixed(2);
+            // PC sidebar digitizing fee
+            const sidebarDigitizingRow = document.getElementById('sidebarDigitizingRow');
+            const sidebarDigitizingFee = document.getElementById('sidebarDigitizingFee');
+            if (sidebarDigitizingRow) {
+                sidebarDigitizingRow.style.display = digitizingFee > 0 ? '' : 'none';
+                if (sidebarDigitizingFee) sidebarDigitizingFee.textContent = formatCurrency(digitizingFee);
+            }
             if (sidebarExcVat) sidebarExcVat.textContent = '£' + subtotalExVat.toFixed(2);
             if (sidebarVat) sidebarVat.textContent = '£' + vatAmount.toFixed(2);
             if (sidebarGrandTotal) sidebarGrandTotal.textContent = '£' + grandTotal.toFixed(2);
