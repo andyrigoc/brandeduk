@@ -7171,26 +7171,16 @@
             });
         }
 
-        // Customize badge click - show method picker then open design modal
+        // Customize badge click - scroll to position cards so user picks position first
         basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const idx = parseInt(badge.dataset.index);
-                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                const item = basket[idx];
-                let position = 'small-centre-front';
-                if (item) {
-                    if (item.positionDesigns) {
-                        const keys = Object.keys(item.positionDesigns);
-                        if (keys.length) position = keys[0];
-                    } else if (item.positions && typeof item.positions === 'object') {
-                        const keys = Object.keys(item.positions);
-                        if (keys.length) position = keys[0];
-                    }
+                // Scroll to the positions section so customer chooses position first
+                const positionsSection = document.querySelector('.customization-options') || document.getElementById('positionOptions');
+                if (positionsSection) {
+                    positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                _logoActionTargetIdx = idx;
-                _showMethodPicker(position, idx);
             });
         });
         
