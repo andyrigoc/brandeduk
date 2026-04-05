@@ -2406,16 +2406,6 @@
                 if (item.unitPrice !== undefined) item.unitPrice = parseFloat(tierPrice);
             });
         }
-            if (Object.keys(item[sizesKey]).length === 0) {
-                basket.splice(itemIndex, 1);
-            }
-            
-            saveBasket(basket);
-            renderBasket();
-            
-            // Haptic feedback
-            if (navigator.vibrate) navigator.vibrate(10);
-        }
         
         // Remove item from basket
         function removeItem(itemIndex) {
