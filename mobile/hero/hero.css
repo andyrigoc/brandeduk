@@ -419,7 +419,7 @@
   transform: rotate(-45deg) translateX(0);
 }
 
-/* Element positions - 9 panels (5 visible, scroll for the rest) */
+/* Element positions - 10 panels (5 visible, scroll for the rest) */
 .hero-el:nth-child(1) {
   left: 0;
   transform: translate3d(0, 0, 0);
@@ -550,7 +550,12 @@
 .hero-el:nth-child(5) .hero-el__bg { transform: none; }
 .hero-el:nth-child(5) .hero-el__bg:before { 
   transition-delay: 0.28s;
-  background-image: url('../../hero/images/Hi-Viz.jpg');
+  background-image: url('../../hero/images/apron.jpg');
+  background-position: center center;
+}
+
+/* Apron panel (expanded): center image */
+.hero-el[data-category="aprons"].s--active .hero-el__bg:before {
   background-position: center center;
 }
 
@@ -568,7 +573,7 @@
 .hero-el:nth-child(6) .hero-el__bg { transform: none; }
 .hero-el:nth-child(6) .hero-el__bg:before { 
   transition-delay: 0.35s;
-  background-image: url('../../hero/images/Polo.jpg');
+  background-image: url('../../hero/images/Hi-Viz.jpg');
   background-position: center center;
 }
 
@@ -586,7 +591,7 @@
 .hero-el:nth-child(7) .hero-el__bg { transform: none; }
 .hero-el:nth-child(7) .hero-el__bg:before { 
   transition-delay: 0.42s;
-  background-image: url('../../hero/images/Jacket.jpeg');
+  background-image: url('../../hero/images/Polo.jpg');
   background-position: center center;
 }
 
@@ -604,7 +609,7 @@
 .hero-el:nth-child(8) .hero-el__bg { transform: none; }
 .hero-el:nth-child(8) .hero-el__bg:before {
   transition-delay: 0.49s;
-  background-image: url('../../hero/images/Sustainable.jpg');
+  background-image: url('../../hero/images/Jacket.jpeg');
   background-position: center center;
 }
 
@@ -622,6 +627,19 @@
 .hero-el:nth-child(9) .hero-el__bg { transform: none; }
 .hero-el:nth-child(9) .hero-el__bg:before {
   transition-delay: 0.56s;
+  background-image: url('../../hero/images/Sustainable.jpg');
+  background-position: center center;
+}
+
+.hero-el:nth-child(10) {
+  left: calc(180% + 36px);
+  transform: translate3d(0, 0, 0);
+  transform-origin: 100% 50%;
+}
+.hero-el:nth-child(10) .hero-el__inner { transition-delay: 0.63s; }
+.hero-el:nth-child(10) .hero-el__bg { transform: none; }
+.hero-el:nth-child(10) .hero-el__bg:before {
+  transition-delay: 0.63s;
   background-image: url('../../hero/images/WorkTrousers.jpg');
   background-position: center calc(50% + 10px);
 }
