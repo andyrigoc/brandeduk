@@ -2446,6 +2446,14 @@ if (popupAddLogoBtn) {
             const item = basket[itemIndex];
             sessionStorage.setItem('selectedProduct', item.code);
             sessionStorage.setItem('selectedColorName', item.color);
+            sessionStorage.setItem('selectedProductData', JSON.stringify({
+                code: item.code || '',
+                name: item.name || '',
+                price: item.unitPrice || item.price || 0,
+                image: item.image || '',
+                brand: item.brand || '',
+                productType: item.productType || ''
+            }));
         }
         // Navigate to customize page
         const isMobile = window.innerWidth < 1024;

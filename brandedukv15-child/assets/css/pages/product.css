@@ -1822,6 +1822,44 @@ html, body {
     text-decoration: none;
 }
 
+/* Popup inner elements */
+.popup-content-fixed .popup-product-info h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.popup-content-fixed .popup-product-info .popup-meta {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.popup-summary-fixed .popup-qty {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.popup-summary-fixed .popup-unit-price {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.popup-summary-fixed .popup-total {
+    text-align: right;
+}
+
+.popup-summary-fixed .popup-total-label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.popup-summary-fixed .popup-total-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ea580c;
+}
+
 /* Uploaded logos preview */
 .logo-preview {
     margin-top: 15px;
