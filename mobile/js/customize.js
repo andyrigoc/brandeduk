@@ -1816,11 +1816,10 @@
     // Ensure sizes/quantities are recalculated after UI setup
     try { updateSizeQuantities(); } catch (e) { /* ignore if not yet defined */ }
         
-        // Update total pieces counter to show basket items at init
+        // Update total pieces counter to show current selection only
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) {
-            const basketQty = getBasketQuantityForProduct(state.product.code);
-            totalSpan.textContent = state.quantity + basketQty;
+            totalSpan.textContent = state.quantity;
         }
         
         // Initialize selection as saved (no items yet)
@@ -4126,12 +4125,10 @@
             }
         });
 
-        // Update total display - show current selection + basket items
+        // Update total display - show current selection only
         const totalSpan = document.getElementById('totalQty');
         if (totalSpan) {
-            // Get basket qty for this product
-            const basketQty = getBasketQuantityForProduct(state.product.code);
-            totalSpan.textContent = total + basketQty;
+            totalSpan.textContent = total;
         }
 
         // Update global quantity for pricing

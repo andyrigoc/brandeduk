@@ -2103,8 +2103,8 @@ function updateTotals() {
 
     updateBelowSummary(total, unit);
 
-    // Update sidebar in real-time
-    updateSidebarFromProduct(grandProductTotal, unit);
+    // Update sidebar in real-time (show current color qty, not grand total)
+    updateSidebarFromProduct(total, unit);
 
     // Auto-save current selection to basket (debounced)
     if (typeof scheduleAutoSave === 'function') {
