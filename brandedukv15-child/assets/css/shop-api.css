@@ -63,6 +63,26 @@
 }
 
 /* ==========================================================================
+   GENDER SECTION HEADINGS (Men / Women / Kids)
+   ========================================================================== */
+
+.gender-section-heading {
+    grid-column: 1 / -1;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    padding: 16px 0 8px;
+    margin-top: 8px;
+    border-bottom: 2px solid #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.gender-section-heading:first-child {
+    margin-top: 0;
+}
+
+/* ==========================================================================
    PAGINATION
    ========================================================================== */
 

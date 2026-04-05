@@ -3945,7 +3945,29 @@
                 return;
             }
 
-            products.forEach((product, idx) => {
+            // Gender grouping: Men first, Women second, Kids third
+            function getGenderGroup(product) {
+                const age = (product.ageGroup || '').toLowerCase();
+                if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
+                const gender = (product.gender || '').toLowerCase();
+                if (gender.includes('ladies') || gender.includes('female') || gender.includes('women') || gender.includes('womens')) return 'women';
+                return 'men';
+            }
+
+            const menProducts = [];
+            const womenProducts = [];
+            const kidsProducts = [];
+            products.forEach(p => {
+                const g = getGenderGroup(p);
+                if (g === 'women') womenProducts.push(p);
+                else if (g === 'kids') kidsProducts.push(p);
+                else menProducts.push(p);
+            });
+
+            const fmtCurrency = (typeof ShopManager !== 'undefined' && ShopManager.formatCurrency) ? ShopManager.formatCurrency : (v => '£' + Number(v).toFixed(2));
+            const fmtVat = (typeof ShopManager !== 'undefined' && ShopManager.vatSuffix) ? ShopManager.vatSuffix : (() => 'ex. VAT');
+
+            function appendProductCard(product) {
                 const card = document.createElement('div');
                 card.className = 'product-card-shop';
                 const img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || '';
@@ -3960,7 +3982,6 @@
                 if (product.customization && product.customization.includes('embroidery')) {
                     badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
                 }
-                // Embroidery-only: hide PRINT badge for products with 'beanie' in name
                 const isBeanie = (product.name || '').toLowerCase().includes('beanie');
                 if (!isBeanie && product.customization && product.customization.includes('print')) {
                     badgesHtml += '<span class="badge print">PRINT</span>';
@@ -3976,7 +3997,7 @@
                     <div class="product-meta">
                         <div class="product-code">${product.code || ''}</div>
                         <div class="product-name">${product.name || ''}</div>
-                        <div class="product-price" data-price="${price || 0}">${formatCurrency(Number(price) || 0)}</div>
+                        <div class="product-price" data-price="${price || 0}">From ${fmtCurrency(Number(price) || 0)} ${fmtVat()}</div>
                     </div>
                 `;
 
@@ -3987,7 +4008,27 @@
                 });
 
                 grid.appendChild(card);
-            });
+            }
+
+            function appendSectionHeading(label) {
+                const heading = document.createElement('div');
+                heading.className = 'gender-section-heading';
+                heading.textContent = label;
+                grid.appendChild(heading);
+            }
+
+            if (menProducts.length > 0) {
+                if (womenProducts.length > 0 || kidsProducts.length > 0) appendSectionHeading('Men');
+                menProducts.forEach(appendProductCard);
+            }
+            if (womenProducts.length > 0) {
+                appendSectionHeading('Women');
+                womenProducts.forEach(appendProductCard);
+            }
+            if (kidsProducts.length > 0) {
+                appendSectionHeading('Kids');
+                kidsProducts.forEach(appendProductCard);
+            }
 
             updateMobilePagination();
         }

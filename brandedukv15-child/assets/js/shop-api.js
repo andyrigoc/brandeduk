@@ -353,8 +353,8 @@ const ShopManager = (function () {
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
-                    <span class="product-price-label">Start From</span>
-                    <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>
+                    <span class="product-price-label">From</span>
+                    <span class="product-price-value">${formatCurrency(minPrice)}</span>
                     <span class="product-price-suffix">${vatSuffix()}</span>
                 </div>
                 <div class="product-colors">${colorsHTML}${moreColorsHTML}</div>
@@ -526,14 +526,52 @@ const ShopManager = (function () {
                         </div>
                     `;
                 } else {
+                    // Group products by gender/age: Men → Women → Kids
+                    function getGenderGroup(product) {
+                        var g = (product.gender || '').toLowerCase();
+                        var age = (product.ageGroup || '').toLowerCase();
+                        if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
+                        if (g.includes('ladies') || g.includes('female') || g.includes('women') || g.includes('womens')) return 'women';
+                        return 'men'; // men, unisex, or default
+                    }
+
+                    var menProducts = [];
+                    var womenProducts = [];
+                    var kidsProducts = [];
+                    result.items.forEach(function(product) {
+                        var group = getGenderGroup(product);
+                        if (group === 'women') womenProducts.push(product);
+                        else if (group === 'kids') kidsProducts.push(product);
+                        else menProducts.push(product);
+                    });
+
+                    var sections = [
+                        { label: 'Men', items: menProducts },
+                        { label: 'Women', items: womenProducts },
+                        { label: 'Kids', items: kidsProducts }
+                    ];
+
                     let rendered = 0;
-                    result.items.forEach((product, index) => {
-                        const card = createProductCard(product, index);
-                        if (!card) return;
-                        rendered++;
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(20px)';
-                        productsGrid.appendChild(card);
+                    var cardIndex = 0;
+                    var hasMultipleGroups = (menProducts.length > 0 ? 1 : 0) + (womenProducts.length > 0 ? 1 : 0) + (kidsProducts.length > 0 ? 1 : 0) > 1;
+                    sections.forEach(function(section) {
+                        if (section.items.length === 0) return;
+                        // Section heading (skip "Men" heading if it's the only group)
+                        if (hasMultipleGroups) {
+                            var heading = document.createElement('div');
+                            heading.className = 'gender-section-heading';
+                            heading.textContent = section.label;
+                            productsGrid.appendChild(heading);
+                        }
+                        // Render products in this section
+                        section.items.forEach(function(product) {
+                            var card = createProductCard(product, cardIndex++);
+                            if (!card) return;
+                            rendered++;
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            productsGrid.appendChild(card);
+                        });
                     });
 
                     if (rendered === 0) {
@@ -796,10 +834,9 @@ const ShopManager = (function () {
     function updatePrices() {
         document.querySelectorAll('.product-price').forEach(priceEl => {
             const min = Number(priceEl.dataset.priceMin);
-            const max = Number(priceEl.dataset.priceMax);
             const valueEl = priceEl.querySelector('.product-price-value');
-            if (valueEl && Number.isFinite(min) && Number.isFinite(max)) {
-                valueEl.textContent = formatPriceRange(min, max);
+            if (valueEl && Number.isFinite(min)) {
+                valueEl.textContent = formatCurrency(min);
             }
             const suffixEl = priceEl.querySelector('.product-price-suffix');
             if (suffixEl) {

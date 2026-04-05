@@ -2394,7 +2394,7 @@ body {
 
 .searchbar-header__search-expand {
     position: relative;
-    width: 320px;
+    flex: 1;
     height: 44px;
     margin-right: 8px;
 }
@@ -2404,7 +2404,7 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    border: 2px solid #C952DE;
+    border: 1px solid #e5e7eb;
     outline: none;
     border-radius: 9999px;
     padding: 12px 44px 12px 20px;
@@ -2414,11 +2414,11 @@ body {
     box-sizing: border-box;
 }
 .searchbar-header__search-expand .search-input-expand:focus {
-    border-color: #C952DE;
-    box-shadow: 0 0 0 3px rgba(201, 82, 222, 0.15);
+    border-color: #d1d5db;
+    box-shadow: none;
 }
 .searchbar-header__search-expand .search-input-expand::placeholder {
-    color: #C952DE;
+    color: #9ca3af;
     font-weight: 500;
 }
 .searchbar-header__search-expand .search-icon-expand {
@@ -2428,7 +2428,7 @@ body {
     transform: translateY(-50%);
     pointer-events: auto;
     cursor: pointer;
-    color: #C952DE;
+    color: #6b7280;
 }
 
 /* === Account Icon in Searchbar === */

@@ -557,34 +557,38 @@
             filter: grayscale(0%);
         }
         
-        /* Search expand desktop - always expanded with purple border */
+        /* Actions bar must flex-grow so search bar can expand */
+        .searchbar-header__actions {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Search expand desktop - same as mobile/tablet, always expanded */
         .searchbar-header__search-expand {
             position: relative;
-            width: 320px;
+            flex: 1;
             height: 44px;
             margin-right: 8px;
         }
         .searchbar-header__search-expand .search-input-expand {
-            position: absolute;
-            right: 0;
-            top: 0;
+            display: block;
             width: 100%;
             height: 100%;
-            border: 2px solid #C952DE;
+            border: 1px solid #e5e7eb;
             outline: none;
             border-radius: 9999px;
-            padding: 12px 44px 12px 20px;
+            padding: 10px 40px 10px 14px;
             font-size: 15px;
             background: #f3f4f6;
             color: #1f2937;
             box-sizing: border-box;
         }
         .searchbar-header__search-expand .search-input-expand:focus {
-            border-color: #C952DE;
-            box-shadow: 0 0 0 3px rgba(201, 82, 222, 0.15);
+            border-color: #d1d5db;
+            box-shadow: none;
         }
         .searchbar-header__search-expand .search-input-expand::placeholder {
-            color: #C952DE;
+            color: #6b7280;
             font-weight: 500;
         }
         .searchbar-header__search-expand .search-icon-expand {
@@ -592,8 +596,9 @@
             top: 50%;
             right: 12px;
             transform: translateY(-50%);
-            pointer-events: none;
-            color: #C952DE;
+            pointer-events: auto;
+            cursor: pointer;
+            color: #6b7280;
         }
 
         /* Search Autocomplete Dropdown */
@@ -3172,149 +3177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })();
 
-// Header searchbar handler - redirects to shop page with search query + autocomplete
-(function() {
-    var PRODUCT_TYPES = [
-        'Accessories','Aprons','Arm Guards','Armbands',
-        'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
-        'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
-        'Document Wallets','Dog Vests','Dresses','Dungarees',
-        'Ear Muffs','Embroidery Accessories','Embroidery Backing',
-        'First Aid Boxes','Fleece','Freezer Blocks',
-        'Gilets & Body Warmers','Glasses','Gloves','Gowns',
-        'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
-        'Jackets','Jeans',
-        'Keyrings','Kneepads','Knitted Jumpers',
-        'Laptop Cases','Leggings','Loungewear Bottoms',
-        'Mail Order Bags',
-        'Onesies',
-        'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
-        'Quad Guards',
-        'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
-        'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
-        'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
-        'Umbrellas','Unitards',
-        'Vests (t-shirt)',
-        'Waistcoats','Wallets','Winter Accessory Sets',
-        'Yoga Mats',
-        'Zips Pulls'
-    ];
-
-    var acTimer = null;
-    var acActiveIndex = -1;
-    var acItems = [];
-
-    function closeAutocomplete() {
-        var dd = document.getElementById('searchAutocomplete');
-        if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
-        acActiveIndex = -1;
-        acItems = [];
-    }
-
-    function highlightItem(dd) {
-        dd.querySelectorAll('.ac-item').forEach(function(el, i) {
-            el.classList.toggle('ac-active', i === acActiveIndex);
-        });
-    }
-
-    function highlightMatch(text, query) {
-        var idx = text.toLowerCase().indexOf(query.toLowerCase());
-        if (idx === -1) return text;
-        return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
-    }
-
-    function bindClicks(dd) {
-        dd.querySelectorAll('.ac-item').forEach(function(item) {
-            item.addEventListener('click', function() {
-                var label = item.dataset.label;
-                closeAutocomplete();
-                window.location.href = 'shop-pc.html?q=' + encodeURIComponent(label);
-            });
-        });
-    }
-
-    function showSuggestions(query, dd) {
-        var q = query.toLowerCase();
-        var matches = PRODUCT_TYPES.filter(function(pt) {
-            return pt.toLowerCase().indexOf(q) === 0;
-        });
-
-        var html = '';
-        if (matches.length > 0) {
-            matches.forEach(function(pt) {
-                html += '<div class="ac-item" data-label="' + pt + '">' +
-                    '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
-                    '<span>' + highlightMatch(pt, query) + '</span>' +
-                '</div>';
-            });
-        }
-
-        dd.innerHTML = html;
-        if (html) dd.classList.add('open'); else dd.classList.remove('open');
-        acItems = [].slice.call(dd.querySelectorAll('.ac-item'));
-        acActiveIndex = -1;
-        bindClicks(dd);
-    }
-
-    function setupHeaderSearch() {
-        var headerSearch = document.getElementById('searchbarHeaderInput');
-        var dropdown = document.getElementById('searchAutocomplete');
-        if (!headerSearch) return;
-
-        if (dropdown) {
-            headerSearch.addEventListener('input', function() {
-                clearTimeout(acTimer);
-                var q = headerSearch.value.trim();
-                if (q.length < 1) { closeAutocomplete(); return; }
-                showSuggestions(q, dropdown);
-            });
-
-            headerSearch.addEventListener('keydown', function(e) {
-                if (!dropdown.classList.contains('open')) return;
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
-                    highlightItem(dropdown);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    acActiveIndex = Math.max(acActiveIndex - 1, -1);
-                    highlightItem(dropdown);
-                } else if (e.key === 'Enter' && acActiveIndex >= 0) {
-                    e.preventDefault();
-                    var activeEl = dropdown.querySelector('.ac-item.ac-active');
-                    if (activeEl) activeEl.click();
-                    return;
-                } else if (e.key === 'Escape') {
-                    closeAutocomplete();
-                }
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.searchbar-header__search-expand')) {
-                    closeAutocomplete();
-                }
-            });
-        }
-
-        headerSearch.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && acActiveIndex < 0) {
-                e.preventDefault();
-                closeAutocomplete();
-                var searchQuery = headerSearch.value.trim();
-                if (searchQuery) {
-                    window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
-                }
-            }
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupHeaderSearch);
-    } else {
-        setupHeaderSearch();
-    }
-})();
-
 // Responsive routing helper (for DevTools/device emulation)
 (function() {
     var BREAKPOINT = 1024;
@@ -3351,6 +3213,136 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('orientationchange', function() {
         setTimeout(maybeRedirectToMobile, 0);
     });
+})();
+</script>
+
+<!-- Search Autocomplete (isolated script - same as tablet/mobile) -->
+<script>
+(function() {
+    var PRODUCT_TYPES = [
+        'Accessories','Aprons','Arm Guards','Armbands',
+        'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
+        'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
+        'Document Wallets','Dog Vests','Dresses','Dungarees',
+        'Ear Muffs','Embroidery Accessories','Embroidery Backing',
+        'First Aid Boxes','Fleece','Freezer Blocks',
+        'Gilets & Body Warmers','Glasses','Gloves','Gowns',
+        'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
+        'Jackets','Jeans',
+        'Keyrings','Kneepads','Knitted Jumpers',
+        'Laptop Cases','Leggings','Loungewear Bottoms',
+        'Mail Order Bags',
+        'Onesies',
+        'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
+        'Quad Guards',
+        'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
+        'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
+        'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
+        'Umbrellas','Unitards',
+        'Vests (t-shirt)',
+        'Waistcoats','Wallets','Winter Accessory Sets',
+        'Yoga Mats',
+        'Zips Pulls'
+    ];
+
+    function highlightMatch(text, query) {
+        var idx = text.toLowerCase().indexOf(query.toLowerCase());
+        if (idx === -1) return text;
+        return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+    }
+
+    function setupSearchAutocomplete(inputId, dropdownId) {
+        var input = document.getElementById(inputId);
+        var dropdown = document.getElementById(dropdownId);
+        if (!input || !dropdown) return;
+
+        var acActiveIndex = -1;
+        var acItems = [];
+
+        function closeAC() {
+            dropdown.classList.remove('open');
+            dropdown.innerHTML = '';
+            acActiveIndex = -1;
+            acItems = [];
+        }
+
+        function highlightItem() {
+            dropdown.querySelectorAll('.ac-item').forEach(function(el, i) {
+                el.classList.toggle('ac-active', i === acActiveIndex);
+            });
+        }
+
+        function showSuggestions(query) {
+            var q = query.toLowerCase();
+            var matches = PRODUCT_TYPES.filter(function(pt) {
+                return pt.toLowerCase().indexOf(q) === 0;
+            });
+            var html = '';
+            if (matches.length > 0) {
+                matches.forEach(function(pt) {
+                    html += '<div class="ac-item" data-label="' + pt + '">' +
+                        '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+                        '<span>' + highlightMatch(pt, query) + '</span></div>';
+                });
+            }
+            dropdown.innerHTML = html;
+            if (html) dropdown.classList.add('open'); else dropdown.classList.remove('open');
+            acItems = [].slice.call(dropdown.querySelectorAll('.ac-item'));
+            acActiveIndex = -1;
+
+            acItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    closeAC();
+                    window.location.href = 'shop.html?q=' + encodeURIComponent(item.dataset.label);
+                });
+            });
+        }
+
+        input.addEventListener('input', function() {
+            var q = input.value.trim();
+            if (q.length < 1) { closeAC(); return; }
+            showSuggestions(q);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (!dropdown.classList.contains('open')) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                acActiveIndex = Math.min(acActiveIndex + 1, acItems.length - 1);
+                highlightItem();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                acActiveIndex = Math.max(acActiveIndex - 1, -1);
+                highlightItem();
+            } else if (e.key === 'Enter' && acActiveIndex >= 0) {
+                e.preventDefault();
+                var activeEl = dropdown.querySelector('.ac-item.ac-active');
+                if (activeEl) activeEl.click();
+                return;
+            } else if (e.key === 'Escape') {
+                closeAC();
+            }
+        });
+
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && acActiveIndex < 0) {
+                e.preventDefault();
+                closeAC();
+                var searchQuery = input.value.trim();
+                if (searchQuery) {
+                    window.location.href = 'shop.html?q=' + encodeURIComponent(searchQuery);
+                }
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#' + dropdownId) && !e.target.closest('#' + inputId)) {
+                closeAC();
+            }
+        });
+    }
+
+    setupSearchAutocomplete('searchbarHeaderInput', 'searchAutocomplete');
 })();
 </script>
 
