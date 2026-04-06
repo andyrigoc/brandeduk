@@ -5,7 +5,7 @@
 
         var url;
         try {
-            url = new URL('/mobile/footer/footer.html', window.location.origin);
+            url = new URL('/mobile/footer/footer.tpl', window.location.origin);
         } catch (e) {
             return;
         }
@@ -16,8 +16,6 @@
                 return res.text();
             })
             .then(function (html) {
-                // Strip Live Server injected script (breaks partial HTML in local dev)
-                html = html.replace(/<!-- Code injected by live-server -->[\s\S]*?<\/script>/g, '');
                 mount.outerHTML = html;
 
                 var year = String(new Date().getFullYear());
