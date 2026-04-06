@@ -138,6 +138,49 @@
     background: #7c3aed;
 }
 
+/* Payment Methods */
+.footer-payment-methods {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.payment-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.payment-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    height: 24px;
+    box-sizing: border-box;
+}
+
 /* Responsive - larger screens */
 @media (min-width: 640px) {
     .footer-grid {
