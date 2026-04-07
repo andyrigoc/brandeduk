@@ -1190,7 +1190,7 @@
             }
         });
 
-        digitizingFee = uniqueEmbLogos.size * 25.00;
+        digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
         const totalLogoCosts = logoCosts + digitizingFee;
         const subtotalExVat = productCosts + totalLogoCosts;
         const vatAmount = subtotalExVat * 0.20;
@@ -1638,7 +1638,7 @@
                         }
                     });
 
-                    digitizingFee = uniqueEmbLogos.size * 25.00;
+                    digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
                     const totalExVat = totalGarmentCost + customizationTotal + digitizingFee;
                     const vatAmount = totalExVat * 0.20;
 
