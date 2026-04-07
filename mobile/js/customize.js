@@ -8192,10 +8192,13 @@
         });
 
         // Add to Basket button
-        elements.addToBasketBtn?.addEventListener('click', () => {
-            console.log('🔘 Add to basket button clicked! state.quantity:', state.quantity);
-            addToQuote();
-        });
+        const addToBasketBtn = document.getElementById('addToBasketBtn');
+        if (addToBasketBtn) {
+            addToBasketBtn.addEventListener('click', () => {
+                console.log('🔘 Add to basket button clicked! state.quantity:', state.quantity);
+                addToQuote();
+            });
+        }
 
         elements.closeEditor?.addEventListener('click', () => {
             closeModal(elements.designEditorModal);
