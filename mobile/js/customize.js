@@ -8769,6 +8769,7 @@
         const now = new Date().toISOString();
 
         // If coming from basket "Add Logo", update existing item in-place
+        let lastNewItem = null;
         if (isFromBasket && _autoSavedItemId) {
             const existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
             if (existingIdx !== -1) {
@@ -8799,7 +8800,6 @@
             _sessionSavedIds.clear();
             _autoSavedItemId = null;
 
-            let lastNewItem = null;
             sizesToAdd.forEach(([size, qty]) => {
                 const sizePositions = positions.map(p => ({
                     ...p,
