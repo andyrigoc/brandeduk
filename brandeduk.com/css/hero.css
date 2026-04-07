@@ -26,13 +26,13 @@
     opacity: 1;
 }
 
-/* Individual Panel - 9 panels */
+/* Individual Panel - 10 panels */
 .hero-el {
     position: absolute;
     left: 0;
     top: 0;
-    /* 9 panels with 8 gaps of 12px */
-    width: calc((100% - 96px) / 9);
+    /* 10 panels with 9 gaps of 12px */
+    width: calc((100% - 108px) / 10);
     height: 100%;
     background: #fff;
     border-radius: 16px;
@@ -400,97 +400,106 @@
     transform: rotate(-45deg) translateX(0);
 }
 
-/* Panel Positions - 9 panels with gaps */
+/* Panel Positions - 10 panels with gaps */
+/* 1. T-Shirts */
 .hero-el:nth-child(1) {
     transform: translate3d(0%, 0, 0);
 }
 .hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
 .hero-el:nth-child(1) .hero-el__bg:before { 
     transition-delay: 0s;
-    background-image: url('../../hero/images/apron.jpg');
-    background-position: calc(50% + 250px) center;
-}
-
-.hero-el:nth-child(2) {
-    transform: translate3d(calc(100% + 12px), 0, 0);
-}
-.hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.07s; }
-.hero-el:nth-child(2) .hero-el__bg:before { 
-    transition-delay: 0.07s;
-    background-image: url('../../hero/images/hoodies.jpg');
-    background-position: calc(50% + 262px) center;
-}
-
-.hero-el:nth-child(3) {
-    transform: translate3d(calc(200% + 24px), 0, 0);
-}
-.hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.14s; }
-.hero-el:nth-child(3) .hero-el__bg:before { 
-    transition-delay: 0.14s;
-    background-image: url('../../hero/images/beanie.jpg');
-    background-position: center top;
-}
-
-.hero-el:nth-child(4) {
-    transform: translate3d(calc(300% + 36px), 0, 0);
-}
-.hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.21s; }
-.hero-el:nth-child(4) .hero-el__bg:before { 
-    transition-delay: 0.21s;
-    background-image: url('../../hero/images/Hi-Viz.jpg');
-    background-position: calc(50% + 40px) calc(50% - 10px);
-}
-
-.hero-cont:not(.s--inactive) .hero-el:nth-child(4):not(.s--active) .hero-el__bg:before {
-    transform: translate3d(0, 0, 0) scale(1.2);
-}
-
-.hero-el:nth-child(5) {
-    transform: translate3d(calc(400% + 48px), 0, 0);
-}
-.hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.28s; }
-.hero-el:nth-child(5) .hero-el__bg:before { 
-    transition-delay: 0.28s;
-    background-image: url('../../hero/images/Polo.jpg');
-    background-position: center center;
-}
-
-.hero-el:nth-child(6) {
-    transform: translate3d(calc(500% + 60px), 0, 0);
-}
-.hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.35s; }
-.hero-el:nth-child(6) .hero-el__bg:before { 
-    transition-delay: 0.35s;
-    background-image: url('../../hero/images/Jacket.jpeg');
-    background-position: center center;
-}
-
-.hero-el:nth-child(7) {
-    transform: translate3d(calc(600% + 72px), 0, 0);
-}
-.hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.42s; }
-.hero-el:nth-child(7) .hero-el__bg:before { 
-    transition-delay: 0.42s;
     background-image: url('../../hero/images/T-shirthero.jpg');
     background-position: center center;
 }
 
-.hero-el:nth-child(8) {
-    transform: translate3d(calc(700% + 84px), 0, 0);
+/* 2. Hoodies */
+.hero-el:nth-child(2) {
+    transform: translate3d(calc(100% + 12px), 0, 0);
 }
-.hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.49s; }
-.hero-el:nth-child(8) .hero-el__bg:before {
-    transition-delay: 0.49s;
-    background-image: url('../../hero/images/WorkTrousers.jpg?v=20260103');
+.hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.06s; }
+.hero-el:nth-child(2) .hero-el__bg:before { 
+    transition-delay: 0.06s;
+    background-image: url('../../hero/images/hoodies.jpg');
+    background-position: calc(50% + 262px) center;
+}
+
+/* 3. Beanies */
+.hero-el:nth-child(3) {
+    transform: translate3d(calc(200% + 24px), 0, 0);
+}
+.hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.12s; }
+.hero-el:nth-child(3) .hero-el__bg:before { 
+    transition-delay: 0.12s;
+    background-image: url('../../hero/images/beanie.jpg');
+    background-position: center top;
+}
+
+/* 4. Bags */
+.hero-el:nth-child(4) {
+    transform: translate3d(calc(300% + 36px), 0, 0);
+}
+.hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.18s; }
+.hero-el:nth-child(4) .hero-el__bg:before { 
+    transition-delay: 0.18s;
+    background-image: url('../../hero/images/bag.jpg');
     background-position: center center;
 }
 
+/* 5. Aprons */
+.hero-el:nth-child(5) {
+    transform: translate3d(calc(400% + 48px), 0, 0);
+}
+.hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.24s; }
+.hero-el:nth-child(5) .hero-el__bg:before { 
+    transition-delay: 0.24s;
+    background-image: url('../../hero/images/apron.jpg');
+    background-position: calc(50% + 250px) center;
+}
+
+/* 6. Hi-Viz */
+.hero-el:nth-child(6) {
+    transform: translate3d(calc(500% + 60px), 0, 0);
+}
+.hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.30s; }
+.hero-el:nth-child(6) .hero-el__bg:before { 
+    transition-delay: 0.30s;
+    background-image: url('../../hero/images/Hi-Viz.jpg');
+    background-position: calc(50% + 40px) calc(50% - 10px);
+}
+
+.hero-cont:not(.s--inactive) .hero-el:nth-child(6):not(.s--active) .hero-el__bg:before {
+    transform: translate3d(0, 0, 0) scale(1.2);
+}
+
+/* 7. Polo */
+.hero-el:nth-child(7) {
+    transform: translate3d(calc(600% + 72px), 0, 0);
+}
+.hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.36s; }
+.hero-el:nth-child(7) .hero-el__bg:before { 
+    transition-delay: 0.36s;
+    background-image: url('../../hero/images/Polo.jpg');
+    background-position: center center;
+}
+
+/* 8. Jackets */
+.hero-el:nth-child(8) {
+    transform: translate3d(calc(700% + 84px), 0, 0);
+}
+.hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.42s; }
+.hero-el:nth-child(8) .hero-el__bg:before { 
+    transition-delay: 0.42s;
+    background-image: url('../../hero/images/Jacket.jpeg');
+    background-position: center center;
+}
+
+/* 9. Sustainable */
 .hero-el:nth-child(9) {
     transform: translate3d(calc(800% + 96px), 0, 0);
 }
-.hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.56s; }
+.hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.48s; }
 .hero-el:nth-child(9) .hero-el__bg:before {
-    transition-delay: 0.56s;
+    transition-delay: 0.48s;
     background-image: url('../../hero/images/Sustainable.jpg');
     background-position: center center;
 }
@@ -498,6 +507,17 @@
 .hero-cont:not(.s--inactive) .hero-el:nth-child(9):not(.s--active) .hero-el__bg:before {
     transform: translate3d(0, 0, 0) scale(1.3);
     background-position: calc(50% - 30px) calc(50% + 10px);
+}
+
+/* 10. Work Trousers */
+.hero-el:nth-child(10) {
+    transform: translate3d(calc(900% + 108px), 0, 0);
+}
+.hero-el:nth-child(10) .hero-el__inner { transition-delay: 0.54s; }
+.hero-el:nth-child(10) .hero-el__bg:before {
+    transition-delay: 0.54s;
+    background-image: url('../../hero/images/WorkTrousers.jpg?v=20260103');
+    background-position: center center;
 }
 
 /* Inactive states for non-active elements */
