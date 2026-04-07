@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BrandedUK Mobile - Customize Page JavaScript
  * TapStitch-inspired interactions
  */
@@ -203,14 +203,14 @@
     
     // Default fallback images (hoodie images)
     const DEFAULT_POSITION_IMAGES = {
-        'left-breast': 'https://i.postimg.cc/sfqnrsjm/Chat_GPT_Image_Dec_19_2025_03_56_48_PM.png',
-        'right-breast': 'https://i.postimg.cc/j5QJk6jx/Right-Chest.jpg',
+        'left-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+        'right-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
         'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
         'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
         'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-        'large-back': 'https://i.postimg.cc/zD6dr8zt/Chat_GPT_Image_Dec_19_2025_03_51_18_PM.png',
-        'left-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png',
-        'right-arm': 'https://i.postimg.cc/cLr487yc/Chat_GPT_Image_Dec_19_2025_05_12_56_PM.png'
+        'large-back': 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
+        'left-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
+        'right-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
     };
     
     // Default prices per position type
@@ -244,6 +244,7 @@
         'Hoodies': 'adult-tops/hoodies',
         'Sweatshirts': 'adult-tops/hoodies',
         'Polos': 'adult-tops/long-sleeve-polo',
+        'Short Sleeve Polos': 'adult-tops/short-sleeve-polo',
         'T-shirts': 'adult-tops/short-sleeve-crew-neck',
         'Shirts': 'adult-tops/short-sleeve-crew-neck',
         'Jackets': 'adult-tops/soft-shell-jacket',
@@ -309,7 +310,8 @@
         'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
         'adult-tops/hoodies': ['back.jpg', 'front.jpg', 'left-chest.jpg', 'left-sleeve.jpg', 'right-chest.jpg', 'right-sleeve.jpg'],
         'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
-        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/short-sleeve-polo': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
         'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
         'headwear/beanie': ['front-logo.png'],
@@ -332,7 +334,8 @@
         if (lower.includes('hoodie') || lower.includes('hooded')) return 'Hoodies';
         if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan')) return 'Sweatshirts';
         if (lower.includes('fleece')) return 'Fleece';
-        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('polo') && lower.includes('long sleeve')) return 'Polos';
+        if (lower.includes('polo')) return 'Short Sleeve Polos';
         if (lower.includes('t-shirt') || lower.includes('tshirt') || lower.includes('tee ') || lower === 'tee' || lower.includes('vest top')) return 'T-shirts';
         if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak') || lower.includes('windbreaker')) return 'Jackets';
         if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
@@ -364,7 +367,8 @@
         if (lower.includes('hoodie') || lower.includes('hooded sweat') || lower.includes('hooded top') || lower.includes('zip hood')) return 'Hoodies';
         if (lower.includes('sweatshirt') || lower.includes('crew neck sweat') || lower.includes('raglan sweat')) return 'Sweatshirts';
         if (lower.includes('fleece')) return 'Fleece';
-        if (lower.includes('polo')) return 'Polos';
+        if (lower.includes('polo') && lower.includes('long sleeve')) return 'Polos';
+        if (lower.includes('polo')) return 'Short Sleeve Polos';
         if (lower.includes('t-shirt') || lower.includes('tshirt') || (lower.includes('tee') && !lower.includes('steel'))) return 'T-shirts';
         if (lower.includes('softshell') || lower.includes('soft shell') || lower.includes('soft-shell')) return 'Softshells';
         if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat') || lower.includes('anorak')) return 'Jackets';
@@ -691,12 +695,24 @@
             const savedState = JSON.parse(saved);
             console.log('?? Restoring customization state:', savedState);
             
+            // CRITICAL: When editing a specific basket item, do NOT restore position designs
+            // from shared session state — the basket item's own data is loaded in Phase 2.1
+            const isEditingBasketItem = sessionStorage.getItem('customizingBasketIndex') !== null;
+            
             // Check if the saved state is for the SAME product
             const currentProductCode = state.product?.code || sessionStorage.getItem('selectedProduct') || '';
             const savedProductCode = savedState.productCode || '';
             const isSameProduct = savedProductCode && currentProductCode && savedProductCode === currentProductCode;
             
-            if (isSameProduct) {
+            if (isEditingBasketItem) {
+                // Editing a specific basket item — clear position state so the basket item's
+                // own designs are used (loaded later in Phase 2.1)
+                state.positionMethods = {};
+                state.positionCustomizations = {};
+                state.positionDesigns = {};
+                state.positions = [];
+                console.log('?? Editing basket item — skipping session position restore (will load from basket)');
+            } else if (isSameProduct) {
                 // Same product — restore position designs/methods
                 if (savedState.positionMethods) state.positionMethods = savedState.positionMethods;
                 if (savedState.positionCustomizations) state.positionCustomizations = savedState.positionCustomizations;
@@ -729,8 +745,12 @@
             }
             // Note: selectedColorImage is NOT restored here - it's set from new product data
             
-            if (savedState.sizeQuantities) state.sizeQuantities = savedState.sizeQuantities;
-            if (savedState.quantity !== undefined) state.quantity = savedState.quantity;
+            // Only restore quantity/sizes if NOT editing a specific basket item
+            // (basket item's own data is loaded in Phase 2.1)
+            if (!isEditingBasketItem) {
+                if (savedState.sizeQuantities) state.sizeQuantities = savedState.sizeQuantities;
+                if (savedState.quantity !== undefined) state.quantity = savedState.quantity;
+            }
             if (savedState.technique) state.technique = savedState.technique;
             
             return true;
@@ -1765,13 +1785,13 @@
         doneBar.querySelector('#positionsDoneBtn').addEventListener('click', () => {
             // Save current customization to the basket item
             addToQuote({ silent: true });
+            // addToQuote Phase 2.2 handles closing via parent.closeCustomizePopup()
+            // If that fails (e.g. cross-origin), send postMessage as fallback
             setTimeout(() => {
-                if (window.parent !== window && typeof window.parent.closeCustomizePopup === 'function') {
-                    window.parent.closeCustomizePopup();
-                } else {
-                    window.location.href = '../basket.html';
+                if (window.parent && window.parent !== window) {
+                    try { window.parent.postMessage({ type: 'closeCustomizePopup' }, '*'); } catch(e) {}
                 }
-            }, 300);
+            }, 1000);
         });
     }
 
@@ -1875,6 +1895,13 @@
                 const basketItem = basket[parseInt(basketIdx, 10)];
                 if (basketItem) {
                     console.log('🛒 Loading basket item for customization:', basketItem.productName, basketItem.color);
+                } else {
+                    // Stale index — basket was cleared or item removed
+                    console.warn('⚠️ Basket item at index', basketIdx, 'no longer exists. Clearing stale sessionStorage keys.');
+                    sessionStorage.removeItem('customizingBasketIndex');
+                    sessionStorage.removeItem('returnAfterCustomize');
+                }
+                if (basketItem) {
 
                     // Link auto-save to this specific basket item
                     _autoSavedItemId = basketItem.id;
@@ -1907,6 +1934,8 @@
                     // Pre-populate existing designs/positions if editing
                     if (basketItem.positionDesigns && Object.keys(basketItem.positionDesigns).length > 0) {
                         state.positionDesigns = { ...basketItem.positionDesigns };
+                        // Also sync positionCustomizations so card previews/glow show correctly
+                        state.positionCustomizations = { ...basketItem.positionDesigns };
                     }
                     if (basketItem.positions) {
                         // positions can be array (new format) or object (old format)
@@ -5475,7 +5504,7 @@
 
         const overlay = document.createElement('div');
         overlay.id = 'existingLogoPopup';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);';
 
         const card = document.createElement('div');
         card.style.cssText = 'background:#fff;border-radius:16px;padding:24px 20px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25);';
@@ -7407,7 +7436,7 @@
 
             const overlay = document.createElement('div');
             overlay.id = 'methodPickerOverlay';
-            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10002;display:flex;align-items:center;justify-content:center;padding:16px;';
 
             const sheet = document.createElement('div');
             sheet.style.cssText = 'background:#fff;border-radius:20px;padding:24px 20px;max-width:320px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.18);text-align:center;animation:logoGalleryScaleIn 0.3s ease;';
@@ -7445,20 +7474,141 @@
             });
         }
 
-        // Customize badge click - scroll to position cards so user picks position first
+        // Customize badge click - open positions section as popup overlay
         basketItemsList.querySelectorAll('.summary-customize-badge[data-index]').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Scroll to the positions section so customer chooses position first
-                const positionsSection = document.querySelector('.customization-options') || document.getElementById('positionOptions');
-                if (positionsSection) {
-                    positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                openPositionsPopup();
             });
         });
         
 
+    }
+
+    // Open positions section as a popup overlay
+    function openPositionsPopup() {
+        // If popup already exists, just show it
+        let overlay = document.getElementById('positionsPopupOverlay');
+        if (overlay) {
+            // Re-apply product type position hiding
+            if (state.product && state.product.rawData) {
+                updatePositionCardsForProductType(state.product.rawData);
+            }
+            // Force-hide cards not in product config
+            const pt = state.product && state.product.rawData ? (state.product.rawData.productType || state.product.rawData.category || state.product.rawData.type || '') : '';
+            const nt = normalizeProductTypeForFolder(pt || (state.product && state.product.rawData && state.product.rawData.name ? inferProductTypeFromName(state.product.rawData.name) : ''));
+            // Update title
+            const titleEl = document.getElementById('positionsSectionTitle');
+            if (titleEl) {
+                const ptName2 = nt || 'Logo';
+                titleEl.textContent = 'Logo Positions: ' + ptName2;
+            }
+            const fp = PRODUCT_TYPE_TO_FOLDER[nt];
+            if (fp) {
+                const imgs = FOLDER_IMAGE_MAP[fp] || [];
+                const avail = [];
+                imgs.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) avail.push(pi.code); });
+                document.querySelectorAll('#positionOptions .position-card, .positions-grid .position-card').forEach(card => {
+                    const pos = card.dataset.position;
+                    if (!avail.includes(pos)) card.style.display = 'none';
+                });
+            }
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+
+        const posSection = document.getElementById('positionsSection');
+        const posTitle = document.getElementById('positionsSectionTitle');
+        if (!posSection) return;
+
+        // Create overlay
+        overlay = document.createElement('div');
+        overlay.id = 'positionsPopupOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;justify-content:center;';
+
+        // Create popup container
+        const popup = document.createElement('div');
+        popup.style.cssText = 'background:#fff;border-radius:16px 16px 0 0;max-height:90vh;width:100%;max-width:600px;overflow-y:auto;padding:0 0 80px;position:relative;';
+
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.cssText = 'position:sticky;top:8px;right:12px;float:right;z-index:10;background:#f3f4f6;border:none;border-radius:50%;width:32px;height:32px;font-size:20px;cursor:pointer;margin:8px 12px 0 0;';
+        closeBtn.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+        popup.appendChild(closeBtn);
+
+        // Move title + section INTO the popup (they are display:none in the page)
+        posSection.style.display = '';
+        popup.appendChild(posSection);
+
+        // Re-apply product type position hiding after moving cards into popup
+        if (state.product && state.product.rawData) {
+            updatePositionCardsForProductType(state.product.rawData);
+        }
+        // Force-hide cards not in product config
+        const productType = state.product && state.product.rawData ? (state.product.rawData.productType || state.product.rawData.category || state.product.rawData.type || '') : '';
+        const normalizedType = normalizeProductTypeForFolder(productType || (state.product && state.product.rawData && state.product.rawData.name ? inferProductTypeFromName(state.product.rawData.name) : ''));
+
+        if (posTitle) {
+            // Update title with product type
+            const ptName = normalizedType || 'Logo';
+            posTitle.textContent = 'Logo Positions: ' + ptName;
+            posTitle.style.display = '';
+            popup.insertBefore(posTitle, posSection);
+        }
+
+        const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedType];
+        if (folderPath) {
+            const imageFiles = FOLDER_IMAGE_MAP[folderPath] || [];
+            const availablePositions = [];
+            imageFiles.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) availablePositions.push(pi.code); });
+            posSection.querySelectorAll('.position-card').forEach(card => {
+                const pos = card.dataset.position;
+                if (!availablePositions.includes(pos)) {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Done button bar
+        const doneBar = document.createElement('div');
+        doneBar.style.cssText = 'position:sticky;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #e5e7eb;z-index:100;';
+        doneBar.innerHTML = `<button type="button" style="width:100%;padding:14px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Done
+        </button>`;
+        doneBar.querySelector('button').addEventListener('click', () => {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            // Force immediate save (not timer)
+            autoSaveToBasket();
+            // If opened from basket iframe, close parent popup
+            const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+            if (isFromBasket && window.parent && window.parent !== window) {
+                try {
+                    window.parent.postMessage({ type: 'closeCustomizePopup' }, '*');
+                } catch(e) {}
+            }
+        });
+        popup.appendChild(doneBar);
+
+        overlay.appendChild(popup);
+
+        // Close on backdrop click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
     }
 
     // Extract logo image src from a basket item
@@ -8043,11 +8193,8 @@
 
         // Add to Basket button
         elements.addToBasketBtn?.addEventListener('click', () => {
-            addToQuote({ silent: true });
-            // Navigate to basket
-            setTimeout(() => {
-                window.location.href = '../basket.html';
-            }, 300);
+            console.log('🔘 Add to basket button clicked! state.quantity:', state.quantity);
+            addToQuote();
         });
 
         elements.closeEditor?.addEventListener('click', () => {
@@ -8382,17 +8529,10 @@
     /**
      * Reset the 3-second auto-save timer. Called whenever state changes
      * (qty change, color change, logo change, position change).
-     * After 3 seconds of no further changes, saves current item to basket silently.
+     * Disabled: no more auto-save. Save only on explicit user action (Done / Add to basket).
      */
     function resetAutoSaveTimer() {
-        if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
-
-        // Only start timer if there are items selected (qty > 0)
-        if (!state.quantity || state.quantity === 0) return;
-
-        _autoSaveTimer = setTimeout(() => {
-            autoSaveToBasket();
-        }, 3000);
+        // No-op: auto-save disabled
     }
 
     // Expose force-save so parent (basket iframe popup) can trigger immediate save
@@ -8440,6 +8580,9 @@
                 const existing = basket[existingIdx];
                 existing.positions = positions;
                 existing.positionDesigns = state.positionDesigns ? JSON.parse(JSON.stringify(state.positionDesigns)) : {};
+                if (!existing.productType) {
+                    existing.productType = state.product?.rawData?.productType || state.product?.rawData?.category || state.product?.rawData?.type || '';
+                }
                 existing.customizations = getActiveCustomizations().map(c => ({
                     ...c,
                     qty: existing.totalQty,
@@ -8484,6 +8627,7 @@
         _sessionSavedIds.clear();
         _autoSavedItemId = null;
 
+        let lastAutoItem = null;
         sizesToAdd.forEach(([size, qty]) => {
             const sizePositions = positions.map(p => ({ ...p }));
             const sizeCustomizations = getActiveCustomizations().map(c => ({
@@ -8493,10 +8637,11 @@
             }));
 
             const itemId = Date.now().toString() + '-auto-' + size;
-            const newItem = {
+            lastAutoItem = {
                 id: itemId,
                 productCode: baseProductCode,
                 productName: baseProductName,
+                productType: state.product?.rawData?.productType || state.product?.rawData?.category || state.product?.rawData?.type || '',
                 color: baseColor,
                 colorId: baseColorId,
                 colorImage: baseColorImage,
@@ -8513,7 +8658,7 @@
             };
 
             _sessionSavedIds.add(itemId);
-            basket.push(newItem);
+            basket.push(lastAutoItem);
         });
 
         if (sizesToAdd.length > 0) {
@@ -8533,7 +8678,7 @@
         // Show subtle feedback
         showAutoSaveIndicator();
 
-        console.log('💾 Auto-saved to basket:', newItem.productName, newItem.color, 'qty:', newItem.totalQty);
+        console.log('💾 Auto-saved to basket:', lastAutoItem?.productName, lastAutoItem?.color, 'qty:', lastAutoItem?.totalQty);
     }
 
     /**
@@ -8557,12 +8702,14 @@
     // === Add to Quote ===
     function addToQuote(options = {}) {
         const { silent = false } = options; // silent = true skips the success modal
+        console.log('🛒 addToQuote called, silent:', silent, 'state.quantity:', state.quantity, 'sizeQuantities:', JSON.stringify(state.sizeQuantities));
 
         // Cancel any pending auto-save to prevent race-condition duplicates
         if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
         
-        // Validate that we have items
-        if (state.quantity === 0) {
+        // Validate that we have items (skip check when editing existing basket item)
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+        if (state.quantity === 0 && !isFromBasket) {
             showToast('Please add at least one item', true);
             return;
         }
@@ -8606,7 +8753,7 @@
         });
         
         // Create one basket item PER SIZE — each size is its own line
-        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+        // isFromBasket already declared above
         const currentUnitPrice = getCurrentUnitPrice();
         const priceMode = localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex';
         const baseProductCode = state.product?.code || 'GD067';
@@ -8649,6 +8796,7 @@
             _sessionSavedIds.clear();
             _autoSavedItemId = null;
 
+            let lastNewItem = null;
             sizesToAdd.forEach(([size, qty]) => {
                 const sizePositions = positions.map(p => ({
                     ...p,
@@ -8661,7 +8809,7 @@
                 }));
 
                 const itemId = Date.now().toString() + '-' + size;
-                const newItem = {
+                lastNewItem = {
                     id: itemId,
                     productCode: baseProductCode,
                     productName: baseProductName,
@@ -8680,7 +8828,7 @@
                 };
 
                 _sessionSavedIds.add(itemId);
-                basket.push(newItem);
+                basket.push(lastNewItem);
                 console.log('🛒 Added basket item (size ' + size + '), totalQty:', qty);
             });
 
@@ -8699,7 +8847,7 @@
                 console.error('?? LocalStorage quota exceeded!');
                 
                 // Try to compress and save again
-                compressItemImages(newItem).then(compressedItem => {
+                compressItemImages(lastNewItem).then(compressedItem => {
                     basket[basket.length - 1] = compressedItem;
                     try {
                         localStorage.setItem('quoteBasket', JSON.stringify(basket));
@@ -8742,8 +8890,15 @@
         }
         
         // Show success message with option to go to basket (unless silent)
-        if (!silent) {
-            showAddedToQuoteModal(newItem);
+        if (!silent && lastNewItem) {
+            // Build a summary item with ALL sizes for the modal
+            const summaryItem = {
+                ...lastNewItem,
+                quantities: { ...state.sizeQuantities },
+                totalQty: state.quantity,
+                productCode: baseProductCode
+            };
+            showAddedToQuoteModal(summaryItem);
         }
     }
 
@@ -8829,69 +8984,104 @@
     }
 
     function showAddedToQuoteModal(item) {
-        // Check if any logo was used in this item (for "reuse logo" button label)
-        const hasLogo = !!(item.positions && item.positions.some(p => p.logo));
+        // Build size detail string (e.g. "Antique Cherry Red, M\nAntique Cherry Red, L")
+        const sizeDetails = Object.entries(item.quantities || {})
+            .filter(([, qty]) => qty > 0)
+            .map(([size]) => `${item.color}, ${size}`)
+            .join('<br>');
+        
+        const itemImage = item.colorImage || state.selectedColorImage || '';
+        const unitPrice = item.unitPrice || 0;
+        const totalPrice = unitPrice * (item.totalQty || 0);
+        const vatMode = localStorage.getItem('brandeduk-vat-mode') === 'on';
+        const displayUnit = vatMode ? (unitPrice * 1.2).toFixed(2) : unitPrice.toFixed(2);
+        const displayTotal = vatMode ? (totalPrice * 1.2).toFixed(2) : totalPrice.toFixed(2);
+        const vatLabel = vatMode ? 'inc. VAT' : 'ex. VAT';
 
-        // Create overlay
+        // Remove any existing modal
+        document.querySelector('.quote-added-modal')?.remove();
+
         const modal = document.createElement('div');
         modal.className = 'quote-added-modal';
         modal.innerHTML = `
-            <div class="quote-added-content">
-                <div class="quote-added-check">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5">
+            <div class="quote-added-content" style="max-width:420px;width:92%;background:#fff;border-radius:16px;padding:24px 20px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.2);">
+                <button type="button" id="closeAddedModal" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280;line-height:1;">&times;</button>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M8 12l2.5 2.5L16 9"/>
                     </svg>
+                    <h3 style="margin:0;font-size:18px;font-weight:700;color:#16a34a;">Added to basket</h3>
                 </div>
-                <h3>Added to Quote!</h3>
-                <p class="quote-added-summary">
-                    ${item.totalQty}× ${item.productName}<br>
-                    <span class="text-muted">${item.color}</span>
-                </p>
-                <div class="quote-added-actions">
-                    <button class="btn-secondary" id="addAnotherColorBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Add Another Color
+                <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+                    ${itemImage ? `<img src="${itemImage}" alt="${item.productName}" style="width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid #e5e7eb;flex-shrink:0;">` : ''}
+                    <div style="min-width:0;">
+                        <h4 style="margin:0 0 2px;font-size:15px;font-weight:700;color:#1f2937;">${item.productName || 'Product'}</h4>
+                        <p style="margin:0;font-size:12px;color:#6b7280;">${item.productCode || ''}</p>
+                        <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">${sizeDetails}</p>
+                        <p style="margin:2px 0 0;font-size:12px;color:#374151;font-weight:600;">Qty: ${item.totalQty}</p>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+                    <span style="font-size:14px;font-weight:700;color:#1f2937;">${item.totalQty} items</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;">
+                    <span style="font-size:13px;color:#6b7280;">£${displayUnit} per item</span>
+                    <span style="font-size:15px;color:#16a34a;font-weight:700;">Total: £${displayTotal} <span style="font-size:11px;font-weight:400;">${vatLabel}</span></span>
+                </div>
+                <div class="quote-added-actions" style="display:flex;flex-direction:column;gap:10px;">
+                    <button class="btn-primary" id="addLogoNowBtn" style="width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        Add your logo now
                     </button>
-                    <button class="btn-secondary" id="chooseAnotherProductBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/>
-                            <rect x="14" y="3" width="7" height="7"/>
-                            <rect x="3" y="14" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/>
-                        </svg>
-                        Choose Another Product
-                    </button>
-                    <button class="btn-primary" id="viewQuoteBtn">View Quote Basket</button>
+                    <button class="btn-secondary" id="viewBasketBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#1f2937;">View Basket</button>
+                    <a href="#" id="continueShoppingLink" style="display:block;text-align:center;font-size:13px;color:#6b7280;text-decoration:underline;margin-top:2px;">Continue Shopping</a>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
         
-        // Add entrance animation
         requestAnimationFrame(() => {
             modal.classList.add('active');
         });
         
-        // Button handlers
-        modal.querySelector('#addAnotherColorBtn').addEventListener('click', () => {
+        // Close button
+        modal.querySelector('#closeAddedModal').addEventListener('click', () => {
             modal.remove();
-            // Reset the form for new item (same product, different color)
+        });
+
+        // Add your logo now
+        modal.querySelector('#addLogoNowBtn').addEventListener('click', () => {
+            modal.remove();
+            // Find the just-added item index in basket and navigate to customize
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const idx = basket.findIndex(i => i.id === item.id);
+            if (idx !== -1) {
+                sessionStorage.setItem('customizingBasketIndex', idx.toString());
+                sessionStorage.setItem('returnAfterCustomize', 'basket');
+                // Open positions popup for logo
+                openPositionsPopup();
+            }
+        });
+        
+        // View Basket
+        modal.querySelector('#viewBasketBtn').addEventListener('click', () => {
+            window.location.href = '../basket.html';
+        });
+        
+        // Continue Shopping
+        modal.querySelector('#continueShoppingLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.remove();
             resetCustomizationForm();
         });
-        
-        modal.querySelector('#chooseAnotherProductBtn').addEventListener('click', () => {
-            modal.remove();
-            // Go to shop to pick a different product (logo stays in gallery)
-            window.location.href = '../shop.html';
-        });
-        
-        modal.querySelector('#viewQuoteBtn').addEventListener('click', () => {
-            window.location.href = '../basket.html';
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
         });
     }
 

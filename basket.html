@@ -2554,6 +2554,7 @@
                 // Collect ALL logos with positions
                 let logos = [];
                 if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                    console.log('🔍 Item', index, item.productName, 'positionDesigns:', JSON.stringify(Object.keys(item.positionDesigns)), Object.entries(item.positionDesigns).map(([k,v]) => k + ':' + (v?.logo ? 'HAS_LOGO' : 'no_logo')));
                     Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
                         if (d && d.logo) {
                             logos.push({ src: d.logo, position: toReadablePosition(d.position || posKey), method: d.method || '' });
@@ -3443,6 +3444,8 @@
                                 sessionStorage.removeItem('customizingProduct');
                                 sessionStorage.removeItem('selectedPositions');
                                 sessionStorage.removeItem('positionCustomizations');
+                                sessionStorage.removeItem('customizingBasketIndex');
+                                sessionStorage.removeItem('returnAfterCustomize');
 
                                 const qOverlay = document.getElementById('quotePopupOverlay');
                                 if (qOverlay) {
@@ -3571,11 +3574,12 @@
             // Set selectedProductData for customize page
             sessionStorage.setItem('selectedProductData', JSON.stringify({
                 code: item.code || item.productCode || '',
-                name: item.name || '',
+                name: item.name || item.productName || '',
                 price: item.unitPrice || item.price || 0,
                 image: item.image || item.colorImage || '',
                 brand: item.brand || '',
-                productType: item.productType || ''
+                productType: item.productType || '',
+                description: item.name || item.productName || ''
             }));
 
             // Open customize page in popup iframe instead of redirect
@@ -3595,30 +3599,34 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Close customize popup
+        // Close customize popup (exposed as window global so iframe can call it)
+        window.closeCustomizePopup = closeCustomizePopup;
         function closeCustomizePopup() {
             const overlay = document.getElementById('customizePopupOverlay');
             const iframe = document.getElementById('customizePopupIframe');
 
-            // Force-save any pending changes from iframe before destroying it
-            try {
-                if (iframe && iframe.contentWindow && iframe.contentWindow._forceAutoSave) {
-                    iframe.contentWindow._forceAutoSave();
-                }
-            } catch (e) { /* cross-origin or iframe already unloaded */ }
+            // Do NOT call _forceAutoSave here — save only happens on explicit Done button click
+            // Calling it here caused double-save corruption (re-saving after addToQuote already saved)
 
             if (overlay) overlay.hidden = true;
             if (iframe) iframe.src = '';
             document.body.style.overflow = '';
             
-            // Refresh basket to show updated logo/costs for this item
-            renderBasket();
+            // Small delay to ensure localStorage is flushed, then refresh basket
+            setTimeout(() => { renderBasket(); }, 100);
         }
 
         // Init customize popup close button
         document.getElementById('customizePopupClose')?.addEventListener('click', closeCustomizePopup);
         document.getElementById('customizePopupOverlay')?.addEventListener('click', (e) => {
             if (e.target.id === 'customizePopupOverlay') closeCustomizePopup();
+        });
+
+        // Listen for close message from iframe (Done button in positions popup)
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'closeCustomizePopup') {
+                closeCustomizePopup();
+            }
         });
 
         // Remove a logo from a specific position of a basket item
