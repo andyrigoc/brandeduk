@@ -1711,6 +1711,13 @@
     // When opened from basket "Add Logo" button, hide everything except position cards
     function applyPositionsOnlyMode() {
         console.log('🎯 Positions-Only mode activated');
+
+        // Show the positions section (hidden by default in HTML)
+        const posSection = document.getElementById('positionsSection');
+        const posTitle = document.getElementById('positionsSectionTitle');
+        if (posSection) posSection.style.display = '';
+        if (posTitle) posTitle.style.display = '';
+
         const style = document.createElement('style');
         style.textContent = `
             /* Hide everything except positions section */
@@ -1719,6 +1726,8 @@
             .order-summary-section, .action-bar, .bottom-nav,
             .pricing-section, #sizeQtySection,
             footer, .mobile-footer { display: none !important; }
+            /* Show positions section */
+            .customization-options { display: block !important; }
             /* Style the positions section for popup */
             .customize-main { padding: 0 !important; margin: 0 !important; }
             body { background: #fff !important; overflow-x: hidden !important; }
@@ -2105,65 +2114,55 @@
             });
         }
         
-        // Create new item
-        const newItem = {
-            id: Date.now().toString(),
-            productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
-            color: state.selectedColorName || state.selectedColor || 'Black',
-            colorId: state.selectedColor,
-            colorImage: state.selectedColorImage,
-            quantities: { ...state.sizeQuantities },
-            totalQty: state.quantity,
-            unitPrice: getCurrentUnitPrice(),
-            priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
-            positions: positions,
-            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
-            customizations: customizations,
-            addedAt: new Date().toISOString()
-        };
-        
-        console.log('?? New Item to save:', JSON.stringify(newItem, null, 2));
-        console.log('?? positions object:', JSON.stringify(positions));
-        console.log('?? customizations array:', JSON.stringify(customizations));
-        
-        // Add to basket — merge if same product+color already exists
-        const existingIdx = basket.findIndex(i =>
-            i.productCode === newItem.productCode &&
-            (i.colorId === newItem.colorId || i.color === newItem.color)
-        );
+        // Create one basket item PER SIZE — each size is its own line
+        const currentUnitPrice = getCurrentUnitPrice();
+        const priceMode = localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex';
+        const baseProductCode = state.product?.code || 'GD067';
+        const baseProductName = state.product?.name || 'Gildan Softstyle™ Midweight Hoodie';
+        const baseColor = state.selectedColorName || state.selectedColor || 'Black';
+        const baseColorId = state.selectedColor;
+        const baseColorImage = state.selectedColorImage;
+        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const now = new Date().toISOString();
 
-        if (existingIdx !== -1) {
-            const existing = basket[existingIdx];
-            Object.entries(newItem.quantities).forEach(([size, qty]) => {
-                existing.quantities[size] = (existing.quantities[size] || 0) + qty;
+        const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
+
+        sizesToAdd.forEach(([size, qty]) => {
+            const sizeCustomizations = customizations.map(c => ({
+                ...c,
+                qty: qty,
+                total: (c.unitPrice || 0) * qty
+            }));
+            const sizePositions = {};
+            Object.entries(positions).forEach(([pos, posData]) => {
+                sizePositions[pos] = {
+                    ...posData,
+                    totalPrice: (posData.unitPrice || 0) * qty
+                };
             });
-            existing.totalQty = Object.values(existing.quantities).reduce((s, q) => s + q, 0);
-            existing.unitPrice = newItem.unitPrice;
-            if (newItem.positions && Object.keys(newItem.positions).length > 0) {
-                existing.positions = newItem.positions;
-                // Recalculate position totals with merged qty
-                Object.values(existing.positions).forEach(pos => {
-                    if (pos.unitPrice) {
-                        pos.totalPrice = pos.unitPrice * existing.totalQty;
-                    }
-                });
-            }
-            if (newItem.positionDesigns && Object.keys(newItem.positionDesigns).length > 0) {
-                existing.positionDesigns = newItem.positionDesigns;
-            }
-            if (newItem.customizations && newItem.customizations.length > 0) {
-                // Recalculate customization totals with merged qty
-                existing.customizations = newItem.customizations.map(c => ({
-                    ...c,
-                    qty: existing.totalQty,
-                    total: (c.unitPrice || 0) * existing.totalQty
-                }));
-            }
-            existing.colorImage = newItem.colorImage || existing.colorImage;
-        } else {
+
+            const newItem = {
+                id: Date.now().toString() + '-' + size,
+                productCode: baseProductCode,
+                productName: baseProductName,
+                color: baseColor,
+                colorId: baseColorId,
+                colorImage: baseColorImage,
+                quantities: { [size]: qty },
+                totalQty: qty,
+                unitPrice: currentUnitPrice,
+                priceMode: priceMode,
+                positions: sizePositions,
+                positionDesigns: JSON.parse(JSON.stringify(basePositionDesigns)),
+                customizations: sizeCustomizations,
+                addedAt: now
+            };
+
+            console.log('🛒 New Item (size ' + size + '):', JSON.stringify(newItem, null, 2));
+
+            // No merge — each size is always a separate line
             basket.push(newItem);
-        }
+        });
         
         // Save to localStorage SYNCHRONOUSLY first, then compress in background
         try {
@@ -5592,6 +5591,7 @@
 
         saveCustomizationState();
         updatePricingSummary();
+        resetAutoSaveTimer();
         showToast('Logo applied!');
         if (navigator.vibrate) navigator.vibrate(10);
     }
@@ -6352,37 +6352,64 @@
             if (pill) {
                 pill.hidden = true; // Pill removed — auto-save branding
                 
-                // Auto-save branding to basket immediately
+                // Auto-save branding to basket immediately — only the specific item being edited
                 const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                const code = state.product?.code;
-                const color = state.selectedColorName || state.selectedColor;
-                const idx = basket.findIndex(i =>
-                    i.productCode === code &&
-                    (i.colorId === state.selectedColor || i.color === color)
-                );
-                if (idx !== -1) {
-                    const existing = basket[idx];
-                    if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
-                        existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                let updated = false;
+
+                // If coming from basket, update only the specific item
+                if (_autoSavedItemId) {
+                    const existing = basket.find(i => i.id === _autoSavedItemId);
+                    if (existing) {
+                        if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
+                            existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                        }
+                        if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
+                            const updatedPositions = [];
+                            const updatedCustomizations = [];
+                            Object.entries(state.positionMethods).forEach(([pos, method]) => {
+                                const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                                const posLabel = canonicalPositionName(pos);
+                                const logo = state.positionDesigns?.[pos]?.logo || null;
+                                const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
+                                const totalPrice = unitPrice * existing.totalQty;
+                                updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
+                                updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
+                            });
+                            existing.positions = updatedPositions;
+                            if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
+                        }
+                        updated = true;
                     }
-                    if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-                        // Rebuild positions as ARRAY (must match addToQuote/autoSaveToBasket format)
-                        const updatedPositions = [];
-                        const updatedCustomizations = [];
-                        Object.entries(state.positionMethods).forEach(([pos, method]) => {
-                            const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
-                            const posLabel = canonicalPositionName(pos);
-                            const logo = state.positionDesigns?.[pos]?.logo || null;
-                            const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                            const totalPrice = unitPrice * existing.totalQty;
-                            updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
-                            updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
-                        });
-                        existing.positions = updatedPositions;
-                        if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
-                    }
-                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                } else {
+                    // Not from basket — update all items with same product+color (normal customize flow)
+                    const code = state.product?.code;
+                    const color = state.selectedColorName || state.selectedColor;
+                    basket.forEach(existing => {
+                        if (existing.productCode === code &&
+                            (existing.colorId === state.selectedColor || existing.color === color)) {
+                            if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
+                                existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                            }
+                            if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
+                                const updatedPositions = [];
+                                const updatedCustomizations = [];
+                                Object.entries(state.positionMethods).forEach(([pos, method]) => {
+                                    const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
+                                    const posLabel = canonicalPositionName(pos);
+                                    const logo = state.positionDesigns?.[pos]?.logo || null;
+                                    const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
+                                    const totalPrice = unitPrice * existing.totalQty;
+                                    updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
+                                    updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
+                                });
+                                existing.positions = updatedPositions;
+                                if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
+                            }
+                            updated = true;
+                        }
+                    });
                 }
+                if (updated) localStorage.setItem('quoteBasket', JSON.stringify(basket));
                 state.selectionSaved = true;
                 updatePricingSummary();
             }
@@ -7764,6 +7791,7 @@
             }
             closeLogoActionModal();
             updatePricingSummary();
+            resetAutoSaveTimer();
             if (typeof showToast === 'function') showToast(hasLogo ? 'Logo applied!' : 'Note saved!');
             return;
         }
@@ -8367,6 +8395,12 @@
         }, 3000);
     }
 
+    // Expose force-save so parent (basket iframe popup) can trigger immediate save
+    window._forceAutoSave = function() {
+        if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
+        autoSaveToBasket();
+    };
+
     /**
      * Silently save/update the current item in localStorage basket.
      * Uses REPLACE logic (not merge) so repeated saves don't duplicate quantities.
@@ -8375,6 +8409,7 @@
         if (!state.quantity || state.quantity === 0) return;
 
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
 
         // Build positions array (same logic as addToQuote)
         const positions = [];
@@ -8398,51 +8433,92 @@
             }
         });
 
-        const newItem = {
-            id: _autoSavedItemId || Date.now().toString(),
-            productCode: state.product?.code || '',
-            productName: state.product?.name || 'Product',
-            color: state.selectedColorName || state.selectedColor,
-            colorId: state.selectedColor,
-            colorImage: state.selectedColorImage,
-            quantities: { ...state.sizeQuantities },
-            totalQty: state.quantity,
-            unitPrice: getCurrentUnitPrice(),
-            priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
-            positions: positions,
-            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
-            customizations: getActiveCustomizations(),
-            note: state.itemNote || '',
-            addedAt: new Date().toISOString(),
-            _autoSaved: true
-        };
+        // If coming from basket "Add Logo", UPDATE the existing item in-place
+        if (isFromBasket && _autoSavedItemId) {
+            const existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+            if (existingIdx !== -1) {
+                const existing = basket[existingIdx];
+                existing.positions = positions;
+                existing.positionDesigns = state.positionDesigns ? JSON.parse(JSON.stringify(state.positionDesigns)) : {};
+                existing.customizations = getActiveCustomizations().map(c => ({
+                    ...c,
+                    qty: existing.totalQty,
+                    total: (c.unitPrice || 0) * existing.totalQty
+                }));
+                try {
+                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                } catch (e) {
+                    console.error('Auto-save failed:', e);
+                    return;
+                }
+                updateCartBadge();
+                showAutoSaveIndicator();
+                console.log('💾 Auto-saved logo to basket item:', existing.productName, existing.color);
+                return;
+            }
+        }
 
-        // Find existing item for same product+color (REPLACE, not merge)
-        let existingIdx = -1;
+        // Normal flow: create one item PER SIZE
+        const currentUnitPrice = getCurrentUnitPrice();
+        const priceMode = localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex';
+        const baseProductCode = state.product?.code || '';
+        const baseProductName = state.product?.name || 'Product';
+        const baseColor = state.selectedColorName || state.selectedColor;
+        const baseColorId = state.selectedColor;
+        const baseColorImage = state.selectedColorImage;
+        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const baseNote = state.itemNote || '';
+        const now = new Date().toISOString();
+
+        const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
+
+        // Remove any previously auto-saved items from this session
         if (_autoSavedItemId) {
-            existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+            const oldIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+            if (oldIdx !== -1) basket.splice(oldIdx, 1);
         }
-        if (existingIdx === -1) {
-            existingIdx = basket.findIndex(i => _sessionSavedIds.has(i.id));
-        }
-        // Fallback: EXACT product+color (colorId must match)
-        if (existingIdx === -1) {
-            existingIdx = basket.findIndex(i =>
-                i.productCode === newItem.productCode &&
-                i.colorId === newItem.colorId
-            );
-        }
+        _sessionSavedIds.forEach(sid => {
+            const oldIdx = basket.findIndex(i => i.id === sid);
+            if (oldIdx !== -1) basket.splice(oldIdx, 1);
+        });
+        _sessionSavedIds.clear();
+        _autoSavedItemId = null;
 
-        if (existingIdx !== -1) {
-            // REPLACE the entire item (not merge quantities)
-            newItem.id = basket[existingIdx].id;
-            basket[existingIdx] = newItem;
-        } else {
+        sizesToAdd.forEach(([size, qty]) => {
+            const sizePositions = positions.map(p => ({ ...p }));
+            const sizeCustomizations = getActiveCustomizations().map(c => ({
+                ...c,
+                qty: qty,
+                total: (c.unitPrice || 0) * qty
+            }));
+
+            const itemId = Date.now().toString() + '-auto-' + size;
+            const newItem = {
+                id: itemId,
+                productCode: baseProductCode,
+                productName: baseProductName,
+                color: baseColor,
+                colorId: baseColorId,
+                colorImage: baseColorImage,
+                quantities: { [size]: qty },
+                totalQty: qty,
+                unitPrice: currentUnitPrice,
+                priceMode: priceMode,
+                positions: sizePositions,
+                positionDesigns: JSON.parse(JSON.stringify(basePositionDesigns)),
+                customizations: sizeCustomizations,
+                note: baseNote,
+                addedAt: now,
+                _autoSaved: true
+            };
+
+            _sessionSavedIds.add(itemId);
             basket.push(newItem);
-        }
+        });
 
-        _autoSavedItemId = newItem.id;
-        _sessionSavedIds.add(newItem.id);
+        if (sizesToAdd.length > 0) {
+            _autoSavedItemId = [..._sessionSavedIds][_sessionSavedIds.size - 1];
+        }
 
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
@@ -8529,64 +8605,88 @@
             }
         });
         
-        // Create item object with all customization data
-        const newItem = {
-            id: _autoSavedItemId || Date.now().toString(),
-            productCode: state.product?.code || 'GD067',
-            productName: state.product?.name || 'Gildan Softstyle™ Midweight Hoodie',
-            color: state.selectedColorName || state.selectedColor,
-            colorId: state.selectedColor,
-            colorImage: state.selectedColorImage,
-            quantities: { ...state.sizeQuantities },
-            totalQty: state.quantity,
-            unitPrice: getCurrentUnitPrice(),
-            priceMode: localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex',
-            // Branding positions with method and pricing
-            positions: positions,
-            // Design data per position (logos, text, etc.)
-            positionDesigns: state.positionDesigns ? { ...state.positionDesigns } : {},
-            // Customization zones (logos/text) - legacy format
-            customizations: getActiveCustomizations(),
-            note: state.itemNote || '',
-            addedAt: new Date().toISOString()
-        };
-        
-        console.log('?? Adding to basket:', {
-            quantities: newItem.quantities,
-            totalQty: newItem.totalQty,
-            color: newItem.color,
-            positions: newItem.positions
-        });
-        
-        // Add to basket — ALWAYS REPLACE same product+color (never merge/double quantities)
-        let existingIdx = -1;
-        // First check if we have a tracked item from this session
-        if (_autoSavedItemId) {
-            existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
-        }
-        // Check session-saved IDs
-        if (existingIdx === -1) {
-            existingIdx = basket.findIndex(i => _sessionSavedIds.has(i.id));
-        }
-        // Fallback: find by EXACT product+color (colorId must match exactly)
-        if (existingIdx === -1) {
-            existingIdx = basket.findIndex(i =>
-                i.productCode === newItem.productCode &&
-                i.colorId === newItem.colorId
-            );
-        }
+        // Create one basket item PER SIZE — each size is its own line
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+        const currentUnitPrice = getCurrentUnitPrice();
+        const priceMode = localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc' : 'ex';
+        const baseProductCode = state.product?.code || 'GD067';
+        const baseProductName = state.product?.name || 'Gildan Softstyle™ Midweight Hoodie';
+        const baseColor = state.selectedColorName || state.selectedColor;
+        const baseColorId = state.selectedColor;
+        const baseColorImage = state.selectedColorImage;
+        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const baseNote = state.itemNote || '';
+        const now = new Date().toISOString();
 
-        if (existingIdx !== -1) {
-            // ALWAYS replace — never merge quantities within the same session
-            newItem.id = basket[existingIdx].id;
-            basket[existingIdx] = newItem;
-            _sessionSavedIds.add(newItem.id);
-            _autoSavedItemId = newItem.id;
-            console.log('🔄 Replaced basket item at index', existingIdx, 'totalQty:', newItem.totalQty);
+        // If coming from basket "Add Logo", update existing item in-place
+        if (isFromBasket && _autoSavedItemId) {
+            const existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+            if (existingIdx !== -1) {
+                const existing = basket[existingIdx];
+                existing.positions = positions;
+                existing.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                existing.customizations = getActiveCustomizations().map(c => ({
+                    ...c,
+                    qty: existing.totalQty,
+                    total: (c.unitPrice || 0) * existing.totalQty
+                }));
+                existing.colorImage = baseColorImage || existing.colorImage;
+                console.log('🔄 Updated basket item in-place:', existing.productName, existing.color, Object.keys(existing.quantities).join(','));
+            }
         } else {
-            _sessionSavedIds.add(newItem.id);
-            _autoSavedItemId = newItem.id;
-            basket.push(newItem);
+            // Normal flow: create separate items per size
+            const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
+
+            // Remove any previously auto-saved items from this session
+            if (_autoSavedItemId) {
+                const oldIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+                if (oldIdx !== -1) basket.splice(oldIdx, 1);
+            }
+            _sessionSavedIds.forEach(sid => {
+                const oldIdx = basket.findIndex(i => i.id === sid);
+                if (oldIdx !== -1) basket.splice(oldIdx, 1);
+            });
+            _sessionSavedIds.clear();
+            _autoSavedItemId = null;
+
+            sizesToAdd.forEach(([size, qty]) => {
+                const sizePositions = positions.map(p => ({
+                    ...p,
+                    unitPrice: p.unitPrice
+                }));
+                const sizeCustomizations = getActiveCustomizations().map(c => ({
+                    ...c,
+                    qty: qty,
+                    total: (c.unitPrice || 0) * qty
+                }));
+
+                const itemId = Date.now().toString() + '-' + size;
+                const newItem = {
+                    id: itemId,
+                    productCode: baseProductCode,
+                    productName: baseProductName,
+                    color: baseColor,
+                    colorId: baseColorId,
+                    colorImage: baseColorImage,
+                    quantities: { [size]: qty },
+                    totalQty: qty,
+                    unitPrice: currentUnitPrice,
+                    priceMode: priceMode,
+                    positions: sizePositions,
+                    positionDesigns: JSON.parse(JSON.stringify(basePositionDesigns)),
+                    customizations: sizeCustomizations,
+                    note: baseNote,
+                    addedAt: now
+                };
+
+                _sessionSavedIds.add(itemId);
+                basket.push(newItem);
+                console.log('🛒 Added basket item (size ' + size + '), totalQty:', qty);
+            });
+
+            if (sizesToAdd.length > 0) {
+                _autoSavedItemId = [..._sessionSavedIds][_sessionSavedIds.size - 1];
+            }
         }
         
         console.log('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));

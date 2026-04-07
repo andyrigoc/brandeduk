@@ -458,17 +458,18 @@
         }
 
         .summary-item-logo-thumb {
-            width: 73px;
-            height: 73px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 73px;
+            min-height: 73px;
             flex-shrink: 0;
             border-radius: 10px;
             border: 1px solid #e5e7eb;
             background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
-            flex-direction: column;
+            padding: 4px;
         }
 
         .summary-item-logo-thumb img {
@@ -2550,26 +2551,40 @@
                 const totalQty = Object.values(sizes).reduce((s, q) => s + q, 0);
                 const unitPrice = item.unitPrice || item.price || 0;
 
-                // Get logo thumbnail
-                let logoSrc = '';
+                // Collect ALL logos with positions
+                let logos = [];
                 if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-                    for (const d of Object.values(item.positionDesigns)) {
-                        if (d && d.logo) { logoSrc = d.logo; break; }
-                    }
+                    Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
+                        if (d && d.logo) {
+                            logos.push({ src: d.logo, position: toReadablePosition(d.position || posKey), method: d.method || '' });
+                        }
+                    });
                 }
-                if (!logoSrc && item.positions) {
-                    const posArr = Array.isArray(item.positions) ? item.positions : Object.values(item.positions);
-                    for (const p of posArr) {
-                        if (p && p.logo) { logoSrc = p.logo; break; }
-                    }
+                if (logos.length === 0 && item.positions) {
+                    const posArr = Array.isArray(item.positions)
+                        ? item.positions.map(p => [p.position || p.name || '', p])
+                        : Object.entries(item.positions);
+                    posArr.forEach(([posName, p]) => {
+                        if (p && p.logo) {
+                            logos.push({ src: p.logo, position: toReadablePosition(p.name || posName), method: p.method || '' });
+                        }
+                    });
                 }
 
-                // Logo thumbnail or placeholder
-                const logoThumb = logoSrc
-                    ? `<img src="${logoSrc}" alt="Logo" style="max-width:100%;max-height:100%;object-fit:contain;">`
-                    : `<span style="color:#9ca3af;font-size:11px;text-align:center;">No logo</span>`;
+                // Build logo thumbnails with position labels
+                let logoThumb = '';
+                if (logos.length > 0) {
+                    logoThumb = logos.map(l => `
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                            <img src="${l.src}" alt="Logo" style="max-width:100%;max-height:44px;object-fit:contain;border-radius:4px;">
+                            <span style="font-size:9px;color:#6b7280;text-align:center;line-height:1.2;">${l.position}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    logoThumb = `<span style="color:#9ca3af;font-size:11px;text-align:center;">No logo</span>`;
+                }
 
-                const addLogoBadge = logoSrc ? '✎ Edit' : '+ Add Logo';
+                const addLogoBadge = logos.length > 0 ? '✎ Edit' : '+ Add Logo';
 
                 // Build size rows with +/- controls
                 let sizesHtml = '';
@@ -2590,7 +2605,7 @@
                 const garmentCost = totalQty * unitPrice;
 
                 // Add Logo button for PC
-                const addLogoBtnText = logoSrc ? 'Add another logo to this item' : 'Add logo to this item';
+                const addLogoBtnText = logos.length > 0 ? 'Add another logo to this item' : 'Add logo to this item';
 
                 html += `
                     <div class="summary-item-card" data-index="${index}">
@@ -3501,7 +3516,7 @@
         // Attach checkbox listeners
         // Attach logo row action listeners (Edit, Copy, Remove, Add Logo)
         function attachLogoActionListeners() {
-            // "Add logo to this item" / "Add another logo" buttons
+            // "Add logo to this item" / "Add another logo" buttons → opens customize popup for THIS item only
             document.querySelectorAll('.basket-add-logo-btn, .basket-add-logo-btn-badge').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -3510,7 +3525,7 @@
                 });
             });
 
-            // Edit logo buttons
+            // Edit logo buttons → edit this specific item's position
             document.querySelectorAll('.edit-logo-action').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -3584,11 +3599,19 @@
         function closeCustomizePopup() {
             const overlay = document.getElementById('customizePopupOverlay');
             const iframe = document.getElementById('customizePopupIframe');
+
+            // Force-save any pending changes from iframe before destroying it
+            try {
+                if (iframe && iframe.contentWindow && iframe.contentWindow._forceAutoSave) {
+                    iframe.contentWindow._forceAutoSave();
+                }
+            } catch (e) { /* cross-origin or iframe already unloaded */ }
+
             if (overlay) overlay.hidden = true;
             if (iframe) iframe.src = '';
             document.body.style.overflow = '';
             
-            // Refresh basket to show any customizations applied
+            // Refresh basket to show updated logo/costs for this item
             renderBasket();
         }
 
