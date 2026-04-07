@@ -1440,9 +1440,9 @@
             </div>
         </div>
 
-        <div class="description-box" id="productDescriptionBox">
+        <div class="description-box" id="productDescriptionBox" style="display:none;">
             <h2 id="descriptionTitle">Loading...</h2>
-            <p id="descriptionText">
+            <p id="productDescriptionText">
                 Loading product details...
             </p>
         </div>
@@ -1478,40 +1478,53 @@
     <div class="right-column">
 
         <div class="summary-main">
-            <!-- PRODUCT TITLE BOX -->
-            <div class="title-box">
-                <div class="title-left">
-                    <h1 class="garment-main-title">
-                        Loading...
-                    </h1>
-                    
-                    <div class="prod-code-line">
-                        <span class="prod-label">Product code:</span>
-                        <span class="prod-code-value">---</span>
-                    </div>
-                </div>
-                <a href="#" title="View brand products" class="brand-link" id="brandLogoLink" style="display:none;">
-                    <img src="" class="title-gildan-logo" alt="" id="brandLogoImg">
+            <!-- PRODUCT CODE (Ralawise-style centered with lines) -->
+            <div class="rala-prod-code">
+                <span class="rala-prod-code__line"></span>
+                <span class="prod-code-value" id="prodCodeValue">---</span>
+                <span class="rala-prod-code__line"></span>
+            </div>
+
+            <!-- PRODUCT NAME (centered, gray) -->
+            <h1 class="garment-main-title" id="garmentMainTitle">Loading...</h1>
+
+            <!-- PRICE + BRAND LOGO ROW -->
+            <div class="rala-price-brand-row">
+                <div id="mainPrice" class="rala-price-block">£17.58</div>
+                <a href="#" title="View brand products" class="brand-link" id="brandLink" style="display:none;">
+                    <img src="" class="title-gildan-logo" alt="" id="brandLogo">
                 </a>
             </div>
 
-            <!-- CUSTOMIZATION BADGE -->
-            <div class="customization-badge">
-                <span class="cust-badge embroidery">EMBROIDERY</span>
-                <span class="cust-badge print">PRINT</span>
+            <!-- CTA BUTTONS ROW -->
+            <div class="rala-cta-row">
+                <button type="button" class="rala-btn-primary" id="selectOptionsBtn">Select Options and Buy</button>
+                <button type="button" class="rala-btn-secondary" id="quickShopBtn">Quick Shop</button>
             </div>
 
-            <!-- MAIN PRICE -->
-            <div id="mainPrice" class="main-price">£17.58 <span>each ex VAT</span></div>
-            
+            <!-- MANUFACTURER CODE -->
+            <div class="rala-manufacturer-code" id="manufacturerCodeLine" style="display:none;">
+                <span class="rala-mfr-label">Manufacturer Code :</span>
+                <span class="rala-mfr-value" id="manufacturerCodeValue"></span>
+            </div>
+
+            <!-- PRODUCT SPECS TABLE (Fabric, Weight, Size) -->
+            <div id="productSpecsTable" class="product-specs-table" style="display:none;">
+                <!-- Populated dynamically from API -->
+            </div>
+
+            <!-- KEY INFO / DESCRIPTION (with Read More) -->
+            <div class="rala-key-info" id="ralaKeyInfo" style="display:none;">
+                <h3 class="rala-key-info__title">Key Info</h3>
+                <div class="rala-key-info__body" id="ralaKeyInfoBody">
+                    <div class="rala-key-info__text" id="ralaKeyInfoText"></div>
+                    <button type="button" class="rala-read-more-btn" id="ralaReadMoreBtn" style="display:none;">Read More...</button>
+                </div>
+            </div>
+
             <!-- TIER PRICING - Compact (dynamically populated from API) -->
             <div id="tierPricingContainer" class="tier-pricing-compact">
                 <!-- Price breaks will be dynamically loaded from API -->
-            </div>
-
-            <!-- PRODUCT SPECS TABLE (Fabric, Weight, Size, Key Info) -->
-            <div id="productSpecsTable" class="product-specs-table" style="display:none;">
-                <!-- Populated dynamically from API -->
             </div>
 
             <!-- STEP PROGRESS BAR -->
@@ -3474,6 +3487,36 @@
         if (productData.name) {
             document.title = productData.name + ' - Branded UK';
         }
+
+        // Populate manufacturer code
+        if (productData.manufacturerCode || productData.supplierCode) {
+            const mfrLine = document.getElementById('manufacturerCodeLine');
+            const mfrVal = document.getElementById('manufacturerCodeValue');
+            if (mfrLine && mfrVal) {
+                mfrVal.textContent = productData.manufacturerCode || productData.supplierCode;
+                mfrLine.style.display = '';
+            }
+        }
+
+        // Populate Key Info (description) with Read More
+        if (productData.description) {
+            const keyInfoEl = document.getElementById('ralaKeyInfo');
+            const keyInfoText = document.getElementById('ralaKeyInfoText');
+            const readMoreBtn = document.getElementById('ralaReadMoreBtn');
+            if (keyInfoEl && keyInfoText) {
+                keyInfoText.innerHTML = productData.description;
+                keyInfoEl.style.display = '';
+
+                // Check if text overflows (> 4 lines ~ 96px)
+                requestAnimationFrame(function() {
+                    const maxH = 96;
+                    if (keyInfoText.scrollHeight > maxH + 8) {
+                        keyInfoText.classList.add('rala-key-info__text--clamped');
+                        if (readMoreBtn) readMoreBtn.style.display = '';
+                    }
+                });
+            }
+        }
         
     }
     
@@ -3574,10 +3617,15 @@
         // Also listen for the productDataLoaded event from product.js
         window.addEventListener('productDataLoaded', function(e) {
             const productData = e.detail;
-            if (productData && productData.productType) {
-                console.log('📦 productDataLoaded event received, updating position cards for:', productData.productType);
-                const mappedCategory = productTypeToCategory(productData.productType) || 'default';
-                updatePositionCardsForCategory(mappedCategory, productData);
+            if (productData) {
+                // Update position cards
+                if (productData.productType) {
+                    console.log('📦 productDataLoaded event received, updating position cards for:', productData.productType);
+                    const mappedCategory = productTypeToCategory(productData.productType) || 'default';
+                    updatePositionCardsForCategory(mappedCategory, productData);
+                }
+                // Populate Key Info (description)
+                updateProductDisplay(productData);
             }
         });
     }
@@ -3604,10 +3652,44 @@
         document.addEventListener('DOMContentLoaded', function() {
             init();
             setupHeaderSearch();
+            setupRalaActions();
         });
     } else {
         init();
         setupHeaderSearch();
+        setupRalaActions();
+    }
+
+    function setupRalaActions() {
+        // Read More toggle
+        var readMoreBtn = document.getElementById('ralaReadMoreBtn');
+        if (readMoreBtn) {
+            readMoreBtn.addEventListener('click', function() {
+                var textEl = document.getElementById('ralaKeyInfoText');
+                if (!textEl) return;
+                var expanded = textEl.classList.toggle('rala-key-info__text--expanded');
+                textEl.classList.toggle('rala-key-info__text--clamped', !expanded);
+                readMoreBtn.textContent = expanded ? 'Show Less' : 'Read More...';
+            });
+        }
+
+        // "Select Options and Buy" scrolls to Step 1 (Colour)
+        var selectBtn = document.getElementById('selectOptionsBtn');
+        if (selectBtn) {
+            selectBtn.addEventListener('click', function() {
+                var step1 = document.querySelector('[data-step="1"]');
+                if (step1) step1.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        // "Quick Shop" scrolls to Step 2 (Sizes)
+        var quickBtn = document.getElementById('quickShopBtn');
+        if (quickBtn) {
+            quickBtn.addEventListener('click', function() {
+                var step2 = document.querySelector('[data-step="2"]');
+                if (step2) step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
     }
 })();
 </script>

@@ -93,7 +93,7 @@ function updateAllPricing() {
         const lowestTier = DISCOUNTS.reduce((min, t) => t.price < min.price ? t : min, DISCOUNTS[0]);
         const priceValue = formatCurrency(lowestTier.price);
         const suffix = ' <span>' + vatSuffix() + '</span>';
-        mainPriceEl.innerHTML = '<span class="start-from-label">START FROM</span> ' + priceValue + suffix;
+        mainPriceEl.innerHTML = '<span class="start-from-label">From</span> ' + priceValue + suffix;
     }
 
     // Update discount boxes (old class .disc-box)
@@ -575,6 +575,36 @@ document.addEventListener('DOMContentLoaded', async function () {
                     brandLogo.src = `https://i.postimg.cc/tRvrwTBg/${brandName}-logo.jpg`;
                 }
                 brandLink.style.display = 'block';
+            }
+        }
+
+        // Populate manufacturer code (supplierRef from API)
+        if (PRODUCT_DATA) {
+            var mfrCode = PRODUCT_DATA.manufacturerCode || PRODUCT_DATA.supplierCode || PRODUCT_DATA.supplierRef || '';
+            if (mfrCode) {
+                var mfrLine = document.getElementById('manufacturerCodeLine');
+                var mfrVal = document.getElementById('manufacturerCodeValue');
+                if (mfrLine && mfrVal) {
+                    mfrVal.textContent = mfrCode;
+                    mfrLine.style.display = '';
+                }
+            }
+        }
+
+        // Populate Key Info (description) in right column
+        if (PRODUCT_DATA && PRODUCT_DATA.description) {
+            var keyInfoEl = document.getElementById('ralaKeyInfo');
+            var keyInfoText = document.getElementById('ralaKeyInfoText');
+            var readMoreBtn = document.getElementById('ralaReadMoreBtn');
+            if (keyInfoEl && keyInfoText) {
+                keyInfoText.innerHTML = PRODUCT_DATA.description;
+                keyInfoEl.style.display = '';
+                requestAnimationFrame(function() {
+                    if (keyInfoText.scrollHeight > 104) {
+                        keyInfoText.classList.add('rala-key-info__text--clamped');
+                        if (readMoreBtn) readMoreBtn.style.display = '';
+                    }
+                });
             }
         }
 
