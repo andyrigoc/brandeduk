@@ -409,7 +409,8 @@
             return null;
         }
         
-        const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+        // Use absolute path from site root for reliable image loading
+        const basePath = `/brandedukv15-child/assets/images/customization/positions/${folderPath}`;
         const positions = {};
         
         // Embroidery-only product types (no print option)
@@ -471,14 +472,11 @@
         if ((!productType || String(productType).trim() === '') && productData.description) {
             productType = inferProductTypeFromName(productData.description);
         }
-        console.log('🎯 Updating position cards for productType:', productType);
-        
         // Try to build positions dynamically from productType
         const config = buildPositionsFromProductType(productType);
         
         if (!config) {
-            console.log('📌 Using default position images (no dynamic config available)');
-            return; // Keep default hoodie images
+            return; // Keep default images
         }
         
         const positionGrids = document.querySelectorAll('#positionOptions, .positions-grid');
@@ -503,16 +501,17 @@
                     const img = card.querySelector('.position-placeholder');
                     if (img && positionConfig.image) {
                         const newSrc = positionConfig.image;
+                        console.log('🖼️ Setting position card image:', position, '→', newSrc);
                         img.src = newSrc;
                         img.alt = positionConfig.label;
                         
-                        // Handle image load error - fallback to default
+                        img.onload = function() {
+                            console.log('✅ Image loaded OK:', newSrc);
+                        };
+                        // Handle image load error - DO NOT fall back to hoodie
                         img.onerror = function() {
-                            const defaultImg = DEFAULT_POSITION_IMAGES[position];
-                            if (defaultImg) {
-                                img.src = defaultImg;
-                                img.alt = positionConfig.label || position;
-                            }
+                            console.error('❌ Image FAILED to load:', newSrc);
+                            img.onerror = null;
                         };
                     }
                     
@@ -1738,7 +1737,90 @@
         if (posSection) posSection.style.display = '';
         if (posTitle) posTitle.style.display = '';
 
+        // ── POSITION CARD FILTERING via CSS !important ──
+        // Read product type from sessionStorage (set by basket.html before opening iframe).
+        // Inject CSS rules with !important to GUARANTEE correct card visibility.
+        // No JS from any script can override !important CSS.
+        let _productType = '';
+        try {
+            const _sd = sessionStorage.getItem('selectedProductData');
+            if (_sd) {
+                const _pd = JSON.parse(_sd);
+                _productType = _pd.productType || '';
+                if (!_productType) _productType = inferProductTypeFromName(_pd.name || '');
+                if (!_productType) _productType = inferProductTypeFromName(_pd.description || '');
+            }
+        } catch(e) { /* ignore */ }
+
+        const _normalizedType = normalizeProductTypeForFolder(_productType);
+        const _folderPath = PRODUCT_TYPE_TO_FOLDER[_normalizedType];
+        let _positionFilterCSS = '';
+        let _availablePositions = new Set();
+
+        if (_folderPath) {
+            const _imageFiles = FOLDER_IMAGE_MAP[_folderPath] || [];
+            _imageFiles.forEach(fn => {
+                const pi = FILENAME_TO_POSITION[fn];
+                if (pi) _availablePositions.add(pi.code);
+            });
+
+            const _allPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
+            const _hidePositions = _allPositions.filter(p => !_availablePositions.has(p));
+
+            if (_hidePositions.length > 0) {
+                _positionFilterCSS = _hidePositions.map(p =>
+                    `.position-card[data-position="${p}"]`
+                ).join(',\n') + ' { display: none !important; }';
+            }
+
+            console.log('🎯 Product type:', _normalizedType, '| Available positions:', [..._availablePositions], '| Hiding:', _hidePositions.length, 'cards');
+
+            // Also update images immediately for available positions
+            const _basePath = `/brandedukv15-child/assets/images/customization/positions/${_folderPath}`;
+            _imageFiles.forEach(fn => {
+                const pi = FILENAME_TO_POSITION[fn];
+                if (!pi) return;
+                const card = document.querySelector(`.position-card[data-position="${pi.code}"]`);
+                if (!card) return;
+                const img = card.querySelector('.position-placeholder');
+                if (img) {
+                    const imgUrl = `${_basePath}/${fn}`;
+                    console.log('🎯 [positionsOnly] Setting card image:', pi.code, '→', imgUrl);
+                    img.src = imgUrl;
+                    img.alt = pi.label;
+                    img.onload = function() {
+                        console.log('✅ [positionsOnly] Image loaded OK:', imgUrl);
+                    };
+                    // On error, use product's own image from sessionStorage (not generic hoodie)
+                    img.onerror = function() {
+                        console.error('❌ [positionsOnly] Image FAILED:', imgUrl);
+                        try {
+                            const pd = JSON.parse(sessionStorage.getItem('selectedProductData') || '{}');
+                            if (pd.image) { img.src = pd.image; }
+                        } catch(e) {}
+                        img.onerror = null; // prevent infinite loop
+                    };
+                }
+                // Update label
+                const labelSpan = card.querySelector('.position-checkbox span');
+                if (labelSpan) labelSpan.textContent = pi.label;
+            });
+
+            // Hide/show embroidery-only (beanies) or print-only products
+            const EMBROIDERY_ONLY = ['Beanies', 'Fleece'];
+            const PRINT_ONLY = ['Safety Vests'];
+            if (EMBROIDERY_ONLY.includes(_normalizedType)) {
+                _positionFilterCSS += '\n.position-card .price-badge.price-print { display: none !important; }';
+                _positionFilterCSS += '\n.key-badge.print { display: none !important; }';
+            }
+            if (PRINT_ONLY.includes(_normalizedType)) {
+                _positionFilterCSS += '\n.position-card .price-badge.price-emb { display: none !important; }';
+                _positionFilterCSS += '\n.key-badge.embroidery { display: none !important; }';
+            }
+        }
+
         const style = document.createElement('style');
+        style.id = 'positionsOnlyModeCSS';
         style.textContent = `
             /* Hide everything except positions section */
             .mobile-header, .tablet-top-bar, .site-breadcrumbs,
@@ -1767,6 +1849,8 @@
                 background: linear-gradient(135deg, #7c3aed, #6d28d9);
                 display: flex; align-items: center; justify-content: center; gap: 8px;
             }
+            /* ── Position card filter (product-type specific) ── */
+            ${_positionFilterCSS}
         `;
         document.head.appendChild(style);
 
@@ -1781,17 +1865,20 @@
         </button>`;
         document.body.appendChild(doneBar);
 
-        // Done button handler: save to basket and close popup
+        // Done button handler: close popup (logo is already auto-saved to basket on upload)
         doneBar.querySelector('#positionsDoneBtn').addEventListener('click', () => {
-            // Save current customization to the basket item
-            addToQuote({ silent: true });
-            // addToQuote Phase 2.2 handles closing via parent.closeCustomizePopup()
-            // If that fails (e.g. cross-origin), send postMessage as fallback
-            setTimeout(() => {
-                if (window.parent && window.parent !== window) {
-                    try { window.parent.postMessage({ type: 'closeCustomizePopup' }, '*'); } catch(e) {}
-                }
-            }, 1000);
+            // Logo data is saved to localStorage by auto-save branding (design editor close).
+            // Just close the popup — same as the X button.
+            if (window.parent && window.parent !== window) {
+                try {
+                    if (typeof window.parent.closeCustomizePopup === 'function') {
+                        window.parent.closeCustomizePopup();
+                        return;
+                    }
+                } catch(e) {}
+                // Fallback: postMessage
+                try { window.parent.postMessage({ type: 'closeCustomizePopup' }, '*'); } catch(e) {}
+            }
         });
     }
 
@@ -1839,7 +1926,10 @@
                 refreshProductDOM();
                 
                 // Update position cards with product-specific images (apron, hoodie, etc.)
-                updatePositionCardsForProductType(state.product.rawData);
+                // In positionsOnly mode, applyPositionsOnlyMode() already handled this via CSS !important
+                if (!isPositionsOnly) {
+                    updatePositionCardsForProductType(state.product.rawData);
+                }
             } else {
                 // If product didn't load, still try to restore state (will use fallback)
                 restoreCustomizationState();
@@ -3754,11 +3844,11 @@
         // Update summary
         updatePricingSummary();
 
-        // Scroll down to product info (title) so the customer sees pricing + sizes
-        const productInfo = document.querySelector('.product-info') || document.getElementById('productTitle');
-        if (productInfo) {
+        // Scroll down to Size & Quantity section so the customer can start adding sizes
+        const sizeSection = document.getElementById('sizeQtySection') || document.querySelector('.size-qty-section');
+        if (sizeSection) {
             setTimeout(() => {
-                productInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                sizeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 150);
         }
     }
@@ -5482,13 +5572,24 @@
             const logos = [];
 
             basket.forEach(item => {
-                if (!item.positionDesigns) return;
-                Object.values(item.positionDesigns).forEach(d => {
-                    if (d && d.logo && !seen.has(d.logo)) {
-                        seen.add(d.logo);
-                        logos.push({ url: d.logo, productName: item.productName || '', color: item.color || '' });
-                    }
-                });
+                // Check V2 logos[] array
+                if (item.logos && Array.isArray(item.logos)) {
+                    item.logos.forEach(l => {
+                        if (l && l.logo && !seen.has(l.logo)) {
+                            seen.add(l.logo);
+                            logos.push({ url: l.logo, productName: item.name || item.productName || '', color: item.color || '' });
+                        }
+                    });
+                }
+                // Also check legacy positionDesigns
+                if (item.positionDesigns) {
+                    Object.values(item.positionDesigns).forEach(d => {
+                        if (d && d.logo && !seen.has(d.logo)) {
+                            seen.add(d.logo);
+                            logos.push({ url: d.logo, productName: item.productName || item.name || '', color: item.color || '' });
+                        }
+                    });
+                }
             });
             return logos;
         } catch (e) {
@@ -7513,6 +7614,32 @@
                     const pos = card.dataset.position;
                     if (!avail.includes(pos)) card.style.display = 'none';
                 });
+
+                // Direct image update (same as basket flow)
+                const imgBase = `/brandedukv15-child/assets/images/customization/positions/${fp}`;
+                imgs.forEach(fn => {
+                    const pi = FILENAME_TO_POSITION[fn];
+                    if (!pi) return;
+                    const card = document.querySelector(`.position-card[data-position="${pi.code}"]`);
+                    if (!card) return;
+                    const img = card.querySelector('.position-placeholder');
+                    if (img) {
+                        img.src = `${imgBase}/${fn}`;
+                        img.alt = pi.label;
+                    }
+                    const labelSpan = card.querySelector('.position-checkbox span');
+                    if (labelSpan) labelSpan.textContent = pi.label;
+                });
+
+                // Embroidery-only / Print-only
+                const EMB_ONLY2 = ['Beanies', 'Fleece'];
+                const PRINT_ONLY2 = ['Safety Vests'];
+                if (EMB_ONLY2.includes(nt)) {
+                    document.querySelectorAll('.price-badge.price-print').forEach(b => b.style.display = 'none');
+                }
+                if (PRINT_ONLY2.includes(nt)) {
+                    document.querySelectorAll('.price-badge.price-emb').forEach(b => b.style.display = 'none');
+                }
             }
             overlay.style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -7526,11 +7653,11 @@
         // Create overlay
         overlay = document.createElement('div');
         overlay.id = 'positionsPopupOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;justify-content:center;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
 
         // Create popup container
         const popup = document.createElement('div');
-        popup.style.cssText = 'background:#fff;border-radius:16px 16px 0 0;max-height:90vh;width:100%;max-width:600px;overflow-y:auto;padding:0 0 80px;position:relative;';
+        popup.style.cssText = 'background:#fff;border-radius:16px;max-height:90vh;width:92%;max-width:600px;overflow-y:auto;padding:0 0 80px;position:relative;';
 
         // Close button
         const closeBtn = document.createElement('button');
@@ -7573,6 +7700,33 @@
                     card.style.display = 'none';
                 }
             });
+
+            // Direct image update for each visible position card
+            // (same approach as applyPositionsOnlyMode in basket flow)
+            const imgBasePath = `/brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+            imageFiles.forEach(fn => {
+                const pi = FILENAME_TO_POSITION[fn];
+                if (!pi) return;
+                const card = posSection.querySelector(`.position-card[data-position="${pi.code}"]`);
+                if (!card) return;
+                const img = card.querySelector('.position-placeholder');
+                if (img) {
+                    img.src = `${imgBasePath}/${fn}`;
+                    img.alt = pi.label;
+                }
+                const labelSpan = card.querySelector('.position-checkbox span');
+                if (labelSpan) labelSpan.textContent = pi.label;
+            });
+
+            // Embroidery-only / Print-only filtering
+            const EMB_ONLY = ['Beanies', 'Fleece'];
+            const PRINT_ONLY = ['Safety Vests'];
+            if (EMB_ONLY.includes(normalizedType)) {
+                posSection.querySelectorAll('.price-badge.price-print').forEach(b => b.style.display = 'none');
+            }
+            if (PRINT_ONLY.includes(normalizedType)) {
+                posSection.querySelectorAll('.price-badge.price-emb').forEach(b => b.style.display = 'none');
+            }
         }
 
         // Done button bar
@@ -7585,15 +7739,10 @@
         doneBar.querySelector('button').addEventListener('click', () => {
             overlay.style.display = 'none';
             document.body.style.overflow = '';
-            // Force immediate save (not timer)
+            // Force immediate save
             autoSaveToBasket();
-            // If opened from basket iframe, close parent popup
-            const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
-            if (isFromBasket && window.parent && window.parent !== window) {
-                try {
-                    window.parent.postMessage({ type: 'closeCustomizePopup' }, '*');
-                } catch(e) {}
-            }
+            // Navigate to basket
+            window.location.href = '../basket.html';
         });
         popup.appendChild(doneBar);
 
@@ -8784,6 +8933,29 @@
                 existing.colorImage = baseColorImage || existing.colorImage;
                 console.log('🔄 Updated basket item in-place:', existing.productName, existing.color, Object.keys(existing.quantities).join(','));
             }
+        } else if (isFromBasket && !_autoSavedItemId) {
+            // iframe positionsOnly mode: _autoSavedItemId is null (fresh JS instance).
+            // Use customizingBasketIndex from sessionStorage to find the item.
+            const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+            if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
+                const existing = basket[basketIdx];
+                existing.positions = positions;
+                existing.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                existing.colorImage = baseColorImage || existing.colorImage;
+                // Also propagate to all items with same productCode+color
+                const key = (existing.productCode || existing.code || '') + '|' + (existing.color || '');
+                basket.forEach((item, i) => {
+                    if (i === basketIdx) return;
+                    const itemKey = (item.productCode || item.code || '') + '|' + (item.color || '');
+                    if (itemKey === key) {
+                        item.positions = JSON.parse(JSON.stringify(positions));
+                        item.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                    }
+                });
+                console.log('🔄 [iframe] Updated basket item via customizingBasketIndex:', basketIdx, existing.productName || existing.name);
+            } else {
+                console.warn('⚠️ [iframe] isFromBasket but no valid customizingBasketIndex');
+            }
         } else {
             // Normal flow: create separate items per size
             const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
@@ -8819,6 +8991,7 @@
                     color: baseColor,
                     colorId: baseColorId,
                     colorImage: baseColorImage,
+                    productType: state.product?.productType || '',
                     quantities: { [size]: qty },
                     totalQty: qty,
                     unitPrice: currentUnitPrice,
@@ -9126,16 +9299,20 @@
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             let totalItems = 0;
             
-            // Count total quantities across all items
+            // Count total quantities across all items (supports V2 per-size rows and legacy)
             basket.forEach(item => {
-                if (item.quantities && typeof item.quantities === 'object') {
+                if (item.qty) {
+                    totalItems += parseInt(item.qty) || 0;
+                } else if (item.quantities && typeof item.quantities === 'object') {
                     Object.values(item.quantities).forEach(qty => {
                         totalItems += parseInt(qty) || 0;
                     });
+                } else if (item.totalQty) {
+                    totalItems += parseInt(item.totalQty) || 0;
                 } else if (item.quantity) {
                     totalItems += parseInt(item.quantity) || 0;
                 } else {
-                    totalItems += 1; // Count item itself if no quantity
+                    totalItems += 1;
                 }
             });
             
@@ -9163,14 +9340,18 @@
         // Current selection from state
         let currentQty = state.quantity || 0;
         
-        // Plus items already in basket
+        // Plus items already in basket (supports V2 per-size rows and legacy)
         try {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             basket.forEach(item => {
-                if (item.quantities && typeof item.quantities === 'object') {
+                if (item.qty) {
+                    currentQty += parseInt(item.qty) || 0;
+                } else if (item.quantities && typeof item.quantities === 'object') {
                     Object.values(item.quantities).forEach(qty => {
                         currentQty += parseInt(qty) || 0;
                     });
+                } else if (item.totalQty) {
+                    currentQty += parseInt(item.totalQty) || 0;
                 } else if (item.quantity) {
                     currentQty += parseInt(item.quantity) || 0;
                 }
@@ -9192,6 +9373,11 @@
 
     // Update cart badge with live quantities
     updateLiveBadge();
+
+    // Refresh badge when returning via back button (bfcache)
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) { updateCartBadge(); updateLiveBadge(); }
+    });
 
     // === Handle Back Button (for iframe popup from basket) ===
     document.addEventListener('DOMContentLoaded', () => {

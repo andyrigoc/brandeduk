@@ -376,61 +376,7 @@
             </div>
         </section>
 
-        <!-- Order Summary Section (Like PC Version) -->
-        <section class="order-summary-section" id="orderSummary">
-            <h2 class="section-title">Your Order Summary:</h2>
-            
-            <div class="sidebar-costs">
-                <h4 class="cost-breakdown-title">Cost Breakdown</h4>
-                
-                <!-- Garment Cost Section -->
-                <div class="section garment-section">
-                    <div class="row">
-                        <span class="label">Garment Cost <span class="vat-suffix">ex vat</span></span>
-                        <span class="value" id="sidebarGarmentCost">£0.00</span>
-                    </div>
-                    <div class="row detail">
-                        <span id="garmentDetailCalc">£0.00 × 0 = £0.00</span>
-                    </div>
-                </div>
-                
-                <!-- Customization Costs (populated by JS) -->
-                <div id="customizationCostsList">
-                    <!-- Populated dynamically with embroidery/print cards -->
-                </div>
-                
-                <!-- Total Cost Row -->
-                <div class="cost-row total-row">
-                    <strong>Total Cost</strong>
-                    <strong id="sidebarTotalCost" class="total-amount">£0.00 <span class="vat-suffix">ex VAT</span></strong>
-                </div>
-            </div>
-            
-            <!-- Basket Items List with +/- controls -->
-            <div id="basketItemsList" class="basket-items-scroll">
-                <!-- Populated by JavaScript -->
-            </div>
-            
-            <p class="summary-note">Shipping calculated at checkout after Quote approval. Delivery in 5-7 working days.</p>
-            
-            <!-- Continue Shopping Button -->
-            <button class="continue-shopping-btn" id="continueShoppingBtnSummary" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #7c3aed; background:#fff; color:#7c3aed; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5"></path>
-                    <path d="M12 19l-7-7 7-7"></path>
-                </svg>
-                Continue Shopping
-            </button>
-
-            <!-- Submit Quote Button -->
-            <button class="submit-quote-btn" id="submitQuoteBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 2L11 13"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
-                </svg>
-                Submit your QUOTE
-            </button>
-        </section>
+        <!-- Order Summary Section removed -->
 
         <!-- Customize: Logo Positions (hidden by default, shown only in popup) -->
         <h2 class="section-title" id="positionsSectionTitle" style="display:none; margin: 24px 16px 8px; font-size: 1.25rem; font-weight: 700; color: #1e293b;">Customize: Logo Positions</h2>
@@ -1058,7 +1004,7 @@
     <script src="js/mobile.js?v=20260221c"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>
     <script src="../brandedukv15-child/assets/js/upload/logo-upload.js?v=20260402a"></script>
-    <script src="js/customize.js?v=20260407j"></script>
+    <script src="js/customize.js?v=20260407z2"></script>
     <script src="../brandedukv15-child/assets/js/api.js"></script>
     <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260403c"></script>
     <script>
@@ -1835,27 +1781,19 @@
             }
         }
         
-        // Start trying when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', tryUpdateWithDelay);
+        // Detect positionsOnly mode (iframe from basket)
+        const _isPositionsOnlyInline = new URLSearchParams(window.location.search).get('positionsOnly') === '1';
+
+        if (_isPositionsOnlyInline) {
+            // POSITIONS-ONLY MODE: All card visibility and image updates are handled by
+            // applyPositionsOnlyMode() in customize.js using CSS !important rules.
+            console.log('[positionsOnly] Inline script skipped — customize.js handles everything');
         } else {
-            tryUpdateWithDelay();
+            // NORMAL MODE: Also handled by customize.js updatePositionCardsForProductType().
+            // Inline retry logic was causing race conditions (overriding correct images with hoodie default).
+            // All position card updates are now single-authority in customize.js.
+            console.log('[normal] Inline script skipped — customize.js handles everything');
         }
-        
-        // Listen for when product code is set in sessionStorage
-        // This ensures we fetch from API immediately when product code becomes available
-        const originalSetItem = sessionStorage.setItem;
-        sessionStorage.setItem = function(key, value) {
-            originalSetItem.apply(sessionStorage, arguments);
-            if (key === 'selectedProduct') {
-                // Clear cache and fetch fresh from API
-                cachedProductData = null;
-                // Wait a bit for DOM to be ready, then update
-                setTimeout(function() {
-                    updatePositionCardsFromAPI();
-                }, 200);
-            }
-        };
     })();
     </script>
 
@@ -2110,14 +2048,25 @@
             }
 
             // Update basket badge
-            try {
-                var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                var badge = document.getElementById('navCartBadge');
-                if (badge && basket.length > 0) {
-                    badge.textContent = basket.length;
-                    badge.style.display = 'flex';
-                }
-            } catch(e) {}
+            function _refreshBasketBadge() {
+                try {
+                    var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    var badge = document.getElementById('navCartBadge');
+                    if (!badge) return;
+                    var total = 0;
+                    basket.forEach(function(item) {
+                        total += parseInt(item.qty) || parseInt(item.totalQty) || 1;
+                    });
+                    if (total > 0) {
+                        badge.textContent = total;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                } catch(e) {}
+            }
+            _refreshBasketBadge();
+            window.addEventListener('pageshow', function(e) { if (e.persisted) _refreshBasketBadge(); });
         })();
     </script>
 

@@ -191,7 +191,7 @@
             <span class="nav-item-label">Filter</span>
         </button>
 
-        <a href="basket-mobile.html" class="nav-item">
+        <a href="../basket.html" class="nav-item">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
@@ -844,8 +844,14 @@
             let totalItems = 0;
 
             basket.forEach(item => {
-                const sizes = item.sizes || item.quantities || {};
-                totalItems += Object.values(sizes).reduce((sum, q) => sum + q, 0);
+                // V2 format: item.qty is a number
+                if (typeof item.qty === 'number') {
+                    totalItems += item.qty;
+                } else {
+                    // Old format: item.sizes or item.quantities is an object
+                    const sizes = item.sizes || item.quantities || {};
+                    totalItems += Object.values(sizes).reduce((sum, q) => sum + q, 0);
+                }
             });
 
             const badge = document.getElementById('navBasketBadge');
