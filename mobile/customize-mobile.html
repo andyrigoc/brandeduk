@@ -54,6 +54,16 @@
             }
         }
 
+        /* FIX: --header-height changed globally from 82→102, restore tablet customize spacing */
+        @media (min-width: 768px) {
+            .customize-main {
+                padding: calc(82px + 36px + 24px) 24px 24px !important;
+            }
+            .product-gallery {
+                top: calc(82px + 20px) !important;
+            }
+        }
+
         /* Apron-specific logo positioning for low-left and low-right */
         .logo-overlay-box.apron-low-left {
             top: 70%;
