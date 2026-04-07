@@ -14,15 +14,22 @@ body.customize-page {
     padding-top: 0 !important;
 }
 
-/* Kill any gap between breadcrumbs and content below */
+/* Breadcrumbs + customize content: no extra gap needed */
 .site-breadcrumbs + .customize-main {
     margin-top: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 8px !important;
 }
 
-/* Customize page: breadcrumbs don't need margin-top (handled by customize-main padding) */
+/* Customize page: breadcrumbs clear fixed header */
 .customize-page .site-breadcrumbs {
-    margin-top: 0;
+    margin-top: var(--header-height, 102px);
+}
+
+/* Tablet: customize breadcrumbs also clear top bar */
+@media (min-width: 768px) and (max-width: 1279px) {
+    .customize-page .site-breadcrumbs {
+        margin-top: calc(82px + 36px);
+    }
 }
 
 /* Shop page: heading before breadcrumbs already clears the header */

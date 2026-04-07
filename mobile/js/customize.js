@@ -1321,7 +1321,7 @@
                 }
             }
 
-            // === Specs Table (Fabric, Weight, Size, Key Info) ===
+            // === Specs Table (Fabric, Weight, Size) ===
             const specsTableEl = document.getElementById('productSpecsTableCustomize');
             if (specsTableEl && state.product) {
                 const rows = [];
@@ -1334,9 +1334,6 @@
                 if (state.product.sizes && Array.isArray(state.product.sizes) && state.product.sizes.length > 0) {
                     rows.push({ label: 'Size', value: state.product.sizes.join(', ') });
                 }
-                if (state.product.description) {
-                    rows.push({ label: 'Key Info', value: state.product.description });
-                }
                 if (rows.length > 0) {
                     let html = '<table>';
                     rows.forEach(r => {
@@ -1345,6 +1342,36 @@
                     html += '</table>';
                     specsTableEl.innerHTML = html;
                     specsTableEl.style.display = '';
+                }
+            }
+
+            // === Manufacturer Code (tablet) ===
+            const mfrCodeEl = document.getElementById('mfrCode');
+            if (mfrCodeEl && state.product && state.product.code) {
+                mfrCodeEl.textContent = state.product.code;
+            }
+
+            // === Key Info — separate section with Read More (tablet) ===
+            const keyInfoSection = document.getElementById('ralaKeyInfoCust');
+            const keyInfoText = document.getElementById('ralaKeyInfoText');
+            const readMoreBtn = document.getElementById('ralaReadMoreCust');
+            if (keyInfoSection && keyInfoText && state.product && state.product.description) {
+                keyInfoText.textContent = state.product.description;
+                // Read More toggle
+                if (readMoreBtn && !readMoreBtn._bound) {
+                    readMoreBtn._bound = true;
+                    readMoreBtn.addEventListener('click', function() {
+                        const clamped = keyInfoText.classList.contains('rala-key-info-cust__text--clamped');
+                        if (clamped) {
+                            keyInfoText.classList.remove('rala-key-info-cust__text--clamped');
+                            keyInfoText.classList.add('rala-key-info-cust__text--expanded');
+                            readMoreBtn.textContent = 'Read less';
+                        } else {
+                            keyInfoText.classList.add('rala-key-info-cust__text--clamped');
+                            keyInfoText.classList.remove('rala-key-info-cust__text--expanded');
+                            readMoreBtn.textContent = 'Read more';
+                        }
+                    });
                 }
             }
         } catch (e) {
@@ -6742,6 +6769,10 @@
         const allCustomizations = [...allBasketCustomizations, ...currentCustomizations];
         let grandCustomTotal = 0;
         allCustomizations.forEach(c => grandCustomTotal += c.total);
+
+        // Prevent double digitizing fee (apply only once if any embroidery logo present)
+        let digitizingFee = 0;
+        let digitizingFeeApplied = false; // NEW: track if already applied
         
         // Setup fee (£25 one-time for embroidery only)
         const setupFeeBase = hasEmbroidery ? 25.00 : 0;

@@ -336,7 +336,7 @@
     /* === Customize Page === */
     .customize-main {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 2fr;
         gap: 24px;
         /* Account for fixed tablet top bar (36px) + fixed header */
         padding: calc(var(--header-height) + 36px + 24px) 24px 24px;
@@ -1191,9 +1191,10 @@
     /* Grid: image left, info right — rest full-width */
     .customize-page .customize-main {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px 24px;
-        padding: 8px 24px 24px;
+        grid-template-columns: 390px 1fr;
+        gap: 16px 20px;
+        padding: 8px 16px 24px;
+        overflow: hidden;
     }
 
     /* Gallery — left column, scrolls normally */
@@ -1206,10 +1207,10 @@
     }
 
     .customize-page .gallery-main {
-        max-height: 450px;
         overflow: visible;
         background: #f9fafb;
         border-radius: 8px;
+        padding: 0;
     }
 
     .customize-page .product-img-placeholder.large {
@@ -1218,10 +1219,9 @@
     }
 
     .customize-page .product-img-placeholder.large img {
-        width: auto !important;
+        width: 100% !important;
         height: auto !important;
         max-width: 100%;
-        max-height: 450px;
         object-fit: contain !important;
     }
 
@@ -1236,20 +1236,34 @@
         grid-row: 1;
         border-bottom: none;
         align-self: start;
-        padding: 12px 0 !important;
+        padding: 0 !important;
         background: transparent;
+        overflow: hidden;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
-    /* Product Code — centered, elegant font */
+    /* Product Code — Ralawise style: centered with lines */
     .customize-page .product-info .product-sku {
         text-align: center;
         font-size: 1.1rem;
-        font-weight: 600;
-        color: #1f2937;
+        font-weight: 700;
+        color: #333;
         letter-spacing: 0.5px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 8px;
+        padding-bottom: 0;
+        border-bottom: none;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .customize-page .product-info .product-sku::before,
+    .customize-page .product-info .product-sku::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #ccc;
     }
 
     /* Product Name — centered, lighter/italic */
@@ -1272,7 +1286,7 @@
         border-bottom: 1px solid #e5e7eb;
     }
 
-    /* Price — thin elegant "From £X.XX" */
+    /* Price — Ralawise style: bold price */
     .customize-page .product-main-price {
         display: block !important;
         margin: 0;
@@ -1280,15 +1294,15 @@
 
     .customize-page .product-main-price .start-from-label {
         display: inline;
-        font-size: 1rem;
-        font-weight: 300;
-        color: #374151;
+        font-size: 0.95rem;
+        font-weight: 400;
+        color: #555;
     }
 
     .customize-page .product-main-price .start-from-price {
-        font-size: 1.5rem;
-        font-weight: 300;
-        color: #1f2937;
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: #111;
         letter-spacing: -0.5px;
     }
 
@@ -1329,7 +1343,7 @@
     }
 
     .customize-page .product-specs-table-customize td {
-        padding: 9px 14px;
+        padding: 10px 14px;
         font-size: 0.87rem;
         line-height: 1.4;
         vertical-align: top;
@@ -1339,13 +1353,129 @@
         font-weight: 600;
         color: #374151;
         white-space: nowrap;
-        width: 80px;
+        width: 70px;
         background: transparent;
     }
 
     .customize-page .product-specs-table-customize .spec-value {
         color: #4b5563;
         font-weight: 400;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* CTA Buttons — Ralawise style */
+    .customize-page .rala-cta-row-cust {
+        display: flex !important;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .customize-page .rala-cta-row-cust .rala-btn-primary-cust {
+        flex: 1;
+        padding: 12px 18px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
+        background: #0d9e6d;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+    }
+
+    .customize-page .rala-cta-row-cust .rala-btn-primary-cust:hover {
+        background: #0b8a5e;
+    }
+
+    .customize-page .rala-cta-row-cust .rala-btn-secondary-cust {
+        flex: 0 0 auto;
+        padding: 12px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        background: #fff;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        white-space: nowrap;
+    }
+
+    .customize-page .rala-cta-row-cust .rala-btn-secondary-cust:hover {
+        border-color: #999;
+        background: #f9f9f9;
+    }
+
+    /* Manufacturer Code */
+    .customize-page .rala-mfr-line {
+        display: block !important;
+        font-size: 0.88rem;
+        color: #555;
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .customize-page .rala-mfr-line .rala-mfr-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Key Info — Read More */
+    .customize-page .rala-key-info-cust {
+        display: block !important;
+        margin: 14px 0 10px;
+        padding-top: 14px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .customize-page .rala-key-info-cust__title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 10px;
+        font-style: italic;
+    }
+
+    .customize-page .rala-key-info-cust__text {
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: #333;
+    }
+
+    .customize-page .rala-key-info-cust__text--clamped {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .customize-page .rala-key-info-cust__text--expanded {
+        display: block;
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
+
+    .customize-page .rala-read-more-cust {
+        display: inline-block;
+        background: none;
+        border: none;
+        color: #2980b9;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 0;
+        margin-top: 4px;
+        transition: color 0.2s;
+    }
+
+    .customize-page .rala-read-more-cust:hover {
+        color: #1a5276;
+        text-decoration: underline;
     }
 
     /* ---- All other sections — full width ---- */

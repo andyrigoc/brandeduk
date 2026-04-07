@@ -7,10 +7,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20260403c">
-    <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
+    <link rel="stylesheet" href="css/mobile.css?v=20260407a">
+    <link rel="stylesheet" href="css/breadcrumbs.css?v=20260407a">
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260401a">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260407a">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260403a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
@@ -42,7 +42,7 @@
                 padding-top: 0 !important;
             }
             .customize-main {
-                padding-top: 82px !important;
+                padding-top: 8px !important;
                 margin-top: 0 !important;
             }
             .gallery-main {
@@ -258,8 +258,23 @@
                 </div>
                 <img id="brandLogoCustomize" class="brand-logo-customize" src="" alt="" style="display:none;">
             </div>
+            <!-- CTA Buttons — tablet only -->
+            <div class="rala-cta-row-cust" style="display:none;">
+                <button class="rala-btn-primary-cust" id="ctaSelectOptions">Select Your Options</button>
+                <button class="rala-btn-secondary-cust" id="ctaQuickShop">Quick&nbsp;Shop</button>
+            </div>
+            <!-- Manufacturer Code — tablet only -->
+            <div class="rala-mfr-line" style="display:none;">
+                <span class="rala-mfr-label">Manufacturer Code: </span><span id="mfrCode"></span>
+            </div>
             <!-- Specs table (Fabric, Weight, Size) - tablet/desktop -->
             <div id="productSpecsTableCustomize" class="product-specs-table-customize" style="display:none;">
+            </div>
+            <!-- Key Info — tablet only (Read More) -->
+            <div class="rala-key-info-cust" style="display:none;" id="ralaKeyInfoCust">
+                <p class="rala-key-info-cust__title">Key Information</p>
+                <div class="rala-key-info-cust__text rala-key-info-cust__text--clamped" id="ralaKeyInfoText"></div>
+                <button class="rala-read-more-cust" id="ralaReadMoreCust">Read more</button>
             </div>
             <!-- Mobile specs pills -->
             <div class="product-specs" id="productSpecs">
@@ -1857,10 +1872,31 @@
 </div>
 
 <style>
-/* Shrink main product image so zoom feels meaningful */
+/* Gallery main — mobile: 70% width, full image visible */
 .gallery-main {
-    max-width: 70%;
+    max-width: 70% !important;
     margin: 0 auto;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    align-items: flex-start !important;
+}
+
+.product-img-placeholder {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.product-img-placeholder.large {
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+.product-img-placeholder.large img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
 }
 
 .lightbox-overlay {
@@ -1882,9 +1918,9 @@
 }
 .lightbox-content {
     position: relative;
-    max-width: 96vw;
+    max-width: 65vw;
     max-height: 92vh;
-    width: 96vw;
+    width: 65vw;
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
