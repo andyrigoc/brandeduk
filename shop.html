@@ -140,6 +140,12 @@
             background: #fff;
             text-align: center;
         }
+        /* Tablet: heading must also clear the 36px tablet-top-bar */
+        @media (min-width: 768px) and (max-width: 1279px) {
+            .shop-category-heading {
+                margin-top: calc(var(--header-height, 80px) + 36px + 16px) !important;
+            }
+        }
         .shop-category-title {
             display: block !important;
             font-size: 22px !important;

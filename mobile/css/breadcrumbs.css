@@ -15,16 +15,25 @@ body.customize-page {
 }
 
 /* Kill any gap between breadcrumbs and content below */
-.site-breadcrumbs + .customize-main,
-.site-breadcrumbs + main {
+.site-breadcrumbs + .customize-main {
     margin-top: 0 !important;
     padding-top: 0 !important;
+}
+
+/* Customize page: breadcrumbs don't need margin-top (handled by customize-main padding) */
+.customize-page .site-breadcrumbs {
+    margin-top: 0;
+}
+
+/* Shop page: heading before breadcrumbs already clears the header */
+.shop-category-heading + .site-breadcrumbs {
+    margin-top: 0;
 }
 
 .site-breadcrumbs {
     display: flex !important;
     align-items: center;
-    margin-top: 0;
+    margin-top: 82px;
     margin-bottom: 0;
     padding: 0 14px;
     background: #f5f5f5;
@@ -107,8 +116,8 @@ body.customize-page {
 /* ─── Tablet (768px – 1279px) ─── */
 @media (min-width: 768px) and (max-width: 1279px) {
     .site-breadcrumbs {
-        /* No header clearance needed - breadcrumb is after category heading */
-        margin-top: 0;
+        /* Clear fixed header (82px) + fixed tablet top bar (~36px) */
+        margin-top: calc(82px + 36px);
         padding: 6px 20px;
         font-size: 11px;
     }
