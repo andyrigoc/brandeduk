@@ -334,7 +334,7 @@
 .iso-social-list li a .fa-brands {
     font-size: 20px;
     color: #262626;
-    line-height: 14px;
+    line-height: 7px;
     position: relative;
     top: 11px;
     transition: .5s;
@@ -343,23 +343,23 @@
 .iso-social-list li a {
     position: relative;
     display: block;
-    width: 14px;
-    height: 14px;
+    width: 7px;
+    height: 7px;
     background: #fff;
     text-align: center;
     transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(0, 0);
     transition: .5s;
     transition-timing-function: linear;
-    box-shadow: -6px 6px 4px rgba(0, 0, 0, .5);
+    box-shadow: -3px 3px 2px rgba(0, 0, 0, .5);
 }
 
 .iso-social-list li a:before {
     content: '';
     position: absolute;
-    top: 3px;
-    left: -6px;
+    top: 2px;
+    left: -3px;
     height: 100%;
-    width: 6px;
+    width: 3px;
     background: #b1b1b1;
     transition: .5s;
     transform: rotate(0deg) skewY(-45deg);
@@ -368,9 +368,9 @@
 .iso-social-list li a:after {
     content: '';
     position: absolute;
-    bottom: -6px;
-    left: -3px;
-    height: 6px;
+    bottom: -3px;
+    left: -2px;
+    height: 3px;
     width: 100%;
     background: #b1b1b1;
     transition: .85s;
@@ -378,8 +378,8 @@
 }
 
 .iso-social-list li a:hover {
-    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(5px, -5px);
-    box-shadow: -12px 12px 12px rgba(0, 0, 0, .5);
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(3px, -3px);
+    box-shadow: -6px 6px 6px rgba(0, 0, 0, .5);
 }
 
 .iso-social-list li:hover .fa-brands {
@@ -432,8 +432,8 @@
 
 /* === Touch/Mobile: active state (first tap) === */
 .iso-social-list li a.iso-active {
-    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(5px, -5px);
-    box-shadow: -12px 12px 12px rgba(0, 0, 0, .5);
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(3px, -3px);
+    box-shadow: -6px 6px 6px rgba(0, 0, 0, .5);
 }
 .iso-social-list li a.iso-active .fa-brands {
     color: #fff;
