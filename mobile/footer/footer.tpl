@@ -1,4 +1,5 @@
 <!-- Footer - BrandedUK -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <footer class="mobile-footer">
     <div class="footer-container">
         <div class="footer-grid">
@@ -7,14 +8,12 @@
                 <div class="footer-logo">brandeduk</div>
                 <p class="footer-copyright">Copyright &copy; <span data-current-year>2026</span> BrandedUK</p>
                 <p class="footer-rights">All rights reserved</p>
-                <div class="footer-social-3d">
-                    <ul class="iso-social-list">
-                        <li><a href="https://www.facebook.com/profile.php?id=100083540654262" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a></li>
-                        <li><a href="https://www.instagram.com/brandeduk_workwear/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a></li>
-                        <li><a href="https://www.youtube.com/@barudanamericainc3060" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a></li>
-                        <li><a href="https://uk.pinterest.com/search/pins/?q=branded%20workwear" target="_blank" rel="noopener" aria-label="Pinterest"><i class="fa-brands fa-pinterest" aria-hidden="true"></i></a></li>
-                    </ul>
-                </div>
+                <ul class="social footer-social-3d">
+                    <li class="facebook"><a href="https://www.facebook.com/profile.php?id=100083540654262" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                    <li class="instagram"><a href="https://www.instagram.com/brandeduk_workwear/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                    <li class="youtube"><a href="https://www.youtube.com/@barudanamericainc3060" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
+                    <li class="pinterest"><a href="https://uk.pinterest.com/search/pins/?q=branded%20workwear" target="_blank" rel="noopener" aria-label="Pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+                </ul>
             </div>
 
             <!-- Company Column -->

@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260408F">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260408G">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
@@ -2899,7 +2899,7 @@
         // Isometric 3D Footer Social Icons - Touch: 1st tap = color/lift, 2nd tap = open link
         (function() {
             function initIsoSocial() {
-                const isoLinks = document.querySelectorAll('.iso-social-list li a');
+                const isoLinks = document.querySelectorAll('.social.footer-social-3d li a');
                 if (!isoLinks.length) return;
                 const isTouch = 'ontouchend' in window || navigator.maxTouchPoints > 0;
 
@@ -2919,7 +2919,7 @@
 
                 // Tap outside: deactivate all
                 document.addEventListener('touchstart', function(e) {
-                    const container = document.querySelector('.footer-social-3d');
+                    const container = document.querySelector('.social.footer-social-3d');
                     if (container && !container.contains(e.target)) {
                         isoLinks.forEach(l => l.classList.remove('iso-active'));
                     }
