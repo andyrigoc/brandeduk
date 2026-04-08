@@ -1775,6 +1775,31 @@
 
             console.log('🎯 Product type:', _normalizedType, '| Available positions:', [..._availablePositions], '| Hiding:', _hidePositions.length, 'cards');
 
+            // === Reorder position cards based on product type ===
+            const HEADWEAR_TYPES = ['Caps', 'Beanies'];
+            const APRON_TYPES = ['Aprons'];
+            const BAG_TYPES = ['Bags', 'Tote Bags'];
+            let _positionOrder;
+            if (HEADWEAR_TYPES.includes(_normalizedType)) {
+                _positionOrder = ['small-centre-front', 'large-front-center', 'left-breast', 'right-breast', 'left-arm', 'right-arm', 'large-back'];
+            } else if (APRON_TYPES.includes(_normalizedType)) {
+                _positionOrder = ['small-centre-front', 'left-breast', 'right-breast', 'large-front-center', 'left-arm', 'right-arm', 'large-back'];
+            } else if (BAG_TYPES.includes(_normalizedType)) {
+                _positionOrder = ['small-centre-front', 'large-back', 'left-breast', 'right-breast', 'large-front-center', 'left-arm', 'right-arm'];
+            } else {
+                _positionOrder = ['left-breast', 'right-breast', 'left-arm', 'right-arm', 'small-centre-front', 'large-front-center', 'large-back'];
+            }
+            document.querySelectorAll('.position-grid').forEach(grid => {
+                const cards = Array.from(grid.querySelectorAll('.position-card'));
+                cards.sort((a, b) => {
+                    const idxA = _positionOrder.indexOf(a.dataset.position);
+                    const idxB = _positionOrder.indexOf(b.dataset.position);
+                    return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+                });
+                cards.forEach(card => grid.appendChild(card));
+            });
+            console.log('🔀 [positionsOnly] Reordered position cards for:', _normalizedType);
+
             // Also update images immediately for available positions
             const _basePath = `/brandedukv15-child/assets/images/customization/positions/${_folderPath}`;
             _imageFiles.forEach(fn => {
@@ -6488,8 +6513,16 @@
 
                 // If coming from basket, update only the specific item
                 if (_autoSavedItemId) {
-                    const existing = basket.find(i => i.id === _autoSavedItemId);
+                    let existing = basket.find(i => i.id === _autoSavedItemId);
+                    // Fallback: if ID not found (normalizeBasket may have changed it), use customizingBasketIndex
+                    if (!existing) {
+                        const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+                        if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
+                            existing = basket[basketIdx];
+                        }
+                    }
                     if (existing) {
+                        const existingQty = existing.totalQty || existing.qty || 0;
                         if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
                             existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
                         }
@@ -6501,9 +6534,9 @@
                                 const posLabel = canonicalPositionName(pos);
                                 const logo = state.positionDesigns?.[pos]?.logo || null;
                                 const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                                const totalPrice = unitPrice * existing.totalQty;
+                                const totalPrice = unitPrice * existingQty;
                                 updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
-                                updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
+                                updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existingQty });
                             });
                             existing.positions = updatedPositions;
                             if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
@@ -6515,7 +6548,7 @@
                     const code = state.product?.code;
                     const color = state.selectedColorName || state.selectedColor;
                     basket.forEach(existing => {
-                        if (existing.productCode === code &&
+                        if (((existing.productCode || existing.code) === code) &&
                             (existing.colorId === state.selectedColor || existing.color === color)) {
                             if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
                                 existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };

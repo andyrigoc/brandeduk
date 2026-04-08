@@ -696,7 +696,7 @@
   width: 100%;
   left: 0;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.6s, width 0.7s 0.7s, z-index 0s;
+  transition: transform 0.6s, width 0.7s 0.25s, z-index 0s;
   border-radius: 0;
 }
 

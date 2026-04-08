@@ -23,47 +23,8 @@ const BrandedAPI = (function () {
     // SLUG MAPPING - Frontend URL params to API params
     // ==========================================================================
 
-    const CATEGORY_SLUG_MAP = {
-        // Frontend category → API productType slug
-        'all': null,
-        'tshirts': 't-shirts',
-        't-shirt': 't-shirts',
-        't-shirts': 't-shirts',
-        'tees': 't-shirts',
-        'polo': 'polos',
-        'polo-shirts': 'polos',
-        'fleeces': 'fleece',
-        'hivis': 'safety-vests',
-        'hi-vis': 'safety-vests',
-        'hi-viz': 'safety-vests',
-        'headwear': 'hats',
-        'sustainable': null, // Special filter - organic/recycled
-        'workwear': null, // Special - multiple types
-
-        // Direct matches
-        'hoodies': 'hoodies',
-        'jackets': 'jackets',
-        'caps': 'caps',
-        'beanies': 'beanies',
-        'trousers': 'trousers',
-        'aprons': 'aprons',
-        'sweatshirts': 'sweatshirts',
-        'softshells': 'softshells',
-        'shorts': 'shorts',
-        'shirts': 'shirts',
-        'bags': 'bags',
-        'gilets': 'gilets-&-body-warmers',
-        'fleece': 'fleece',
-        'towels': 'towels',
-        'gloves': 'gloves',
-        'hats': 'hats',
-        'boots': 'boots',
-        'trainers': 'trainers',
-        'leggings': 'leggings',
-        'sweatpants': 'sweatpants',
-        'scarves': 'scarves',
-        'socks': 'socks'
-    };
+    // Category slug map (from shared config)
+    const CATEGORY_SLUG_MAP = (window.BrandedConfig && window.BrandedConfig.CATEGORY_SLUG_MAP) || { 'all': null };
 
     // ==========================================================================
     // HELPER FUNCTIONS

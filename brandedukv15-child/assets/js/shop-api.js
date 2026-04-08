@@ -52,34 +52,9 @@ const ShopManager = (function () {
     let colorDebounceTimer = null;
     const COLOR_DEBOUNCE_MS = 300;
 
-    // Category title mappings
-    const CATEGORY_TITLES = {
-        'all': 'All Products',
-        'tshirts': 'Personalised T-Shirts',
-        't-shirts': 'Personalised T-Shirts',
-        'polo': 'Personalised Polo Shirts',
-        'polos': 'Personalised Polo Shirts',
-        'hoodies': 'Personalised Hoodies',
-        'jackets': 'Personalised Jackets',
-        'hivis': 'Hi-Vis Workwear',
-        'safety-vests': 'Hi-Vis Workwear',
-        'trousers': 'Work Trousers',
-        'fleeces': 'Personalised Fleeces',
-        'fleece': 'Personalised Fleeces',
-        'bags': 'Personalised Bags',
-        'caps': 'Personalised Caps',
-        'beanies': 'Personalised Beanies',
-        'headwear': 'Personalised Headwear',
-        'hats': 'Personalised Hats',
-        'aprons': 'Personalised Aprons',
-        'sustainable': 'Sustainable Workwear',
-        'workwear': 'Workwear',
-        'sweatshirts': 'Sweatshirts',
-        'softshells': 'Softshell Jackets',
-        'shorts': 'Shorts',
-        'shirts': 'Shirts',
-        'gilets': 'Gilets & Body Warmers',
-        'gilets-&-body-warmers': 'Gilets & Body Warmers'
+    // Category title mappings (from shared config)
+    const CATEGORY_TITLES = (window.BrandedConfig && window.BrandedConfig.CATEGORY_TITLES) || {
+        'all': 'All Products'
     };
 
     // ==========================================================================

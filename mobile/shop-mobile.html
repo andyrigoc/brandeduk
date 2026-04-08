@@ -15,6 +15,50 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer/footer.css?v=20260406">
+    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
+    <style>
+        /* Search Autocomplete Dropdown */
+        .search-autocomplete {
+            display: none; position: absolute; top: 100%; left: 0; right: 0;
+            background: #fff; border: 1px solid #e5e7eb; border-top: none;
+            border-radius: 0 0 16px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999; max-height: 400px; overflow-y: auto;
+        }
+        .search-autocomplete.open { display: block; }
+        .search-wrapper-expand { position: relative; }
+        /* Category suggestion row */
+        .search-autocomplete .ac-cat {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; cursor: pointer; font-size: 14px;
+            color: #374151; transition: background 0.15s; border-bottom: 1px solid #f3f4f6;
+        }
+        .search-autocomplete .ac-cat:hover { background: #f3f0ff; }
+        .search-autocomplete .ac-cat .ac-icon { width: 20px; height: 20px; flex-shrink: 0; color: #a855f7; }
+        .search-autocomplete .ac-match { font-weight: 700; color: #7c3aed; }
+        /* Section label */
+        .search-autocomplete .ac-section-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            color: #9ca3af; padding: 10px 16px 4px; letter-spacing: 0.5px;
+        }
+        /* Product row */
+        .search-autocomplete .ac-prod {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 16px; cursor: pointer; border-radius: 0;
+            transition: background 0.12s; text-decoration: none; color: inherit;
+        }
+        .search-autocomplete .ac-prod:hover { background: #f3f0ff; }
+        .ac-prod-img { width: 44px; height: 44px; border-radius: 6px; object-fit: contain; flex-shrink: 0; background: #f9fafb; }
+        .ac-prod-info { min-width: 0; flex: 1; }
+        .ac-prod-name { font-size: 13px; font-weight: 600; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ac-prod-code { font-size: 11px; color: #9ca3af; }
+        .ac-view-all {
+            display: block; text-align: center; padding: 12px;
+            font-size: 14px; font-weight: 600; color: #fff; background: #2dd4bf;
+            border-radius: 0 0 16px 16px; text-decoration: none;
+        }
+        .ac-view-all:hover { background: #14b8a6; }
+        .ac-loading, .ac-no-results { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
+    </style>
 </head>
 
 <body>
@@ -116,12 +160,13 @@
             </a>
             <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand" autocomplete="off">
                 <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
+                <div class="search-autocomplete" id="searchAutocomplete"></div>
             </div>
         </div>
     </header>
@@ -138,9 +183,26 @@
 
     <!-- Category Title -->
     <div class="shop-title-bar">
-        <h1 class="shop-title" id="categoryTitle">All Products</h1>
-        <span class="results-count" id="resultsCount">Loading...</span>
+        <h1 class="shop-title" id="categoryTitle">Loading...</h1>
+        <span class="results-count" id="resultsCount"></span>
     </div>
+    <script>
+    // Set correct title immediately from URL to avoid "All Products" flash
+    (function() {
+        var cfg = window.BrandedConfig;
+        var titles = cfg ? cfg.CATEGORY_TITLES : {};
+        var p = new URLSearchParams(window.location.search);
+        var cat = p.get('category') || 'all';
+        var q = p.get('q') || p.get('search') || '';
+        var bs = p.get('bestsellers') === '1';
+        var el = document.getElementById('categoryTitle');
+        if (el) {
+            if (q) el.textContent = 'Search: "' + q + '"';
+            else if (bs) el.textContent = 'Recommended For You';
+            else el.textContent = titles[cat] || titles[cat.toLowerCase()] || 'All Products';
+        }
+    })();
+    </script>
 
     <!-- Products Grid -->
     <main class="shop-products-container">
@@ -465,31 +527,8 @@
             return { min: base, max: base };
         }
 
-        // Category title mappings
-        const CATEGORY_TITLES = {
-            'all': 'All Products',
-            'tshirts': 'T-Shirts',
-            't-shirts': 'T-Shirts',
-            'polo': 'Polo Shirts',
-            'polos': 'Polo Shirts',
-            'hoodies': 'Hoodies & Sweatshirts',
-            'jackets': 'Jackets',
-            'hivis': 'Hi-Viz',
-            'safety-vests': 'Hi-Viz',
-            'trousers': 'Trousers',
-            'fleeces': 'Fleeces',
-            'fleece': 'Fleece',
-            'bags': 'Bags',
-            'caps': 'Caps',
-            'beanies': 'Beanies',
-            'headwear': 'Headwear',
-            'aprons': 'Aprons',
-            'sustainable': 'Sustainable',
-            'workwear': 'Workwear',
-            'sweatshirts': 'Sweatshirts',
-            'shorts': 'Shorts',
-            'shirts': 'Shirts'
-        };
+        // Category title mappings (from shared config)
+        const CATEGORY_TITLES = window.BrandedConfig ? window.BrandedConfig.CATEGORY_TITLES : {};
 
         // Create product card
         function createProductCard(product, index) {
@@ -924,6 +963,126 @@
         } else {
             init();
         }
+    </script>
+    <script>
+    // ── Search Autocomplete (API-powered with product images) ──
+    (function() {
+        var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
+        var HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];
+        var debounceTimer = null;
+        var currentRequest = null;
+
+        function highlightMatch(text, query) {
+            var idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.substring(0, idx) + '<span class="ac-match">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+        }
+        function stripBrands(name) {
+            var n = name || '';
+            HIDDEN_BRANDS.forEach(function(b) { n = n.replace(new RegExp(b, 'gi'), '').trim(); });
+            return n;
+        }
+        function getLowestPrice(product) {
+            var breaks = product.priceBreaks || product.price_breaks || [];
+            if (breaks.length > 0) return Math.min.apply(null, breaks.map(function(b) { return Number(b.price) || 999; }));
+            return Number(product.price) || 0;
+        }
+
+        var input = document.getElementById('searchInput');
+        var dropdown = document.getElementById('searchAutocomplete');
+        if (!input || !dropdown) return;
+
+        function closeAC() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
+
+        function renderResults(products, query) {
+            var html = '';
+            // Category suggestions
+            var q = query.toLowerCase();
+            var catMatches = PRODUCT_TYPES.filter(function(pt) { return pt.toLowerCase().indexOf(q) === 0; });
+            if (catMatches.length > 0) {
+                catMatches.slice(0, 3).forEach(function(pt) {
+                    html += '<div class="ac-cat" data-label="' + pt + '">' +
+                        '<svg class="ac-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+                        '<span>' + highlightMatch(pt, query) + '</span></div>';
+                });
+            }
+            // Product results
+            if (products.length > 0) {
+                html += '<div class="ac-section-label">Product Results</div>';
+                products.slice(0, 5).forEach(function(p) {
+                    var img = p.image || '../brandedukv15-child/assets/images/ui/no-image.png';
+                    var name = stripBrands(p.name || '');
+                    var code = p.code || '';
+                    var safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+                    var safeImg = img.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+                    html += '<a class="ac-prod" href="shop-mobile.html?q=' + encodeURIComponent(code) + '" data-code="' + encodeURIComponent(code) + '">' +
+                        '<img class="ac-prod-img" src="' + safeImg + '" alt="" onerror="this.style.display=\'none\'">' +
+                        '<div class="ac-prod-info">' +
+                            '<div class="ac-prod-name">' + highlightMatch(name, query) + '</div>' +
+                            '<div class="ac-prod-code">Code: ' + code + '</div>' +
+                        '</div></a>';
+                });
+            } else if (catMatches.length === 0) {
+                html += '<div class="ac-no-results">No products found</div>';
+            }
+            // View all results
+            html += '<a class="ac-view-all" href="shop-mobile.html?q=' + encodeURIComponent(query) + '">View all results for &ldquo;' + query + '&rdquo; &rarr;</a>';
+            dropdown.innerHTML = html;
+            dropdown.classList.add('open');
+            // Bind category clicks
+            dropdown.querySelectorAll('.ac-cat').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    closeAC();
+                    window.location.href = 'shop-mobile.html?q=' + encodeURIComponent(el.dataset.label);
+                });
+            });
+        }
+
+        async function fetchAndShow(query) {
+            if (currentRequest) { try { currentRequest.abort(); } catch(e){} }
+            var controller = new AbortController();
+            currentRequest = controller;
+            dropdown.innerHTML = '<div class="ac-loading">Searching...</div>';
+            dropdown.classList.add('open');
+            try {
+                var res = await fetch('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(query) + '&limit=20', { signal: controller.signal });
+                if (!res.ok) throw new Error('API error');
+                var data = await res.json();
+                var items = (data.items || []).map(function(p) {
+                    return {
+                        code: p.code || p.style_code || '',
+                        name: p.name || p.product_name || '',
+                        price: p.price,
+                        priceBreaks: p.priceBreaks || p.price_breaks || [],
+                        image: p.image || p.main_image || ''
+                    };
+                });
+                currentRequest = null;
+                renderResults(items, query);
+            } catch(err) {
+                if (err.name === 'AbortError') return;
+                currentRequest = null;
+                renderResults([], query);
+            }
+        }
+
+        // Override the existing input handler with autocomplete
+        var acDebounce = null;
+        input.addEventListener('input', function(e) {
+            var q = input.value.trim();
+            if (q.length < 2) { closeAC(); return; }
+            clearTimeout(acDebounce);
+            acDebounce = setTimeout(function() { fetchAndShow(q); }, 300);
+        }, true);
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAC();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#searchAutocomplete') && !e.target.closest('#searchInput')) closeAC();
+        });
+    })();
     </script>
     <script src="js/mobile.js?v=20251230"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>

@@ -803,6 +803,7 @@
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/services.css?v=20260224">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
 </head>
 <body>
 
@@ -2478,31 +2479,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Header searchbar handler - redirects to shop page with search query + autocomplete
 (function() {
-    var PRODUCT_TYPES = [
-        'Accessories','Aprons','Arm Guards','Armbands',
-        'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
-        'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
-        'Document Wallets','Dog Vests','Dresses','Dungarees',
-        'Ear Muffs','Embroidery Accessories','Embroidery Backing',
-        'First Aid Boxes','Fleece','Freezer Blocks',
-        'Gilets & Body Warmers','Glasses','Gloves','Gowns',
-        'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
-        'Jackets','Jeans',
-        'Keyrings','Kneepads','Knitted Jumpers',
-        'Laptop Cases','Leggings','Loungewear Bottoms',
-        'Mail Order Bags',
-        'Onesies',
-        'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
-        'Quad Guards',
-        'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
-        'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
-        'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
-        'Umbrellas','Unitards',
-        'Vests (t-shirt)',
-        'Waistcoats','Wallets','Winter Accessory Sets',
-        'Yoga Mats',
-        'Zips Pulls'
-    ];
+    var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
 
     var acTimer = null;
     var acActiveIndex = -1;

@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260307A">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260408E">
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
     <!-- Responsive Breakpoints (Tablet/Desktop) -->
@@ -2713,31 +2714,7 @@
         
         // ── Search Autocomplete (mobile + desktop header) ──
         (function() {
-            var PRODUCT_TYPES = [
-                'Accessories','Aprons','Arm Guards','Armbands',
-                'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
-                'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
-                'Document Wallets','Dog Vests','Dresses','Dungarees',
-                'Ear Muffs','Embroidery Accessories','Embroidery Backing',
-                'First Aid Boxes','Fleece','Freezer Blocks',
-                'Gilets & Body Warmers','Glasses','Gloves','Gowns',
-                'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
-                'Jackets','Jeans',
-                'Keyrings','Kneepads','Knitted Jumpers',
-                'Laptop Cases','Leggings','Loungewear Bottoms',
-                'Mail Order Bags',
-                'Onesies',
-                'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
-                'Quad Guards',
-                'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
-                'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
-                'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
-                'Umbrellas','Unitards',
-                'Vests (t-shirt)',
-                'Waistcoats','Wallets','Winter Accessory Sets',
-                'Yoga Mats',
-                'Zips Pulls'
-            ];
+            var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
 
             function highlightMatch(text, query) {
                 var idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -2917,6 +2894,46 @@
             
             document.addEventListener('touchstart', deactivateAll, { passive: true });
             document.addEventListener('click', deactivateAll);
+        })();
+
+        // Isometric 3D Footer Social Icons - Touch: 1st tap = color/lift, 2nd tap = open link
+        (function() {
+            function initIsoSocial() {
+                const isoLinks = document.querySelectorAll('.iso-social-list li a');
+                if (!isoLinks.length) return;
+                const isTouch = 'ontouchend' in window || navigator.maxTouchPoints > 0;
+
+                isoLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        if (!isTouch) return; // desktop: normal hover + click
+                        if (!link.classList.contains('iso-active')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Deactivate siblings
+                            isoLinks.forEach(l => l.classList.remove('iso-active'));
+                            link.classList.add('iso-active');
+                        }
+                        // 2nd tap: iso-active already set, default action opens link
+                    });
+                });
+
+                // Tap outside: deactivate all
+                document.addEventListener('touchstart', function(e) {
+                    const container = document.querySelector('.footer-social-3d');
+                    if (container && !container.contains(e.target)) {
+                        isoLinks.forEach(l => l.classList.remove('iso-active'));
+                    }
+                }, { passive: true });
+            }
+
+            // Run after footer injection
+            const prevCb = window.onMobileFooterInjected;
+            window.onMobileFooterInjected = function() {
+                if (typeof prevCb === 'function') prevCb();
+                initIsoSocial();
+            };
+            // Also try immediately in case footer already loaded
+            initIsoSocial();
         })();
         
         // Tablet Social Icons - Single/Double Click

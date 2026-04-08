@@ -311,3 +311,174 @@
 .social-icon-3d.active::after {
     opacity: 0.5;
 }
+
+/* =============================================
+   Isometric 3D Social Icons – Footer
+   ============================================= */
+.footer-social-3d {
+    margin-top: 20px;
+}
+
+.iso-social-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0;
+}
+
+.iso-social-list li {
+    margin: 0 20px;
+}
+
+.iso-social-list li a .fa-brands {
+    font-size: 20px;
+    color: #262626;
+    line-height: 14px;
+    position: relative;
+    top: 11px;
+    transition: .5s;
+}
+
+.iso-social-list li a {
+    position: relative;
+    display: block;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    text-align: center;
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(0, 0);
+    transition: .5s;
+    transition-timing-function: linear;
+    box-shadow: -6px 6px 4px rgba(0, 0, 0, .5);
+}
+
+.iso-social-list li a:before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: -6px;
+    height: 100%;
+    width: 6px;
+    background: #b1b1b1;
+    transition: .5s;
+    transform: rotate(0deg) skewY(-45deg);
+}
+
+.iso-social-list li a:after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: -3px;
+    height: 6px;
+    width: 100%;
+    background: #b1b1b1;
+    transition: .85s;
+    transform: rotate(0deg) skewX(-45deg);
+}
+
+.iso-social-list li a:hover {
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(5px, -5px);
+    box-shadow: -12px 12px 12px rgba(0, 0, 0, .5);
+}
+
+.iso-social-list li:hover .fa-brands {
+    color: #fff;
+}
+
+/* Facebook */
+.iso-social-list li:nth-child(1):hover a {
+    background: #3b5999;
+}
+.iso-social-list li:nth-child(1):hover a:before {
+    background: #2c3e64;
+}
+.iso-social-list li:nth-child(1):hover a:after {
+    background: #516aa5;
+}
+
+/* Instagram */
+.iso-social-list li:nth-child(2):hover a {
+    background: #e4405f;
+}
+.iso-social-list li:nth-child(2):hover a:before {
+    background: #cb1d3d;
+}
+.iso-social-list li:nth-child(2):hover a:after {
+    background: #ad344a;
+}
+
+/* YouTube */
+.iso-social-list li:nth-child(3):hover a {
+    background: #cd201f;
+}
+.iso-social-list li:nth-child(3):hover a:before {
+    background: #930504;
+}
+.iso-social-list li:nth-child(3):hover a:after {
+    background: #e62c2a;
+}
+
+/* Pinterest */
+.iso-social-list li:nth-child(4):hover a {
+    background: #bd081c;
+}
+.iso-social-list li:nth-child(4):hover a:before {
+    background: #930011;
+}
+.iso-social-list li:nth-child(4):hover a:after {
+    background: #bb2a3a;
+}
+
+/* === Touch/Mobile: active state (first tap) === */
+.iso-social-list li a.iso-active {
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(5px, -5px);
+    box-shadow: -12px 12px 12px rgba(0, 0, 0, .5);
+}
+.iso-social-list li a.iso-active .fa-brands {
+    color: #fff;
+}
+
+/* Facebook active */
+.iso-social-list li:nth-child(1) a.iso-active {
+    background: #3b5999;
+}
+.iso-social-list li:nth-child(1) a.iso-active:before {
+    background: #2c3e64;
+}
+.iso-social-list li:nth-child(1) a.iso-active:after {
+    background: #516aa5;
+}
+
+/* Instagram active */
+.iso-social-list li:nth-child(2) a.iso-active {
+    background: #e4405f;
+}
+.iso-social-list li:nth-child(2) a.iso-active:before {
+    background: #cb1d3d;
+}
+.iso-social-list li:nth-child(2) a.iso-active:after {
+    background: #ad344a;
+}
+
+/* YouTube active */
+.iso-social-list li:nth-child(3) a.iso-active {
+    background: #cd201f;
+}
+.iso-social-list li:nth-child(3) a.iso-active:before {
+    background: #930504;
+}
+.iso-social-list li:nth-child(3) a.iso-active:after {
+    background: #e62c2a;
+}
+
+/* Pinterest active */
+.iso-social-list li:nth-child(4) a.iso-active {
+    background: #bd081c;
+}
+.iso-social-list li:nth-child(4) a.iso-active:before {
+    background: #930011;
+}
+.iso-social-list li:nth-child(4) a.iso-active:after {
+    background: #bb2a3a;
+}

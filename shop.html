@@ -997,6 +997,7 @@
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
 </head>
 
 <body>
@@ -2565,197 +2566,8 @@
         // EXACT COPY of PC filters & API mapping - matching PC version exactly
         // ---------------------------------------------------------------------
 
-        // Filter value mappings (Frontend HTML values → API values) - EXACT PC COPY
-        const FILTER_MAPPINGS = {
-            // Quick filters (flag[] array param) - special mappings
-            quickFilter: {
-                'new-in': 'new-in',
-                'bradeal': 'raladeal',  // HTML: bradeal -> API: raladeal
-                'offers': 'offers',
-                'in-stock': 'in-stock',
-                'recycled': 'recycled-organic'  // HTML: recycled -> API: recycled-organic
-            },
-            // Gender - values match API spec directly
-            gender: {
-                'female': 'female',
-                'male': 'male',
-                'unisex': 'unisex'
-            },
-            // Age Group - values match API spec directly
-            ageGroup: {
-                'adult': 'adult',
-                'infant': 'infant',
-                'kids': 'kids'
-            },
-            // Sleeve - values match API spec directly
-            sleeve: {
-                'long-sleeve-2': 'long-sleeve-2',
-                'short-sleeve-2': 'short-sleeve-2',
-                'sleeveless': 'sleeveless',
-                'raglan-sleeve': 'raglan-sleeve',
-                'set-in-sleeve': 'set-in-sleeve',
-                'roll-sleeve': 'roll-sleeve'
-            },
-            // Neckline - values match API spec directly
-            neckline: {
-                'crew-neck-2': 'crew-neck-2',
-                'v-neck-2': 'v-neck-2',
-                'mandarin': 'mandarin',
-                'wide-neck': 'wide-neck',
-                'roll-neck': 'roll-neck',
-                'button-down-collar': 'button-down-collar',
-                'keyhole': 'keyhole',
-                'polo-neck-2': 'polo-neck-2',
-                'hooded-2': 'hooded-2',
-                'scoop-neck-2': 'scoop-neck-2',
-                'zip-neck-2': 'zip-neck-2'
-            },
-            // Accreditations - values match API spec directly
-            accreditations: {
-                'vegan-tested': 'vegan-tested',
-                'oeko-tex': 'oeko-tex',
-                'global-compact': 'global-compact',
-                'sedex': 'sedex',
-                'un-global-compact': 'un-global-compact',
-                'polylana': 'polylana',
-                'ocs-blended-licence': 'ocs-blended-licence',
-                'ocs-100-licence': 'ocs-100-licence',
-                'oeko-tex-step': 'oeko-tex-step',
-                'rcs-blended-licence': 'rcs-blended-licence',
-                'global-recycled-standard': 'global-recycled-standard',
-                'sa8000': 'sa8000',
-                'amfori-bsci': 'amfori-bsci',
-                'recycled': 'recycled',
-                'b-corp': 'b-corp',
-                'gots-licence': 'gots-licence',
-                'organic': 'organic',
-                'fairtrade-': 'fairtrade-',
-                'certified-organic': 'certified-organic',
-                'en-iso-20471': 'en-iso-20471',
-                'ris-3279-tom-rail': 'ris-3279-tom-rail'
-            },
-            // Primary Colour - values match API spec directly
-            primaryColour: {
-                'black': 'black',
-                'blue': 'blue',
-                'grey': 'grey',
-                'green': 'green',
-                'white': 'white',
-                'red': 'red',
-                'pink': 'pink',
-                'yellow': 'yellow',
-                'neutral': 'neutral',
-                'purple': 'purple',
-                'orange': 'orange',
-                'brown': 'brown',
-                'pattern': 'pattern',
-                'other': 'other'
-            },
-            // Colour Shade - values match API spec directly
-            colourShade: {
-                'black - black': 'black - black',
-                'blue - navy': 'blue - navy',
-                'grey - dark grey': 'grey - dark grey',
-                'white - white': 'white - white'
-            },
-            // Style - values match API spec directly
-            style: {
-                'classic': 'classic',
-                'crew-neck-1': 'crew-neck-1',
-                'hooded-1': 'hooded-1',
-                'long-sleeve-1': 'long-sleeve-1',
-                'oversized': 'oversized',
-                'pocket': 'pocket',
-                'regular': 'regular',
-                'slim-1': 'slim-1',
-                'v-neck': 'v-neck',
-                'zipped': 'zipped'
-            },
-            // Features - values match API spec directly (NOTE: singular 'feature' for API)
-            feature: {
-                'anti-bacterial': 'anti-bacterial',
-                'breathable': 'breathable',
-                'eco': 'eco',
-                'heavyweight': 'heavyweight',
-                'tear-away': 'tear-away',
-                'uv-protection': 'uv-protection',
-                'water-resistant': 'water-resistant'
-            },
-            // Size - values match API spec directly
-            size: {
-                's': 's',
-                'm': 'm',
-                'l': 'l',
-                'xl': 'xl',
-                '2xl': '2xl',
-                '3xl': '3xl',
-                'xs': 'xs',
-                'one-size': 'one-size',
-                '4xl': '4xl',
-                '5xl': '5xl'
-            },
-            // Fabric - values match API spec directly
-            fabric: {
-                'recycled-100': 'recycled-100',
-                'organic-100': 'organic-100',
-                'polyester-100': 'polyester-100',
-                'cotton-100': 'cotton-100',
-                'nylon-100': 'nylon-100',
-                'ringspun-100': 'ringspun-100'
-            },
-            // Weight - values match API spec directly
-            weight: {
-                '0-50gsm': '0-50gsm',
-                '051-100gsm': '051-100gsm',
-                '101-150gsm': '101-150gsm',
-                '151-200gsm': '151-200gsm',
-                '201-250gsm': '201-250gsm',
-                '251-300gsm': '251-300gsm',
-                'over-300gsm': 'over-300gsm'
-            },
-            // Fit - values match API spec directly
-            fit: {
-                'classic': 'classic',
-                'comfort': 'comfort',
-                'crop': 'crop',
-                'fashion': 'fashion',
-                'fitted': 'fitted',
-                'oversized': 'oversized',
-                'relaxed': 'relaxed',
-                'semi-fitted': 'semi-fitted'
-            },
-            // Related Sector - values match API spec directly
-            sector: {
-                'sport': 'sport',
-                'corporate': 'corporate',
-                'hospitality': 'hospitality',
-                'travel': 'travel',
-                'fashion': 'fashion'
-            },
-            // Related Sport - values match API spec directly
-            sport: {
-                'golf': 'golf',
-                'gym': 'gym',
-                'swimming': 'swimming',
-                'rugby': 'rugby'
-            },
-            // Tag - values match API spec directly
-            tag: {
-                'adhesives': 'adhesives',
-                'cut-away-inner-label': 'cut-away-inner-label',
-                'sewn-tag': 'sewn-tag',
-                'tagless': 'tagless'
-            },
-            // Effect - values match API spec directly
-            effect: {
-                'melange': 'melange',
-                'heather': 'heather',
-                'tie-dye': 'tie-dye',
-                'triblend': 'triblend',
-                'washed': 'washed',
-                'acid-wash': 'acid-wash'
-            }
-        };
+        // Filter value mappings (from shared config)
+        const FILTER_MAPPINGS = window.BrandedConfig ? window.BrandedConfig.FILTER_MAPPINGS : {};
 
         // State (EXACT PC COPY)
         let currentState = {
@@ -2792,25 +2604,13 @@
             }
         };
 
-        // Helpers from PC script
+        // Helpers (from shared config)
         function normalizeCategory(raw) {
-            const value = String(raw || '').trim().toLowerCase();
-            if (!value) return 'all';
-            const aliases = {
-                't-shirt': 'tshirts', 't-shirts': 'tshirts', 'tees': 'tshirts', 'tee': 'tshirts',
-                'polo-shirts': 'polo', 'polos': 'polo',
-                'hi-viz': 'hivis', 'hi-vis': 'hivis', 'hi-vis clothing': 'hivis', 'hi-viz clothing': 'hivis',
-                'safety-vests': 'hivis',
-                'fleece': 'fleeces'
-            };
-            return aliases[value] || value;
+            return window.BrandedConfig ? window.BrandedConfig.normalizeCategory(raw) : String(raw || '').trim().toLowerCase() || 'all';
         }
 
         function getApiCategoryName(categorySlug) {
-            const slugToApiName = {
-                'tshirts': 'T-Shirts', 'caps': 'Caps', 'hoodies': 'Hoodies', 'jackets': 'Jackets', 'polo': 'Polos', 'shirts': 'Shirts', 'sweatshirts': 'Sweatshirts', 'beanies': 'Beanies', 'blouses': 'Blouses', 'chinos': 'Chinos', 'fleeces': 'Fleeces', 'hivis': 'Hi-Vis', 'trousers': 'Trousers', 'workwear': 'Workwear', 'aprons': 'Aprons'
-            };
-            return slugToApiName[categorySlug] || null;
+            return window.BrandedConfig ? window.BrandedConfig.getApiCategoryName(categorySlug) : null;
         }
 
         function mapFilterValue(filterType, frontendValue) {
@@ -3602,31 +3402,7 @@
         // ═══════════════════════════════════════════
         // AUTOCOMPLETE / PREDICTIVE SEARCH
         // ═══════════════════════════════════════════
-        const PRODUCT_TYPES = [
-            'Accessories','Aprons','Arm Guards','Armbands',
-            'Bags','Baselayers','Batteries','Beanies','Bedding','Belts','Bibs','Bin Bags','Blankets','Blouses','Bodysuits','Boots','Bottles','Boxers','Braces','Bras',
-            'Caps','Cardigans','Chef Jacket Studs','Chef Jackets','Chinos','Coveralls','Cushion Covers','Cushions',
-            'Document Wallets','Dog Vests','Dresses','Dungarees',
-            'Ear Muffs','Embroidery Accessories','Embroidery Backing',
-            'First Aid Boxes','Fleece','Freezer Blocks',
-            'Gilets & Body Warmers','Glasses','Gloves','Gowns',
-            'Hats','Headbands','Helmets','Hoodies','Hot Water Bottles & Covers',
-            'Jackets','Jeans',
-            'Keyrings','Kneepads','Knitted Jumpers',
-            'Laptop Cases','Leggings','Loungewear Bottoms',
-            'Mail Order Bags',
-            'Onesies',
-            'Packing Tape','Paper','Pencil Cases','Polos','Ponchos','Pyjamas',
-            'Quad Guards',
-            'Rain Suits','Reflective Tape','Robes','Rugby Shirts',
-            'Safety Vests','Scarves','Shirt Bags','Shirts','Shoes','Shorts','Skirts','Skorts','Sleepsuits','Slippers','Snoods','Socks','Soft Toys','Softshells','Sports Overtops','Storage','Straps','Sweatpants','Sweatshirts',
-            'T-Shirts','Tabards','Tablecloths','Ties','Towels','Trackwear','Trainers','Travel Sets','Trousers','Tunics',
-            'Umbrellas','Unitards',
-            'Vests (t-shirt)',
-            'Waistcoats','Wallets','Winter Accessory Sets',
-            'Yoga Mats',
-            'Zips Pulls'
-        ];
+        const PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
 
         let acTimer = null;
         let acActiveIndex = -1;
@@ -3819,25 +3595,11 @@
 
         // Setup category filter buttons - NEW FUNCTION
         function setupCategoryFilters() {
-            // Category metadata (titles + descriptions)
-            var CATEGORY_INFO = {
-                'all': { title: 'All Products', desc: 'Browse our full range of customisable workwear and uniforms.' },
-                'tshirts': { title: 'Personalised T-Shirts', desc: 'Cost-effective custom t-shirts for promotions, staff uniforms, and events. Available in a wide range of fabrics and fits with multiple print methods. Optimised for large orders with consistent quality and fast turnaround.' },
-                'polo': { title: 'Personalised Polo Shirts', desc: 'Professional custom polo shirts for corporate, trade, and hospitality sectors. High-quality embroidery or print for a clean, long-lasting finish. A versatile uniform solution balancing comfort, durability, and brand image.' },
-                'hoodies': { title: 'Personalised Hoodies', desc: 'Premium custom hoodies for workwear, events, and corporate teams. Available with embroidery, screen printing, or DTF for sharp, durable logos. Comfortable, hard-wearing garments suitable for daily use and brand visibility.' },
-                'jackets': { title: 'Personalised Jackets', desc: 'Custom jackets and outerwear built for performance and brand exposure. Weather-resistant options ideal for outdoor teams and work environments. Advanced embroidery and print techniques ensure premium logo presentation.' },
-                'hivis': { title: 'Hi-Vis Workwear', desc: 'Certified high-visibility clothing compliant with UK safety standards. Essential for construction, logistics, and industrial workplaces. Custom branding available without compromising safety or compliance.' },
-                'trousers': { title: 'Work Trousers', desc: 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.' },
-                'fleeces': { title: 'Personalised Fleeces', desc: '' },
-                'bags': { title: 'Personalised Bags', desc: '' },
-                'caps': { title: 'Personalised Caps', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
-                'beanies': { title: 'Personalised Beanies', desc: 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.' },
-                'aprons': { title: 'Personalised Aprons', desc: 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.' },
-                'sustainable': { title: 'Sustainable Workwear', desc: 'Eco-friendly clothing options made from organic and recycled materials. Ideal for brands focused on sustainability and ethical sourcing. Custom branding available with reduced environmental impact.' }
-            };
+            // Category metadata (from shared config)
+            var cfg = window.BrandedConfig || {};
 
             function updateCategoryHeading(catSlug) {
-                var info = CATEGORY_INFO[catSlug] || CATEGORY_INFO['all'];
+                var info = cfg.getCategoryInfo ? cfg.getCategoryInfo(catSlug) : { title: 'All Products', desc: '' };
                 var titleEl = document.getElementById('shopCategoryTitle');
                 var descEl = document.getElementById('shopCategoryDesc');
                 if (titleEl) titleEl.textContent = info.title;
@@ -3904,37 +3666,15 @@
             if (titleEl) titleEl.textContent = (currentState.category && currentState.category !== 'all') ? currentState.category : 'All Products';
             if (resultsEl) resultsEl.textContent = `${currentState.total} items`;
 
-            // Ensure visible heading always shows CATEGORY_INFO title (not raw slug)
-            const HEADING_MAP = {
-                'all': 'All Products', 'tshirts': 'Personalised T-Shirts', 'polo': 'Personalised Polo Shirts',
-                'hoodies': 'Personalised Hoodies', 'jackets': 'Personalised Jackets', 'hivis': 'Hi-Vis Workwear',
-                'trousers': 'Work Trousers', 'fleeces': 'Personalised Fleeces', 'bags': 'Personalised Bags',
-                'caps': 'Personalised Caps', 'beanies': 'Personalised Beanies', 'aprons': 'Personalised Aprons',
-                'sustainable': 'Sustainable Workwear'
-            };
-            const DESCRIPTION_MAP = {
-                'all': 'Browse our full range of customisable workwear and uniforms.',
-                'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafés, and trade professionals seeking a polished, branded look.',
-                'hoodies': 'Premium custom hoodies for workwear, events, and corporate teams. Available with embroidery, screen printing, or DTF for sharp, durable logos. Comfortable, hard-wearing garments suitable for daily use and brand visibility.',
-                'beanies': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
-                'caps': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
-                'hivis': 'Certified high-visibility clothing compliant with UK safety standards. Essential for construction, logistics, and industrial workplaces. Custom branding available without compromising safety or compliance.',
-                'polo': 'Professional custom polo shirts for corporate, trade, and hospitality sectors. High-quality embroidery or print for a clean, long-lasting finish. A versatile uniform solution balancing comfort, durability, and brand image.',
-                'jackets': 'Custom jackets and outerwear built for performance and brand exposure. Weather-resistant options ideal for outdoor teams and work environments. Advanced embroidery and print techniques ensure premium logo presentation.',
-                'tshirts': 'Cost-effective custom t-shirts for promotions, staff uniforms, and events. Available in a wide range of fabrics and fits with multiple print methods. Optimised for large orders with consistent quality and fast turnaround.',
-                'trousers': 'Durable work trousers designed for demanding trade and industrial use. Reinforced materials and functional design for maximum performance. Optional branding solutions to complete your professional workwear set.',
-                'sustainable': 'Eco-friendly clothing options made from organic and recycled materials. Ideal for brands focused on sustainability and ethical sourcing. Custom branding available with reduced environmental impact.',
-                'fleeces': '',
-                'bags': ''
-            };
+            // Ensure visible heading always shows category title (not raw slug)
+            var catInfo = window.BrandedConfig ? window.BrandedConfig.getCategoryInfo(currentState.category) : { title: 'All Products', desc: '' };
             const headingEl = document.getElementById('shopCategoryTitle');
             const descEl = document.getElementById('shopCategoryDesc');
             if (headingEl) {
-                const friendlyTitle = HEADING_MAP[currentState.category] || HEADING_MAP['all'];
-                headingEl.textContent = friendlyTitle;
+                headingEl.textContent = catInfo.title;
             }
             if (descEl) {
-                descEl.textContent = DESCRIPTION_MAP[currentState.category] || DESCRIPTION_MAP['all'];
+                descEl.textContent = catInfo.desc;
             }
 
             // Update product count next to hamburger label
