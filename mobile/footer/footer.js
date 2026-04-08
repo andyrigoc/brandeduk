@@ -6,6 +6,7 @@
         var url;
         try {
             url = new URL('/mobile/footer/footer.tpl', window.location.origin);
+            url.searchParams.set('_t', Date.now());
         } catch (e) {
             return;
         }
