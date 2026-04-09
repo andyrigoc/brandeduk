@@ -522,7 +522,7 @@
 /* --- Quote Button --- */
 .quote-btn {
   position: absolute;
-  left: 50%;
+  left: 55%;
   top: 50%;
   transform: translate(-50%, -50%);
   appearance: none;
@@ -939,7 +939,7 @@
   }
 
   .quote-email {
-    display: block;
+    display: none;
   }
 
   .bar-menu {
