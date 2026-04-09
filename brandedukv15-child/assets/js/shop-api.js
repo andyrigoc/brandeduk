@@ -19,7 +19,7 @@ const ShopManager = (function () {
         search: '',
         priceMin: null,
         priceMax: null,
-        sort: 'newest',
+        sort: 'best',
         // Variant-driven color filter (API param: color=black)
         color: '',
         filters: {
@@ -177,7 +177,7 @@ const ShopManager = (function () {
         }
 
         // Set sort if not default
-        if (currentState.sort && currentState.sort !== 'newest') {
+        if (currentState.sort && currentState.sort !== 'best') {
             url.searchParams.set('sort', currentState.sort);
         } else {
             url.searchParams.delete('sort');
@@ -695,7 +695,7 @@ const ShopManager = (function () {
     }
 
     function setSort(sortBy) {
-        currentState.sort = sortBy || 'newest';
+        currentState.sort = sortBy || 'best';
         currentState.page = 1;
         renderProducts();
     }
@@ -735,7 +735,7 @@ const ShopManager = (function () {
         currentState.search = '';
         currentState.priceMin = null;
         currentState.priceMax = null;
-        currentState.sort = 'newest';
+        currentState.sort = 'best';
         currentState.color = '';
         Object.keys(currentState.filters).forEach(key => {
             currentState.filters[key] = [];
@@ -812,7 +812,7 @@ const ShopManager = (function () {
         currentState.category = getCategoryFromLocation();
         currentState.search = urlParams.get('q') || '';
         currentState.page = parseInt(urlParams.get('page'), 10) || 1;
-        currentState.sort = urlParams.get('sort') || 'newest';
+        currentState.sort = urlParams.get('sort') || 'best';
         currentState.color = slugifyColor(urlParams.get('color') || '');
     }
 

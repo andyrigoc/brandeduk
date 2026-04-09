@@ -1921,8 +1921,8 @@
             <div class="shop-control-group">
                 <label for="mobileSortSelect">Sort:</label>
                 <select id="mobileSortSelect" class="shop-control-select">
-                    <option value="newest" selected>Newest Arrivals</option>
-                    <option value="best">Best Sellers</option>
+                    <option value="newest">Newest Arrivals</option>
+                    <option value="best" selected>Best Sellers</option>
                     <option value="recommended">Highly Recommended</option>
                     <option value="brand-az">Brand A-Z</option>
                     <option value="brand-za">Brand Z-A</option>
@@ -2575,7 +2575,7 @@
             priceMin: null,
             priceMax: null,
             apiPriceRange: null,
-            sort: 'newest',
+            sort: 'best',
             filters: {
                 gender: [],
                 ageGroup: [],
@@ -3045,7 +3045,7 @@
             } else {
                 url.searchParams.delete('limit');
             }
-            if (currentState.sort && currentState.sort !== 'newest') {
+            if (currentState.sort && currentState.sort !== 'best') {
                 url.searchParams.set('sort', currentState.sort);
             } else {
                 url.searchParams.delete('sort');
@@ -3885,7 +3885,7 @@
             currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 24;
-            currentState.sort = urlParams.get('sort') || 'newest';
+            currentState.sort = urlParams.get('sort') || 'best';
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
@@ -3971,7 +3971,7 @@
             const viewSelect = document.getElementById('mobileViewSelect');
 
             if (sortSelect) {
-                sortSelect.value = currentState.sort || 'newest';
+                sortSelect.value = currentState.sort || 'best';
                 sortSelect.addEventListener('change', async (e) => {
                     currentState.sort = e.target.value;
                     currentState.page = 1;

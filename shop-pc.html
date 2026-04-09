@@ -3345,8 +3345,8 @@
                     <div class="products-controls">
                         <div class="control-group">
                             <select id="sortSelect" class="control-select">
-                                <option value="newest" selected>Newest Arrivals</option>
-                                <option value="best">Best Sellers</option>
+                                <option value="newest">Newest Arrivals</option>
+                                <option value="best" selected>Best Sellers</option>
                                 <option value="recommended">Highly Recommended</option>
                                 <option value="brand-az">Brand A-Z</option>
                                 <option value="brand-za">Brand Z-A</option>
@@ -3611,7 +3611,7 @@
             priceMin: null,
             priceMax: null,
             apiPriceRange: null, // Store priceRange from API response to update slider
-            sort: 'newest',
+            sort: 'best',
             // Variant-driven colour filter (API param: color=black)
             color: '',
             filters: {
@@ -3727,7 +3727,7 @@
             currentState.brand = brandParam || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 28;
-            currentState.sort = urlParams.get('sort') || 'newest';
+            currentState.sort = urlParams.get('sort') || 'best';
             currentState.search = '';
             currentState.priceMin = null;
             currentState.priceMax = null;
@@ -3763,8 +3763,8 @@
             currentState.category = categoryFilter;
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 28;
-            currentState.sort = urlParams.get('sort') || 'newest';
-            currentState.search = urlParams.get('q') || '';
+            currentState.sort = urlParams.get('sort') || 'best';
+            currentState.search = urlParams.get('q') || '';;
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
         }
