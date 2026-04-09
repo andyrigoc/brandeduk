@@ -2216,7 +2216,7 @@
     
     /* === FILTERS DROPUP - Desktop === */
     .filters-dropup {
-        max-width: 400px;
+        max-width: 480px;
         left: 50%;
         transform: translateX(-50%) translateY(100%);
         border-radius: 16px 16px 0 0;

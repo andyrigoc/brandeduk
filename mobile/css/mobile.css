@@ -9587,8 +9587,8 @@ a.continue-shopping {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 55%;
-    max-width: 320px;
+    width: 80%;
+    max-width: 400px;
     background: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
