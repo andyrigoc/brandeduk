@@ -32,13 +32,11 @@
         }
     });
 
-    // Close popup after CTA click so page is clean when user returns
+    // Close popup immediately after CTA click
     var cta = popup.querySelector('.wa-popup__cta');
     if (cta) {
         cta.addEventListener('click', function () {
-            setTimeout(function () {
-                popup.classList.remove('is-active');
-            }, 300);
+            popup.classList.remove('is-active');
         });
     }
 })();

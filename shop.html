@@ -3821,47 +3821,8 @@
                 grid.appendChild(heading);
             }
 
-            // If a gender filter is active, skip grouping — render flat list
-            const hasGenderFilter = currentState.filters.gender && currentState.filters.gender.length > 0;
-
-            if (hasGenderFilter) {
-                products.forEach(appendProductCard);
-            } else {
-                // Gender grouping: Men first, Women second, Kids third
-                function getGenderGroup(product) {
-                    const age = (product.ageGroup || '').toLowerCase();
-                    if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
-                    const gender = (product.gender || '').toLowerCase();
-                    const n = (product.name || '').toLowerCase();
-                    if (gender.includes('ladies') || gender.includes('female') || gender.includes('women') || gender.includes('womens')) return 'women';
-                    if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
-                    if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
-                    return 'men';
-                }
-
-                const menProducts = [];
-                const womenProducts = [];
-                const kidsProducts = [];
-                products.forEach(p => {
-                    const g = getGenderGroup(p);
-                    if (g === 'women') womenProducts.push(p);
-                    else if (g === 'kids') kidsProducts.push(p);
-                    else menProducts.push(p);
-                });
-
-                if (menProducts.length > 0) {
-                    if (womenProducts.length > 0 || kidsProducts.length > 0) appendSectionHeading('Men');
-                    menProducts.forEach(appendProductCard);
-                }
-                if (womenProducts.length > 0) {
-                    appendSectionHeading('Women');
-                    womenProducts.forEach(appendProductCard);
-                }
-                if (kidsProducts.length > 0) {
-                    appendSectionHeading('Kids');
-                    kidsProducts.forEach(appendProductCard);
-                }
-            }
+            // Always render flat list — no gender grouping
+            products.forEach(appendProductCard);
 
             updateMobilePagination();
         }
