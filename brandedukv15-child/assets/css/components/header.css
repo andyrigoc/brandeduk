@@ -1592,7 +1592,7 @@ body {
     position: static;
 }
 
-/* Hide the hover bridge on the first (now static) li — the dropdown itself handles it */
+/* Hide the hover bridge on the first (now static) li Ã¢â‚¬â€ the dropdown itself handles it */
 .main-nav .menu > li.has-megamenu:first-child::after {
     display: none;
 }
@@ -1760,7 +1760,7 @@ body {
     display: block;
 }
 
-/* ── Exclusives dropdown (brand grid) ── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Exclusives dropdown (brand grid) Ã¢â€â‚¬Ã¢â€â‚¬ */
 .exclusives-menu {
     position: relative;
 }
@@ -1858,7 +1858,7 @@ body {
     }
 }
 
-/* ── Brand dropdown (alphabetical list of all brands) ── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Brand dropdown (alphabetical list of all brands) Ã¢â€â‚¬Ã¢â€â‚¬ */
 .brands-menu {
     position: relative;
 }
@@ -2022,7 +2022,7 @@ body {
     }
 }
 
-/* ── Catalogue dropdown (simple 2-item list) ── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Catalogue dropdown (simple 2-item list) Ã¢â€â‚¬Ã¢â€â‚¬ */
 .catalogue-menu {
     position: relative;
 }
@@ -2201,8 +2201,8 @@ body {
 }
 
 .promo-theme-4 .promo-card-tag {
-    color: #5b21b6;
-    background: rgba(168, 85, 247, 0.22);
+    color: #1E2749;
+    background: rgba(228, 217, 255, 0.22);
 }
 
 .promo-theme-5 .promo-card-tag {
@@ -2880,7 +2880,7 @@ body {
     border: none;
     border-radius: 10px;
     background: #fff;
-    color: #6b21a8;
+    color: #273469;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -3026,8 +3026,8 @@ body {
     display: block;
     padding: 14px;
     text-align: center;
-    background: #03C8A8;
-    color: white;
+    background: #ff9100;
+    color: #000;
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
@@ -3035,7 +3035,7 @@ body {
 }
 
 .view-all-results:hover {
-    background: #02a88e;
+    background: #e07f00;
 }
 
 /* Custom scrollbar for suggestions */
@@ -3053,7 +3053,7 @@ body {
     background: #94a3b8;
 }
 
-/* ── Mobile: widen suggestions dropdown to full screen width ── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Mobile: widen suggestions dropdown to full screen width Ã¢â€â‚¬Ã¢â€â‚¬ */
 @media (max-width: 767px) {
     .search-suggestions {
         position: fixed;

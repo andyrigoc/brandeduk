@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6B21A8">
+    <meta name="theme-color" content="#273469">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Premium Workwear Hoodie - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20260307A">
@@ -141,7 +141,7 @@
 
         <!-- Product Title & Code (above image) -->
         <section class="product-header-info">
-            <div class="product-sku">#UX123 • UX Hoodie Pro</div>
+            <div class="product-sku">#UX123 Ã¢â‚¬Â¢ UX Hoodie Pro</div>
             <h1 class="product-title">Premium Workwear Hoodie</h1>
         </section>
 
@@ -220,7 +220,7 @@
             </div>
             <div class="product-price-block">
                 <span class="price-from">From</span>
-                <span class="price-amount" id="mainPrice" data-base-price="17.58">£17.58</span>
+                <span class="price-amount" id="mainPrice" data-base-price="17.58">Ã‚Â£17.58</span>
                 <span class="price-unit">per piece <span class="vat-suffix">ex VAT</span></span>
             </div>
         </section>
@@ -270,7 +270,7 @@
                 <button class="color-dot" style="background: #ea580c;" data-color="Orange"></button>
                 <button class="color-dot" style="background: #2563eb;" data-color="Royal Blue"></button>
                 <button class="color-dot" style="background: #166534;" data-color="Bottle Green"></button>
-                <button class="color-dot" style="background: #7c3aed;" data-color="Purple"></button>
+                <button class="color-dot" style="background: #273469;" data-color="Purple"></button>
                 <button class="color-dot" style="background: #fbbf24;" data-color="Yellow"></button>
             </div>
         </section>
@@ -282,7 +282,7 @@
                 <!-- Tier cards will be populated dynamically from API -->
                 <div class="tier-card" data-min="1" data-max="99999" data-price="0">
                     <span class="tier-qty">Loading...</span>
-                    <span class="tier-price">—</span>
+                    <span class="tier-price">Ã¢â‚¬â€</span>
                 </div>
             </div>
         </section>
@@ -302,7 +302,7 @@
                     </div>
                     <h3>Embroidery</h3>
                     <p>Premium finish</p>
-                    <span class="from-price" data-base-price="2.50">from £2.50</span>
+                    <span class="from-price" data-base-price="2.50">from Ã‚Â£2.50</span>
                 </div>
                 <div class="customization-card">
                     <div class="customization-icon">
@@ -314,7 +314,7 @@
                     </div>
                     <h3>DTG Print</h3>
                     <p>Full color</p>
-                    <span class="from-price" data-base-price="3.00">from £3.00</span>
+                    <span class="from-price" data-base-price="3.00">from Ã‚Â£3.00</span>
                 </div>
                 <div class="customization-card">
                     <div class="customization-icon">
@@ -326,7 +326,7 @@
                     </div>
                     <h3>Screen Print</h3>
                     <p>Bulk orders</p>
-                    <span class="from-price" data-base-price="1.50">from £1.50</span>
+                    <span class="from-price" data-base-price="1.50">from Ã‚Â£1.50</span>
                 </div>
             </div>
         </section>
@@ -437,7 +437,7 @@
                     </button>
                 </div>
                 <div class="product-recommendations__body" id="productRecommendationsMobileBody" data-recommendation-body hidden>
-                    <div class="product-recommendations__status" aria-live="polite">Finding related and alternative styles for this product…</div>
+                    <div class="product-recommendations__status" aria-live="polite">Finding related and alternative styles for this productÃ¢â‚¬Â¦</div>
                     <div class="product-recommendations__panel" id="productRecommendationsMobilePanelRelated" data-panel="related" aria-labelledby="productRecommendationsMobileTabRelated"></div>
                     <div class="product-recommendations__panel" id="productRecommendationsMobilePanelAlternatives" data-panel="alternatives" aria-labelledby="productRecommendationsMobileTabAlternatives" hidden></div>
                 </div>
@@ -449,7 +449,7 @@
     <!-- Fixed Action Bar -->
     <div class="action-bar product-action-bar">
         <div class="action-price">
-            <span class="price-value" id="actionPrice">£0.00</span>
+            <span class="price-value" id="actionPrice">Ã‚Â£0.00</span>
         </div>
         <button id="mobileAddToBasket" class="design-btn" disabled>
             <span>Add to basket</span>
@@ -460,8 +460,8 @@
     <div id="addedToBasketPopup" class="popup-overlay" style="display:none;">
         <div class="popup-box">
             <div class="popup-header">
-                <span class="popup-title" style="color:#16a34a;">✓ Added to basket</span>
-                <span id="closeAddedPopup" class="close-x">✕</span>
+                <span class="popup-title" style="color:#16a34a;">Ã¢Å“â€œ Added to basket</span>
+                <span id="closeAddedPopup" class="close-x">Ã¢Å“â€¢</span>
             </div>
             <div id="addedPopupContent" class="popup-content-fixed"></div>
             <hr class="popup-divider">
@@ -503,7 +503,7 @@
             function formatRecommendationPrice(basePrice) {
                 const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
                 const displayPrice = vatOn ? (Number(basePrice) || 0) * 1.20 : (Number(basePrice) || 0);
-                return `From £${displayPrice.toFixed(2)}`;
+                return `From Ã‚Â£${displayPrice.toFixed(2)}`;
             }
 
             function recommendationVatNote() {
@@ -550,10 +550,10 @@
                         const response = await fetch(`${API_BASE_URL}/products/${productCode}`);
                         if (response.ok) {
                             productData = await response.json();
-                            console.log('✅ Mobile product loaded from API:', productData.code);
+                            console.log('Ã¢Å“â€¦ Mobile product loaded from API:', productData.code);
                         }
                     } catch (error) {
-                        console.error('❌ Failed to fetch product from API:', error);
+                        console.error('Ã¢ÂÅ’ Failed to fetch product from API:', error);
                     }
                 }
 
@@ -626,7 +626,7 @@
 
                     card.innerHTML = `
                         <span class="tier-qty">${tier.label}</span>
-                        <span class="tier-price">£${tier.price.toFixed(2)}</span>
+                        <span class="tier-price">Ã‚Â£${tier.price.toFixed(2)}</span>
                         ${tier.save ? `<span class="tier-save">${tier.save}</span>` : ''}
                     `;
                     container.appendChild(card);
@@ -647,7 +647,7 @@
 
                     const priceEl = card.querySelector('.tier-price');
                     if (priceEl) {
-                        priceEl.textContent = `£${displayPrice.toFixed(2)}`;
+                        priceEl.textContent = `Ã‚Â£${displayPrice.toFixed(2)}`;
                     }
                 });
 
@@ -657,21 +657,21 @@
                 const mainPrice = document.getElementById('mainPrice');
                 const actionPrice = document.getElementById('actionPrice');
 
-                if (mainPrice) mainPrice.textContent = `£${displayPrice.toFixed(2)}`;
-                if (actionPrice) actionPrice.textContent = `£${displayPrice.toFixed(2)}`;
+                if (mainPrice) mainPrice.textContent = `Ã‚Â£${displayPrice.toFixed(2)}`;
+                if (actionPrice) actionPrice.textContent = `Ã‚Â£${displayPrice.toFixed(2)}`;
 
                 // Update customization prices
                 document.querySelectorAll('.from-price[data-base-price]').forEach(el => {
                     const base = parseFloat(el.dataset.basePrice);
                     const price = vatOn ? base * 1.20 : base;
-                    el.textContent = `from £${price.toFixed(2)}`;
+                    el.textContent = `from Ã‚Â£${price.toFixed(2)}`;
                 });
 
                 // Update related product prices
                 document.querySelectorAll('.related-price[data-base-price]').forEach(el => {
                     const base = parseFloat(el.dataset.basePrice);
                     const price = vatOn ? base * 1.20 : base;
-                    el.textContent = `From £${price.toFixed(2)}`;
+                    el.textContent = `From Ã‚Â£${price.toFixed(2)}`;
                 });
 
                 // Update VAT suffix
@@ -751,7 +751,7 @@
                 });
             }
 
-            // Swipe support (touch + mouse) – fixes "main image not scrolling" on desktop/tablet
+            // Swipe support (touch + mouse) Ã¢â‚¬â€œ fixes "main image not scrolling" on desktop/tablet
             const swiperContainer = document.getElementById('productSwiper');
             const SWIPE_THRESHOLD = 50;
             let swipeStartX = 0;
@@ -906,7 +906,7 @@
             padding-top: var(--header-height);
         }
 
-        /* ── Title & code above image ── */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Title & code above image Ã¢â€â‚¬Ã¢â€â‚¬ */
         .product-header-info {
             padding: 12px 16px 4px;
         }
@@ -923,7 +923,7 @@
             line-height: 1.3;
         }
 
-        /* ── Hide thumbnail gallery on mobile ── */
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Hide thumbnail gallery on mobile Ã¢â€â‚¬Ã¢â€â‚¬ */
         .gallery-thumbs {
             display: none !important;
         }
@@ -1082,7 +1082,7 @@
         .tier-card.active {
             border: 2px solid var(--purple);
             box-shadow: 0 0 0 2px var(--purple);
-            background: rgba(107, 33, 168, 0.05);
+            background: rgba(39, 52, 105, 0.05);
         }
 
         .tier-card.inactive {
@@ -1132,7 +1132,7 @@
 
         .pricing-card.highlight {
             border-color: var(--purple);
-            background: rgba(107, 33, 168, 0.05);
+            background: rgba(39, 52, 105, 0.05);
         }
 
         .pricing-card.best-value {

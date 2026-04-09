@@ -136,8 +136,8 @@ html, body {
 }
 
 .thumb-item.active {
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+    border-color: #273469;
+    box-shadow: 0 0 0 2px rgba(39, 52, 105, 0.2);
 }
 
 .product-main {
@@ -561,7 +561,7 @@ html, body {
 }
 
 .cust-badge.print {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #E4D9FF, #273469);
     color: white;
 }
 
@@ -596,19 +596,19 @@ html, body {
 }
 
 .tier-item:hover {
-    border-color: #7c3aed;
+    border-color: #273469;
     background: #faf5ff;
 }
 
 .tier-item.active {
-    border: 3px solid #7c3aed;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px #7c3aed;
+    border: 3px solid #273469;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px #273469;
     background: #ffffff;
 }
 
 .tier-item.active .tier-qty,
 .tier-item.active .tier-price {
-    color: #7c3aed;
+    color: #273469;
 }
 
 .tier-item.highlight {
@@ -717,14 +717,14 @@ html, body {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #E4D9FF, #273469);
     color: white;
     font-size: 1.1rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 14px rgba(39, 52, 105, 0.3);
 }
 
 .step-item.completed .step-num {
@@ -735,7 +735,7 @@ html, body {
 .step-label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #7c3aed;
+    color: #273469;
 }
 
 .step-item.completed .step-label {
@@ -796,7 +796,7 @@ html, body {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #E4D9FF, #273469);
     color: white;
     font-size: 0.8rem;
     font-weight: 700;
@@ -850,14 +850,14 @@ html, body {
 }
 
 .cta-btn.primary {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #E4D9FF, #273469);
     color: white;
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 14px rgba(39, 52, 105, 0.3);
 }
 
 .cta-btn.primary:not(:disabled):hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 6px 20px rgba(39, 52, 105, 0.4);
 }
 
 .cta-icon {
@@ -904,7 +904,7 @@ html, body {
 .sticky-cta {
     flex: 0 0 auto;
     padding: 14px 24px;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #E4D9FF, #273469);
     color: white;
     border: none;
     border-radius: 10px;
@@ -966,8 +966,8 @@ html, body {
 
 .disc-box.active {
     background: #fff;
-    border-color: #7c3aed;
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.2);
+    border-color: #273469;
+    box-shadow: 0 4px 14px rgba(39, 52, 105, 0.2);
 }
 
 .disc-box .qty {
@@ -987,7 +987,7 @@ html, body {
 }
 
 .disc-box.active .price {
-    color: #7c3aed;
+    color: #273469;
 }
 
 .disc-box .badge {
@@ -1002,7 +1002,7 @@ html, body {
 }
 
 .badge-base {
-    background: #7c3aed;
+    background: #273469;
     color: white;
 }
 
@@ -1682,19 +1682,19 @@ html, body {
 }
 
 .quote-button.primary {
-    background: linear-gradient(135deg, #9b6fd8 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, #9b6fd8 0%, #273469 100%);
     opacity: 0.6;
 }
 
 .quote-button.primary:not(:disabled) {
     opacity: 1;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 12px rgba(39, 52, 105, 0.3);
 }
 
 .quote-button.primary:not(:disabled):hover {
-    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    background: linear-gradient(135deg, #273469 0%, #1E2749 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 6px 16px rgba(39, 52, 105, 0.4);
 }
 
 .quote-button:disabled {
@@ -1746,8 +1746,8 @@ html, body {
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: rgba(124, 58, 237, 0.12);
-    color: #7c3aed;
+    background: rgba(39, 52, 105, 0.12);
+    color: #273469;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1788,27 +1788,27 @@ html, body {
 
 .confirm-btn.outline {
     background: transparent;
-    border: 1px solid rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(39, 52, 105, 0.2);
     color: #374151;
 }
 
 .confirm-btn.outline:hover {
-    border-color: #7c3aed;
-    color: #7c3aed;
+    border-color: #273469;
+    color: #273469;
     transform: translateY(-1px);
 }
 
 .confirm-btn.solid {
     border: none;
-    background: #7c3aed;
+    background: #273469;
     color: #ffffff;
-    box-shadow: 0 10px 20px rgba(124, 58, 237, 0.35);
+    box-shadow: 0 10px 20px rgba(39, 52, 105, 0.35);
 }
 
 .confirm-btn.solid:hover {
     background: #6a2aed;
     transform: translateY(-1px);
-    box-shadow: 0 14px 30px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 14px 30px rgba(39, 52, 105, 0.4);
 }
 
 .confirm-close {
@@ -1816,8 +1816,8 @@ html, body {
     top: 14px;
     right: 14px;
     border: none;
-    background: rgba(124, 58, 237, 0.08);
-    color: #7c3aed;
+    background: rgba(39, 52, 105, 0.08);
+    color: #273469;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1830,7 +1830,7 @@ html, body {
 }
 
 .confirm-close:hover {
-    background: rgba(124, 58, 237, 0.18);
+    background: rgba(39, 52, 105, 0.18);
     transform: rotate(90deg);
 }
 

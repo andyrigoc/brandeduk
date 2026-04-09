@@ -886,7 +886,7 @@
         const position = designModalState.currentPosition;
         const previewImg = document.getElementById('designPreviewImg');
 
-        console.log('🎨 applyDesignToCard called:', {
+        console.log('ðŸŽ¨ applyDesignToCard called:', {
             position,
             hasPreviewImg: !!previewImg,
             previewImgSrc: previewImg?.src?.substring?.(0, 100),
@@ -928,7 +928,7 @@
             method: positionMethods[position] || existingCustomization.method || 'embroidery'
         };
 
-        console.log('✅ Logo saved to positionCustomizationsMap:', {
+        console.log('âœ… Logo saved to positionCustomizationsMap:', {
             position,
             hasLogoData: !!positionCustomizationsMap[position]?.logoData,
             logoDataPrefix: positionCustomizationsMap[position]?.logoData?.substring?.(0, 50),
@@ -996,7 +996,7 @@
         fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:ELEMENTS',message:'Elements found status',data:{hasSubmitBtn:!!submitBtn,hasPopup:!!popup,hasCloseBtn:!!closeBtn,hasForm:!!form,hasBrandedAPI:!!window.BrandedAPI,submitQuoteType:typeof window.BrandedAPI?.submitQuote},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
         // #endregion
 
-        console.log('🔧 [initSubmitQuoteBtn] Initializing...', {
+        console.log('ðŸ”§ [initSubmitQuoteBtn] Initializing...', {
             submitBtn: !!submitBtn,
             popup: !!popup,
             closeBtn: !!closeBtn,
@@ -1009,7 +1009,7 @@
             // #region agent log
             fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:NO_BTN',message:'submitQuoteBtnInline NOT FOUND - returning early',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            console.warn('⚠️ [initSubmitQuoteBtn] submitQuoteBtnInline not found!');
+            console.warn('âš ï¸ [initSubmitQuoteBtn] submitQuoteBtnInline not found!');
             return;
         }
 
@@ -1046,13 +1046,13 @@
             // #region agent log
             fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:FORM_HANDLER_ATTACHED',message:'Form submit handler ATTACHED to quoteRequestForm',data:{formId:form.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            console.log('✅ [initSubmitQuoteBtn] Attaching form submit handler to quoteRequestForm');
+            console.log('âœ… [initSubmitQuoteBtn] Attaching form submit handler to quoteRequestForm');
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 // #region agent log
                 fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:EVENT_FIRED',message:'Form submit EVENT FIRED',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
                 // #endregion
-                console.log('📝 [Form Submit] Form submission triggered!');
+                console.log('ðŸ“ [Form Submit] Form submission triggered!');
 
                 const submitFormBtn = document.getElementById('quoteSubmitBtn');
                 const popupEl = document.getElementById('quoteRequestPopup');
@@ -1095,13 +1095,13 @@
                             : [];
 
                     // DEBUG: Log what's in positionCustomizationsMap
-                    console.log('🔍 DEBUG: positionCustomizationsMap contents:', positionCustomizationsMap);
-                    console.log('🔍 DEBUG: designModalState.positionDesigns:', designModalState.positionDesigns);
+                    console.log('ðŸ” DEBUG: positionCustomizationsMap contents:', positionCustomizationsMap);
+                    console.log('ðŸ” DEBUG: designModalState.positionDesigns:', designModalState.positionDesigns);
                     // #region agent log
                     fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:ENTRY',message:'Quote submission STARTED',data:{positionCount:customizationsEntries.length,positions:customizationsEntries.map(([p,d])=>({pos:p,hasLogoData:!!d?.logoData,hasLogo:!!d?.logo,logoDataLen:d?.logoData?.length,isBase64:d?.logoData?.startsWith?.('data:')})),designModalPositions:Object.keys(designModalState.positionDesigns||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
                     // #endregion
                     customizationsEntries.forEach(([pos, data]) => {
-                        console.log(`🔍 DEBUG: Position "${pos}" data:`, {
+                        console.log(`ðŸ” DEBUG: Position "${pos}" data:`, {
                             hasLogoData: !!data?.logoData,
                             logoDataType: typeof data?.logoData,
                             logoDataPrefix: data?.logoData?.substring?.(0, 50),
@@ -1119,7 +1119,7 @@
                         const designData = designModalState.positionDesigns?.[pos];
                         const logoDataSource = data?.logo || data?.logoData || designData?.logo;
                         
-                        console.log(`🔍 DEBUG: Checking position "${pos}" for logo:`, {
+                        console.log(`ðŸ” DEBUG: Checking position "${pos}" for logo:`, {
                             hasDataLogo: !!data?.logo,
                             hasDataLogoData: !!data?.logoData,
                             hasDesignLogo: !!designData?.logo,
@@ -1136,7 +1136,7 @@
                             try {
                                 const matches = logoDataSource.match(/^data:image\/(\w+);base64,(.+)$/);
                                 if (matches) {
-                                    console.log(`✅ DEBUG: Converting base64 to File for position "${pos}"`);
+                                    console.log(`âœ… DEBUG: Converting base64 to File for position "${pos}"`);
                                     const mimeType = matches[1] === 'jpeg' ? 'image/jpeg' : `image/${matches[1]}`;
                                     const base64Data = matches[2];
                                     const byteCharacters = atob(base64Data);
@@ -1153,9 +1153,9 @@
                                     const file = new File([blob], filename, { type: mimeType });
                                     
                                     logoFiles[pos] = file;
-                                    console.log(`📎 Collected logo file for position "${pos}":`, filename, 'Size:', file.size, 'bytes');
+                                    console.log(`ðŸ“Ž Collected logo file for position "${pos}":`, filename, 'Size:', file.size, 'bytes');
                                 } else {
-                                    console.warn(`⚠️ DEBUG: Logo data doesn't match base64 pattern for position "${pos}"`);
+                                    console.warn(`âš ï¸ DEBUG: Logo data doesn't match base64 pattern for position "${pos}"`);
                                 }
                             } catch (err) {
                                 console.warn(`Could not convert logo for position "${pos}":`, err);
@@ -1163,7 +1163,7 @@
                         } else if (data?.logoFile instanceof File) {
                             // Already a File object
                             logoFiles[pos] = data.logoFile;
-                            console.log(`📎 Using existing file for position "${pos}":`, data.logoFile.name);
+                            console.log(`ðŸ“Ž Using existing file for position "${pos}":`, data.logoFile.name);
                         }
                     });
                     // #region agent log
@@ -1286,12 +1286,12 @@
                         basket: basketItems,
                         // Customizations (no logo data, just hasLogo boolean)
                         customizations: customizationsList,
-                        // Logo files for FormData upload (position → File)
+                        // Logo files for FormData upload (position â†’ File)
                         logoFiles: Object.keys(logoFiles).length > 0 ? logoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };
 
-                    console.log('📦 Quote data prepared:', {
+                    console.log('ðŸ“¦ Quote data prepared:', {
                         customer: quoteData.customer.fullName,
                         customizationsCount: customizationsList.length,
                         logoFilesCount: Object.keys(logoFiles).length,
@@ -1308,9 +1308,9 @@
                     
                     // CRITICAL DEBUG: Log if logoFiles will be sent
                     if (Object.keys(logoFiles).length > 0) {
-                        console.log('✅ LOGO FILES WILL BE SENT:', logoFiles);
+                        console.log('âœ… LOGO FILES WILL BE SENT:', logoFiles);
                     } else {
-                        console.warn('⚠️ NO LOGO FILES COLLECTED! Check positionCustomizationsMap:', positionCustomizationsMap);
+                        console.warn('âš ï¸ NO LOGO FILES COLLECTED! Check positionCustomizationsMap:', positionCustomizationsMap);
                     }
 
                     // Save locally as backup (with error handling for quota)
@@ -1333,7 +1333,7 @@
                         // #endregion
                         
                         // Check if BrandedAPI is available
-                        console.log('🔍 [Quote Submit] Checking BrandedAPI:', {
+                        console.log('ðŸ” [Quote Submit] Checking BrandedAPI:', {
                             hasBrandedAPI: !!window.BrandedAPI,
                             submitQuoteType: typeof window.BrandedAPI?.submitQuote,
                             BrandedAPIKeys: window.BrandedAPI ? Object.keys(window.BrandedAPI) : []
@@ -1343,7 +1343,7 @@
                             // #region agent log
                             fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:CALLING_API',message:'CALLING BrandedAPI.submitQuote',data:{customerEmail:quoteData.customer?.email,hasLogoFiles:!!quoteData.logoFiles,logoFilesCount:quoteData.logoFiles?Object.keys(quoteData.logoFiles).length:0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
                             // #endregion
-                            console.log('✅ [Quote Submit] Calling BrandedAPI.submitQuote with data:', {
+                            console.log('âœ… [Quote Submit] Calling BrandedAPI.submitQuote with data:', {
                                 customerEmail: quoteData.customer?.email,
                                 hasLogoFiles: !!quoteData.logoFiles,
                                 logoFilesCount: quoteData.logoFiles ? Object.keys(quoteData.logoFiles).length : 0
@@ -1352,12 +1352,12 @@
                             // #region agent log
                             fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:API_RETURNED',message:'BrandedAPI.submitQuote RETURNED',data:{success:result?.success,message:result?.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
                             // #endregion
-                            console.log('✅ [Quote Submit] BrandedAPI.submitQuote returned:', result);
+                            console.log('âœ… [Quote Submit] BrandedAPI.submitQuote returned:', result);
                         } else {
                             // #region agent log
                             fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:FALLBACK',message:'BrandedAPI NOT available - using FALLBACK',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
                             // #endregion
-                            console.warn('⚠️ [Quote Submit] BrandedAPI.submitQuote not available, using fallback');
+                            console.warn('âš ï¸ [Quote Submit] BrandedAPI.submitQuote not available, using fallback');
                             // Fallback: direct fetch to API
                             const API_BASE_URL = 'https://api.brandeduk.com';
                             // #region agent log
@@ -1398,12 +1398,12 @@
                     }
 
                     if (result.success) {
-                        console.log('✅ Email sent successfully via PHP');
+                        console.log('âœ… Email sent successfully via PHP');
                         
                         if (submitFormBtn) {
                             submitFormBtn.classList.remove('error');
                             submitFormBtn.classList.add('success');
-                            submitFormBtn.textContent = '✓ Submitted';
+                            submitFormBtn.textContent = 'âœ“ Submitted';
                         }
 
                         setTimeout(() => {
@@ -1437,7 +1437,7 @@
                         submitFormBtn.disabled = false;
                         submitFormBtn.classList.remove('success');
                         submitFormBtn.classList.add('error');
-                        submitFormBtn.textContent = '✗ Error - Retry';
+                        submitFormBtn.textContent = 'âœ— Error - Retry';
 
                         setTimeout(() => {
                             submitFormBtn.classList.remove('error');
@@ -1576,7 +1576,7 @@
                         sizes: item.sizes
                     }));
                     localStorage.setItem('quoteBasket', JSON.stringify(minimalBasket));
-                    console.log('✅ Saved minimal basket data');
+                    console.log('âœ… Saved minimal basket data');
                 } catch (e2) {
                     console.error('Could not save even minimal data:', e2);
                 }
@@ -1606,8 +1606,8 @@
             return window.formatCurrency(baseAmount);
         }
         const n = Number(baseAmount);
-        if (!Number.isFinite(n)) return '£0.00';
-        return `£${n.toFixed(2)}`;
+        if (!Number.isFinite(n)) return 'Â£0.00';
+        return `Â£${n.toFixed(2)}`;
     }
 
     function vatLabel() {
@@ -1825,7 +1825,7 @@
                     customizationListEl.innerHTML += `
                         <div class="digitizing-fee-row">
                             <span>Digitizing Fee (one-time)</span>
-                            <span>£25.00 <small>ex VAT</small></span>
+                            <span>Â£25.00 <small>ex VAT</small></span>
                         </div>
                     `;
                 }
@@ -1982,12 +1982,12 @@
 
         const greenStyle = 'width:44px; height:44px; border-radius:50%; background:#10b981; color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(16,185,129,0.3);';
         const greenLabelStyle = 'font-size:0.9rem; font-weight:600; color:#10b981;';
-        const purpleStyle = 'width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,0.3);';
+        const purpleStyle = 'width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#E4D9FF,#273469); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(39, 52, 105,0.3);';
 
         // Make step 3 green (completed)
         if (stepNum3) {
             stepNum3.style.cssText = greenStyle;
-            stepNum3.textContent = '3✓';
+            stepNum3.textContent = '3âœ“';
         }
         if (stepLabel3) {
             stepLabel3.style.cssText = greenLabelStyle;

@@ -91,7 +91,7 @@
   }
 }
 
-/* ── Hero Loading Placeholder ── */
+/* â”€â”€ Hero Loading Placeholder â”€â”€ */
 .hero-loading-placeholder {
   position: absolute;
   top: 0;
@@ -153,7 +153,7 @@
   top: 0;
   width: 20%;
   height: 100%;
-  background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%);
+  background: linear-gradient(135deg, #273469 0%, #1E2749 100%);
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.25s, left 0.25s, width 0.25s, opacity 0.25s, z-index 0s 0.3s;
@@ -360,7 +360,7 @@
   margin-top: 12px;
   padding: 10px 20px;
   background: #fff;
-  color: #6B21A8;
+  color: #273469;
   font-size: 14px;
   font-weight: 700;
   font-family: 'Inter', sans-serif;
@@ -1016,7 +1016,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9ca24;
+  background: #995BD5;
 }
 
 .hero-bounce-headline {
@@ -1024,7 +1024,7 @@
   font-weight: 700;
   font-size: clamp(56px, 14vw, 160px);
   line-height: 1;
-  color: #000;
+  color: #fff;
 }
 
 .hero-bounce-char {

@@ -54,11 +54,9 @@
   function initIsoSocial() {
     var isoLinks = document.querySelectorAll('.social.footer-social-3d li a');
     if (!isoLinks.length) return;
-    var isTouch = 'ontouchend' in window || navigator.maxTouchPoints > 0;
 
     isoLinks.forEach(function (link) {
       link.addEventListener('click', function (e) {
-        if (!isTouch) return;
         if (!link.classList.contains('iso-active')) {
           e.preventDefault();
           e.stopPropagation();
@@ -68,12 +66,12 @@
       });
     });
 
-    document.addEventListener('touchstart', function (e) {
+    document.addEventListener('click', function (e) {
       var container = document.querySelector('.social.footer-social-3d');
       if (container && !container.contains(e.target)) {
         isoLinks.forEach(function (l) { l.classList.remove('iso-active'); });
       }
-    }, { passive: true });
+    });
   }
 
   /* --- 2. Footer Popups --- */
@@ -204,7 +202,7 @@
     }
 
     menuLinks.forEach(function (link) {
-      if (!link.hasAttribute('data-popup')) {
+      if (!link.hasAttribute('data-popup') && !link.closest('.footer-social-3d')) {
         link.addEventListener('click', closeMenu);
       }
     });

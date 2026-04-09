@@ -4,8 +4,8 @@
    ==================================== */
 
 :root {
-    --purple: #6B21A8;
-    --purple-light: #a855f7;
+    --purple: #273469;
+    --purple-light: #E4D9FF;
     --gray-50: #f9fafb;
     --gray-100: #f3f4f6;
     --gray-200: #e5e7eb;
@@ -124,7 +124,7 @@ body {
 
 .progress-step.active .step-dot {
     background: var(--purple);
-    box-shadow: 0 0 0 4px rgba(107, 33, 168, 0.18);
+    box-shadow: 0 0 0 4px rgba(39, 52, 105, 0.18);
 }
 
 .progress-step.completed .step-dot {
@@ -195,7 +195,7 @@ body {
 }
 
 .nav-btn.next {
-    background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+    background: linear-gradient(135deg, var(--purple) 0%, #1E2749 100%);
     color: #fff;
 }
 
@@ -211,7 +211,7 @@ body {
 
 /* Header */
 .order-header {
-    background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+    background: linear-gradient(135deg, var(--purple) 0%, #1E2749 100%);
     color: white;
     padding: 24px;
     text-align: center;
@@ -268,7 +268,7 @@ body {
 
 .colour-swatch.selected {
     border-color: var(--purple);
-    box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.3);
+    box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.3);
 }
 
 .selected-colour-label {
@@ -293,7 +293,7 @@ body {
 .size-chip {
     border: 1.5px solid #d5d8fb;
     background: #eef0ff;
-    color: #4c1d95;
+    color: #1E2749;
     border-radius: 999px;
     padding: 10px 12px;
     font-weight: 800;
@@ -310,7 +310,7 @@ body {
 }
 
 .size-chip.active {
-    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    background: linear-gradient(135deg, #273469, #1E2749);
     border-color: transparent;
     color: #fff;
     box-shadow: 0 8px 22px rgba(76, 29, 149, 0.22);
@@ -341,8 +341,8 @@ body {
 }
 
 .size-active-box.active {
-    border-color: rgba(124, 58, 237, 0.55);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    border-color: rgba(39, 52, 105, 0.55);
+    box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.12);
 }
 
 .size-active-label {
@@ -459,7 +459,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 14px 16px;
-    background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+    background: linear-gradient(135deg, var(--purple) 0%, #1E2749 100%);
     border-radius: var(--radius-md);
     color: white;
     font-weight: 600;
@@ -507,7 +507,7 @@ body {
 
 .sidebar-costs {
     background: #f9fafb;
-    border: 2px solid #7c3aed;
+    border: 2px solid #273469;
     border-radius: 12px;
     padding: 16px;
     padding-top: 56px;
@@ -540,7 +540,7 @@ body {
 .sidebar-costs .section.garment-section .label {
     font-size: 15px;
     font-weight: 700;
-    color: #7c3aed;
+    color: #273469;
 }
 
 .sidebar-costs .section.garment-section .value {
@@ -665,7 +665,7 @@ body {
 .qty-toggle-btn {
     border: none;
     background: transparent;
-    color: #4c1d95;
+    color: #1E2749;
     font-size: 18px;
     font-weight: 900;
     width: 36px;
@@ -728,7 +728,7 @@ body {
     border-radius: 12px;
     border: none;
     text-decoration: none;
-    background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+    background: linear-gradient(135deg, var(--purple) 0%, #1E2749 100%);
     color: #fff;
     font-weight: 900;
 }
@@ -784,27 +784,27 @@ body {
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1.4px solid rgba(168, 85, 247, 0.2);
+    border: 1.4px solid rgba(228, 217, 255, 0.2);
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
 .position-card:hover {
-    border-color: rgba(168, 85, 247, 0.35);
+    border-color: rgba(228, 217, 255, 0.35);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12);
+    box-shadow: 0 8px 24px rgba(39, 52, 105, 0.12);
 }
 
 .position-card.selected {
-    border-color: rgba(168, 85, 247, 0.5);
+    border-color: rgba(228, 217, 255, 0.5);
     background: rgba(255, 255, 255, 0.99);
-    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), 0 8px 24px rgba(124, 58, 237, 0.15);
+    box-shadow: 0 0 0 3px rgba(228, 217, 255, 0.1), 0 8px 24px rgba(39, 52, 105, 0.15);
 }
 
 /* === Mobile behavior: Add-logo button styles === */
 .price-badge.add-logo-btn {
-    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    background: linear-gradient(135deg, #273469, #1E2749);
     color: #fff !important;
     border-color: transparent;
     box-shadow: 0 4px 12px rgba(76, 29, 149, 0.25);
@@ -1046,7 +1046,7 @@ body {
 .remove-bg-btn {
     flex: 1;
     padding: 8px 12px;
-    background: linear-gradient(135deg, #7c3aed, #6b21a8);
+    background: linear-gradient(135deg, #273469, #273469);
     color: white;
     border: none;
     border-radius: 6px;
@@ -1085,7 +1085,7 @@ body {
 .submit-btn {
     width: 100%;
     padding: 18px;
-    background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+    background: linear-gradient(135deg, var(--purple) 0%, #1E2749 100%);
     color: white;
     border: none;
     border-radius: var(--radius-md);
@@ -1097,7 +1097,7 @@ body {
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(107, 33, 168, 0.35);
+    box-shadow: 0 8px 24px rgba(39, 52, 105, 0.35);
 }
 
 .submit-btn:disabled {

@@ -91,7 +91,7 @@ h1 {
 }
 
 .login-link a {
-    color: #7c3aed;
+    color: #273469;
     text-decoration: none;
     font-weight: 500;
 }
@@ -135,8 +135,8 @@ h1 {
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    border-color: #273469;
+    box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.1);
 }
 
 .form-group textarea {
@@ -164,7 +164,7 @@ h1 {
     width: 18px;
     height: 18px;
     cursor: pointer;
-    accent-color: #7c3aed;
+    accent-color: #273469;
 }
 
 .checkbox-item label {
@@ -176,7 +176,7 @@ h1 {
 }
 
 .checkbox-item label a {
-    color: #7c3aed;
+    color: #273469;
     text-decoration: none;
 }
 
@@ -222,8 +222,8 @@ h1 {
 
 .notes-section textarea:focus {
     outline: none;
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    border-color: #273469;
+    box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.1);
 }
 
 .notes-section textarea::placeholder {
@@ -256,7 +256,7 @@ h1 {
 
 .radio-item input[type="radio"] {
     cursor: pointer;
-    accent-color: #7c3aed;
+    accent-color: #273469;
     width: 18px;
     height: 18px;
 }
@@ -271,7 +271,7 @@ h1 {
 .submit-btn {
     width: 100%;
     padding: 1rem 1.5rem;
-    background-color: #7c3aed;
+    background-color: #273469;
     color: white;
     border: none;
     border-radius: 8px;
@@ -280,14 +280,14 @@ h1 {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 4px 6px rgba(39, 52, 105, 0.2);
     transition: all 0.2s;
     margin-top: 1rem;
 }
 
 .submit-btn:hover {
-    background-color: #6d28d9;
-    box-shadow: 0 6px 8px rgba(124, 58, 237, 0.3);
+    background-color: #1E2749;
+    box-shadow: 0 6px 8px rgba(39, 52, 105, 0.3);
     transform: translateY(-2px);
 }
 
@@ -316,7 +316,7 @@ h1 {
 }
 
 .summary-notice {
-    background-color: #7c3aed;
+    background-color: #273469;
     color: white;
     padding: 1.25rem;
     border-radius: 8px;
@@ -404,7 +404,7 @@ h1 {
 }
 
 .method-badge.embroidery {
-    background-color: #7c3aed;
+    background-color: #273469;
 }
 
 .method-badge.print {

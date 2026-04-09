@@ -27,7 +27,7 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1.4px solid rgba(168, 85, 247, 0.2);
+    border: 1.4px solid rgba(228, 217, 255, 0.2);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -41,19 +41,19 @@
 }
 
 .position-card:hover {
-    border-color: rgba(168, 85, 247, 0.35);
+    border-color: rgba(228, 217, 255, 0.35);
     transform: translateY(-2px);
     box-shadow: 
-        0 8px 24px rgba(124, 58, 237, 0.12),
-        0 2px 8px rgba(124, 58, 237, 0.08);
+        0 8px 24px rgba(39, 52, 105, 0.12),
+        0 2px 8px rgba(39, 52, 105, 0.08);
 }
 
 .position-card.selected {
-    border-color: rgba(168, 85, 247, 0.5);
+    border-color: rgba(228, 217, 255, 0.5);
     background: rgba(255, 255, 255, 0.99);
     box-shadow: 
-        0 0 0 3px rgba(168, 85, 247, 0.1),
-        0 8px 24px rgba(124, 58, 237, 0.15);
+        0 0 0 3px rgba(228, 217, 255, 0.1),
+        0 8px 24px rgba(39, 52, 105, 0.15);
 }
 
 .position-card.selected:active {
@@ -200,8 +200,8 @@
    ================================ */
 .price-badge.poa-badge {
     background: linear-gradient(145deg, #f3e8ff, #e9d5ff);
-    border: 2px dashed #9333ea !important;
-    color: #7c3aed !important;
+    border: 2px dashed #1E2749 !important;
+    color: #273469 !important;
     cursor: not-allowed;
     position: relative;
 }
@@ -209,12 +209,12 @@
 .price-badge.poa-badge .price-value {
     font-size: 14px;
     font-weight: 800;
-    color: #7c3aed !important;
+    color: #273469 !important;
     letter-spacing: 0.5px;
 }
 
 .price-badge.poa-badge .price-label {
-    color: #9333ea !important;
+    color: #1E2749 !important;
 }
 
 .price-badge.poa-badge:active {
@@ -225,7 +225,7 @@
    Add Logo Button (Purple with Cloud)
    ================================ */
 .price-badge.add-logo-btn {
-    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    background: linear-gradient(135deg, #273469, #1E2749);
     color: #fff !important;
     border-color: transparent;
     box-shadow: 0 4px 12px rgba(76, 29, 149, 0.25);
@@ -521,7 +521,7 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     position: relative;
     width: 100%;
     padding: 16px;
-    border: 2px dashed rgba(168, 85, 247, 0.3);
+    border: 2px dashed rgba(228, 217, 255, 0.3);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -534,13 +534,13 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     order: 2; /* Sempre dopo */
     padding: 8px 16px;
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
-    color: #7c3aed;
+    color: #273469;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border: 1px solid rgba(168, 85, 247, 0.2);
+    border: 1px solid rgba(228, 217, 255, 0.2);
 }
 
 .uploaded-logo-thumb {
@@ -668,7 +668,7 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
 
 /* Upload Dropzone */
 .upload-dropzone {
-    border: 2px dashed rgba(168, 85, 247, 0.4);
+    border: 2px dashed rgba(228, 217, 255, 0.4);
     border-radius: 16px;
     padding: 40px 20px;
     text-align: center;
@@ -678,12 +678,12 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
 }
 
 .upload-dropzone:hover {
-    border-color: #a855f7;
+    border-color: #E4D9FF;
     background: rgba(243, 232, 255, 0.3);
 }
 
 .upload-dropzone.dragover {
-    border-color: #7c3aed;
+    border-color: #273469;
     background: rgba(243, 232, 255, 0.5);
     transform: scale(1.02);
 }
@@ -698,7 +698,7 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
 }
 
 .dropzone-text .browse-link {
-    color: #7c3aed;
+    color: #273469;
     font-weight: 600;
     text-decoration: underline;
     cursor: pointer;
@@ -763,10 +763,10 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    background: rgba(124, 58, 237, 0.1);
-    border: 1px solid rgba(124, 58, 237, 0.3);
+    background: rgba(39, 52, 105, 0.1);
+    border: 1px solid rgba(39, 52, 105, 0.3);
     border-radius: 8px;
-    color: #7c3aed;
+    color: #273469;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -774,7 +774,7 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
 }
 
 .toggle-bg-btn:hover {
-    background: rgba(124, 58, 237, 0.2);
+    background: rgba(39, 52, 105, 0.2);
 }
 
 .toggle-bg-btn.processing {
@@ -811,7 +811,7 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
     justify-content: center;
     gap: 10px;
     padding: 14px 20px;
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    background: linear-gradient(135deg, #273469, #1E2749);
     color: white;
     font-size: 15px;
     font-weight: 700;
@@ -825,9 +825,9 @@ body.category-beanies .logo-overlay-box.left-chest { top: 50%; left: 50%; width:
 }
 
 .apply-design-btn:hover {
-    background: linear-gradient(135deg, #6d28d9, #5b21b6);
+    background: linear-gradient(135deg, #1E2749, #1E2749);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 6px 20px rgba(39, 52, 105, 0.3);
 }
 
 /* ================================

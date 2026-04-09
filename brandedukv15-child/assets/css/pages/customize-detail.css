@@ -39,7 +39,7 @@ body {
     position: absolute;
     top: -8px;
     right: -8px;
-    background: #7c3aed;
+    background: #273469;
     color: white;
     width: 20px;
     height: 20px;
@@ -108,7 +108,7 @@ body {
 }
 
 .basket-items-scroll::-webkit-scrollbar-thumb {
-    background: #7c3aed;
+    background: #273469;
     border-radius: 10px;
 }
 
@@ -168,7 +168,7 @@ body {
 }
 
 .sidebar-basket-details .product-price .item-total {
-    color: #7c3aed;
+    color: #273469;
     font-weight: 700;
 }
 
@@ -257,7 +257,7 @@ body {
 .qty-toggle-btn {
     border: none;
     background: transparent;
-    color: #4c1d95;
+    color: #1E2749;
     font-size: 18px;
     font-weight: 700;
     width: 36px;
@@ -529,9 +529,9 @@ body {
 }
 
 .method-btn.active {
-    border-color: #7c3aed;
+    border-color: #273469;
     background-color: #f5f3ff;
-    color: #7c3aed;
+    color: #273469;
 }
 
 .method-btn.active[data-method="printing"] {
@@ -853,7 +853,7 @@ body {
 }
 
 .copyright-header {
-    background: #7c3aed;
+    background: #273469;
     color: white;
     padding: 20px 30px;
 }
@@ -958,12 +958,12 @@ body {
 }
 
 .btn-confirm {
-    background: #7c3aed;
+    background: #273469;
     color: white;
 }
 
 .btn-confirm:hover:not(:disabled) {
-    background: #6d28d9;
+    background: #1E2749;
     transform: translateY(-2px);
 }
 

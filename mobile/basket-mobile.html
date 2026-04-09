@@ -103,7 +103,7 @@
             align-items: center;
             gap: 8px;
             padding: 14px 28px;
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             color: #fff;
             border: none;
             border-radius: 14px;
@@ -117,13 +117,13 @@
         .basket-order-summary {
             background: #fff;
             border-radius: 16px;
-            border: 2px solid #7c3aed;
+            border: 2px solid #273469;
             overflow: hidden;
             margin-bottom: 20px;
         }
         
         .basket-order-summary .summary-header {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             color: #fff;
             padding: 16px 20px;
             display: flex;
@@ -405,7 +405,7 @@
         .basket-action-bar .quote-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             color: #fff;
             border: none;
             border-radius: 14px;
@@ -472,7 +472,7 @@
         }
         
         .vat-toggle-switch input:checked + .slider {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
         }
         
         .vat-toggle-switch input:checked + .slider:before {
@@ -507,8 +507,8 @@
         }
         
         .item-select-checkbox input:checked + .checkmark {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            border-color: #7c3aed;
+            background: linear-gradient(135deg, #273469, #1E2749);
+            border-color: #273469;
         }
         
         .item-select-checkbox .checkmark svg {
@@ -541,7 +541,7 @@
         
         .basket-item-card.selected {
             background: #ede9fe;
-            border: 2px solid #7c3aed;
+            border: 2px solid #273469;
         }
         
         /* Logo thumbnail in basket item */
@@ -571,7 +571,7 @@
             padding: 4px 8px;
             background: #f3f4f6;
             border-radius: 6px;
-            border-left: 3px solid #7c3aed;
+            border-left: 3px solid #273469;
         }
 
         /* Quote Popup Overlay */
@@ -649,13 +649,13 @@
         .quote-popup .form-group input:focus,
         .quote-popup .form-group textarea:focus {
             outline: none;
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+            border-color: #273469;
+            box-shadow: 0 0 0 3px rgba(39, 52, 105,0.1);
         }
         .quote-popup .submit-quote-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             color: #fff;
             border: none;
             border-radius: 14px;
@@ -688,7 +688,7 @@
             align-items: center;
             gap: 4px;
             padding: 4px 10px;
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             color: #fff;
             font-size: 11px;
             font-weight: 600;
@@ -706,13 +706,13 @@
             bottom: 140px;
             left: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            background: linear-gradient(135deg, #273469, #1E2749);
             border-radius: 16px;
             padding: 14px 20px;
             display: none;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 8px 30px rgba(39, 52, 105, 0.4);
             z-index: 99;
             animation: slideUp 0.3s ease;
         }
@@ -740,7 +740,7 @@
         
         .customize-selected-bar .customize-btn {
             background: #fff;
-            color: #7c3aed;
+            color: #273469;
             border: none;
             padding: 10px 20px;
             border-radius: 10px;
@@ -785,8 +785,8 @@
         }
         
         .select-all-row input:checked + .checkmark {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            border-color: #7c3aed;
+            background: linear-gradient(135deg, #273469, #1E2749);
+            border-color: #273469;
         }
         
         .select-all-row input {
@@ -977,15 +977,15 @@
             <div class="basket-totals">
                 <div class="total-row">
                     <span class="label">Garments Subtotal</span>
-                    <span class="value" id="garmentsSubtotal">£0.00</span>
+                    <span class="value" id="garmentsSubtotal">Ã‚Â£0.00</span>
                 </div>
                 <div class="total-row">
                     <span class="label">Customization Subtotal</span>
-                    <span class="value" id="customSubtotal">£0.00</span>
+                    <span class="value" id="customSubtotal">Ã‚Â£0.00</span>
                 </div>
                 <div class="total-row grand-total">
                     <span class="label">Order Total</span>
-                    <span class="value" id="grandTotal">£0.00 <span class="vat-suffix">ex VAT</span></span>
+                    <span class="value" id="grandTotal">Ã‚Â£0.00 <span class="vat-suffix">ex VAT</span></span>
                 </div>
             </div>
         </div>
@@ -1057,7 +1057,7 @@
     <div class="basket-action-bar">
         <div class="action-bar-summary">
             <span class="total-label">Total</span>
-            <span class="total-amount" id="actionBarTotal">£0.00</span>
+            <span class="total-amount" id="actionBarTotal">Ã‚Â£0.00</span>
         </div>
         <button class="quote-btn" id="requestQuoteBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1097,7 +1097,7 @@
         // Format currency
         function formatCurrency(amount) {
             const displayAmount = includeVAT ? amount * 1.2 : amount;
-            return '£' + displayAmount.toFixed(2);
+            return 'Ã‚Â£' + displayAmount.toFixed(2);
         }
         
         function vatSuffix() {
@@ -1182,7 +1182,7 @@
                 const hasCustomization = (item.customizations && item.customizations.length > 0) || 
                                           (item.positions && Object.keys(item.positions).length > 0);
                 const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
-                const customBadgeText = hasCustomization ? '✓ Customized' : '+ Add Logo';
+                const customBadgeText = hasCustomization ? 'Ã¢Å“â€œ Customized' : '+ Add Logo';
                 
                 // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
@@ -1195,7 +1195,7 @@
                                 <div class="basket-size-row">
                                     <span class="size-label">${size}</span>
                                     <div class="basket-qty-controls">
-                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
+                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">Ã¢Ë†â€™</button>
                                         <span class="qty-value">${qty}</span>
                                         <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
                                     </div>
@@ -1225,7 +1225,7 @@
                                 ${sizesHtml}
                             </div>
                             ${getItemLogoHtml(item)}
-                            ${item.note ? `<div class="basket-item-note">📝 ${item.note}</div>` : ''}
+                            ${item.note ? `<div class="basket-item-note">Ã°Å¸â€œÂ ${item.note}</div>` : ''}
                             <span class="${customBadgeClass}">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M12 20h9"/>
@@ -1256,19 +1256,19 @@
             const container = document.getElementById('customizationCardsList');
             if (!container) return;
             
-            console.log('🧺 BASKET renderCustomizations called with', basket.length, 'items');
+            console.log('Ã°Å¸Â§Âº BASKET renderCustomizations called with', basket.length, 'items');
             
             // Collect all customizations from basket items
             let allCustomizations = [];
             
             basket.forEach((item, idx) => {
-                console.log('🧺 Item', idx, '- customizations:', item.customizations);
-                console.log('🧺 Item', idx, '- positions:', item.positions);
+                console.log('Ã°Å¸Â§Âº Item', idx, '- customizations:', item.customizations);
+                console.log('Ã°Å¸Â§Âº Item', idx, '- positions:', item.positions);
                 
                 // Check customizations array (preferred format)
                 if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
                     item.customizations.forEach(custom => {
-                        console.log('🧺 Found customization:', custom);
+                        console.log('Ã°Å¸Â§Âº Found customization:', custom);
                         allCustomizations.push({
                             position: custom.position || 'Unknown',
                             method: custom.method || 'Print',
@@ -1499,7 +1499,7 @@
                 });
             }
             
-            // Request quote button — open popup
+            // Request quote button Ã¢â‚¬â€ open popup
             const quoteBtn = document.getElementById('requestQuoteBtn');
             const quoteOverlay = document.getElementById('quotePopupOverlay');
             const closeQuoteBtn = document.getElementById('closeQuotePopup');
@@ -1661,7 +1661,7 @@
                         
                         if (result.success) {
                             bqSubmitBtn.classList.add('submitted');
-                            bqSubmitBtn.innerHTML = '✓ Quote Submitted!';
+                            bqSubmitBtn.innerHTML = 'Ã¢Å“â€œ Quote Submitted!';
                             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
                             
                             setTimeout(() => {

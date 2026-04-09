@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    BrandedUK Responsive CSS - Mobile First
    ============================================
    
@@ -177,14 +177,14 @@
     
     .tablet-top-bar__email svg,
     .tablet-top-bar__phone svg {
-        stroke: #6B21A8 !important;
+        stroke: #273469 !important;
         width: 14px;
         height: 14px;
     }
     
     .tablet-top-bar__email:hover,
     .tablet-top-bar__phone:hover {
-        color: #6B21A8;
+        color: #273469;
     }
     
     .tablet-top-bar__right {
@@ -473,7 +473,7 @@
 }
 
 /* ========================================
-   TABLET HERO 1 (768px–1023px) - DISABLED
+   TABLET HERO 1 (768pxâ€“1023px) - DISABLED
    - show ALL cards, no horizontal scroll
    ======================================== */
 @media (min-width: 99999px) {
@@ -642,7 +642,7 @@
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
 
-    /* === Hero "GET IN TOUCH" neon text – 30% larger than mobile === */
+    /* === Hero "GET IN TOUCH" neon text â€“ 30% larger than mobile === */
     .hero-get-in-touch .neon-text,
     .hero-get-in-touch .flux-text,
     .hero-banner .neon-container .neon-text,
@@ -696,7 +696,7 @@
 
     .tablet-top-bar__email svg,
     .tablet-top-bar__phone svg {
-        stroke: #6B21A8 !important;
+        stroke: #273469 !important;
         width: 14px;
         height: 14px;
     }
@@ -753,7 +753,7 @@
         padding-top: calc(36px + var(--header-height) + 20px);
     }
 
-    /* === Header – scale up ~20% === */
+    /* === Header â€“ scale up ~20% === */
     .mobile-header .social-icons-mobile {
         gap: 4px !important;
         margin-left: 0 !important;
@@ -821,7 +821,7 @@
         height: 2.5px;
     }
 
-    /* Bottom navigation – scale up ~20% */
+    /* Bottom navigation â€“ scale up ~20% */
     .bottom-nav {
         height: 77px;
     }
@@ -852,7 +852,7 @@
         padding: 16px 20px;
     }
 
-    /* === Discount / Tier Pricing – FULL WIDTH === */
+    /* === Discount / Tier Pricing â€“ FULL WIDTH === */
     .discount-row {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
@@ -879,7 +879,7 @@
         padding: 5px 8px;
     }
 
-    /* Pricing tiers grid – fill full width */
+    /* Pricing tiers grid â€“ fill full width */
     .pricing-tiers-grid {
         display: grid !important;
         grid-template-columns: repeat(6, 1fr);
@@ -1150,7 +1150,7 @@
         flex: 1;
     }
 
-    /* === Hero 1 – hide scrollbar, scale up for tablet === */
+    /* === Hero 1 â€“ hide scrollbar, scale up for tablet === */
     .hero-cont {
         height: 290px;
         scrollbar-width: none;           /* Firefox */
@@ -1165,12 +1165,12 @@
         font-size: 10px;
     }
 
-    /* Hero panels – center subjects in wider cards */
+    /* Hero panels â€“ center subjects in wider cards */
     .hero-el .hero-el__bg:before {
         background-position: center top;
     }
 
-    /* Hoodie: tablet position – shift left */
+    /* Hoodie: tablet position â€“ shift left */
     .hero-el[data-category="hoodies"]:not(.s--active) .hero-el__bg:before {
         background-position: calc(50% - 70px) center !important;
     }
@@ -1185,10 +1185,10 @@
     }
 
     /* ================================================
-       CUSTOMIZE PAGE — Ralawise-style layout
+       CUSTOMIZE PAGE â€” Ralawise-style layout
        ================================================ */
 
-    /* Grid: image left, info right — rest full-width */
+    /* Grid: image left, info right â€” rest full-width */
     .customize-page .customize-main {
         display: grid;
         grid-template-columns: 390px 1fr;
@@ -1197,7 +1197,7 @@
         overflow: hidden;
     }
 
-    /* Gallery — left column, scrolls normally */
+    /* Gallery â€” left column, scrolls normally */
     .customize-page .product-gallery {
         grid-column: 1;
         grid-row: 1;
@@ -1225,12 +1225,12 @@
         object-fit: contain !important;
     }
 
-    /* Gallery thumbs — HIDDEN */
+    /* Gallery thumbs â€” HIDDEN */
     .customize-page .gallery-thumbs {
         display: none !important;
     }
 
-    /* ---- Product Info — right column ---- */
+    /* ---- Product Info â€” right column ---- */
     .customize-page .product-info {
         grid-column: 2;
         grid-row: 1;
@@ -1243,7 +1243,7 @@
         overflow-wrap: break-word;
     }
 
-    /* Product Code — Ralawise style: centered with lines */
+    /* Product Code â€” Ralawise style: centered with lines */
     .customize-page .product-info .product-sku {
         text-align: center;
         font-size: 1.1rem;
@@ -1266,7 +1266,7 @@
         background: #ccc;
     }
 
-    /* Product Name — centered, lighter/italic */
+    /* Product Name â€” centered, lighter/italic */
     .customize-page .product-info .product-title {
         text-align: center;
         font-size: 1rem;
@@ -1276,7 +1276,7 @@
         margin: 0 0 16px 0;
     }
 
-    /* Price + Brand Logo — same row */
+    /* Price + Brand Logo â€” same row */
     .customize-page .price-brand-row {
         display: flex !important;
         justify-content: space-between;
@@ -1286,7 +1286,7 @@
         border-bottom: 1px solid #e5e7eb;
     }
 
-    /* Price — Ralawise style: bold price */
+    /* Price â€” Ralawise style: bold price */
     .customize-page .product-main-price {
         display: block !important;
         margin: 0;
@@ -1306,7 +1306,7 @@
         letter-spacing: -0.5px;
     }
 
-    /* Brand Logo — right aligned */
+    /* Brand Logo â€” right aligned */
     .customize-page .brand-logo-customize {
         display: block !important;
         max-height: 50px;
@@ -1314,12 +1314,12 @@
         object-fit: contain;
     }
 
-    /* Mobile specs pills — hide on tablet */
+    /* Mobile specs pills â€” hide on tablet */
     .customize-page .product-specs {
         display: none;
     }
 
-    /* Specs Table — Fabric, Weight, Size */
+    /* Specs Table â€” Fabric, Weight, Size */
     .customize-page .product-specs-table-customize {
         display: block !important;
         margin: 0;
@@ -1364,7 +1364,7 @@
         overflow-wrap: break-word;
     }
 
-    /* CTA Buttons — Ralawise style */
+    /* CTA Buttons â€” Ralawise style */
     .customize-page .rala-cta-row-cust {
         display: flex !important;
         gap: 10px;
@@ -1423,7 +1423,7 @@
         color: #333;
     }
 
-    /* Key Info — Read More */
+    /* Key Info â€” Read More */
     .customize-page .rala-key-info-cust {
         display: block !important;
         margin: 14px 0 10px;
@@ -1478,7 +1478,7 @@
         text-decoration: underline;
     }
 
-    /* ---- All other sections — full width ---- */
+    /* ---- All other sections â€” full width ---- */
     .customize-page .customize-section,
     .customize-page .pricing-section,
     .customize-page .estimated-delivery,
@@ -1486,7 +1486,7 @@
         grid-column: 1 / -1;
     }
 
-    /* Color swatches — more columns */
+    /* Color swatches â€” more columns */
     .customize-page .color-options {
         grid-template-columns: repeat(10, 1fr);
         gap: 6px;
@@ -1589,16 +1589,16 @@
     
     /* === Desktop Header Email/Phone === */
     .header-top-email {
-        color: #7c3aed;
+        color: #273469;
         text-decoration: none;
         font-size: 13px;
         font-weight: 500;
     }
     .header-top-email:hover {
-        color: #a855f7;
+        color: #E4D9FF;
     }
     .header-top-phone {
-        color: #7c3aed;
+        color: #273469;
         text-decoration: none;
         font-size: 13px;
         font-weight: 500;
@@ -1607,7 +1607,7 @@
         gap: 6px;
     }
     .header-top-phone:hover {
-        color: #a855f7;
+        color: #E4D9FF;
     }
     .header-top-phone svg {
         stroke: currentColor;
@@ -1618,7 +1618,7 @@
         position: relative;
         display: flex;
         align-items: center;
-        color: #7c3aed;
+        color: #273469;
         text-decoration: none;
     }
     .header-top-basket-link svg {
@@ -1647,7 +1647,7 @@
     
     /* === Searchbar Header Actions === */
     .searchbar-header__account .searchbar-header__action-ring {
-        background: #7c3aed;
+        background: #273469;
     }
     .searchbar-header__account .searchbar-header__action-icon {
         stroke: #fff;
@@ -1699,7 +1699,7 @@
         transition: color 0.2s ease;
     }
     .searchbar-header__search-expand:focus-within .search-icon-expand {
-        color: #a855f7;
+        color: #E4D9FF;
     }
     
     /* === Brand Logo === */
@@ -1709,7 +1709,7 @@
         object-fit: contain;
     }
     .searchbar-header__brand-text {
-        color: #a855f7 !important;
+        color: #E4D9FF !important;
     }
     
     /* === MAIN CONTAINER - Boxed Layout === */
@@ -1837,12 +1837,12 @@
     }
     
     .hero-cont__inner::-webkit-scrollbar-thumb {
-        background: linear-gradient(90deg, #7c3aed, #a855f7);
+        background: linear-gradient(90deg, #273469, #E4D9FF);
         border-radius: 3px;
     }
     
     .hero-cont__inner::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(90deg, #6b21a8, #9333ea);
+        background: linear-gradient(90deg, #273469, #1E2749);
     }
     
     /* 10 cards - each takes ~20% to show 5 visible */
@@ -1878,7 +1878,7 @@
     /* Background images: don't override real images on cards 6-9 */
     .main-content .hero-el:nth-child(10) .hero-el__bg:before {
         background-image: none !important;
-        background: linear-gradient(135deg, #6b21a8 0%, #9333ea 100%) !important;
+        background: linear-gradient(135deg, #273469 0%, #1E2749 100%) !important;
     }
     
     /* Active card expansion for 10 cards desktop */

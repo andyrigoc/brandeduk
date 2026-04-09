@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BrandedUK Mobile - Customize Page JavaScript
  * TapStitch-inspired interactions
  */
@@ -98,7 +98,7 @@
         { id: 'paragon', name: 'Paragon', hex: '#C0C0C0', image: 'https://i.postimg.cc/j5kMwHSL/GD067-Paragon-FT.jpg' },
         { id: 'pink-lemonade', name: 'Pink Lemonade', hex: '#F8B4D9', image: 'https://i.postimg.cc/zBPxbCGy/GD067-Pink-Lemonade-FT.jpg' },
         { id: 'pistachio', name: 'Pistachio', hex: '#93C572', image: 'https://i.postimg.cc/xCF6Jv1N/GD067-Pistachio-FT.jpg' },
-        { id: 'purple', name: 'Purple', hex: '#7c3aed', image: 'https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg' },
+        { id: 'purple', name: 'Purple', hex: '#273469', image: 'https://i.postimg.cc/C5BmjRRx/GD067-Purple-FT.jpg' },
         { id: 'red', name: 'Red', hex: '#dc2626', image: 'https://i.postimg.cc/brD3QZZd/GD067-Red-FT.jpg' },
         { id: 'sport-grey', name: 'Sport Grey', hex: '#9ca3af', image: 'https://i.postimg.cc/zvb0nyyg/GD067-Ringspun-Sport-Grey-FT.jpg' },
         { id: 'royal', name: 'Royal', hex: '#2563eb', image: 'https://i.postimg.cc/VNmG3sVH/GD067-Royal-FT.jpg' },
@@ -1871,7 +1871,7 @@
                 width: 100%; padding: 14px; border-radius: 12px;
                 font-size: 1rem; font-weight: 700; cursor: pointer;
                 border: none; color: #fff;
-                background: linear-gradient(135deg, #7c3aed, #6d28d9);
+                background: linear-gradient(135deg, #273469, #1E2749);
                 display: flex; align-items: center; justify-content: center; gap: 8px;
             }
             /* ── Position card filter (product-type specific) ── */
@@ -7304,14 +7304,14 @@
                 : `<span style="font-size:10px;color:#9ca3af;text-align:center;">No logo</span>`;
             
             itemsHtml += `
-                <div class="summary-item-card current-item" style="border: 2px solid #7c3aed; background: #faf5ff;">
+                <div class="summary-item-card current-item" style="border: 2px solid #273469; background: #f0eef5;">
                     <div class="summary-item-top">
                         <label class="summary-item-checkbox"><input type="checkbox" class="summary-select-cb" data-index="current"></label>
                         <div class="summary-item-image">
                             <img src="${currentImage}" alt="${currentName}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="summary-item-info">
-                            <h4>${currentName} <span style="color: #7c3aed; font-size: 11px;">(Current)</span></h4>
+                            <h4>${currentName} <span style="color: #273469; font-size: 11px;">(Current)</span></h4>
                             <p style="font-size: 11px; color: #6b7280;">${currentCode}</p>
                             <p style="font-size: 12px; color: #6b7280;">Color: ${currentColor}</p>
                         </div>
@@ -7765,7 +7765,7 @@
         // Done button bar
         const doneBar = document.createElement('div');
         doneBar.style.cssText = 'position:sticky;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #e5e7eb;z-index:100;';
-        doneBar.innerHTML = `<button type="button" style="width:100%;padding:14px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;gap:8px;">
+        doneBar.innerHTML = `<button type="button" style="width:100%;padding:14px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#273469,#1E2749);display:flex;align-items:center;justify-content:center;gap:8px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             Done
         </button>`;
@@ -9239,7 +9239,7 @@
                     <span style="font-size:15px;color:#16a34a;font-weight:700;">Total: £${displayTotal} <span style="font-size:11px;font-weight:400;">${vatLabel}</span></span>
                 </div>
                 <div class="quote-added-actions" style="display:flex;flex-direction:column;gap:10px;">
-                    <button class="btn-primary" id="addLogoNowBtn" style="width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button class="btn-primary" id="addLogoNowBtn" style="width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#273469,#1E2749);display:flex;align-items:center;justify-content:center;gap:8px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         Add your logo now
                     </button>

@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <head>
         <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #111827; }
-            .header { background: #7c3aed; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-            .section { background: #f9fafb; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #7c3aed; }
+            .header { background: #273469; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+            .section { background: #f9fafb; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #273469; }
             .section h2 { margin-top: 0; color: #374151; }
             .label { font-weight: bold; color: #374151; width: 150px; }
             .value { color: #111827; }
@@ -50,17 +50,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd4fe; }
             .summary-row:last-child { border-bottom: none; font-weight: bold; font-size: 1.1em; }
             .basket-item { background: white; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #e5e7eb; }
-            .basket-item-header { font-weight: bold; color: #7c3aed; margin-bottom: 8px; }
+            .basket-item-header { font-weight: bold; color: #273469; margin-bottom: 8px; }
             .sizes-detail { color: #6b7280; font-size: 0.9em; margin-top: 4px; }
         </style>
     </head>
     <body>
         <div class='header'>
-            <h1>🎉 New Quote Request</h1>
+            <h1>ðŸŽ‰ New Quote Request</h1>
         </div>
         
         <div class='section'>
-            <h2>👤 Customer Details</h2>
+            <h2>ðŸ‘¤ Customer Details</h2>
             <table>
                 <tr><td class='label'>Name:</td><td class='value'>{$customerName}</td></tr>
                 <tr><td class='label'>Email:</td><td class='value'>{$customerEmail}</td></tr>
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class='section'>
-            <h2>🛒 Basket Items (" . count($basket) . " " . (count($basket) == 1 ? 'item' : 'items') . ")</h2>";
+            <h2>ðŸ›’ Basket Items (" . count($basket) . " " . (count($basket) == 1 ? 'item' : 'items') . ")</h2>";
     
     if (!empty($basket)) {
         foreach ($basket as $index => $item) {
@@ -106,15 +106,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $message .= "
-                    <tr><td class='label'>Unit Price:</td><td class='value'>£{$unitPrice}</td></tr>
-                    <tr><td class='label'>Item Total:</td><td class='value'><strong>£{$itemTotal}</strong></td></tr>";
+                    <tr><td class='label'>Unit Price:</td><td class='value'>Â£{$unitPrice}</td></tr>
+                    <tr><td class='label'>Item Total:</td><td class='value'><strong>Â£{$itemTotal}</strong></td></tr>";
             
             // Include customer note for this item
             $itemNote = isset($item['note']) ? trim($item['note']) : '';
             if ($itemNote) {
                 $itemNote = htmlspecialchars($itemNote);
                 $message .= "
-                    <tr><td class='label'>📝 Customer Note:</td><td class='value' style='color:#7c3aed;font-weight:600;'>{$itemNote}</td></tr>";
+                    <tr><td class='label'>ðŸ“ Customer Note:</td><td class='value' style='color:#273469;font-weight:600;'>{$itemNote}</td></tr>";
             }
             
             $message .= "
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class='section'>
-            <h2>🎨 Customizations</h2>
+            <h2>ðŸŽ¨ Customizations</h2>
             <table>";
     
     if (!empty($customizations)) {
@@ -141,10 +141,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $type = isset($custom['type']) ? $custom['type'] : 'N/A';
             $position = isset($custom['position']) ? htmlspecialchars($custom['position']) : 'Unknown';
             $hasLogo = isset($custom['hasLogo']) ? $custom['hasLogo'] : (isset($custom['uploadedLogo']) ? $custom['uploadedLogo'] : false);
-            $logo = $hasLogo ? '✅ Yes' : '❌ No';
+            $logo = $hasLogo ? 'âœ… Yes' : 'âŒ No';
             $text = isset($custom['text']) && $custom['text'] ? " - Text: " . htmlspecialchars($custom['text']) : '';
-            $unitPrice = isset($custom['unitPrice']) ? ($custom['unitPrice'] === 'POA' ? 'POA' : '£' . number_format($custom['unitPrice'], 2)) : 'N/A';
-            $lineTotal = isset($custom['lineTotal']) ? ($custom['lineTotal'] === 'POA' ? 'POA' : '£' . number_format($custom['lineTotal'], 2)) : 'N/A';
+            $unitPrice = isset($custom['unitPrice']) ? ($custom['unitPrice'] === 'POA' ? 'POA' : 'Â£' . number_format($custom['unitPrice'], 2)) : 'N/A';
+            $lineTotal = isset($custom['lineTotal']) ? ($custom['lineTotal'] === 'POA' ? 'POA' : 'Â£' . number_format($custom['lineTotal'], 2)) : 'N/A';
             $qty = isset($custom['quantity']) ? $custom['quantity'] : 0;
             
             $message .= "
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class='value'>
                         <strong>{$method}</strong> - {$type}<br>
                         Logo Uploaded: {$logo}{$text}<br>
-                        <small>Unit: {$unitPrice} × Qty: {$qty} = {$lineTotal}</small>
+                        <small>Unit: {$unitPrice} Ã— Qty: {$qty} = {$lineTotal}</small>
                     </td>
                 </tr>";
         }
@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class='section'>
-            <h2>💰 Quote Summary</h2>
+            <h2>ðŸ’° Quote Summary</h2>
             <div class='summary-box'>";
     
     if (!empty($summary)) {
@@ -193,33 +193,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class='summary-row'>
                     <span>Garment Cost:</span>
-                    <span>£{$garmentCost} ex VAT</span>
+                    <span>Â£{$garmentCost} ex VAT</span>
                 </div>
                 <div class='summary-row'>
                     <span>Customization Cost:</span>
-                    <span>£{$customizationCost} ex VAT</span>
+                    <span>Â£{$customizationCost} ex VAT</span>
                 </div>";
         
         if ($digitizingFee > 0) {
             $message .= "
                 <div class='summary-row'>
                     <span>Digitizing Fee (one-time):</span>
-                    <span>£{$digitizingFee} ex VAT</span>
+                    <span>Â£{$digitizingFee} ex VAT</span>
                 </div>";
         }
         
         $message .= "
                 <div class='summary-row'>
                     <span>Subtotal (ex VAT):</span>
-                    <span>£{$subtotal}</span>
+                    <span>Â£{$subtotal}</span>
                 </div>
                 <div class='summary-row'>
                     <span>VAT (20%):</span>
-                    <span>£{$vatAmount}</span>
+                    <span>Â£{$vatAmount}</span>
                 </div>
                 <div class='summary-row'>
                     <span><strong>Total (" . ($vatMode === 'inc' ? 'inc' : 'ex') . " VAT):</strong></span>
-                    <span><strong>£{$displayTotal}</strong></span>
+                    <span><strong>Â£{$displayTotal}</strong></span>
                 </div>";
     } else {
         $message .= "<p>Summary not available</p>";
@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class='section'>
-            <h2>📅 Request Date</h2>
+            <h2>ðŸ“… Request Date</h2>
             <p>" . date('d/m/Y H:i:s') . "</p>
         </div>";
     
@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($notes)) {
         $message .= "
         <div class='section' style='border-left-color: #f59e0b;'>
-            <h2>📝 Customer Notes / Logo Instructions</h2>
+            <h2>ðŸ“ Customer Notes / Logo Instructions</h2>
             <ul style='margin:0;padding-left:20px;'>";
         foreach ($notes as $note) {
             $message .= "<li style='padding:4px 0;'>" . htmlspecialchars($note) . "</li>";

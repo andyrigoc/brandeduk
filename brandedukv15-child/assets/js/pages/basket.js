@@ -1,6 +1,6 @@
 // INITIALIZE
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🔵 Quote Basket: DOM Loaded');
+    console.log('ðŸ”µ Quote Basket: DOM Loaded');
     loadBasketData();
     calculateBreakdown();
 });
@@ -50,7 +50,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || 'Â£';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -164,27 +164,27 @@ function applyProductPricing(productData) {
 
 // LOAD BASKET DATA
 function loadBasketData() {
-    console.log('🔵 Loading basket data...');
+    console.log('ðŸ”µ Loading basket data...');
     
     const productDataStr = sessionStorage.getItem('customizingProduct');
-    console.log('📦 Product Data String:', productDataStr);
+    console.log('ðŸ“¦ Product Data String:', productDataStr);
     
     const productData = productDataStr ? JSON.parse(productDataStr) : null;
-    console.log('📦 Product Data Parsed:', productData);
+    console.log('ðŸ“¦ Product Data Parsed:', productData);
     
     const positionCustomizations = JSON.parse(sessionStorage.getItem('positionCustomizations') || '[]');
     const selectedPositions = JSON.parse(sessionStorage.getItem('selectedPositions') || '[]');
     
-    console.log('🎯 Positions:', selectedPositions);
-    console.log('🎨 Customizations:', positionCustomizations);
+    console.log('ðŸŽ¯ Positions:', selectedPositions);
+    console.log('ðŸŽ¨ Customizations:', positionCustomizations);
     
     if (!productData) {
-        console.log('❌ No product data - showing empty basket');
+        console.log('âŒ No product data - showing empty basket');
         showEmptyBasket();
         return;
     }
     
-    console.log('✅ Product data found - rendering basket');
+    console.log('âœ… Product data found - rendering basket');
     applyProductPricing(productData);
     sessionStorage.setItem('customizingProduct', JSON.stringify(productData));
     renderBasketItems(productData, positionCustomizations, selectedPositions);
@@ -241,7 +241,7 @@ function renderBasketItems(productData, positionCustomizations, selectedPosition
         </td>
         <td class="price-cell" data-total="${totalGarmentCost}">${formatCurrency(totalGarmentCost)} ${vatSuffix()}</td>
         <td>
-            <button class="btn-remove" onclick="removeItem()" title="Remove item">×</button>
+            <button class="btn-remove" onclick="removeItem()" title="Remove item">Ã—</button>
         </td>
     `;
     
@@ -280,7 +280,7 @@ function renderCustomizationDetails(positionCustomizations) {
         }
         
         const methodBadge = customization.method === 'embroidery' 
-            ? '<span style="background: #7c3aed; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">EMBROIDERY</span>'
+            ? '<span style="background: #273469; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">EMBROIDERY</span>'
             : '<span style="background: #14b8a6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">PRINT</span>';
         
         positionDiv.innerHTML = `
@@ -505,7 +505,7 @@ function clearBasket() {
 
 // PROCEED TO QUOTE FORM
 function proceedToQuoteForm() {
-    console.log('📝 Proceeding to Quote Form...');
+    console.log('ðŸ“ Proceeding to Quote Form...');
     window.location.href = 'quote-form.html';
 }
 

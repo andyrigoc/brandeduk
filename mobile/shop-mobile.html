@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6B21A8">
+    <meta name="theme-color" content="#273469">
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20251230">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
@@ -33,8 +33,8 @@
             color: #374151; transition: background 0.15s; border-bottom: 1px solid #f3f4f6;
         }
         .search-autocomplete .ac-cat:hover { background: #f3f0ff; }
-        .search-autocomplete .ac-cat .ac-icon { width: 20px; height: 20px; flex-shrink: 0; color: #a855f7; }
-        .search-autocomplete .ac-match { font-weight: 700; color: #7c3aed; }
+        .search-autocomplete .ac-cat .ac-icon { width: 20px; height: 20px; flex-shrink: 0; color: #E4D9FF; }
+        .search-autocomplete .ac-match { font-weight: 700; color: #273469; }
         /* Section label */
         .search-autocomplete .ac-section-label {
             font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -53,10 +53,10 @@
         .ac-prod-code { font-size: 11px; color: #9ca3af; }
         .ac-view-all {
             display: block; text-align: center; padding: 12px;
-            font-size: 14px; font-weight: 600; color: #fff; background: #2dd4bf;
+            font-size: 14px; font-weight: 600; color: #000; background: #ff9100;
             border-radius: 0 0 16px 16px; text-decoration: none;
         }
-        .ac-view-all:hover { background: #14b8a6; }
+        .ac-view-all:hover { background: #e07f00; }
         .ac-loading, .ac-no-results { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
     </style>
 </head>
@@ -472,7 +472,7 @@
             if (vatOn) {
                 value = value * (1 + VAT_RATE);
             }
-            return '£' + value.toFixed(2);
+            return 'Â£' + value.toFixed(2);
         }
 
         function vatSuffix() {
@@ -572,13 +572,13 @@
 
             let defaultThumbImage = product.image;
             if (currentColorFilter) {
-                // Variant-level color filter (from primaryColour) – show the matched variant
+                // Variant-level color filter (from primaryColour) â€“ show the matched variant
                 const matched = pickBestColorVariant(colors, currentColorFilter);
                 if (matched) {
                     defaultThumbImage = matched.main || product.image;
                 }
             } else if (hasColorFilter) {
-                // colourShade or primaryColour array filter active – pick first matching variant
+                // colourShade or primaryColour array filter active â€“ pick first matching variant
                 const filterColorValues = [...primaryColourValues, ...colorShadeValues];
                 if (filterColorValues.length > 0 && colors.length > 0) {
                     const matched = colors.find(c => {
@@ -591,7 +591,7 @@
                     if (matched) {
                         defaultThumbImage = matched.main || product.image;
                     } else {
-                        // No exact match – fall back to first color variant (API already filtered)
+                        // No exact match â€“ fall back to first color variant (API already filtered)
                         defaultThumbImage = colors[0].main || product.image;
                     }
                 }
@@ -649,7 +649,7 @@
                         // If a color was explicitly clicked, revert to that color's image
                         if (img) img.src = selectedColor.url;
                     } else {
-                        // No color clicked – revert to the model/lifestyle image
+                        // No color clicked â€“ revert to the model/lifestyle image
                         if (img) img.src = product.image;
                     }
                 });
@@ -755,7 +755,7 @@
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
-                        <button onclick="loadProductsWithSearch('${query}')" style="margin-top: 12px; padding: 8px 16px; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer;">Retry</button>
+                        <button onclick="loadProductsWithSearch('${query}')" style="margin-top: 12px; padding: 8px 16px; background: #273469; color: white; border: none; border-radius: 6px; cursor: pointer;">Retry</button>
                     </div>
                 `;
             }
@@ -855,7 +855,7 @@
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
-                        <button onclick="loadProducts()" style="margin-top: 12px; padding: 8px 16px; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer;">Retry</button>
+                        <button onclick="loadProducts()" style="margin-top: 12px; padding: 8px 16px; background: #273469; color: white; border: none; border-radius: 6px; cursor: pointer;">Retry</button>
                     </div>
                 `;
             }
@@ -965,7 +965,7 @@
         }
     </script>
     <script>
-    // ── Search Autocomplete (API-powered with product images) ──
+    // â”€â”€ Search Autocomplete (API-powered with product images) â”€â”€
     (function() {
         var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
         var HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];

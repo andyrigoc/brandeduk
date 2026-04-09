@@ -68,7 +68,7 @@ const ShopManager = (function () {
         if (vatOn) {
             value = value * (1 + VAT_RATE);
         }
-        return '£' + value.toFixed(2);
+        return 'Â£' + value.toFixed(2);
     }
 
     function vatSuffix() {
@@ -264,10 +264,10 @@ const ShopManager = (function () {
 
         let defaultThumbImage = product.image;
         if (activeColorSlug && matchedVariant) {
-            // Variant-level color filter – show the matched variant
+            // Variant-level color filter â€“ show the matched variant
             defaultThumbImage = matchedVariant.main || product.image;
         } else if (hasColorFilter && !activeColorSlug) {
-            // primaryColour / colourShade filter active – pick first matching variant
+            // primaryColour / colourShade filter active â€“ pick first matching variant
             const filterColorValues = [
                 ...(currentState.filters.primaryColour || []),
                 ...(currentState.filters.colourShade || [])
@@ -284,7 +284,7 @@ const ShopManager = (function () {
                 if (matched) {
                     defaultThumbImage = matched.main || product.image;
                 } else {
-                    // No exact match – fall back to first color variant (since API already filtered by color)
+                    // No exact match â€“ fall back to first color variant (since API already filtered by color)
                     defaultThumbImage = allColors[0].main || product.image;
                 }
             }
@@ -356,7 +356,7 @@ const ShopManager = (function () {
                     // If a color was explicitly clicked, revert to that color's image
                     if (img) img.src = selectedColor.url;
                 } else {
-                    // No color clicked – revert to the model/lifestyle image
+                    // No color clicked â€“ revert to the model/lifestyle image
                     if (img) img.src = product.image;
                 }
             });
@@ -497,17 +497,17 @@ const ShopManager = (function () {
                             </svg>
                             <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">No products found${currentState.color ? ' for this colour' : ''}</h3>
                             <p style="color: #6b7280; font-size: 14px;">${currentState.color ? 'Try a different colour or clear the colour filter' : 'Try adjusting your filters or search terms'}</p>
-                            <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
+                            <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #273469; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
                         </div>
                     `;
                 } else {
-                    // Check if gender filter is active — skip grouping if so
+                    // Check if gender filter is active â€” skip grouping if so
                     var hasGenderFilter = currentState.filters.gender && currentState.filters.gender.length > 0;
 
                     let rendered = 0;
                     var cardIndex = 0;
 
-                    // Always render flat list — no gender grouping
+                    // Always render flat list â€” no gender grouping
                     result.items.forEach(function(product) {
                         var card = createProductCard(product, cardIndex++);
                         if (!card) return;
@@ -522,7 +522,7 @@ const ShopManager = (function () {
                             <div class="no-products-message" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
                                 <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">No products found for this colour</h3>
                                 <p style="color: #6b7280; font-size: 14px;">Try a different colour or clear the colour filter</p>
-                                <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
+                                <button onclick="ShopManager.clearAllFilters()" style="margin-top: 16px; padding: 10px 24px; background: #273469; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Clear Filters</button>
                             </div>
                         `;
                     }
@@ -569,7 +569,7 @@ const ShopManager = (function () {
                         </svg>
                         <h3 style="color: #374151; font-size: 18px; margin-bottom: 8px;">Failed to load products</h3>
                         <p style="color: #6b7280; font-size: 14px;">${error.message}</p>
-                        <button onclick="ShopManager.renderProducts()" style="margin-top: 16px; padding: 10px 24px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Try Again</button>
+                        <button onclick="ShopManager.renderProducts()" style="margin-top: 16px; padding: 10px 24px; background: #273469; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Try Again</button>
                     </div>
                 `;
             }
@@ -764,7 +764,7 @@ const ShopManager = (function () {
         if (priceSlider) {
             priceSlider.value = priceSlider.max;
             const priceLabel = document.getElementById('priceRangeLabel');
-            if (priceLabel) priceLabel.textContent = `£0 - £${priceSlider.max}`;
+            if (priceLabel) priceLabel.textContent = `Â£0 - Â£${priceSlider.max}`;
         }
 
         renderProducts();
@@ -866,7 +866,7 @@ const ShopManager = (function () {
             loadingOverlay.className = 'shop-loading-overlay';
             loadingOverlay.innerHTML = `
                 <div class="loading-spinner">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#273469" stroke-width="2">
                         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                     </svg>
                 </div>
@@ -936,7 +936,7 @@ const ShopManager = (function () {
                 const max = Number(e.target.value);
                 const priceLabel = document.getElementById('priceRangeLabel');
                 if (priceLabel) {
-                    priceLabel.textContent = `£0 - £${max}`;
+                    priceLabel.textContent = `Â£0 - Â£${max}`;
                 }
             });
 

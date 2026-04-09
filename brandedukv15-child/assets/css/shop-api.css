@@ -73,7 +73,7 @@
     color: #1f2937;
     padding: 16px 0 8px;
     margin-top: 8px;
-    border-bottom: 2px solid #7c3aed;
+    border-bottom: 2px solid #273469;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -126,8 +126,8 @@
 }
 
 .pagination-btn.active {
-    background: #7c3aed;
-    border-color: #7c3aed;
+    background: #273469;
+    border-color: #273469;
     color: #fff;
 }
 
@@ -196,7 +196,7 @@
 .error-message button {
     margin-top: 16px;
     padding: 10px 24px;
-    background: #7c3aed;
+    background: #273469;
     color: white;
     border: none;
     border-radius: 8px;
@@ -208,7 +208,7 @@
 
 .no-products-message button:hover,
 .error-message button:hover {
-    background: #6d28d9;
+    background: #1E2749;
 }
 
 /* ==========================================================================
@@ -246,12 +246,12 @@
    ========================================================================== */
 
 .filter-colour-swatch.active {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #7c3aed;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #273469;
     transform: scale(1.1);
 }
 
 .filter-option input:checked+span {
-    color: #7c3aed;
+    color: #273469;
     font-weight: 600;
 }
 

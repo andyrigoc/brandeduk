@@ -85,7 +85,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || 'Â£';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -203,7 +203,7 @@ function renderSizes() {
         box.innerHTML = `
             <div class="size-label">${size}</div>
             <div class="qty-wrapper">
-                <button class="qty-btn minus" data-size="${size}">−</button>
+                <button class="qty-btn minus" data-size="${size}">âˆ’</button>
                 <input type="number" class="qty-input" data-size="${size}" value="0" min="0">
                 <button class="qty-btn plus" data-size="${size}">+</button>
             </div>
@@ -292,7 +292,7 @@ function setupUpload() {
     // Drag & Drop
     uploadArea.ondragover = (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = '#7c3aed';
+        uploadArea.style.borderColor = '#273469';
     };
     
     uploadArea.ondragleave = () => {
@@ -328,7 +328,7 @@ function renderLogoPreviews() {
         
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-btn';
-        removeBtn.textContent = '×';
+        removeBtn.textContent = 'Ã—';
         removeBtn.onclick = () => {
             uploadedLogos.splice(index, 1);
             renderLogoPreviews();

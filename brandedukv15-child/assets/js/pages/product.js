@@ -58,7 +58,7 @@ function vatRate() {
 
 function formatCurrency(baseAmount, options) {
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || 'Â£';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -86,7 +86,7 @@ function vatAmount(baseAmount) {
 
 // Update all pricing displays when VAT changes
 function updateAllPricing() {
-    // Update main price — show lowest tier price with "START FROM"
+    // Update main price â€” show lowest tier price with "START FROM"
     const mainPriceEl = document.getElementById('mainPrice');
     if (mainPriceEl && DISCOUNTS && DISCOUNTS.length > 0) {
         // Find the lowest price across all tiers
@@ -128,7 +128,7 @@ function updateAllPricing() {
 
 // Listen for VAT toggle changes
 document.addEventListener('brandeduk:vat-change', function (event) {
-    console.log('💰 VAT changed, updating prices. isVatOn():', isVatOn(), 'suffix:', vatSuffix());
+    console.log('ðŸ’° VAT changed, updating prices. isVatOn():', isVatOn(), 'suffix:', vatSuffix());
     updateAllPricing();
     updateBasketTotalBox(); // Refresh basket box on VAT change
     recommendationsController?.refreshPricing?.();
@@ -188,7 +188,7 @@ async function loadProductData() {
             // Process detail endpoint (full product data)
             if (detailRes.status === 'fulfilled' && detailRes.value.ok) {
                 productData = await detailRes.value.json();
-                console.log('✅ Loaded product from detail API:', productData);
+                console.log('âœ… Loaded product from detail API:', productData);
             }
 
             // Process listing endpoint (accurate pricing)
@@ -198,7 +198,7 @@ async function loadProductData() {
                 const items = listingData.items || listingData.products || [];
                 listingProduct = items.find(p => p.code === productCode) || items[0] || null;
                 if (listingProduct) {
-                    console.log('✅ Listing price data:', {
+                    console.log('âœ… Listing price data:', {
                         price: listingProduct.price,
                         breaks: listingProduct.priceBreaks?.length || 0
                     });
@@ -210,7 +210,7 @@ async function loadProductData() {
                 const detailPrice = Number(productData.price) || 0;
                 const listingPrice = Number(listingProduct.price) || 0;
                 if (listingPrice > 0 && listingPrice !== detailPrice) {
-                    console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                    console.log(`ðŸ’° Price correction: detail Â£${detailPrice} â†’ listing Â£${listingPrice}`);
                     productData.price = listingProduct.price;
                     productData.basePrice = listingProduct.price;
                     productData.sell_price = listingProduct.price;
@@ -221,30 +221,30 @@ async function loadProductData() {
             } else if (!productData && listingProduct) {
                 // Detail failed, use listing data entirely
                 productData = listingProduct;
-                console.warn('⚠️ Using listing data (detail endpoint failed)');
+                console.warn('âš ï¸ Using listing data (detail endpoint failed)');
             }
 
             if (productData) {
                 sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
             } else {
-                // Both failed — try sessionStorage cache
+                // Both failed â€” try sessionStorage cache
                 const savedProductData = sessionStorage.getItem('selectedProductData');
                 if (savedProductData) {
                     try {
                         productData = JSON.parse(savedProductData);
-                        console.warn('⚠️ Using cached data (both endpoints failed)');
+                        console.warn('âš ï¸ Using cached data (both endpoints failed)');
                     } catch (e) {
                         console.warn('Failed to parse saved product data:', e);
                     }
                 }
             }
         } catch (error) {
-            console.error('❌ Failed to fetch product from API:', error);
+            console.error('âŒ Failed to fetch product from API:', error);
             const savedProductData = sessionStorage.getItem('selectedProductData');
             if (savedProductData) {
                 try {
                     productData = JSON.parse(savedProductData);
-                    console.warn('⚠️ Using cached data due to API error');
+                    console.warn('âš ï¸ Using cached data due to API error');
                 } catch (e) {
                     console.warn('Failed to parse saved product data:', e);
                 }
@@ -253,8 +253,8 @@ async function loadProductData() {
     }
 
     if (!productData) {
-        console.error('❌ No product data available!');
-        // No blocking alert – redirect to homepage so user isn't stuck
+        console.error('âŒ No product data available!');
+        // No blocking alert â€“ redirect to homepage so user isn't stuck
         window.location.replace('index.html');
         return false;
     }
@@ -296,9 +296,9 @@ async function loadProductData() {
     }
 
     // Log available fields for debugging
-    console.log('📋 Available product fields:', Object.keys(productData));
+    console.log('ðŸ“‹ Available product fields:', Object.keys(productData));
 
-    console.log('✅ Product initialized:', {
+    console.log('âœ… Product initialized:', {
         code: PRODUCT_CODE,
         name: PRODUCT_NAME,
         price: BASE_PRICE,
@@ -513,20 +513,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         const productNameEl = document.getElementById('productTitle');
         if (productNameEl && PRODUCT_NAME) {
             productNameEl.textContent = PRODUCT_NAME;
-            console.log('✅ Product name updated:', PRODUCT_NAME, 'in element:', productNameEl);
+            console.log('âœ… Product name updated:', PRODUCT_NAME, 'in element:', productNameEl);
         } else if (!productNameEl) {
-            console.warn('⚠️ Product name element (#productTitle) not found');
+            console.warn('âš ï¸ Product name element (#productTitle) not found');
         } else if (!PRODUCT_NAME) {
-            console.warn('⚠️ PRODUCT_NAME is missing. Product data:', PRODUCT_DATA);
+            console.warn('âš ï¸ PRODUCT_NAME is missing. Product data:', PRODUCT_DATA);
         }
 
         // Update garment-main-title (main product title above price tier)
         const garmentMainTitle = document.querySelector('.garment-main-title');
         if (garmentMainTitle && PRODUCT_DATA && PRODUCT_DATA.name) {
             garmentMainTitle.textContent = PRODUCT_DATA.name;
-            console.log('✅ Garment main title updated:', PRODUCT_DATA.name);
+            console.log('âœ… Garment main title updated:', PRODUCT_DATA.name);
         } else if (!garmentMainTitle) {
-            console.warn('⚠️ Garment main title element (.garment-main-title) not found');
+            console.warn('âš ï¸ Garment main title element (.garment-main-title) not found');
         }
 
         const productCodeEl = document.querySelector('.product-code, [data-product-code], .prod-code-value');
@@ -661,14 +661,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (productType && productType.trim() !== '') {
                 productTypeTitle.textContent = productType;
                 productTypeTitle.style.display = 'block';
-                console.log('✅ Product type title updated:', productType);
+                console.log('âœ… Product type title updated:', productType);
             } else {
-                console.log('ℹ️ No productType/category found. Available fields:', Object.keys(PRODUCT_DATA || {}));
-                console.log('ℹ️ Product name:', PRODUCT_DATA?.name);
+                console.log('â„¹ï¸ No productType/category found. Available fields:', Object.keys(PRODUCT_DATA || {}));
+                console.log('â„¹ï¸ Product name:', PRODUCT_DATA?.name);
                 productTypeTitle.style.display = 'none';
             }
         } else {
-            console.warn('⚠️ Product type title element not found');
+            console.warn('âš ï¸ Product type title element not found');
         }
 
         // Set initial main image - ALWAYS prioritize PRODUCT_DATA.image (API primary image)
@@ -762,7 +762,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             initColors(PRODUCT_DATA.colors);
         }
 
-        // ── Size overrides: API may be missing sizes for certain products ──
+        // â”€â”€ Size overrides: API may be missing sizes for certain products â”€â”€
         const SIZE_OVERRIDES = {
             'YK001': ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL']
         };
@@ -1095,7 +1095,7 @@ function initThumbnailGallery() {
                         if (currentTotal > 0) {
                             saveCurrentSelectionToBasket();
                             hasBasketItems = true;
-                            showToast(`✓ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
+                            showToast(`âœ“ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
                         }
 
                         changeColor(name, url, colorThumb);
@@ -1211,7 +1211,7 @@ function initThumbnailColumn(productColors) {
             primaryButton.setAttribute('data-index', '-1');
             primaryButton.setAttribute('data-primary', 'true');
             primaryButton.setAttribute('aria-label', `Primary image of ${PRODUCT_NAME || 'product'}`);
-            primaryButton.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0; border: 2px solid #7c3aed;';
+            primaryButton.style.cssText = 'width: 72px; height: 72px; flex-shrink: 0; border: 2px solid #273469;';
 
             const primaryImg = document.createElement('img');
             primaryImg.src = primaryImageUrl;
@@ -1403,7 +1403,7 @@ function initThumbnailColumn(productColors) {
         }
     }
 
-    console.log('✅ Thumbnail column initialized with', productColors.length, 'colors' + (primaryInserted ? ' + primary image' : '') + ' (slider enabled)');
+    console.log('âœ… Thumbnail column initialized with', productColors.length, 'colors' + (primaryInserted ? ' + primary image' : '') + ' (slider enabled)');
 }
 
 function slideThumbnails(direction) {
@@ -1568,7 +1568,7 @@ function initColors(productColors) {
             if (currentTotal > 0) {
                 saveCurrentSelectionToBasket();
                 hasBasketItems = true;
-                showToast(`✓ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
+                showToast(`âœ“ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
             }
 
             changeColor(name, url, div);
@@ -1577,7 +1577,7 @@ function initColors(productColors) {
         colorGrid.appendChild(div);
     });
 
-    console.log('✅ Colors initialized:', colors.length);
+    console.log('âœ… Colors initialized:', colors.length);
 }
 
 // Click outside color grid deselects color if no quantities added
@@ -1651,7 +1651,7 @@ function initSizes(productSizes) {
     // Render sizes
     renderSizes();
 
-    console.log('✅ Sizes initialized:', sizeList);
+    console.log('âœ… Sizes initialized:', sizeList);
 }
 
 function renderSizes() {
@@ -1669,7 +1669,7 @@ function renderSizes() {
         box.innerHTML = `
             <div class="size-header">${size}</div>
             <div class="qty-controls">
-                <button class="qty-btn minus" data-size="${size}" ${colorSelected ? "" : "disabled"}>−</button>
+                <button class="qty-btn minus" data-size="${size}" ${colorSelected ? "" : "disabled"}>âˆ’</button>
                 <input 
                     type="number"
                     class="qty-input"
@@ -1740,7 +1740,7 @@ function updateSizesMessage() {
             msg = document.createElement('div');
             msg.id = 'selectColorMessage';
             msg.className = 'select-color-message';
-            msg.innerHTML = '⬆️ Please select a colour first';
+            msg.innerHTML = 'â¬†ï¸ Please select a colour first';
             sizesGrid.parentNode.insertBefore(msg, sizesGrid);
         }
         msg.style.display = 'block';
@@ -1854,7 +1854,7 @@ function updateStepProgress(stepCompleted) {
         // Color selected - make step 1 green immediately
         if (stepNum1 && !stepNum1.dataset.completed) {
             stepNum1.style.cssText = greenStyle;
-            stepNum1.textContent = '1✓';
+            stepNum1.textContent = '1âœ“';
             stepNum1.dataset.completed = 'true';
             if (stepLabel1) stepLabel1.style.cssText = greenLabelStyle;
         }
@@ -1880,7 +1880,7 @@ function updateStepProgress(stepCompleted) {
 
                 if (stepNum2) {
                     stepNum2.style.cssText = greenStyle;
-                    stepNum2.textContent = '2✓';
+                    stepNum2.textContent = '2âœ“';
                     stepNum2.dataset.completed = 'true';
                 }
                 if (stepLabel2) stepLabel2.style.cssText = greenLabelStyle;
@@ -1898,7 +1898,7 @@ function updateStepProgress(stepCompleted) {
 
                 if (stepNum3) {
                     stepNum3.style.cssText = greenStyle;
-                    stepNum3.textContent = '3✓';
+                    stepNum3.textContent = '3âœ“';
                     stepNum3.dataset.completed = 'true';
                 }
                 if (stepLabel3) stepLabel3.style.cssText = greenLabelStyle;
@@ -1909,8 +1909,8 @@ function updateStepProgress(stepCompleted) {
 
 // Reset step progress
 function resetStepProgress() {
-    const purpleStyle = 'width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(124,58,237,0.3);';
-    const purpleLabelStyle = 'font-size:0.9rem; font-weight:600; color:#7c3aed;';
+    const purpleStyle = 'width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#E4D9FF,#273469); color:white; font-size:1.1rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(39, 52, 105,0.3);';
+    const purpleLabelStyle = 'font-size:0.9rem; font-weight:600; color:#273469;';
     const connectorStyle = 'width:60px; height:4px; background:#e5e7eb; margin:0 16px; margin-bottom:28px; border-radius:2px;';
 
     for (let i = 1; i <= 3; i++) {
@@ -1982,7 +1982,7 @@ function changeColor(name, url, colorDiv) {
     }
 }
 
-// showColorChangeModal removed — auto-save on color change now
+// showColorChangeModal removed â€” auto-save on color change now
 
 /* ---------------------------------------------------
    MINI SUMMARY
@@ -1999,7 +1999,7 @@ function updateBelowSummary(total, unit) {
     const currentTotal = total;
     const currentPrice = currentTotal > 0 ? (unit * currentTotal) : 0;
 
-    const perItemLabel = currentTotal > 0 ? ` · ${formatCurrency(unit)} each ${vatSuffix()}` : '';
+    const perItemLabel = currentTotal > 0 ? ` Â· ${formatCurrency(unit)} each ${vatSuffix()}` : '';
     const summaryMarkup = `
         <div class="summary-text">
             <span class="summary-items"><b>${currentTotal} items</b>${perItemLabel}</span>
@@ -2087,7 +2087,7 @@ function updateTotals() {
     const tier = getCurrentTier(grandProductTotal);
     if (priceInfoEl) {
         if (grandProductTotal === 0) {
-            priceInfoEl.innerHTML = `Price listed for 1–9 units`;
+            priceInfoEl.innerHTML = `Price listed for 1â€“9 units`;
         } else {
             priceInfoEl.innerHTML =
                 `<b>Bulk price applied:</b> ${formatCurrency(tier.price)} ${vatSuffix()} (${tier.min}+ units)`;
@@ -2102,7 +2102,7 @@ function updateTotals() {
     if (continueShoppingButton) continueShoppingButton.disabled = continueDisabled;
     if (addCustomizeButton) addCustomizeButton.disabled = continueDisabled;
 
-    // Sync mobile sticky bar — show CURRENT color total + "Add to basket"
+    // Sync mobile sticky bar â€” show CURRENT color total + "Add to basket"
     const stickyAddToBasket = document.getElementById("stickyAddToBasket");
     const stickyTotal = document.getElementById("stickyTotal");
 
@@ -2186,7 +2186,7 @@ function updateTierPricing(total) {
 }
 
 /* ---------------------------------------------------
-   ADD COLOUR BUTTON — saves current color/sizes to basket, resets for new color
+   ADD COLOUR BUTTON â€” saves current color/sizes to basket, resets for new color
 --------------------------------------------------- */
 
 if (addContinueButton) {
@@ -2200,7 +2200,7 @@ addContinueButton.onclick = () => {
 } // end if (addContinueButton)
 
 /* ---------------------------------------------------
-   CONTINUE SHOPPING BUTTON — saves current selection and goes to shop
+   CONTINUE SHOPPING BUTTON â€” saves current selection and goes to shop
 --------------------------------------------------- */
 
 if (continueShoppingButton) {
@@ -2210,7 +2210,7 @@ continueShoppingButton.onclick = () => {
     // Save current selection if there is one
     if (total > 0) {
         saveCurrentSelectionToBasket();
-        showToast(`✓ ${total} pcs added to basket!`);
+        showToast(`âœ“ ${total} pcs added to basket!`);
     }
 
     // Navigate to shop
@@ -2228,7 +2228,7 @@ function saveCurrentSelectionToBasket() {
 
     let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
 
-    // Check if same product with same color already exists → REPLACE it
+    // Check if same product with same color already exists â†’ REPLACE it
     const existingIndex = basket.findIndex(item =>
         item.name === PRODUCT_NAME &&
         item.code === PRODUCT_CODE &&
@@ -2271,7 +2271,7 @@ function saveCurrentSelectionToBasket() {
         productData.notes = existing.notes || '';
         basket[existingIndex] = productData;
     } else {
-        // New item — no customizations yet
+        // New item â€” no customizations yet
         productData.positionDesigns = {};
         productData.positions = [];
         productData.selectedPositions = [];
@@ -2309,7 +2309,7 @@ function scheduleAutoSave() {
         var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
         if (total > 0 && selectedColorName) {
             saveCurrentSelectionToBasket();
-            console.log('⏱️ Auto-saved', total, 'pcs of', selectedColorName, 'to basket');
+            console.log('â±ï¸ Auto-saved', total, 'pcs of', selectedColorName, 'to basket');
         }
     }, 500);
 }
@@ -2372,7 +2372,7 @@ function getSizesSummaryFromSizes(sizes) {
 }
 
 /* ---------------------------------------------------
-   MOBILE STICKY BAR BUTTON — "Add to basket"
+   MOBILE STICKY BAR BUTTON â€” "Add to basket"
 --------------------------------------------------- */
 
 const stickyAddToBasketBtn = document.getElementById("stickyAddToBasket");
@@ -2442,7 +2442,7 @@ function openPopup() {
 
     if (popup) popup.style.display = "flex";
 
-    // Reset sizes after adding to basket so bar goes back to £0.00
+    // Reset sizes after adding to basket so bar goes back to Â£0.00
     resetSizes();
     resetColorSelection();
     hasBasketItems = true;
@@ -2461,7 +2461,7 @@ window.addEventListener("click", (e) => {
     }
 });
 
-// "Add your logo now" button in popup — navigate to customize page
+// "Add your logo now" button in popup â€” navigate to customize page
 const popupAddLogoBtn = document.getElementById('popupAddLogoBtn');
 if (popupAddLogoBtn) {
     popupAddLogoBtn.onclick = () => {
@@ -2491,7 +2491,7 @@ if (popupAddLogoBtn) {
     };
 }
 
-// "Continue Shopping" link in popup — close popup and stay on page
+// "Continue Shopping" link in popup â€” close popup and stay on page
 const popupContinueShopping = document.getElementById('popupContinueShopping');
 if (popupContinueShopping) {
     popupContinueShopping.onclick = (e) => {

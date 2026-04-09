@@ -93,7 +93,7 @@
         }
         
         .refresh-btn:hover {
-            background: #6b21a8;
+            background: #273469;
         }
         
         table {
@@ -172,7 +172,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>👥 User Management</h1>
+        <h1>ðŸ‘¥ User Management</h1>
         <p class="subtitle">BrandedUK registered users database</p>
         
         <div class="stats">
@@ -195,7 +195,7 @@
         <div class="users-table">
             <div class="table-header">
                 <span class="table-title">Registered Users</span>
-                <button class="refresh-btn" onclick="loadUsers()">↻ Refresh</button>
+                <button class="refresh-btn" onclick="loadUsers()">â†» Refresh</button>
             </div>
             <div id="tableContent">
                 <div class="loading">Loading users...</div>
@@ -233,7 +233,7 @@
                     renderUsers(users);
                     updateStats(users);
                 } else {
-                    errorContainer.innerHTML = `<div class="error">⚠️ ${error.message || 'Failed to load users. Make sure the server is running PHP.'}</div>`;
+                    errorContainer.innerHTML = `<div class="error">âš ï¸ ${error.message || 'Failed to load users. Make sure the server is running PHP.'}</div>`;
                     tableContent.innerHTML = '<div class="loading">No users found. Register some users first!</div>';
                 }
             }
