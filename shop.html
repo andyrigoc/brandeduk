@@ -3645,6 +3645,52 @@
             });
         }
 
+        // --- Color matching helpers (ported from PC version) ---
+        function slugifyColor(value) {
+            return String(value || '').trim().toLowerCase()
+                .replace(/&/g, ' and ')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        }
+
+        function getVariantImage(variant, product) {
+            return (variant && (variant.main || variant.image_url || variant.image)) || (product && product.image) || '';
+        }
+
+        function pickBestColorVariant(product, requestedSlug) {
+            const target = slugifyColor(requestedSlug);
+            if (!target) return null;
+            const variants = Array.isArray(product && product.colors) ? product.colors : [];
+            if (variants.length === 0) return null;
+            const synonyms = {
+                black: ['black','jet','jet-black','charcoal','graphite','carbon','ebony'],
+                navy: ['navy','midnight','deep-navy','dark-navy'],
+                grey: ['grey','gray','charcoal','slate','graphite','heather','marl'],
+                white: ['white','off-white','ivory','natural'],
+                red: ['red','burgundy','maroon','crimson','wine'],
+                blue: ['blue','royal','sky','light-blue'],
+                green: ['green','forest','bottle','olive','khaki'],
+                yellow: ['yellow','gold','mustard'],
+                pink: ['pink','fuchsia','hot-pink'],
+                purple: ['purple','violet','lilac','plum'],
+                orange: ['orange','coral','burnt-orange'],
+                brown: ['brown','chocolate','tan','camel'],
+                neutral: ['neutral','natural','sand','stone','beige','oatmeal']
+            };
+            const needles = [target, ...(synonyms[target] || [])].map(slugifyColor).filter(Boolean);
+            let best = null, bestScore = -1;
+            for (const v of variants) {
+                const nameSlug = slugifyColor(v && v.name);
+                if (!nameSlug) continue;
+                let score = 0;
+                if (nameSlug === target) score = 100;
+                else if (nameSlug.includes(target) || target.includes(nameSlug)) score = 85;
+                else if (needles.some(n => nameSlug.includes(n))) score = 70;
+                if (score > bestScore) { bestScore = score; best = v; }
+            }
+            return (!best || bestScore < 70) ? null : best;
+        }
+
         // Render products using API (delegates to BrandedAPI)
         async function renderProducts() {
             const grid = document.getElementById('productsGrid');
@@ -3691,35 +3737,28 @@
                 return;
             }
 
-            // Gender grouping: Men first, Women second, Kids third
-            function getGenderGroup(product) {
-                const age = (product.ageGroup || '').toLowerCase();
-                if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
-                const gender = (product.gender || '').toLowerCase();
-                const n = (product.name || '').toLowerCase();
-                if (gender.includes('ladies') || gender.includes('female') || gender.includes('women') || gender.includes('womens')) return 'women';
-                if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
-                if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
-                return 'men';
-            }
-
-            const menProducts = [];
-            const womenProducts = [];
-            const kidsProducts = [];
-            products.forEach(p => {
-                const g = getGenderGroup(p);
-                if (g === 'women') womenProducts.push(p);
-                else if (g === 'kids') kidsProducts.push(p);
-                else menProducts.push(p);
-            });
-
             const fmtCurrency = (typeof ShopManager !== 'undefined' && ShopManager.formatCurrency) ? ShopManager.formatCurrency : (v => '£' + Number(v).toFixed(2));
             const fmtVat = (typeof ShopManager !== 'undefined' && ShopManager.vatSuffix) ? ShopManager.vatSuffix : (() => 'ex. VAT');
 
             function appendProductCard(product) {
                 const card = document.createElement('div');
                 card.className = 'product-card-shop';
-                const img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || '';
+
+                // Pick color-matched image if a color filter is active
+                let img = product.image || (product.colors && product.colors[0] && (product.colors[0].main || product.colors[0].image)) || '';
+                const activeColors = currentState.filters.primaryColour || [];
+                const activeShades = currentState.filters.colourShade || [];
+                const colorSlug = currentState.color || activeColors[0] || activeShades[0] || null;
+                if (colorSlug) {
+                    const matched = pickBestColorVariant(product, colorSlug);
+                    if (matched) {
+                        img = getVariantImage(matched, product);
+                    } else {
+                        // No matching color variant — skip this product entirely
+                        return;
+                    }
+                }
+
                 const price = (product.priceBreaks && product.priceBreaks.length) ? product.priceBreaks[0].price : product.price;
                 let badgesHtml = '';
                 if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
@@ -3766,17 +3805,46 @@
                 grid.appendChild(heading);
             }
 
-            if (menProducts.length > 0) {
-                if (womenProducts.length > 0 || kidsProducts.length > 0) appendSectionHeading('Men');
-                menProducts.forEach(appendProductCard);
-            }
-            if (womenProducts.length > 0) {
-                appendSectionHeading('Women');
-                womenProducts.forEach(appendProductCard);
-            }
-            if (kidsProducts.length > 0) {
-                appendSectionHeading('Kids');
-                kidsProducts.forEach(appendProductCard);
+            // If a gender filter is active, skip grouping — render flat list
+            const hasGenderFilter = currentState.filters.gender && currentState.filters.gender.length > 0;
+
+            if (hasGenderFilter) {
+                products.forEach(appendProductCard);
+            } else {
+                // Gender grouping: Men first, Women second, Kids third
+                function getGenderGroup(product) {
+                    const age = (product.ageGroup || '').toLowerCase();
+                    if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
+                    const gender = (product.gender || '').toLowerCase();
+                    const n = (product.name || '').toLowerCase();
+                    if (gender.includes('ladies') || gender.includes('female') || gender.includes('women') || gender.includes('womens')) return 'women';
+                    if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
+                    if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
+                    return 'men';
+                }
+
+                const menProducts = [];
+                const womenProducts = [];
+                const kidsProducts = [];
+                products.forEach(p => {
+                    const g = getGenderGroup(p);
+                    if (g === 'women') womenProducts.push(p);
+                    else if (g === 'kids') kidsProducts.push(p);
+                    else menProducts.push(p);
+                });
+
+                if (menProducts.length > 0) {
+                    if (womenProducts.length > 0 || kidsProducts.length > 0) appendSectionHeading('Men');
+                    menProducts.forEach(appendProductCard);
+                }
+                if (womenProducts.length > 0) {
+                    appendSectionHeading('Women');
+                    womenProducts.forEach(appendProductCard);
+                }
+                if (kidsProducts.length > 0) {
+                    appendSectionHeading('Kids');
+                    kidsProducts.forEach(appendProductCard);
+                }
             }
 
             updateMobilePagination();
