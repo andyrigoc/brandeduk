@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260402b">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1827,9 +1828,37 @@ body.tawk-open #tawk-bubble-container {
 }
 </style>
 
+    <!-- WhatsApp Floating Button -->
+    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
+        <i class="fa-brands fa-whatsapp"></i>
+    </button>
+
+    <!-- WhatsApp Popup -->
+    <div class="wa-popup" id="waPopup">
+        <div class="wa-popup__card">
+            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
+            <div class="wa-popup__header">
+                <div class="wa-popup__avatar"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="wa-popup__info">
+                    <h3>Branded UK</h3>
+                    <span>Typically replies quickly</span>
+                </div>
+            </div>
+            <div class="wa-popup__body">
+                <div class="wa-message">Hi, how can we help you?</div>
+            </div>
+            <div class="wa-popup__footer">
+                <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-whatsapp"></i> Start chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
-    <script src="mobile/js/breadcrumbs.js?v=20260403a"></script>
+    <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
 </body>
 </html>

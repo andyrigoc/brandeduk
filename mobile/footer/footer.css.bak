@@ -1,0 +1,590 @@
+/* Footer Styles - BrandedUK Mobile */
+
+.mobile-footer {
+    background: #f9fafb;
+    padding: 40px 16px 120px;
+    margin-top: 32px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 16px;
+}
+
+/* Brand Column */
+.footer-brand {
+    grid-column: 1 / -1;
+}
+
+.footer-logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: -0.5px;
+    font-family: 'Inter', sans-serif;
+}
+
+.footer-copyright,
+.footer-rights {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.footer-social-btn {
+    width: 36px;
+    height: 36px;
+    background: #1f2937;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.footer-social-btn:hover,
+.footer-social-btn:active {
+    opacity: 1;
+    background: #6b21a8;
+}
+
+/* Footer Columns */
+.footer-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-heading {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.footer-link {
+    font-size: 14px;
+    color: #4b5563;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover,
+.footer-link:active {
+    color: #6b21a8;
+}
+
+/* Newsletter */
+.footer-newsletter {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.newsletter-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.newsletter-form {
+    display: flex;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    background: #fff;
+    color: #1f2937;
+}
+
+.newsletter-input::placeholder {
+    color: #9ca3af;
+}
+
+.newsletter-btn {
+    padding: 14px 16px;
+    background: #6b21a8;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.newsletter-btn:hover,
+.newsletter-btn:active {
+    background: #7c3aed;
+}
+
+/* Payment Methods */
+.footer-payment-methods {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.payment-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.payment-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    height: 24px;
+    box-sizing: border-box;
+}
+
+/* Responsive - larger screens */
+@media (min-width: 640px) {
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+    
+    .footer-brand {
+        grid-column: 1;
+    }
+}
+
+/* ===== 3D Neumorphism Social Icons ===== */
+.footer-social-3d {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.social-icon-3d {
+    --icon-size: 44px;
+    --shadow-light: #ffffff;
+    --shadow-dark: #d1d5db;
+    
+    position: relative;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 14px;
+    background: #f0f2f5;
+    box-shadow: 
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon-3d i {
+    font-size: calc(var(--icon-size) / 2.2);
+    color: #9ca3af;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover effect - pressed in */
+.social-icon-3d:hover,
+.social-icon-3d:active {
+    box-shadow: 
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+    transform: translateY(-4px);
+}
+
+/* Color change on hover for each platform */
+.social-icon-3d.facebook:hover i,
+.social-icon-3d.facebook:active i {
+    color: #3b5998;
+}
+
+.social-icon-3d.instagram:hover i,
+.social-icon-3d.instagram:active i {
+    color: #E1306C;
+}
+
+.social-icon-3d.linkedin:hover i,
+.social-icon-3d.linkedin:active i {
+    color: #0077B5;
+}
+
+.social-icon-3d.youtube:hover i,
+.social-icon-3d.youtube:active i {
+    color: #FF0000;
+}
+
+.social-icon-3d.pinterest:hover i,
+.social-icon-3d.pinterest:active i {
+    color: #E60023;
+}
+
+/* Shadow under icon on hover */
+.social-icon-3d::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    width: 70%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    filter: blur(4px);
+    opacity: 0;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-icon-3d:hover::after,
+.social-icon-3d:active::after {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Active state - icon stays lit */
+.social-icon-3d.active {
+    box-shadow: 
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+}
+
+.social-icon-3d.active.facebook i {
+    color: #3b5998;
+}
+
+.social-icon-3d.active.instagram i {
+    color: #E1306C;
+}
+
+.social-icon-3d.active.linkedin i {
+    color: #0077B5;
+}
+
+.social-icon-3d.active.youtube i {
+    color: #FF0000;
+}
+
+.social-icon-3d.active.pinterest i {
+    color: #E60023;
+}
+
+.social-icon-3d.active::after {
+    opacity: 0.5;
+}
+
+/* =============================================
+   Isometric 3D Social Icons – Footer
+   ============================================= */
+.footer-social-3d.social {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin: 20px 0 0 0;
+    padding: 0;
+    display: flex;
+}
+
+.social li {
+    list-style: none;
+    margin: 0 15px;
+}
+
+.social li .fa {
+    font-size: 20px;
+    color: #262626;
+    line-height: 40px;
+    transition: 0.5s;
+}
+
+.social li a {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    text-align: center;
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(0, 0);
+    transition: 0.5s;
+    box-shadow: -20px 20px 10px rgba(0, 0, 0, 0.5);
+}
+
+.social li a::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: -20px;
+    height: 100%;
+    width: 20px;
+    background: #b1b1b1;
+    transition: 0.5s;
+    transform: rotate(0deg) skewY(-45deg);
+}
+
+.social li a::after {
+    content: "";
+    position: absolute;
+    top: 40px;
+    left: -11px;
+    height: 20px;
+    width: 100%;
+    background: #b1b1b1;
+    transition: 0.5s;
+    transform: rotate(0deg) skewX(-45deg);
+}
+
+.social li a:hover {
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(20px, -20px);
+    box-shadow: -50px 50px 50px rgba(0, 0, 0, 0.5);
+}
+
+.social li:hover .fa {
+    color: #fff;
+}
+
+/* Facebook */
+.social .facebook:hover a {
+    background: #3b5999;
+}
+.social .facebook:hover a:before {
+    background: #2e4a86;
+}
+.social .facebook:hover a:after {
+    background: #4a69ad;
+}
+
+/* Instagram */
+.social .instagram:hover a {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+.social .instagram:hover a:before {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+.social .instagram:hover a:after {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+
+/* YouTube */
+.social .youtube:hover a {
+    background: #cd201f;
+}
+.social .youtube:hover a:before {
+    background: #930504;
+}
+.social .youtube:hover a:after {
+    background: #e62c2a;
+}
+
+/* Pinterest */
+.social .pinterest:hover a {
+    background: #bd081c;
+}
+.social .pinterest:hover a:before {
+    background: #930011;
+}
+.social .pinterest:hover a:after {
+    background: #bb2a3a;
+}
+
+/* === Touch/Mobile: active state (first tap) === */
+.social li a.iso-active {
+    transform: perspective(1000px) rotate(-30deg) skew(25deg) translate(20px, -20px);
+    box-shadow: -50px 50px 50px rgba(0, 0, 0, 0.5);
+}
+.social li a.iso-active .fa {
+    color: #fff;
+}
+
+.social .facebook a.iso-active {
+    background: #3b5999;
+}
+.social .facebook a.iso-active:before {
+    background: #2e4a86;
+}
+.social .facebook a.iso-active:after {
+    background: #4a69ad;
+}
+
+.social .instagram a.iso-active {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+.social .instagram a.iso-active:before {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+.social .instagram a.iso-active:after {
+    background: linear-gradient(#400080, transparent), linear-gradient(200deg, #d047d1, #ff0000, #ffff00);
+}
+
+.social .youtube a.iso-active {
+    background: #cd201f;
+}
+.social .youtube a.iso-active:before {
+    background: #930504;
+}
+.social .youtube a.iso-active:after {
+    background: #e62c2a;
+}
+
+.social .pinterest a.iso-active {
+    background: #bd081c;
+}
+.social .pinterest a.iso-active:before {
+    background: #930011;
+}
+.social .pinterest a.iso-active:after {
+    background: #bb2a3a;
+}
+
+/* =============================================
+   Footer Popups
+   ============================================= */
+.footer-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: popupFadeIn 0.3s ease;
+}
+
+.footer-popup-overlay.active {
+    display: flex;
+}
+
+@keyframes popupFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.footer-popup {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: popupSlideUp 0.3s ease;
+}
+
+@keyframes popupSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.footer-popup-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #6b7280;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.footer-popup-close:hover,
+.footer-popup-close:active {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.footer-popup-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.footer-popup-subtitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #6b21a8;
+    margin: 0 0 16px 0;
+}
+
+.footer-popup p {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0 0 12px 0;
+}
+
+.footer-popup-features {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+}
+
+.footer-popup-features li {
+    font-size: 14px;
+    color: #1f2937;
+    padding: 10px 0 10px 28px;
+    position: relative;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.footer-popup-features li:last-child {
+    border-bottom: none;
+}
+
+.footer-popup-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #6b21a8;
+    font-weight: 700;
+    font-size: 16px;
+}

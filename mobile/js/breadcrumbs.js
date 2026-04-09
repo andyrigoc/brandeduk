@@ -144,24 +144,63 @@
 
             case 'shop':
                 if (category && category !== 'all') {
-                    crumbs.push({ label: catDisplay, href: null }); // current
+                    crumbs.push({ label: catDisplay, href: shopUrl + '?category=' + encodeURIComponent(category) });
                 } else {
-                    crumbs.push({ label: 'All Products', href: null });
+                    crumbs.push({ label: 'All Products', href: shopUrl });
                 }
+                // Append active filter tags from URL params
+                var filterLabels = {
+                    'gender': { 'male': 'Male', 'mens': 'Male', 'female': 'Female', 'womens': 'Female', 'unisex': 'Unisex' },
+                    'primaryColour': null,
+                    'colourShade': null,
+                    'ageGroup': null,
+                    'brand': null,
+                    'sleeve': null,
+                    'neckline': null,
+                    'fabric': null,
+                    'size': null
+                };
+                var urlP = new URLSearchParams(window.location.search);
+                Object.keys(filterLabels).forEach(function(key) {
+                    var val = urlP.get(key);
+                    if (!val) return;
+                    val.split(',').forEach(function(v) {
+                        v = v.trim();
+                        if (!v) return;
+                        var map = filterLabels[key];
+                        var display = (map && map[v.toLowerCase()]) || v.replace(/[-_]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+                        crumbs.push({ label: display, href: null });
+                    });
+                });
                 break;
 
             case 'product':
             case 'customize':
-                if (category) {
+                // Try to enrich from selectedProductData if category/product missing
+                var enrichedCat = category;
+                var enrichedProduct = product;
+                if (!enrichedCat || !enrichedProduct) {
+                    try {
+                        var spd = JSON.parse(sessionStorage.getItem('selectedProductData') || '{}');
+                        if (!enrichedCat && spd.productType) {
+                            enrichedCat = toSlug(spd.productType);
+                            catDisplay = prettyCategory(enrichedCat);
+                        }
+                        if (!enrichedProduct && spd.code) {
+                            enrichedProduct = spd.code.toUpperCase();
+                        }
+                    } catch (e) { /* ignore parse errors */ }
+                }
+                if (enrichedCat) {
                     crumbs.push({
                         label: catDisplay,
-                        href: shopUrl + '?category=' + encodeURIComponent(category)
+                        href: shopUrl + '?category=' + encodeURIComponent(enrichedCat)
                     });
                 } else {
                     crumbs.push({ label: 'Shop', href: shopUrl });
                 }
-                if (product) {
-                    crumbs.push({ label: product, href: null });
+                if (enrichedProduct) {
+                    crumbs.push({ label: enrichedProduct, href: null });
                 }
                 break;
 
@@ -225,6 +264,7 @@
         if (!nav) return; // no breadcrumb container on this page
 
         var page = detectPage();
+        console.log('[breadcrumbs] page=' + page, 'readyState=' + document.readyState);
         if (page === 'home') {
             nav.style.display = 'none';
             return;
@@ -260,6 +300,8 @@
             }
         });
         trailEl.innerHTML = html;
+        nav.style.display = '';  // ensure visible
+        console.log('[breadcrumbs] rendered:', trail.map(function(c){ return c.label; }).join(' › '));
     }
 
     /* ── Public API for pages that need to update breadcrumbs ── */

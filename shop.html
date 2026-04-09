@@ -8,6 +8,7 @@
     <title>Shop - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260221">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329c">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
@@ -3048,6 +3049,18 @@
             if (currentState.priceMin !== null) url.searchParams.set('priceMin', currentState.priceMin); else url.searchParams.delete('priceMin');
             if (currentState.priceMax !== null) url.searchParams.set('priceMax', currentState.priceMax); else url.searchParams.delete('priceMax');
 
+            // Persist active filters in URL
+            const filterKeys = ['gender','ageGroup','brand','productType','sleeve','neckline','accreditations',
+                'primaryColour','colourShade','style','feature','size','fabric','weight','fit','sector','sport','tag','effect'];
+            filterKeys.forEach(key => {
+                const values = currentState.filters[key];
+                if (values && values.length > 0) {
+                    url.searchParams.set(key, values.join(','));
+                } else {
+                    url.searchParams.delete(key);
+                }
+            });
+
             // Preserve accreditation=recycled URL parameter if recycled is in quickFilters
             if (currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled')) {
                 url.searchParams.set('accreditation', 'recycled');
@@ -3547,6 +3560,7 @@
                         currentState.filters[stateKey] = checked;
                         currentState.page = 1;
                         updateURL();
+                        if (typeof updateBreadcrumbCategory === 'function') updateBreadcrumbCategory(currentState.category);
                         await renderProducts();
                         await fetchFilterCounts();
                     });
@@ -3792,6 +3806,8 @@
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code || '');
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
+                    // Save breadcrumb category before navigating
+                    if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentState.category || '');
                     window.location.href = '/customize?code=' + encodeURIComponent(product.code || '');
                 });
 
@@ -3907,6 +3923,29 @@
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
             currentState.priceMax = urlParams.get('priceMax') ? parseFloat(urlParams.get('priceMax')) : null;
+
+            // Restore filters from URL params
+            const filterKeys = ['gender','ageGroup','brand','productType','sleeve','neckline','accreditations',
+                'primaryColour','colourShade','style','feature','size','fabric','weight','fit','sector','sport','tag','effect'];
+            filterKeys.forEach(key => {
+                const val = urlParams.get(key);
+                if (val) {
+                    currentState.filters[key] = val.split(',').map(v => v.trim()).filter(Boolean);
+                }
+            });
+
+            // Sync checkbox UI with restored filter state
+            filterKeys.forEach(key => {
+                const values = currentState.filters[key];
+                if (!values || values.length === 0) return;
+                // Find the matching filter-expandable section
+                const section = document.querySelector('.filter-expandable[data-filter="' + key + '"]') ||
+                                document.querySelector('.filter-expandable[data-filter="features"]'); // features -> feature mapping
+                if (!section) return;
+                section.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    if (values.includes(cb.value)) cb.checked = true;
+                });
+            });
 
             // Set initial category heading from URL
             (function() {
@@ -4037,7 +4076,7 @@
         });
     </script>
     <script src="mobile/js/mobile.js?v=20251230"></script>
-    <script src="mobile/js/breadcrumbs.js?v=20260403a"></script>
+    <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
     <!--Tawk.to – mini chat iframe overlay-->
     <script type="text/javascript">
         (function() {
@@ -4094,6 +4133,34 @@
             }
         })();
     </script>
+
+    <!-- WhatsApp Floating Button -->
+    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
+        <i class="fa-brands fa-whatsapp"></i>
+    </button>
+
+    <!-- WhatsApp Popup -->
+    <div class="wa-popup" id="waPopup">
+        <div class="wa-popup__card">
+            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
+            <div class="wa-popup__header">
+                <div class="wa-popup__avatar"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="wa-popup__info">
+                    <h3>Branded UK</h3>
+                    <span>Typically replies quickly</span>
+                </div>
+            </div>
+            <div class="wa-popup__body">
+                <div class="wa-message">Hi, how can we help you?</div>
+            </div>
+            <div class="wa-popup__footer">
+                <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-whatsapp"></i> Start chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>

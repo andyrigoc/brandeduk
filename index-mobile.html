@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260408G">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260615A">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
@@ -2926,11 +2927,33 @@
                 }, { passive: true });
             }
 
+            // Footer popup system
+            function initFooterPopups() {
+                document.querySelectorAll('[data-popup]').forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        var id = 'popup-' + this.getAttribute('data-popup');
+                        var overlay = document.getElementById(id);
+                        if (overlay) overlay.classList.add('active');
+                    });
+                });
+                document.querySelectorAll('.footer-popup-overlay').forEach(function(overlay) {
+                    overlay.addEventListener('click', function(e) {
+                        if (e.target === this) this.classList.remove('active');
+                    });
+                    var btn = overlay.querySelector('.footer-popup-close');
+                    if (btn) btn.addEventListener('click', function() {
+                        overlay.classList.remove('active');
+                    });
+                });
+            }
+
             // Run after footer injection
             const prevCb = window.onMobileFooterInjected;
             window.onMobileFooterInjected = function() {
                 if (typeof prevCb === 'function') prevCb();
                 initIsoSocial();
+                initFooterPopups();
             };
             // Also try immediately in case footer already loaded
             initIsoSocial();
@@ -3012,7 +3035,7 @@
         })();
     </script>
 
-    <script src="mobile/footer/footer.js?v=20260408F" defer></script>
+    <script src="mobile/footer/footer.js?v=20260615A" defer></script>
 
     <!--Tawk.to – mini chat iframe overlay-->
     <script type="text/javascript">
@@ -3368,5 +3391,34 @@
     }
 })();
 </script>
+
+    <!-- WhatsApp Floating Button -->
+    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
+        <i class="fa-brands fa-whatsapp"></i>
+    </button>
+
+    <!-- WhatsApp Popup -->
+    <div class="wa-popup" id="waPopup">
+        <div class="wa-popup__card">
+            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
+            <div class="wa-popup__header">
+                <div class="wa-popup__avatar"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="wa-popup__info">
+                    <h3>Branded UK</h3>
+                    <span>Typically replies quickly</span>
+                </div>
+            </div>
+            <div class="wa-popup__body">
+                <div class="wa-message">Hi, how can we help you?</div>
+            </div>
+            <div class="wa-popup__footer">
+                <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-whatsapp"></i> Start chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+
 </body>
 </html>
