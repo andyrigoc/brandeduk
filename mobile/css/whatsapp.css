@@ -3,7 +3,7 @@
    Shared across all pages
    ═══════════════════════════════════════════════════════ */
 
-/* Floating button – sits above bottom-nav (64px) */
+/* Floating button – circle with WhatsApp icon */
 .whatsapp-float {
     position: fixed;
     right: 18px;
@@ -12,7 +12,7 @@
     height: 56px;
     border: none;
     border-radius: 50%;
-    background: #25d366;
+    background: #6B21A8;
     color: #fff;
     font-size: 28px;
     display: flex;
@@ -20,7 +20,7 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-    z-index: 101;               /* above bottom-nav (100) */
+    z-index: 101;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     -webkit-tap-highlight-color: transparent;
 }
@@ -88,26 +88,28 @@
 
 /* Header */
 .wa-popup__header {
-    background: #25d366;
+    background: #6B21A8;
     color: #fff;
-    padding: 20px 18px 18px;
+    padding: 10px 18px 8px;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 .wa-popup__avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.16);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    display: none;
 }
+/* Logo replaces title in header */
 .wa-popup__info h3 {
     margin: 0 0 4px;
-    font-size: 18px;
+    font-size: 0;
+    line-height: 0;
+    display: block;
+}
+.wa-popup__info h3 img {
+    width: 180px;
+    height: auto;
+    filter: brightness(0) invert(1);
+    display: block;
 }
 .wa-popup__info span {
     font-size: 13px;
@@ -117,6 +119,7 @@
 /* Body (chat bubble) */
 .wa-popup__body {
     padding: 18px;
+    padding-bottom: 120px;
     background: #efeae2;
 }
 .wa-message {
@@ -143,7 +146,7 @@
     justify-content: center;
     gap: 10px;
     text-decoration: none;
-    background: #25d366;
+    background: #6B21A8;
     color: #fff;
     padding: 14px 16px;
     border-radius: 14px;
