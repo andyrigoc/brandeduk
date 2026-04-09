@@ -31,4 +31,14 @@
             popup.classList.remove('is-active');
         }
     });
+
+    // Close popup after CTA click so page is clean when user returns
+    var cta = popup.querySelector('.wa-popup__cta');
+    if (cta) {
+        cta.addEventListener('click', function () {
+            setTimeout(function () {
+                popup.classList.remove('is-active');
+            }, 300);
+        });
+    }
 })();
