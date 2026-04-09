@@ -507,64 +507,15 @@ const ShopManager = (function () {
                     let rendered = 0;
                     var cardIndex = 0;
 
-                    if (hasGenderFilter) {
-                        // Flat list — no gender grouping
-                        result.items.forEach(function(product) {
-                            var card = createProductCard(product, cardIndex++);
-                            if (!card) return;
-                            rendered++;
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            productsGrid.appendChild(card);
-                        });
-                    } else {
-                        // Group products by gender/age: Men → Women → Kids
-                        function getGenderGroup(product) {
-                            var g = (product.gender || '').toLowerCase();
-                            var age = (product.ageGroup || '').toLowerCase();
-                            var n = (product.name || '').toLowerCase();
-                            if (age.includes('kids') || age.includes('child') || age.includes('children') || age.includes('junior')) return 'kids';
-                            if (g.includes('ladies') || g.includes('female') || g.includes('women') || g.includes('womens')) return 'women';
-                            if (n.includes("women's") || n.includes('womens ') || n.includes('ladies ') || n.includes('female ')) return 'women';
-                            if (n.includes("kid's") || n.includes('kids ') || n.includes('junior ') || n.includes('children')) return 'kids';
-                            return 'men'; // men, unisex, or default
-                        }
-
-                        var menProducts = [];
-                        var womenProducts = [];
-                        var kidsProducts = [];
-                        result.items.forEach(function(product) {
-                            var group = getGenderGroup(product);
-                            if (group === 'women') womenProducts.push(product);
-                            else if (group === 'kids') kidsProducts.push(product);
-                            else menProducts.push(product);
-                        });
-
-                        var sections = [
-                            { label: 'Men', items: menProducts },
-                            { label: 'Women', items: womenProducts },
-                            { label: 'Kids', items: kidsProducts }
-                        ];
-
-                        var hasMultipleGroups = (menProducts.length > 0 ? 1 : 0) + (womenProducts.length > 0 ? 1 : 0) + (kidsProducts.length > 0 ? 1 : 0) > 1;
-                        sections.forEach(function(section) {
-                            if (section.items.length === 0) return;
-                            if (hasMultipleGroups) {
-                                var heading = document.createElement('div');
-                                heading.className = 'gender-section-heading';
-                                heading.textContent = section.label;
-                                productsGrid.appendChild(heading);
-                            }
-                            section.items.forEach(function(product) {
-                                var card = createProductCard(product, cardIndex++);
-                                if (!card) return;
-                                rendered++;
-                                card.style.opacity = '0';
-                                card.style.transform = 'translateY(20px)';
-                                productsGrid.appendChild(card);
-                            });
-                        });
-                    }
+                    // Always render flat list — no gender grouping
+                    result.items.forEach(function(product) {
+                        var card = createProductCard(product, cardIndex++);
+                        if (!card) return;
+                        rendered++;
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        productsGrid.appendChild(card);
+                    });
 
                     if (rendered === 0) {
                         productsGrid.innerHTML = `
