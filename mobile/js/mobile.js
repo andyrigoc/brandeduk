@@ -1204,6 +1204,11 @@ function initFiltersDropup() {
         document.querySelectorAll('.filter-expandable').forEach(exp => {
             exp.dataset.expanded = 'false';
         });
+
+        // Trigger ShopManager to clear state and re-fetch products
+        if (typeof ShopManager !== 'undefined' && ShopManager.clearAllFilters) {
+            ShopManager.clearAllFilters();
+        }
     }
     
     function applyFilters() {

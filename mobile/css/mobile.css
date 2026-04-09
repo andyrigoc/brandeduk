@@ -9892,12 +9892,20 @@ a.continue-shopping {
 }
 
 .filter-expandable__content {
-    display: none;
+    display: none !important;
     padding: 0 0 16px 0;
 }
 
 .filter-expandable[data-expanded="true"] .filter-expandable__content {
-    display: block;
+    display: block !important;
+}
+
+.filter-expandable[data-expanded="true"] .filter-expandable__content.filter-colors-grid {
+    display: grid !important;
+}
+
+.filter-expandable[data-expanded="true"] .filter-expandable__content.filter-sizes-grid {
+    display: grid !important;
 }
 
 /* Checkbox Filters */
