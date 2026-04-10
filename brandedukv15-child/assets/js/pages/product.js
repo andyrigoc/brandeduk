@@ -8,6 +8,9 @@ let PRODUCT_NAME = null;
 let BASE_PRICE = null;
 let PRODUCT_DATA = null;
 let DISCOUNTS = [];
+let ORIGINAL_DISCOUNTS = []; // Store original price breaks for recalculation
+let SIZE_PRICE_MAP = {}; // Map of size → sell_price from variants
+let ORIGINAL_BASE_PRICE = null; // Original base sell_price before size adjustment
 let recommendationsController = null;
 
 // Expose PRODUCT_DATA globally for other scripts
@@ -289,10 +292,19 @@ async function loadProductData() {
 
         // Set BASE_PRICE to the first tier's price (1-9 tier) so main price matches
         BASE_PRICE = DISCOUNTS[0].price;
+        ORIGINAL_BASE_PRICE = BASE_PRICE;
+        ORIGINAL_DISCOUNTS = DISCOUNTS.map(d => ({ ...d }));
     } else {
         // Fallback: single price tier
         BASE_PRICE = productData.price;
+        ORIGINAL_BASE_PRICE = BASE_PRICE;
         DISCOUNTS = [{ min: 1, max: 99999, price: BASE_PRICE, save: 0 }];
+        ORIGINAL_DISCOUNTS = DISCOUNTS.map(d => ({ ...d }));
+    }
+
+    // Build SIZE_PRICE_MAP from variants if available
+    if (productData.variants && productData.variants.length > 0) {
+        buildSizePriceMap(productData.variants);
     }
 
     // Log available fields for debugging
@@ -351,6 +363,54 @@ function initTierPricing() {
 
         tierPricingContainer.appendChild(tierItem);
     });
+}
+
+// Build size→sell_price map from variants, optionally filtered by color
+function buildSizePriceMap(variants, colorName) {
+    SIZE_PRICE_MAP = {};
+    if (!variants || variants.length === 0) return;
+
+    const filtered = colorName
+        ? variants.filter(v => v.color === colorName)
+        : variants;
+
+    // Use first occurrence per size (all same-color variants of a size should have same price)
+    filtered.forEach(v => {
+        if (v.size && v.sell_price && !SIZE_PRICE_MAP[v.size]) {
+            SIZE_PRICE_MAP[v.size] = v.sell_price;
+        }
+    });
+
+    // Check if there are actually different prices across sizes
+    const uniquePrices = [...new Set(Object.values(SIZE_PRICE_MAP))];
+    if (uniquePrices.length <= 1) {
+        SIZE_PRICE_MAP = {}; // No size-based pricing differences
+    } else {
+        console.log('📊 Size-based pricing detected:', SIZE_PRICE_MAP);
+    }
+}
+
+// Recalculate DISCOUNTS and tier pricing based on a new base sell_price
+function recalculateTierPricing(newBaseSellPrice) {
+    if (!ORIGINAL_DISCOUNTS || ORIGINAL_DISCOUNTS.length === 0 || !ORIGINAL_BASE_PRICE) return;
+
+    DISCOUNTS = ORIGINAL_DISCOUNTS.map(orig => ({
+        min: orig.min,
+        max: orig.max,
+        price: Math.round(newBaseSellPrice * (1 - (orig.save || 0) / 100) * 100) / 100,
+        save: orig.save
+    }));
+
+    BASE_PRICE = DISCOUNTS[0].price;
+    initTierPricing();
+}
+
+// Restore original tier pricing (when no special sizes selected)
+function restoreOriginalTierPricing() {
+    if (!ORIGINAL_DISCOUNTS || ORIGINAL_DISCOUNTS.length === 0) return;
+    DISCOUNTS = ORIGINAL_DISCOUNTS.map(d => ({ ...d }));
+    BASE_PRICE = ORIGINAL_BASE_PRICE;
+    initTierPricing();
 }
 
 // Populate product specs table (Fabric, Weight, Size, Key Info)
@@ -1544,6 +1604,11 @@ function initColors(productColors) {
             selectedColorURL = url;
             if (mainImage) mainImage.src = url;
 
+            // Build size price map for this color's variants
+            if (PRODUCT_DATA && PRODUCT_DATA.variants && PRODUCT_DATA.variants.length > 0) {
+                buildSizePriceMap(PRODUCT_DATA.variants, name);
+            }
+
             // Update thumbnail gallery to show this color's image (use setTimeout to ensure gallery is initialized)
             setTimeout(() => {
                 if (typeof window.setGalleryActiveBySrc === 'function') {
@@ -1955,6 +2020,13 @@ function changeColor(name, url, colorDiv) {
 
     if (mainImage) mainImage.src = url;
 
+    // Rebuild size price map for this color's variants
+    if (PRODUCT_DATA && PRODUCT_DATA.variants && PRODUCT_DATA.variants.length > 0) {
+        buildSizePriceMap(PRODUCT_DATA.variants, name);
+        // Restore original pricing when switching colors (sizes are reset)
+        restoreOriginalTierPricing();
+    }
+
     // Update thumbnail gallery active state
     if (typeof window.setGalleryActiveBySrc === 'function') {
         window.setGalleryActiveBySrc(url);
@@ -2059,6 +2131,26 @@ function getCurrentTier(totalItems) {
 
 function updateTotals() {
     const total = Object.values(qty).reduce((a, b) => a + b, 0);
+
+    // If product has size-based pricing (variants with different prices per size),
+    // recalculate tier pricing based on weighted average sell_price of selected sizes
+    if (Object.keys(SIZE_PRICE_MAP).length > 0 && total > 0) {
+        let weightedSum = 0;
+        let totalQty = 0;
+        for (const [size, q] of Object.entries(qty)) {
+            if (q > 0 && SIZE_PRICE_MAP[size]) {
+                weightedSum += SIZE_PRICE_MAP[size] * q;
+                totalQty += q;
+            }
+        }
+        if (totalQty > 0) {
+            const weightedPrice = weightedSum / totalQty;
+            recalculateTierPricing(weightedPrice);
+        }
+    } else if (Object.keys(SIZE_PRICE_MAP).length > 0 && total === 0) {
+        // No sizes selected — restore original pricing
+        restoreOriginalTierPricing();
+    }
 
     // Check if basket has items
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
