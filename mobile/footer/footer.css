@@ -638,7 +638,7 @@
   transition: transform 0.55s var(--ease);
   z-index: 9999;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   will-change: transform;
 }
 
@@ -676,7 +676,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease 0s, visibility 0s linear 0.25s;
-  padding: 40px 16px 16px 30px;
+  padding: 28px 16px 10px 16px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -692,13 +692,17 @@
 /* --- Sidebar grid --- */
 .bar-menu-grid {
   display: grid;
-  grid-template-columns: auto auto auto auto;
-  gap: 16px 24px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px 10px;
   color: var(--white);
   align-items: start;
 }
 
-.bar-menu-brand { margin-bottom: 2px; margin-left: 70px; }
+.bar-menu-brand {
+  grid-column: 1 / -1;
+  margin-bottom: 4px;
+  text-align: center;
+}
 
 .bar-menu-logo {
   font-size: 16px;
@@ -730,11 +734,12 @@
 .bar-menu-panel.is-active .bar-menu-rights { opacity: 1; transform: translateY(0); transition-delay: 0.48s; }
 
 /* --- Sidebar columns --- */
+
 .bar-menu-col-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--white);
-  margin-bottom: 6px;
+  margin-bottom: 1px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   opacity: 0;
@@ -742,11 +747,11 @@
   transition: transform 0.55s var(--ease), opacity 0.55s var(--ease);
 }
 
-.bar-menu-list { list-style: none; }
+.bar-menu-list { list-style: none; margin: 0; padding: 0; }
 
 .bar-menu-item {
-  overflow: hidden;
-  margin-bottom: 3px;
+  margin-bottom: 0;
+  line-height: 1;
 }
 
 .bar-menu-item a {
@@ -754,8 +759,9 @@
   color: rgba(255,255,255,0.92);
   text-decoration: none;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 1.3;
+  font-size: 11px;
+  line-height: 1.15;
+  padding: 0;
   transform: translateY(115%);
   opacity: 0;
   transition: transform 0.55s var(--ease), opacity 0.55s var(--ease), color 0.25s ease;
@@ -798,8 +804,9 @@
 
 /* --- Social icons inside sidebar (smaller 3D) --- */
 .bar-menu-social.footer-social-3d {
-  margin: 12px 0 0 0;
+  margin: 12px auto 0 auto;
   gap: 30px;
+  justify-content: center;
 }
 
 .bar-menu-social.footer-social-3d li {
@@ -843,8 +850,8 @@
 /* --- Payment inside sidebar --- */
 .bar-menu-payment {
   width: 100%;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,0.18);
   text-align: center;
   opacity: 0;
@@ -970,6 +977,20 @@
     grid-template-columns: auto auto auto auto;
     gap: 36px 50px;
     align-items: start;
+  }
+
+  .bar-menu-brand {
+    grid-column: auto;
+    text-align: left;
+  }
+
+  .bar-menu-column:nth-child(4) {
+    grid-column: auto;
+  }
+
+  .bar-menu-social.footer-social-3d {
+    margin: 12px 0 0 0;
+    justify-content: flex-start;
   }
 
   .bar-menu-logo { font-size: 20px; }

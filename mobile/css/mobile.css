@@ -8254,9 +8254,10 @@ a {
 
 .product-price-label {
     font-size: 9px;
-    color: var(--gray-500);
+    color: #6B21A8;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    font-weight: 600;
 }
 
 .product-price-value {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BrandedUK Shop Page - API Integration
  * Handles product listing, filtering, pagination, and search
  * Requires: api.js to be loaded first
@@ -68,7 +68,7 @@ const ShopManager = (function () {
         if (vatOn) {
             value = value * (1 + VAT_RATE);
         }
-        return 'Â£' + value.toFixed(2);
+        return '£' + value.toFixed(2);
     }
 
     function vatSuffix() {
@@ -764,7 +764,7 @@ const ShopManager = (function () {
         if (priceSlider) {
             priceSlider.value = priceSlider.max;
             const priceLabel = document.getElementById('priceRangeLabel');
-            if (priceLabel) priceLabel.textContent = `Â£0 - Â£${priceSlider.max}`;
+            if (priceLabel) priceLabel.textContent = `£0 - £${priceSlider.max}`;
         }
 
         renderProducts();
@@ -936,7 +936,7 @@ const ShopManager = (function () {
                 const max = Number(e.target.value);
                 const priceLabel = document.getElementById('priceRangeLabel');
                 if (priceLabel) {
-                    priceLabel.textContent = `Â£0 - Â£${max}`;
+                    priceLabel.textContent = `£0 - £${max}`;
                 }
             });
 

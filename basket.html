@@ -511,7 +511,7 @@
             .item-row-image { width: 80px; height: 80px; }
         }
     </style>
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260410D">
 </head>
 <body class="basket-page">
         <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
@@ -673,7 +673,7 @@
             <!-- Discount Code (collapsed) -->
             <div class="discount-code-section" id="discountCodeSection" style="display:none;">
                 <button class="discount-code-toggle" id="discountToggle">
-                    Add a discount code <span class="arrow">â–¼</span>
+                    Add a discount code <span class="arrow">▼</span>
                 </button>
                 <div class="discount-code-body" id="discountBody">
                     <input type="text" placeholder="Enter code" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;">
@@ -685,31 +685,31 @@
                 <h3>Your order summary</h3>
                 <div class="summary-row">
                     <span>Product Costs</span>
-                    <span class="summary-val" id="summaryProductCosts">Â£0.00</span>
+                    <span class="summary-val" id="summaryProductCosts">�0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Costs To Add Logo</span>
-                    <span class="summary-val" id="summaryLogoCosts">Â£0.00</span>
+                    <span class="summary-val" id="summaryLogoCosts">�0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Total (exc. VAT)</span>
-                    <span class="summary-val" id="summaryExcVat">Â£0.00</span>
+                    <span class="summary-val" id="summaryExcVat">�0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>VAT (on Total)</span>
-                    <span class="summary-val" id="summaryVat">Â£0.00</span>
+                    <span class="summary-val" id="summaryVat">�0.00</span>
                 </div>
                 <div class="summary-grand-total">
                     <span>Your total (inc. VAT)</span>
-                    <span class="grand-total-val" id="summaryGrandTotal">Â£0.00</span>
+                    <span class="grand-total-val" id="summaryGrandTotal">�0.00</span>
                 </div>
 
                 <div class="summary-trust-note">
-                    <strong>ðŸ›¡ Adding a new logo or text?</strong> We'll email a mock up to approve before we begin!
+                    <strong>🛡 Adding a new logo or text?</strong> We'll email a mock up to approve before we begin!
                 </div>
 
                 <div class="summary-actions">
-                    <a href="mobile/shop-mobile.html" class="btn-continue-shopping">â† Continue Shopping / Add another item</a>
+                    <a href="mobile/shop-mobile.html" class="btn-continue-shopping">← Continue Shopping / Add another item</a>
                     <button class="btn-share-basket" id="shareBasketBtn">Share Basket</button>
                     <button class="btn-checkout" id="checkoutBtn">Continue to checkout</button>
                 </div>
@@ -734,10 +734,10 @@
 
             <!-- Trust Badges -->
             <div class="basket-trust-badges">
-                <div class="trust-badge">ðŸ¢ <strong>In business since 1990</strong></div>
-                <div class="trust-badge">ðŸ‘¥ <strong>300 staff</strong>, based in the UK</div>
-                <div class="trust-badge">âœ… Trusted by over <strong>2 million customers</strong></div>
-                <div class="trust-badge">â­ <strong>137,500+ positive reviews</strong> â˜…â˜…â˜…â˜…â˜…</div>
+                <div class="trust-badge">🏢 <strong>In business since 1990</strong></div>
+                <div class="trust-badge">👥 <strong>300 staff</strong>, based in the UK</div>
+                <div class="trust-badge">✅ Trusted by over <strong>2 million customers</strong></div>
+                <div class="trust-badge">⭐ <strong>137,500+ positive reviews</strong> ★★★★★</div>
             </div>
         </div>
     </main>
@@ -809,7 +809,7 @@
     <div class="basket-action-bar" id="actionBar" style="display:none;">
         <div class="action-bar-summary">
             <span class="total-label">Total (inc. VAT)</span>
-            <span class="total-amount" id="actionBarTotal">Â£0.00</span>
+            <span class="total-amount" id="actionBarTotal">�0.00</span>
         </div>
         <button class="quote-btn" id="requestQuoteBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -822,7 +822,7 @@
 
     <script>
     // =============================================
-    // BASKET V2 â€” Per-size rows, Workwear Express style
+    // BASKET V2 — Per-size rows, Workwear Express style
     // =============================================
 
     // --- State ---
@@ -858,7 +858,7 @@
         return (code || 'ITEM') + '-' + slug + '-' + (size || 'OS');
     }
 
-    // Single-pass normalization: handles ALL legacy formats â†’ V2 per-size rows with logos[]
+    // Single-pass normalization: handles ALL legacy formats → V2 per-size rows with logos[]
     function normalizeBasket() {
         const basket = getBasket();
         if (basket.length === 0) return;
@@ -899,7 +899,7 @@
                 });
                 changed = true;
             } else if (item.size) {
-                // Already V2 format â€” just update logos if old fields present
+                // Already V2 format — just update logos if old fields present
                 if (logos.length > 0 && (item.positions || item.positionDesigns)) {
                     item.logos = logos;
                     delete item.positions;
@@ -985,7 +985,7 @@
             });
         }
 
-        // Priority 3: existing logos[] â€” keep if old fields were empty
+        // Priority 3: existing logos[] — keep if old fields were empty
         if (logos.length === 0 && item.logos && item.logos.length > 0) {
             return item.logos;
         }
@@ -993,10 +993,10 @@
         return logos;
     }
 
-    // Keep for backward compat â€” called by syncLogosFromOldFormat
+    // Keep for backward compat — called by syncLogosFromOldFormat
     function migrateBasketV2() { normalizeBasket(); }
 
-    // Position slug â†’ readable name
+    // Position slug → readable name
     function toReadablePosition(slug) {
         const map = {
             'left-chest': 'Left Chest', 'right-chest': 'Right Chest',
@@ -1016,7 +1016,7 @@
 
     function formatCurrency(amount) {
         const val = includeVAT ? amount * 1.2 : amount;
-        return 'Â£' + val.toFixed(2);
+        return '�' + val.toFixed(2);
     }
 
     function vatSuffix() {
@@ -1087,7 +1087,7 @@
                 item.logos.forEach((logo, logoIdx) => {
                     const isEmb = logo.method === 'embroidery';
                     const methodLabel = isEmb ? 'Embroidered Logo' : 'Printed Logo';
-                    const methodIcons = isEmb ? 'ðŸ§µâœ³' : 'ðŸ–¨ï¸âœ³';
+                    const methodIcons = isEmb ? '🧵✳' : '🖨️✳';
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
@@ -1137,7 +1137,7 @@
 
                     <div class="item-row-qty-price">
                         <div class="qty-controls">
-                            <button type="button" class="qty-btn" onclick="changeQty(${index}, -1)">âˆ’</button>
+                            <button type="button" class="qty-btn" onclick="changeQty(${index}, -1)">−</button>
                             <span class="qty-value">${qty}</span>
                             <button type="button" class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
                         </div>
@@ -1199,14 +1199,14 @@
 
         // Update summary
         const el = (id) => document.getElementById(id);
-        if (el('summaryProductCosts')) el('summaryProductCosts').textContent = 'Â£' + productCosts.toFixed(2);
-        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = 'Â£' + totalLogoCosts.toFixed(2);
-        if (el('summaryExcVat')) el('summaryExcVat').textContent = 'Â£' + subtotalExVat.toFixed(2);
-        if (el('summaryVat')) el('summaryVat').textContent = 'Â£' + vatAmount.toFixed(2);
-        if (el('summaryGrandTotal')) el('summaryGrandTotal').textContent = 'Â£' + grandTotal.toFixed(2);
+        if (el('summaryProductCosts')) el('summaryProductCosts').textContent = '�' + productCosts.toFixed(2);
+        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '�' + totalLogoCosts.toFixed(2);
+        if (el('summaryExcVat')) el('summaryExcVat').textContent = '�' + subtotalExVat.toFixed(2);
+        if (el('summaryVat')) el('summaryVat').textContent = '�' + vatAmount.toFixed(2);
+        if (el('summaryGrandTotal')) el('summaryGrandTotal').textContent = '�' + grandTotal.toFixed(2);
 
         // Mobile action bar
-        if (el('actionBarTotal')) el('actionBarTotal').textContent = 'Â£' + grandTotal.toFixed(2);
+        if (el('actionBarTotal')) el('actionBarTotal').textContent = '�' + grandTotal.toFixed(2);
     }
 
     // ========================
@@ -1413,7 +1413,7 @@
         if (overlay) overlay.hidden = true;
         if (iframe) iframe.src = '';
         document.body.style.overflow = '';
-        // Sync old-format positions/positionDesigns â†’ logos[] then re-render
+        // Sync old-format positions/positionDesigns → logos[] then re-render
         syncLogosFromOldFormat();
         setTimeout(() => { renderBasket(); }, 100);
     }
@@ -1445,7 +1445,7 @@
         if (!logo) return;
 
         const method = logo.method || 'embroidery';
-        const methodIcon = method === 'embroidery' ? 'ðŸ§µ' : 'ðŸ–¨ï¸';
+        const methodIcon = method === 'embroidery' ? '🧵' : '🖨️';
         const posName = logo.positionLabel || toReadablePosition(logo.position);
 
         const sourceEl = document.getElementById('copyLogoSource');
@@ -1470,7 +1470,7 @@
                     <input type="checkbox" data-target-index="${idx}">
                     <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                     <div class="garment-info">
-                        ${item.name} Â· ${item.code} Â· ${item.color} Â· ${item.size}
+                        ${item.name} · ${item.code} · ${item.color} · ${item.size}
                     </div>
                 </label>
             `;
@@ -1681,7 +1681,7 @@
                     }
 
                     if (result.success) {
-                        if (submitBtn) { submitBtn.classList.add('submitted'); submitBtn.textContent = 'Quote Submitted! âœ“'; }
+                        if (submitBtn) { submitBtn.classList.add('submitted'); submitBtn.textContent = 'Quote Submitted! ✓'; }
                         setTimeout(() => {
                             localStorage.removeItem('quoteBasket');
                             sessionStorage.clear();
