@@ -977,15 +977,15 @@
             <div class="basket-totals">
                 <div class="total-row">
                     <span class="label">Garments Subtotal</span>
-                    <span class="value" id="garmentsSubtotal">Ã‚Â£0.00</span>
+                    <span class="value" id="garmentsSubtotal">£0.00</span>
                 </div>
                 <div class="total-row">
                     <span class="label">Customization Subtotal</span>
-                    <span class="value" id="customSubtotal">Ã‚Â£0.00</span>
+                    <span class="value" id="customSubtotal">£0.00</span>
                 </div>
                 <div class="total-row grand-total">
                     <span class="label">Order Total</span>
-                    <span class="value" id="grandTotal">Ã‚Â£0.00 <span class="vat-suffix">ex VAT</span></span>
+                    <span class="value" id="grandTotal">£0.00 <span class="vat-suffix">ex VAT</span></span>
                 </div>
             </div>
         </div>
@@ -1057,7 +1057,7 @@
     <div class="basket-action-bar">
         <div class="action-bar-summary">
             <span class="total-label">Total</span>
-            <span class="total-amount" id="actionBarTotal">Ã‚Â£0.00</span>
+            <span class="total-amount" id="actionBarTotal">£0.00</span>
         </div>
         <button class="quote-btn" id="requestQuoteBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1097,7 +1097,7 @@
         // Format currency
         function formatCurrency(amount) {
             const displayAmount = includeVAT ? amount * 1.2 : amount;
-            return 'Ã‚Â£' + displayAmount.toFixed(2);
+            return '£' + displayAmount.toFixed(2);
         }
         
         function vatSuffix() {

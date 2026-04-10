@@ -50,7 +50,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || 'Â£';
+    var currency = options.currency || '£';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -414,7 +414,7 @@ function calculateBreakdown() {
             
             customizationRowsHTML += `
                 <div class="breakdown-item" data-vat-row data-base="${positionTotal}">
-                    <span>${label}:</span>
+                    <span>${label} (${totalQuantity} × £${price.toFixed(2)}):</span>
                     <span class="breakdown-value"></span>
                 </div>
             `;

@@ -7909,8 +7909,7 @@
                     gallery.querySelectorAll('.logo-action-gallery-item').forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                     _logoActionSelectedSrc = src;
-                    if (applyBtn) applyBtn.textContent = 'Apply Logo';
-                    if (previewDiv) previewDiv.style.display = 'none';
+                    applyLogoAction();
                 });
                 gallery.appendChild(div);
             });
@@ -8056,8 +8055,8 @@
             window.BrandedLogoLibrary.renderGallery(galleryContainer, {
                 onSelect: function(logoEntry) {
                     _logoActionSelectedSrc = logoEntry.url;
-                    if (applyBtn) { applyBtn.style.display = 'block'; applyBtn.textContent = 'Apply Logo'; }
                     if (navigator.vibrate) navigator.vibrate(10);
+                    applyLogoAction();
                 },
             });
         }
