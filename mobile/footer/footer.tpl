@@ -30,7 +30,7 @@
             <div class="bar-menu-content">
                 <div class="bar-menu-grid">
                     <div class="bar-menu-brand">
-                        <div class="bar-menu-logo">brandeduk</div>
+                        <div class="bar-menu-logo"><img src="/brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="bar-menu-logo-img"></div>
                         <div class="bar-menu-copy">Copyright &copy; <span data-current-year>2026</span> BrandedUK</div>
                         <div class="bar-menu-rights">All rights reserved</div>
                         <ul class="social footer-social-3d bar-menu-social">
@@ -44,7 +44,7 @@
                         <div class="bar-menu-col-title">Company</div>
                         <ul class="bar-menu-list">
                             <li class="bar-menu-item"><a href="#" data-popup="about-us">About Us</a></li>
-                            <li class="bar-menu-item"><a href="#">Blog</a></li>
+                            <li class="bar-menu-item"><a href="/blog/">Blog</a></li>
                             <li class="bar-menu-item"><a href="#">Careers</a></li>
                             <li class="bar-menu-item"><a href="#">Contact Us</a></li>
                             <li class="bar-menu-item"><a href="#">Testimonials</a></li>

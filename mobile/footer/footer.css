@@ -676,7 +676,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease 0s, visibility 0s linear 0.25s;
-  padding: 28px 16px 10px 16px;
+  padding: 24px 16px 8px 16px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -693,27 +693,31 @@
 .bar-menu-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px 10px;
+  gap: 2px 10px;
   color: var(--white);
   align-items: start;
 }
 
 .bar-menu-brand {
   grid-column: 1 / -1;
-  margin-bottom: 4px;
+  margin-bottom: 0;
   text-align: center;
 }
 
 .bar-menu-logo {
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--white);
-  letter-spacing: -0.5px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   opacity: 0;
   transform: translateY(100%);
   transition: transform 0.55s var(--ease), opacity 0.55s var(--ease);
+  text-align: center;
+}
+
+.bar-menu-logo-img {
+  height: 68px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  filter: brightness(0) invert(1);
 }
 
 .bar-menu-copy,
@@ -726,7 +730,7 @@
   transition: transform 0.55s var(--ease), opacity 0.55s var(--ease);
 }
 
-.bar-menu-rights { margin-top: 2px; }
+.bar-menu-rights { margin-top: 0; }
 
 /* Staggered reveal */
 .bar-menu-panel.is-active .bar-menu-logo   { opacity: 1; transform: translateY(0); transition-delay: 0.36s; }
@@ -804,7 +808,7 @@
 
 /* --- Social icons inside sidebar (smaller 3D) --- */
 .bar-menu-social.footer-social-3d {
-  margin: 12px auto 0 auto;
+  margin: 4px auto 0 auto;
   gap: 30px;
   justify-content: center;
 }
@@ -970,12 +974,12 @@
   .bar-menu__icon { top: 23px; }
 
   .bar-menu-content {
-    padding: 92px 38px 34px 38px;
+    padding: 48px 24px 20px 24px;
   }
 
   .bar-menu-grid {
     grid-template-columns: auto auto auto auto;
-    gap: 36px 50px;
+    gap: 16px 30px;
     align-items: start;
   }
 
@@ -989,11 +993,11 @@
   }
 
   .bar-menu-social.footer-social-3d {
-    margin: 12px 0 0 0;
+    margin: 8px 0 0 0;
     justify-content: flex-start;
   }
 
-  .bar-menu-logo { font-size: 20px; }
+  .bar-menu-logo-img { width: 160px; height: auto; }
   .bar-menu-col-title { font-size: 12px; }
   .bar-menu-item a { font-size: 13px; }
 
@@ -1006,6 +1010,6 @@
   }
 
   .bar-menu-grid { gap: 44px; }
-  .bar-menu-logo { font-size: 24px; }
+  .bar-menu-logo-img { height: 42px; }
   .bar-menu-item a { font-size: 14px; }
 }
