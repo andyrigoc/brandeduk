@@ -31,8 +31,6 @@
                 <div class="bar-menu-grid">
                     <div class="bar-menu-brand">
                         <div class="bar-menu-logo"><img src="/brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="bar-menu-logo-img"></div>
-                        <div class="bar-menu-copy">Copyright &copy; <span data-current-year>2026</span> BrandedUK</div>
-                        <div class="bar-menu-rights">All rights reserved</div>
                         <ul class="social footer-social-3d bar-menu-social">
                             <li class="facebook"><a href="https://www.facebook.com/profile.php?id=100083540654262" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
                             <li class="instagram"><a href="https://www.instagram.com/brandeduk_workwear/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
@@ -82,6 +80,7 @@
                         <span class="bar-menu-payment-badge"><i class="fa fa-university" aria-hidden="true"></i> Bank</span>
                     </div>
                 </div>
+                <div class="bar-menu-copyright">Copyright &copy; <span data-current-year>2026</span> BrandedUK &middot; All rights reserved</div>
             </div>
         </div>
         <div class="clock-wrap" aria-label="London time clock">

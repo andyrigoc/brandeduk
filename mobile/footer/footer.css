@@ -700,7 +700,7 @@
 
 .bar-menu-brand {
   grid-column: 1 / -1;
-  margin-bottom: 0;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -722,20 +722,25 @@
 
 .bar-menu-copy,
 .bar-menu-rights {
+  display: none;
+}
+
+.bar-menu-copyright {
   font-size: 9px;
   line-height: 1.4;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255,255,255,0.6);
+  text-align: right;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.1);
   opacity: 0;
   transform: translateY(100%);
   transition: transform 0.55s var(--ease), opacity 0.55s var(--ease);
 }
 
-.bar-menu-rights { margin-top: 0; }
-
 /* Staggered reveal */
 .bar-menu-panel.is-active .bar-menu-logo   { opacity: 1; transform: translateY(0); transition-delay: 0.36s; }
-.bar-menu-panel.is-active .bar-menu-copy   { opacity: 1; transform: translateY(0); transition-delay: 0.42s; }
-.bar-menu-panel.is-active .bar-menu-rights { opacity: 1; transform: translateY(0); transition-delay: 0.48s; }
+.bar-menu-panel.is-active .bar-menu-copyright { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
 
 /* --- Sidebar columns --- */
 
@@ -882,29 +887,29 @@
 .bar-menu-payment-icons {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-wrap: nowrap;
+  gap: 4px;
 }
 
 .bar-menu-payment-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 6px 14px;
+  gap: 3px;
+  padding: 4px 8px;
   background: rgba(255,255,255,0.14);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 600;
   color: var(--white);
   letter-spacing: 0.3px;
   white-space: nowrap;
-  height: 30px;
+  height: 26px;
 }
 
 .bar-menu-payment-badge .fa {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 /* =============================================
