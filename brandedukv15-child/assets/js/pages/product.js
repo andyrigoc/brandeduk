@@ -1,6 +1,7 @@
-﻿/* ---------------------------------------------------
+/* ---------------------------------------------------
    CONFIG
 --------------------------------------------------- */
+console.log('[product.js] v20260411B loaded — NO auto-save, loading overlay enabled');
 
 // Product data will be loaded from API or sessionStorage
 let PRODUCT_CODE = null;
@@ -883,16 +884,18 @@ function updateBasketTotalBox() {
     let itemsHTML = '';
 
     basket.forEach(item => {
-        // Calculate total quantity for this item
+        // Calculate total quantity for this item (handle all storage formats)
         let totalQty = 0;
-        if (item.quantities && Object.keys(item.quantities).length > 0) {
+        if (item.quantities && typeof item.quantities === 'object' && Object.keys(item.quantities).length > 0) {
             Object.values(item.quantities).forEach(q => totalQty += Number(q) || 0);
+        } else if (item.sizes && typeof item.sizes === 'object' && !Array.isArray(item.sizes) && Object.keys(item.sizes).length > 0) {
+            Object.values(item.sizes).forEach(q => totalQty += Number(q) || 0);
         } else {
-            totalQty = Number(item.quantity) || 0;
+            totalQty = Number(item.quantity) || Number(item.qty) || 0;
         }
 
         // Calculate item total (garment + customizations)
-        const unitPrice = Number(item.price) || 0;
+        const unitPrice = Number(item.price) || Number(item.unitPrice) || 0;
         let itemTotal = unitPrice * totalQty;
 
         // Add customization costs if available
@@ -909,8 +912,9 @@ function updateBasketTotalBox() {
 
         // Format sizes display
         let sizesText = '';
-        if (item.quantities && Object.keys(item.quantities).length > 0) {
-            const sizeList = Object.entries(item.quantities)
+        const sizeSource = item.quantities || item.sizes;
+        if (sizeSource && typeof sizeSource === 'object' && !Array.isArray(sizeSource) && Object.keys(sizeSource).length > 0) {
+            const sizeList = Object.entries(sizeSource)
                 .filter(([s, q]) => Number(q) > 0)
                 .map(([s, q]) => `${s}:${q}`)
                 .join(', ');
@@ -1149,15 +1153,12 @@ function initThumbnailGallery() {
                     const [name, url] = matchingColor;
                     const colorThumb = document.querySelector(`.color-thumb[data-color-name="${name}"]`);
                     if (colorThumb) {
-                        // Auto-save current selection if any, then change color
+                        // Warn if unsaved items before changing color
                         const currentTotal = Object.values(qty).reduce((a, b) => a + b, 0);
-
-                        if (currentTotal > 0) {
-                            saveCurrentSelectionToBasket();
-                            hasBasketItems = true;
-                            showToast(`âœ“ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
+                        if (currentTotal > 0 && selectedColorName) {
+                            var msg = 'You have ' + currentTotal + ' items of ' + selectedColorName + ' not added to basket.\nSwitch colour and discard them?';
+                            if (!confirm(msg)) return;
                         }
-
                         changeColor(name, url, colorThumb);
                     }
                 }
@@ -1627,13 +1628,14 @@ function initColors(productColors) {
         }
 
         div.onclick = () => {
-            // Auto-save current selection if any, then change color
+            // Warn user if they have unsaved items for current color
             const currentTotal = Object.values(qty).reduce((a, b) => a + b, 0);
 
-            if (currentTotal > 0) {
-                saveCurrentSelectionToBasket();
-                hasBasketItems = true;
-                showToast(`âœ“ ${currentTotal} pcs of ${selectedColorName} saved to basket.`);
+            if (currentTotal > 0 && selectedColorName) {
+                var msg = 'You have ' + currentTotal + ' items of ' + selectedColorName + ' not added to basket.\nSwitch colour and discard them?';
+                if (!confirm(msg)) {
+                    return;
+                }
             }
 
             changeColor(name, url, div);
@@ -1774,15 +1776,19 @@ function renderSizes() {
     saveBtn.onclick = function() {
         var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
         if (total > 0 && selectedColorName) {
-            saveCurrentSelectionToBasket();
-            saveBtn.classList.add('saved');
-            saveBtn.textContent = '\u2713 Saved!';
+            showBasketLoading();
             setTimeout(function() {
-                saveBtn.classList.remove('saved');
-                saveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Save to Basket';
-            }, 1500);
-            if (typeof showToast === 'function') showToast('\u2713 ' + total + ' pcs of ' + selectedColorName + ' saved!');
-            if (typeof updateLiveBadge === 'function') updateLiveBadge();
+                saveCurrentSelectionToBasket();
+                if (typeof updateLiveBadge === 'function') updateLiveBadge();
+                if (window.brandedukv15 && window.brandedukv15.updateCartBadge) window.brandedukv15.updateCartBadge();
+                saveBtn.classList.add('saved');
+                saveBtn.textContent = '\u2713 Saved!';
+                setTimeout(function() {
+                    hideBasketLoading();
+                    saveBtn.classList.remove('saved');
+                    saveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Save to Basket';
+                }, 400);
+            }, 50);
         }
     };
     saveWrapper.appendChild(saveBtn);
@@ -2006,12 +2012,6 @@ function resetStepProgress() {
 }
 
 function changeColor(name, url, colorDiv) {
-    // Cancel any pending auto-save for the old color (already saved by color click handler)
-    if (typeof _autoSaveTimer !== 'undefined' && _autoSaveTimer) {
-        clearTimeout(_autoSaveTimer);
-        _autoSaveTimer = null;
-    }
-
     document.querySelectorAll(".color-thumb").forEach(c => c.classList.remove("active"));
     if (colorDiv) colorDiv.classList.add("active");
 
@@ -2227,11 +2227,6 @@ function updateTotals() {
 
     // Update sidebar in real-time (show current color qty, not grand total)
     updateSidebarFromProduct(total, unit);
-
-    // Auto-save current selection to basket (debounced)
-    if (typeof scheduleAutoSave === 'function') {
-        scheduleAutoSave();
-    }
 }
 
 // Update sidebar with current product selection
@@ -2278,36 +2273,26 @@ function updateTierPricing(total) {
 }
 
 /* ---------------------------------------------------
-   ADD COLOUR BUTTON â€” saves current color/sizes to basket, resets for new color
+   ADD COLOUR BUTTON - saves via loading overlay, resets for new color
 --------------------------------------------------- */
 
 if (addContinueButton) {
-addContinueButton.onclick = () => {
-    const total = Object.values(qty).reduce((a, b) => a + b, 0);
-    if (total === 0) return;
-
-    saveCurrentSelectionToBasket();
-    openPopup();
-};
+addContinueButton.onclick = handleAddToBasket;
 } // end if (addContinueButton)
 
 /* ---------------------------------------------------
-   CONTINUE SHOPPING BUTTON â€” saves current selection and goes to shop
+   CONTINUE SHOPPING BUTTON - navigates to shop
 --------------------------------------------------- */
 
 if (continueShoppingButton) {
-continueShoppingButton.onclick = () => {
-    const total = Object.values(qty).reduce((a, b) => a + b, 0);
-
-    // Save current selection if there is one
-    if (total > 0) {
-        saveCurrentSelectionToBasket();
-        showToast(`âœ“ ${total} pcs added to basket!`);
-    }
-
-    // Navigate to shop
-    window.location.href = 'shop.html';
-};
+    continueShoppingButton.onclick = () => {
+        const total = Object.values(qty).reduce((a, b) => a + b, 0);
+        if (total > 0 && selectedColorName) {
+            var msg = 'You have ' + total + ' items of ' + selectedColorName + ' not added to basket.\nLeave and discard them?';
+            if (!confirm(msg)) return;
+        }
+        window.location.href = 'shop.html';
+    };
 }
 
 /* ---------------------------------------------------
@@ -2320,12 +2305,37 @@ function saveCurrentSelectionToBasket() {
 
     let basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
 
-    // Check if same product with same color already exists â†’ REPLACE it
-    const existingIndex = basket.findIndex(item =>
-        item.name === PRODUCT_NAME &&
-        item.code === PRODUCT_CODE &&
-        item.color === selectedColorName
-    );
+    console.log('[BASKET-SAVE] Saving', selectedColorName, 'qty:', total, '| basket BEFORE:', basket.length, 'items →', basket.map(i => i.color + ':' + (i.quantity||i.qty||'?')));
+
+    // Find ALL existing entries for this product+color (V2 may have multiple per-size rows)
+    const matchingIndices = [];
+    basket.forEach((item, idx) => {
+        if (item.code === PRODUCT_CODE && item.color === selectedColorName) {
+            matchingIndices.push(idx);
+        }
+    });
+
+    // Preserve customizations/logos from the first matching entry
+    let preservedLogos = [];
+    let preservedPositionDesigns = {};
+    let preservedPositions = [];
+    let preservedSelectedPositions = [];
+    let preservedCustomizations = [];
+    let preservedNotes = '';
+    if (matchingIndices.length > 0) {
+        const first = basket[matchingIndices[0]];
+        preservedLogos = first.logos || [];
+        preservedPositionDesigns = first.positionDesigns || {};
+        preservedPositions = first.positions || [];
+        preservedSelectedPositions = first.selectedPositions || [];
+        preservedCustomizations = first.customizations || [];
+        preservedNotes = first.notes || '';
+    }
+
+    // Remove ALL old entries for this product+color (fixes V2 per-size row duplication)
+    for (let i = matchingIndices.length - 1; i >= 0; i--) {
+        basket.splice(matchingIndices[i], 1);
+    }
 
     // Build clean sizes object (only non-zero)
     const cleanSizes = {};
@@ -2333,10 +2343,10 @@ function saveCurrentSelectionToBasket() {
         if (qty[size] > 0) cleanSizes[size] = qty[size];
     });
 
-    // Calculate total quantity of THIS PRODUCT across ALL colors (excluding the one we're replacing)
+    // Calculate total quantity of THIS PRODUCT across ALL colors (V2 uses qty, old uses quantity)
     const otherColorsTotal = basket
-        .filter((item, idx) => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE && idx !== existingIndex)
-        .reduce((sum, item) => sum + item.quantity, 0);
+        .filter(item => item.code === PRODUCT_CODE)
+        .reduce((sum, item) => sum + (item.quantity || item.qty || 0), 0);
 
     const newTotal = otherColorsTotal + total;
     const newUnitPrice = getUnitPrice(newTotal);
@@ -2353,71 +2363,34 @@ function saveCurrentSelectionToBasket() {
         priceBreaks: typeof DISCOUNTS !== 'undefined' ? DISCOUNTS : []
     };
 
-    if (existingIndex !== -1) {
-        // REPLACE existing entry but PRESERVE customizations (logos)
-        const existing = basket[existingIndex];
-        productData.positionDesigns = existing.positionDesigns || {};
-        productData.positions = existing.positions || [];
-        productData.selectedPositions = existing.selectedPositions || [];
-        productData.customizations = existing.customizations || [];
-        productData.notes = existing.notes || '';
-        basket[existingIndex] = productData;
-    } else {
-        // New item â€” no customizations yet
-        productData.positionDesigns = {};
-        productData.positions = [];
-        productData.selectedPositions = [];
-        productData.customizations = [];
-        basket.push(productData);
-    }
+    // Restore preserved customization data
+    productData.logos = preservedLogos;
+    productData.positionDesigns = preservedPositionDesigns;
+    productData.positions = preservedPositions;
+    productData.selectedPositions = preservedSelectedPositions;
+    productData.customizations = preservedCustomizations;
+    productData.notes = preservedNotes;
 
-    // Update price for ALL items of the SAME PRODUCT (all colors)
+    basket.push(productData);
+
+    // Update price for ALL items of the SAME PRODUCT (all colors) - handle both V2 and old format
     basket.forEach(item => {
-        if (item.name === PRODUCT_NAME && item.code === PRODUCT_CODE) {
+        if (item.code === PRODUCT_CODE) {
             item.price = newUnitPrice.toFixed(2);
+            item.unitPrice = parseFloat(newUnitPrice);
         }
     });
 
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
+
+    console.log('[BASKET-SAVE] AFTER save:', basket.length, 'items →', basket.map(i => i.color + ':' + (i.quantity||i.qty||'?')));
 
     if (window.brandedukv15 && window.brandedukv15.updateCartBadge) {
         window.brandedukv15.updateCartBadge();
     }
     updateBasketTotalBox();
 }
-
-/* ---------------------------------------------------
-   REAL-TIME AUTO-SAVE: saves current selection to basket
-   after every quantity change (debounced 500ms)
-   This ensures nothing is lost when navigating to basket
---------------------------------------------------- */
-
-var _autoSaveTimer = null;
-
-function scheduleAutoSave() {
-    if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
-    _autoSaveTimer = setTimeout(function() {
-        if (typeof qty === 'undefined' || typeof selectedColorName === 'undefined') return;
-        var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
-        if (total > 0 && selectedColorName) {
-            saveCurrentSelectionToBasket();
-            console.log('â±ï¸ Auto-saved', total, 'pcs of', selectedColorName, 'to basket');
-        }
-    }, 500);
-}
-
-// Also save immediately on page leave as safety net
-function autoSaveBeforeLeave() {
-    if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
-    if (typeof qty === 'undefined' || typeof selectedColorName === 'undefined') return;
-    var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
-    if (total > 0 && selectedColorName) {
-        saveCurrentSelectionToBasket();
-    }
-}
-
-window.addEventListener('pagehide', autoSaveBeforeLeave);
-window.addEventListener('beforeunload', autoSaveBeforeLeave);
+// Auto-save removed — basket saves ONLY when "Add to basket" button is clicked
 
 /* ---------------------------------------------------
    ADD & CUSTOMIZE BUTTON (legacy - button removed, section always visible)
@@ -2428,21 +2401,30 @@ if (addCustomizeButton) {
     addCustomizeButton.onclick = () => {
         const total = Object.values(qty).reduce((a, b) => a + b, 0);
 
-        // If there's a current selection, save it to basket (REPLACE logic)
+        // If there's a current selection, save it to basket with loading overlay
         if (total > 0) {
-            saveCurrentSelectionToBasket();
-        }
-
-        // Show inline customization section instead of navigating
-        const positionsSection = document.getElementById('step3PositionsSection');
-
-        // Customization section is now always visible, just scroll to it
-        if (positionsSection) {
-            // Scroll to positions section
-            positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            // Update step progress to step 3
-            updateStepProgress(3);
+            showBasketLoading();
+            setTimeout(() => {
+                saveCurrentSelectionToBasket();
+                if (typeof updateLiveBadge === 'function') updateLiveBadge();
+                if (window.brandedukv15 && window.brandedukv15.updateCartBadge) window.brandedukv15.updateCartBadge();
+                setTimeout(() => {
+                    hideBasketLoading();
+                    // Scroll to customization section
+                    const positionsSection = document.getElementById('step3PositionsSection');
+                    if (positionsSection) {
+                        positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        updateStepProgress(3);
+                    }
+                }, 400);
+            }, 50);
+        } else {
+            // No items - just scroll to customization section
+            const positionsSection = document.getElementById('step3PositionsSection');
+            if (positionsSection) {
+                positionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                updateStepProgress(3);
+            }
         }
     };
 }
@@ -2464,29 +2446,70 @@ function getSizesSummaryFromSizes(sizes) {
 }
 
 /* ---------------------------------------------------
-   MOBILE STICKY BAR BUTTON â€” "Add to basket"
+   BASKET LOADING OVERLAY - shown when saving to basket
+--------------------------------------------------- */
+function showBasketLoading() {
+    var existing = document.getElementById('basketLoadingOverlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'basketLoadingOverlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2);">'
+        + '<div style="width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#f97316;border-radius:50%;animation:basketSpin .7s linear infinite;margin:0 auto 12px;"></div>'
+        + '<div style="font-size:15px;font-weight:600;color:#1f2937;">Saving to basket\u2026</div>'
+        + '</div>';
+    document.body.appendChild(overlay);
+
+    if (!document.getElementById('basketSpinStyle')) {
+        var style = document.createElement('style');
+        style.id = 'basketSpinStyle';
+        style.textContent = '@keyframes basketSpin{to{transform:rotate(360deg)}}';
+        document.head.appendChild(style);
+    }
+}
+function hideBasketLoading() {
+    var overlay = document.getElementById('basketLoadingOverlay');
+    if (overlay) overlay.remove();
+}
+
+/* ---------------------------------------------------
+   ADD TO BASKET HANDLER - ONLY way to save to basket
+--------------------------------------------------- */
+function handleAddToBasket() {
+    var total = Object.values(qty).reduce(function(a, b) { return a + b; }, 0);
+    if (total === 0) return;
+
+    showBasketLoading();
+
+    setTimeout(function() {
+        saveCurrentSelectionToBasket();
+
+        if (typeof updateLiveBadge === 'function') updateLiveBadge();
+        if (window.brandedukv15 && window.brandedukv15.updateCartBadge) window.brandedukv15.updateCartBadge();
+
+        setTimeout(function() {
+            hideBasketLoading();
+            openPopup();
+        }, 400);
+    }, 50);
+}
+
+/* ---------------------------------------------------
+   MOBILE STICKY BAR BUTTON - "Add to basket"
 --------------------------------------------------- */
 
-const stickyAddToBasketBtn = document.getElementById("stickyAddToBasket");
+var stickyAddToBasketBtn = document.getElementById("stickyAddToBasket");
 if (stickyAddToBasketBtn) {
-    stickyAddToBasketBtn.onclick = () => {
-        const total = Object.values(qty).reduce((a, b) => a + b, 0);
-        if (total === 0) return;
-        saveCurrentSelectionToBasket();
-        openPopup();
-    };
+    stickyAddToBasketBtn.onclick = handleAddToBasket;
 }
 
 // Mobile "Add to basket" button in action bar
-const mobileAddToBasketBtn = document.getElementById("mobileAddToBasket");
+var mobileAddToBasketBtn = document.getElementById("mobileAddToBasket");
 if (mobileAddToBasketBtn) {
-    mobileAddToBasketBtn.onclick = () => {
-        const total = Object.values(qty).reduce((a, b) => a + b, 0);
-        if (total === 0) return;
-        saveCurrentSelectionToBasket();
-        openPopup();
-    };
+    mobileAddToBasketBtn.onclick = handleAddToBasket;
 }
+
 
 function openPopup() {
     const total = Object.values(qty).reduce((a, b) => a + b, 0);
@@ -2495,8 +2518,17 @@ function openPopup() {
     // Calculate tier using grand total (all colors of this product)
     const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
     const grandTotal = basket
-        .filter(item => item.name === PRODUCT_NAME && item.code === PRODUCT_CODE)
-        .reduce((sum, item) => sum + item.quantity, 0);
+        .filter(item => item.code === PRODUCT_CODE)
+        .reduce((sum, item) => {
+            // Handle all storage formats: quantity, qty, sizes, quantities
+            if (item.sizes && typeof item.sizes === 'object' && !Array.isArray(item.sizes)) {
+                return sum + Object.values(item.sizes).reduce((a, b) => a + (Number(b) || 0), 0);
+            }
+            if (item.quantities && typeof item.quantities === 'object') {
+                return sum + Object.values(item.quantities).reduce((a, b) => a + (Number(b) || 0), 0);
+            }
+            return sum + (Number(item.quantity) || Number(item.qty) || 0);
+        }, 0);
 
     const unit = getUnitPrice(grandTotal);
     const lineTotal = unit * total;

@@ -3694,6 +3694,10 @@
 
             // If already saved or no selection, clear and proceed directly
             if (hasSelection && state.selectionSaved) {
+                // Reset tracking so the next save doesn't overwrite the old colour's items
+                _autoSavedItemId = null;
+                _sessionSavedIds.clear();
+                state.selectionSaved = false;
                 clearSizeSelection();
             }
             
@@ -9295,6 +9299,12 @@
     }
 
     function resetCustomizationForm() {
+        // CRITICAL: Reset basket-tracking so the NEXT save creates a NEW item
+        // instead of overwriting the one we just saved
+        _autoSavedItemId = null;
+        _sessionSavedIds.clear();
+        state.selectionSaved = false;
+
         // Reset quantities
         state.quantity = 0;
         state.sizeQuantities = {};

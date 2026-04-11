@@ -22,10 +22,18 @@
     var btnStartX = 0, btnStartY = 0;
     var dragThreshold = 8; // px before considered a drag
 
-    // === Dismiss key (only used within same page life-cycle) ===
+    // === Dismiss state ===
     var dismissKey = 'wa-dismissed';
-    // Always show button on fresh load / hard refresh / navigation
-    sessionStorage.removeItem(dismissKey);
+    // On hard refresh (reload) → clear dismissed state so bubble reappears
+    // On navigation (same session) → keep dismissed state
+    var navEntries = performance.getEntriesByType('navigation');
+    var isReload = navEntries.length > 0 ? navEntries[0].type === 'reload' : (performance.navigation && performance.navigation.type === 1);
+    if (isReload) {
+        sessionStorage.removeItem(dismissKey);
+    }
+    if (sessionStorage.getItem(dismissKey) === '1') {
+        openBtn.classList.add('is-dismissed');
+    }
 
     // === Position helpers ===
     function getBtnCenter() {

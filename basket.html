@@ -691,15 +691,16 @@
 
         <!-- Basket Content (visible when items exist) -->
         <div id="basketContent" style="display:none;">
-            <h2 style="font-size:20px; font-weight:700; margin:0 0 8px; color:#1f2937;">My Basket</h2>
-
-            <!-- VAT Toggle -->
-            <div class="vat-toggle-row">
-                <span>Show prices including VAT</span>
-                <label class="vat-toggle-switch">
-                    <input type="checkbox" id="vatToggle">
-                    <span class="slider"></span>
-                </label>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <h2 style="font-size:20px; font-weight:700; margin:0; color:#1f2937;">My Basket</h2>
+                <!-- VAT Toggle -->
+                <div class="vat-toggle-row" style="margin:0; padding:0;">
+                    <span>Show prices including VAT</span>
+                    <label class="vat-toggle-switch">
+                        <input type="checkbox" id="vatToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- Item Rows (per-size, populated by JS) -->
@@ -865,7 +866,7 @@
             <span class="total-label">Total (inc. VAT)</span>
             <span class="total-amount" id="actionBarTotal">&#163;0.00</span>
         </div>
-        <button class="quote-btn" id="requestQuoteBtn">
+        <button class="quote-btn" id="requestQuoteBtn" style="margin:0 auto;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 2L11 13"/>
                 <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
@@ -918,7 +919,7 @@
         if (basket.length === 0) return;
 
         let changed = false;
-        const newBasket = [];
+        let newBasket = [];
 
         basket.forEach(item => {
             // --- Step 1: Extract logos from old positions/positionDesigns ---
@@ -1029,6 +1030,22 @@
                 }
             });
         });
+
+        // --- Step 4: Deduplicate rows with same code+color+size ---
+        const seen = {};
+        const deduped = [];
+        newBasket.forEach(item => {
+            const key = (item.code || '') + '|' + (item.color || '') + '|' + (item.size || '');
+            if (seen[key]) {
+                // Merge qty into the first occurrence
+                seen[key].qty = (seen[key].qty || 0) + (item.qty || 0);
+                changed = true;
+            } else {
+                seen[key] = item;
+                deduped.push(item);
+            }
+        });
+        newBasket = deduped;
 
         if (changed) {
             saveBasket(newBasket);

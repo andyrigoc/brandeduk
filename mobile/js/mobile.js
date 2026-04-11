@@ -902,6 +902,10 @@ function updateLiveBadge() {
                 Object.values(item.quantities).forEach(qty => {
                     totalQty += parseInt(qty) || 0;
                 });
+            } else if (item.sizes && typeof item.sizes === 'object' && !Array.isArray(item.sizes)) {
+                Object.values(item.sizes).forEach(qty => {
+                    totalQty += parseInt(qty) || 0;
+                });
             } else if (item.sizeQuantities && typeof item.sizeQuantities === 'object') {
                 Object.values(item.sizeQuantities).forEach(qty => {
                     totalQty += parseInt(qty) || 0;

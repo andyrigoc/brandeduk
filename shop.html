@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -3836,7 +3836,7 @@
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
                     // Save breadcrumb category before navigating
                     if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentState.category || '');
-                    window.location.href = '/customize?code=' + encodeURIComponent(product.code || '');
+                    window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code || '');
                 });
 
                 grid.appendChild(card);
@@ -4064,7 +4064,7 @@
             updateMobilePagination();
         });
     </script>
-    <script src="mobile/js/mobile.js?v=20251230"></script>
+    <script src="mobile/js/mobile.js?v=20260411A"></script>
     <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
     <!--Tawk.to â€“ mini chat iframe overlay-->
     <script type="text/javascript">
