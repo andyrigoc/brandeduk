@@ -8932,6 +8932,42 @@
     }
 
     // === Add to Quote ===
+    /**
+     * Recalculate unit prices for ALL basket items with the given productCode.
+     * Uses the combined total quantity across all colours/sizes to determine the tier.
+     */
+    function _recalcPricesForProduct(basket, productCode) {
+        const rule = PRICING_RULES[productCode];
+        if (!rule || !rule.tiers || rule.tiers.length === 0) return;
+
+        // Sum total qty for this product code across all colours
+        let totalQty = 0;
+        basket.forEach(item => {
+            if ((item.productCode || item.code) === productCode) {
+                totalQty += parseInt(item.totalQty) || 0;
+            }
+        });
+
+        // Find the correct tier price
+        let tierPrice = rule.basePrice;
+        for (const tier of rule.tiers) {
+            if (totalQty >= tier.min) {
+                tierPrice = tier.price;
+                break;
+            }
+        }
+
+        // Apply to every item with this product code
+        basket.forEach(item => {
+            if ((item.productCode || item.code) === productCode) {
+                if (item.unitPrice !== tierPrice) {
+                    console.log('💰 Price updated:', item.color, item.unitPrice, '→', tierPrice, '(total qty:', totalQty, ')');
+                    item.unitPrice = tierPrice;
+                }
+            }
+        });
+    }
+
     function addToQuote(options = {}) {
         const { silent = false } = options; // silent = true skips the success modal
         console.log('🛒 addToQuote called, silent:', silent, 'state.quantity:', state.quantity, 'sizeQuantities:', JSON.stringify(state.sizeQuantities));
@@ -9075,6 +9111,8 @@
                     quantities: { [size]: qty },
                     totalQty: qty,
                     unitPrice: currentUnitPrice,
+                    basePrice: state.product?.basePrice || currentUnitPrice,
+                    priceBreaks: state.product?.priceBreaks || [],
                     priceMode: priceMode,
                     positions: sizePositions,
                     positionDesigns: JSON.parse(JSON.stringify(basePositionDesigns)),
@@ -9094,6 +9132,10 @@
         }
         
         console.log('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
+        
+        // ── RECALCULATE prices for ALL items with the same productCode ──
+        // Total quantity across all colours determines the tier discount
+        _recalcPricesForProduct(basket, baseProductCode);
         
         // Save to localStorage with error handling
         try {

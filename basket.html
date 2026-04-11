@@ -886,6 +886,7 @@
     // --- Init ---
     document.addEventListener('DOMContentLoaded', () => {
         normalizeBasket();          // Single-pass: sync logos + convert to per-size rows
+        recalcAllTierPricing();     // Ensure consistent prices across same-code items
         initVATToggle();
         renderBasket();
         initEventListeners();
@@ -1336,7 +1337,7 @@
     // Recalculate tier pricing for all rows sharing the same product code
     function recalcTierPricing(basket, productCode) {
         if (!productCode) return;
-        const related = basket.filter(i => i.code === productCode);
+        const related = basket.filter(i => (i.code || i.productCode) === productCode);
         if (related.length === 0) return;
 
         // Find priceBreaks from any related item
@@ -1349,13 +1350,16 @@
         }
         if (!priceBreaks || priceBreaks.length === 0) return;
 
+        // Sort tiers descending by min quantity so we find the best tier first
+        const sortedTiers = priceBreaks.slice().sort((a, b) => (b.min || 0) - (a.min || 0));
+
         // Aggregate total qty across all colors/sizes of this product
         const grandQty = related.reduce((sum, item) => sum + (item.qty || 0), 0);
 
-        // Find the tier price
-        let tierPrice = priceBreaks[0].price;
-        for (const tier of priceBreaks) {
-            if (grandQty >= tier.min && (!tier.max || grandQty <= tier.max)) {
+        // Find the tier price (highest min that qty meets)
+        let tierPrice = sortedTiers[sortedTiers.length - 1].price; // fallback: lowest tier
+        for (const tier of sortedTiers) {
+            if (grandQty >= (tier.min || 0)) {
                 tierPrice = tier.price;
                 break;
             }
@@ -1367,6 +1371,15 @@
         });
     }
 
+    // Recalculate tier pricing for ALL product codes in the basket on page load
+    function recalcAllTierPricing() {
+        let basket = getBasket();
+        if (basket.length === 0) return;
+        const codes = [...new Set(basket.map(i => i.code).filter(Boolean))];
+        codes.forEach(code => recalcTierPricing(basket, code));
+        saveBasket(basket);
+    }
+
     // ========================
     // REMOVE ITEM
     // ========================
@@ -1375,6 +1388,13 @@
         let basket = getBasket();
         if (index < 0 || index >= basket.length) return;
         basket.splice(index, 1);
+
+        // Recalc prices after removal (fewer items may change the tier)
+        if (basket.length > 0) {
+            const codes = [...new Set(basket.map(i => i.code).filter(Boolean))];
+            codes.forEach(code => recalcTierPricing(basket, code));
+        }
+
         saveBasket(basket);
         renderBasket();
         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
