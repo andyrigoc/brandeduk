@@ -6482,7 +6482,7 @@
         showToast('Background restored');
     }
     
-    function applyDesignToPosition() {
+    async function applyDesignToPosition() {
         const modal = document.getElementById('designModal');
         if (!modal) return;
         
@@ -6493,10 +6493,22 @@
         const method = modal.dataset.method;
         
         // Gather design data
+        let logoSrc = document.getElementById('designPreviewImg')?.src || null;
+
+        // ── Compress base64 logos to prevent QuotaExceededError ──
+        if (logoSrc && logoSrc.startsWith('data:')) {
+            try {
+                logoSrc = await compressBase64Image(logoSrc, 600, 0.65);
+                console.log('📷 Logo compressed for storage, length:', logoSrc.length);
+            } catch (e) {
+                console.warn('Logo compression failed, using original:', e);
+            }
+        }
+
         const designData = {
             position,
             method,
-            logo: document.getElementById('designPreviewImg')?.src || null,
+            logo: logoSrc,
             text: document.getElementById('designTextInput')?.value || '',
             textColor: modal.querySelector('.color-circle.active')?.dataset.color || '#1f2937',
             strokeColor: modal.querySelector('.stroke-circle.active')?.dataset.color || '#1f2937',
@@ -6619,7 +6631,41 @@
                         }
                     });
                 }
-                if (updated) localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                if (updated) {
+                    try {
+                        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                    } catch (e) {
+                        if (e.name === 'QuotaExceededError') {
+                            console.warn('⚠️ localStorage quota exceeded, compressing all logos...');
+                            // Compress all base64 logos in the basket and retry
+                            for (const item of basket) {
+                                if (item.positionDesigns) {
+                                    for (const key of Object.keys(item.positionDesigns)) {
+                                        const d = item.positionDesigns[key];
+                                        if (d && d.logo && d.logo.startsWith('data:') && d.logo.length > 50000) {
+                                            try { d.logo = await compressBase64Image(d.logo, 400, 0.5); } catch(ce) {}
+                                        }
+                                    }
+                                }
+                                if (Array.isArray(item.positions)) {
+                                    for (const p of item.positions) {
+                                        if (p.logo && p.logo.startsWith('data:') && p.logo.length > 50000) {
+                                            try { p.logo = await compressBase64Image(p.logo, 400, 0.5); } catch(ce) {}
+                                        }
+                                    }
+                                }
+                            }
+                            try {
+                                localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                                showToast('Logo saved (compressed due to storage limit)');
+                            } catch(e2) {
+                                showToast('Storage full! Please remove some items.', true);
+                            }
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
                 state.selectionSaved = true;
                 updatePricingSummary();
             }
