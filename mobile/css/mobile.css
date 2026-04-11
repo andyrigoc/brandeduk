@@ -4692,8 +4692,8 @@ a {
     margin: 0 0 12px 0;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Logo Gallery (saved logos reuse) Ã¢â€â‚¬Ã¢â€â‚¬ */
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Logo Gallery Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* —— Logo Gallery (saved logos reuse) —— */
+/* —— Logo Gallery ————————————————————————————————————————————— */
 .logo-gallery {
     margin-bottom: 16px;
 }
@@ -6734,6 +6734,13 @@ a {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.brand-card:hover {
+    background: #e5e7eb;
+    transform: scale(1.05);
 }
 
 .brand-card .brand-logo-img {
@@ -6939,7 +6946,7 @@ a {
 
 .product-price-label-mobile {
     font-size: 9px;
-    color: var(--gray-500);
+    color: #c1ef09;
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
@@ -8225,9 +8232,14 @@ a {
 }
 
 .brand-logo {
-    height: 10px;
+    height: 24px;
     width: auto;
-    opacity: 0.7;
+    opacity: 0.85;
+    object-fit: contain;
+}
+
+.brand-logo[title="Gildan"] {
+    height: 16px;
 }
 
 .product-name {
@@ -8253,8 +8265,8 @@ a {
 }
 
 .product-price-label {
-    font-size: 9px;
-    color: #6B21A8;
+    font-size: 12px;
+    color: #f99400;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     font-weight: 600;
@@ -10820,7 +10832,7 @@ a.continue-shopping {
     background: #059669;
 }
 
-/* === MOBILE: Embroidery & Print badges Ã¢â‚¬â€ bottom-right of product image === */
+/* === MOBILE: Embroidery & Print badges — bottom-right of product image === */
 @media (max-width: 767px) {
     .product-badges-bottom {
         position: absolute !important;

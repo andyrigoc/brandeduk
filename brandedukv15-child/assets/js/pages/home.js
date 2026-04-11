@@ -379,7 +379,7 @@ function renderProducts(productsToRender = PRODUCTS_DB) {
                     ${product.code}
                     <img src="https://i.postimg.cc/3WpCDK5M/gildan-logo.png" alt="Gildan" class="brand-logo" title="Gildan Brand">
                 </div>
-                <div class="product-name">${product.name}</div>
+                <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
                     <span class="product-price-label">Start From</span>
                     <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>

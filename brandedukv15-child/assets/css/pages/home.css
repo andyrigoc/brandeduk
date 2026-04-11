@@ -2201,13 +2201,17 @@ body {
 }
 
 .brand-logo {
-    height: 26px;
+    height: 45px;
     width: auto;
     filter: none;
-    opacity: 1;
+    opacity: 0.85;
     transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
     object-fit: contain;
     mix-blend-mode: normal;
+}
+
+.brand-logo[title="Gildan"] {
+    height: 30px;
 }
 
 .brand-logo:hover {
@@ -2256,9 +2260,9 @@ body {
 }
 
 .product-price-label {
-    font-size: 13px;
+    font-size: 17px;
     font-weight: 700;
-    color: #6B21A8;
+    color: #f99400;
     text-transform: none;
     letter-spacing: 0.08em;
 }
@@ -2519,7 +2523,7 @@ body {
         mix-blend-mode: multiply; /* Helps remove white backgrounds */
     }
     
-    /* Badges Mobile - piÃ¹ piccoli e compatti */
+    /* Badges Mobile - più piccoli e compatti */
     .product-badges-top {
         top: 6px;
         right: 6px;
@@ -2543,9 +2547,10 @@ body {
         margin-bottom: 2px;
     }
     
-    /* Hide brand logo on mobile to save space */
+    /* Show brand logo on tablet */
     .product-code .brand-logo {
-        display: none;
+        display: inline-block;
+        height: 24px;
     }
     
     .product-name {
@@ -2574,7 +2579,7 @@ body {
         font-size: 10px;
     }
     
-    /* Color Dots Mobile - piÃ¹ grandi per touch */
+    /* Color Dots Mobile - più grandi per touch */
     .product-colors {
         gap: 6px;
         padding: 6px 4px;

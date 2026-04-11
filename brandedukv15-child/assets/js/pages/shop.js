@@ -171,7 +171,7 @@ function renderProducts() {
             </div>
             <div class="product-info">
                 <div class="product-code">${product.code}</div>
-                <div class="product-name">${product.name}</div>
+                <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                 <div class="product-price" data-price="${Number(product.price)}">
                     <span class="product-price-value">${formatCurrency(product.price)}</span>
                     <span class="product-price-suffix">${vatSuffix()}</span>

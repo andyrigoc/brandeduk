@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -106,8 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $message .= "
-                    <tr><td class='label'>Unit Price:</td><td class='value'>Â£{$unitPrice}</td></tr>
-                    <tr><td class='label'>Item Total:</td><td class='value'><strong>Â£{$itemTotal}</strong></td></tr>";
+                    <tr><td class='label'>Unit Price:</td><td class='value'>£{$unitPrice}</td></tr>
+                    <tr><td class='label'>Item Total:</td><td class='value'><strong>£{$itemTotal}</strong></td></tr>";
             
             // Include customer note for this item
             $itemNote = isset($item['note']) ? trim($item['note']) : '';
@@ -143,8 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hasLogo = isset($custom['hasLogo']) ? $custom['hasLogo'] : (isset($custom['uploadedLogo']) ? $custom['uploadedLogo'] : false);
             $logo = $hasLogo ? 'âœ… Yes' : 'âŒ No';
             $text = isset($custom['text']) && $custom['text'] ? " - Text: " . htmlspecialchars($custom['text']) : '';
-            $unitPrice = isset($custom['unitPrice']) ? ($custom['unitPrice'] === 'POA' ? 'POA' : 'Â£' . number_format($custom['unitPrice'], 2)) : 'N/A';
-            $lineTotal = isset($custom['lineTotal']) ? ($custom['lineTotal'] === 'POA' ? 'POA' : 'Â£' . number_format($custom['lineTotal'], 2)) : 'N/A';
+            $unitPrice = isset($custom['unitPrice']) ? ($custom['unitPrice'] === 'POA' ? 'POA' : '£' . number_format($custom['unitPrice'], 2)) : 'N/A';
+            $lineTotal = isset($custom['lineTotal']) ? ($custom['lineTotal'] === 'POA' ? 'POA' : '£' . number_format($custom['lineTotal'], 2)) : 'N/A';
             $qty = isset($custom['quantity']) ? $custom['quantity'] : 0;
             
             $message .= "
@@ -193,33 +193,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class='summary-row'>
                     <span>Garment Cost:</span>
-                    <span>Â£{$garmentCost} ex VAT</span>
+                    <span>£{$garmentCost} ex VAT</span>
                 </div>
                 <div class='summary-row'>
                     <span>Customization Cost:</span>
-                    <span>Â£{$customizationCost} ex VAT</span>
+                    <span>£{$customizationCost} ex VAT</span>
                 </div>";
         
         if ($digitizingFee > 0) {
             $message .= "
                 <div class='summary-row'>
                     <span>Digitizing Fee (one-time):</span>
-                    <span>Â£{$digitizingFee} ex VAT</span>
+                    <span>£{$digitizingFee} ex VAT</span>
                 </div>";
         }
         
         $message .= "
                 <div class='summary-row'>
                     <span>Subtotal (ex VAT):</span>
-                    <span>Â£{$subtotal}</span>
+                    <span>£{$subtotal}</span>
                 </div>
                 <div class='summary-row'>
                     <span>VAT (20%):</span>
-                    <span>Â£{$vatAmount}</span>
+                    <span>£{$vatAmount}</span>
                 </div>
                 <div class='summary-row'>
                     <span><strong>Total (" . ($vatMode === 'inc' ? 'inc' : 'ex') . " VAT):</strong></span>
-                    <span><strong>Â£{$displayTotal}</strong></span>
+                    <span><strong>£{$displayTotal}</strong></span>
                 </div>";
     } else {
         $message .= "<p>Summary not available</p>";

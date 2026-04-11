@@ -1,4 +1,4 @@
-// INITIALIZE
+﻿// INITIALIZE
 document.addEventListener('DOMContentLoaded', () => {
     console.log('ðŸ”µ Quote Basket: DOM Loaded');
     loadBasketData();
@@ -50,7 +50,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || 'Â£';
+    var currency = options.currency || '£';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;

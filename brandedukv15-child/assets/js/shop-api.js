@@ -326,7 +326,7 @@ const ShopManager = (function () {
                     ${product.code}
                     ${brandName && !['absolute','ralawise'].some(ex => brandName.toLowerCase().includes(ex)) ? (brandLogo ? `<img src="${brandLogo}" alt="${brandName}" class="brand-logo" title="${brandName}">` : `<span class="brand-name">${brandName}</span>`) : ''}
                 </div>
-                <div class="product-name">${product.name}</div>
+                <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                 <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
                     <span class="product-price-label">From</span>
                     <span class="product-price-value">${formatCurrency(minPrice)}</span>
@@ -405,16 +405,129 @@ const ShopManager = (function () {
     }
 
     function getBrandLogo(brandName) {
-        // Common brand logo mappings - can be expanded
+        const B = 'brandedukv15-child/assets/images/brands/';
         const brandLogos = {
-            'gildan': 'https://i.postimg.cc/3WpCDK5M/gildan-logo.png',
-            'fruit of the loom': 'https://i.postimg.cc/placeholder-fotl.png',
-            'russell': 'https://i.postimg.cc/placeholder-russell.png',
-            'awdis': 'https://i.postimg.cc/placeholder-awdis.png'
-            // Add more as needed
+            // A
+            '2786':                         B + '27862020.webp',
+            'adidas':                       B + 'adidas.jpg',
+            'adidas®':                      B + 'adidas.jpg',
+            'afd by dennys':                B + 'add-it-on2020.jpg',
+            'anthem':                       B + 'anthem-logo.jpg',
+            'asquith & fox':                B + 'asquith-and-fox.jpg',
+            'awdis':                        B + 'awdis.webp',
+            'awdis academy':                B + 'awdisacademy2020.webp',
+            'awdis ecologie':               B + 'awdisecologie2020.jpg',
+            'awdis just cool':              B + 'awdisjustcool2020.webp',
+            'awdis just hoods':             B + 'awdisjusthoods2020.webp',
+            "awdis just polo's":            B + 'awdisjustpolos2020.jpg',
+            "awdis just t's":               B + 'awdisjustts2020.webp',
+            'awdis so denim':               B + 'awdissodenim2020.jpg',
+            // B
+            'b&c':                          B + 'bc20202.webp',
+            'b&c collection':               B + 'bccollp23.png',
+            'babybugz':                     B + 'babybugz2020.jpg',
+            'bagbase':                      B + 'bagbase.jpeg',
+            'beechfield':                   B + 'beechfield.jpeg',
+            'bella canvas':                 B + 'bellapluscanvas.svg',
+            'bella+canvas':                 B + 'bellapluscanvas.svg',
+            'build your brand':             B + 'build-your-brand.png',
+            'build your brand basic':       B + 'build-your-brand-basic-logo-web-2021.jpg',
+            'build your brandit':           B + 'build-your-brandit-logo.jpeg',
+            // C
+            'callaway':                     B + 'callaway2020.jpg',
+            'colortone':                    B + 'colortone2020.webp',
+            'comfort colors':               B + 'comfort-colors.webp',
+            'comfort colors®':              B + 'comfort-colors.webp',
+            'craghoppers':                  B + 'craghoppers.jpg',
+            // E
+            'essentials':                   B + 'everydayessentials2020.jpg',
+            // F
+            'finden & hales':               B + 'finden-hales.png',
+            'flexfit':                      B + 'flexfit.webp',
+            'flexfit by yupoong':           B + 'flexfit.webp',
+            'front row':                    B + 'front-row.jpg',
+            'fruit of the loom':            B + 'fruit-of-the-loom.jpg',
+            // G
+            'gildan':                       B + 'gildan2020.webp',
+            'gildan hammer':                B + 'gildan2020.webp',
+            // H
+            'henbury':                      B + 'henbury2020.webp',
+            'home & living':                B + 'web-logo-homeandliving-2023.webp',
+            // K
+            'kariban':                      B + 'kariban2020.webp',
+            'kariban proact':               B + 'proact.jpg',
+            'kimood':                       B + 'kimood2020.jpg',
+            'kustom kit':                   B + 'kustom-kit2020.webp',
+            // L
+            'larkwood':                     B + 'larkwood.jpeg',
+            // M
+            'maddins':                      B + 'maddins2020.jpg',
+            'madeira':                      B + 'web-logo-madeira-2022.jpg',
+            'mumbles':                      B + 'mumbles2020.webp',
+            // N
+            'new morning studios':          B + 'web-logo-new-morning-studios.png',
+            'nike':                         B + 'nike2020.jpg',
+            'nimbus':                       B + 'nimbus2020.webp',
+            'nutshell':                     B + 'nutshell-bag2020.webp',
+            'nutshell®':                    B + 'nutshell-bag2020.webp',
+            // O
+            'ogio':                         B + 'ogio2020.webp',
+            'onna by premier':              B + 'web-logo-onna-by-premier-2023.jpg',
+            // P
+            'portwest':                     B + 'portwest.webp',
+            'premier':                      B + 'premier2020.webp',
+            'pro rtx':                      B + 'pro-rtx2020.jpg',
+            'prortx':                       B + 'pro-rtx2020.jpg',
+            'prortx high visibility':       B + 'pro-rtx-hv2020.jpg',
+            // Q
+            'quadra':                       B + 'quadra-2020.webp',
+            // R
+            'regatta':                      B + 'regatta.webp',
+            'regatta high visibility':      B + 'regattaprofessional-highv2020.webp',
+            'regatta honestly made':        B + 'regattaprofessional-hones2020.jpg',
+            'regatta junior':               B + 'regattaprofessional-junio2020.jpg',
+            'regatta professional':         B + 'regatta-professional2020.webp',
+            'regatta safety footwear':      B + 'regattaprofessional-safet2020.jpg',
+            'result':                       B + 'result2020.webp',
+            'result core':                  B + 'resultcorevalue2020.webp',
+            'result headwear':              B + 'resultheadwear2020.webp',
+            'result safeguard':             B + 'result-safe-guard-2026.webp',
+            'result urban outdoor':         B + 'resulturbanoutdoorwear2020.webp',
+            'result winter essentials':     B + 'resultwinteressentials2020.webp',
+            'result workguard':             B + 'result-workguard-2026.webp',
+            'rhino':                        B + 'rhino2020.jpg',
+            'ribbon':                       B + 'brand-logo-ribbon.jpg',
+            'russell':                      B + 'russell.webp',
+            'russell athletic':             B + 'russel-athletic-2026.webp',
+            'russell athletic collection':  B + 'russel-athletic-collection-2026.webp',
+            'russell collection':           B + 'russell.webp',
+            'russell europe':               B + 'russell.webp',
+            // S
+            'scruffs':                      B + 'web-logo-scruffs-2023.jpg',
+            'sf':                           B + 'sf-clothing.webp',
+            'spiro':                        B + 'spiro2022.webp',
+            'spiro recycled':               B + 'web-logo-spiro-recycled.png',
+            'splashmacs':                   B + 'splashmacs2020.jpg',
+            'stanley workwear':             B + 'stanley-logo.jpg',
+            'stanley/stella':               B + 'stanley-stella.webp',
+            'stormtech':                    B + 'stormtech.webp',
+            // T
+            'tee jays':                     B + 'tee-jays.jpg',
+            'tombo':                        B + 'tombo2020.webp',
+            'towel city':                   B + 'towel-city2020.jpg',
+            'tridri':                       B + 'tridri.webp',
+            'tridri®':                      B + 'web-logo-tridri-2025.webp',
+            // U
+            'under armour':                 B + 'under-armour.webp',
+            'under armour golf':            B + 'under-armour.webp',
+            // W
+            'westford mill':                B + 'westford-mill-2020.webp',
+            'wombat':                       B + 'wombat-logo.jpg',
+            // Y
+            'yoko':                         B + 'yoko.webp'
         };
-
-        const normalized = (brandName || '').toLowerCase();
+        const normalized = (brandName || '').toLowerCase().trim()
+            .replace(/[\u00AE\u2122\u00A9]/g, '');   // strip ®™© before lookup
         return brandLogos[normalized] || null;
     }
 

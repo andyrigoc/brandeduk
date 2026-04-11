@@ -162,6 +162,12 @@
             color: #b0b0b0;
             letter-spacing: 0.5px;
         }
+        .featured-card .fc-code .brand-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0.85;
+        }
         .featured-card .fc-name {
             font-size: 15px;
             font-weight: 600;
@@ -1591,7 +1597,7 @@
                                     <h4 class="promo-col-heading">Hospitality</h4>
                                     <ul class="promo-col-list">
                                         <li><a href="#">Restaurants</a></li>
-                                        <li><a href="#">CafÃ©s</a></li>
+                                        <li><a href="#">Cafés</a></li>
                                         <li><a href="#">Hotels</a></li>
                                         <li><a href="#">Catering companies</a></li>
                                         <li><a href="#">Street food vendors</a></li>
@@ -2312,6 +2318,16 @@
             </div>
         </div>
     </section>
+
+    <!-- Brand carousel click → shop filtered by brand -->
+    <script>
+    document.querySelector('.brands-section').addEventListener('click', function(e) {
+        var card = e.target.closest('.brand-card');
+        if (!card) return;
+        var brand = card.textContent.trim();
+        if (brand) window.location.href = 'shop-pc.html?brand=' + encodeURIComponent(brand);
+    });
+    </script>
 
     <!-- Services Section -->
     <section class="services-section">
@@ -3309,7 +3325,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function stripBrands(name) {
-        var n = name || '';
+        var n = (name || '').replace(/[\u00AE\u2122\u00A9]/g,'');
         HIDDEN_BRANDS.forEach(function(b) {
             n = n.replace(new RegExp(b, 'gi'), '').trim();
         });
@@ -3525,6 +3541,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return HIDDEN.some(function(h){ return n.includes(h); });
     }
 
+    function getBrandLogo(b) {
+        var m = {
+            'gildan':'brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
+            'russell':'brandedukv15-child/assets/images/brands/russell.webp','awdis':'brandedukv15-child/assets/images/brands/awdis.webp',
+            'anthem':'brandedukv15-child/assets/images/brands/anthem.jpg','result':'brandedukv15-child/assets/images/brands/result2020.webp',
+            'regatta':'brandedukv15-child/assets/images/brands/regatta.webp','portwest':'brandedukv15-child/assets/images/brands/portwest.webp',
+            'nike':'brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'brandedukv15-child/assets/images/brands/adidas.jpg',
+            'under armour':'brandedukv15-child/assets/images/brands/under-armour.webp','premier':'brandedukv15-child/assets/images/brands/premier2020.webp',
+            'henbury':'brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'brandedukv15-child/assets/images/brands/beechfield.jpeg',
+            'kustom kit':'brandedukv15-child/assets/images/brands/kustom-kit2020.webp','scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg',
+            'yoko':'brandedukv15-child/assets/images/brands/yoko.webp','tridri':'brandedukv15-child/assets/images/brands/tridri.webp',
+            'pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
+            'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp'
+        };
+        return m[(b||'').toLowerCase().trim()] || null;
+    }
+
     // Build a single featured product card
     function buildCard(item) {
         var card = document.createElement('div');
@@ -3544,7 +3577,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Brand
         var brand = _shouldHideBrand(item.brand_name) ? '' : (item.brand_name || '');
-        var brandHTML = brand ? '<span class="fc-brand-name">' + brand + '</span>' : '';
+        var bLogo = brand ? getBrandLogo(brand) : null;
+        var brandHTML = brand ? (bLogo ? '<img src="' + bLogo + '" alt="' + brand + '" class="brand-logo" title="' + brand + '">' : '<span class="fc-brand-name">' + brand + '</span>') : '';
 
         card.innerHTML =
             '<div class="fc-media">' +
@@ -3555,7 +3589,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '</div>' +
             '<div class="fc-info">' +
                 '<div class="fc-code">' + (item.style_code||'') + ' ' + brandHTML + '</div>' +
-                '<div class="fc-name">' + (item.style_name||'') + '</div>' +
+                '<div class="fc-name">' + (item.style_name||'').replace(/[\u00AE\u2122\u00A9]/g,'') + '</div>' +
                 '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
                     '<span class="fc-price-label">From</span>' +
                     '<span class="fc-price-value">' + displayPrice + '</span>' +

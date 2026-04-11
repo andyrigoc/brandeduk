@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=FTR10APR2026">
+    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260409B">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
@@ -62,7 +62,7 @@
             display: none !important;
         }
 
-        /* ── Search Autocomplete Dropdown ── */
+        /* â”€â”€ Search Autocomplete Dropdown â”€â”€ */
         .search-autocomplete {
             display: none;
             position: absolute;
@@ -179,6 +179,7 @@
         .featured-card .fc-info { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .featured-card .fc-code { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         .featured-card .fc-code .fc-brand-name { font-size: 10px; font-weight: 500; color: #b0b0b0; letter-spacing: 0.5px; }
+        .featured-card .fc-code .brand-logo { height: 18px; width: auto; object-fit: contain; opacity: 0.85; }
         .featured-card .fc-name { font-size: 15px; font-weight: 600; color: #1a1a1a; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .featured-card .fc-price { margin-top: 4px; }
         .featured-card .fc-price-label { font-size: 11px; color: #9ca3af; margin-right: 4px; }
@@ -1047,7 +1048,7 @@
             </a>
         </section>
 
-        <!-- Categories Section – Infinite Carousel -->
+        <!-- Categories Section â€“ Infinite Carousel -->
         <section class="section-block">
             <div class="section-header">
                 <h2 class="section-title">Shop by Category</h2>
@@ -1142,7 +1143,7 @@
                     <div class="truck"></div>
                     <div class="wheels"></div>
                 </div>
-                <span class="trust-truck-label">Free UK Delivery �150+</span>
+                <span class="trust-truck-label">Free UK Delivery £150+</span>
             </div>
             
             <!-- Trust Badges Row -->
@@ -1410,6 +1411,16 @@
             </div>
         </section>
 
+        <!-- Brand carousel click → shop filtered by brand -->
+        <script>
+        document.querySelector('.brands-section').addEventListener('click', function(e) {
+            var card = e.target.closest('.brand-card');
+            if (!card) return;
+            var brand = card.textContent.trim();
+            if (brand) window.location.href = 'shop.html?brand=' + encodeURIComponent(brand);
+        });
+        </script>
+
         <!-- Services Section -->
         <section class="services-section">
             <h2 class="section-title centered">Our Services</h2>
@@ -1422,7 +1433,7 @@
                         </svg>
                     </div>
                     <h3>Embroidery</h3>
-                    <p>From �2.95 per item</p>
+                    <p>From £2.95 per item</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon print-icon">
@@ -1504,7 +1515,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup cost?</div>
-                        <div class="faq-answer">A one-time digitisation fee of �25-�45 converts your logo into stitch data. This file is saved for all future orders at no extra cost.</div>
+                        <div class="faq-answer">A one-time digitisation fee of £25-£45 converts your logo into stitch data. This file is saved for all future orders at no extra cost.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Production time</div>
@@ -1531,7 +1542,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Wash resistance</div>
-                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30°C and avoid tumble drying on high heat.</div>
+                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30Â°C and avoid tumble drying on high heat.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Small quantities?</div>
@@ -1609,7 +1620,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Setup costs</div>
-                        <div class="faq-answer">�25-�35 per screen (per colour). Screens are kept on file for 12 months for repeat orders at no extra setup charge.</div>
+                        <div class="faq-answer">£25-£35 per screen (per colour). Screens are kept on file for 12 months for repeat orders at no extra setup charge.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Lead time</div>
@@ -1928,7 +1939,7 @@
         <div class="filters-dropup__header">
             <h2 class="filters-dropup__title">Filter By</h2>
             <button class="filters-dropup__clear" id="filtersClearAll">Clear All</button>
-            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">×</button>
+            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">Ã—</button>
         </div>
         <div class="filters-dropup__body">
             <!-- TOGGLE FILTERS -->
@@ -1982,13 +1993,13 @@
                 <div class="filter-expandable" data-expanded="true">
                     <div class="filter-expandable__header">
                         <span>Price Range</span>
-                        <span class="filter-expandable__arrow">⌄</span>
+                        <span class="filter-expandable__arrow">âŒ„</span>
                     </div>
                     <div class="filter-expandable__content">
                         <div class="price-range-display">
-                            <span id="priceMinDisplay">�0</span>
+                            <span id="priceMinDisplay">£0</span>
                             <span>-</span>
-                            <span id="priceMaxDisplay">�100</span>
+                            <span id="priceMaxDisplay">£100</span>
                         </div>
                         <input type="range" class="filter-price-slider" id="filterPriceRange" min="0" max="100" value="100">
                     </div>
@@ -2001,7 +2012,7 @@
                 <div class="filter-expandable" data-filter="gender">
                     <div class="filter-expandable__header">
                         <span>Gender</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="mens"> Men's</label>
@@ -2014,7 +2025,7 @@
                 <div class="filter-expandable" data-filter="ageGroup">
                     <div class="filter-expandable__header">
                         <span>Age Group</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="adults"> Adults</label>
@@ -2030,7 +2041,7 @@
                 <div class="filter-expandable" data-filter="sleeve">
                     <div class="filter-expandable__header">
                         <span>Sleeve</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="short"> Short Sleeve</label>
@@ -2046,7 +2057,7 @@
                 <div class="filter-expandable" data-filter="neckline">
                     <div class="filter-expandable__header">
                         <span>Neckline</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="crew"> Crew Neck</label>
@@ -2065,7 +2076,7 @@
                 <div class="filter-expandable" data-filter="accreditations">
                     <div class="filter-expandable__header">
                         <span>Accreditations</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="en20471"> EN ISO 20471</label>
@@ -2083,7 +2094,7 @@
                 <div class="filter-expandable" data-filter="primaryColour">
                     <div class="filter-expandable__header">
                         <span>Primary Colour</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content filter-colors-grid">
                         <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox" value="black"><span>Black</span></label>
@@ -2108,7 +2119,7 @@
                 <div class="filter-expandable" data-filter="colourShade">
                     <div class="filter-expandable__header">
                         <span>Colour Shade</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="light"> Light</label>
@@ -2125,7 +2136,7 @@
                 <div class="filter-expandable" data-filter="cmyk">
                     <div class="filter-expandable__header">
                         <span>CMYK</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <input type="text" class="filter-text-input" placeholder="Enter CMYK values...">
@@ -2136,7 +2147,7 @@
                 <div class="filter-expandable" data-filter="pantone">
                     <div class="filter-expandable__header">
                         <span>Pantone</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <input type="text" class="filter-text-input" placeholder="Enter Pantone code...">
@@ -2147,7 +2158,7 @@
                 <div class="filter-expandable" data-filter="style">
                     <div class="filter-expandable__header">
                         <span>Style</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="classic"> Classic</label>
@@ -2169,7 +2180,7 @@
                 <div class="filter-expandable" data-filter="features">
                     <div class="filter-expandable__header">
                         <span>Features</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="pockets"> Pockets</label>
@@ -2192,7 +2203,7 @@
                 <div class="filter-expandable" data-filter="size">
                     <div class="filter-expandable__header">
                         <span>Size</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content filter-sizes-grid">
                         <label class="filter-size"><input type="checkbox" value="xxs"><span>XXS</span></label>
@@ -2214,7 +2225,7 @@
                 <div class="filter-expandable" data-filter="fabric">
                     <div class="filter-expandable__header">
                         <span>Fabric</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="cotton100"> 100% Cotton</label>
@@ -2236,7 +2247,7 @@
                 <div class="filter-expandable" data-filter="weight">
                     <div class="filter-expandable__header">
                         <span>Weight (GSM)</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="light"> Lightweight (&lt;150g)</label>
@@ -2251,7 +2262,7 @@
                 <div class="filter-expandable" data-filter="fit">
                     <div class="filter-expandable__header">
                         <span>Fit</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
@@ -2267,7 +2278,7 @@
                 <div class="filter-expandable" data-filter="sector">
                     <div class="filter-expandable__header">
                         <span>Related Sector</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="construction"> Construction</label>
@@ -2289,7 +2300,7 @@
                 <div class="filter-expandable" data-filter="sport">
                     <div class="filter-expandable__header">
                         <span>Related Sport</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="football"> Football</label>
@@ -2311,7 +2322,7 @@
                 <div class="filter-expandable" data-filter="tag">
                     <div class="filter-expandable__header">
                         <span>Tag</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="bestseller"> Best Seller</label>
@@ -2328,7 +2339,7 @@
                 <div class="filter-expandable" data-filter="effect">
                     <div class="filter-expandable__header">
                         <span>Effect</span>
-                        <span class="filter-expandable__arrow">›</span>
+                        <span class="filter-expandable__arrow">â€º</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="plain"> Plain</label>
@@ -2357,7 +2368,7 @@
     <div class="popup-contact" id="popupContact">
         <div class="popup-contact__header">
             <h2 class="popup-contact__title">Get in touch</h2>
-            <button class="popup-contact__close" id="popupContactClose" aria-label="Close">×</button>
+            <button class="popup-contact__close" id="popupContactClose" aria-label="Close">Ã—</button>
         </div>
         <div class="popup-contact__body">
             <form class="popup-contact__form" id="contactQuickForm">
@@ -2456,7 +2467,7 @@
             pausedUntil = Math.max(pausedUntil, Date.now() + (ms || 2500));
         }
 
-        // ── Manual touch/drag: swipe left/right to move the carousel ──
+        // â”€â”€ Manual touch/drag: swipe left/right to move the carousel â”€â”€
         var dragStartX = 0;
         var dragScrollStart = 0;
         var isDragging = false;
@@ -2713,7 +2724,7 @@
             });
         })();
         
-        // ── Search Autocomplete (mobile + desktop header) ──
+        // â”€â”€ Search Autocomplete (mobile + desktop header) â”€â”€
         (function() {
             var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
 
@@ -2832,7 +2843,7 @@
                 document.querySelectorAll('.product-price[data-base-price]').forEach(el => {
                     const basePrice = parseFloat(el.dataset.basePrice);
                     const displayPrice = includeVat ? basePrice * (1 + VAT_RATE) : basePrice;
-                    el.textContent = '�' + displayPrice.toFixed(2);
+                    el.textContent = '£' + displayPrice.toFixed(2);
                 });
             }
 
@@ -3035,9 +3046,9 @@
         })();
     </script>
 
-    <script src="mobile/footer/footer.js?v=FTR10APR2026" defer></script>
+    <script src="mobile/footer/footer.js?v=20260615A" defer></script>
 
-    <!--Tawk.to – mini chat iframe overlay-->
+    <!--Tawk.to â€“ mini chat iframe overlay-->
     <script type="text/javascript">
         (function() {
             var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
@@ -3104,7 +3115,7 @@
         var scroller = document.getElementById('categoriesScroller');
         if (!scroller) return;
 
-        var speed = 0.4;          // px per frame – slow & smooth
+        var speed = 0.4;          // px per frame â€“ slow & smooth
         var paused = false;
         var rafId = null;
         var resumeTimer = null;
@@ -3181,6 +3192,23 @@
         return HIDDEN.some(function(h){ return n.includes(h); });
     }
 
+    function getBrandLogo(b) {
+        var m = {
+            'gildan':'brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
+            'russell':'brandedukv15-child/assets/images/brands/russell.webp','awdis':'brandedukv15-child/assets/images/brands/awdis.webp',
+            'anthem':'brandedukv15-child/assets/images/brands/anthem.jpg','result':'brandedukv15-child/assets/images/brands/result2020.webp',
+            'regatta':'brandedukv15-child/assets/images/brands/regatta.webp','portwest':'brandedukv15-child/assets/images/brands/portwest.webp',
+            'nike':'brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'brandedukv15-child/assets/images/brands/adidas.jpg',
+            'under armour':'brandedukv15-child/assets/images/brands/under-armour.webp','premier':'brandedukv15-child/assets/images/brands/premier2020.webp',
+            'henbury':'brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'brandedukv15-child/assets/images/brands/beechfield.jpeg',
+            'kustom kit':'brandedukv15-child/assets/images/brands/kustom-kit2020.webp','scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg',
+            'yoko':'brandedukv15-child/assets/images/brands/yoko.webp','tridri':'brandedukv15-child/assets/images/brands/tridri.webp',
+            'pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
+            'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp'
+        };
+        return m[(b||'').toLowerCase().trim()] || null;
+    }
+
     // Build a single featured product card
     function buildCard(item) {
         var card = document.createElement('div');
@@ -3200,7 +3228,8 @@
 
         // Brand
         var brand = _shouldHideBrand(item.brand_name) ? '' : (item.brand_name || '');
-        var brandHTML = brand ? '<span class="fc-brand-name">' + brand + '</span>' : '';
+        var bLogo = brand ? getBrandLogo(brand) : null;
+        var brandHTML = brand ? (bLogo ? '<img src="' + bLogo + '" alt="' + brand + '" class="brand-logo" title="' + brand + '">' : '<span class="fc-brand-name">' + brand + '</span>') : '';
 
         card.innerHTML =
             '<div class="fc-media">' +
@@ -3211,7 +3240,7 @@
             '</div>' +
             '<div class="fc-info">' +
                 '<div class="fc-code">' + (item.style_code||'') + ' ' + brandHTML + '</div>' +
-                '<div class="fc-name">' + (item.style_name||'') + '</div>' +
+                '<div class="fc-name">' + (item.style_name||'').replace(/[\u00AE\u2122\u00A9]/g,'') + '</div>' +
                 '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
                     '<span class="fc-price-label">From</span>' +
                     '<span class="fc-price-value">' + displayPrice + '</span>' +

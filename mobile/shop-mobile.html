@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -472,12 +472,34 @@
             if (vatOn) {
                 value = value * (1 + VAT_RATE);
             }
-            return 'Â£' + value.toFixed(2);
+            return '£' + value.toFixed(2);
         }
 
         function vatSuffix() {
             const vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
             return vatOn ? 'inc VAT' : 'ex VAT';
+        }
+
+        function getBrandLogo(b) {
+            var m = {
+                'gildan':'brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
+                'russell':'brandedukv15-child/assets/images/brands/russell.webp','awdis':'brandedukv15-child/assets/images/brands/awdis.webp',
+                'anthem':'brandedukv15-child/assets/images/brands/anthem.jpg','result':'brandedukv15-child/assets/images/brands/result2020.webp',
+                'regatta':'brandedukv15-child/assets/images/brands/regatta.webp','portwest':'brandedukv15-child/assets/images/brands/portwest.webp',
+                'nike':'brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'brandedukv15-child/assets/images/brands/adidas.jpg',
+                'under armour':'brandedukv15-child/assets/images/brands/under-armour.webp','premier':'brandedukv15-child/assets/images/brands/premier2020.webp',
+                'henbury':'brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'brandedukv15-child/assets/images/brands/beechfield.jpeg',
+                'kustom kit':'brandedukv15-child/assets/images/brands/kustom-kit2020.webp','tombo':'brandedukv15-child/assets/images/brands/tombo2020.webp',
+                'spiro':'brandedukv15-child/assets/images/brands/spiro.webp','tee jays':'brandedukv15-child/assets/images/brands/tee-jays.jpg',
+                'front row':'brandedukv15-child/assets/images/brands/front-row.jpg','kariban':'brandedukv15-child/assets/images/brands/kariban2020.webp',
+                'westford mill':'brandedukv15-child/assets/images/brands/westford-mill-2020.webp','quadra':'brandedukv15-child/assets/images/brands/quadra-2020.webp',
+                'bagbase':'brandedukv15-child/assets/images/brands/bagbase.jpeg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
+                'scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg','yoko':'brandedukv15-child/assets/images/brands/yoko.webp',
+                'tridri':'brandedukv15-child/assets/images/brands/tridri.webp','pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg',
+                'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp',
+                'russell athletic':'brandedukv15-child/assets/images/brands/russel-athletic-2026.webp'
+            };
+            return m[(b||'').toLowerCase().trim()] || null;
         }
 
         function formatPriceRange(minPrice, maxPrice) {
@@ -621,9 +643,9 @@
                 <div class="product-info">
                     <div class="product-code">
                         ${product.code}
-                        ${(product.brand && !['absolute','ralawise'].some(ex => product.brand.toLowerCase().includes(ex))) ? `<span class="brand-name">${product.brand}</span>` : ''}
+                        ${(() => { const bn = product.brand || ''; if (!bn || ['absolute','ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const logo = getBrandLogo(bn); return logo ? `<img src="${logo}" alt="${bn}" class="brand-logo" title="${bn}">` : `<span class="brand-name">${bn}</span>`; })()}
                     </div>
-                    <div class="product-name">${product.name}</div>
+                    <div class="product-name">${(product.name||'').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                     <div class="product-price" data-price-min="${minPrice}" data-price-max="${maxPrice}">
                         <span class="product-price-label">Start From</span>
                         <span class="product-price-value">${formatPriceRange(minPrice, maxPrice)}</span>

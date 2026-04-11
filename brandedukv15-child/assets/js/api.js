@@ -181,6 +181,8 @@ const BrandedAPI = (function () {
         HIDDEN_BRAND_NAMES.forEach(b => {
             rawName = rawName.replace(new RegExp(b + '\\s*apparel', 'gi'), '').replace(new RegExp(b, 'gi'), '').replace(/^\s*[-–—]\s*/, '').trim();
         });
+        // Strip ™ ® © symbols that render as boxes in some fonts
+        rawName = rawName.replace(/[\u00AE\u2122\u00A9]/g, '');
 
         return {
             code: apiProduct.code || apiProduct.style_code || '',

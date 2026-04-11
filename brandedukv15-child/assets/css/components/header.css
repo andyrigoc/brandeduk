@@ -1592,7 +1592,7 @@ body {
     position: static;
 }
 
-/* Hide the hover bridge on the first (now static) li Ã¢â‚¬â€ the dropdown itself handles it */
+/* Hide the hover bridge on the first (now static) li — the dropdown itself handles it */
 .main-nav .menu > li.has-megamenu:first-child::after {
     display: none;
 }
@@ -1760,7 +1760,7 @@ body {
     display: block;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Exclusives dropdown (brand grid) Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* —— Exclusives dropdown (brand grid) —— */
 .exclusives-menu {
     position: relative;
 }
@@ -1858,7 +1858,7 @@ body {
     }
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Brand dropdown (alphabetical list of all brands) Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* —— Brand dropdown (alphabetical list of all brands) —— */
 .brands-menu {
     position: relative;
 }
@@ -2022,7 +2022,7 @@ body {
     }
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Catalogue dropdown (simple 2-item list) Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* —— Catalogue dropdown (simple 2-item list) —— */
 .catalogue-menu {
     position: relative;
 }
@@ -3053,7 +3053,7 @@ body {
     background: #94a3b8;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Mobile: widen suggestions dropdown to full screen width Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* —— Mobile: widen suggestions dropdown to full screen width —— */
 @media (max-width: 767px) {
     .search-suggestions {
         position: fixed;

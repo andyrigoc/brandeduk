@@ -272,6 +272,26 @@ body {
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-code .brand-logo {
+    height: 33px;
+    width: auto;
+    object-fit: contain;
+    opacity: 0.85;
+}
+
+.product-code .brand-logo[title="Gildan"] {
+    height: 22px;
+}
+
+.product-code .brand-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: #b0b0b0;
 }
 
 .product-name {
@@ -284,7 +304,7 @@ body {
 
 .product-price {
     font-size: 18px;
-    color: var(--teal);
+    color: #c1ef09;
     font-weight: 700;
     margin-bottom: 4px;
 }

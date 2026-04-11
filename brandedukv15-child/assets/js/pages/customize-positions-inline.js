@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Customize Positions - Inline version for Product Detail Page
  * This script handles position selection, logo upload within the single-page product flow
  * Version: 1.0.0 - 2026-01-07
@@ -1606,8 +1606,8 @@
             return window.formatCurrency(baseAmount);
         }
         const n = Number(baseAmount);
-        if (!Number.isFinite(n)) return 'Â£0.00';
-        return `Â£${n.toFixed(2)}`;
+        if (!Number.isFinite(n)) return '£0.00';
+        return `£${n.toFixed(2)}`;
     }
 
     function vatLabel() {
@@ -1825,7 +1825,7 @@
                     customizationListEl.innerHTML += `
                         <div class="digitizing-fee-row">
                             <span>Digitizing Fee (one-time)</span>
-                            <span>Â£25.00 <small>ex VAT</small></span>
+                            <span>£25.00 <small>ex VAT</small></span>
                         </div>
                     `;
                 }

@@ -115,7 +115,7 @@
 
         const name = document.createElement('p');
         name.className = 'product-recommendations__card-name';
-        name.textContent = product.name || 'Product';
+        name.textContent = (product.name || 'Product').replace(/[\u00AE\u2122\u00A9]/g,'');
 
         const footer = document.createElement('div');
         footer.className = 'product-recommendations__card-footer';
