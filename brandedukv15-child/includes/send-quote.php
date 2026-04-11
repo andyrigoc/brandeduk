@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $totalExVat = isset($summary['totalExVat']) ? number_format($summary['totalExVat'], 2) : '0.00';
         $totalIncVat = isset($summary['totalIncVat']) ? number_format($summary['totalIncVat'], 2) : '0.00';
         $vatMode = isset($summary['vatMode']) ? $summary['vatMode'] : 'ex';
-        $displayTotal = isset($summary['displayTotal']) ? number_format($summary['displayTotal'], 2) : $totalExVat;
+        $displayTotal = ($vatMode === 'inc') ? $totalIncVat : $totalExVat;
         $totalQty = isset($summary['totalQuantity']) ? $summary['totalQuantity'] : 0;
         $totalItems = isset($summary['totalItems']) ? $summary['totalItems'] : 0;
         
