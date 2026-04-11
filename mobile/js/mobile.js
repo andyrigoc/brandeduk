@@ -126,7 +126,7 @@ function setVatMode(on) {
 function formatCurrency(baseAmount, options = {}) {
     const includeVat = options.includeVat !== undefined ? options.includeVat : isVatOn();
     const amount = includeVat ? baseAmount * (1 + VAT_RATE) : baseAmount;
-    return `£${amount.toFixed(2)}`;
+    return `\u00A3${amount.toFixed(2)}`;
 }
 
 function vatSuffix() {
@@ -1127,7 +1127,7 @@ function initFiltersDropup() {
     // Price slider
     if (priceSlider && priceMaxDisplay) {
         priceSlider.addEventListener('input', function() {
-            priceMaxDisplay.textContent = '£' + this.value;
+            priceMaxDisplay.textContent = '\u00A3' + this.value;
         });
     }
     
@@ -1192,7 +1192,7 @@ function initFiltersDropup() {
         // Reset price slider
         if (priceSlider) {
             priceSlider.value = 100;
-            if (priceMaxDisplay) priceMaxDisplay.textContent = '£100';
+            if (priceMaxDisplay) priceMaxDisplay.textContent = '\u00A3100';
         }
         
         // Reset text inputs

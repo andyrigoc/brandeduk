@@ -68,7 +68,7 @@ const ShopManager = (function () {
         if (vatOn) {
             value = value * (1 + VAT_RATE);
         }
-        return '£' + value.toFixed(2);
+        return '\u00A3' + value.toFixed(2);
     }
 
     function vatSuffix() {
@@ -877,7 +877,7 @@ const ShopManager = (function () {
         if (priceSlider) {
             priceSlider.value = priceSlider.max;
             const priceLabel = document.getElementById('priceRangeLabel');
-            if (priceLabel) priceLabel.textContent = `£0 - £${priceSlider.max}`;
+            if (priceLabel) priceLabel.textContent = `\u00A30 - \u00A3${priceSlider.max}`;
         }
 
         renderProducts();
@@ -1049,7 +1049,7 @@ const ShopManager = (function () {
                 const max = Number(e.target.value);
                 const priceLabel = document.getElementById('priceRangeLabel');
                 if (priceLabel) {
-                    priceLabel.textContent = `£0 - £${max}`;
+                    priceLabel.textContent = `\u00A30 - \u00A3${max}`;
                 }
             });
 

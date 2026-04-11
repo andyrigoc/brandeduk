@@ -36,7 +36,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || '\u00A3';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -243,7 +243,7 @@ function calculateBasketBreakdown(basket) {
             });
         }
 
-        // Embroidery logo setup fee (£25 per unique logo)
+        // Embroidery logo setup fee (\u00A325 per unique logo)
         var isEmb = function(m){ return !m || (typeof m==='string' && m.toLowerCase()==='embroidery'); };
         if (item.positionDesigns) Object.values(item.positionDesigns).forEach(function(d){ if(d&&d.logo&&isEmb(d.method)) uniqueEmbLogos[d.logo]=true; });
         if (item.positions) { var pa=Array.isArray(item.positions)?item.positions:Object.values(item.positions); pa.forEach(function(p){ if(p&&p.logo&&isEmb(p.method)) uniqueEmbLogos[p.logo]=true; }); }

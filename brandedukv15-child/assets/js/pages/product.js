@@ -61,7 +61,7 @@ function vatRate() {
 
 function formatCurrency(baseAmount, options) {
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || '\u00A3';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -213,7 +213,7 @@ async function loadProductData() {
                 const detailPrice = Number(productData.price) || 0;
                 const listingPrice = Number(listingProduct.price) || 0;
                 if (listingPrice > 0 && listingPrice !== detailPrice) {
-                    console.log(`ðŸ’° Price correction: detail £${detailPrice} â†’ listing £${listingPrice}`);
+                    console.log(`ðŸ’° Price correction: detail \u00A3${detailPrice} â†’ listing \u00A3${listingPrice}`);
                     productData.price = listingProduct.price;
                     productData.basePrice = listingProduct.price;
                     productData.sell_price = listingProduct.price;
@@ -2534,7 +2534,7 @@ function openPopup() {
 
     if (popup) popup.style.display = "flex";
 
-    // Reset sizes after adding to basket so bar goes back to £0.00
+    // Reset sizes after adding to basket so bar goes back to \u00A30.00
     resetSizes();
     resetColorSelection();
     hasBasketItems = true;

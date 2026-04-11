@@ -2200,7 +2200,7 @@
                         <span class="filter-expandable__arrow">âŒ„</span>
                     </div>
                     <div class="filter-expandable__content">
-                        <div class="price-range-display" id="priceRangeDisplay">£14 - £65</div>
+                        <div class="price-range-display" id="priceRangeDisplay">&#163;14 - &#163;65</div>
                         <div class="price-range-slider-container">
                             <div class="price-range-track"></div>
                             <div class="price-range-selected" id="priceRangeSelected"></div>
@@ -2210,11 +2210,11 @@
                         <div class="price-range-inputs">
                             <div class="price-input-group">
                                 <label>Min</label>
-                                <input type="text" class="price-input" id="priceInputMin" value="£14">
+                                <input type="text" class="price-input" id="priceInputMin" value="&#163;14">
                             </div>
                             <div class="price-input-group">
                                 <label>Max</label>
-                                <input type="text" class="price-input" id="priceInputMax" value="£65">
+                                <input type="text" class="price-input" id="priceInputMax" value="&#163;65">
                             </div>
                         </div>
                     </div>
@@ -3235,10 +3235,10 @@
                     const displayMin = isVatOn() ? (minVal * 1.2).toFixed(2) : minVal.toFixed(2);
                     const displayMax = isVatOn() ? (maxVal * 1.2).toFixed(2) : maxVal.toFixed(2);
                     if (rangeDisplay) {
-                        rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+                        rangeDisplay.textContent = '\u00A3' + displayMin + ' - \u00A3' + displayMax;
                     }
-                    if (inputMin) inputMin.value = '£' + minVal;
-                    if (inputMax) inputMax.value = '£' + maxVal;
+                    if (inputMin) inputMin.value = '\u00A3' + minVal;
+                    if (inputMax) inputMax.value = '\u00A3' + maxVal;
                 }
 
                 function handlePriceSliderChange() {
@@ -3280,7 +3280,7 @@
                     // Input field handlers
                     if (inputMin) {
                         inputMin.addEventListener('change', function () {
-                            let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
+                            let val = parseInt(this.value.replace('\u00A3', '').replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = mobileCatalogMinPrice;
                             val = Math.max(mobileCatalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
                             sliderMin.value = val;
@@ -3290,7 +3290,7 @@
 
                     if (inputMax) {
                         inputMax.addEventListener('change', function () {
-                            let val = parseInt(this.value.replace('£', '').replace(/[^0-9]/g, ''));
+                            let val = parseInt(this.value.replace('\u00A3', '').replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = mobileCatalogMaxPrice;
                             val = Math.min(mobileCatalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
                             sliderMax.value = val;
@@ -3367,10 +3367,10 @@
             const displayMin = isVatOn() ? (newMinVal * 1.2).toFixed(2) : newMinVal.toFixed(2);
             const displayMax = isVatOn() ? (newMaxVal * 1.2).toFixed(2) : newMaxVal.toFixed(2);
             if (rangeDisplay) {
-                rangeDisplay.textContent = '£' + displayMin + ' - £' + displayMax;
+                rangeDisplay.textContent = '\u00A3' + displayMin + ' - \u00A3' + displayMax;
             }
-            if (inputMin) inputMin.value = '£' + newMinVal;
-            if (inputMax) inputMax.value = '£' + newMaxVal;
+            if (inputMin) inputMin.value = '\u00A3' + newMinVal;
+            if (inputMax) inputMax.value = '\u00A3' + newMaxVal;
 
             console.log('âœ… Mobile price slider range updated:', {
                 min: apiMin,
@@ -3762,7 +3762,7 @@
                 return;
             }
 
-            const fmtCurrency = (typeof ShopManager !== 'undefined' && ShopManager.formatCurrency) ? ShopManager.formatCurrency : (v => '£' + Number(v).toFixed(2));
+            const fmtCurrency = (typeof ShopManager !== 'undefined' && ShopManager.formatCurrency) ? ShopManager.formatCurrency : (v => '\u00A3' + Number(v).toFixed(2));
             const fmtVat = (typeof ShopManager !== 'undefined' && ShopManager.vatSuffix) ? ShopManager.vatSuffix : (() => 'ex. VAT');
 
             function getBrandLogo(b) {

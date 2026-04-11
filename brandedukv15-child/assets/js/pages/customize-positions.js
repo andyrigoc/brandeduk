@@ -104,7 +104,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || '\u00A3';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -323,7 +323,7 @@ function updateBasketTotalBox() {
                 No items in basket yet
             </div>
         `;
-        basketGrandTotal.textContent = '£0.00 ' + vatSuffix();
+        basketGrandTotal.textContent = '\u00A30.00 ' + vatSuffix();
         return;
     }
     
@@ -3717,7 +3717,7 @@ function updateSidebarCosts() {
                 digitizingHTML = `
                     <div class="digitizing-fee-row">
                         <span>Digitizing Fee (one-time)</span>
-                        <span>£25.00 <small>ex VAT</small></span>
+                        <span>\u00A325.00 <small>ex VAT</small></span>
                     </div>
                 `;
             }

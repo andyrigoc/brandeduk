@@ -232,7 +232,7 @@ function formatCurrency(baseAmount, options) {
     }
 
     options = options || {};
-    var currency = options.currency || '£';
+    var currency = options.currency || '\u00A3';
     var decimals = Number.isFinite(options.decimals) ? options.decimals : 2;
     var includeVat = options.includeVat !== false;
     var value = Number(baseAmount) || 0;
@@ -857,10 +857,10 @@ function initFilters() {
         priceSlider.max = max.toFixed(2);
         priceSlider.step = 0.01;
         priceSlider.value = max.toFixed(2);
-        priceLabel.textContent = `£${min.toFixed(2)} - £${priceSlider.value}`;
+        priceLabel.textContent = `\u00A3${min.toFixed(2)} - \u00A3${priceSlider.value}`;
 
         priceSlider.addEventListener('input', () => {
-            priceLabel.textContent = `£${priceSlider.min} - £${Number(priceSlider.value).toFixed(2)}`;
+            priceLabel.textContent = `\u00A3${priceSlider.min} - \u00A3${Number(priceSlider.value).toFixed(2)}`;
             applyFilters({ fromSlider: true });
         });
     }
@@ -988,7 +988,7 @@ function applyFilters(options = {}) {
         }
 
         // Keep label in sync with the latest bounds/value
-        label.textContent = `£${slider.min} - £${Number(slider.value).toFixed(2)}`;
+        label.textContent = `\u00A3${slider.min} - \u00A3${Number(slider.value).toFixed(2)}`;
         filters.priceMin = toPriceNumber(slider.min);
         filters.priceMax = toPriceNumber(slider.value);
     } else {
