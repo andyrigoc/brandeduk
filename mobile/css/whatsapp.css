@@ -18,15 +18,68 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: grab;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
     z-index: 101;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, left 0.3s ease, top 0.3s ease;
     -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    user-select: none;
+}
+.whatsapp-float.is-dragging {
+    cursor: grabbing;
+    transition: box-shadow 0.15s ease;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32);
+    transform: scale(1.12);
+}
+.whatsapp-float.is-over-dismiss {
+    transform: scale(0.7) !important;
+    opacity: 0.5;
+}
+.whatsapp-float.is-dismissed {
+    transform: scale(0) !important;
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .whatsapp-float:hover {
     transform: scale(1.06);
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+}
+
+/* Dismiss zone — appears at bottom center while dragging */
+.wa-dismiss-zone {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.6);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(150, 150, 150, 0.25);
+    border: 2px solid rgba(140, 140, 140, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
+}
+.wa-dismiss-zone.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+.wa-dismiss-zone.is-hover {
+    background: rgba(160, 160, 160, 0.3);
+    border-color: rgba(130, 130, 130, 0.8);
+    transform: translateX(-50%) scale(1.15);
+}
+.wa-dismiss-zone::after {
+    content: '\00d7';
+    font-size: 28px;
+    color: rgba(140, 140, 140, 0.8);
+    font-weight: 300;
 }
 
 /* Popup overlay */
