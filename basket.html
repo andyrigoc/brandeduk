@@ -513,31 +513,37 @@
             font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280;
         }
         .copy-logo-modal .source-logo {
-            padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+            padding: 16px 20px; display: flex; align-items: center; gap: 12px;
             background: #f9fafb; border-bottom: 1px solid #e5e7eb;
         }
-        .copy-logo-modal .source-logo img { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #e5e7eb; object-fit: contain; }
-        .copy-logo-modal .source-logo .source-info { font-size: 13px; }
-        .copy-logo-modal .source-logo .source-info strong { display: block; color: #1f2937; }
-        .copy-logo-modal .source-logo .source-info span { color: #6b7280; font-size: 12px; }
-        .copy-logo-modal .garment-list { padding: 12px 20px; overflow-y: auto; flex: 1; }
-        .copy-logo-modal .garment-list h4 { font-size: 13px; font-weight: 600; color: #6b7280; margin: 0 0 8px; }
+        .copy-logo-modal .source-logo img { width: 48px; height: 48px; border-radius: 8px; border: 1px solid #e5e7eb; object-fit: contain; background: #fff; }
+        .copy-logo-modal .source-logo .source-info { font-size: 14px; }
+        .copy-logo-modal .source-logo .source-info strong { display: block; color: #1f2937; font-size: 14px; }
+        .copy-logo-modal .source-logo .source-info span { color: #6b7280; font-size: 13px; }
+        .copy-logo-modal .source-logo .source-info span b { color: #1f2937; }
+        .copy-logo-modal .garment-list { padding: 16px 20px; overflow-y: auto; flex: 1; }
+        .copy-logo-modal .garment-list h4 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 0 12px; }
         .copy-logo-modal .garment-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; padding: 14px 12px;
+            border: 1px solid #e5e7eb; border-radius: 10px; cursor: pointer; margin-bottom: 10px;
+            transition: border-color 0.2s;
         }
-        .copy-logo-modal .garment-item:last-child { border-bottom: none; }
-        .copy-logo-modal .garment-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #273469; cursor: pointer; flex-shrink: 0; }
-        .copy-logo-modal .garment-item img { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #e5e7eb; object-fit: contain; }
-        .copy-logo-modal .garment-item .garment-info { font-size: 13px; color: #1f2937; flex: 1; }
-        .copy-logo-modal .garment-item .garment-info span { display: block; font-size: 11px; color: #6b7280; }
-        .copy-logo-modal .modal-actions { padding: 12px 20px 16px; border-top: 1px solid #e5e7eb; }
+        .copy-logo-modal .garment-item:has(input:checked) { border-color: #16a34a; background: #f0fdf4; }
+        .copy-logo-modal .garment-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: #16a34a; cursor: pointer; flex-shrink: 0; }
+        .copy-logo-modal .garment-item img { width: 48px; height: 48px; border-radius: 8px; border: 1px solid #e5e7eb; object-fit: contain; }
+        .copy-logo-modal .garment-item .garment-info { font-size: 14px; color: #1f2937; flex: 1; font-weight: 600; }
+        .copy-logo-modal .garment-item .garment-info span { display: block; font-size: 12px; color: #6b7280; font-weight: 400; }
+        .copy-logo-modal .modal-actions { padding: 16px 20px 20px; border-top: 1px solid #e5e7eb; }
         .copy-logo-modal .copy-btn {
             width: 100%; padding: 14px; background: #ea580c; color: #fff; border: none;
             border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
         }
         .copy-logo-modal .copy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .copy-logo-modal .cancel-link { display: block; text-align: center; margin-top: 8px; font-size: 13px; color: #6b7280; cursor: pointer; background: none; border: none; }
+        .copy-logo-modal .cancel-link {
+            display: block; width: 100%; text-align: center; margin-top: 8px; padding: 12px;
+            font-size: 14px; font-weight: 600; color: #1f2937; cursor: pointer;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+        }
 
         /* ===== DESKTOP (>1024px) ===== */
         @media (min-width: 1024px) {
@@ -1710,13 +1716,13 @@
         sourceEl.innerHTML = `
             <img src="${logo.logo || ''}" alt="Logo">
             <div class="source-info">
-                <strong>${methodIcon} ${method.charAt(0).toUpperCase() + method.slice(1)}</strong>
-                <span>Location: ${posName}</span>
+                <strong>${methodIcon} ${method.charAt(0).toUpperCase() + method.slice(1)} Logo</strong>
+                <span>Locations: <b>${posName}</b></span>
             </div>
         `;
 
         const listEl = document.getElementById('copyLogoGarmentList');
-        let listHtml = '<h4>Choose items to copy to</h4>';
+        let listHtml = '<h4>Choose Garment</h4>';
         basket.forEach((item, idx) => {
             if (idx === sourceItemIndex) return;
             // Skip if item already has a logo at this position
@@ -1728,7 +1734,10 @@
                     <input type="checkbox" data-target-index="${idx}">
                     <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                     <div class="garment-info">
-                        ${item.name} &#183; ${item.code} &#183; ${item.color} &#183; ${item.size}
+                        <strong>${item.name || 'Product'}</strong>
+                        <span>${item.code || ''}</span>
+                        <span>${item.color || ''}</span>
+                        <span>${item.size || ''}</span>
                     </div>
                 </label>
             `;
@@ -1781,7 +1790,7 @@
         saveBasket(basket);
         closeCopyLogoModal();
         renderBasket();
-        showToast(`Logo copied to ${count} item${count !== 1 ? 's' : ''}`);
+        showToast(`Logo replicated to ${count} item${count !== 1 ? 's' : ''}`);
     }
 
     // ========================
