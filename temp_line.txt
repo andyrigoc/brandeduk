@@ -1,1 +1,0 @@
-﻿                        if (submitBtn) { submitBtn.classList.add('submitted'); submitBtn.textContent = 'Quote Submitted! âœ“'; }
