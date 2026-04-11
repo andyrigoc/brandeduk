@@ -975,8 +975,31 @@
                 }
                 newBasket.push(item);
             } else {
-                // Unknown format, skip
-                changed = true;
+                // No sizes object and no size field — treat as One Size
+                if (!item.qty) {
+                    item.qty = item.quantity || item.totalQuantity || item.totalQty || 1;
+                    changed = true;
+                }
+                if (!item.size) {
+                    item.size = 'OS';
+                    changed = true;
+                }
+                if (!item.id) {
+                    item.id = makeRowId(item.code || item.productCode, item.color, item.size);
+                    changed = true;
+                }
+                if (typeof item.unitPrice === 'undefined') {
+                    item.unitPrice = parseFloat(item.price || 0);
+                    changed = true;
+                }
+                if (logos.length > 0) {
+                    item.logos = logos;
+                    delete item.positions;
+                    delete item.positionDesigns;
+                    delete item.customizations;
+                    changed = true;
+                }
+                newBasket.push(item);
             }
         });
 
