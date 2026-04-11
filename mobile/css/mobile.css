@@ -9659,13 +9659,32 @@ a.continue-shopping {
     border-radius: 50%;
     background: var(--gray-100);
     border: none;
-    font-size: 20px;
+    font-size: 0;
     color: var(--gray-600);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    position: relative;
+}
+
+.filters-dropup__close::before,
+.filters-dropup__close::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: var(--gray-600);
+    border-radius: 1px;
+}
+
+.filters-dropup__close::before {
+    transform: rotate(45deg);
+}
+
+.filters-dropup__close::after {
+    transform: rotate(-45deg);
 }
 
 .filters-dropup__close:active {
@@ -9896,13 +9915,17 @@ a.continue-shopping {
 }
 
 .filter-expandable__arrow {
-    font-size: 18px;
-    color: var(--gray-400);
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--gray-400);
+    border-bottom: 2px solid var(--gray-400);
+    transform: rotate(-45deg);
     transition: transform 0.3s ease;
+    font-size: 0;
 }
 
 .filter-expandable[data-expanded="true"] .filter-expandable__arrow {
-    transform: rotate(180deg);
+    transform: rotate(45deg);
 }
 
 .filter-expandable__content {
