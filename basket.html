@@ -1893,16 +1893,19 @@
                     const totalExVat = totalGarmentCost + customizationTotal + digitizingFee;
                     const vatAmount = totalExVat * 0.20;
 
+                    const totalIncVat = totalExVat + vatAmount;
+                    const displayTotal = includeVAT ? totalIncVat : totalExVat;
+
                     const quoteData = {
                         customer: { fullName: name, phone: phone, email: emailVal },
                         summary: {
                             totalQuantity, totalItems: basket.length, garmentCost: totalGarmentCost,
                             customizationCost: customizationTotal, digitizingFee, subtotal: totalExVat,
-                            vatRate: 0.20, vatAmount, totalExVat, totalIncVat: totalExVat + vatAmount,
-                            vatMode: includeVAT ? 'inc' : 'ex'
+                            vatRate: 0.20, vatAmount, totalExVat, totalIncVat,
+                            displayTotal, vatMode: includeVAT ? 'inc' : 'ex'
                         },
                         basket: basketItems, customizations: customizationsList,
-                        notes: [document.getElementById('orderNotesTextarea')?.value.trim()].filter(Boolean),
+                        notes: [document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || ''].filter(Boolean),
                         timestamp: new Date().toISOString()
                     };
 
