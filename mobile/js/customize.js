@@ -1905,6 +1905,33 @@
                 try { window.parent.postMessage({ type: 'closeCustomizePopup' }, '*'); } catch(e) {}
             }
         });
+
+        // ── AUTO-OPEN logo editor when editing a specific position from basket ──
+        const _editingPosition = sessionStorage.getItem('editingPosition');
+        if (_editingPosition) {
+            console.log('🎯 [positionsOnly] Auto-opening logo editor for position:', _editingPosition);
+            // Wait for restoreUIFromState (300ms) + DOM settle
+            setTimeout(() => {
+                const card = document.querySelector(`.position-card[data-position="${_editingPosition}"]`);
+                if (!card) {
+                    console.warn('⚠️ [positionsOnly] Position card not found:', _editingPosition);
+                    return;
+                }
+                // Ensure the checkbox is checked
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                if (checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+                // Find the active method for this position (embroidery or print)
+                const method = state.positionMethods[_editingPosition] || 'embroidery';
+                // Open the design modal (logo upload)
+                openDesignModal(_editingPosition, method, 'logo');
+                // Clean up so it doesn't re-trigger
+                sessionStorage.removeItem('editingPosition');
+                sessionStorage.removeItem('editingLogoIndex');
+            }, 600);
+        }
     }
 
     // === Initialize ===
@@ -5884,6 +5911,22 @@
         
         // Reset modal state
         resetDesignModal();
+
+        // ── PRE-POPULATE existing logo when editing from basket ──
+        const existingDesign = state.positionDesigns && state.positionDesigns[position];
+        if (existingDesign && existingDesign.logo) {
+            const uploadZone = document.getElementById('designUploadZone');
+            const uploadPreview = document.getElementById('designUploadPreview');
+            const previewImg = document.getElementById('designPreviewImg');
+            if (uploadZone) { uploadZone.hidden = true; uploadZone.style.display = 'none'; }
+            if (previewImg) { previewImg.src = existingDesign.logo; }
+            if (uploadPreview) { uploadPreview.hidden = false; }
+            // Update title to indicate editing
+            if (modalTitle) {
+                const posName = card?.querySelector('.position-checkbox span')?.textContent || position.replace(/-/g, ' ');
+                modalTitle.textContent = `Edit Logo - ${posName}`;
+            }
+        }
         
         // Scroll to specific section based on selection
         setTimeout(() => {
