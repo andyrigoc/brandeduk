@@ -407,6 +407,41 @@
         .customize-popup-close svg { stroke: #333; }
         #customizePopupIframe { width: 100%; height: 100%; border: none; }
 
+        /* ===== Quick Add Logo Modal ===== */
+        .quick-logo-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 20px;
+        }
+        .quick-logo-overlay.active { opacity: 1; visibility: visible; }
+        .quick-logo-modal {
+            background: #fff; border-radius: 16px; width: 100%; max-width: 400px;
+            padding: 24px; position: relative; transform: translateY(20px);
+            transition: transform 0.25s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .quick-logo-overlay.active .quick-logo-modal { transform: translateY(0); }
+        .quick-logo-modal .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .quick-logo-modal .modal-header h3 { margin: 0; font-size: 1.3rem; color: #1e293b; }
+        .quick-logo-modal .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #64748b; padding: 0 4px; }
+        .quick-logo-existing { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .quick-logo-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.2s;
+        }
+        .quick-logo-item:hover { border-color: #273469; background: #f8fafc; }
+        .quick-logo-item img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: #f1f5f9; padding: 4px; }
+        .quick-logo-item-info { flex: 1; }
+        .quick-logo-item-info .logo-name { font-weight: 600; font-size: 0.95rem; color: #1e293b; }
+        .quick-logo-item-info .logo-detail { font-size: 0.8rem; color: #64748b; }
+        .quick-logo-positions-btn {
+            width: 100%; padding: 14px; border: 2px dashed #cbd5e1; border-radius: 12px;
+            background: #f8fafc; color: #475569; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .quick-logo-positions-btn:hover { border-color: #273469; color: #273469; background: #eff6ff; }
+
         /* ===== Quote Request Popup ===== */
         .quote-popup-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -711,7 +746,7 @@
                 <div class="summary-actions">
                     <a href="mobile/shop-mobile.html" class="btn-continue-shopping">&lt;- Continue Shopping / Add another item</a>
                     <button class="btn-share-basket" id="shareBasketBtn">Share Basket</button>
-                    <button class="btn-checkout" id="checkoutBtn">Continue to checkout</button>
+                    <button class="btn-checkout" id="checkoutBtn">Send Quote</button>
                 </div>
             </div>
 
@@ -805,6 +840,25 @@
         </div>
     </div>
 
+    <!-- Quick Add Logo Modal (appears when logos already exist in basket) -->
+    <div class="quick-logo-overlay" id="quickLogoOverlay">
+        <div class="quick-logo-modal">
+            <div class="modal-header">
+                <h3>Add Logo</h3>
+                <button class="modal-close" id="quickLogoClose">&times;</button>
+            </div>
+            <div class="quick-logo-existing" id="quickLogoExisting"></div>
+            <div class="quick-logo-actions">
+                <button class="quick-logo-positions-btn" id="quickLogoPositionsBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3v18M3 12h18"/>
+                    </svg>
+                    Choose Position &amp; Upload New Logo
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Action Bar (mobile) -->
     <div class="basket-action-bar" id="actionBar" style="display:none;">
         <div class="action-bar-summary">
@@ -816,7 +870,7 @@
                 <path d="M22 2L11 13"/>
                 <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
             </svg>
-            Continue to checkout
+            Send Quote
         </button>
     </div>
 
@@ -884,7 +938,7 @@
                 sizeObj = converted;
             }
 
-            const needsSplit = sizeObj && typeof sizeObj === 'object' && Object.keys(sizeObj).length > 0 && !item.size;
+            const needsSplit = sizeObj && typeof sizeObj === 'object' && Object.keys(sizeObj).length > 0;
 
             if (needsSplit) {
                 // Old format: split into per-size rows
@@ -1368,7 +1422,134 @@
         if (itemIndex < 0 || itemIndex >= basket.length) return;
         const item = basket[itemIndex];
 
-        // Write logos back as positions/positionDesigns for customize.js compatibility
+        // Collect all unique logos from ALL basket items
+        const existingLogos = _collectAllLogos(basket, itemIndex);
+
+        if (existingLogos.length > 0) {
+            // Show quick picker modal
+            _showQuickLogoModal(itemIndex, existingLogos);
+        } else {
+            // No existing logos anywhere — go straight to full customize flow
+            _openFullCustomizeForItem(itemIndex);
+        }
+    }
+
+    /** Collect unique logos from the entire basket (optionally excluding the target item's occupied positions) */
+    function _collectAllLogos(basket, targetItemIndex) {
+        const seen = new Set();
+        const logos = [];
+        const targetItem = basket[targetItemIndex];
+        const occupiedPositions = (targetItem.logos || []).map(l => l.position);
+
+        basket.forEach(item => {
+            if (!item.logos) return;
+            item.logos.forEach(logo => {
+                const key = (logo.logo || '') + '|' + (logo.position || '') + '|' + (logo.method || '');
+                if (!seen.has(key) && logo.logo) {
+                    seen.add(key);
+                    logos.push({
+                        logo: logo.logo,
+                        position: logo.position,
+                        positionLabel: logo.positionLabel || toReadablePosition(logo.position),
+                        method: logo.method || 'print',
+                        unitPrice: logo.unitPrice || 0,
+                        alreadyOnTarget: occupiedPositions.includes(logo.position)
+                    });
+                }
+            });
+        });
+        return logos;
+    }
+
+    /** Show the quick logo picker modal */
+    function _showQuickLogoModal(itemIndex, existingLogos) {
+        const overlay = document.getElementById('quickLogoOverlay');
+        const container = document.getElementById('quickLogoExisting');
+        const posBtn = document.getElementById('quickLogoPositionsBtn');
+        if (!overlay || !container) return;
+
+        overlay.dataset.targetItem = itemIndex;
+
+        let html = '<p style="font-size:0.85rem;color:#64748b;margin:0 0 10px;">Use an existing logo:</p>';
+        existingLogos.forEach((logo, i) => {
+            const isEmb = logo.method === 'embroidery';
+            const methodLabel = isEmb ? 'Embroidery' : 'Print';
+            const disabled = logo.alreadyOnTarget ? ' style="opacity:.45;pointer-events:none;"' : '';
+            const badge = logo.alreadyOnTarget ? ' <span style="font-size:0.7rem;color:#ef095d;">(already added)</span>' : '';
+            html += `
+                <div class="quick-logo-item" data-logo-idx="${i}"${disabled}>
+                    <img src="${logo.logo}" alt="Logo" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                    <div class="quick-logo-item-info">
+                        <div class="logo-name">${logo.positionLabel}${badge}</div>
+                        <div class="logo-detail">${methodLabel} &#183; ${formatCurrency(logo.unitPrice)}/item</div>
+                    </div>
+                </div>`;
+        });
+        container.innerHTML = html;
+
+        // Bind click on each logo card
+        container.querySelectorAll('.quick-logo-item').forEach((card, i) => {
+            card.addEventListener('click', () => {
+                if (existingLogos[i].alreadyOnTarget) return;
+                _applyQuickLogo(itemIndex, existingLogos[i]);
+                _closeQuickLogoModal();
+            });
+        });
+
+        // "Choose Position & Upload New Logo" button
+        if (posBtn) {
+            posBtn.onclick = () => {
+                _closeQuickLogoModal();
+                _openFullCustomizeForItem(itemIndex);
+            };
+        }
+
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function _closeQuickLogoModal() {
+        const overlay = document.getElementById('quickLogoOverlay');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    /** Apply an existing logo to a basket item (all size rows for same product+color) */
+    function _applyQuickLogo(itemIndex, logoData) {
+        const basket = getBasket();
+        if (itemIndex < 0 || itemIndex >= basket.length) return;
+        const item = basket[itemIndex];
+        const code = item.code || '';
+        const color = item.color || '';
+
+        const newLogo = {
+            position: logoData.position,
+            positionLabel: logoData.positionLabel,
+            method: logoData.method,
+            logo: logoData.logo,
+            unitPrice: logoData.unitPrice
+        };
+
+        // Add to all items with same code+color (all size rows)
+        basket.forEach(bi => {
+            if ((bi.code || '') === code && (bi.color || '') === color) {
+                if (!bi.logos) bi.logos = [];
+                // Don't duplicate same position
+                if (!bi.logos.some(l => l.position === newLogo.position)) {
+                    bi.logos.push(JSON.parse(JSON.stringify(newLogo)));
+                }
+            }
+        });
+
+        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        renderBasket();
+    }
+
+    /** Open the full customize positions popup for an item */
+    function _openFullCustomizeForItem(itemIndex) {
+        const basket = getBasket();
+        const item = basket[itemIndex];
+
         _writeLogosAsOldFormat(itemIndex);
 
         sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
@@ -1376,7 +1557,6 @@
         sessionStorage.removeItem('editingPosition');
         sessionStorage.setItem('returnAfterCustomize', 'basket');
 
-        // Pass occupied positions so the customize page can mark them
         if (item.logos && item.logos.length > 0) {
             const occupied = item.logos.map(l => l.position);
             sessionStorage.setItem('occupiedPositions', JSON.stringify(occupied));
@@ -1441,6 +1621,12 @@
         if (e.target.id === 'customizePopupOverlay') closeCustomizePopup();
     });
 
+    // Quick Logo Modal close handlers
+    document.getElementById('quickLogoClose')?.addEventListener('click', _closeQuickLogoModal);
+    document.getElementById('quickLogoOverlay')?.addEventListener('click', (e) => {
+        if (e.target.id === 'quickLogoOverlay') _closeQuickLogoModal();
+    });
+
     window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'closeCustomizePopup') closeCustomizePopup();
     });
@@ -1482,7 +1668,7 @@
                     <input type="checkbox" data-target-index="${idx}">
                     <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                     <div class="garment-info">
-                        ${item.name} Â· ${item.code} Â· ${item.color} Â· ${item.size}
+                        ${item.name} &#183; ${item.code} &#183; ${item.color} &#183; ${item.size}
                     </div>
                 </label>
             `;

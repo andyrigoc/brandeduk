@@ -4802,7 +4802,7 @@ a {
     gap: 6px;
 }
 .logo-gallery__file-types::before {
-    content: 'Ã¢Å“â€œ';
+    content: '\2713';
     color: #273469;
     font-weight: 700;
 }

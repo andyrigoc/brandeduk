@@ -422,7 +422,7 @@ function addToQuote() {
     updateBasketCount();
     
     alert('Added to quote basket!');
-    window.location.href = 'quote-basket.html';
+    window.location.href = 'basket.html';
 }
 
 function updateBasketCount() {

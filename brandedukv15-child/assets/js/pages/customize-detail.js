@@ -926,7 +926,7 @@ function validateAndNext() {
     } else {
         // Go to basket
         console.log('All positions done, going to basket');
-        window.location.href = 'quote-basket.html';
+        window.location.href = 'basket.html';
     }
 }
 

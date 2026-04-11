@@ -142,7 +142,7 @@ function renderBasketProductSummary(basket) {
         if (Object.keys(sizes).length > 0) {
             qty = Object.values(sizes).reduce(function(s,q){ return s+q; }, 0);
         } else {
-            qty = parseInt(item.quantity) || 1;
+            qty = parseInt(item.qty) || parseInt(item.quantity) || 1;
         }
         var unitPrice = Number(item.unitPrice || item.price) || 0;
         var sizeStr = item.size || Object.keys(sizes).map(function(s){ return s+'×'+sizes[s]; }).join(', ') || '-';
@@ -165,10 +165,16 @@ function renderBasketCustomizationSummary(basket) {
     basket.forEach(function(item) {
         var itemName = item.name || item.code || 'Product';
         var sizes = item.sizes || item.quantities || {};
-        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.quantity) || 1);
+        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.qty) || parseInt(item.quantity) || 1);
 
+        // V2 format: logos[]
+        if (item.logos && item.logos.length > 0) {
+            item.logos.forEach(function(logo) {
+                allCustom.push({ position: logo.positionLabel || logo.position, method: logo.method === 'embroidery' ? 'Embroidery' : 'Print', unitPrice: logo.unitPrice || 0, qty: qty, itemName: itemName });
+            });
+        }
         // Collect from customizations array
-        if (item.customizations && item.customizations.length > 0) {
+        else if (item.customizations && item.customizations.length > 0) {
             item.customizations.forEach(function(c) {
                 allCustom.push({ position: c.position || c.posKey, method: c.method, unitPrice: c.unitPrice || 0, qty: qty, itemName: itemName });
             });
@@ -212,13 +218,22 @@ function calculateBasketBreakdown(basket) {
 
     basket.forEach(function(item) {
         var sizes = item.sizes || item.quantities || {};
-        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.quantity) || 1);
+        var qty = Object.keys(sizes).length > 0 ? Object.values(sizes).reduce(function(s,q){ return s+q; }, 0) : (parseInt(item.qty) || parseInt(item.quantity) || 1);
         var unitPrice = Number(item.unitPrice || item.price) || 0;
         garmentsTotal += unitPrice * qty;
 
         // Application costs
         var seenPos = {};
-        if (item.customizations && item.customizations.length > 0) {
+        // V2 format: logos[]
+        if (item.logos && item.logos.length > 0) {
+            item.logos.forEach(function(logo) {
+                var pk = (logo.position || '') + '|' + (logo.method || '');
+                if (seenPos[pk]) return; seenPos[pk] = true;
+                applicationTotal += (logo.unitPrice || 0) * qty;
+                if (logo.method === 'embroidery' && logo.logo) uniqueEmbLogos[logo.logo] = true;
+            });
+        }
+        else if (item.customizations && item.customizations.length > 0) {
             item.customizations.forEach(function(c) {
                 var pk = (c.posKey || c.position || '') + '|' + (c.method || '');
                 if (seenPos[pk]) return; seenPos[pk] = true;

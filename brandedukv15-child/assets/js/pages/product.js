@@ -2795,7 +2795,7 @@ function addCustomizedItemToBasket() {
 
     // Close modal and redirect to basket
     closeCustomizationModal();
-    window.location.href = 'quote-basket.html';
+    window.location.href = 'basket.html';
 }
 
 function showValidationError(message) {
