@@ -6413,34 +6413,12 @@ a {
     object-fit: contain;
 }
 
-/* Logo Overlay Box - posizione fissa sul prodotto */
+/* Logo Overlay Box - HIDDEN (only show mini preview below) */
 .logo-overlay-box {
-    position: absolute;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    /* Non interattivo */
-    z-index: 10;
-    user-select: none;
-    transform: translate(-50%, -50%);
-    /* Centra rispetto alle coordinate */
+    display: none !important;
 }
 
-.logo-overlay-box:not([hidden]) {
-    display: flex;
-}
-
-.logo-overlay-box.active {
-    display: flex;
-}
-
-/* Removed: dragging state - no longer draggable */
-
-/* Smooth transition for visibility */
-.logo-overlay-box:not([hidden]) {
-    animation: logoFadeIn 0.3s ease-out;
-}
+/* Logo overlay completely disabled - mini preview only */
 
 @keyframes logoFadeIn {
     from {
