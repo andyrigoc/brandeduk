@@ -1382,12 +1382,12 @@ a {
 }
 
 .tier-card.active {
-    border-color: var(--gray-200);
-    border-width: 1px;
-    background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+    border-color: #84cc16;
+    border-width: 2px;
+    background: linear-gradient(135deg, #ecfccb, #d9f99d);
+    box-shadow: 0 2px 10px rgba(132, 204, 22, 0.25), 0 1px 4px rgba(0,0,0,0.08);
     opacity: 1;
-    transform: scale(1.02);
+    transform: scale(1.04);
 }
 
 .tier-card.best {
@@ -1436,7 +1436,8 @@ a {
 }
 
 .tier-card.active .tier-price {
-    color: var(--purple);
+    color: #000000;
+    font-weight: 800;
 }
 
 .tier-card.best .tier-price {
