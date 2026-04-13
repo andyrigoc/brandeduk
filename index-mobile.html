@@ -15,11 +15,12 @@
     </script>
     <!-- Mobile-First CSS -->
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260331A">
-    <link rel="stylesheet" href="mobile/hero/hero.css?v=20260409a">
+    <link rel="stylesheet" href="mobile/hero/hero.css?v=20260413a">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
+    <link rel="stylesheet" href="mobile/css/upload-logo-modal.css?v=20260413a">
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260409B">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
@@ -1008,15 +1009,15 @@
 
             <!-- Banner Dots Navigation -->
             <div class="hero-banner-dots">
-                <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1" style="width:12px;height:12px;border-radius:50%;border:1.5px solid #273469;background:#273469;"></button>
-                <button class="banner-dot" data-banner="2" aria-label="Banner 2" style="width:12px;height:12px;border-radius:50%;border:1.5px solid #273469;background:transparent;"></button>
-                <button class="banner-dot" data-banner="3" aria-label="Banner 3" style="width:12px;height:12px;border-radius:50%;border:1.5px solid #273469;background:transparent;"></button>
+                <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1"></button>
+                <button class="banner-dot" data-banner="2" aria-label="Banner 2"></button>
+                <button class="banner-dot" data-banner="3" aria-label="Banner 3"></button>
             </div>
         </div>
 
         <!-- Quick Actions -->
         <section class="quick-actions">
-            <a href="/customize" class="quick-action-card upload-card">
+            <button type="button" class="quick-action-card upload-card" id="openUploadModal">
                 <div class="quick-action-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1031,7 +1032,7 @@
                 <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
-            </a>
+            </button>
             <a href="tel:02089742722" class="quick-action-card call-card">
                 <div class="quick-action-icon phone-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3448,6 +3449,89 @@
         </div>
     </div>
     <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+
+    <!-- Upload Logo Modal -->
+    <div class="upload-modal-overlay" id="uploadModalOverlay"></div>
+    <div class="upload-modal" id="uploadModal">
+        <div class="upload-modal__header">
+            <h2 class="upload-modal__title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Upload Your Logo
+            </h2>
+            <button class="upload-modal__close" id="closeUploadModal" aria-label="Close">&times;</button>
+        </div>
+        <div class="upload-modal__body">
+            <!-- Form -->
+            <form class="upload-modal__form" id="uploadLogoForm">
+                <!-- Logo Upload Zone -->
+                <div class="upload-logo-zone" id="uploadLogoZone">
+                    <input type="file" id="logoFileInput" accept="image/*,.pdf,.ai,.eps,.svg" hidden>
+                    <div class="upload-logo-zone__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <p class="upload-logo-zone__text">Tap to upload your logo</p>
+                    <p class="upload-logo-zone__hint">PNG, JPG, PDF, AI, EPS, SVG</p>
+                    <div class="upload-logo-zone__preview">
+                        <img id="logoPreviewImg" src="" alt="Logo preview">
+                        <p class="upload-logo-zone__filename" id="logoFileName"></p>
+                        <p class="upload-logo-zone__change">Tap to change</p>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="upload-form-row">
+                    <div class="upload-form-group">
+                        <label class="upload-form-label">Name <span class="required">*</span></label>
+                        <input type="text" class="upload-form-input" id="uploadName" name="name" required placeholder="Your name">
+                    </div>
+                    <div class="upload-form-group">
+                        <label class="upload-form-label">Surname <span class="required">*</span></label>
+                        <input type="text" class="upload-form-input" id="uploadSurname" name="surname" required placeholder="Your surname">
+                    </div>
+                </div>
+                <div class="upload-form-group">
+                    <label class="upload-form-label">Phone <span class="required">*</span></label>
+                    <input type="tel" class="upload-form-input" id="uploadPhone" name="phone" required placeholder="Your phone number">
+                </div>
+                <div class="upload-form-group">
+                    <label class="upload-form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="upload-form-input" id="uploadEmail" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="upload-form-group">
+                    <label class="upload-form-label">Notes</label>
+                    <textarea class="upload-form-input upload-form-textarea" id="uploadNotes" name="notes" placeholder="Tell us about your project, quantity needed, questions..."></textarea>
+                </div>
+
+                <button type="submit" class="upload-modal__submit" id="uploadSubmitBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Send Enquiry
+                </button>
+            </form>
+
+            <!-- Success Message -->
+            <div class="upload-modal__success" id="uploadSuccess">
+                <div class="upload-modal__success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h3>Thank You!</h3>
+                <p>We've received your enquiry and will get back to you shortly.</p>
+            </div>
+        </div>
+    </div>
+    <script src="mobile/js/upload-logo-modal.js?v=20260413a"></script>
 
 </body>
 </html>

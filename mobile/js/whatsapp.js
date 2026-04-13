@@ -24,16 +24,9 @@
 
     // === Dismiss state ===
     var dismissKey = 'wa-dismissed';
-    // On hard refresh (reload) → clear dismissed state so bubble reappears
-    // On navigation (same session) → keep dismissed state
-    var navEntries = performance.getEntriesByType('navigation');
-    var isReload = navEntries.length > 0 ? navEntries[0].type === 'reload' : (performance.navigation && performance.navigation.type === 1);
-    if (isReload) {
-        sessionStorage.removeItem(dismissKey);
-    }
-    if (sessionStorage.getItem(dismissKey) === '1') {
-        openBtn.classList.add('is-dismissed');
-    }
+    // Always clear dismissed state on page load so the button reappears on every navigation
+    sessionStorage.removeItem(dismissKey);
+    openBtn.classList.remove('is-dismissed');
 
     // === Position helpers ===
     function getBtnCenter() {

@@ -812,11 +812,11 @@
 }
 
 .hero-dot:hover {
-  background: #9ca3af;
+  background: #a3e635;
 }
 
 .hero-dot--active {
-  background: #6b7280;
+  background: #84cc16;
   transform: scale(1.3);
 }
 

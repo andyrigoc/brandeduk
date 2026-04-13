@@ -1,0 +1,327 @@
+/* ══════════════════════════════════════════════════════
+   UPLOAD LOGO MODAL
+   Simple contact modal with logo upload for quick inquiries
+   ══════════════════════════════════════════════════════ */
+
+/* Button Reset for Upload Card */
+button.quick-action-card {
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+}
+
+/* Overlay */
+.upload-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10000;
+}
+.upload-modal-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Modal Container */
+.upload-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 10001;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+}
+.upload-modal-overlay.is-active + .upload-modal,
+.upload-modal.is-active {
+    transform: translateY(0);
+}
+
+/* Modal Header */
+.upload-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+    border-radius: 24px 24px 0 0;
+}
+.upload-modal__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #273469;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.upload-modal__title svg {
+    width: 24px;
+    height: 24px;
+    color: #995BD5;
+}
+.upload-modal__close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.upload-modal__close:hover {
+    background: #e5e7eb;
+    transform: scale(1.05);
+}
+
+/* Modal Body */
+.upload-modal__body {
+    padding: 20px;
+}
+
+/* Logo Upload Zone */
+.upload-logo-zone {
+    border: 2px dashed #995BD5;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    background: #faf8ff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 20px;
+}
+.upload-logo-zone:hover,
+.upload-logo-zone.drag-over {
+    border-color: #7c3aed;
+    background: #f3effb;
+}
+.upload-logo-zone.has-file {
+    border-style: solid;
+    border-color: #84cc16;
+    background: #f7fee7;
+}
+.upload-logo-zone__icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
+    background: #995BD5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.upload-logo-zone__icon svg {
+    width: 28px;
+    height: 28px;
+    color: #fff;
+}
+.upload-logo-zone__text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #273469;
+    margin-bottom: 4px;
+}
+.upload-logo-zone__hint {
+    font-size: 13px;
+    color: #888;
+}
+.upload-logo-zone__preview {
+    display: none;
+}
+.upload-logo-zone.has-file .upload-logo-zone__preview {
+    display: block;
+}
+.upload-logo-zone.has-file .upload-logo-zone__icon,
+.upload-logo-zone.has-file .upload-logo-zone__text,
+.upload-logo-zone.has-file .upload-logo-zone__hint {
+    display: none;
+}
+.upload-logo-zone__preview img {
+    max-width: 120px;
+    max-height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.upload-logo-zone__filename {
+    font-size: 14px;
+    font-weight: 600;
+    color: #166534;
+    margin-bottom: 4px;
+    word-break: break-all;
+}
+.upload-logo-zone__change {
+    font-size: 13px;
+    color: #995BD5;
+    text-decoration: underline;
+}
+
+/* Form Fields */
+.upload-form-group {
+    margin-bottom: 16px;
+}
+.upload-form-row {
+    display: flex;
+    gap: 12px;
+}
+.upload-form-row .upload-form-group {
+    flex: 1;
+}
+.upload-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #273469;
+    margin-bottom: 6px;
+}
+.upload-form-label span.required {
+    color: #ef4444;
+}
+.upload-form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #333;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+}
+.upload-form-input:focus {
+    outline: none;
+    border-color: #995BD5;
+    box-shadow: 0 0 0 3px rgba(153, 91, 213, 0.15);
+}
+.upload-form-input::placeholder {
+    color: #aaa;
+}
+.upload-form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Submit Button */
+.upload-modal__submit {
+    width: 100%;
+    padding: 16px 24px;
+    background: #995BD5;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.25s ease, transform 0.2s ease;
+    margin-top: 8px;
+}
+.upload-modal__submit:hover {
+    background: #7c3aed;
+}
+.upload-modal__submit:active {
+    transform: scale(0.98);
+}
+.upload-modal__submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+.upload-modal__submit svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Success State */
+.upload-modal__success {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+}
+.upload-modal__success.is-visible {
+    display: block;
+}
+.upload-modal__success-icon {
+    width: 80px;
+    height: 80px;
+    background: #84cc16;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+.upload-modal__success-icon svg {
+    width: 40px;
+    height: 40px;
+    color: #fff;
+}
+.upload-modal__success h3 {
+    font-size: 22px;
+    color: #273469;
+    margin-bottom: 10px;
+}
+.upload-modal__success p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Form Hidden when success */
+.upload-modal__form.is-hidden {
+    display: none;
+}
+
+/* Spinner */
+.upload-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: uploadSpin 0.8s linear infinite;
+}
+@keyframes uploadSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Safety padding for bottom nav */
+.upload-modal__body {
+    padding-bottom: 100px;
+}
+
+/* Tablet+ adjustments */
+@media (min-width: 768px) {
+    .upload-modal {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100%);
+        bottom: 0;
+        border-radius: 24px 24px 0 0;
+    }
+    .upload-modal-overlay.is-active + .upload-modal,
+    .upload-modal.is-active {
+        transform: translateX(-50%) translateY(0);
+    }
+}

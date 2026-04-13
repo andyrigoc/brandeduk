@@ -1377,7 +1377,7 @@
         font-size: 0.9rem;
         font-weight: 700;
         color: #fff;
-        background: #0d9e6d;
+        background: #995BD5;
         border: none;
         border-radius: 4px;
         cursor: pointer;
@@ -1386,7 +1386,7 @@
     }
 
     .customize-page .rala-cta-row-cust .rala-btn-primary-cust:hover {
-        background: #0b8a5e;
+        background: #7c3aed;
     }
 
     .customize-page .rala-cta-row-cust .rala-btn-secondary-cust {
