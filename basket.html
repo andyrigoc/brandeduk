@@ -1883,7 +1883,9 @@
                                 customizationsList.push({
                                     position: logo.positionLabel || logo.position,
                                     method: logo.method === 'embroidery' ? 'Embroidery' : 'Print',
-                                    hasLogo: !!logo.logo, unitPrice: logoUp, lineTotal: lineTotal, quantity: qty
+                                    hasLogo: !!logo.logo,
+                                    logo: logo.logo || null,
+                                    unitPrice: logoUp, lineTotal: lineTotal, quantity: qty
                                 });
                             });
                         }

@@ -2662,6 +2662,7 @@
                                     method: method === 'print' ? 'Print' : 'Embroidery',
                                     type: hasLogo ? 'logo' : 'text',
                                     hasLogo: hasLogo,
+                                    logo: posData.logo || state.positionDesigns?.[pos]?.logo || null,
                                     unitPrice: unitPrice,
                                     lineTotal: lineTotal,
                                     quantity: quantity
@@ -2688,6 +2689,7 @@
                                     method: method === 'print' ? 'Print' : 'Embroidery',
                                     type: c.type || 'logo',
                                     hasLogo: !!c.hasLogo,
+                                    logo: c.logo || null,
                                     unitPrice: unitPrice,
                                     lineTotal: lineTotal,
                                     quantity: quantity
@@ -2721,6 +2723,7 @@
                             method: method === 'print' ? 'Print' : 'Embroidery',
                             type: hasLogo ? 'logo' : (customization.text ? 'text' : 'logo'),
                             hasLogo: hasLogo,
+                            logo: customization.logo || customization.logoUrl || customization.logoData || null,
                             unitPrice: unitPrice,
                             lineTotal: lineTotal,
                             quantity: quantity

@@ -1602,6 +1602,7 @@
                                         method: m==='print'?'Print':'Embroidery',
                                         type: pd.logo?'logo':'text',
                                         hasLogo: !!pd.logo,
+                                        logo: pd.logo || null,
                                         unitPrice: uP,
                                         lineTotal: lt,
                                         quantity: qty
@@ -1617,6 +1618,7 @@
                                         method: c.method || 'Embroidery',
                                         type: c.type || 'logo',
                                         hasLogo: !!c.hasLogo,
+                                        logo: c.logo || null,
                                         unitPrice: uP,
                                         lineTotal: lt,
                                         quantity: c.qty || qty
