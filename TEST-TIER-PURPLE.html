@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - Tier Purple</title>
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=purple2026">
+</head>
+<body style="padding: 40px; background: #f5f5f5;">
+    <h1>TEST - Tier Item Active State</h1>
+    <p>Se vedi VIOLA = CSS caricato correttamente. Se vedi VERDE = cache del browser.</p>
+    
+    <div class="tier-pricing-compact" style="max-width: 600px; margin: 20px 0;">
+        <div class="tier-item">
+            <span class="tier-qty">1-9</span>
+            <span class="tier-price">£3.35</span>
+        </div>
+        <div class="tier-item active">
+            <span class="tier-qty">10-24</span>
+            <span class="tier-price">£3.04</span>
+            <span class="tier-save">-9%</span>
+        </div>
+        <div class="tier-item">
+            <span class="tier-qty">25-49</span>
+            <span class="tier-price">£2.90</span>
+            <span class="tier-save">-13%</span>
+        </div>
+        <div class="tier-item highlight">
+            <span class="tier-qty">50+</span>
+            <span class="tier-price">£2.76</span>
+            <span class="tier-save">-18%</span>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: white; border-radius: 8px;">
+        <h2>Cosa dovresti vedere:</h2>
+        <ul>
+            <li>Secondo tier (10-24): <strong>VIOLA trasparente con testo BIANCO</strong></li>
+            <li>Quarto tier (50+): <strong>VIOLA trasparente con testo BIANCO</strong></li>
+            <li>Badge "SAVE": <strong>VIOLA</strong> sui tier normali, <strong>BIANCO</strong> sugli attivi</li>
+        </ul>
+        <p><strong>Se vedi VERDE</strong>: Fai hard refresh (Ctrl+Shift+F5) o svuota cache browser.</p>
+    </div>
+</body>
+</html>

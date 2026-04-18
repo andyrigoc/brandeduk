@@ -1082,7 +1082,13 @@
         .tier-card.active {
             border: 2px solid var(--purple);
             box-shadow: 0 0 0 2px var(--purple);
-            background: rgba(39, 52, 105, 0.05);
+            background: rgba(124, 58, 237, 0.85);
+        }
+        
+        .tier-card.active .tier-qty,
+        .tier-card.active .tier-price,
+        .tier-card.active .tier-save {
+            color: #fff;
         }
 
         .tier-card.inactive {
@@ -1111,7 +1117,7 @@
             display: block;
             font-size: 10px;
             font-weight: 600;
-            color: var(--green);
+            color: var(--purple);
             margin-top: 2px;
         }
 
