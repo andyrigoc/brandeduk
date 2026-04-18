@@ -9245,7 +9245,10 @@
                 totalQty: state.quantity,
                 productCode: baseProductCode
             };
-            showAddedToQuoteModal(summaryItem);
+            // Wait 2 seconds before showing the modal
+            setTimeout(() => {
+                showAddedToQuoteModal(summaryItem);
+            }, 2000);
         }
     }
 
