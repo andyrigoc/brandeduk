@@ -601,19 +601,29 @@ html, body {
 }
 
 .tier-item.active {
-    border: 3px solid #273469;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px #273469;
-    background: #ffffff;
+    border: 3px solid #7c3aed;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px rgba(124, 58, 237, 0.3);
+    background: rgba(124, 58, 237, 0.85);
 }
 
 .tier-item.active .tier-qty,
 .tier-item.active .tier-price {
-    color: #273469;
+    color: #fff;
+}
+
+.tier-item.active .tier-save {
+    color: #fff;
 }
 
 .tier-item.highlight {
-    border-color: #10b981;
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-color: #7c3aed;
+    background: rgba(124, 58, 237, 0.85);
+}
+
+.tier-item.highlight .tier-qty,
+.tier-item.highlight .tier-price,
+.tier-item.highlight .tier-save {
+    color: #fff;
 }
 
 .tier-qty {
@@ -688,7 +698,7 @@ html, body {
 .tier-save {
     font-size: 0.85rem;
     font-weight: 800;
-    color: #10b981;
+    color: #7c3aed;
     margin-top: 1px;
 }
 
