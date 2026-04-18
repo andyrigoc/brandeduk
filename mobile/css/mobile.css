@@ -1382,10 +1382,10 @@ a {
 }
 
 .tier-card.active {
-    border-color: #84cc16;
+    border-color: #7c3aed;
     border-width: 2px;
-    background: linear-gradient(135deg, #ecfccb, #d9f99d);
-    box-shadow: 0 2px 10px rgba(132, 204, 22, 0.25), 0 1px 4px rgba(0,0,0,0.08);
+    background: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.25), 0 1px 4px rgba(0,0,0,0.08);
     opacity: 1;
     transform: scale(1.04);
 }
@@ -1435,8 +1435,14 @@ a {
     margin-top: 1px;
 }
 
+.tier-card.active .tier-qty,
+.tier-card.active .tier-price,
+.tier-card.active .tier-suffix {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .tier-card.active .tier-price {
-    color: #000000;
     font-weight: 800;
 }
 
@@ -1450,8 +1456,8 @@ a {
     padding: 1px 4px;
     font-size: 8px;
     font-weight: 700;
-    color: var(--green);
-    background: rgba(22, 163, 74, 0.1);
+    color: #000000;
+    background: #ffb20a;
     border-radius: 6px;
 }
 
