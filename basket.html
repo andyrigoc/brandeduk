@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Review your quote basket and submit your custom workwear order. Add logos, adjust quantities, and get instant pricing for your branded clothing.">
     <title>Your Quote Basket - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260402b">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
@@ -905,6 +906,7 @@
 
     // Single-pass normalization: handles ALL legacy formats &larr;’ V2 per-size rows with logos[]
     function normalizeBasket() {
+        console.log('🔄 [normalizeBasket] Called - extracting logos from positions/positionDesigns');
         const basket = getBasket();
         if (basket.length === 0) return;
 
@@ -1044,8 +1046,20 @@
 
     // Extract logos from any combination of positions/positionDesigns/logos fields
     function _extractLogos(item) {
+        console.log('🔍 [_extractLogos] Called for item:', {
+            code: item.code,
+            color: item.color,
+            hasLogos: !!item.logos,
+            logosLength: item.logos?.length,
+            hasPositions: !!item.positions,
+            positionsLength: item.positions?.length,
+            hasPositionDesigns: !!item.positionDesigns,
+            positionDesignsKeys: item.positionDesigns ? Object.keys(item.positionDesigns) : []
+        });
+        
         // If item already has logos[] and no old fields, return existing
         if (item.logos && item.logos.length > 0 && !item.positions && !item.positionDesigns) {
+            console.log('✅ [_extractLogos] Returning existing logos:', item.logos.length);
             return item.logos;
         }
 
@@ -1053,34 +1067,41 @@
 
         // Priority 1: positions array (used by customize.js addToQuote)
         if (Array.isArray(item.positions) && item.positions.length > 0) {
+            console.log('📋 [_extractLogos] Found positions array:', item.positions.length, 'items');
             item.positions.forEach(p => {
                 if (p && (p.logo || p.method)) {
-                    logos.push({
+                    const newLogo = {
                         position: p.position || '',
                         positionLabel: toReadablePosition(p.name || p.position || ''),
                         method: (p.method || 'embroidery').toLowerCase(),
                         logo: p.logo || '',
                         unitPrice: p.unitPrice || (p.method === 'print' ? 3.50 : 5.00)
-                    });
+                    };
+                    logos.push(newLogo);
+                    console.log('✅ [_extractLogos] Added logo from positions:', newLogo.positionLabel, newLogo.method);
                 }
             });
         }
 
         // Priority 2: positionDesigns object (used by customize.js state)
         if (logos.length === 0 && item.positionDesigns && typeof item.positionDesigns === 'object') {
+            console.log('📐 [_extractLogos] Trying positionDesigns:', Object.keys(item.positionDesigns).length, 'keys');
             Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
                 if (d && (d.logo || d.method)) {
-                    logos.push({
+                    const newLogo = {
                         position: posKey,
                         positionLabel: toReadablePosition(d.position || posKey),
                         method: (d.method || 'embroidery').toLowerCase(),
                         logo: d.logo || '',
                         unitPrice: d.unitPrice || 5.00
-                    });
+                    };
+                    logos.push(newLogo);
+                    console.log('✅ [_extractLogos] Added logo from positionDesigns:', newLogo.positionLabel, newLogo.method);
                 }
             });
         }
 
+        console.log('📦 [_extractLogos] Final result:', logos.length, 'logos');
         // Priority 3: existing logos[] â€” keep if old fields were empty
         if (logos.length === 0 && item.logos && item.logos.length > 0) {
             return item.logos;
@@ -1649,6 +1670,7 @@
 
     window.closeCustomizePopup = closeCustomizePopup;
     function closeCustomizePopup() {
+        console.log('🔄 [closeCustomizePopup] Called - syncing logos and re-rendering basket');
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
         if (overlay) overlay.hidden = true;
@@ -1662,6 +1684,7 @@
     // Convert positions/positionDesigns written by customize.js back to logos[] (V2)
     // Called on popup close AND on page load via normalizeBasket
     function syncLogosFromOldFormat() {
+        console.log('🔄 [syncLogosFromOldFormat] Called - delegating to normalizeBasket()');
         normalizeBasket();
     }
 

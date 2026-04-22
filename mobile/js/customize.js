@@ -9118,6 +9118,8 @@
                     }
                 });
                 console.log('🔄 [iframe] Updated basket item via customizingBasketIndex:', basketIdx, existing.productName || existing.name);
+                console.log('💾 [iframe] Saved positions:', existing.positions);
+                console.log('💾 [iframe] Saved positionDesigns:', existing.positionDesigns);
             } else {
                 console.warn('⚠️ [iframe] isFromBasket but no valid customizingBasketIndex');
             }
@@ -9189,6 +9191,20 @@
         // Save to localStorage with error handling
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            console.log('💾 [addToQuote] Saved basket to localStorage, total items:', basket.length);
+            if (isFromBasket) {
+                const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+                if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
+                    console.log('💾 [addToQuote] Item at basketIdx', basketIdx, ':', {
+                        code: basket[basketIdx].code || basket[basketIdx].productCode,
+                        color: basket[basketIdx].color,
+                        hasPositions: !!basket[basketIdx].positions,
+                        positionsLength: basket[basketIdx].positions?.length,
+                        hasPositionDesigns: !!basket[basketIdx].positionDesigns,
+                        positionDesignsKeys: basket[basketIdx].positionDesigns ? Object.keys(basket[basketIdx].positionDesigns) : []
+                    });
+                }
+            }
         } catch (e) {
             if (e.name === 'QuotaExceededError') {
                 console.error('?? LocalStorage quota exceeded!');
