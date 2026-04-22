@@ -468,24 +468,22 @@
             // Reset remove BG button
             if (removeBgBtn) {
                 removeBgBtn.classList.remove('bg-removed', 'processing');
-                removeBgBtn.querySelector('span').textContent = 'Remove BG';
+                removeBgBtn.querySelector('span').textContent = 'REMOVE BACKGROUND';
             }
             
             // Save original for undo
             state.originalLogoImage = ev.target.result;
             
-            // Auto remove background for JPEG with embroidery
-            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || 
-                           file.name.toLowerCase().endsWith('.jpg') || 
-                           file.name.toLowerCase().endsWith('.jpeg');
-            
-            // Get current method for this position
-            const method = state.positionMethods[state.currentPosition];
-            
-            if (isJpeg && method === 'embroidery') {
-                console.log('🎨 Auto-removing background for JPEG embroidery');
-                setTimeout(() => removeImageBackground(), 200);
-            }
+            // ❌ AUTO BACKGROUND REMOVAL DISABLED
+            // Users can manually remove background using the button if needed
+            // const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+            //                file.name.toLowerCase().endsWith('.jpg') || 
+            //                file.name.toLowerCase().endsWith('.jpeg');
+            // const method = state.positionMethods[state.currentPosition];
+            // if (isJpeg && method === 'embroidery') {
+            //     console.log('🎨 Auto-removing background for JPEG embroidery');
+            //     setTimeout(() => removeImageBackground(), 200);
+            // }
         };
         reader.readAsDataURL(file);
     }
@@ -584,7 +582,7 @@
         
         if (removeBgBtn) {
             removeBgBtn.classList.remove('bg-removed');
-            removeBgBtn.querySelector('span').textContent = 'Remove BG';
+            removeBgBtn.querySelector('span').textContent = 'REMOVE BACKGROUND';
         }
         
         console.log('↩️ Background restored');

@@ -2351,11 +2351,24 @@ function saveCurrentSelectionToBasket() {
     const newTotal = otherColorsTotal + total;
     const newUnitPrice = getUnitPrice(newTotal);
 
+    // Ensure we have an image URL - use selectedColorURL or fallback to main image
+    let imageUrl = selectedColorURL;
+    if (!imageUrl && mainImage && mainImage.src) {
+        imageUrl = mainImage.src;
+    }
+    // If still no image, try to find it from color name in PRODUCT_DATA
+    if (!imageUrl && selectedColorName && PRODUCT_DATA && PRODUCT_DATA.images) {
+        const colorImages = PRODUCT_DATA.images.find(img => img.color === selectedColorName);
+        if (colorImages && colorImages.url) {
+            imageUrl = colorImages.url;
+        }
+    }
+
     const productData = {
         name: PRODUCT_NAME,
         code: PRODUCT_CODE,
         color: selectedColorName,
-        image: selectedColorURL,
+        image: imageUrl || '',
         quantity: total,
         size: getSizesSummary(),
         price: newUnitPrice.toFixed(2),
@@ -2811,12 +2824,25 @@ function addCustomizedItemToBasket() {
     // Get quote basket from localStorage
     let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
 
+    // Ensure we have an image URL - fallback to main image if needed
+    let imageUrl = customizationData.selectedColorUrl;
+    if (!imageUrl && mainImage && mainImage.src) {
+        imageUrl = mainImage.src;
+    }
+    // If still no image, try to find it from color name
+    if (!imageUrl && customizationData.selectedColor && PRODUCT_DATA && PRODUCT_DATA.images) {
+        const colorImages = PRODUCT_DATA.images.find(img => img.color === customizationData.selectedColor);
+        if (colorImages && colorImages.url) {
+            imageUrl = colorImages.url;
+        }
+    }
+
     // Prepare item
     const item = {
         code: PRODUCT_CODE,
         name: PRODUCT_NAME,
         color: customizationData.selectedColor,
-        image: customizationData.selectedColorUrl,
+        image: imageUrl || '',
         sizes: sizeQuantities,
         price: BASE_PRICE,
         customization: customizationData.positionsData

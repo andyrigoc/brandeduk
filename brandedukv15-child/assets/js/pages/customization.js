@@ -409,6 +409,7 @@ function addToQuote() {
         name: currentProduct?.name || '',
         color: selectedColor[0],
         colorImage: selectedColor[1],
+        image: selectedColor[1], // Add image field for email thumbnails
         sizes: activeSizes,
         totalQuantity: total,
         logos: uploadedLogos,
