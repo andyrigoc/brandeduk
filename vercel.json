@@ -26,7 +26,16 @@
     { "source": "/services", "destination": "/services.html" },
 
     { "source": "/product", "destination": "/product-detail.html" },
-    { "source": "/product/:code", "destination": "/product-detail.html" }
+    { "source": "/product/:code", "destination": "/product-detail.html" },
+
+    { "source": "/polos", "destination": "/polos.html" },
+    { "source": "/hoodies", "destination": "/hoodies.html" },
+    { "source": "/tshirts", "destination": "/tshirts.html" },
+    { "source": "/hivis", "destination": "/hivis.html" },
+    { "source": "/workwear", "destination": "/workwear.html" },
+    { "source": "/jackets", "destination": "/jackets.html" },
+    { "source": "/bundles", "destination": "/bundles.html" },
+    { "source": "/bulk-orders", "destination": "/bulk-orders.html" }
   ],
 
   "redirects": [

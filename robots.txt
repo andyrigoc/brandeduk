@@ -1,0 +1,21 @@
+# robots.txt for brandeduk.com
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin and backend paths
+Disallow: /api/
+Disallow: /backend/
+Disallow: /.git/
+Disallow: /.vscode/
+Disallow: /node_modules/
+Disallow: /test-*
+Disallow: /*?*customizingProduct=*
+Disallow: /*?*sessionId=*
+
+# Sitemap location
+Sitemap: https://www.brandeduk.com/sitemap.xml
+
+# Crawl delay (optional, adjust if needed)
+Crawl-delay: 1

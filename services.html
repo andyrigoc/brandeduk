@@ -3,7 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Services - BrandedUK</title>
+    <meta name="description" content="Embroidery, Screen Print, DTG & Vinyl Transfer Services UK. Professional Garment Customisation. Up to 6 Colours. Fast Turnaround. Bulk Pricing Available. Free Logo Setup!">
+    <meta name="keywords" content="embroidery services, screen printing UK, DTG printing, vinyl transfer, garment customisation, workwear printing UK">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.brandeduk.com/services.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.brandeduk.com/services.html">
+    <meta property="og:title" content="Embroidery & Printing Services UK - BrandedUK">
+    <meta property="og:description" content="Professional embroidery, screen print, DTG and vinyl transfer services. Fast turnaround. Bulk pricing available.">
+    <meta property="og:image" content="https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png">
+    
+    <title>Embroidery & Printing Services UK - BrandedUK</title>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.brandeduk.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Services",
+          "item": "https://www.brandeduk.com/services.html"
+        }
+      ]
+    }
+    </script>
     <script>
         // Redirect to mobile version on smaller screens (mobile + tablet)
         if (window.innerWidth < 1024) {
@@ -796,6 +830,68 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+        
+        /* Service Image Carousel */
+        .service-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        
+        .service-carousel__track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .service-carousel__slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        
+        .service-carousel__slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        .service-carousel__slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        
+        .service-carousel__indicators {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+        
+        .service-carousel__dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .service-carousel__dot.active {
+            background: #fff;
+            width: 24px;
+            border-radius: 4px;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&display=swap" rel="stylesheet">
@@ -1423,8 +1519,32 @@
                     </p>
                 </div>
                 <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/embroidery.jpg"
-                         alt="Embroidery machine creating intricate floral design">
+                    <div class="service-carousel" data-carousel="embroidery">
+                        <div class="service-carousel__track">
+                            <div class="service-carousel__slide active">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-floral-pattern.jpg" alt="Machine embroidery floral pattern close-up">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-mexican-colorful.jpg" alt="Vibrant Mexican embroidery patterns">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-machine-red.jpg" alt="Industrial embroidery machine in action">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-rocket-machine.jpg" alt="Automatic embroidery machine creating design">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-eagle-detail.jpg" alt="Detailed embroidered eagle design">
+                            </div>
+                        </div>
+                        <div class="service-carousel__indicators">
+                            <span class="service-carousel__dot active" data-slide="0"></span>
+                            <span class="service-carousel__dot" data-slide="1"></span>
+                            <span class="service-carousel__dot" data-slide="2"></span>
+                            <span class="service-carousel__dot" data-slide="3"></span>
+                            <span class="service-carousel__dot" data-slide="4"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1515,8 +1635,36 @@
                     </p>
                 </div>
                 <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/screen-printing.jpg"
-                         alt="Screen printing process with yellow ink and squeegee">
+                    <div class="service-carousel" data-carousel="screen-printing">
+                        <div class="service-carousel__track">
+                            <div class="service-carousel__slide active">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.jpg" alt="Colorful printed t-shirts on conveyor belt in printing facility">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-press-process.jpg" alt="Person using screen printing press">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.jpg" alt="Vibrant streetwear branding with bold graffiti inspired design">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-fashion-label.jpg" alt="Blue shirt label symbolizes luxury fashion industry">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-label-detail.jpg" alt="Antique label on elegant silk dress design">
+                            </div>
+                            <div class="service-carousel__slide">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-blue-shirt.jpg" alt="Blue shirt with printed design">
+                            </div>
+                        </div>
+                        <div class="service-carousel__indicators">
+                            <span class="service-carousel__dot active" data-slide="0"></span>
+                            <span class="service-carousel__dot" data-slide="1"></span>
+                            <span class="service-carousel__dot" data-slide="2"></span>
+                            <span class="service-carousel__dot" data-slide="3"></span>
+                            <span class="service-carousel__dot" data-slide="4"></span>
+                            <span class="service-carousel__dot" data-slide="5"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2632,6 +2780,63 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     window.addEventListener('orientationchange', function() {
         setTimeout(maybeRedirectToMobile, 0);
+    });
+})();
+</script>
+
+<!-- Service Carousel Auto-play Script -->
+<script>
+(function() {
+    'use strict';
+    
+    // Initialize all carousels on the page
+    const carousels = document.querySelectorAll('[data-carousel]');
+    
+    carousels.forEach(carousel => {
+        const slides = carousel.querySelectorAll('.service-carousel__slide');
+        const dots = carousel.querySelectorAll('.service-carousel__dot');
+        let currentSlide = 0;
+        let autoplayInterval;
+        
+        function showSlide(index) {
+            // Remove active class from all slides and dots
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Add active class to current slide and dot
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+        
+        function startAutoplay() {
+            autoplayInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+        }
+        
+        function stopAutoplay() {
+            clearInterval(autoplayInterval);
+        }
+        
+        // Manual navigation via dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+                stopAutoplay();
+                startAutoplay(); // Restart autoplay after manual interaction
+            });
+        });
+        
+        // Pause on hover
+        carousel.addEventListener('mouseenter', stopAutoplay);
+        carousel.addEventListener('mouseleave', startAutoplay);
+        
+        // Start autoplay on load
+        startAutoplay();
     });
 })();
 </script>
