@@ -24,8 +24,6 @@
     { "source": "/customize", "destination": "/customize.html" },
     { "source": "/quote", "destination": "/quote-form.html" },
     { "source": "/services", "destination": "/services.html" },
-    { "source": "/catalogue", "destination": "/catalogue.html" },
-    { "source": "/catalogue2", "destination": "/catalogue2.html" },
 
     { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" }
@@ -65,16 +63,6 @@
     {
       "source": "/services.html",
       "destination": "/services",
-      "permanent": true
-    },
-    {
-      "source": "/catalogue.html",
-      "destination": "/catalogue",
-      "permanent": true
-    },
-    {
-      "source": "/catalogue2.html",
-      "destination": "/catalogue2",
       "permanent": true
     },
     {
