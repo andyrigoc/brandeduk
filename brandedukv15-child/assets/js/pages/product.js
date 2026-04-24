@@ -658,23 +658,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             var keyInfoText = document.getElementById('ralaKeyInfoText');
             var readMoreBtn = document.getElementById('ralaReadMoreBtn');
             if (keyInfoEl && keyInfoText) {
-                // Format description as bullet list (split by periods)
-                var desc = PRODUCT_DATA.description.trim();
-                var sentences = desc.split('.').map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
-                
-                if (sentences.length > 1) {
-                    // Multiple sentences → create bullet list
-                    var listHTML = '<ul style="margin: 0; padding-left: 20px;">';
-                    sentences.forEach(function(sentence) {
-                        listHTML += '<li style="margin-bottom: 6px;">' + sentence + '</li>';
-                    });
-                    listHTML += '</ul>';
-                    keyInfoText.innerHTML = listHTML;
-                } else {
-                    // Single sentence → plain text
-                    keyInfoText.innerHTML = desc;
-                }
-                
+                keyInfoText.innerHTML = PRODUCT_DATA.description;
                 keyInfoEl.style.display = '';
                 requestAnimationFrame(function() {
                     if (keyInfoText.scrollHeight > 104) {

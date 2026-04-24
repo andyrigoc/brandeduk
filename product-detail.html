@@ -3555,23 +3555,7 @@
             const keyInfoText = document.getElementById('ralaKeyInfoText');
             const readMoreBtn = document.getElementById('ralaReadMoreBtn');
             if (keyInfoEl && keyInfoText) {
-                // Format description as bullet list (split by periods)
-                let desc = productData.description.trim();
-                let sentences = desc.split('.').map(s => s.trim()).filter(s => s.length > 0);
-                
-                if (sentences.length > 1) {
-                    // Multiple sentences → create bullet list
-                    let listHTML = '<ul style="margin: 0; padding-left: 20px;">';
-                    sentences.forEach(sentence => {
-                        listHTML += '<li style="margin-bottom: 6px;">' + sentence + '</li>';
-                    });
-                    listHTML += '</ul>';
-                    keyInfoText.innerHTML = listHTML;
-                } else {
-                    // Single sentence → plain text
-                    keyInfoText.innerHTML = desc;
-                }
-                
+                keyInfoText.innerHTML = productData.description;
                 keyInfoEl.style.display = '';
 
                 // Check if text overflows (> 4 lines ~ 96px)
