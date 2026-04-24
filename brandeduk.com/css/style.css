@@ -198,9 +198,9 @@ img {
     background: #fff;
 }
 
-/* Banner 4 - Branded Bouncing (Light Gray) */
+/* Banner 4 - Branded Bouncing (Purple) */
 #heroBanner4 {
-    background: #f8f9fa;
+    background: #995BD5;
 }
 
 .hero-bounce-container {
@@ -209,7 +209,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8f9fa;
+    background: #995BD5;
 }
 
 .hero-bounce-headline {
@@ -324,7 +324,7 @@ img {
     justify-content: center;
     width: 100%;
     height: 100%;
-    background: #f8f9fa;
+    background: #d1d5db;
     padding: 40px;
     gap: 8px;
 }
