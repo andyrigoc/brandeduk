@@ -13,6 +13,18 @@
     <style>
         /* Logo e Search expand per header uniforme */
         
+        /* Reduce searchbar header gap - PC only */
+        .searchbar-header {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .searchbar-header__surface {
+            padding: 0 var(--searchbar-shell-padding, var(--header-shell-padding)) !important;
+        }
+        .searchbar-header__brand-img {
+            height: 80px !important;
+        }
+        
         .searchbar-header__search-expand {
             position: relative;
             width: 320px;
