@@ -170,6 +170,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Top Promotional Bar */
+        .top-promo-bar {
+            background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
+            color: #ffffff;
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1000;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .top-promo-bar .promo-scroll {
+            display: inline-block;
+            animation: scroll-left 45s linear infinite;
+        }
+        .top-promo-bar .promo-scroll span {
+            display: inline-block;
+            padding-right: 50px;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .top-promo-bar:hover .promo-scroll {
+            animation-play-state: paused;
+        }
+        
         /* Hide Shop Now buttons in hero */
         .hero-el__cta {
             display: none !important;
@@ -340,7 +370,10 @@
 <body class="customize-page">
     <!-- Top Promotional Bar -->
     <div class="top-promo-bar">
-        Workwear for Trades, Schools, Hospitality & Teams | Fast Turnaround | Bulk Pricing
+        <div class="promo-scroll">
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+        </div>
     </div>
     
     <!-- ========================================
