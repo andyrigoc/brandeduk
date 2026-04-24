@@ -14,6 +14,18 @@ Disallow: /test-*
 Disallow: /*?*customizingProduct=*
 Disallow: /*?*sessionId=*
 
+# Disallow duplicate/old content folders
+Disallow: /brandeduk.com/
+Disallow: /brandeduk.com-pc-OLD/
+Disallow: /mobile/home-mobile.html
+Disallow: /tablet-order-process-v4/
+Disallow: /test-order-page/
+Disallow: /footer-dev/
+Disallow: /.history/
+Disallow: /tools/
+Disallow: /dist/
+Disallow: /design-assets/
+
 # Sitemap location
 Sitemap: https://www.brandeduk.com/sitemap.xml
 
