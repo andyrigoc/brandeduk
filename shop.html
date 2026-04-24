@@ -1003,12 +1003,64 @@
         .badge.print {
             background: #eab308;
         }
+
+        /* Top Promotional Bar */
+        .top-promo-bar {
+            background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
+            color: #ffffff;
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1000;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .top-promo-bar .promo-scroll {
+            display: inline-block;
+            animation: scroll-left 45s linear infinite;
+        }
+        .top-promo-bar .promo-scroll span {
+            display: inline-block;
+            padding-right: 50px;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .top-promo-bar:hover .promo-scroll {
+            animation-play-state: paused;
+        }
+
+        /* Reduce searchbar header gap - PC only */
+        @media (min-width: 768px) {
+            .desktop-site-header .searchbar-header {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .desktop-site-header .searchbar-header__surface {
+                padding: 0 var(--searchbar-shell-padding, var(--header-shell-padding)) !important;
+            }
+            .desktop-site-header .searchbar-header__brand-img {
+                height: 80px !important;
+            }
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
 </head>
 
 <body>
+
+<!-- Top Promotional Bar -->
+<div class="top-promo-bar">
+    <div class="promo-scroll">
+        <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+        <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+    </div>
+</div>
 
     <!-- Desktop Header (from main page) -->
     <header class="site-header desktop-site-header">
