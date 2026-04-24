@@ -3925,6 +3925,70 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
+
+<script>
+// Click-based dropdown menu system (no hover)
+(function() {
+    'use strict';
+    
+    // Close all dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.has-megamenu, .promotions-menu, .exclusives-menu').forEach(function(menu) {
+            menu.classList.remove('is-open');
+        });
+    }
+    
+    // Toggle dropdown on click
+    function setupDropdownToggles() {
+        var dropdownMenus = document.querySelectorAll('.has-megamenu, .promotions-menu, .exclusives-menu');
+        
+        dropdownMenus.forEach(function(menu) {
+            var trigger = menu.querySelector('a');
+            if (!trigger) return;
+            
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var isCurrentlyOpen = menu.classList.contains('is-open');
+                
+                // Close all dropdowns first
+                closeAllDropdowns();
+                
+                // Toggle current dropdown
+                if (!isCurrentlyOpen) {
+                    menu.classList.add('is-open');
+                }
+            });
+        });
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.has-megamenu') && 
+            !e.target.closest('.promotions-menu') && 
+            !e.target.closest('.exclusives-menu')) {
+            closeAllDropdowns();
+        }
+    });
+    
+    // Close dropdowns on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAllDropdowns();
+        }
+    });
+    
+    // Initialize
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupDropdownToggles);
+    } else {
+        setupDropdownToggles();
+    }
+})();
+</script>
+
+<script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
 <!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
