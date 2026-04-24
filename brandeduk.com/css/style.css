@@ -198,9 +198,9 @@ img {
     background: #fff;
 }
 
-/* Banner 4 - Branded Yellow/Black Bouncing */
+/* Banner 4 - Branded Bouncing (Light Gray) */
 #heroBanner4 {
-    background: #f9ca24;
+    background: #f8f9fa;
 }
 
 .hero-bounce-container {
@@ -209,7 +209,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f9ca24;
+    background: #f8f9fa;
 }
 
 .hero-bounce-headline {
@@ -412,21 +412,21 @@ img {
     height: 12px;
     border-radius: 50%;
     background: transparent;
-    border: 2px solid var(--purple);
+    border: 2px solid #6b7280;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .banner-dot:hover {
-    background: rgba(124, 58, 237, 0.15);
+    background: rgba(107, 114, 128, 0.15);
 }
 
 .banner-dot--active {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: var(--purple);
-    border: 2px solid var(--purple);
+    background: #6b7280;
+    border: 2px solid #6b7280;
     transform: scale(1.1);
 }
 
