@@ -5676,7 +5676,7 @@ a {
     height: 12px !important;
     border-radius: 50% !important;
     background: transparent !important;
-    border: 1.5px solid #6b7280 !important;
+    border: 1.5px solid #84cc16 !important;
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 0;
@@ -5685,11 +5685,11 @@ a {
 }
 
 .banner-dot--active {
-    background: #6b7280 !important;
+    background: #84cc16 !important;
     width: 12px !important;
     height: 12px !important;
     border-radius: 50% !important;
-    border: 1.5px solid #6b7280 !important;
+    border: 1.5px solid #84cc16 !important;
     min-width: 12px !important;
     min-height: 12px !important;
 }

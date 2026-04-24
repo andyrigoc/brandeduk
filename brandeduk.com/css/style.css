@@ -412,21 +412,21 @@ img {
     height: 12px;
     border-radius: 50%;
     background: transparent;
-    border: 2px solid #6b7280;
+    border: 2px solid #84cc16;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .banner-dot:hover {
-    background: rgba(107, 114, 128, 0.15);
+    background: rgba(132, 204, 22, 0.15);
 }
 
 .banner-dot--active {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #6b7280;
-    border: 2px solid #6b7280;
+    background: #84cc16;
+    border: 2px solid #84cc16;
     transform: scale(1.1);
 }
 
