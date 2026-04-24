@@ -3701,5 +3701,22 @@ html, body {
     }
 }
 
+/* ---------------------------------------------------
+   DESKTOP OVERRIDES (PC ONLY)
+--------------------------------------------------- */
+@media (min-width: 1024px) {
+    .rala-btn-primary {
+        background: #995BD5;
+    }
+    
+    .rala-btn-primary:hover {
+        background: #7d4db8;
+    }
+    
+    .rala-btn-secondary {
+        display: none;
+    }
+}
+
 
 /* CACHE BUSTER 2025-12-22-v3-clean */
