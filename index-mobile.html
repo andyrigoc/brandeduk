@@ -163,6 +163,7 @@
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <!-- Responsive Breakpoints (Tablet/Desktop) -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260401b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
@@ -170,36 +171,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Top Promotional Bar */
-        .top-promo-bar {
-            background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
-            color: #ffffff;
-            padding: 12px 0;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            line-height: 1.4;
-            position: relative;
-            z-index: 1000;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .top-promo-bar .promo-scroll {
-            display: inline-block;
-            animation: scroll-left 45s linear infinite;
-        }
-        .top-promo-bar .promo-scroll span {
-            display: inline-block;
-            padding-right: 50px;
-        }
-        @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .top-promo-bar:hover .promo-scroll {
-            animation-play-state: paused;
-        }
-        
         /* Hide Shop Now buttons in hero */
         .hero-el__cta {
             display: none !important;
@@ -223,7 +194,49 @@
         .mobile-header .social-icons-mobile .social-icon i {
             font-size: 12px !important;
         }
-        
+
+        .header-contact-tablet {
+            display: none;
+        }
+
+        @media (min-width: 768px) and (max-width: 1279px) {
+            .mobile-header {
+                top: 36px;
+            }
+
+            .mobile-header .header-top-row {
+                display: none;
+            }
+
+            .header-contact-tablet {
+                display: none;
+                align-items: center;
+                gap: 16px;
+                margin-left: 14px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #4b5563;
+                white-space: nowrap;
+            }
+
+            .header-contact-tablet a {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                color: #4b5563;
+                text-decoration: none;
+            }
+
+            .header-contact-tablet a:hover {
+                color: #273469;
+            }
+
+            .header-contact-tablet i {
+                font-size: 11px;
+                color: #273469;
+            }
+        }
+
         /* Note: responsive.css handles showing desktop header on wider screens */
 
         /* Prevent duplicated header bars on tablet: this page is mobile/tablet UI only */
@@ -926,6 +939,7 @@
         </div>
     </div>
 
+    <div class="header-with-promo">
     <header class="mobile-header">
         <!-- Top Row: Social + VAT Toggle -->
         <div class="header-top-row">
@@ -947,6 +961,11 @@
                     <i class="fab fa-pinterest-p"></i>
                 </a>
             </div>
+
+            <span class="header-contact-tablet">
+                <a href="mailto:info@brandeduk.com"><i class="fas fa-envelope"></i> info@brandeduk.com</a>
+                <a href="tel:02089742722"><i class="fas fa-phone"></i> 0208 974 2722</a>
+            </span>
 
             <!-- VAT Toggle Right -->
             <div class="vat-toggle-mobile" id="vatToggleContainer">
@@ -974,16 +993,18 @@
         </div>
     </header>
 
+    <!-- Top Promotional Bar -->
+    <div class="top-promo-bar">
+        <div class="promo-scroll">
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+        </div>
+    </div>
+    </div>
+
     <!-- Main Content -->
     <main class="mobile-main">
-        <!-- Top Promotional Bar -->
-        <div class="top-promo-bar">
-            <div class="promo-scroll">
-                <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-                <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-            </div>
-        </div>
-        
+
         <!-- Hero 1 - Expanding Panels (Always visible) -->
         <div class="hero-expanding-wrapper">
             <!-- Loading placeholder: shown while hero panels load -->

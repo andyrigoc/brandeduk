@@ -1,0 +1,1183 @@
+﻿{
+    "code":  "AT001",
+    "name":  "The AWDis 150 T",
+    "brand":  "AWDis",
+    "supplier":  "ralawise",
+    "productType":  "T-shirts",
+    "price":  4.06,
+    "basePrice":  4.06,
+    "sell_price":  4.06,
+    "carton_price":  2.32,
+    "markup_tier":  75,
+    "priceBreaks":  [
+                        {
+                            "min":  1,
+                            "max":  9,
+                            "price":  4.06,
+                            "percentage":  0
+                        },
+                        {
+                            "min":  10,
+                            "max":  24,
+                            "price":  3.74,
+                            "percentage":  8
+                        },
+                        {
+                            "min":  25,
+                            "max":  49,
+                            "price":  3.65,
+                            "percentage":  10
+                        },
+                        {
+                            "min":  50,
+                            "max":  99,
+                            "price":  3.45,
+                            "percentage":  15
+                        },
+                        {
+                            "min":  100,
+                            "max":  249,
+                            "price":  3.05,
+                            "percentage":  25
+                        },
+                        {
+                            "min":  250,
+                            "max":  99999,
+                            "price":  2.84,
+                            "percentage":  30
+                        }
+                    ],
+    "colors":  [
+                   {
+                       "name":  "model",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b0409eb3/67ab095edb80ce5fa7000006/AT001_LS00_2025.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b0409eb3/67ab095edb80ce5fa7000006/AT001_LS00_2025.jpg"
+                   },
+                   {
+                       "name":  "Arctic White*",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001a/69de7f5c/AT001_ArcticWhite_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001a/69de7f5c/AT001_ArcticWhite_FT.jpg"
+                   },
+                   {
+                       "name":  "Baby Pink",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001b/453bb78c/AT001_BabyPink_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001b/453bb78c/AT001_BabyPink_FT.jpg"
+                   },
+                   {
+                       "name":  "Bottle Green",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001c/736565f7/AT001_BottleGreen_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001c/736565f7/AT001_BottleGreen_FT.jpg"
+                   },
+                   {
+                       "name":  "Burgundy",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001d/6b3dac15/AT001_Burgundy_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001d/6b3dac15/AT001_Burgundy_FT.jpg"
+                   },
+                   {
+                       "name":  "Deep Black*",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001e/a536cb82/AT001_DeepBlack_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001e/a536cb82/AT001_DeepBlack_FT.jpg"
+                   },
+                   {
+                       "name":  "Desert Sand",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001f/b30ac62a/AT001_DesertSand_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001f/b30ac62a/AT001_DesertSand_FT.jpg"
+                   },
+                   {
+                       "name":  "Earthy Green",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000020/2cdb178f/AT001_EarthyGreen_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000020/2cdb178f/AT001_EarthyGreen_FT.jpg"
+                   },
+                   {
+                       "name":  "Fire Red",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000021/ecc85259/AT001_FireRed_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000021/ecc85259/AT001_FireRed_FT.jpg"
+                   },
+                   {
+                       "name":  "Heather Grey",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000022/00320ae8/AT001_HeatherGrey_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000022/00320ae8/AT001_HeatherGrey_FT.jpg"
+                   },
+                   {
+                       "name":  "Hot Pink",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000023/28a3d5fe/AT001_HotPink_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000023/28a3d5fe/AT001_HotPink_FT.jpg"
+                   },
+                   {
+                       "name":  "New French Navy*",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000024/0f43c363/AT001_NewFrenchNavy_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000024/0f43c363/AT001_NewFrenchNavy_FT.jpg"
+                   },
+                   {
+                       "name":  "Purple",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000025/4a6d6990/AT001_Purple_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000025/4a6d6990/AT001_Purple_FT.jpg"
+                   },
+                   {
+                       "name":  "Royal Blue",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000026/8ae38ac2/AT001_RoyalBlue_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000026/8ae38ac2/AT001_RoyalBlue_FT.jpg"
+                   },
+                   {
+                       "name":  "Sky Blue",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000027/6e48f5a4/AT001_SkyBlue_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000027/6e48f5a4/AT001_SkyBlue_FT.jpg"
+                   },
+                   {
+                       "name":  "Solid Charcoal",
+                       "main":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000028/581d15ff/AT001_SolidCharcoal_FT.jpg",
+                       "thumb":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000028/581d15ff/AT001_SolidCharcoal_FT.jpg"
+                   }
+               ],
+    "sizes":  [
+                  "S",
+                  "M",
+                  "L",
+                  "XL",
+                  "2XL",
+                  "3XL",
+                  "4XL",
+                  "5XL"
+              ],
+    "variants":  [
+                     {
+                         "sku_code":  "AT001AWHIS",
+                         "color":  "Arctic White*",
+                         "size":  "S",
+                         "single_price":  2.32,
+                         "pack_price":  2.02,
+                         "carton_price":  1.82,
+                         "sell_price":  5.37,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHIM",
+                         "color":  "Arctic White*",
+                         "size":  "M",
+                         "single_price":  2.32,
+                         "pack_price":  2.02,
+                         "carton_price":  1.82,
+                         "sell_price":  5.37,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHIL",
+                         "color":  "Arctic White*",
+                         "size":  "L",
+                         "single_price":  2.32,
+                         "pack_price":  2.02,
+                         "carton_price":  1.82,
+                         "sell_price":  5.37,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHIXL",
+                         "color":  "Arctic White*",
+                         "size":  "XL",
+                         "single_price":  2.32,
+                         "pack_price":  2.02,
+                         "carton_price":  1.82,
+                         "sell_price":  5.37,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHI2XL",
+                         "color":  "Arctic White*",
+                         "size":  "2XL",
+                         "single_price":  2.32,
+                         "pack_price":  2.02,
+                         "carton_price":  1.82,
+                         "sell_price":  5.37,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHI3XL",
+                         "color":  "Arctic White*",
+                         "size":  "3XL",
+                         "single_price":  2.98,
+                         "pack_price":  2.68,
+                         "carton_price":  2.48,
+                         "sell_price":  4.34,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHI4XL",
+                         "color":  "Arctic White*",
+                         "size":  "4XL",
+                         "single_price":  3.18,
+                         "pack_price":  2.88,
+                         "carton_price":  2.68,
+                         "sell_price":  4.69,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001AWHI5XL",
+                         "color":  "Arctic White*",
+                         "size":  "5XL",
+                         "single_price":  3.18,
+                         "pack_price":  2.88,
+                         "carton_price":  2.68,
+                         "sell_price":  4.69,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPKS",
+                         "color":  "Baby Pink",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPKM",
+                         "color":  "Baby Pink",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPKL",
+                         "color":  "Baby Pink",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPKXL",
+                         "color":  "Baby Pink",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPK2XL",
+                         "color":  "Baby Pink",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BAPK3XL",
+                         "color":  "Baby Pink",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGRS",
+                         "color":  "Bottle Green",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGRM",
+                         "color":  "Bottle Green",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGRL",
+                         "color":  "Bottle Green",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGRXL",
+                         "color":  "Bottle Green",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGR2XL",
+                         "color":  "Bottle Green",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BOGR3XL",
+                         "color":  "Bottle Green",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURGS",
+                         "color":  "Burgundy",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURGM",
+                         "color":  "Burgundy",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURGL",
+                         "color":  "Burgundy",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURGXL",
+                         "color":  "Burgundy",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURG2XL",
+                         "color":  "Burgundy",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001BURG3XL",
+                         "color":  "Burgundy",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBKS",
+                         "color":  "Deep Black*",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBKM",
+                         "color":  "Deep Black*",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBKL",
+                         "color":  "Deep Black*",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBKXL",
+                         "color":  "Deep Black*",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBK2XL",
+                         "color":  "Deep Black*",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBK3XL",
+                         "color":  "Deep Black*",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBK4XL",
+                         "color":  "Deep Black*",
+                         "size":  "4XL",
+                         "single_price":  3.92,
+                         "pack_price":  3.62,
+                         "carton_price":  3.42,
+                         "sell_price":  8.38,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DPBK5XL",
+                         "color":  "Deep Black*",
+                         "size":  "5XL",
+                         "single_price":  3.92,
+                         "pack_price":  3.62,
+                         "carton_price":  3.42,
+                         "sell_price":  8.38,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSANS",
+                         "color":  "Desert Sand",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSANM",
+                         "color":  "Desert Sand",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSANL",
+                         "color":  "Desert Sand",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSANXL",
+                         "color":  "Desert Sand",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSAN2XL",
+                         "color":  "Desert Sand",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001DSAN3XL",
+                         "color":  "Desert Sand",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGNS",
+                         "color":  "Earthy Green",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGNM",
+                         "color":  "Earthy Green",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGNL",
+                         "color":  "Earthy Green",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGNXL",
+                         "color":  "Earthy Green",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGN2XL",
+                         "color":  "Earthy Green",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001EAGN3XL",
+                         "color":  "Earthy Green",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FREDS",
+                         "color":  "Fire Red",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FREDM",
+                         "color":  "Fire Red",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FREDL",
+                         "color":  "Fire Red",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FREDXL",
+                         "color":  "Fire Red",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FRED2XL",
+                         "color":  "Fire Red",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001FRED3XL",
+                         "color":  "Fire Red",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGRES",
+                         "color":  "Heather Grey",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGREM",
+                         "color":  "Heather Grey",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGREL",
+                         "color":  "Heather Grey",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGREXL",
+                         "color":  "Heather Grey",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGRE2XL",
+                         "color":  "Heather Grey",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HGRE3XL",
+                         "color":  "Heather Grey",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPKS",
+                         "color":  "Hot Pink",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPKM",
+                         "color":  "Hot Pink",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPKL",
+                         "color":  "Hot Pink",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPKXL",
+                         "color":  "Hot Pink",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPK2XL",
+                         "color":  "Hot Pink",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001HOPK3XL",
+                         "color":  "Hot Pink",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNAS",
+                         "color":  "New French Navy*",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNAM",
+                         "color":  "New French Navy*",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNAL",
+                         "color":  "New French Navy*",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNAXL",
+                         "color":  "New French Navy*",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNA2XL",
+                         "color":  "New French Navy*",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNA3XL",
+                         "color":  "New French Navy*",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNA4XL",
+                         "color":  "New French Navy*",
+                         "size":  "4XL",
+                         "single_price":  3.92,
+                         "pack_price":  3.62,
+                         "carton_price":  3.42,
+                         "sell_price":  8.38,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001NFNA5XL",
+                         "color":  "New French Navy*",
+                         "size":  "5XL",
+                         "single_price":  3.92,
+                         "pack_price":  3.62,
+                         "carton_price":  3.42,
+                         "sell_price":  8.38,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURPS",
+                         "color":  "Purple",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURPM",
+                         "color":  "Purple",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURPL",
+                         "color":  "Purple",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURPXL",
+                         "color":  "Purple",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURP2XL",
+                         "color":  "Purple",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001PURP3XL",
+                         "color":  "Purple",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBLS",
+                         "color":  "Royal Blue",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBLM",
+                         "color":  "Royal Blue",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBLL",
+                         "color":  "Royal Blue",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBLXL",
+                         "color":  "Royal Blue",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBL2XL",
+                         "color":  "Royal Blue",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001ROBL3XL",
+                         "color":  "Royal Blue",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYBS",
+                         "color":  "Sky Blue",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYBM",
+                         "color":  "Sky Blue",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYBL",
+                         "color":  "Sky Blue",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYBXL",
+                         "color":  "Sky Blue",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYB2XL",
+                         "color":  "Sky Blue",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SKYB3XL",
+                         "color":  "Sky Blue",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCHS",
+                         "color":  "Solid Charcoal",
+                         "size":  "S",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCHM",
+                         "color":  "Solid Charcoal",
+                         "size":  "M",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCHL",
+                         "color":  "Solid Charcoal",
+                         "size":  "L",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCHXL",
+                         "color":  "Solid Charcoal",
+                         "size":  "XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCH2XL",
+                         "color":  "Solid Charcoal",
+                         "size":  "2XL",
+                         "single_price":  2.82,
+                         "pack_price":  2.52,
+                         "carton_price":  2.32,
+                         "sell_price":  4.06,
+                         "stock":  0
+                     },
+                     {
+                         "sku_code":  "AT001SOCH3XL",
+                         "color":  "Solid Charcoal",
+                         "size":  "3XL",
+                         "single_price":  3.72,
+                         "pack_price":  3.42,
+                         "carton_price":  3.22,
+                         "sell_price":  7.89,
+                         "stock":  0
+                     }
+                 ],
+    "images":  [
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b0409eb3/67ab095edb80ce5fa7000006/AT001_LS00_2025.jpg",
+                       "type":  "main"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001a/69de7f5c/AT001_ArcticWhite_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001b/453bb78c/AT001_BabyPink_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001c/736565f7/AT001_BottleGreen_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001d/6b3dac15/AT001_Burgundy_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001e/a536cb82/AT001_DeepBlack_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa700001f/b30ac62a/AT001_DesertSand_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000020/2cdb178f/AT001_EarthyGreen_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000021/ecc85259/AT001_FireRed_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000022/00320ae8/AT001_HeatherGrey_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000023/28a3d5fe/AT001_HotPink_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000024/0f43c363/AT001_NewFrenchNavy_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000025/4a6d6990/AT001_Purple_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000026/8ae38ac2/AT001_RoyalBlue_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000027/6e48f5a4/AT001_SkyBlue_FT.jpg",
+                       "type":  "thumb"
+                   },
+                   {
+                       "url":  "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/519a0691/67ab0978db80ce5fa7000028/581d15ff/AT001_SolidCharcoal_FT.jpg",
+                       "type":  "thumb"
+                   }
+               ],
+    "description":  "Relaxed fit T. Short sleeves. Side seams. PurePrint BC Cotton fabric. Taped back neck. Twin needle stitch details. Ribbed crew neck. Size label only for easy rebranding.",
+    "details":  {
+                    "fit":  "",
+                    "fabric":  "100% Cotton PurePrint Fabric. Heather Grey: 90% Cotton PurePrint Fabric, 10% Viscose",
+                    "weight":  "",
+                    "care":  ""
+                },
+    "customization":  [
+                          "embroidery",
+                          "print"
+                      ],
+    "is_best_seller":  false,
+    "is_recommended":  false
+}

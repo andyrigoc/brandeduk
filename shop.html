@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329c">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20260114">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260107">
@@ -1004,36 +1005,6 @@
             background: #eab308;
         }
 
-        /* Top Promotional Bar */
-        .top-promo-bar {
-            background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
-            color: #ffffff;
-            padding: 12px 0;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            line-height: 1.4;
-            position: relative;
-            z-index: 1000;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .top-promo-bar .promo-scroll {
-            display: inline-block;
-            animation: scroll-left 45s linear infinite;
-        }
-        .top-promo-bar .promo-scroll span {
-            display: inline-block;
-            padding-right: 50px;
-        }
-        @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .top-promo-bar:hover .promo-scroll {
-            animation-play-state: paused;
-        }
-
         /* Reduce searchbar header gap - PC only */
         @media (min-width: 768px) {
             .desktop-site-header .searchbar-header {
@@ -1047,6 +1018,20 @@
                 height: 80px !important;
             }
         }
+        
+        /* DESKTOP: Make header visible and ensure bar shows */
+        @media (min-width: 1280px) {
+            .desktop-site-header {
+                display: block !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                z-index: 2000 !important;
+            }
+            
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
@@ -1054,14 +1039,7 @@
 
 <body>
 
-<!-- Top Promotional Bar -->
-<div class="top-promo-bar">
-    <div class="promo-scroll">
-        <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-        <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
-    </div>
-</div>
-
+    <div class="header-with-promo">
     <!-- Desktop Header (from main page) -->
     <header class="site-header desktop-site-header">
         <div class="header-top">
@@ -1854,6 +1832,15 @@
             </div>
         </div>
     </header>
+
+    <!-- Top Promotional Bar -->
+    <div class="top-promo-bar">
+        <div class="promo-scroll">
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+            <span>Custom Workwear & Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades & Construction • Schools & Leavers • Hospitality & Restaurants • Corporate & Office Teams • Warehouses & Delivery Companies • Sports Clubs • Events & Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+        </div>
+    </div>
+    </div>
 
     <!-- Category Heading (H1 for SEO) -->
     <div class="shop-category-heading" id="shopCategoryHeading" style="display:block!important;visibility:visible!important;padding:20px 16px 8px;background:#fff;">
@@ -4003,8 +3990,19 @@
                 var info = CATEGORY_INFO[currentState.category] || CATEGORY_INFO['all'];
                 var titleEl = document.getElementById('shopCategoryTitle');
                 var descEl = document.getElementById('shopCategoryDesc');
-                if (titleEl) titleEl.textContent = info.title;
-                if (descEl) descEl.textContent = info.desc;
+                
+                // If brand filter is active, show brand name as title
+                if (currentState.filters.brand && currentState.filters.brand.length > 0) {
+                    const brandName = currentState.filters.brand[0];
+                    if (titleEl) titleEl.textContent = brandName;
+                    if (descEl) descEl.textContent = `Browse all ${brandName} products available for customisation.`;
+                    document.title = `${brandName} Custom Workwear - BrandedUK`;
+                } else {
+                    if (titleEl) titleEl.textContent = info.title;
+                    if (descEl) descEl.textContent = info.desc;
+                    document.title = `${info.title} - BrandedUK`;
+                }
+                
                 // Update shared breadcrumbs
                 if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentState.category);
                 if (typeof updateBreadcrumbCategory === 'function') updateBreadcrumbCategory(currentState.category);

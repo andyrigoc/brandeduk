@@ -624,7 +624,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const brandLogo = document.getElementById('brandLogo');
             if (brandLink && brandLogo) {
                 const brandName = PRODUCT_DATA.brand.toLowerCase();
-                brandLink.href = `/shop/?brand=${brandName}`;
+                brandLink.href = `shop.html?brand=${encodeURIComponent(PRODUCT_DATA.brand)}`;
                 brandLink.title = `View all ${PRODUCT_DATA.brand} products`;
                 brandLogo.alt = PRODUCT_DATA.brand;
                 // Try to construct brand logo URL (common pattern)
