@@ -1453,6 +1453,37 @@
             min-width: 0;
         }
 
+        .category-brand-logo-wrap {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 86px;
+            margin: 2px 0 8px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            overflow: hidden;
+        }
+
+        .category-brand-logo {
+            display: block;
+            height: auto;
+            width: auto;
+            max-height: 76px;
+            max-width: 420px;
+            object-fit: contain;
+            image-rendering: auto;
+            -ms-interpolation-mode: bicubic;
+            transition: transform 0.2s ease;
+        }
+
+        .category-brand-logo.category-brand-logo--boost {
+            transform: scale(1.2);
+        }
+
+        .category-brand-logo.category-brand-logo--boost-strong {
+            transform: scale(1.95);
+        }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -1483,7 +1514,7 @@
         }
 
         .products-header h1 {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
             color: #1f2937;
             margin: 0;
@@ -1655,7 +1686,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 8px;
-            height: 20px;
+            min-height: 24px;
             /* Fixed height */
         }
 
@@ -1666,10 +1697,15 @@
         }
 
         .brand-logo {
-            height: 24px;
+            height: auto;
             width: auto;
+            max-height: 24px;
+            max-width: 96px;
             opacity: 0.85;
             object-fit: contain;
+            object-position: left center;
+            image-rendering: auto;
+            -ms-interpolation-mode: bicubic;
         }
 
         .brand-name {
@@ -2581,7 +2617,7 @@
             <!-- Special Filters Dropdown -->
             <div class="special-filters-dropdown">
                 <button type="button" class="special-filters-btn" onclick="this.parentElement.classList.toggle('open')">
-                    <span class="special-filters-icon">Ã¢Å“Â¨</span>
+                    <span class="special-filters-icon">&#10024;</span>
                     <span class="special-filters-text">Special Filters</span>
                     <span class="special-filters-arrow">›</span>
                 </button>
@@ -2635,9 +2671,9 @@
             <div class="price-range-section expanded">
                 <div class="price-range-header" onclick="this.parentElement.classList.toggle('expanded')">
                     <h4>Price Range</h4>
-                    <span class="price-range-arrow">Ã‹â€¡</span>
+                    <span class="price-range-arrow">&#9662;</span>
                 </div>
-                <div class="price-range-display" id="priceRangeDisplay">Ã‚£14.25 - Ã‚£64.95</div>
+                <div class="price-range-display" id="priceRangeDisplay">&#163;14.25 - &#163;64.95</div>
                 <div class="price-range-slider-container">
                     <div class="price-range-track"></div>
                     <div class="price-range-selected" id="priceRangeSelected"></div>
@@ -2647,11 +2683,11 @@
                 <div class="price-range-inputs">
                     <div class="price-input-group">
                         <label>Min</label>
-                        <input type="text" class="price-input" id="priceInputMin" value="Ã‚£14">
+                        <input type="text" class="price-input" id="priceInputMin" value="&#163;14">
                     </div>
                     <div class="price-input-group">
                         <label>Max</label>
-                        <input type="text" class="price-input" id="priceInputMax" value="Ã‚£65">
+                        <input type="text" class="price-input" id="priceInputMax" value="&#163;65">
                     </div>
                 </div>
             </div>
@@ -3331,6 +3367,9 @@
 
         <!-- Products Section -->
         <section class="products-section">
+            <div id="categoryBrandLogoWrap" class="category-brand-logo-wrap">
+                <img id="categoryBrandLogo" class="category-brand-logo" alt="" loading="lazy">
+            </div>
             <div class="products-header">
                 <div class="products-header-left">
                     <button type="button" class="back-btn" onclick="window.history.back()">
@@ -4436,6 +4475,7 @@
 
                 const isColorSwatch = config.isColorSwatch;
                 const checkedValues = checkedStates[config.stateKey] || checkedStates[filterKey] || [];
+                const filterOptions = filterKey === 'brand' ? dedupeBrandsByName(filterData) : filterData;
 
                 // Build filter row
                 html += `<div class="filter-expandable-row" data-filter-key="${filterKey}">
@@ -4447,7 +4487,7 @@
                 if (isColorSwatch) {
                     // Color swatch grid - don't show counts for primary colour
                     html += `<div class="filter-color-swatches" aria-label="${config.title}">`;
-                    filterData.forEach(item => {
+                    filterOptions.forEach(item => {
                         const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
                         const colorValue = COLOR_SWATCH_MAP[item.slug] || '#e5e7eb';
                         const isPattern = item.slug === 'pattern';
@@ -4466,7 +4506,7 @@
                 } else {
                     // Regular checkbox list
                     html += `<div class="filter-checkbox-list">`;
-                    filterData.forEach(item => {
+                    filterOptions.forEach(item => {
                         const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
                         html += `<label class="filter-checkbox-item">
                     <input type="checkbox" value="${item.slug}" ${isChecked}>
@@ -4786,11 +4826,138 @@
                 'bagbase':'brandedukv15-child/assets/images/brands/bagbase.jpeg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
                 'scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg','yoko':'brandedukv15-child/assets/images/brands/yoko.webp',
                 'tridri':'brandedukv15-child/assets/images/brands/tridri.webp','pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg',
+                '2786':'brandedukv15-child/assets/images/brands/27862020.webp',
+                'asquith and fox':'brandedukv15-child/assets/images/brands/asquith-and-fox.jpg',
+                'asquith & fox':'brandedukv15-child/assets/images/brands/asquith-and-fox.jpg',
+                'awdis academy':'brandedukv15-child/assets/images/brands/awdisacademy2020.webp',
+                'awdis ecologie':'brandedukv15-child/assets/images/brands/awdisecologie2020.jpg',
+                'awdis just cool':'brandedukv15-child/assets/images/brands/awdisjustcool2020.webp',
+                'awdis just hoods':'brandedukv15-child/assets/images/brands/awdisjusthoods2020.webp',
+                'awdis just polos':'brandedukv15-child/assets/images/brands/awdisjustpolos2020.jpg',
+                'awdis just ts':'brandedukv15-child/assets/images/brands/awdisjustts2020.webp',
+                'babybugz':'brandedukv15-child/assets/images/brands/babybugz2020.jpg',
+                'bella canvas':'brandedukv15-child/assets/images/brands/bellapluscanvas.svg',
+                'b and c collection':'brandedukv15-child/assets/images/brands/bandc-collection.png',
+                'build your brand':'brandedukv15-child/assets/images/brands/build-your-brand.png',
+                'build your brand basic':'brandedukv15-child/assets/images/brands/build-your-brand-basic-logo-web-2021.jpg',
+                'build your brandit':'brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg',
+                'brandit':'brandedukv15-child/assets/images/brands/build-your-brandit-logo.jpeg',
+                'callaway':'brandedukv15-child/assets/images/brands/callaway2020.jpg',
+                'colortone':'brandedukv15-child/assets/images/brands/colortone2020.webp',
+                'comfort colors':'brandedukv15-child/assets/images/brands/comfort-colors.webp',
+                'craghoppers':'brandedukv15-child/assets/images/brands/craghoppers.jpg',
+                'finden and hales':'brandedukv15-child/assets/images/brands/finden-hales.png',
+                'finden & hales':'brandedukv15-child/assets/images/brands/finden-hales.png',
+                'gamegear':'brandedukv15-child/assets/images/brands/gamegear.webp',
+                'home and living':'brandedukv15-child/assets/images/brands/web-logo-homeandliving-2023.webp',
+                'kimood':'brandedukv15-child/assets/images/brands/kimood2020.jpg',
+                'kariban proact':'brandedukv15-child/assets/images/brands/proact.jpg',
+                'larkwood':'brandedukv15-child/assets/images/brands/larkwood.jpeg',
+                'maddins':'brandedukv15-child/assets/images/brands/maddins2020.jpg',
+                'madeira':'brandedukv15-child/assets/images/brands/web-logo-madeira-2022.jpg',
+                'magicut':'brandedukv15-child/assets/images/brands/web-logo-magicut.jpg',
+                'mumbles':'brandedukv15-child/assets/images/brands/mumbles2020.webp',
+                'new morning studios':'brandedukv15-child/assets/images/brands/web-logo-new-morning-studios.png',
+                'nutshell':'brandedukv15-child/assets/images/brands/nutshell-bag2020.webp',
+                'ogio':'brandedukv15-child/assets/images/brands/ogio2020.webp',
+                'onna by premier':'brandedukv15-child/assets/images/brands/web-logo-onna-by-premier-2023.jpg',
+                'sf clothing':'brandedukv15-child/assets/images/brands/sf-clothing.webp',
+                'ribbon':'brandedukv15-child/assets/images/brands/brand-logo-ribbon.jpg',
+                'rhino':'brandedukv15-child/assets/images/brands/rhino2020.jpg',
+                'result core':'brandedukv15-child/assets/images/brands/resultcorevalue2020.webp',
+                'result headwear':'brandedukv15-child/assets/images/brands/resultheadwear2020.webp',
+                'result safeguard':'brandedukv15-child/assets/images/brands/result-safe-guard-2026.webp',
+                'result safe guard':'brandedukv15-child/assets/images/brands/result-safe-guard-2026.webp',
+                'result winter essentials':'brandedukv15-child/assets/images/brands/resultwinteressentials2020.webp',
+                'result urban outdoor':'brandedukv15-child/assets/images/brands/resulturbanoutdoorwear2020.webp',
+                'result work guard':'brandedukv15-child/assets/images/brands/result-workguard-2026.webp',
+                'russell athletic collection':'brandedukv15-child/assets/images/brands/russel-athletic-collection-2026.webp',
+                'regatta high visibility':'brandedukv15-child/assets/images/brands/regattaprofessional-highv2020.webp',
+                'regatta honestly made':'brandedukv15-child/assets/images/brands/regattaprofessional-hones2020.jpg',
+                'regatta junior':'brandedukv15-child/assets/images/brands/regattaprofessional-junio2020.jpg',
+                'regatta safety footwear':'brandedukv15-child/assets/images/brands/regattaprofessional-safet2020.jpg',
+                'stanley stella':'brandedukv15-child/assets/images/brands/stanley-stella.webp',
+                'stormtech':'brandedukv15-child/assets/images/brands/stormtech.webp',
+                'spiro recycled':'brandedukv15-child/assets/images/brands/web-logo-spiro-recycled.png',
+                'the magic touch':'brandedukv15-child/assets/images/brands/themagictouch-logo-officialrgb150x110.jpg',
+                'themagictouch':'brandedukv15-child/assets/images/brands/themagictouch-logo-officialrgb150x110.jpg',
+                'towel city':'brandedukv15-child/assets/images/brands/towel-city2020.jpg',
+                'xpres':'brandedukv15-child/assets/images/brands/xpres2020.jpg',
+                'wombat':'brandedukv15-child/assets/images/brands/wombat.jpg',
                 'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp',
-                'russell athletic':'brandedukv15-child/assets/images/brands/russel-athletic-2026.webp'
+                'russell athletic':'brandedukv15-child/assets/images/brands/russel-athletic-2026.webp',
+                'flexfit':'brandedukv15-child/assets/images/brands/flexfit.webp',
+                'flexfit by yupoong':'brandedukv15-child/assets/images/brands/flexfit.webp',
+                'flexifit':'brandedukv15-child/assets/images/brands/flexfit.webp'
             };
-            return m[(b||'').toLowerCase().trim()] || null;
+            var input = (b || '').toLowerCase().trim();
+            if (!input) return null;
+
+            var candidates = [
+                input,
+                input.replace(/\+/g, ' '),
+                input.replace(/-/g, ' '),
+                input.replace(/\+/g, ' ').replace(/-/g, ' '),
+                input.replace(/[^a-z0-9& ]+/g, ' ').replace(/\s+/g, ' ').trim()
+            ];
+
+            for (var i = 0; i < candidates.length; i++) {
+                if (m[candidates[i]]) return m[candidates[i]];
+            }
+
+            var normalized = candidates[candidates.length - 1] || input;
+            var keys = Object.keys(m);
+            for (var j = 0; j < keys.length; j++) {
+                var key = keys[j];
+                if (normalized.includes(key) || key.includes(normalized)) {
+                    return m[key];
+                }
+            }
+
+            return null;
         }
+
+        function updateCategoryBrandLogo(brandParam, brandDisplayName) {
+            var logoEl = document.getElementById('categoryBrandLogo');
+            var logoWrapEl = document.getElementById('categoryBrandLogoWrap');
+            if (!logoEl || !logoWrapEl) return;
+
+            var logoPath = getBrandLogo(brandDisplayName) || getBrandLogo(brandParam);
+            if (!logoPath) {
+                logoEl.removeAttribute('src');
+                logoEl.alt = '';
+                logoEl.classList.remove('category-brand-logo--boost');
+                logoEl.classList.remove('category-brand-logo--boost-strong');
+                logoWrapEl.style.display = 'none';
+                logoWrapEl.style.opacity = '0';
+                return;
+            }
+
+            logoEl.src = logoPath;
+            logoEl.alt = (brandDisplayName || 'Brand') + ' logo';
+
+            var normalizedBrand = (brandDisplayName || brandParam || '')
+                .toLowerCase()
+                .replace(/[+\-]/g, ' ')
+                .replace(/[^a-z0-9 ]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            var isAdidas = normalizedBrand.includes('adidas');
+            var isThinLogo =
+                normalizedBrand.includes('build your brand basic') ||
+                normalizedBrand === 'build your brand' ||
+                normalizedBrand.includes('craghoppers') ||
+                normalizedBrand.includes('finden and hales') ||
+                normalizedBrand.includes('finden hales');
+            logoEl.classList.toggle('category-brand-logo--boost', isAdidas);
+            logoEl.classList.toggle('category-brand-logo--boost-strong', isThinLogo);
+
+            logoWrapEl.style.display = 'flex';
+            logoWrapEl.style.opacity = '1';
+        }
+
+        const POUND_SYMBOL = '\u00A3';
 
         function formatCurrency(amount) {
             const vat = getVatApi();
@@ -4801,7 +4968,7 @@
             if (isVatOn()) {
                 value = value * 1.20;
             }
-            return 'Ã‚£' + value.toFixed(2);
+            return POUND_SYMBOL + value.toFixed(2);
         }
 
         function vatSuffix() {
@@ -4945,6 +5112,7 @@
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
             const productsCountEl = document.getElementById('productsCount');
+            const categoryBrandLogoWrapEl = document.getElementById('categoryBrandLogoWrap');
 
             // ALWAYS show loader before fetching products - better UX
             const beforeLoaderTime = performance.now();
@@ -4955,6 +5123,9 @@
             if (categoryTitleEl) {
                 categoryTitleEl.style.opacity = '0';
                 categoryTitleEl.style.transition = 'opacity 0.3s ease';
+            }
+            if (categoryBrandLogoWrapEl) {
+                categoryBrandLogoWrapEl.style.opacity = '0';
             }
             if (productsCountEl) {
                 productsCountEl.style.opacity = '0';
@@ -4999,9 +5170,11 @@
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
                     categoryTitleEl.textContent = brandDisplayName;
+                    updateCategoryBrandLogo(brandParam, brandDisplayName);
                     categoryTitleEl.style.opacity = '1';
                     console.log('Ã°Å¸ÂÂ·Ã¯Â¸Â Showing brand title:', brandDisplayName);
                 } else if (accreditationParam) {
+                    updateCategoryBrandLogo('', '');
                     // Fetch accreditation name
                     getAccreditationName(accreditationParam).then(name => {
                         categoryTitleEl.textContent = name || 'Sustainable Products';
@@ -5015,6 +5188,7 @@
                         categoryTitleEl.style.opacity = '1';
                     });
                 } else if (productTypeParam) {
+                    updateCategoryBrandLogo('', '');
                     // Fetch product type name from API
                     getProductTypeName(productTypeParam).then(name => {
                         if (name) {
@@ -5036,6 +5210,7 @@
                         categoryTitleEl.style.opacity = '1';
                     });
                 } else {
+                    updateCategoryBrandLogo('', '');
                     categoryTitleEl.textContent = categoryTitles[currentState.category] || 'Products';
                     categoryTitleEl.style.opacity = '1';
                 }
@@ -5043,7 +5218,7 @@
             var descEl = document.getElementById('categoryDescription');
             if (descEl) {
                 var DESC = {
-                    'all': '', 'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafÃƒÂ©s, and trade professionals seeking a polished, branded look.',
+                    'all': '', 'aprons': 'High-quality custom aprons designed for hospitality, catering, and retail environments. Durable fabrics with professional embroidery or print options for long-lasting branding. Ideal for restaurants, cafes, and trade professionals seeking a polished, branded look.',
                     'hoodies': 'Premium custom hoodies for workwear, events, and corporate teams. Available with embroidery, screen printing, or DTF for sharp, durable logos. Comfortable, hard-wearing garments suitable for daily use and brand visibility.',
                     'beanies': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
                     'caps': 'Custom beanies, caps, and headwear designed for year-round branding. Perfect for promotional use, uniforms, and outdoor work environments. High-quality embroidery ensures strong brand recognition and durability.',
@@ -5083,7 +5258,7 @@
 
                 let noResultsHtml = `
                     <div class="no-results-container" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #e2e8f0; margin: 20px 0;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">Ã°Å¸â€Â</div>
+                        <div style="font-size: 48px; margin-bottom: 20px;">&#128269;</div>
                         <h3 style="font-size: 20px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">No products found</h3>
                         <p style="color: #64748b; max-width: 400px; margin: 0 auto 24px;">We couldn't find any products matching "${currentState.search || 'your criteria'}".</p>
                         <div id="noResultsSuggestions" class="no-results-suggestions"></div>
@@ -5634,10 +5809,10 @@
                     const displayMin = (minVal * vatMultiplier).toFixed(2);
                     const displayMax = (maxVal * vatMultiplier).toFixed(2);
                     if (rangeDisplay) {
-                        rangeDisplay.textContent = 'Ã‚£' + displayMin + ' - Ã‚£' + displayMax;
+                        rangeDisplay.textContent = POUND_SYMBOL + displayMin + ' - ' + POUND_SYMBOL + displayMax;
                     }
-                    if (inputMin) inputMin.value = 'Ã‚£' + minVal;
-                    if (inputMax) inputMax.value = 'Ã‚£' + maxVal;
+                    if (inputMin) inputMin.value = POUND_SYMBOL + minVal;
+                    if (inputMax) inputMax.value = POUND_SYMBOL + maxVal;
                 }
 
                 // Handle price slider change - call API (for change events - when user releases)
@@ -5713,7 +5888,7 @@
                     // Input field handlers - trigger API on change
                     if (inputMin) {
                         inputMin.addEventListener('change', function () {
-                            let val = parseInt(this.value.replace('Ã‚£', '').replace(/[^0-9]/g, ''));
+                            let val = parseInt(this.value.replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = catalogMinPrice;
                             val = Math.max(catalogMinPrice, Math.min(val, parseInt(sliderMax.value)));
                             sliderMin.value = val;
@@ -5723,7 +5898,7 @@
 
                     if (inputMax) {
                         inputMax.addEventListener('change', function () {
-                            let val = parseInt(this.value.replace('Ã‚£', '').replace(/[^0-9]/g, ''));
+                            let val = parseInt(this.value.replace(/[^0-9]/g, ''));
                             if (isNaN(val)) val = catalogMaxPrice;
                             val = Math.min(catalogMaxPrice, Math.max(val, parseInt(sliderMin.value)));
                             sliderMax.value = val;
@@ -5751,10 +5926,10 @@
                 const displayMin = (initMinVal * vatMultiplier).toFixed(2);
                 const displayMax = (initMaxVal * vatMultiplier).toFixed(2);
                 if (rangeDisplay) {
-                    rangeDisplay.textContent = 'Ã‚£' + displayMin + ' - Ã‚£' + displayMax;
+                    rangeDisplay.textContent = POUND_SYMBOL + displayMin + ' - ' + POUND_SYMBOL + displayMax;
                 }
-                if (inputMin) inputMin.value = 'Ã‚£' + initMinVal;
-                if (inputMax) inputMax.value = 'Ã‚£' + initMaxVal;
+                if (inputMin) inputMin.value = POUND_SYMBOL + initMinVal;
+                if (inputMax) inputMax.value = POUND_SYMBOL + initMaxVal;
                 console.log('Ã¢Å“â€¦ Price slider initialization complete');
                 console.log('Ã°Å¸â€œÅ  Final slider state:', {
                     sliderMinValue: sliderMin.value,
@@ -5843,8 +6018,8 @@
             // Update the input fields
             const inputMin = document.getElementById('priceInputMin');
             const inputMax = document.getElementById('priceInputMax');
-            if (inputMin) inputMin.value = 'Ã‚£' + currentMin;
-            if (inputMax) inputMax.value = 'Ã‚£' + currentMax;
+            if (inputMin) inputMin.value = POUND_SYMBOL + currentMin;
+            if (inputMax) inputMax.value = POUND_SYMBOL + currentMax;
 
             // Update the UI display
             updatePriceRangeDisplay();
@@ -5883,7 +6058,7 @@
             const vatMultiplier = isVatOn() ? 1.20 : 1;
             const displayMin = (rawMin * vatMultiplier).toFixed(2);
             const displayMax = (rawMax * vatMultiplier).toFixed(2);
-            rangeDisplay.textContent = 'Ã‚£' + displayMin + ' - Ã‚£' + displayMax;
+            rangeDisplay.textContent = POUND_SYMBOL + displayMin + ' - ' + POUND_SYMBOL + displayMax;
         }
 
         // Filter checkbox handlers
@@ -6695,6 +6870,58 @@
             return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         }
 
+        function normalizeBrandName(name) {
+            return String(name || '')
+                .replace(/\s+/g, ' ')
+                .replace(/[®™]/g, '')
+                .replace(/\b(ralawise|absolute\s*apparel|absolute)\b/gi, '')
+                .replace(/\bflexifit\b/gi, 'Flexfit')
+                .trim();
+        }
+
+        function normalizeBrandKey(name) {
+            return normalizeBrandName(name)
+                .toLowerCase()
+                .replace(/&/g, 'and')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
+
+        function dedupeBrandsByName(brands) {
+            const unique = new Map();
+
+            brands.forEach((brand) => {
+                const normalizedName = normalizeBrandName(brand.name);
+                const normalizedKey = normalizeBrandKey(normalizedName);
+                if (!normalizedName || !normalizedKey) return;
+
+                const candidate = {
+                    name: normalizedName,
+                    slug: brand.slug || slugify(normalizedName),
+                    count: brand.count || 0
+                };
+
+                // Canonicalize common API variations/typos for the same brand.
+                if (/^flexfit(\s+by\s+yupoong)?$/i.test(candidate.name)) {
+                    candidate.name = 'Flexfit by Yupoong';
+                    candidate.slug = 'flexfit';
+                }
+
+                if (!unique.has(normalizedKey)) {
+                    unique.set(normalizedKey, candidate);
+                    return;
+                }
+
+                const existing = unique.get(normalizedKey);
+                existing.count += candidate.count;
+                if (candidate.name.length < existing.name.length) {
+                    existing.name = candidate.name;
+                }
+            });
+
+            return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
+        }
+
         async function loadBrands() {
             if (fetched) return;
             fetched = true;
@@ -6703,13 +6930,12 @@
                 const data = await res.json();
                 const raw  = data.brands || data || [];
                 // Normalize: API may return strings or {name,slug} objects
-                allBrands = raw.map(b => {
+                allBrands = dedupeBrandsByName(raw.map(b => {
                     const name = typeof b === 'string' ? b : (b.name || b.label || '');
                     const slug = typeof b === 'string' ? slugify(b) : (b.slug || b.value || slugify(name));
                     return { name, slug };
                 })
-                .filter(b => b.name && !EXCLUDED.some(ex => b.name.toLowerCase().includes(ex)))
-                .sort((a, b) => a.name.localeCompare(b.name));
+                .filter(b => b.name && !EXCLUDED.some(ex => b.name.toLowerCase().includes(ex))));
 
                 renderBrands(allBrands);
             } catch (err) {
@@ -6757,7 +6983,12 @@
                         renderBrands(allBrands);
                         return;
                     }
-                    renderBrands(allBrands.filter(b => b.name.toLowerCase().includes(q)));
+                    const queryKey = normalizeBrandKey(q);
+                    renderBrands(allBrands.filter(b => {
+                        const name = b.name.toLowerCase();
+                        const key = normalizeBrandKey(b.name);
+                        return name.includes(q) || key.includes(queryKey);
+                    }));
                 });
                 // Prevent clicks on input from closing/navigating
                 searchInput.addEventListener('click', e => e.stopPropagation());

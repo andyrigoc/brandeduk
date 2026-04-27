@@ -39,7 +39,7 @@
     .mobile-header + .top-promo-bar .promo-scroll {
         display: inline-block;
         width: auto;
-        animation: promo-scroll-left 35s linear infinite;
+        animation: promo-scroll-left 70s linear infinite;
         white-space: nowrap;
         will-change: transform;
     }
@@ -63,7 +63,8 @@
 
 .top-promo-bar .promo-scroll {
     display: inline-block;
-    animation: promo-scroll-left 45s linear infinite;
+    animation: promo-scroll-left 70s linear infinite;
+    animation-play-state: running;
 }
 
 .top-promo-bar .promo-scroll span {
@@ -73,6 +74,21 @@
 
 .top-promo-bar:hover .promo-scroll {
     animation-play-state: paused;
+}
+
+/* Touch devices can keep :hover stuck; never pause marquee there */
+@media (hover: none) and (pointer: coarse) {
+    .top-promo-bar:hover .promo-scroll {
+        animation-play-state: running !important;
+    }
+}
+
+/* Keep promo marquee moving even when global reduced-motion clamp is active */
+@media (prefers-reduced-motion: reduce) {
+    .top-promo-bar .promo-scroll {
+        animation: promo-scroll-left 70s linear infinite !important;
+        animation-play-state: running !important;
+    }
 }
 
 @keyframes promo-scroll-left {

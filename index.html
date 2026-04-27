@@ -67,7 +67,8 @@
             padding: 20px;
         }
         .splash-logo {
-            width: 220px;
+            width: 320px;
+            max-width: 82vw;
             height: auto;
             animation: fadeInScale 0.6s ease-out;
         }
@@ -150,7 +151,7 @@
             // Redirect after splash screen delay.
             updateDebug('pending');
 
-            var MAX_WAIT_MS = 500;
+            var MAX_WAIT_MS = 2500;
             var didRedirect = false;
 
             function safeRedirect(reason) {
@@ -160,10 +161,19 @@
                 redirectIfNeeded();
             }
 
-            // Always wait the full 3 seconds (splash screen) then redirect.
-            autoTimer = setTimeout(function () {
-                safeRedirect('timeout');
-            }, MAX_WAIT_MS);
+            function startSplashCountdown() {
+                if (autoTimer) return;
+                autoTimer = setTimeout(function () {
+                    safeRedirect('timeout');
+                }, MAX_WAIT_MS);
+            }
+
+            // Wait for this loader page to be fully ready, then keep splash visible for ~4 seconds.
+            if (document.readyState === 'complete') {
+                startSplashCountdown();
+            } else {
+                window.addEventListener('load', startSplashCountdown, { once: true });
+            }
         })();
     </script>
 </body>

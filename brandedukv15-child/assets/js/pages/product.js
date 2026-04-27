@@ -1254,6 +1254,8 @@ function initThumbnailColumn(productColors) {
     thumbInner.className = 'thumb-slider-inner';
     thumbInner.style.cssText = 'display: flex; flex-direction: column; gap: 8px; transition: transform 0.3s ease;';
 
+    const isDesktopPc = window.matchMedia && window.matchMedia('(min-width: 1024px)').matches;
+
     // ===== INSERT PRIMARY IMAGE FROM API AS FIRST THUMBNAIL =====
     const primaryImageUrl = PRODUCT_DATA && PRODUCT_DATA.image ? PRODUCT_DATA.image : null;
     let primaryInserted = false;
@@ -1266,7 +1268,7 @@ function initThumbnailColumn(productColors) {
         if (!isDuplicate) {
             const primaryButton = document.createElement('button');
             primaryButton.type = 'button';
-            primaryButton.className = 'thumb-item active';
+            primaryButton.className = isDesktopPc ? 'thumb-item' : 'thumb-item active';
             primaryButton.setAttribute('data-image', primaryImageUrl);
             primaryButton.setAttribute('data-color-name', '');
             primaryButton.setAttribute('data-index', '-1');
@@ -1283,8 +1285,8 @@ function initThumbnailColumn(productColors) {
             thumbInner.appendChild(primaryButton);
             primaryInserted = true;
 
-            // Set main image to the primary API image
-            if (mainImage) {
+            // For non-desktop keep API primary image as initial image.
+            if (mainImage && !isDesktopPc) {
                 mainImage.src = primaryImageUrl;
                 mainImage.alt = PRODUCT_NAME || 'Product';
             }
@@ -1451,9 +1453,16 @@ function initThumbnailColumn(productColors) {
                     mainImage.src = savedMainUrl;
                 }
             }
+        } else if (isDesktopPc) {
+            // Desktop-only: force model/color image as default main image.
+            const firstColor = productColors[0];
+            const firstMainUrl = firstColor.main || firstColor.thumb || firstColor.url || primaryImageUrl;
+            if (firstMainUrl) {
+                mainImage.src = firstMainUrl;
+                mainImage.alt = PRODUCT_NAME || 'Product';
+            }
         } else if (primaryInserted && primaryImageUrl) {
-            // Primary API image was inserted and is already set as main image
-            // No action needed - already set above
+            // Non-desktop: keep API primary image as default.
         } else {
             // Use first color
             const firstColor = productColors[0];

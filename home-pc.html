@@ -643,6 +643,53 @@
         .exclusives-menu {
             position: relative;
         }
+
+        .brands-menu {
+            position: static;
+        }
+
+        .brands-menu::after {
+            display: none;
+        }
+
+        .brands-menu .nav-megamenu.brand-grid {
+            top: calc(100% + 1px);
+            left: 50%;
+            right: auto;
+            width: min(calc(100vw - 48px), 1220px);
+            max-width: 1220px;
+            min-width: 1120px;
+            box-sizing: border-box;
+            transform: translateX(-50%);
+            column-count: 6;
+            column-gap: 30px;
+            column-rule: 1px solid #eef2f7;
+            padding: 14px 30px 18px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .brands-menu .nav-megamenu.brand-grid li a {
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.35;
+        }
+
+        .brands-menu .nav-megamenu.brand-grid li {
+            margin-bottom: 5px;
+        }
+
+        .brands-menu .nav-megamenu.brand-grid .brand-heading {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .brands-menu .nav-megamenu.brand-grid .brand-heading:first-of-type {
+            margin-top: 0;
+        }
         .exclusives-dropdown {
             position: absolute;
             top: 100%;
@@ -1709,7 +1756,154 @@
                             <li><a href="#">Winter Workwear</a></li>
                         </ul>
                     </li>
-                    <li><a href="#">Branded</a></li>
+                    <li class="has-megamenu brands-menu">
+                        <a href="#" aria-haspopup="true">
+                            Brands
+                            <span class="nav-caret" aria-hidden="true"></span>
+                        </a>
+                        <ul class="nav-megamenu brand-grid" aria-label="Brands list">
+                            <li class="brand-heading">0 - 9</li>
+                            <li><a href="shop-pc.html?brand=2786">2786</a></li>
+                            <li class="brand-heading">A</li>
+                            <li><a href="shop-pc.html?brand=absolute-apparel">Absolute Apparel</a></li>
+                            <li><a href="shop-pc.html?brand=afd-by-dennys">AFD by Dennys</a></li>
+                            <li><a href="shop-pc.html?brand=add-it-on">Add It On</a></li>
+                            <li><a href="shop-pc.html?brand=adidas%C2%AE">Adidas</a></li>
+                            <li><a href="shop-pc.html?brand=anthem">Anthem</a></li>
+                            <li><a href="shop-pc.html?brand=asquith-and-fox">Asquith &amp; Fox</a></li>
+                            <li><a href="shop-pc.html?brand=atlantis">Atlantis</a></li>
+                            <li><a href="shop-pc.html?brand=awdis">AWDis</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-academy">AWDis Academy</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-ecologie">AWDis Ecologie</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-just-cool">AWDis Just Cool</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-just-hoods">AWDis Just Hoods</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-just-polos">AWDis Just Polos</a></li>
+                            <li><a href="shop-pc.html?brand=awdis-just-ts">AWDis Just Ts</a></li>
+                            <li class="brand-heading">B</li>
+                            <li><a href="shop-pc.html?brand=b%26c-collection">B&amp;C Collection</a></li>
+                            <li><a href="shop-pc.html?brand=babybugz">BabyBugz</a></li>
+                            <li><a href="shop-pc.html?brand=bagbase">BagBase</a></li>
+                            <li><a href="shop-pc.html?brand=bella-canvas">Bella+Canvas</a></li>
+                            <li><a href="shop-pc.html?brand=beechfield">Beechfield</a></li>
+                            <li><a href="shop-pc.html?brand=bonchef">BonChef</a></li>
+                            <li><a href="shop-pc.html?brand=build-your-brand">Build Your Brand</a></li>
+                            <li><a href="shop-pc.html?brand=build-your-brand-basic">Build Your Brand Basic</a></li>
+                            <li><a href="shop-pc.html?brand=build-your-brandit">Build Your Brandit</a></li>
+                            <li class="brand-heading">C</li>
+                            <li><a href="shop-pc.html?brand=callaway">Callaway</a></li>
+                            <li><a href="shop-pc.html?brand=casual-classics">Casual Classics</a></li>
+                            <li><a href="shop-pc.html?brand=colortone">ColorTone</a></li>
+                            <li><a href="shop-pc.html?brand=comfort-colors">Comfort Colors</a></li>
+                            <li><a href="shop-pc.html?brand=consumables">Consumables</a></li>
+                            <li><a href="shop-pc.html?brand=craghoppers">Craghoppers</a></li>
+                            <li><a href="shop-pc.html?brand=craghoppers-expert">Craghoppers Expert</a></li>
+                            <li class="brand-heading">D</li>
+                            <li><a href="shop-pc.html?brand=dae-ha">Dae Ha</a></li>
+                            <li><a href="shop-pc.html?brand=dennys">Dennys</a></li>
+                            <li class="brand-heading">E</li>
+                            <li><a href="shop-pc.html?brand=everyday-essentials">Everyday Essentials</a></li>
+                            <li><a href="shop-pc.html?brand=ez-trans">EZ Trans</a></li>
+                            <li class="brand-heading">F</li>
+                            <li><a href="shop-pc.html?brand=finden-and-hales">Finden &amp; Hales</a></li>
+                            <li><a href="shop-pc.html?brand=flexfit">Flexfit by Yupoong</a></li>
+                            <li><a href="shop-pc.html?brand=front-row">Front Row</a></li>
+                            <li><a href="shop-pc.html?brand=fruit-of-the-loom">Fruit of the Loom</a></li>
+                            <li class="brand-heading">G</li>
+                            <li><a href="shop-pc.html?brand=gildan">Gildan</a></li>
+                            <li><a href="shop-pc.html?brand=gildan-hammer">Gildan Hammer</a></li>
+                            <li class="brand-heading">H</li>
+                            <li><a href="shop-pc.html?brand=henbury">Henbury</a></li>
+                            <li><a href="shop-pc.html?brand=home-and-living">Home &amp; Living</a></li>
+                            <li class="brand-heading">K</li>
+                            <li><a href="shop-pc.html?brand=kariban">Kariban</a></li>
+                            <li><a href="shop-pc.html?brand=kariban-proact">Kariban Proact</a></li>
+                            <li><a href="shop-pc.html?brand=kimood">KiMood</a></li>
+                            <li><a href="shop-pc.html?brand=korntex">Korntex</a></li>
+                            <li><a href="shop-pc.html?brand=kodak">Kodak</a></li>
+                            <li><a href="shop-pc.html?brand=kustom-kit">Kustom Kit</a></li>
+                            <li class="brand-heading">L</li>
+                            <li><a href="shop-pc.html?brand=larkwood">Larkwood</a></li>
+                            <li class="brand-heading">M</li>
+                            <li><a href="shop-pc.html?brand=maddins">Maddins</a></li>
+                            <li><a href="shop-pc.html?brand=madeira">Madeira</a></li>
+                            <li><a href="shop-pc.html?brand=magicut">MagiCut</a></li>
+                            <li><a href="shop-pc.html?brand=marketing-hub">Marketing Hub</a></li>
+                            <li><a href="shop-pc.html?brand=mumbles">Mumbles</a></li>
+                            <li class="brand-heading">N</li>
+                            <li><a href="shop-pc.html?brand=new-morning-studios">New Morning Studios</a></li>
+                            <li><a href="shop-pc.html?brand=next-level-apparel">Next Level Apparel</a></li>
+                            <li><a href="shop-pc.html?brand=nike">Nike</a></li>
+                            <li><a href="shop-pc.html?brand=nimbus">Nimbus</a></li>
+                            <li><a href="shop-pc.html?brand=nutshell">Nutshell</a></li>
+                            <li class="brand-heading">O</li>
+                            <li><a href="shop-pc.html?brand=ogio">OGIO</a></li>
+                            <li><a href="shop-pc.html?brand=orna-by-premier">Orna By Premier</a></li>
+                            <li class="brand-heading">P</li>
+                            <li><a href="shop-pc.html?brand=portman-and-pooch">Portman &amp; Pooch</a></li>
+                            <li><a href="shop-pc.html?brand=portwest">Portwest</a></li>
+                            <li><a href="shop-pc.html?brand=premier">Premier</a></li>
+                            <li><a href="shop-pc.html?brand=pro-rtx">Pro RTX</a></li>
+                            <li><a href="shop-pc.html?brand=pro-rtx-high-visibility">Pro RTX High Visibility</a></li>
+                            <li class="brand-heading">Q</li>
+                            <li><a href="shop-pc.html?brand=quadra">Quadra</a></li>
+                            <li class="brand-heading">R</li>
+                            <li><a href="shop-pc.html?brand=rala-bundle">RalaBundle</a></li>
+                            <li><a href="shop-pc.html?brand=rala-deal-outlet">RalaDeal - Outlet</a></li>
+                            <li><a href="shop-pc.html?brand=ralaflex">RalaFlex</a></li>
+                            <li><a href="shop-pc.html?brand=regatta-high-visibility">Regatta High Visibility</a></li>
+                            <li><a href="shop-pc.html?brand=regatta-honestly-made">Regatta Honestly Made</a></li>
+                            <li><a href="shop-pc.html?brand=regatta-junior">Regatta Junior</a></li>
+                            <li><a href="shop-pc.html?brand=regatta-professional">Regatta Professional</a></li>
+                            <li><a href="shop-pc.html?brand=result">Result</a></li>
+                            <li><a href="shop-pc.html?brand=result-core">Result Core</a></li>
+                            <li><a href="shop-pc.html?brand=result-recycled">Result Recycled</a></li>
+                            <li><a href="shop-pc.html?brand=result-headwear">Result Headwear</a></li>
+                            <li><a href="shop-pc.html?brand=result-safe-guard">Result Safeguard</a></li>
+                            <li><a href="shop-pc.html?brand=result-winter-essentials">Result Winter Essentials</a></li>
+                            <li><a href="shop-pc.html?brand=result-urban-outdoor">Result Urban Outdoor</a></li>
+                            <li><a href="shop-pc.html?brand=result-work-guard">Result Work-Guard</a></li>
+                            <li><a href="shop-pc.html?brand=rhino">Rhino</a></li>
+                            <li><a href="shop-pc.html?brand=ribbon">Ribbon</a></li>
+                            <li><a href="shop-pc.html?brand=russell-athletic">Russell Athletic</a></li>
+                            <li><a href="shop-pc.html?brand=russell-athletic-collection">Russell Athletic Collection</a></li>
+                            <li><a href="shop-pc.html?brand=russell-athletic-pure-organic">Russell Athletic Pure Organic</a></li>
+                            <li class="brand-heading">S</li>
+                            <li><a href="shop-pc.html?brand=scruffs">Scruffs</a></li>
+                            <li><a href="shop-pc.html?brand=sf-clothing">SF Clothing</a></li>
+                            <li><a href="shop-pc.html?brand=spiro">Spiro</a></li>
+                            <li><a href="shop-pc.html?brand=spiro-recycled">Spiro Recycled</a></li>
+                            <li><a href="shop-pc.html?brand=splashmacs">Splashmacs</a></li>
+                            <li><a href="shop-pc.html?brand=stanley-stella">Stanley / Stella</a></li>
+                            <li><a href="shop-pc.html?brand=stanley-workwear">Stanley Workwear</a></li>
+                            <li><a href="shop-pc.html?brand=stedman">Stedman</a></li>
+                            <li class="brand-heading">T</li>
+                            <li><a href="shop-pc.html?brand=tee-jays">Tee Jays</a></li>
+                            <li><a href="shop-pc.html?brand=the-magic-touch">TheMagicTouch</a></li>
+                            <li><a href="shop-pc.html?brand=stormtech">Stormtech</a></li>
+                            <li><a href="shop-pc.html?brand=tombo">Tombo</a></li>
+                            <li><a href="shop-pc.html?brand=towel-city">Towel City</a></li>
+                            <li><a href="shop-pc.html?brand=tridri%C2%AE">TriDri</a></li>
+                            <li class="brand-heading">U</li>
+                            <li><a href="shop-pc.html?brand=under-armour">Under Armour</a></li>
+                            <li><a href="shop-pc.html?brand=under-armour-golf">Under Armour Golf</a></li>
+                            <li><a href="shop-pc.html?brand=uneek">Uneek</a></li>
+                            <li class="brand-heading">W</li>
+                            <li><a href="shop-pc.html?brand=warrior">Warrior</a></li>
+                            <li><a href="shop-pc.html?brand=westford-mill">Westford Mill</a></li>
+                            <li><a href="shop-pc.html?brand=work-force">Work Force</a></li>
+                            <li><a href="shop-pc.html?brand=wombat">Wombat</a></li>
+                            <li class="brand-heading">X</li>
+                            <li><a href="shop-pc.html?brand=xpres">Xpres</a></li>
+                            <li class="brand-heading">Y</li>
+                            <li><a href="shop-pc.html?brand=yoko">Yoko</a></li>
+                            <li>
+                                <a href="shop-pc.html" class="view-all-link">
+                                    <span class="category-text">View All Brands</span>
+                                    <span class="category-caret" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="has-megamenu promotions-menu">
                         <a href="#" aria-haspopup="true">
                             Promotions

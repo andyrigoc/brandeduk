@@ -3705,6 +3705,24 @@ html, body {
    DESKTOP OVERRIDES (PC ONLY)
 --------------------------------------------------- */
 @media (min-width: 1024px) {
+    .product-visual {
+        gap: 0;
+    }
+
+    .thumb-column {
+        display: none !important;
+    }
+
+    .product-main {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .product-main .main-img {
+        max-width: 520px;
+        width: 100%;
+    }
+
     .rala-btn-primary {
         background: #995BD5;
     }
