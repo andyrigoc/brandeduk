@@ -1953,6 +1953,7 @@
         if (isPositionsOnly) {
             applyPositionsOnlyMode();
         }
+        normalizePositionBadgeTexts();
         
         console.log('?? INIT STARTED');
         console.log('DOM Ready State:', document.readyState);
@@ -5590,6 +5591,42 @@
         }
     }
 
+    function normalizeBadgePriceText(value) {
+        const raw = String(value || '').replace(/\u00A0/g, ' ').trim();
+        if (!raw) return '£0.00';
+        if (/^\s*POA\s*$/i.test(raw)) return 'POA';
+
+        const numericMatch = raw.match(/-?\d+(?:\.\d{1,2})?/);
+        if (!numericMatch) return raw;
+
+        const amount = Number(numericMatch[0]);
+        if (!Number.isFinite(amount)) return raw;
+        return `£${amount.toFixed(2)}`;
+    }
+
+    function normalizePositionBadgeTexts() {
+        const embLegend = document.querySelector('.key-badge.embroidery');
+        const printLegend = document.querySelector('.key-badge.print');
+        if (embLegend) embLegend.textContent = 'Embroidery';
+        if (printLegend) printLegend.textContent = 'Print';
+
+        document.querySelectorAll('.position-card .price-badge').forEach((badge) => {
+            const method = (badge.dataset.method || '').toLowerCase();
+            const labelEl = badge.querySelector('.price-label');
+            const valueEl = badge.querySelector('.price-value');
+
+            if (labelEl) {
+                if (method === 'embroidery') labelEl.textContent = 'EMBROIDERY';
+                if (method === 'print') labelEl.textContent = 'PRINT';
+            }
+
+            const sourcePrice = badge.dataset.defaultPrice || valueEl?.textContent || '';
+            const normalizedPrice = normalizeBadgePriceText(sourcePrice);
+            badge.dataset.defaultPrice = normalizedPrice;
+            if (valueEl) valueEl.textContent = normalizedPrice;
+        });
+    }
+
     // === Reset Price Badge ===
     function resetPriceBadge(badge) {
         if (!badge) return;
@@ -5601,7 +5638,8 @@
         // Restore original content
         const method = badge.dataset.method;
         const defaultLabel = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
-        const defaultPrice = badge.dataset.defaultPrice || '+ £0.00';
+        const defaultPrice = normalizeBadgePriceText(badge.dataset.defaultPrice || '£0.00');
+        badge.dataset.defaultPrice = defaultPrice;
         
         badge.innerHTML = `
             <span class="price-label">${defaultLabel}</span>

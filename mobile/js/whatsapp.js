@@ -61,6 +61,21 @@
         }
     }
 
+    function restoreFloatingButton() {
+        openBtn.classList.remove('is-dismissed');
+        sessionStorage.removeItem(dismissKey);
+        openBtn.style.left = 'auto';
+        openBtn.style.right = '18px';
+        openBtn.style.top = 'auto';
+        openBtn.style.bottom = window.matchMedia('(min-width: 1024px)').matches ? '24px' : '82px';
+    }
+
+    function openPopup() {
+        if (popup) {
+            popup.classList.add('is-active');
+        }
+    }
+
     // === Touch events ===
     openBtn.addEventListener('touchstart', function (e) {
         if (openBtn.classList.contains('is-dismissed')) return;
@@ -143,8 +158,27 @@
             wasDragged = false;
             return;
         }
-        if (popup) popup.classList.add('is-active');
+        openPopup();
     });
+
+    // Any explicit chat trigger should restore the bubble and open WhatsApp popup.
+    document.addEventListener('click', function (e) {
+        var trigger = e.target && e.target.closest ? e.target.closest('[data-open-whatsapp]') : null;
+        if (!trigger) return;
+        e.preventDefault();
+        restoreFloatingButton();
+        openPopup();
+    });
+
+    // Mobile bottom-nav chat button support.
+    var chatNavBtn = document.getElementById('chatNavBtn');
+    if (chatNavBtn) {
+        chatNavBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            restoreFloatingButton();
+            openPopup();
+        });
+    }
 
     // === Popup close events ===
     if (closeBtn && popup) {

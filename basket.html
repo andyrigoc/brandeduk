@@ -734,6 +734,10 @@
                     <span>Costs To Add Logo</span>
                     <span class="summary-val" id="summaryLogoCosts">&#163;0.00</span>
                 </div>
+                <div class="summary-row" id="digitizingFeeRow" style="display: none;">
+                    <span>£25 Digitizing and test (ONE OFF)</span>
+                    <span class="summary-val" id="summaryDigitizingFee">&#163;25.00</span>
+                </div>
                 <div class="summary-row">
                     <span>Total (exc. VAT)</span>
                     <span class="summary-val" id="summaryExcVat">&#163;0.00</span>
@@ -1309,15 +1313,26 @@
         });
 
         digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
-        const totalLogoCosts = logoCosts + digitizingFee;
-        const subtotalExVat = productCosts + totalLogoCosts;
+        const subtotalExVat = productCosts + logoCosts + digitizingFee;
         const vatAmount = subtotalExVat * 0.20;
         const grandTotal = subtotalExVat + vatAmount;
 
         // Update summary
         const el = (id) => document.getElementById(id);
         if (el('summaryProductCosts')) el('summaryProductCosts').textContent = '\u00A3' + productCosts.toFixed(2);
-        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '\u00A3' + totalLogoCosts.toFixed(2);
+        if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '\u00A3' + logoCosts.toFixed(2);
+        
+        // Show/hide digitizing fee row
+        const digitizingRow = el('digitizingFeeRow');
+        if (digitizingRow) {
+            if (digitizingFee > 0) {
+                digitizingRow.style.display = 'flex';
+                if (el('summaryDigitizingFee')) el('summaryDigitizingFee').textContent = '\u00A3' + digitizingFee.toFixed(2);
+            } else {
+                digitizingRow.style.display = 'none';
+            }
+        }
+        
         if (el('summaryExcVat')) el('summaryExcVat').textContent = '\u00A3' + subtotalExVat.toFixed(2);
         if (el('summaryVat')) el('summaryVat').textContent = '\u00A3' + vatAmount.toFixed(2);
         if (el('summaryGrandTotal')) el('summaryGrandTotal').textContent = '\u00A3' + grandTotal.toFixed(2);

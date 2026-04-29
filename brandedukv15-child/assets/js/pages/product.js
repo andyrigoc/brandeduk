@@ -88,6 +88,71 @@ function vatAmount(baseAmount) {
     return (Number(baseAmount) || 0) * vatRate();
 }
 
+function normalizeBrandKey(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/\+/g, ' ')
+        .replace(/-/g, ' ')
+        .replace(/[^a-z0-9& ]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function inferBrandFromProductName(name) {
+    const text = normalizeBrandKey(name);
+    if (!text) return '';
+
+    const knownBrands = {
+        'anthem': 'Anthem',
+        'gildan': 'Gildan',
+        'fruit of the loom': 'Fruit of the Loom',
+        'awdis': 'AWDis',
+        'result': 'Result',
+        'regatta': 'Regatta',
+        'portwest': 'Portwest',
+        'russell': 'Russell',
+        'premier': 'Premier',
+        'yoko': 'Yoko',
+        'tridri': 'TriDri'
+    };
+
+    for (const key of Object.keys(knownBrands)) {
+        if (text.startsWith(key + ' ') || text === key || text.includes(' ' + key + ' ')) {
+            return knownBrands[key];
+        }
+    }
+
+    return '';
+}
+
+function resolveBrandLogoPath(brandName) {
+    const logos = {
+        'anthem': 'brandedukv15-child/assets/images/brands/anthem.jpg',
+        'gildan': 'brandedukv15-child/assets/images/brands/gildan2020.webp',
+        'fruit of the loom': 'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
+        'awdis': 'brandedukv15-child/assets/images/brands/awdis.webp',
+        'result': 'brandedukv15-child/assets/images/brands/result2020.webp',
+        'regatta': 'brandedukv15-child/assets/images/brands/regatta.webp',
+        'portwest': 'brandedukv15-child/assets/images/brands/portwest.webp',
+        'premier': 'brandedukv15-child/assets/images/brands/premier2020.webp',
+        'russell': 'brandedukv15-child/assets/images/brands/russell.webp',
+        'yoko': 'brandedukv15-child/assets/images/brands/yoko.webp',
+        'tridri': 'brandedukv15-child/assets/images/brands/tridri.webp'
+    };
+
+    const normalized = normalizeBrandKey(brandName);
+    if (!normalized) return '';
+    if (logos[normalized]) return logos[normalized];
+
+    for (const key of Object.keys(logos)) {
+        if (normalized.includes(key) || key.includes(normalized)) {
+            return logos[key];
+        }
+    }
+
+    return '';
+}
+
 // Update all pricing displays when VAT changes
 function updateAllPricing() {
     // Update main price â€” show lowest tier price with "START FROM"
@@ -489,65 +554,42 @@ function initProductRecommendationsSection() {
 
 // Initialize breadcrumb navigation from API data
 function initBreadcrumb() {
-    const breadcrumbCategoryLink = document.getElementById('breadcrumbCategoryLink');
-    const breadcrumbProduct = document.getElementById('breadcrumbProduct');
+        function sanitizeProductLabel(value) {
+            return String(value || '')
+                .replace(/[\uFFFD\uFFFC]/g, ' ')
+                .replace(/[®™©]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
 
-    if (!breadcrumbCategoryLink || !breadcrumbProduct) {
+    const breadcrumbBrandLink = document.getElementById('breadcrumbBrandLink');
+    const breadcrumbProduct = document.getElementById('breadcrumbProduct');
+    const breadcrumbCode = document.getElementById('breadcrumbCode');
+
+    if (!breadcrumbBrandLink || !breadcrumbProduct) {
         return;
     }
 
-    // Get productType from API data
-    let productType = PRODUCT_DATA?.productType || PRODUCT_DATA?.category || '';
+    const brandName = PRODUCT_DATA?.brand || '';
 
-    // Map API productType to URL slug for shop link
-    function productTypeToSlug(apiProductType) {
-        if (!apiProductType) return null;
-
-        const typeToSlug = {
-            'T-shirts': 'tshirts',
-            'T-Shirts': 'tshirts',
-            'Polos': 'polos',
-            'Polo Shirts': 'polos',
-            'Hoodies': 'hoodies',
-            'Hoodies & Sweatshirts': 'hoodies',
-            'Jackets': 'jackets',
-            'Jackets & Softshell': 'jackets',
-            'Hi-Vis': 'safety-vests',
-            'Hi-Vis Clothing': 'safety-vests',
-            'Trousers': 'trousers',
-            'Work Trousers': 'trousers',
-            'Aprons': 'aprons',
-            'Fleeces': 'fleece',
-            'Caps': 'caps',
-            'Headwear / Accessories': 'caps',
-            'Beanies': 'beanies'
-        };
-
-        return typeToSlug[apiProductType] || apiProductType.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    }
-
-    // Update category link
-    if (productType) {
-        const categorySlug = productTypeToSlug(productType);
-        if (categorySlug) {
-            // Use clean /shop URL with productType as query param for compatibility
-            breadcrumbCategoryLink.href = `/shop?productType=${encodeURIComponent(categorySlug)}`;
-            breadcrumbCategoryLink.textContent = productType;
-        } else {
-            breadcrumbCategoryLink.href = '/shop';
-            breadcrumbCategoryLink.textContent = productType;
-        }
+    if (brandName) {
+        breadcrumbBrandLink.href = `shop-pc.html?brand=${encodeURIComponent(brandName)}`;
+        breadcrumbBrandLink.textContent = brandName;
     } else {
-        breadcrumbCategoryLink.href = '/shop';
-        breadcrumbCategoryLink.textContent = 'All Products';
+        breadcrumbBrandLink.href = 'shop-pc.html';
+        breadcrumbBrandLink.textContent = 'Brand';
     }
 
     // Update product name from API data
     if (PRODUCT_DATA && PRODUCT_DATA.name) {
-        breadcrumbProduct.textContent = PRODUCT_DATA.name.toUpperCase();
+        breadcrumbProduct.textContent = sanitizeProductLabel(PRODUCT_DATA.name);
     } else if (PRODUCT_NAME) {
         // Fallback to PRODUCT_NAME if PRODUCT_DATA.name is not available
-        breadcrumbProduct.textContent = PRODUCT_NAME.toUpperCase();
+        breadcrumbProduct.textContent = sanitizeProductLabel(PRODUCT_NAME);
+    }
+
+    if (breadcrumbCode) {
+        breadcrumbCode.textContent = (PRODUCT_DATA && PRODUCT_DATA.code) || PRODUCT_CODE || 'Code';
     }
 }
 
@@ -566,14 +608,23 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (loaded) {
         // Update page title
         if (PRODUCT_NAME) {
-            document.title = `${PRODUCT_NAME} - Branded UK`;
+            const safeProductName = String(PRODUCT_NAME)
+                .replace(/[\uFFFD\uFFFC]/g, ' ')
+                .replace(/[®™©]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+            document.title = `${safeProductName} - Branded UK`;
         }
 
         // Update product name and code in the page (if elements exist)
         // Use ID selector first to avoid conflicts with productTypeTitle h1
         const productNameEl = document.getElementById('productTitle');
         if (productNameEl && PRODUCT_NAME) {
-            productNameEl.textContent = PRODUCT_NAME;
+            productNameEl.textContent = String(PRODUCT_NAME)
+                .replace(/[\uFFFD\uFFFC]/g, ' ')
+                .replace(/[®™©]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
             console.log('âœ… Product name updated:', PRODUCT_NAME, 'in element:', productNameEl);
         } else if (!productNameEl) {
             console.warn('âš ï¸ Product name element (#productTitle) not found');
@@ -584,7 +635,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Update garment-main-title (main product title above price tier)
         const garmentMainTitle = document.querySelector('.garment-main-title');
         if (garmentMainTitle && PRODUCT_DATA && PRODUCT_DATA.name) {
-            garmentMainTitle.textContent = PRODUCT_DATA.name;
+            garmentMainTitle.textContent = String(PRODUCT_DATA.name)
+                .replace(/[\uFFFD\uFFFC]/g, ' ')
+                .replace(/[®™©]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
             console.log('âœ… Garment main title updated:', PRODUCT_DATA.name);
         } else if (!garmentMainTitle) {
             console.warn('âš ï¸ Garment main title element (.garment-main-title) not found');
@@ -598,7 +653,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Update description box title (h2)
         const descTitleEl = document.getElementById('productDescriptionTitle') || document.querySelector('.description-box h2');
         if (descTitleEl && PRODUCT_NAME) {
-            descTitleEl.textContent = PRODUCT_NAME;
+            descTitleEl.textContent = String(PRODUCT_NAME)
+                .replace(/[\uFFFD\uFFFC]/g, ' ')
+                .replace(/[®™©]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         // Update description text
@@ -623,18 +682,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             const brandLink = document.getElementById('brandLink');
             const brandLogo = document.getElementById('brandLogo');
             if (brandLink && brandLogo) {
-                const brandName = PRODUCT_DATA.brand.toLowerCase();
-                brandLink.href = `shop.html?brand=${encodeURIComponent(PRODUCT_DATA.brand)}`;
-                brandLink.title = `View all ${PRODUCT_DATA.brand} products`;
-                brandLogo.alt = PRODUCT_DATA.brand;
-                // Try to construct brand logo URL (common pattern)
-                // If brand logo exists in API, use it; otherwise use a default pattern
-                if (PRODUCT_DATA.brandLogo) {
-                    brandLogo.src = PRODUCT_DATA.brandLogo;
-                } else {
-                    // Default brand logo pattern - you may need to adjust this based on your actual brand logo URLs
-                    brandLogo.src = `https://i.postimg.cc/tRvrwTBg/${brandName}-logo.jpg`;
-                }
+                const inferredBrand = inferBrandFromProductName(PRODUCT_DATA.name || '');
+                const displayBrand = inferredBrand || PRODUCT_DATA.brand;
+                const mappedBrandLogo = resolveBrandLogoPath(displayBrand);
+
+                brandLink.href = `shop-pc.html?brand=${encodeURIComponent(displayBrand)}`;
+                brandLink.title = `View all ${displayBrand} products`;
+                brandLogo.alt = displayBrand;
+                brandLogo.src = mappedBrandLogo || PRODUCT_DATA.brandLogo || '';
                 brandLink.style.display = 'block';
             }
         }
@@ -1745,7 +1800,7 @@ function renderSizes() {
         box.innerHTML = `
             <div class="size-header">${size}</div>
             <div class="qty-controls">
-                <button class="qty-btn minus" data-size="${size}" ${colorSelected ? "" : "disabled"}>âˆ’</button>
+                <button class="qty-btn minus" data-size="${size}" ${colorSelected ? "" : "disabled"}>-</button>
                 <input 
                     type="number"
                     class="qty-input"

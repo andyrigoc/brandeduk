@@ -203,7 +203,7 @@ function renderSizes() {
         box.innerHTML = `
             <div class="size-label">${size}</div>
             <div class="qty-wrapper">
-                <button class="qty-btn minus" data-size="${size}">âˆ’</button>
+                <button class="qty-btn minus" data-size="${size}">-</button>
                 <input type="number" class="qty-input" data-size="${size}" value="0" min="0">
                 <button class="qty-btn plus" data-size="${size}">+</button>
             </div>
