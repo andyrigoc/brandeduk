@@ -1954,7 +1954,25 @@
             margin-top: 60px;
             text-align: center;
         }
+
+        /* Blur effect when popup is open */
+        body.popup-open .shop-wrapper,
+        body.popup-open .site-header,
+        body.popup-open [data-mobile-footer] {
+            filter: blur(8px);
+            transition: filter 0.3s ease;
+        }
+
+        body.popup-open {
+            overflow: hidden;
+        }
     </style>
+    
+    <!-- Order Popup Styles -->
+    <link rel="stylesheet" href="test-order-popup/order.css">
+    <link rel="stylesheet" href="test-order-popup/order-shop.css">
+    <link rel="stylesheet" href="test-order-popup/order-overlay.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
@@ -5520,7 +5538,7 @@
                     if (controls) controls.style.display = 'none';
                 }
 
-                // Card click - go to product detail
+                // Card click - open order popup
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code);
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
@@ -5529,8 +5547,14 @@
                         sessionStorage.setItem('selectedColorName', activeColor.dataset.color);
                         sessionStorage.setItem('selectedColorUrl', activeColor.dataset.main);
                     }
-                    // Navigate to product detail page (static prototype)
-                    window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code);
+                    // Open order popup with product data directly (more efficient than re-fetching)
+                    if (typeof window.openOrderPopup === 'function') {
+                        // Pass the full product object for immediate display
+                        window.openOrderPopup(product.code, product);
+                    } else {
+                        // Fallback to old behavior if popup not loaded
+                        window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code);
+                    }
                 });
 
                 grid.appendChild(card);
@@ -7026,6 +7050,118 @@
     <!--End of Tawk.to Script-->
 
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
+
+    <!-- Order Popup HTML -->
+    <div id="orderPopup" class="order_overlay" style="display:none;">
+        <div class="order_wrapper">
+            <div class="order_card">
+                <button class="order_close_btn" onclick="window.closeOrderPopup()">&times;</button>
+                
+                <div class="viewport">
+                    <div class="track" style="width: 200%;">
+                        <!-- PAGE 1: Product Shop View -->
+                        <div class="page" style="width: 50%;">
+                            <div class="product-shop-layout">
+                                <!-- Left: Gallery -->
+                                <div class="product-gallery">
+                                    <div class="product-main-image">
+                                        <img id="productMainImage" src="" alt="Product Image">
+                                    </div>
+                                    <div class="product-code-display">
+                                        <span class="code-label">Product Code:</span>
+                                        <span class="code-value" id="productCode">-</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right: Product Info -->
+                                <div class="product-shop-info">
+                                    <div class="product-brand-badge" id="productBrand">GILDAN</div>
+                                    <h1 class="product-shop-title" id="productTitle">Loading...</h1>
+                                    
+                                    <div class="product-price-box">
+                                        <div class="price-main">
+                                            <span id="productPrice">£0.00</span>
+                                            <span class="price-unit">each ex VAT</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Product Details Grid -->
+                                    <div class="product-details-compact">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Fabric:</span>
+                                            <span class="detail-value" id="productFabric">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Size:</span>
+                                            <span class="detail-value" id="productSizeLabel">One size</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- KEY INFO Section -->
+                                    <div class="key-info-section">
+                                        <h3>KEY INFO</h3>
+                                        <p id="productKeyInfo">Double layer knit. Cuffed design for optimal decoration. Also available in junior sizes.</p>
+                                    </div>
+                                    
+                                    <!-- Price Tiers -->
+                                    <div class="price-tiers-section">
+                                        <div class="price-tier active">
+                                            <div class="tier-qty">1-9</div>
+                                            <div class="tier-price" id="tier1Price">£4.41</div>
+                                        </div>
+                                        <div class="price-tier">
+                                            <div class="tier-qty">10+</div>
+                                            <div class="tier-price" id="tier10Price">£3.97</div>
+                                            <div class="tier-discount">-10%</div>
+                                        </div>
+                                        <div class="price-tier">
+                                            <div class="tier-qty">25+</div>
+                                            <div class="tier-price" id="tier25Price">£3.84</div>
+                                            <div class="tier-discount">-13%</div>
+                                        </div>
+                                        <div class="price-tier">
+                                            <div class="tier-qty">50+</div>
+                                            <div class="tier-price" id="tier50Price">£3.75</div>
+                                            <div class="tier-discount">-15%</div>
+                                        </div>
+                                        <div class="price-tier">
+                                            <div class="tier-qty">100+</div>
+                                            <div class="tier-price" id="tier100Price">£3.62</div>
+                                            <div class="tier-discount">-18%</div>
+                                        </div>
+                                        <div class="price-tier">
+                                            <div class="tier-qty">250+</div>
+                                            <div class="tier-price" id="tier250Price">£3.57</div>
+                                            <div class="tier-discount">-19%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn-continue next">
+                                        Select Colour →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PAGE 2: Sizes & Quantities (Placeholder) -->
+                        <div class="page" style="width: 50%;">
+                            <h2>PAGE 2: Sizes & Quantities</h2>
+                            <p>Coming soon...</p>
+                            <button class="btn back">← Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Easing -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    
+    <!-- Order Popup Scripts -->
+    <script src="test-order-popup/order.js"></script>
+    <script src="test-order-popup/order-integration.js"></script>
 </body>
 
 </html>

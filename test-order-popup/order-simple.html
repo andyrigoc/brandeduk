@@ -1,0 +1,178 @@
+<!-- order-simple.html - Versione semplificata con 2 pagine -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order Process - BrandedUK</title>
+
+<link rel="stylesheet" href="order.css">
+<link rel="stylesheet" href="order-shop.css">
+<link rel="stylesheet" href="order-overlay.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+</head>
+<body>
+
+<div id="orderPopup">
+
+<section class="order_wrapper">
+  <div class="order_card">
+
+    <button class="order_close_btn" onclick="closeOrderPopup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <header class="order_header">
+      <h2 id="productTitle">Product Name</h2>
+      <p id="productCode">Loading...</p>
+    </header>
+
+    <div class="viewport">
+      <div class="track" style="width: 200%;">
+
+        <!-- ====================================== -->
+        <!-- PAGE 1: PRODUCT SHOP / DETAILS         -->
+        <!-- ====================================== -->
+        <section class="page" style="width: 50%;">
+          
+          <div class="product-shop-layout">
+            
+            <!-- Left: Product Image Gallery -->
+            <div class="product-gallery">
+              <div class="product-main-image">
+                <img id="productMainImage" src="https://via.placeholder.com/500" alt="Product">
+              </div>
+              <div class="product-thumbnails">
+                <!-- Thumbnail images will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Right: Product Info & Selection -->
+            <div class="product-shop-info">
+              
+              <!-- Brand & Title -->
+              <div class="product-header-info">
+                <div class="product-brand-badge" id="productBrand">BRAND</div>
+                <h1 class="product-shop-title" id="productName">Product Name</h1>
+              </div>
+
+              <!-- Price -->
+              <div class="product-price-box">
+                <div class="price-main">
+                  <span class="price-from">From</span>
+                  <span class="price-amount" id="productPrice">£0.00</span>
+                  <span class="price-unit">per item</span>
+                </div>
+                <div class="price-vat-toggle">
+                  <button class="vat-toggle-btn active" data-vat="ex">ex VAT</button>
+                  <button class="vat-toggle-btn" data-vat="inc">inc VAT</button>
+                </div>
+              </div>
+
+              <!-- Product Description -->
+              <div class="product-description">
+                <p id="productDescription">Premium quality workwear designed for comfort and durability.</p>
+              </div>
+
+              <!-- Separator -->
+              <div class="shop-separator"></div>
+
+              <!-- Product Specifications -->
+              <div class="product-specs-section">
+                <h3>Product Details</h3>
+                <div class="specs-grid">
+                  <div class="spec-item">
+                    <span class="spec-icon">🧵</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Fabric</div>
+                      <div class="spec-value" id="productFabric">100% Cotton</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">📏</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Sizes Available</div>
+                      <div class="spec-value" id="productSizes">S, M, L, XL, 2XL</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">🎨</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Colours Available</div>
+                      <div class="spec-value" id="productColourCount">8 colours</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">🏭</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Printing Options</div>
+                      <div class="spec-value">Screen Print, DTF, Embroidery</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Separator -->
+              <div class="shop-separator"></div>
+
+              <!-- Colour Selection -->
+              <div class="colour-selection-section">
+                <h3>
+                  <span class="step-number">1</span>
+                  Choose Your Colour
+                </h3>
+                <div class="colour-swatches" id="colourGrid">
+                  <!-- Colour swatches will be loaded here -->
+                </div>
+              </div>
+
+              <!-- Continue Button -->
+              <button class="btn-continue next btn-large">
+                <span>Continue to Sizes & Quantities</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ====================================== -->
+        <!-- PAGE 2: PLACEHOLDER (For now)          -->
+        <!-- ====================================== -->
+        <section class="page" style="width: 50%;">
+          <h2>Page 2 - Coming Soon</h2>
+          <p>Qui metteremo sizes & quantities...</p>
+          
+          <div class="nav">
+            <button class="btn back">← Back to Product</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- #orderPopup -->
+
+<script src="order.js"></script>
+<script src="order-integration.js"></script>
+
+<!-- For standalone testing, show popup on load -->
+<script>
+  $(document).ready(function() {
+    $('#orderPopup').show();
+  });
+</script>
+
+</body>
+</html>

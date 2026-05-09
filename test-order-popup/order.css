@@ -1,0 +1,91 @@
+/* order.css */
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#f2f4f8}
+
+.order_wrapper{display:flex;justify-content:center;padding:60px}
+.order_card{width:1200px;background:#fff;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.12);padding:50px;overflow:hidden}
+
+.order_header{text-align:center;margin-bottom:40px}
+.order_header h2{font-size:28px;margin-bottom:8px;color:#1f2937}
+.order_header p{color:#6b7280;font-size:14px}
+
+.viewport{width:100%;overflow:hidden}
+.track{display:flex;width:600%;position:relative;left:0}
+
+.page{width:16.666%;padding:20px 40px;min-height:500px}
+
+/* PAGE 1: Product Details */
+.product-detail-section{display:flex;gap:40px;margin-bottom:30px}
+.product-image-main{flex:1;background:#f9fafb;border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:center}
+.product-image-main img{max-width:100%;border-radius:12px}
+.product-info-box{flex:1}
+.product-info-box h3{font-size:24px;margin-bottom:8px;color:#1f2937}
+.product-brand{font-size:14px;color:#6b7280;margin-bottom:16px}
+.product-price{font-size:32px;font-weight:700;color:#273469;margin-bottom:24px}
+.price-vat{font-size:14px;color:#6b7280;font-weight:400}
+.product-specs{background:#f9fafb;padding:16px;border-radius:12px}
+.spec-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb}
+.spec-row:last-child{border-bottom:none}
+.spec-label{color:#6b7280;font-size:14px}
+.spec-value{color:#1f2937;font-weight:600;font-size:14px}
+
+/* PAGE 2: Choose Colour */
+.colour-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;margin-bottom:30px}
+.colour-swatch{width:50px;height:50px;border-radius:50%;border:3px solid #e5e7eb;cursor:pointer;transition:all .2s}
+.colour-swatch:hover{transform:scale(1.1)}
+.colour-swatch.selected{border-color:#273469;box-shadow:0 0 0 3px rgba(39,52,105,.2)}
+
+/* PAGE 3: Size & Quantity */
+.size-quantity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+.size-box{background:#f9fafb;border-radius:12px;padding:16px;text-align:center}
+.size-box .size-label{font-weight:700;font-size:18px;margin-bottom:12px;color:#1f2937}
+.qty-controls{display:flex;align-items:center;justify-content:center;gap:12px}
+.qty-btn{width:36px;height:36px;border-radius:50%;background:#273469;color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qty-btn:hover{background:#1e2a52}
+.qty-value{font-size:20px;font-weight:700;min-width:40px;text-align:center}
+
+.total_bar{margin-top:20px;font-size:18px;font-weight:700;background:#f9fafb;padding:16px;border-radius:12px;text-align:center}
+
+/* PAGE 4: Logo Upload */
+.upload-section{margin-bottom:30px}
+.upload-box{border:2px dashed #d1d5db;border-radius:16px;padding:60px;text-align:center;cursor:pointer;transition:all .2s;background:#f9fafb}
+.upload-box:hover{border-color:#273469;background:#faf5ff}
+.upload-box svg{margin-bottom:16px;color:#9ca3af}
+.upload-box p{color:#6b7280;font-weight:500}
+.logo-positions{margin-top:30px}
+.logo-positions h4{margin-bottom:16px;color:#1f2937}
+.position-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.position-option{display:flex;align-items:center;gap:8px;padding:12px;background:#f9fafb;border-radius:8px;cursor:pointer;transition:all .2s}
+.position-option:hover{background:#e5e7eb}
+.position-option input{cursor:pointer}
+
+/* PAGE 5: Details Form */
+.details-form{margin-bottom:30px}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;color:#374151;font-size:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid #d1d5db;font-size:14px;font-family:inherit}
+.input:focus{outline:none;border-color:#273469;box-shadow:0 0 0 3px rgba(39,52,105,.1)}
+textarea.input{resize:vertical}
+
+/* PAGE 6: Success */
+.success-screen{text-align:center;padding:60px 20px}
+.success-icon{width:100px;height:100px;margin:0 auto 24px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.success-icon svg{stroke:#10b981}
+.success-screen h2{font-size:28px;margin-bottom:12px;color:#1f2937}
+.success-screen p{font-size:16px;color:#6b7280;margin-bottom:24px}
+.order-ref{font-size:18px;background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:30px}
+.order-ref strong{color:#273469;font-weight:700}
+
+/* Navigation */
+.nav{display:flex;justify-content:space-between;margin-top:40px}
+
+.btn{padding:14px 40px;border-radius:12px;border:0;font-size:16px;cursor:pointer;font-weight:600;transition:all .2s}
+.btn.back{background:#9ca3af;color:#fff}
+.btn.back:hover{background:#6b7280}
+.btn.next{background:#273469;color:#fff}
+.btn.next:hover{background:#1e2a52}
+.btn.submit{background:#10b981;color:#fff}
+.btn.submit:hover{background:#059669}
+.btn.btn-large{width:100%;padding:18px;font-size:18px;margin-top:20px}

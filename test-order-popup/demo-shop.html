@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Page Demo - BrandedUK</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px;
+    background: #f5f5f5;
+}
+
+.demo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+}
+
+h1 {
+    color: #273469;
+    margin-bottom: 30px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.product-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    background: #f9fafb;
+}
+
+.product-card h3 {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    color: #1f2937;
+}
+
+.product-card .brand {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.product-card .price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #273469;
+}
+
+.demo-note {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+    padding: 16px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.demo-note strong {
+    color: #1e40af;
+}
+</style>
+
+<!-- ORDER POPUP STYLES -->
+<link rel="stylesheet" href="order.css">
+<link rel="stylesheet" href="order-shop.css">
+<link rel="stylesheet" href="order-overlay.css">
+
+</head>
+<body>
+
+<div class="demo-container">
+    <h1>🛍️ Product Shop Page - Demo</h1>
+    
+    <div class="demo-note">
+        <strong>FOCUS: Pagina 1 - Shop View</strong><br>
+        Clicca un prodotto per vedere la nuova pagina shop completa con:
+        <ul style="margin: 10px 0 0 20px;">
+            <li>Gallery immagini prodotto</li>
+            <li>Dettagli completi (brand, prezzo, specifiche)</li>
+            <li>Scelta colore con swatches grandi</li>
+            <li>Design pulito e professionale</li>
+        </ul>
+    </div>
+
+    <div class="product-grid">
+        
+        <div class="product-card" onclick="openOrderPopup('GD002');">
+            <img src="https://i.postimg.cc/Y4JNXxv1/GD067-Charcoal-FT.jpg" alt="Ultra Cotton T-Shirt">
+            <h3>Ultra Cotton adult t-shirt</h3>
+            <div class="brand">GILDAN</div>
+            <div class="price">From £5.90</div>
+        </div>
+
+        <div class="product-card" onclick="openOrderPopup('GD018');">
+            <img src="https://i.postimg.cc/4Krv81Yv/GD067-Cobalt-FT.jpg" alt="Heavy Blend Hoodie">
+            <h3>Heavy Blend™ adult hooded sweatshirt</h3>
+            <div class="brand">GILDAN</div>
+            <div class="price">From £12.50</div>
+        </div>
+
+        <div class="product-card" onclick="openOrderPopup('GD040');">
+            <img src="https://i.postimg.cc/06LGtCzn/GD067-Cocoa-FT.jpg" alt="DryBlend Polo">
+            <h3>DryBlend® adult double piqué polo</h3>
+            <div class="brand">GILDAN</div>
+            <div class="price">From £8.90</div>
+        </div>
+
+        <div class="product-card" onclick="openOrderPopup('GD030');">
+            <img src="https://i.postimg.cc/hJH8C0X2/GD067-Daisy-FT.jpg" alt="Softstyle T-Shirt">
+            <h3>Softstyle® adult t-shirt</h3>
+            <div class="brand">GILDAN</div>
+            <div class="price">From £4.50</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Include the simplified popup HTML -->
+<div id="orderPopup">
+
+<section class="order_wrapper">
+  <div class="order_card">
+
+    <button class="order_close_btn" onclick="closeOrderPopup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <header class="order_header">
+      <h2 id="productTitle">Product Name</h2>
+      <p id="productCode">Loading...</p>
+    </header>
+
+    <div class="viewport">
+      <div class="track" style="width: 200%;">
+
+        <!-- PAGE 1: PRODUCT SHOP -->
+        <section class="page" style="width: 50%;">
+          
+          <div class="product-shop-layout">
+            
+            <div class="product-gallery">
+              <div class="product-main-image">
+                <img id="productMainImage" src="https://via.placeholder.com/500" alt="Product">
+              </div>
+            </div>
+
+            <div class="product-shop-info">
+              
+              <div class="product-header-info">
+                <div class="product-brand-badge" id="productBrand">BRAND</div>
+                <h1 class="product-shop-title" id="productName">Product Name</h1>
+              </div>
+
+              <div class="product-price-box">
+                <div class="price-main">
+                  <span class="price-from">From</span>
+                  <span class="price-amount" id="productPrice">£0.00</span>
+                  <span class="price-unit">per item</span>
+                </div>
+                <div class="price-vat-toggle">
+                  <button class="vat-toggle-btn active" data-vat="ex">ex VAT</button>
+                  <button class="vat-toggle-btn" data-vat="inc">inc VAT</button>
+                </div>
+              </div>
+
+              <div class="product-description">
+                <p id="productDescription">Premium quality workwear designed for comfort and durability.</p>
+              </div>
+
+              <div class="shop-separator"></div>
+
+              <div class="product-specs-section">
+                <h3>Product Details</h3>
+                <div class="specs-grid">
+                  <div class="spec-item">
+                    <span class="spec-icon">🧵</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Fabric</div>
+                      <div class="spec-value" id="productFabric">100% Cotton</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">📏</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Sizes Available</div>
+                      <div class="spec-value" id="productSizes">S, M, L, XL, 2XL</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">🎨</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Colours Available</div>
+                      <div class="spec-value" id="productColourCount">8 colours</div>
+                    </div>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-icon">🏭</span>
+                    <div class="spec-content">
+                      <div class="spec-label">Printing Options</div>
+                      <div class="spec-value">Screen Print, DTF, Embroidery</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="shop-separator"></div>
+
+              <div class="colour-selection-section">
+                <h3>
+                  <span class="step-number">1</span>
+                  Choose Your Colour
+                </h3>
+                <div class="colour-swatches" id="colourGrid">
+                  <!-- Colour swatches loaded here -->
+                </div>
+              </div>
+
+              <button class="btn-continue next btn-large">
+                <span>Continue to Sizes & Quantities</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- PAGE 2: PLACEHOLDER -->
+        <section class="page" style="width: 50%;">
+          <h2>Page 2 - Coming Soon</h2>
+          <p>Sizes & quantities will go here...</p>
+          
+          <div class="nav">
+            <button class="btn back">← Back to Product</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+<!-- Order popup scripts -->
+<script src="order.js"></script>
+<script src="order-integration.js"></script>
+
+</body>
+</html>
