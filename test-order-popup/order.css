@@ -4,7 +4,7 @@
 body{background:#f2f4f8}
 
 .order_wrapper{display:flex;justify-content:center;padding:60px}
-.order_card{width:1200px;background:#fff;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.12);padding:50px;overflow:hidden}
+.order_card{width:1400px;max-height:600px;background:#fff;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.12);padding:40px;overflow:hidden}
 
 .order_header{text-align:center;margin-bottom:40px}
 .order_header h2{font-size:28px;margin-bottom:8px;color:#1f2937}
@@ -13,7 +13,7 @@ body{background:#f2f4f8}
 .viewport{width:100%;overflow:hidden}
 .track{display:flex;width:600%;position:relative;left:0}
 
-.page{width:16.666%;padding:20px 40px;min-height:500px}
+.page{width:16.666%;padding:0;min-height:500px}
 
 /* PAGE 1: Product Details */
 .product-detail-section{display:flex;gap:40px;margin-bottom:30px}

@@ -214,6 +214,10 @@
         const colourGrid = $("#colourSwatches");
         colourGrid.empty();
         
+        // Also populate PAGE 2 colour swatches
+        const colourGridPage2 = $("#colourSwatches");
+        colourGridPage2.empty();
+        
         // API uses 'colors' not 'colours'
         const colors = product.colors || product.colours || [];
         
@@ -227,7 +231,9 @@
                 // Use the color variant image as background
                 const imgUrl = colour.main || colour.image || product.image;
                 const colorName = colour.name || 'Unknown';
+                const colorHex = colour.hex || getColourHex(colorName);
                 
+                // Create swatch for old grid (if exists)
                 const swatch = $(`
                     <div class="colour-swatch" 
                          data-colour="${colorName}" 
@@ -246,6 +252,16 @@
                 });
                 
                 colourGrid.append(swatch);
+                
+                // Create swatch for PAGE 2
+                const swatchPage2 = $(`
+                    <div class="colour-swatch-item" data-colour="${colorName}" data-hex="${colorHex}">
+                        <div class="swatch-circle" style="background: ${colorHex};"></div>
+                        <span class="swatch-name">${colorName}</span>
+                    </div>
+                `);
+                
+                colourGridPage2.append(swatchPage2);
             });
         } else {
             // Default colours
@@ -257,6 +273,7 @@
             ];
             
             defaultColours.forEach(function(colour) {
+                // Old swatch
                 const swatch = $(`
                     <div class="colour-swatch" 
                          data-colour="${colour.name}" 
@@ -272,14 +289,29 @@
                 });
                 
                 colourGrid.append(swatch);
+                
+                // PAGE 2 swatch
+                const swatchPage2 = $(`
+                    <div class="colour-swatch-item" data-colour="${colour.name}" data-hex="${colour.hex}">
+                        <div class="swatch-circle" style="background: ${colour.hex};${colour.hex === '#FFFFFF' ? ' border-color: #d1d5db;' : ''}"></div>
+                        <span class="swatch-name">${colour.name}</span>
+                    </div>
+                `);
+                
+                colourGridPage2.append(swatchPage2);
             });
         }
     }
     
     // Setup product sizes
     function setupProductSizes(product) {
+        // Old grid (if exists)
         const grid = $("#sizeQuantityGrid");
         grid.empty();
+        
+        // PAGE 2 grid
+        const gridPage2 = $("#sizeQtyGrid");
+        gridPage2.empty();
         
         const sizes = product.sizes || ["S", "M", "L", "XL", "2XL", "3XL"];
         window.quantities = {};
@@ -287,6 +319,7 @@
         sizes.forEach(function(size) {
             window.quantities[size] = 0;
             
+            // Old size box (if old grid exists)
             const box = $(`
                 <div class="size-box">
                     <div class="size-label">${size}</div>
@@ -299,6 +332,20 @@
             `);
             
             grid.append(box);
+            
+            // PAGE 2 size box
+            const boxPage2 = $(`
+                <div class="size-qty-box">
+                    <div class="size-name">${size}</div>
+                    <div class="qty-controls">
+                        <button class="qty-btn minus">-</button>
+                        <input type="number" class="qty-input" value="0" min="0" max="9999" data-size="${size}">
+                        <button class="qty-btn plus">+</button>
+                    </div>
+                </div>
+            `);
+            
+            gridPage2.append(boxPage2);
         });
     }
     

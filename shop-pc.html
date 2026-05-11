@@ -7067,35 +7067,12 @@
                                     <div class="product-main-image">
                                         <img id="productMainImage" src="" alt="Product Image">
                                     </div>
-                                    <div class="product-code-display">
-                                        <span class="code-label">Product Code:</span>
-                                        <span class="code-value" id="productCode">-</span>
-                                    </div>
                                 </div>
                                 
                                 <!-- Right: Product Info -->
                                 <div class="product-shop-info">
                                     <div class="product-brand-badge" id="productBrand">GILDAN</div>
                                     <h1 class="product-shop-title" id="productTitle">Loading...</h1>
-                                    
-                                    <div class="product-price-box">
-                                        <div class="price-main">
-                                            <span id="productPrice">£0.00</span>
-                                            <span class="price-unit">each ex VAT</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Product Details Grid -->
-                                    <div class="product-details-compact">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Fabric:</span>
-                                            <span class="detail-value" id="productFabric">-</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Size:</span>
-                                            <span class="detail-value" id="productSizeLabel">One size</span>
-                                        </div>
-                                    </div>
                                     
                                     <!-- KEY INFO Section -->
                                     <div class="key-info-section">
@@ -7137,17 +7114,130 @@
                                     </div>
                                     
                                     <button class="btn-continue next">
-                                        Select Colour →
+                                        Continue →
                                     </button>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- PAGE 2: Sizes & Quantities (Placeholder) -->
-                        <div class="page" style="width: 50%;">
-                            <h2>PAGE 2: Sizes & Quantities</h2>
-                            <p>Coming soon...</p>
-                            <button class="btn back">← Back</button>
+                        <!-- PAGE 2: Colours & Quantities -->
+                        <div class="page page-2" style="width: 50%;">
+                            <div class="page-content-wrapper">
+                                <div class="page-header-compact">
+                                    <h2 class="page-title">Select Colour & Quantities</h2>
+                                    <p class="page-subtitle">Choose your colour and enter quantities for each size</p>
+                                </div>
+                                
+                                <!-- Colour Selection -->
+                                <div class="colour-section">
+                                    <h3 class="section-label">
+                                        <span class="step-badge">1</span> Choose Colour
+                                    </h3>
+                                    <div class="colour-swatches-grid" id="colourSwatches">
+                                        <!-- Colours will be populated by JS -->
+                                        <div class="colour-swatch-item" data-colour="Black" data-hex="#000000">
+                                            <div class="swatch-circle" style="background: #000000;"></div>
+                                            <span class="swatch-name">Black</span>
+                                        </div>
+                                        <div class="colour-swatch-item" data-colour="White" data-hex="#FFFFFF">
+                                            <div class="swatch-circle" style="background: #FFFFFF;"></div>
+                                            <span class="swatch-name">White</span>
+                                        </div>
+                                        <div class="colour-swatch-item" data-colour="Navy" data-hex="#000080">
+                                            <div class="swatch-circle" style="background: #000080;"></div>
+                                            <span class="swatch-name">Navy</span>
+                                        </div>
+                                        <div class="colour-swatch-item" data-colour="Red" data-hex="#DC143C">
+                                            <div class="swatch-circle" style="background: #DC143C;"></div>
+                                            <span class="swatch-name">Red</span>
+                                        </div>
+                                        <div class="colour-swatch-item" data-colour="Royal" data-hex="#4169E1">
+                                            <div class="swatch-circle" style="background: #4169E1;"></div>
+                                            <span class="swatch-name">Royal</span>
+                                        </div>
+                                        <div class="colour-swatch-item" data-colour="Grey" data-hex="#808080">
+                                            <div class="swatch-circle" style="background: #808080;"></div>
+                                            <span class="swatch-name">Grey</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Size & Quantity Grid -->
+                                <div class="sizes-section">
+                                    <h3 class="section-label">
+                                        <span class="step-badge">2</span> Select Sizes & Quantities
+                                    </h3>
+                                    <div class="size-qty-grid" id="sizeQtyGrid">
+                                        <!-- Sizes will be populated by JS -->
+                                        <div class="size-qty-box">
+                                            <div class="size-name">S</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="size-qty-box">
+                                            <div class="size-name">M</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="size-qty-box">
+                                            <div class="size-name">L</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="size-qty-box">
+                                            <div class="size-name">XL</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="size-qty-box">
+                                            <div class="size-name">2XL</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="size-qty-box">
+                                            <div class="size-name">3XL</div>
+                                            <div class="qty-controls">
+                                                <button class="qty-btn minus">-</button>
+                                                <input type="number" class="qty-input" value="0" min="0" max="9999">
+                                                <button class="qty-btn plus">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Order Summary -->
+                                <div class="order-summary-compact">
+                                    <div class="summary-row">
+                                        <span>Total Items:</span>
+                                        <strong id="totalItems">0</strong>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Selected Colour:</span>
+                                        <strong id="selectedColourName">None</strong>
+                                    </div>
+                                </div>
+                                
+                                <!-- Navigation Buttons -->
+                                <div class="page-nav-buttons">
+                                    <button class="btn-nav btn-back back">← Back</button>
+                                    <button class="btn-nav btn-next next">Add to Quote →</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

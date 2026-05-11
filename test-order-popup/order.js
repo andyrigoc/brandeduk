@@ -44,14 +44,13 @@ $(document).ready(function() {
 window.goToPage = function(index) {
     // Validation before moving forward
     if (index > window.current) {
-        // Page 0 -> Page 1: Must select colour
-        if (window.current === 0 && !window.selectedColour) {
+        // Page 1 (index 1) -> Page 2: Must select colour AND quantities
+        if (window.current === 1 && !window.selectedColour) {
             alert("Please select a colour");
             return;
         }
-        // Page 2 -> Page 3: Must select sizes
-        if (window.current === 2) {
-            const totalQty = Object.values(window.quantities).reduce((a, b) => a + b, 0);
+        if (window.current === 1) {
+            const totalQty = Object.values(window.quantities).reduce((a, b) => a + (b || 0), 0);
             if (totalQty === 0) {
                 alert("Please select at least one size/quantity");
                 return;
@@ -258,3 +257,97 @@ $(".submit").click(function(){
     // Here you would send to API
     // fetch('/api/submit-quote', { method: 'POST', body: JSON.stringify(orderData) })
 });
+
+/* ========================================
+   PAGE 2: Colour & Quantities Logic
+======================================== */
+
+// Handle colour swatch selection (PAGE 2)
+$(document).on("click", ".colour-swatch-item", function() {
+    // Remove selection from all swatches
+    $(".colour-swatch-item").removeClass("selected");
+    
+    // Add selection to clicked swatch
+    $(this).addClass("selected");
+    
+    // Store selected colour
+    const colourName = $(this).data("colour");
+    const colourHex = $(this).data("hex");
+    window.selectedColour = colourName;
+    
+    // Update summary display
+    $("#selectedColourName").text(colourName);
+    
+    console.log("Selected colour:", colourName);
+});
+
+// Handle quantity controls (PAGE 2)
+$(document).on("click", ".qty-btn.minus", function() {
+    const input = $(this).siblings(".qty-input");
+    let currentValue = parseInt(input.val()) || 0;
+    
+    if (currentValue > 0) {
+        currentValue--;
+        input.val(currentValue);
+        updatePage2Summary();
+        updateBoxHighlight($(this).closest(".size-qty-box"));
+    }
+});
+
+$(document).on("click", ".qty-btn.plus", function() {
+    const input = $(this).siblings(".qty-input");
+    let currentValue = parseInt(input.val()) || 0;
+    
+    currentValue++;
+    input.val(currentValue);
+    updatePage2Summary();
+    updateBoxHighlight($(this).closest(".size-qty-box"));
+});
+
+// Handle manual input change
+$(document).on("change", ".qty-input", function() {
+    let value = parseInt($(this).val()) || 0;
+    
+    // Ensure positive value
+    if (value < 0) value = 0;
+    
+    $(this).val(value);
+    updatePage2Summary();
+    updateBoxHighlight($(this).closest(".size-qty-box"));
+});
+
+// Update summary totals
+function updatePage2Summary() {
+    let totalItems = 0;
+    
+    // Calculate total from all inputs
+    $(".qty-input").each(function() {
+        totalItems += parseInt($(this).val()) || 0;
+    });
+    
+    // Update display
+    $("#totalItems").text(totalItems);
+    
+    // Store in window object for later use
+    window.quantities = {};
+    $(".size-qty-box").each(function() {
+        const sizeName = $(this).find(".size-name").text().trim();
+        const qty = parseInt($(this).find(".qty-input").val()) || 0;
+        if (qty > 0) {
+            window.quantities[sizeName] = qty;
+        }
+    });
+    
+    console.log("Updated quantities:", window.quantities, "Total:", totalItems);
+}
+
+// Highlight box if has quantity
+function updateBoxHighlight(box) {
+    const qty = parseInt(box.find(".qty-input").val()) || 0;
+    
+    if (qty > 0) {
+        box.addClass("has-qty");
+    } else {
+        box.removeClass("has-qty");
+    }
+}
