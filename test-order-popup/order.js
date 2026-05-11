@@ -6,7 +6,7 @@ window.selectedColour = null;
 window.quantities = {};
 window.productData = null;
 
-let total = 2; // Start with just 2 pages for now
+let total = 5; // 5 pages now
 
 // Sample product data (will be loaded from API)
 const sampleProduct = {
@@ -44,28 +44,31 @@ $(document).ready(function() {
 window.goToPage = function(index) {
     // Validation before moving forward
     if (index > window.current) {
-        // Page 1 (index 1) -> Page 2: Must select colour AND quantities
+        // Page 2 (colour) -> Page 3: Must select colour
         if (window.current === 1 && !window.selectedColour) {
             alert("Please select a colour");
             return;
         }
-        if (window.current === 1) {
+        // Page 3 (sizes) -> Page 4: Must select at least one quantity
+        if (window.current === 2) {
             const totalQty = Object.values(window.quantities).reduce((a, b) => a + (b || 0), 0);
             if (totalQty === 0) {
                 alert("Please select at least one size/quantity");
                 return;
             }
         }
-        // Page 4 -> Page 5: Must fill form
-        if (window.current === 4) {
-            if (!$("#customerName").val() || !$("#customerEmail").val() || !$("#customerPhone").val()) {
-                alert("Please fill in all required fields");
-                return;
-            }
-        }
     }
     
     const target = -(index * 100) + "%";
+    
+    // When going to page 3, populate it
+    if (index === 2) {
+        populatePage3();
+    }
+    // When going to page 5, populate it
+    if (index === 4) {
+        populatePage5();
+    }
     
     $(".track").stop().animate(
         { left: target },
@@ -215,6 +218,74 @@ window.setProductData = function(data) {
     window.productData = data;
 };
 
+// Populate page 3 with selected colour info and sizes
+function populatePage3() {
+    var product = window.productData;
+    if (!product) return;
+    
+    // Update colour bar
+    var selectedItem = document.querySelector('.colour-swatch-item.selected');
+    if (selectedItem) {
+        var imgUrl = selectedItem.dataset.img;
+        var colourName = selectedItem.dataset.name || selectedItem.dataset.colour;
+        
+        $('#selectedColourBarName').text(colourName);
+        $('#selectedColourThumb').css({'background-image': 'url(' + imgUrl + ')', 'background-size': 'cover', 'background-position': 'center', 'width': '32px', 'height': '32px', 'border-radius': '4px', 'display': 'inline-block', 'flex-shrink': '0'});
+        $('#selectedColourViewLink').off('click').on('click', function(e) {
+            e.preventDefault();
+            openColorZoom(imgUrl, colourName);
+        });
+    }
+    
+    // Populate discount tiers from priceBreaks
+    var tiers = product.priceBreaks || product.tiers || product.priceTiers || [];
+    var tiersContainer = $('#p3DiscountTiers');
+    tiersContainer.empty();
+    if (tiers.length > 0) {
+        tiers.forEach(function(tier) {
+            var min = tier.min || tier.qty || 1;
+            if (min <= 1) return; // skip 1-9 base tier
+            var pct = tier.percentage || tier.discount || tier.pct || 0;
+            if (!pct) return;
+            tiersContainer.append('<span class="discount-tier-badge">' + pct + '% off ' + min + '+</span>');
+        });
+    } else {
+        tiersContainer.append('<span class="discount-tier-badge">5% off 10+</span>');
+        tiersContainer.append('<span class="discount-tier-badge">10% off 25+</span>');
+        tiersContainer.append('<span class="discount-tier-badge">20% off 50+</span>');
+    }
+    
+    // Populate size grid
+    var sizes = product.sizes || ['S','M','L','XL','2XL','3XL'];
+    var prices = product.prices || {};
+    var basePrice = product.price || 0;
+    var grid = $('#sizeQtyGridP3');
+    grid.empty();
+    
+    $('#p3BasePrice').text('£' + parseFloat(basePrice).toFixed(2));
+    
+    sizes.forEach(function(size) {
+        var sizePrice = (prices[size] || basePrice);
+        var stock = '';
+        if (product.colors || product.colours) {
+            var colours = product.colors || product.colours;
+            var sel = colours.find(function(c) { return (c.name || '') === window.selectedColour; });
+            if (sel && sel.sizes && sel.sizes[size]) stock = sel.sizes[size].stock || '';
+        }
+        
+        var box = $('<div class="size-qty-box-p3"></div>');
+        box.html('<div class="size-name-p3">' + size + '</div>' +
+            '<div class="size-price-p3">£' + parseFloat(sizePrice).toFixed(2) + '</div>' +
+            (stock ? '<div class="size-stock-p3">Stock: <strong>' + stock + '</strong></div>' : '') +
+            '<div class="qty-controls">' +
+            '<button class="qty-btn minus" data-size="' + size + '">-</button>' +
+            '<input type="number" class="qty-input" data-size="' + size + '" value="0" min="0" max="9999">' +
+            '<button class="qty-btn plus" data-size="' + size + '">+</button>' +
+            '</div>');
+        grid.append(box);
+    });
+}
+
 $(".next").click(function(){
     if(window.current < total - 1){
         window.goToPage(window.current + 1);
@@ -227,58 +298,421 @@ $(".back").click(function(){
     }
 });
 
-// Submit
-$(".submit").click(function(){
-    const orderData = {
-        product: window.productData.code,
-        colour: window.selectedColour,
-        quantities: window.quantities,
-        customer: {
-            name: $("#customerName").val(),
-            company: $("#customerCompany").val(),
-            email: $("#customerEmail").val(),
-            phone: $("#customerPhone").val(),
-            address: $("#customerAddress").val(),
-            city: $("#customerCity").val(),
-            postcode: $("#customerPostcode").val(),
-            notes: $("#customerNotes").val()
+// Add to Quote handler — page 3 button → go to Page 4 (logo)
+$(document).on("click", "#btnAddToQuote", function(e) {
+    var product = window.productData;
+    if (!product) return;
+
+    // Collect quantities from page 3 grid
+    var sizes = {};
+    var totalQty = 0;
+    $('#sizeQtyGridP3 .qty-input').each(function() {
+        var qty = parseInt($(this).val()) || 0;
+        if (qty > 0) {
+            sizes[$(this).data('size')] = qty;
+            totalQty += qty;
         }
+    });
+
+    if (totalQty === 0) {
+        alert('Please select at least one size/quantity');
+        return;
+    }
+
+    // Store pending basket item globally (finalised on page 5)
+    var selectedItem = document.querySelector('.colour-swatch-item.selected');
+    var colourName = selectedItem ? (selectedItem.dataset.name || selectedItem.dataset.colour) : (window.selectedColour || '');
+    var colourImg = selectedItem ? selectedItem.dataset.img : '';
+
+    var item = {
+        id: Date.now(),
+        code: product.code || product.sku || '',
+        name: product.name || '',
+        brand: product.brand || '',
+        colour: colourName,
+        colourImg: colourImg,
+        image: colourImg || product.image || '',
+        price: parseFloat(product.price) || 0,
+        sizes: sizes
     };
-    
-    // Generate reference
-    const ref = "ORD-" + Date.now().toString().slice(-8);
-    $("#orderRef").text("#" + ref);
-    
-    console.log("Order submitted:", orderData);
-    
-    // Move to confirmation page
-    window.goToPage(5);
-    
-    // Here you would send to API
-    // fetch('/api/submit-quote', { method: 'POST', body: JSON.stringify(orderData) })
+
+    // Save directly to basket
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
+    basket.push(item);
+    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    window.dispatchEvent(new Event('basketUpdated'));
+
+    // Show success state
+    var sizeList = Object.entries(sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
+    $('#successSubtitle').text(item.colour + ' · ' + totalQty + ' items (' + sizeList + ')');
+    $('#btnAddToQuote').hide();
+    $('#addQuoteSuccess').fadeIn(300);
 });
+
+// Final save — called after page 5
+function finalSaveToBasket(redirectUrl) {
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
+
+    if (window.logoUpdateItemId) {
+        // Update the existing item with logo data (user came via "+ Add Your Logo")
+        var idx = basket.findIndex(function(i) { return i.id === window.logoUpdateItemId; });
+        if (idx !== -1) {
+            if (window.logoPositions) basket[idx].logoPositions = window.logoPositions;
+            if (window.logoMethod) basket[idx].logoMethod = window.logoMethod;
+            if (window.logoData) basket[idx].logoData = window.logoData;
+
+            // Convert to item.logos format (basket.html rendering)
+            if (window.logoPositions && window.logoPositions.length) {
+                basket[idx].logos = window.logoPositions.map(function(lp) {
+                    var posData = (window.logoData || {})[lp.position] || {};
+                    var method = lp.application.toLowerCase();
+                    var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + lp.position + '"]');
+                    var price = 0;
+                    if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
+                    return {
+                        method: method,
+                        position: lp.position.toLowerCase().replace(/ /g, '-'),
+                        positionLabel: lp.position,
+                        logo: posData.dataUrl || '',
+                        notes: posData.notes || '',
+                        unitPrice: price
+                    };
+                });
+            }
+        }
+        window.logoUpdateItemId = null;
+    } else {
+        // Normal flow: save pending item
+        var item = window.pendingBasketItem;
+        if (!item) return;
+        if (window.logoPositions) item.logoPositions = window.logoPositions;
+        if (window.logoMethod) item.logoMethod = window.logoMethod;
+        if (window.logoData) item.logoData = window.logoData;
+
+        // Convert logoPositions + logoData → item.logos (format basket.html expects)
+        if (window.logoPositions && window.logoPositions.length) {
+            item.logos = window.logoPositions.map(function(lp) {
+                var posData = (window.logoData || {})[lp.position] || {};
+                var method = lp.application.toLowerCase();
+                // Get price from position card on page 4
+                var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + lp.position + '"]');
+                var price = 0;
+                if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
+                return {
+                    method: method,
+                    position: lp.position.toLowerCase().replace(/ /g, '-'),
+                    positionLabel: lp.position,
+                    logo: posData.dataUrl || '',
+                    notes: posData.notes || '',
+                    unitPrice: price
+                };
+            });
+        }
+
+        basket.push(item);
+        window.pendingBasketItem = null;
+    }
+
+    window.logoPositions = null;
+    window.logoMethod = null;
+    window.logoData = null;
+
+    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    window.dispatchEvent(new Event('basketUpdated'));
+
+    if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
+    }
+
+    // Back to page 3 and show success
+    window.goToPage(2);
+    setTimeout(function() {
+        var item = basket[basket.length - 1] || {};
+        var sizes = item.sizes || {};
+        var totalQty = Object.values(sizes).reduce(function(a,b){ return a + (Number(b)||0); }, 0);
+        var sizeList = Object.entries(sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
+        $('#successSubtitle').text((item.colour||'') + ' · ' + totalQty + ' items (' + sizeList + ')');
+        $('#btnAddToQuote').hide();
+        $('#addQuoteSuccess').fadeIn(300);
+    }, 750);
+}
+
+// Continue Shopping - close popup and reset
+$(document).on("click", "#btnContinueShopping", function() {
+    $('#addQuoteSuccess').hide();
+    $('#btnAddToQuote').show();
+    window.goToPage(0);
+    // Close popup
+    if (typeof window.closeOrderPopup === 'function') {
+        window.closeOrderPopup();
+    } else {
+        $('#orderPopup').fadeOut(300);
+    }
+});
+
+// Add Your Logo - go to page 4 (logo positions)
+$(document).on("click", "#btnAddLogo", function() {
+    $('#addQuoteSuccess').hide();
+    $('#btnAddToQuote').show();
+
+    // Re-sync window.quantities from the P3 grid to pass validation
+    window.quantities = {};
+    $('#sizeQtyGridP3 .qty-input').each(function() {
+        var qty = parseInt($(this).val()) || 0;
+        var size = $(this).data('size');
+        if (qty > 0 && size) window.quantities[size] = qty;
+    });
+
+    // Mark the last saved basket item for logo update (avoid duplicate on page 5)
+    try {
+        var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        if (basket.length > 0) {
+            window.logoUpdateItemId = basket[basket.length - 1].id;
+        }
+    } catch(e) {}
+
+    window.goToPage(3);
+});
+
+// PAGE 4: Helper — reset badge back to original EMBROIDERY/PRINT label
+function p4ResetBadge(badge) {
+    if (!badge) return;
+    badge.classList.remove('active', 'add-logo-btn', 'logo-added');
+    badge.dataset.role = 'method';
+    delete badge.dataset.activeMethod;
+    var method = badge.dataset.method;
+    var label = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
+    var price = badge.dataset.defaultPrice || (method === 'embroidery' ? '£5.00' : '£3.50');
+    badge.innerHTML = '<span class="price-label">' + label + '</span><span class="price-value">' + price + '</span>';
+}
+
+// PAGE 4: applyMethodUI — active badge + other becomes upload cloud (identical to mobile)
+function p4ApplyMethodUI(card, method) {
+    var embBadge = card.querySelector('.price-emb');
+    var printBadge = card.querySelector('.price-print');
+    p4ResetBadge(embBadge);
+    p4ResetBadge(printBadge);
+    if (!method) return;
+    var methodBadge = method === 'embroidery' ? embBadge : printBadge;
+    var addBadge   = method === 'embroidery' ? printBadge : embBadge;
+    if (methodBadge) {
+        methodBadge.classList.add('active');
+        methodBadge.dataset.role = 'method';
+    }
+    if (addBadge) {
+        addBadge.classList.remove('active');
+        addBadge.classList.add('add-logo-btn');
+        addBadge.dataset.role = 'add-logo';
+        addBadge.dataset.activeMethod = method;
+        var uid = 'cloud-' + Date.now();
+        addBadge.innerHTML = '<svg class="add-logo-cloud-icon" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="' + uid + '"><path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z"/></clipPath></defs><g clip-path="url(#' + uid + ')"><path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim"/></g></svg>';
+    }
+}
+
+// PAGE 4: Price badge click — identical to mobile customize.js logic
+$(document).on('click', '#p4PositionOptions .price-badge', function(e) {
+    e.stopPropagation();
+    var badge = this;
+    var card = $(badge).closest('.position-card')[0];
+    var role = badge.dataset.role || 'method';
+
+    // "Add Logo" upload button clicked → select position + go to Next Step (page 5)
+    if (role === 'add-logo') {
+        card.classList.add('selected');
+        card.querySelector('input[type="checkbox"]').checked = true;
+        populatePage5();
+        goToPage(4);
+        return;
+    }
+
+    var method = badge.dataset.method;
+    if (!method) return;
+
+    // POA — don't allow selection
+    if (badge.classList.contains('poa-badge') || (badge.querySelector('.price-value') && badge.querySelector('.price-value').textContent === 'POA')) {
+        return;
+    }
+
+    // Already active → toggle OFF (deselect)
+    if (badge.classList.contains('active')) {
+        card.classList.remove('selected');
+        card.querySelector('input[type="checkbox"]').checked = false;
+        var emb = card.querySelector('.price-emb');
+        var prnt = card.querySelector('.price-print');
+        p4ResetBadge(emb);
+        p4ResetBadge(prnt);
+        return;
+    }
+
+    // Select this method
+    card.classList.add('selected');
+    card.querySelector('input[type="checkbox"]').checked = true;
+    p4ApplyMethodUI(card, method);
+});
+
+// PAGE 4: Click on card body (not badge) — toggle selection, default to embroidery
+$(document).on('click', '#p4PositionOptions .position-card', function(e) {
+    if ($(e.target).closest('.price-badge').length) return;
+    var card = this;
+    if (card.classList.contains('selected')) {
+        card.classList.remove('selected');
+        card.querySelector('input[type="checkbox"]').checked = false;
+        p4ResetBadge(card.querySelector('.price-emb'));
+        p4ResetBadge(card.querySelector('.price-print'));
+    } else {
+        card.classList.add('selected');
+        card.querySelector('input[type="checkbox"]').checked = true;
+        if (!card.querySelector('.price-badge.active')) {
+            p4ApplyMethodUI(card, 'embroidery');
+        }
+    }
+});
+
+// PAGE 4: Next → go to page 5
+$(document).on('click', '#btnP4Next', function() {
+    var selected = $('#p4PositionOptions .position-card.selected');
+    if (selected.length === 0) {
+        alert('Please select at least one logo position, or click "Skip (no logo)"');
+        return;
+    }
+    window.goToPage(4);
+});
+
+// PAGE 4: Skip logo → close popup after saving
+$(document).on('click', '#btnSkipLogo', function() {
+    if (typeof window.closeOrderPopup === 'function') {
+        window.closeOrderPopup();
+    } else {
+        $('#orderPopup').fadeOut(300);
+    }
+    window.goToPage(0);
+});
+
+// PAGE 4: Back
+$(document).on('click', '.back-btn-p4', function() {
+    window.goToPage(2);
+});
+
+// PAGE 5: Assignment card toggle
+$(document).on('click', '.p5-assignment-card', function() {
+    $('.p5-assignment-card').removeClass('selected');
+    $(this).addClass('selected');
+});
+
+// PAGE 5: Method card toggle
+$(document).on('click', '.p5-method-card', function() {
+    $('.p5-method-card').removeClass('selected');
+    $(this).addClass('selected');
+});
+
+// PAGE 5: Back
+$(document).on('click', '.back-btn-p5', function() {
+    window.goToPage(3);
+});
+
+// PAGE 5: Final "Add to Quote →"
+$(document).on('click', '#btnP5Next', function() {
+    var method = $('.p5-method-card.selected').data('method');
+    if (!method) {
+        alert('Please choose a logo method');
+        return;
+    }
+    // Collect logo positions from page 4 (new card system)
+    var positions = [];
+    $('#p4PositionOptions .position-card.selected').each(function() {
+        var pos = $(this).data('position');
+        var activeBadge = $(this).find('.price-badge.active');
+        var app = activeBadge.length ? (activeBadge.attr('data-method') || 'embroidery') : 'embroidery';
+        positions.push({ position: pos, application: app.charAt(0).toUpperCase() + app.slice(1) });
+    });
+    window.logoPositions = positions;
+    window.logoMethod = method;
+
+    if (method === 'upload') {
+        // Open upload overlay for each selected position
+        var posNames = positions.map(function(p) { return p.position; });
+        if (posNames.length === 0) posNames = ['Logo'];
+        window.pendingLogos = {}; // reset
+        luaOpen(posNames, 0);
+        return;
+    }
+    // Text or existing: save straight to basket
+    finalSaveToBasket();
+});
+
+// Page 5 method card selection
+$(document).on('click', '.p5-method-card', function() {
+    $('.p5-method-card').removeClass('selected');
+    $(this).addClass('selected');
+});
+
+// Page 5 assignment card selection
+$(document).on('click', '.p5-assignment-card', function() {
+    $('.p5-assignment-card').removeClass('selected');
+    $(this).addClass('selected');
+});
+
+// Populate page 5 summary chips
+function populatePage5() {
+    var container = $('#p5PositionsSummary');
+    container.empty();
+    var selected = $('#p4PositionOptions .position-card.selected');
+    if (selected.length === 0) {
+        container.html('<p style="padding:0 14px;font-size:12px;color:#9ca3af;">No positions selected — choosing method only.</p>');
+        return;
+    }
+    selected.each(function() {
+        var pos = $(this).data('position');
+        var img = $(this).find('.position-placeholder').attr('src') || '';
+        var activeBadge = $(this).find('.price-badge.active');
+        // fallback: if active badge not found, check role='method' badge
+        if (!activeBadge.length) {
+            activeBadge = $(this).find('.price-badge[data-role="method"]:not(.add-logo-btn)');
+        }
+        var app = activeBadge.length ? (activeBadge.data('method') || activeBadge.attr('data-method')) : 'embroidery';
+        app = app.charAt(0).toUpperCase() + app.slice(1);
+        var chip = $('<div class="p5-pos-chip">' +
+            (img ? '<img src="' + img + '" alt="' + pos + '">' : '') +
+            '<span>' + pos + '</span>' +
+            '<span class="p5-app-badge">' + app + '</span>' +
+        '</div>');
+        container.append(chip);
+    });
+}
+
 
 /* ========================================
    PAGE 2: Colour & Quantities Logic
 ======================================== */
 
 // Handle colour swatch selection (PAGE 2)
-$(document).on("click", ".colour-swatch-item", function() {
+$(document).on("click", ".colour-swatch-item", function(e) {
+    // Skip if clicking View button
+    if ($(e.target).hasClass('swatch-view-btn') || $(e.target).closest('.swatch-view-btn').length > 0) {
+        return;
+    }
+    
+    const wasSelected = $(this).hasClass("selected");
+    
     // Remove selection from all swatches
     $(".colour-swatch-item").removeClass("selected");
     
-    // Add selection to clicked swatch
-    $(this).addClass("selected");
-    
-    // Store selected colour
-    const colourName = $(this).data("colour");
-    const colourHex = $(this).data("hex");
-    window.selectedColour = colourName;
-    
-    // Update summary display
-    $("#selectedColourName").text(colourName);
-    
-    console.log("Selected colour:", colourName);
+    if (!wasSelected) {
+        // Select this one
+        $(this).addClass("selected");
+        const colourName = $(this).data("colour") || $(this).data("name");
+        const imgUrl = $(this).data("img");
+        window.selectedColour = colourName;
+        $("#selectedColourName").text(colourName);
+        if (imgUrl) $("#productMainImage").attr("src", imgUrl);
+    } else {
+        // Deselect completely
+        window.selectedColour = null;
+        $("#selectedColourName").text("None");
+    }
 });
 
 // Handle quantity controls (PAGE 2)
@@ -350,4 +784,184 @@ function updateBoxHighlight(box) {
     } else {
         box.removeClass("has-qty");
     }
+}
+
+/* ============================================================
+   LOGO UPLOAD OVERLAY (lua = logo upload area)
+   ============================================================ */
+window.luaPositions  = [];   // ordered array of position names
+window.luaCurrentIdx = 0;    // which position we're on
+window.pendingLogos  = {};   // { 'Left Chest': { dataUrl, filename, notes }, ... }
+
+function luaOpen(positions, startIdx) {
+    window.luaPositions  = positions;
+    window.luaCurrentIdx = startIdx || 0;
+    luaLoadPosition(window.luaCurrentIdx);
+    $('#logoUploadOverlay').fadeIn(180);
+}
+
+function luaClose() {
+    $('#logoUploadOverlay').fadeOut(180);
+}
+
+function luaLoadPosition(idx) {
+    var pos = window.luaPositions[idx];
+    var total = window.luaPositions.length;
+
+    // Position label
+    $('#luaPositionLabel').text(pos);
+
+    // Continue / Done label
+    if (idx < total - 1) {
+        $('#luaContinue').text('CONTINUE TO NEXT POSITION');
+    } else {
+        $('#luaContinue').text('ADD TO CART');
+    }
+
+    // Restore saved data if revisiting
+    var saved = window.pendingLogos[pos];
+    if (saved && saved.dataUrl) {
+        luaShowPreview(saved.dataUrl, saved.filename);
+    } else {
+        luaClearPreview();
+    }
+    $('#luaNotes').val(saved ? (saved.notes || '') : '');
+}
+
+function luaShowPreview(dataUrl, filename) {
+    $('#luaThumb').attr('src', dataUrl);
+    $('#luaFilename').text(filename);
+    $('#luaPreviewRow').show();
+    $('#luaUploadedLabel').show();
+}
+
+function luaClearPreview() {
+    $('#luaThumb').attr('src', '');
+    $('#luaFilename').text('');
+    $('#luaPreviewRow').hide();
+    $('#luaUploadedLabel').hide();
+    $('#luaFileInput').val('');
+}
+
+function luaSaveCurrent() {
+    var pos = window.luaPositions[window.luaCurrentIdx];
+    var dataUrl = $('#luaThumb').attr('src') || '';
+    var filename = $('#luaFilename').text() || '';
+    var notes = $('#luaNotes').val() || '';
+    window.pendingLogos[pos] = { dataUrl: dataUrl, filename: filename, notes: notes };
+}
+
+// File input change
+$(document).on('change', '#luaFileInput', function() {
+    var file = this.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { alert('Max file size is 8MB'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        luaShowPreview(e.target.result, file.name);
+    };
+    reader.readAsDataURL(file);
+});
+
+// Remove file
+$(document).on('click', '#luaRemoveFile', function() {
+    luaClearPreview();
+});
+
+// Drop zone click → trigger file input
+$(document).on('click', '#luaDropZone', function() {
+    $('#luaFileInput').trigger('click');
+});
+
+// Drag & drop
+$(document).on('dragover', '#luaDropZone', function(e) {
+    e.preventDefault();
+    $(this).addClass('drag-over');
+});
+$(document).on('dragleave drop', '#luaDropZone', function(e) {
+    $(this).removeClass('drag-over');
+});
+$(document).on('drop', '#luaDropZone', function(e) {
+    e.preventDefault();
+    var file = e.originalEvent.dataTransfer.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { alert('Max file size is 8MB'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        luaShowPreview(ev.target.result, file.name);
+    };
+    reader.readAsDataURL(file);
+});
+
+// Continue / Done
+$(document).on('click', '#luaContinue', function() {
+    luaSaveCurrent();
+    var next = window.luaCurrentIdx + 1;
+    if (next < window.luaPositions.length) {
+        // More positions to fill
+        window.luaCurrentIdx = next;
+        luaLoadPosition(next);
+    } else {
+        // All positions done → show confirm screen
+        luaApplyLogosToCards();
+        window.logoData = window.pendingLogos;
+
+        // Build confirm details text
+        var lines = window.luaPositions.map(function(pos) {
+            var d = (window.pendingLogos[pos] || {});
+            return '<strong>' + pos + '</strong>' + (d.filename ? ' — ' + d.filename : '');
+        });
+        $('#luaConfirmDetails').html(lines.join('<br>'));
+
+        // Show logo preview (first logo with a dataUrl)
+        var firstLogo = null;
+        window.luaPositions.forEach(function(pos) {
+            if (!firstLogo && window.pendingLogos[pos] && window.pendingLogos[pos].dataUrl) {
+                firstLogo = window.pendingLogos[pos].dataUrl;
+            }
+        });
+        $('#luaConfirmThumb').attr('src', firstLogo || '');
+
+        // Switch panels
+        $('#luaStepUpload').hide();
+        $('#luaStepConfirm').fadeIn(200);
+    }
+});
+
+// Confirm: Add to Basket
+$(document).on('click', '#luaGoBasket', function() {
+    finalSaveToBasket('basket.html');
+});
+
+// Confirm: Proceed to Checkout
+$(document).on('click', '#luaGoCheckout', function() {
+    finalSaveToBasket('checkout.html');
+});
+
+// Confirm: back to upload step
+$(document).on('click', '#luaBackToUpload', function() {
+    $('#luaStepConfirm').hide();
+    $('#luaStepUpload').fadeIn(200);
+});
+
+// Back
+$(document).on('click', '#luaBackBtn', function() {
+    luaClose();
+});
+
+// Apply logo data to position cards (show thumb on card)
+function luaApplyLogosToCards() {
+    Object.keys(window.pendingLogos).forEach(function(pos) {
+        var logo = window.pendingLogos[pos];
+        if (!logo || !logo.dataUrl) return;
+        var card = $('#p4PositionOptions .position-card[data-position="' + pos + '"]');
+        if (!card.length) return;
+        var thumb = card.find('.uploaded-logo-thumb');
+        var box = card.find('.uploaded-logo-container');
+        thumb.attr('src', logo.dataUrl);
+        box.removeAttr('hidden').show();
+        card.find('.position-placeholder').hide();
+        // Mark cloud button as logo-added
+        card.find('.add-logo-btn').addClass('logo-added');
+    });
 }

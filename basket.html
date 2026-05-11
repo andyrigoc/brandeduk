@@ -221,7 +221,7 @@
             border-top: 1px solid #f3f4f6;
         }
         .logo-row .logo-thumb {
-            width: 40px; height: 40px; border-radius: 6px;
+            width: 72px; height: 72px; border-radius: 8px;
             border: 1px solid #e5e7eb; object-fit: contain; background: #f9fafb; flex-shrink: 0;
         }
         .logo-row .logo-info { flex: 1; min-width: 0; }
@@ -231,6 +231,11 @@
         }
         .logo-row .logo-method-label .method-icons { font-size: 12px; }
         .logo-row .logo-position-label { font-size: 12px; color: #6b7280; margin-top: 1px; }
+        .logo-notes { font-size: 11px; color: #9ca3af; margin-top: 2px; font-style: italic; }
+        .logos-applied-header {
+            font-size: 13px; font-weight: 600; color: #374151;
+            padding: 10px 0 4px; border-top: 1px solid #f3f4f6; margin-top: 4px;
+        }
         .logo-row .logo-actions {
             display: flex; gap: 8px; margin-top: 4px;
         }
@@ -548,9 +553,103 @@
 
         /* ===== DESKTOP (>1024px) ===== */
         @media (min-width: 1024px) {
-            .basket-content { max-width: 900px; }
+            /* Hide mobile-only basket header (back btn / Clear All) */
+            .basket-header { display: none !important; }
+
+            /* Show normal site header on desktop */
+            body.basket-page .mobile-header { display: none !important; }
+            body.basket-page .tablet-top-bar { display: flex !important; }
+
+            /* Outer page */
+            body.basket-page { background: #f3f4f6; }
+
+            /* Full-width container */
+            .basket-content {
+                max-width: 1280px;
+                margin: 0 auto;
+                padding: 32px 40px 60px;
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 32px;
+                align-items: start;
+            }
+
+            /* Left column: items list */
+            #basketContent {
+                display: contents; /* children flow into grid */
+            }
+            .basket-items-col {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+            .basket-items-col .basket-item-row {
+                background: #fff;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            }
+
+            /* Right column: order summary sticky */
+            .order-summary-bottom {
+                background: #fff;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+                position: sticky;
+                top: 24px;
+            }
+            .order-summary-bottom h3 {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0 0 16px;
+            }
+
+            /* Push summary to right column */
+            #orderSummaryBottom { grid-column: 2; grid-row: 1 / 99; }
+            #basketItemsList    { grid-column: 1; }
+            #emptyBasket        { grid-column: 1 / 3; }
+            .order-notes-section { grid-column: 1; }
+            .basket-trust-badges { grid-column: 1; }
+            .vat-toggle-row     { grid-column: 1; }
+            .discount-code-section { grid-column: 1; }
+
+            /* Page title row */
+            .basket-desktop-title {
+                grid-column: 1 / 3;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: -8px;
+            }
+            .basket-desktop-title h2 {
+                font-size: 24px; font-weight: 800; color: #1f2937; margin: 0;
+            }
+            .basket-desktop-title .clear-desktop-btn {
+                font-size: 14px; font-weight: 600; color: #ef4444;
+                background: none; border: none; cursor: pointer;
+            }
+
             .basket-action-bar { display: none !important; }
             .item-row-image { width: 80px; height: 80px; }
+
+            /* Checkout button big on desktop */
+            .btn-checkout {
+                width: 100%;
+                padding: 16px;
+                font-size: 15px;
+                border-radius: 10px;
+            }
+            .btn-continue-shopping {
+                display: block;
+                text-align: center;
+                margin-bottom: 12px;
+                font-size: 13px;
+                color: #6b7280;
+                text-decoration: none;
+            }
+            .btn-continue-shopping:hover { color: #374151; }
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -677,6 +776,12 @@
 
     <!-- Main Content -->
     <main class="basket-content">
+        <!-- Desktop title row (hidden on mobile via CSS) -->
+        <div class="basket-desktop-title">
+            <h2>Your Cart</h2>
+            <button class="clear-desktop-btn" id="clearBasketBtnDesktop">Clear Cart</button>
+        </div>
+
         <!-- Empty State (hidden by default) -->
         <div class="empty-basket" id="emptyBasket" style="display: none;">
             <div class="empty-basket-icon">
@@ -1205,10 +1310,10 @@
             // Logo rows
             let logosHtml = '';
             if (item.logos && item.logos.length > 0) {
+                logosHtml += `<div class="logos-applied-header">Logos applied to this item</div>`;
                 item.logos.forEach((logo, logoIdx) => {
                     const isEmb = logo.method === 'embroidery';
-                    const methodLabel = isEmb ? 'Embroidered Logo' : 'Printed Logo';
-                    const methodIcons = isEmb ? '' : '';
+                    const methodLabel = isEmb ? 'Embroidery' : 'Printed Logo';
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
@@ -1217,17 +1322,16 @@
                         <div class="logo-row">
                             ${thumbSrc ? `<img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'">` : ''}
                             <div class="logo-info">
-                                <div class="logo-method-label">
-                                    <span class="method-icons">${methodIcons}</span> ${methodLabel}
-                                </div>
-                                <div class="logo-position-label">${posLabel}</div>
+                                <div class="logo-method-label">${methodLabel}</div>
+                                <div class="logo-position-label">Position: ${posLabel}</div>
+                                ${logo.notes ? `<div class="logo-notes">${logo.notes}</div>` : ''}
                                 <div class="logo-actions">
-                                    <button class="edit-btn" data-item="${index}" data-logo="${logoIdx}" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
-                                    <button class="copy-btn" data-item="${index}" data-logo="${logoIdx}" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
-                                    <button class="remove-btn" data-item="${index}" data-logo="${logoIdx}" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
+                                    <button class="edit-btn" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
+                                    <button class="copy-btn" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
+                                    <button class="remove-btn" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
                                 </div>
                             </div>
-                            <div class="logo-price">${formatCurrency(logoTotal)}</div>
+                            <div class="logo-price">${formatCurrency(logoTotal)}<br><small style="font-weight:400;color:#6b7280">exc. VAT</small></div>
                         </div>
                     `;
                 });

@@ -85,6 +85,36 @@
             color: #1DA1F2 !important;
         }
 
+        /* Header basket icon */
+        .header-top-basket-link {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 4px 6px;
+            border-radius: 6px;
+            position: relative;
+            transition: color 0.2s;
+            margin-left: 4px;
+        }
+        .header-top-basket-link:hover { color: #C952DE; }
+        .header-top-basket-link svg { stroke: currentColor; fill: none; }
+        .header-top-basket-badge {
+            background: #f97316;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
         /* Legacy social buttons (fallback) */
         .header-top .social-buttons-header {
             gap: 10px;
@@ -2031,6 +2061,15 @@
                                     data-vat-inc>inc vat</span>
                             </button>
                         </div>
+                        <a class="header-top-basket-link" href="#" onclick="event.preventDefault(); openOrderDrawer();" aria-label="View basket">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 6h15l-1.5 9h-12z"/>
+                                <circle cx="9" cy="20" r="1"/>
+                                <circle cx="18" cy="20" r="1"/>
+                                <path d="M6 6L5 3H2"/>
+                            </svg>
+                            <span class="header-top-basket-badge" id="headerBasketBadge" style="display:none;">0</span>
+                        </a>
                     </nav>
                 </div>
             </div>
@@ -7058,9 +7097,9 @@
                 <button class="order_close_btn" onclick="window.closeOrderPopup()">&times;</button>
                 
                 <div class="viewport">
-                    <div class="track" style="width: 200%;">
+                    <div class="track" style="width: 500%;">
                         <!-- PAGE 1: Product Shop View -->
-                        <div class="page" style="width: 50%;">
+                        <div class="page" style="width: 20%;">
                             <div class="product-shop-layout">
                                 <!-- Left: Gallery -->
                                 <div class="product-gallery">
@@ -7071,69 +7110,86 @@
                                 
                                 <!-- Right: Product Info -->
                                 <div class="product-shop-info">
-                                    <div class="product-brand-badge" id="productBrand">GILDAN</div>
-                                    <h1 class="product-shop-title" id="productTitle">Loading...</h1>
-                                    
-                                    <!-- KEY INFO Section -->
-                                    <div class="key-info-section">
-                                        <h3>KEY INFO</h3>
-                                        <p id="productKeyInfo">Double layer knit. Cuffed design for optimal decoration. Also available in junior sizes.</p>
+
+                                    <!-- Code + Name header -->
+                                    <div class="p1-header">
+                                        <div class="p1-code-line">
+                                            <span class="p1-divider"></span>
+                                            <span class="p1-code" id="productCodeDisplay"></span>
+                                            <span class="p1-divider"></span>
+                                        </div>
+                                        <h1 class="p1-name" id="productTitle">Loading...</h1>
                                     </div>
-                                    
-                                    <!-- Price Tiers -->
-                                    <div class="price-tiers-section">
-                                        <div class="price-tier active">
-                                            <div class="tier-qty">1-9</div>
-                                            <div class="tier-price" id="tier1Price">£4.41</div>
+
+                                    <!-- Price + Brand row -->
+                                    <div class="p1-price-brand-row">
+                                        <div class="p1-price-block">
+                                            <span class="p1-from">From</span>
+                                            <span class="p1-price" id="tier1Price">£0.00</span>
                                         </div>
-                                        <div class="price-tier">
-                                            <div class="tier-qty">10+</div>
-                                            <div class="tier-price" id="tier10Price">£3.97</div>
-                                            <div class="tier-discount">-10%</div>
-                                        </div>
-                                        <div class="price-tier">
-                                            <div class="tier-qty">25+</div>
-                                            <div class="tier-price" id="tier25Price">£3.84</div>
-                                            <div class="tier-discount">-13%</div>
-                                        </div>
-                                        <div class="price-tier">
-                                            <div class="tier-qty">50+</div>
-                                            <div class="tier-price" id="tier50Price">£3.75</div>
-                                            <div class="tier-discount">-15%</div>
-                                        </div>
-                                        <div class="price-tier">
-                                            <div class="tier-qty">100+</div>
-                                            <div class="tier-price" id="tier100Price">£3.62</div>
-                                            <div class="tier-discount">-18%</div>
-                                        </div>
-                                        <div class="price-tier">
-                                            <div class="tier-qty">250+</div>
-                                            <div class="tier-price" id="tier250Price">£3.57</div>
-                                            <div class="tier-discount">-19%</div>
+                                        <div class="p1-brand-block">
+                                            <img id="productBrandLogo" class="p1-brand-logo" src="" alt="" style="display:none;">
+                                            <span id="productBrand" class="p1-brand-text"></span>
                                         </div>
                                     </div>
-                                    
-                                    <button class="btn-continue next">
-                                        Continue →
-                                    </button>
+
+                                    <!-- Spec table: Fabric / Weight / Size -->
+                                    <div class="p1-spec-table">
+                                        <div class="p1-spec-row" id="p1FabricRow" style="display:none;">
+                                            <span class="p1-spec-label">Fabric</span>
+                                            <span class="p1-spec-value" id="productFabric"></span>
+                                        </div>
+                                        <div class="p1-spec-row" id="p1WeightRow" style="display:none;">
+                                            <span class="p1-spec-label">Weight</span>
+                                            <span class="p1-spec-value" id="productWeight"></span>
+                                        </div>
+                                        <div class="p1-spec-row" id="p1SizeRow" style="display:none;">
+                                            <span class="p1-spec-label">Size</span>
+                                            <span class="p1-spec-value" id="productSizeDesc"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Key Info -->
+                                    <div class="p1-keyinfo">
+                                        <div class="p1-keyinfo-title">Key Info</div>
+                                        <div class="p1-keyinfo-divider"></div>
+                                        <p class="p1-keyinfo-text" id="productKeyInfo"></p>
+                                    </div>
+
+                                    <!-- Price tiers (hidden, used by JS) -->
+                                    <span id="tier10Price" style="display:none;"></span>
+                                    <span id="tier25Price" style="display:none;"></span>
+                                    <span id="tier50Price" style="display:none;"></span>
+                                    <span id="tier100Price" style="display:none;"></span>
+                                    <span id="tier250Price" style="display:none;"></span>
+
+                                    <button class="btn-continue next">Continue →</button>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- PAGE 2: Colours & Quantities -->
-                        <div class="page page-2" style="width: 50%;">
+                        <!-- PAGE 2: Colours -->
+                        <div class="page page-2" style="width: 20%;">
                             <div class="page-content-wrapper">
-                                <div class="page-header-compact">
-                                    <h2 class="page-title">Select Colour & Quantities</h2>
-                                    <p class="page-subtitle">Choose your colour and enter quantities for each size</p>
+
+                                <!-- Product identity bar (code + brand) -->
+                                <div class="p2-identity-bar">
+                                    <div class="p2-code-name">
+                                        <span class="p2-code" id="p2ProductCode"></span>
+                                        <span class="p2-name" id="p2ProductName"></span>
+                                    </div>
+                                    <div class="p2-brand">
+                                        <img id="p2BrandLogo" class="p2-brand-logo" src="" alt="" style="display:none;">
+                                        <span id="p2BrandText" class="p2-brand-text"></span>
+                                    </div>
                                 </div>
-                                
+
                                 <!-- Colour Selection -->
                                 <div class="colour-section">
                                     <h3 class="section-label">
                                         <span class="step-badge">1</span> Choose Colour
                                     </h3>
-                                    <div class="colour-swatches-grid" id="colourSwatches">
+                                    <div id="colourSwatches">
                                         <!-- Colours will be populated by JS -->
                                         <div class="colour-swatch-item" data-colour="Black" data-hex="#000000">
                                             <div class="swatch-circle" style="background: #000000;"></div>
@@ -7162,8 +7218,8 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Size & Quantity Grid -->
-                                <div class="sizes-section">
+                                <!-- Size & Quantity Grid - HIDDEN for now -->
+                                <div class="sizes-section" style="display: none;">
                                     <h3 class="section-label">
                                         <span class="step-badge">2</span> Select Sizes & Quantities
                                     </h3>
@@ -7220,8 +7276,8 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Order Summary -->
-                                <div class="order-summary-compact">
+                                <!-- Order Summary - HIDDEN for now -->
+                                <div class="order-summary-compact" style="display: none;">
                                     <div class="summary-row">
                                         <span>Total Items:</span>
                                         <strong id="totalItems">0</strong>
@@ -7235,13 +7291,415 @@
                                 <!-- Navigation Buttons -->
                                 <div class="page-nav-buttons">
                                     <button class="btn-nav btn-back back">← Back</button>
-                                    <button class="btn-nav btn-next next">Add to Quote →</button>
+                                    <button class="btn-nav btn-next next">Continue →</button>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- PAGE 3: Sizes & Quantities -->
+                        <div class="page page-3" style="width: 20%;">
+                            <div class="page-content-wrapper">
+
+                                <!-- Selected colour bar -->
+                                <div class="selected-colour-bar" id="selectedColourBar">
+                                    <div class="selected-colour-bar-left">
+                                        <span class="selected-colour-check">✓</span>
+                                        <strong>Colour:</strong>
+                                        <div class="selected-colour-thumb" id="selectedColourThumb"></div>
+                                        <span id="selectedColourBarName">—</span>
+                                        <a href="#" class="selected-colour-view" id="selectedColourViewLink">View Image</a>
+                                    </div>
+                                    <button class="selected-colour-change back">Change</button>
+                                </div>
+
+                                <!-- Size & Quantity Grid -->
+                                <div class="sizes-section-p3">
+                                    <div class="sizes-header">
+                                        <h3 class="sizes-title">Select Sizes &amp; Quantities</h3>
+                                        <div class="sizes-meta">
+                                            <span>From <strong id="p3BasePrice">£0.00</strong> per unit excl. VAT &nbsp;·&nbsp; <a href="#" class="size-guide-link">Size Guide</a></span>
+                                            <span class="sizes-delivery">🚚 Dispatched in 1–2 working days · Free delivery over £150</span>
+                                        </div>
+                                        <div class="discount-tiers" id="p3DiscountTiers"></div>
+                                    </div>
+                                    <div class="size-qty-grid" id="sizeQtyGridP3">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                    <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
+                                </div>
+
+                                <!-- Add to Quote Button -->
+                                <button class="btn-add-quote" id="btnAddToQuote">Add to Quote →</button>
+
+                                <!-- Success State (shown after adding) -->
+                                <div class="add-quote-success" id="addQuoteSuccess" style="display:none;">
+                                    <span id="successSubtitle" style="display:none;"></span>
+                                    <button class="btn-added-confirm" disabled>✓ Added to Quote</button>
+                                    <button class="btn-add-logo" id="btnAddLogo">+ Add Your Logo</button>
+                                    <button class="btn-keep-shopping" id="btnContinueShopping">Keep Shopping →</button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- PAGE 4: Logo Positions -->
+                        <div class="page page-4" style="width: 20%;">
+                            <div class="page-content-wrapper">
+
+                                <!-- Identity bar (populated by JS) -->
+                                <div class="p2-identity-bar">
+                                    <div class="p2-code-name">
+                                        <span class="p2-code" id="p4ProductCode"></span>
+                                        <span class="p2-name" id="p4ProductName"></span>
+                                    </div>
+                                    <div class="p2-brand">
+                                        <img class="p2-brand-logo" id="p4BrandLogo" src="" alt="" style="display:none;">
+                                        <span class="p2-brand-text" id="p4BrandText"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Position Cards Grid -->
+                                <div class="positions-grid" id="p4PositionOptions">
+
+                                    <!-- Left Chest -->
+                                    <div class="position-card" data-position="Left Chest" data-embroidery="5.00" data-print="3.50">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Left Chest">
+                                                <span>Left Chest</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">£5.00</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£3.50">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£3.50</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Left Chest">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Chest -->
+                                    <div class="position-card" data-position="Right Chest" data-embroidery="5.00" data-print="3.50">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Right Chest">
+                                                <span>Right Chest</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">£5.00</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£3.50">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£3.50</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Right Chest">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Left Sleeve -->
+                                    <div class="position-card" data-position="Left Sleeve" data-embroidery="5.00" data-print="3.50">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Left Sleeve">
+                                                <span>Left Sleeve</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">£5.00</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£3.50">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£3.50</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png" alt="Left Sleeve">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Sleeve -->
+                                    <div class="position-card" data-position="Right Sleeve" data-embroidery="5.00" data-print="3.50">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Right Sleeve">
+                                                <span>Right Sleeve</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="£5.00">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">£5.00</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£3.50">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£3.50</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png" alt="Right Sleeve" style="transform:scaleX(-1);">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Large Front -->
+                                    <div class="position-card" data-position="Large Front" data-embroidery="POA" data-print="6.00">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Large Front">
+                                                <span>Large Front</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="POA">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">POA</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£6.00">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£6.00</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png" alt="Large Front">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Large Back -->
+                                    <div class="position-card" data-position="Large Back" data-embroidery="POA" data-print="5.00">
+                                        <div class="position-card-header">
+                                            <label class="position-checkbox">
+                                                <input type="checkbox" name="p4position" value="Large Back">
+                                                <span>Large Back</span>
+                                            </label>
+                                            <div class="position-prices">
+                                                <button type="button" class="price-badge price-emb poa-badge" data-method="embroidery" data-default-label="EMBROIDERY" data-default-price="POA">
+                                                    <span class="price-label">EMBROIDERY</span>
+                                                    <span class="price-value">POA</span>
+                                                </button>
+                                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="PRINT" data-default-price="£5.00">
+                                                    <span class="price-label">PRINT</span>
+                                                    <span class="price-value">£5.00</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="position-preview">
+                                            <img class="position-placeholder" src="https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png" alt="Large Back">
+                                        </div>
+                                        <div class="uploaded-logo-container" hidden>
+                                            <div class="uploaded-logo-box">
+                                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Nav buttons -->
+                                <div class="p4-nav" style="position:sticky;bottom:0;background:white;z-index:2;padding:10px 0 4px;">
+                                    <button class="p4-btn-back back-btn-p4">← Back</button>
+                                    <button class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
+                                    <button class="p4-btn-next" id="btnP4Next">Next Step →</button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- PAGE 5: Logo Method + Summary Cards -->
+                        <div class="page page-5" style="width: 20%;">
+                            <div class="page-content-wrapper">
+
+                                <!-- Identity bar -->
+                                <div class="p2-identity-bar">
+                                    <div class="p2-code-name">
+                                        <span class="p2-code" id="p5ProductCode"></span>
+                                        <span class="p2-name" id="p5ProductName"></span>
+                                    </div>
+                                    <div class="p2-brand">
+                                        <img class="p2-brand-logo" id="p5BrandLogo" src="" alt="" style="display:none;">
+                                        <span class="p2-brand-text" id="p5BrandText"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Summary of selected positions -->
+                                <div class="p5-positions-summary" id="p5PositionsSummary"></div>
+
+                                <!-- Logo Assignment Style -->
+                                <div class="p5-section">
+                                    <h3 class="p5-section-title">Choose Logo Assignment Style</h3>
+                                    <div class="p5-assignment-grid">
+                                        <div class="p5-assignment-card selected" id="p5SameLogo" data-assignment="same">
+                                            <div class="p5-assignment-title">Use Same Logo</div>
+                                            <div class="p5-assignment-desc">Apply the same logo to all positions</div>
+                                        </div>
+                                        <div class="p5-assignment-card" id="p5EachLogo" data-assignment="each">
+                                            <div class="p5-assignment-title">Customise Each Position</div>
+                                            <div class="p5-assignment-desc">Upload or enter different logos per position</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Logo Method -->
+                                <div class="p5-section">
+                                    <h3 class="p5-section-title">Choose a method of adding your logo</h3>
+                                    <div class="p5-method-grid">
+                                        <div class="p5-method-card" data-method="existing" id="p5MethodExisting" style="display:none;">
+                                            <div class="p5-method-icon p5-icon-existing">
+                                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                            </div>
+                                            <div class="p5-method-name">Existing Logo</div>
+                                            <div class="p5-method-desc">Reuse the logo you uploaded earlier.</div>
+                                        </div>
+                                        <div class="p5-method-card" data-method="text">
+                                            <div class="p5-method-icon p5-icon-text">T</div>
+                                            <div class="p5-method-name">Text Logo</div>
+                                            <div class="p5-method-desc">Add custom text like a company name with your choice of font and colour.</div>
+                                        </div>
+                                        <div class="p5-method-card" data-method="upload">
+                                            <div class="p5-method-icon p5-icon-upload">
+                                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                            </div>
+                                            <div class="p5-method-name">Upload Your Logo</div>
+                                            <div class="p5-method-desc">Choose a file from your device to upload your logo.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nav buttons -->
+                                <div class="p4-nav">
+                                    <button class="p4-btn-back back-btn-p5">← Back</button>
+                                    <button class="p4-btn-next" id="btnP5Next">Upload →</button>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Logo Upload Overlay (inside order popup) -->
+    <div id="logoUploadOverlay" class="lua-overlay" style="display:none;">
+
+        <!-- STEP 1: Upload form -->
+        <div class="lua-content" id="luaStepUpload">
+            <h2 class="lua-title">Upload Your Logo</h2>
+            <p class="lua-subtitle">Upload with confidence, we have no set up fees!</p>
+            <div class="lua-position-label" id="luaPositionLabel"></div>
+
+            <!-- Choose File + Preview -->
+            <div class="lua-upload-box">
+                <label class="lua-choose-btn" for="luaFileInput">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Choose File
+                </label>
+                <input type="file" id="luaFileInput" accept="image/*,.pdf,.ai,.eps" hidden>
+                <div class="lua-preview-row" id="luaPreviewRow" style="display:none;">
+                    <img class="lua-thumb" id="luaThumb" src="" alt="">
+                    <span class="lua-filename" id="luaFilename"></span>
+                    <button class="lua-remove-btn" id="luaRemoveFile" title="Remove">&times;</button>
+                </div>
+                <div class="lua-uploaded-label" id="luaUploadedLabel" style="display:none;">Logo Has Been Uploaded</div>
+            </div>
+
+            <!-- Drop Zone -->
+            <div class="lua-drop-zone" id="luaDropZone">
+                <p class="lua-drop-title">Drag 'n' Drop Some Files Here, or Click To Select Files</p>
+                <p class="lua-drop-info">Upload choose file<br>JPG, PNG, ESP, AI, PDF</p>
+                <p class="lua-drop-info">Max size: 8MB<br>Don't worry how it looks, we will make it look great and send a proof before we add to your products!</p>
+            </div>
+
+            <!-- Notes -->
+            <div class="lua-notes-section">
+                <label class="lua-notes-label"><strong>Notes</strong></label>
+                <textarea class="lua-notes-input" id="luaNotes" placeholder="Leave a message"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="lua-btns">
+                <button class="lua-btn-continue" id="luaContinue">ADD TO CART</button>
+                <button class="lua-btn-back" id="luaBackBtn">BACK</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Confirm screen -->
+        <div class="lua-content lua-confirm" id="luaStepConfirm" style="display:none;">
+            <div class="lua-confirm-check">&#10003; Logo Uploaded Successfully</div>
+            <div class="lua-confirm-preview">
+                <img id="luaConfirmThumb" src="" alt="Logo preview">
+            </div>
+            <div class="lua-confirm-details" id="luaConfirmDetails"></div>
+            <div class="lua-btns">
+                <button class="lua-btn-continue" id="luaGoBasket">Add to Basket</button>
+                <button class="lua-btn-checkout" id="luaGoCheckout">Proceed to Checkout →</button>
+                <button class="lua-btn-back" id="luaBackToUpload">← Change Logo</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Color Zoom Modal -->
+    <div id="colorZoomModal">
+        <div class="color-zoom-content">
+            <button class="color-zoom-close" onclick="closeColorZoom()">&times;</button>
+            <img id="colorZoomImage" class="color-zoom-image" src="" alt="">
+            <div id="colorZoomName" class="color-zoom-name"></div>
         </div>
     </div>
 
@@ -7252,6 +7710,58 @@
     <!-- Order Popup Scripts -->
     <script src="test-order-popup/order.js"></script>
     <script src="test-order-popup/order-integration.js"></script>
+
+    <script>
+        // Color Zoom Modal Functions
+        function openColorZoom(imageSrc, colorName) {
+            $('#colorZoomImage').attr('src', imageSrc);
+            $('#colorZoomName').text(colorName);
+            $('#colorZoomModal').addClass('active');
+        }
+
+        function closeColorZoom() {
+            $('#colorZoomModal').removeClass('active');
+        }
+
+        // Close on background click
+        $('#colorZoomModal').click(function(e) {
+            if (e.target === this) {
+                closeColorZoom();
+            }
+        });
+
+        // Close on ESC key
+        $(document).keydown(function(e) {
+            if (e.key === 'Escape' && $('#colorZoomModal').hasClass('active')) {
+                closeColorZoom();
+            }
+        });
+    </script>
+
+    <script>
+        // Basket badge updater
+        (function() {
+            function updateBasketBadge() {
+                var badge = document.getElementById('headerBasketBadge');
+                if (!badge) return;
+                var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                var count = 0;
+                basket.forEach(function(item) {
+                    var sizes = item.sizes || item.quantities || {};
+                    Object.values(sizes).forEach(function(q) { count += Number(q) || 0; });
+                    if (!Object.keys(sizes).length) count += Number(item.quantity || item.totalQty || 0);
+                });
+                badge.textContent = count > 99 ? '99+' : String(count);
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            }
+            document.addEventListener('DOMContentLoaded', updateBasketBadge);
+            window.addEventListener('storage', function(e) { if (e.key === 'quoteBasket') updateBasketBadge(); });
+            window.addEventListener('basketUpdated', updateBasketBadge);
+        })();
+    </script>
+
+<!-- ORDER DRAWER PC - Slide-in basket summary -->
+<script src="order-drawer-pc.js?v=20260509a"></script>
 </body>
 
 </html>
