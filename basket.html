@@ -31,6 +31,18 @@
             padding-top: 0 !important;
         }
 
+        /* Never hide the header on basket page — keep it always visible */
+        body.basket-page .site-header.header-hidden {
+            transform: none !important;
+        }
+
+        /* Desktop: push content below the fixed header */
+        @media (min-width: 1024px) {
+            body.basket-page .basket-content {
+                padding-top: calc(var(--brandeduk-site-header-height, 175px) + 24px) !important;
+            }
+        }
+
         /* Breadcrumbs: no margin-top since fixed header is hidden on basket page */
         body.basket-page .site-breadcrumbs {
             margin-top: 0;
