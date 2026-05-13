@@ -2629,6 +2629,109 @@
         </div>
     </div>
 
+    <!-- ── DESKTOP SIDEBAR LAYOUT ── -->
+    <style>
+        @media (min-width: 1280px) {
+            /* 2-col grid: filters sidebar | products */
+            #shopPageLayout {
+                display: grid;
+                grid-template-columns: 260px 1fr;
+                gap: 0 24px;
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px 24px;
+                align-items: start;
+            }
+
+            /* Transform the mobile slide-out into a static sticky sidebar */
+            #shopPageLayout > #filtersDropup {
+                position: sticky !important;
+                top: 160px;
+                transform: none !important;
+                transition: none !important;
+                width: auto !important;
+                max-width: none !important;
+                height: auto !important;
+                max-height: calc(100vh - 180px);
+                overflow-y: auto !important;
+                background: #fff !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                border-radius: 12px !important;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+                border: 1px solid #f3f4f6;
+                z-index: 1 !important;
+                display: flex !important;
+                flex-direction: column;
+                grid-column: 1;
+                align-self: start;
+            }
+
+            /* Hide close/X button in sidebar mode */
+            #shopPageLayout > #filtersDropup .filters-dropup__close {
+                display: none !important;
+            }
+
+            /* Sticky heading inside sidebar */
+            #shopPageLayout > #filtersDropup .filters-dropup__header {
+                position: sticky;
+                top: 0;
+                background: #fff;
+                z-index: 2;
+                border-radius: 12px 12px 0 0;
+            }
+
+            /* Products column */
+            #shopProductsCol {
+                grid-column: 2;
+                min-width: 0;
+            }
+
+            /* Sort/view bar – compact row, no stretch */
+            #shopProductsCol .shop-products-controls {
+                background: transparent !important;
+                border-bottom: 1px solid #e5e7eb !important;
+                padding: 0 0 10px !important;
+                margin-bottom: 16px;
+            }
+
+            #shopProductsCol .shop-controls-row {
+                flex-wrap: nowrap;
+                gap: 20px;
+                justify-content: flex-start;
+            }
+
+            /* Fix: don't let select grow full-width */
+            #shopProductsCol .shop-control-group {
+                flex: 0 0 auto !important;
+                width: auto !important;
+            }
+
+            #shopProductsCol .shop-control-select {
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: 140px;
+                max-width: 200px;
+            }
+
+            /* Hide mobile overlay when sidebar is in-page */
+            body.desktop-sidebar-active .filters-overlay {
+                display: none !important;
+            }
+
+            /* Products grid: 3 cols with sidebar present */
+            #shopProductsCol .products-grid-shop {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        @media (min-width: 1500px) {
+            #shopProductsCol .products-grid-shop {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+    </style>
+
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
     <!-- API Integration Scripts -->
     <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
@@ -4233,6 +4336,43 @@
         </div>
     </div>
     <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+
+    <!-- ── Desktop Sidebar: restructure DOM at 1280px+ ── -->
+    <script>
+    (function initDesktopSidebarLayout() {
+        if (window.innerWidth < 1280) return;
+
+        var sidebar = document.getElementById('filtersDropup');
+        var controls = document.querySelector('.shop-products-controls');
+        var productsMain = document.querySelector('.shop-products-container');
+        var pagination = document.getElementById('bottomPagination');
+
+        if (!sidebar || !controls) return;
+
+        // Create outer layout grid
+        var layout = document.createElement('div');
+        layout.id = 'shopPageLayout';
+
+        // Create products column
+        var productsCol = document.createElement('div');
+        productsCol.id = 'shopProductsCol';
+
+        // Inject layout wrapper at the position of .shop-products-controls
+        controls.parentNode.insertBefore(layout, controls);
+
+        // sidebar → col 1, productsCol → col 2
+        layout.appendChild(sidebar);
+        layout.appendChild(productsCol);
+
+        // Move products elements into the products column
+        productsCol.appendChild(controls);
+        if (productsMain) productsCol.appendChild(productsMain);
+        if (pagination) productsCol.appendChild(pagination);
+
+        // Flag for CSS targeting
+        document.body.classList.add('desktop-sidebar-active');
+    })();
+    </script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
