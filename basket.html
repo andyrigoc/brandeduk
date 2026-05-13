@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260402b">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260220">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
+    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -30,6 +34,18 @@
         /* Breadcrumbs: no margin-top since fixed header is hidden on basket page */
         body.basket-page .site-breadcrumbs {
             margin-top: 0;
+        }
+
+        /* ── MOBILE (< 768px): only show searchbar-header + basket-header page title ── */
+        @media (max-width: 767px) {
+            body.basket-page .header-top  { display: none !important; }
+            body.basket-page .header-bottom { display: none !important; }
+            body.basket-page .top-promo-bar { display: none !important; }
+        }
+
+        /* ── TABLET (768-1023px): full site header, hide basket-header page title ── */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            body.basket-page .basket-header { display: none !important; }
         }
 
         /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
@@ -316,6 +332,19 @@
             border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
         }
         .btn-checkout:hover { background: #dc2626; }
+        /* New primary / secondary CTAs */
+        .btn-checkout-primary {
+            width: 100%; padding: 16px; background: #16a34a; color: #fff;
+            border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-checkout-primary:hover { background: #15803d; }
+        .btn-request-quote {
+            width: 100%; padding: 14px; background: #fff; color: #7c3aed;
+            border: 2px solid #7c3aed; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-request-quote:hover { background: #f5f3ff; }
 
         /* Trust badges (below summary) */
         .basket-trust-badges { margin-top: 20px; font-size: 13px; color: #374151; }
@@ -553,12 +582,10 @@
 
         /* ===== DESKTOP (>1024px) ===== */
         @media (min-width: 1024px) {
-            /* Hide mobile-only basket header (back btn / Clear All) */
+            /* Hide mobile-only elements */
             .basket-header { display: none !important; }
-
-            /* Show normal site header on desktop */
-            body.basket-page .mobile-header { display: none !important; }
-            body.basket-page .tablet-top-bar { display: flex !important; }
+            .mobile-header { display: none !important; }
+            .tablet-top-bar { display: none !important; }
 
             /* Outer page */
             body.basket-page { background: #f3f4f6; }
@@ -634,17 +661,22 @@
             .basket-action-bar { display: none !important; }
             .item-row-image { width: 80px; height: 80px; }
 
-            /* Checkout button big on desktop */
-            .btn-checkout {
+            /* Primary / secondary CTA buttons on desktop */
+            .btn-checkout-primary {
                 width: 100%;
                 padding: 16px;
-                font-size: 15px;
+                font-size: 16px;
                 border-radius: 10px;
+            }
+            .btn-request-quote {
+                width: 100%;
+                padding: 14px;
+                font-size: 14px;
             }
             .btn-continue-shopping {
                 display: block;
                 text-align: center;
-                margin-bottom: 12px;
+                margin-top: 8px;
                 font-size: 13px;
                 color: #6b7280;
                 text-decoration: none;
@@ -655,52 +687,154 @@
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
 <body class="basket-page">
-        <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
-        <div class="tablet-top-bar">
-            <div class="tablet-top-bar__left">
-                <div class="social-icons-container social-icons-mobile">
-                    <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+
+<!-- ============================================
+    SITE HEADER
+    ============================================ -->
+<div class="header-with-promo">
+<header class="site-header">
+    <div class="header-top">
+        <div class="header-container">
+            <div class="header-top-left">
+                <div class="header-social-3d">
+                    <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon-3d facebook" target="_blank" rel="noopener" aria-label="Facebook">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon-3d instagram" target="_blank" rel="noopener" aria-label="Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon-3d linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon-3d youtube" target="_blank" rel="noopener" aria-label="YouTube">
                         <i class="fab fa-youtube"></i>
                     </a>
-                    <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
-                        <i class="fab fa-pinterest-p"></i>
+                    <a href="https://twitter.com/brandeduk" class="social-icon-3d twitter" target="_blank" rel="noopener" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
                     </a>
                 </div>
             </div>
-            <div class="tablet-top-bar__center">
-                <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    info@brandeduk.com
-                </a>
-                <a href="tel:02089742722" class="tablet-top-bar__phone">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    0208 974 2722
-                </a>
+            <div class="header-top-right">
+                <a class="header-top-email" href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                <nav class="header-top-links" aria-label="utility navigation">
+                    <a href="tel:02089742722" class="header-top-phone">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        0208 974 2722
+                    </a>
+                    <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
+                        <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                            <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
+                        </button>
+                    </div>
+                    <a class="header-top-basket-link" href="basket.html" aria-label="View quote">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 6h15l-1.5 9h-12z"/>
+                            <circle cx="9" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                            <path d="M6 6L5 3H2"/>
+                        </svg>
+                        <span class="header-top-basket-badge" id="headerBasketBadge">0</span>
+                    </a>
+                </nav>
             </div>
-            <div class="tablet-top-bar__right">
-                <div class="vat-toggle-tablet">
-                    <span class="vat-label vat-label--exc">EXC VAT</span>
-                    <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
-                    <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
-                    <span class="vat-label vat-label--inc">INC VAT</span>
+        </div>
+    </div>
+
+    <div class="searchbar-header">
+        <div class="searchbar-header__surface">
+            <div class="searchbar-header__inner">
+                <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
+                    <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                </a>
+
+                <div class="searchbar-header__actions">
+                    <div class="searchbar-header__search-expand">
+                        <input type="text" class="search-input-expand" autocomplete="off" placeholder="Search products, brands, categories..." id="searchbarHeaderInput" data-ac-custom="true">
+                        <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <div class="search-autocomplete" id="searchAutocomplete"></div>
+                    </div>
+
+                    <a class="searchbar-header__action" href="tel:02089742722" aria-label="Call us">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.5 0 1 .4 1 1V20c0 .5-.5 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.5 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action" href="#" data-open-whatsapp="1" aria-label="WhatsApp us">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon searchbar-header__action-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2C6.48 2 2 6.33 2 11.82c0 1.98.56 3.85 1.6 5.47L2 22l4.89-1.53C8.41 21.4 10.18 21.8 12 21.8c5.52 0 10-4.33 10-9.98C22 6.33 17.52 2 12 2zm0 17.45c-1.65 0-3.27-.45-4.68-1.3l-.34-.2-2.9.91.94-2.8-.22-.36a8.02 8.02 0 0 1-1.23-4.26c0-4.37 3.58-7.92 8.02-7.92 4.41 0 7.98 3.55 7.98 7.92 0 4.37-3.57 8.01-7.97 8.01zm4.55-5.58c-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.57.12-.17.25-.66.81-.81.98-.15.17-.29.19-.54.07-.25-.12-1.04-.41-1.98-1.3-.73-.66-1.22-1.47-1.37-1.72-.15-.25-.02-.38.11-.5.11-.1.25-.27.38-.4.12-.13.17-.23.25-.39.08-.17.04-.31-.02-.43-.06-.12-.57-1.37-.78-1.88-.21-.5-.42-.43-.57-.44-.15-.01-.32-.02-.49-.02-.17 0-.45.06-.68.31-.23.25-.9.88-.9 2.14s.92 2.49 1.05 2.66c.13.17 1.81 2.87 4.38 3.97.61.26 1.08.41 1.45.52.61.19 1.16.16 1.6.1.49-.07 1.49-.61 1.7-1.2.21-.59.21-1.1.15-1.2-.06-.1-.22-.16-.47-.28z"></path>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a class="searchbar-header__action searchbar-header__account" href="#" aria-label="My Account" id="accountBtn">
+                        <span class="searchbar-header__action-ring is-animating">
+                            <svg class="searchbar-header__action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </span>
+                    </a>
                 </div>
             </div>
         </div>
-    <!-- Mobile Header -->
+    </div>
+
+    <div class="header-bottom sticky-header">
+        <div class="header-container">
+            <div class="category-dropdown has-border" data-visible="false">
+                <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false" title="Browse Categories">
+                    <span class="category-toggle-icon" aria-hidden="true"></span>
+                    <span class="category-toggle-label">Browse Categories</span>
+                    <span class="category-toggle-caret" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-box" role="region" aria-label="Browse categories">
+                    <ul class="menu vertical-menu category-menu">
+                        <li><a href="shop-pc.html?productType=tshirts">T-Shirts</a></li>
+                        <li><a href="shop-pc.html?productType=polos">Polo Shirts</a></li>
+                        <li><a href="shop-pc.html?productType=hoodies">Hoodies &amp; Sweatshirts</a></li>
+                        <li><a href="shop-pc.html?productType=jackets">Jackets &amp; Softshell</a></li>
+                        <li><a href="shop-pc.html?productType=safety-vests">Hi-Vis Clothing</a></li>
+                        <li><a href="shop-pc.html?productType=trousers">Work Trousers</a></li>
+                        <li><a href="shop-pc.html?productType=fleece">Fleeces</a></li>
+                        <li><a href="shop-pc.html?productType=caps">Headwear / Accessories</a></li>
+                        <li><a href="shop-pc.html">View All Categories</a></li>
+                    </ul>
+                </div>
+            </div>
+            <nav class="main-nav" aria-label="primary navigation">
+                <ul class="menu">
+                    <li><a href="shop-pc.html">All Products</a></li>
+                    <li><a href="shop-pc.html">Brands</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Top Promotional Bar -->
+<div class="top-promo-bar">
+    <div class="promo-scroll">
+        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
+        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
+    </div>
+</div>
+</div>
+<!-- END SITE HEADER -->
+
+    <!-- Mobile Header (mobile only) -->
     <header class="mobile-header">
         <!-- Top Row: Social + VAT Toggle -->
         <div class="header-top-row">
@@ -857,8 +991,21 @@
                 </div>
 
                 <div class="summary-actions">
-                    <a href="mobile/shop-mobile.html" class="btn-continue-shopping">&lt;- Continue Shopping / Add another item</a>
-                    <button class="btn-checkout" id="checkoutBtn">Send Quote</button>
+                    <button class="btn-checkout-primary" id="checkoutBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:6px">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Proceed to Checkout
+                    </button>
+                    <button class="btn-request-quote" id="requestQuoteBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Richiedi Quote / Request a Quote
+                    </button>
+                    <a href="shop-pc.html" class="btn-continue-shopping">← Continue Shopping / Add another item</a>
                 </div>
             </div>
 
@@ -2156,8 +2303,33 @@
         </div>
     </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
+<script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
+<script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
-<!-- Tawk & WhatsApp removed from basket page -->
+<script>
+// Basket page: search submit → shop-pc
+(function() {
+    var input = document.getElementById('searchbarHeaderInput');
+    var icon  = document.querySelector('.searchbar-header .search-icon-expand');
+    function submitSearch() {
+        var q = (input ? input.value : '').trim();
+        if (q) window.location.href = 'shop-pc.html?q=' + encodeURIComponent(q);
+    }
+    if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
+    if (icon)  icon.addEventListener('click', submitSearch);
+})();
+// Request Quote button → same handler as checkout but marks as quote
+document.addEventListener('DOMContentLoaded', function() {
+    var rqBtn = document.getElementById('requestQuoteBtn');
+    if (rqBtn) {
+        rqBtn.addEventListener('click', function() {
+            var checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) checkoutBtn.click();
+        });
+    }
+});
+</script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
