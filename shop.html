@@ -432,6 +432,11 @@
             .categories-filter-scroll {
                 display: none;
             }
+
+            /* Promo bar: undo mobile margin-top (mobile-header is hidden, but selector still applies) */
+            .mobile-header + .top-promo-bar {
+                margin-top: 0 !important;
+            }
         }
     </style>
     <style>

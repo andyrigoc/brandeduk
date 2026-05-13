@@ -71,6 +71,62 @@
         });
     }
 
+    function closeAllMegaMenus(exceptItem) {
+        document.querySelectorAll('.has-megamenu.is-open').forEach((item) => {
+            if (exceptItem && item === exceptItem) return;
+            item.classList.remove('is-open');
+            const trigger = item.querySelector(':scope > a');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    function initMegaMenuToggle() {
+        // Handle plain has-megamenu items (e.g. "All Products")
+        // Excludes promotions-menu, exclusives-menu, catalogue-menu (handled elsewhere)
+        const items = Array.from(document.querySelectorAll(
+            '.main-nav .menu > li.has-megamenu:not(.promotions-menu):not(.exclusives-menu):not(.catalogue-menu)'
+        ));
+        if (!items.length) return;
+
+        items.forEach((item) => {
+            const trigger = item.querySelector(':scope > a');
+            const megamenu = item.querySelector(':scope > .nav-megamenu');
+            if (!trigger || !megamenu) return;
+
+            trigger.setAttribute('aria-expanded', 'false');
+
+            const toggle = (event) => {
+                if (event) { event.preventDefault(); event.stopPropagation(); }
+                const willOpen = !item.classList.contains('is-open');
+                closeAllMegaMenus(item);
+                closeAllPromoDropdowns();
+                closeAllExclusivesDropdowns();
+                closeAllCatalogueDropdowns();
+                closeAllDropdowns();
+                closeAllSearchbarDropdowns();
+                item.classList.toggle('is-open', willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            };
+
+            trigger.addEventListener('click', toggle);
+            trigger.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Spacebar') toggle(e);
+                if (e.key === 'Escape') closeAllMegaMenus();
+            });
+            megamenu.addEventListener('click', (e) => e.stopPropagation());
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element)) return;
+            if (event.target.closest('.main-nav .menu > li.has-megamenu')) return;
+            closeAllMegaMenus();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAllMegaMenus();
+        });
+    }
+
     function initPromoDropdownToggle() {
         const promoItems = Array.from(document.querySelectorAll('.promotions-menu'));
         if (!promoItems.length) {
@@ -98,6 +154,7 @@
                 closeAllPromoDropdowns(item);
                 closeAllCatalogueDropdowns();
                 closeAllExclusivesDropdowns();
+                closeAllMegaMenus();
                 closeAllDropdowns();
                 closeAllSearchbarDropdowns();
 
@@ -398,6 +455,7 @@
                 closeAllExclusivesDropdowns(item);
                 closeAllPromoDropdowns();
                 closeAllCatalogueDropdowns();
+                closeAllMegaMenus();
                 closeAllDropdowns();
                 closeAllSearchbarDropdowns();
                 item.classList.toggle('is-open', willOpen);
@@ -441,6 +499,7 @@
                 const willOpen = !item.classList.contains('is-open');
                 closeAllCatalogueDropdowns(item);
                 closeAllPromoDropdowns();
+                closeAllMegaMenus();
                 closeAllDropdowns();
                 closeAllSearchbarDropdowns();
                 item.classList.toggle('is-open', willOpen);
@@ -650,6 +709,7 @@
         initSearchbarHeaderDropdown();
         initModernSearchDropdown();
         initSearchExpandToggle();
+        initMegaMenuToggle();
         initPromoDropdownToggle();
         initExclusivesDropdownToggle();
         initCatalogueDropdownToggle();
