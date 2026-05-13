@@ -48,6 +48,46 @@
             body.basket-page .basket-header { display: none !important; }
         }
 
+        /* ── FIX: responsive.css collapses searchbar to 44px on 1280px+ — override it ── */
+        /* Match home-pc.html header exactly */
+        .header-with-promo .searchbar-header {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .header-with-promo .searchbar-header__surface {
+            padding: 0 var(--searchbar-shell-padding, var(--header-shell-padding)) !important;
+        }
+        .header-with-promo .searchbar-header__brand-img {
+            height: 80px !important;
+            width: auto !important;
+            object-fit: contain;
+        }
+        .header-with-promo .searchbar-header__search-expand {
+            position: relative !important;
+            flex: 1 !important;
+            width: auto !important;
+            min-width: 200px !important;
+            height: 44px !important;
+            transition: none !important;
+            margin-right: 8px;
+        }
+        .header-with-promo .searchbar-header__search-expand .search-input-expand {
+            position: absolute !important;
+            right: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .header-with-promo .searchbar-header__search-expand .search-input-expand::placeholder {
+            color: #9ca3af !important;
+        }
+        .header-with-promo .searchbar-header__actions {
+            flex: 1 !important;
+            margin-left: auto;
+        }
+
         /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
         .social-icons-mobile {
             gap: 3px !important;
