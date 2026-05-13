@@ -1350,23 +1350,73 @@
     color: #9ca3af;
 }
 
-/* Discount tiers */
+/* Discount tiers — purple branded cards */
 .discount-tiers {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: nowrap;
     margin-bottom: 8px;
+    overflow-x: auto;
 }
 
-.discount-tier-badge {
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-size: 11px;
+.discount-tier-card {
+    flex: 1 1 0;
+    min-width: 72px;
+    background: #f5f3ff;
+    border: 1.5px solid #ddd6fe;
+    border-radius: 10px;
+    padding: 6px 8px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.discount-tier-card .tier-qty {
+    font-size: 10px;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.discount-tier-card .tier-pct {
+    font-size: 13px;
+    font-weight: 800;
+    color: #5b21b6;
+    line-height: 1.1;
+}
+
+.discount-tier-card .tier-label {
+    font-size: 9px;
+    color: #8b5cf6;
     font-weight: 600;
-    color: #c2410c;
-    white-space: nowrap;
+    margin-top: 1px;
+}
+
+/* Active (reached) tier */
+.discount-tier-card.tier-active {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    border-color: #5b21b6;
+    box-shadow: 0 4px 12px rgba(91,33,182,0.35);
+    transform: translateY(-2px);
+}
+
+.discount-tier-card.tier-active .tier-qty,
+.discount-tier-card.tier-active .tier-pct,
+.discount-tier-card.tier-active .tier-label {
+    color: #fff;
+}
+
+.discount-tier-card.tier-active::after {
+    content: '✓';
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 700;
 }
 
 /* Size qty grid for page 3 */

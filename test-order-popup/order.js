@@ -1,5 +1,33 @@
 // order.js - Updated for real product data
 
+// Elegant custom alert (replaces browser alert())
+window.showAlert = function(message, btnLabel) {
+    btnLabel = btnLabel || 'OK';
+    // Inject CSS once
+    if (!document.getElementById('_alertModalStyle')) {
+        var s = document.createElement('style');
+        s.id = '_alertModalStyle';
+        s.textContent = [
+            '#_alertModal{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);animation:_amFadeIn 0.18s ease}',
+            '@keyframes _amFadeIn{from{opacity:0}to{opacity:1}}',
+            '#_alertModal .am-card{background:#fff;border-radius:20px;padding:36px 40px 32px;text-align:center;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:_amSlideIn 0.22s cubic-bezier(0.34,1.56,0.64,1)}',
+            '@keyframes _amSlideIn{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}',
+            '#_alertModal .am-icon{font-size:36px;margin-bottom:12px}',
+            '#_alertModal .am-msg{font-size:15px;font-weight:600;color:#1f2937;margin-bottom:24px;line-height:1.5}',
+            '#_alertModal .am-btn{background:#f97316;color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.3px;transition:background 0.2s}',
+            '#_alertModal .am-btn:hover{background:#ea6c0a}'
+        ].join('');
+        document.head.appendChild(s);
+    }
+    var overlay = document.createElement('div');
+    overlay.id = '_alertModal';
+    overlay.innerHTML = '<div class="am-card"><div class="am-icon">&#9888;&#65039;</div><div class="am-msg">' + message + '</div><button class="am-btn">' + btnLabel + '</button></div>';
+    document.body.appendChild(overlay);
+    var close = function() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+    overlay.querySelector('.am-btn').addEventListener('click', close);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+};
+
 // Global variables
 window.current = 0;
 window.selectedColour = null;
@@ -46,14 +74,14 @@ window.goToPage = function(index) {
     if (index > window.current) {
         // Page 2 (colour) -> Page 3: Must select colour
         if (window.current === 1 && !window.selectedColour) {
-            alert("Please select a colour");
+            window.showAlert('Please select a colour', 'Select Colour');
             return;
         }
         // Page 3 (sizes) -> Page 4: Must select at least one quantity
         if (window.current === 2) {
             const totalQty = Object.values(window.quantities).reduce((a, b) => a + (b || 0), 0);
             if (totalQty === 0) {
-                alert("Please select at least one size/quantity");
+                window.showAlert('Please select at least one size/quantity', 'Select Sizes');
                 return;
             }
         }
@@ -241,19 +269,40 @@ function populatePage3() {
     var tiers = product.priceBreaks || product.tiers || product.priceTiers || [];
     var tiersContainer = $('#p3DiscountTiers');
     tiersContainer.empty();
+
+    // Build tier card data (skip base tier min≤1)
+    var tierData = [];
     if (tiers.length > 0) {
         tiers.forEach(function(tier) {
             var min = tier.min || tier.qty || 1;
-            if (min <= 1) return; // skip 1-9 base tier
+            if (min <= 1) return;
             var pct = tier.percentage || tier.discount || tier.pct || 0;
             if (!pct) return;
-            tiersContainer.append('<span class="discount-tier-badge">' + pct + '% off ' + min + '+</span>');
+            tierData.push({ min: min, pct: parseFloat(pct).toFixed(2).replace(/\.00$/, '') });
         });
     } else {
-        tiersContainer.append('<span class="discount-tier-badge">5% off 10+</span>');
-        tiersContainer.append('<span class="discount-tier-badge">10% off 25+</span>');
-        tiersContainer.append('<span class="discount-tier-badge">20% off 50+</span>');
+        tierData = [
+            { min: 10, pct: '5' },
+            { min: 25, pct: '10' },
+            { min: 50, pct: '20' }
+        ];
     }
+
+    // Store for live highlight
+    window._p3TierData = tierData;
+
+    tierData.forEach(function(t) {
+        tiersContainer.append(
+            '<div class="discount-tier-card" data-min="' + t.min + '">' +
+              '<div class="tier-qty">' + t.min + '+</div>' +
+              '<div class="tier-pct">-' + t.pct + '%</div>' +
+              '<div class="tier-label">off</div>' +
+            '</div>'
+        );
+    });
+
+    // Run once immediately in case qty already set
+    updateP3TierHighlight();
     
     // Populate size grid
     var sizes = product.sizes || ['S','M','L','XL','2XL','3XL'];
@@ -315,7 +364,7 @@ $(document).on("click", "#btnAddToQuote", function(e) {
     });
 
     if (totalQty === 0) {
-        alert('Please select at least one size/quantity');
+        window.showAlert('Please select at least one size/quantity', 'Select Sizes');
         return;
     }
 
@@ -575,7 +624,7 @@ $(document).on('click', '#p4PositionOptions .position-card', function(e) {
 $(document).on('click', '#btnP4Next', function() {
     var selected = $('#p4PositionOptions .position-card.selected');
     if (selected.length === 0) {
-        alert('Please select at least one logo position, or click "Skip (no logo)"');
+        window.showAlert('Please select at least one logo position, or click &quot;Skip (no logo)&quot;', 'Select Position');
         return;
     }
     window.goToPage(4);
@@ -617,7 +666,7 @@ $(document).on('click', '.back-btn-p5', function() {
 $(document).on('click', '#btnP5Next', function() {
     var method = $('.p5-method-card.selected').data('method');
     if (!method) {
-        alert('Please choose a logo method');
+        window.showAlert('Please choose a logo method', 'Choose Method');
         return;
     }
     // Collect logo positions from page 4 (new card system)
@@ -725,6 +774,7 @@ $(document).on("click", ".qty-btn.minus", function() {
         input.val(currentValue);
         updatePage2Summary();
         updateBoxHighlight($(this).closest(".size-qty-box"));
+        updateP3TierHighlight();
     }
 });
 
@@ -736,6 +786,7 @@ $(document).on("click", ".qty-btn.plus", function() {
     input.val(currentValue);
     updatePage2Summary();
     updateBoxHighlight($(this).closest(".size-qty-box"));
+    updateP3TierHighlight();
 });
 
 // Handle manual input change
@@ -748,6 +799,7 @@ $(document).on("change", ".qty-input", function() {
     $(this).val(value);
     updatePage2Summary();
     updateBoxHighlight($(this).closest(".size-qty-box"));
+    updateP3TierHighlight();
 });
 
 // Update summary totals
@@ -773,6 +825,27 @@ function updatePage2Summary() {
     });
     
     console.log("Updated quantities:", window.quantities, "Total:", totalItems);
+}
+
+// Highlight the reached tier card live
+function updateP3TierHighlight() {
+    var total = 0;
+    $('#sizeQtyGridP3 .qty-input').each(function() {
+        total += parseInt($(this).val()) || 0;
+    });
+    // Also count old page-2 style inputs
+    if (total === 0) {
+        $('.qty-input').each(function() { total += parseInt($(this).val()) || 0; });
+    }
+    var tierData = window._p3TierData || [];
+    // Find highest tier reached
+    var reached = -1;
+    tierData.forEach(function(t, i) {
+        if (total >= t.min) reached = i;
+    });
+    $('#p3DiscountTiers .discount-tier-card').each(function(i) {
+        $(this).toggleClass('tier-active', i === reached);
+    });
 }
 
 // Highlight box if has quantity
@@ -855,7 +928,7 @@ function luaSaveCurrent() {
 $(document).on('change', '#luaFileInput', function() {
     var file = this.files[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) { alert('Max file size is 8MB'); return; }
+    if (file.size > 8 * 1024 * 1024) { window.showAlert('Max file size is 8MB', 'OK'); return; }
     var reader = new FileReader();
     reader.onload = function(e) {
         luaShowPreview(e.target.result, file.name);
@@ -885,7 +958,7 @@ $(document).on('drop', '#luaDropZone', function(e) {
     e.preventDefault();
     var file = e.originalEvent.dataTransfer.files[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) { alert('Max file size is 8MB'); return; }
+    if (file.size > 8 * 1024 * 1024) { window.showAlert('Max file size is 8MB', 'OK'); return; }
     var reader = new FileReader();
     reader.onload = function(ev) {
         luaShowPreview(ev.target.result, file.name);

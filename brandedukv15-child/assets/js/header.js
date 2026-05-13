@@ -547,9 +547,7 @@
                 let html = '<div class="suggestion-group-title">Product Results</div>';
 
                 products.slice(0, 8).forEach(product => {
-                    const detailUrl = isMobile
-                        ? `mobile/customize-mobile.html?code=${product.value}`
-                        : `product-detail.html?code=${product.value}`;
+                    const detailUrl = `product-detail.html?code=${product.value}`;
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
 
                     html += `

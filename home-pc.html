@@ -3872,20 +3872,33 @@ document.addEventListener('DOMContentLoaded', function() {
             debounceTimer = setTimeout(function() { fetchAndShow(q); }, 300);
         });
 
+        function submitSearch() {
+            var searchQuery = input.value.trim();
+            if (searchQuery) {
+                closeAC();
+                window.location.href = 'shop-pc.html?q=' + encodeURIComponent(searchQuery);
+            }
+        }
+
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                closeAC();
-                var searchQuery = input.value.trim();
-                if (searchQuery) {
-                    window.location.href = 'shop.html?q=' + encodeURIComponent(searchQuery);
-                }
+                submitSearch();
             }
         });
 
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeAC();
         });
+
+        // Lens icon click → submit search
+        var lensIcon = document.querySelector('.searchbar-header__search-expand .search-icon-expand');
+        if (lensIcon) {
+            lensIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                submitSearch();
+            });
+        }
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('#' + dropdownId) && !e.target.closest('#' + inputId)) {

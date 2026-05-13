@@ -4047,7 +4047,11 @@
             // Search query (mutually exclusive with productType)
             // According to API spec: if q is present, productType is set to null
             if (currentState.search && currentState.search.trim()) {
-                params.q = currentState.search.trim();
+                // Normalise hi-viz / hi viz / hiviz → hi-vis (API uses "hi-vis" spelling)
+                let searchQuery = currentState.search.trim();
+                searchQuery = searchQuery.replace(/\bhi[\s\-]?viz\b/gi, 'hi-vis');
+                searchQuery = searchQuery.replace(/\bhiviz\b/gi, 'hi-vis');
+                params.q = searchQuery;
                 // Don't set productType when search is present (mutually exclusive)
             } else if (currentState.productType) {
                 // If productType is set from URL, use it directly (may need mapping)
