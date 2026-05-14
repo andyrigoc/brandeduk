@@ -1997,6 +1997,32 @@
         body.popup-open {
             overflow: hidden;
         }
+
+        /* === Category Description Banner === */
+        #cat-desc-banner {
+            display: none;
+            background: linear-gradient(135deg, #f9fafc 0%, #f0edff 100%);
+            border: 1px solid #e5e0ff;
+            border-radius: 10px;
+            padding: 18px 28px;
+            margin: 0 0 18px;
+            text-align: center;
+        }
+        #cat-desc-banner.visible {
+            display: block;
+        }
+        #cat-desc-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 6px;
+        }
+        #cat-desc-text {
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #4b5563;
+            margin: 0;
+        }
     </style>
     
     <!-- Order Popup Styles -->
@@ -3436,6 +3462,11 @@
 
         <!-- Products Section -->
         <section class="products-section">
+            <!-- Category Description Banner -->
+            <div id="cat-desc-banner">
+                <h2 id="cat-desc-title"></h2>
+                <p id="cat-desc-text"></p>
+            </div>
             <div id="categoryBrandLogoWrap" class="category-brand-logo-wrap">
                 <img id="categoryBrandLogo" class="category-brand-logo" alt="" loading="lazy">
             </div>
@@ -4019,6 +4050,199 @@
             return best;
         }
 
+        /**
+         * Normalise search query variants, misspellings and aliases
+         * to the canonical terms matched by the API productType field.
+         * Applied before sending q= to the API so results are consistent
+         * regardless of how the user typed the term.
+         */
+        function normalizeSearchQuery(q) {
+            if (!q) return q;
+
+            // ── Hi-Vis ───────────────────────────────────────────────────────────
+            q = q.replace(/\bhigh[\s\-_]?visib[a-z]*/gi, 'hi-vis'); // high visibility, high visability
+            q = q.replace(/\bhigh[\s\-_]?vi[sz]+/gi,      'hi-vis'); // high vis, high-vis, high viz
+            q = q.replace(/\bhi[\s\-_]?vi[sz]+/gi,        'hi-vis'); // hi-vis, hi vis, hi-viz, hiviz
+            q = q.replace(/\bhi[\s\-_]?v[sz]\b/gi,        'hi-vis'); // hi-vz, hivz (missing 'i')
+
+            // ── T-Shirts ─────────────────────────────────────────────────────────
+            q = q.replace(/\btee[\s\-]?shirts?\b/gi,  't-shirts'); // tee shirt, tee-shirt
+            q = q.replace(/\bt[\s\-]?shirts?\b/gi,    't-shirts'); // t shirt, t-shirt
+            q = q.replace(/\btshirts?\b/gi,            't-shirts'); // tshirt, tshirts
+            q = q.replace(/\btees\b/gi,                't-shirts'); // tees (plural standalone)
+
+            // ── Polo Shirts ───────────────────────────────────────────────────────
+            q = q.replace(/\bpolo[\s\-]?shirts?\b/gi, 'polos'); // polo shirt, polo-shirt
+
+            // ── Hoodies ───────────────────────────────────────────────────────────
+            q = q.replace(/\bhodd?ie[s]?\b/gi,                'hoodies'); // hoodie, hoddie
+            q = q.replace(/\bhood[yz]s?\b/gi,                 'hoodies'); // hoody, hoodz
+            q = q.replace(/\bhooded[\s\-]?sweatshirts?\b/gi,  'hoodies'); // hooded sweatshirt
+            q = q.replace(/\bhooded[\s\-]?tops?\b/gi,         'hoodies'); // hooded top
+
+            // ── Sweatshirts ───────────────────────────────────────────────────────
+            q = q.replace(/\bsweat[\s\-]?shirts?\b/gi, 'sweatshirts'); // sweat shirt, sweat-shirt
+
+            // ── Fleece ────────────────────────────────────────────────────────────
+            q = q.replace(/\bfleeces\b/gi,    'fleece'); // plural → API slug is "fleece"
+            q = q.replace(/\bfleec[iy]\b/gi,  'fleece'); // fleecy, fleeci (typos)
+
+            // ── Jackets ───────────────────────────────────────────────────────────
+            q = q.replace(/\bjacket\b/gi,     'jackets'); // singular
+            q = q.replace(/\bjackits?\b/gi,   'jackets'); // typo: jackit
+            q = q.replace(/\bjacked[s]?\b/gi, 'jackets'); // typo: jacked
+
+            // ── Softshells ────────────────────────────────────────────────────────
+            q = q.replace(/\bsoft[\s\-]?shells?\b/gi, 'softshells'); // soft shell, soft-shell
+
+            // ── Bodywarmers / Gilets ──────────────────────────────────────────────
+            q = q.replace(/\bbody[\s\-]?warmers?\b/gi, 'bodywarmers'); // body warmer, body-warmer
+            q = q.replace(/\bgilets?\b/gi,              'bodywarmers'); // gilet, gilets
+
+            // ── Caps ──────────────────────────────────────────────────────────────
+            q = q.replace(/\bbaseball[\s\-]?caps?\b/gi, 'caps'); // baseball cap
+            q = q.replace(/\btrucker[\s\-]?caps?\b/gi,  'caps'); // trucker cap
+
+            // ── Beanies ───────────────────────────────────────────────────────────
+            q = q.replace(/\bbeann?ie[s]?\b/gi,       'beanies'); // beanie, beannie
+            q = q.replace(/\bbean[iy]s?\b/gi,         'beanies'); // beany, beanis
+            q = q.replace(/\bbobble[\s\-]?hats?\b/gi, 'beanies'); // bobble hat
+            q = q.replace(/\bwoolly[\s\-]?hats?\b/gi, 'beanies'); // woolly hat
+
+            // ── Knitwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bknit[\s\-]?wear\b/gi, 'knitwear'); // knit wear, knit-wear
+            q = q.replace(/\bjumpers?\b/gi,         'knitwear'); // jumper (UK English)
+            q = q.replace(/\bpullovers?\b/gi,       'knitwear'); // pullover
+
+            // ── Baselayers ────────────────────────────────────────────────────────
+            q = q.replace(/\bbase[\s\-]?layers?\b/gi, 'baselayers'); // base layer, base-layer
+            q = q.replace(/\bthermals?\b/gi,           'baselayers'); // thermal, thermals
+            q = q.replace(/\bunderlayers?\b/gi,        'baselayers'); // underlayer
+
+            // ── Trousers ──────────────────────────────────────────────────────────
+            q = q.replace(/\btrouser\b/gi, 'trousers'); // singular
+
+            // ── Coveralls ─────────────────────────────────────────────────────────
+            q = q.replace(/\bcoverall\b/gi,             'coveralls'); // singular
+            q = q.replace(/\bboiler[\s\-]?suits?\b/gi,  'coveralls'); // boiler suit
+            q = q.replace(/\bboilersuits?\b/gi,          'coveralls'); // boilersuit (no space)
+            q = q.replace(/\boveralls?\b/gi,             'coveralls'); // overall, overalls
+
+            // ── Joggers ───────────────────────────────────────────────────────────
+            q = q.replace(/\bjogger\b/gi,                 'joggers'); // singular
+            q = q.replace(/\bjogging[\s\-]?bottoms?\b/gi, 'joggers'); // jogging bottoms
+            q = q.replace(/\bjogging[\s\-]?pants?\b/gi,   'joggers'); // jogging pants
+            q = q.replace(/\bsweatpants?\b/gi,             'joggers'); // sweatpants
+            q = q.replace(/\bsweat[\s\-]?pants?\b/gi,      'joggers'); // sweat pants
+
+            // ── Workwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bwork[\s\-]?wear\b/gi, 'workwear'); // work wear, work-wear
+
+            // ── Scarves ───────────────────────────────────────────────────────────
+            q = q.replace(/\bscarfs?\b/gi, 'scarves'); // scarf, scarfs
+
+            // ── Aprons ────────────────────────────────────────────────────────────
+            q = q.replace(/\bapron\b/gi, 'aprons'); // singular
+
+            // ── Tabards ───────────────────────────────────────────────────────────
+            q = q.replace(/\btabard\b/gi, 'tabards'); // singular
+
+            // ── Footwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bfoot[\s\-]?wear\b/gi,     'footwear'); // foot wear, foot-wear
+            q = q.replace(/\bsafety[\s\-]?boots?\b/gi, 'footwear'); // safety boot/boots
+            q = q.replace(/\bsafety[\s\-]?shoes?\b/gi, 'footwear'); // safety shoe/shoes
+            q = q.replace(/\bwork[\s\-]?boots?\b/gi,   'footwear'); // work boot/boots
+
+            // ── Sports & Teamwear ─────────────────────────────────────────────────
+            q = q.replace(/\bteam[\s\-]?wear\b/gi,   'sports-teamwear'); // teamwear, team wear
+            q = q.replace(/\bsports?[\s\-]?wear\b/gi,'sports-teamwear'); // sportswear, sport wear
+            q = q.replace(/\bactivewear\b/gi,          'sports-teamwear'); // activewear
+            q = q.replace(/\bsports?[\s\-]?kit\b/gi,  'sports-teamwear'); // sports kit
+
+            // ── Bags ──────────────────────────────────────────────────────────────
+            q = q.replace(/\bback[\s\-]?packs?\b/gi,  'bags'); // backpack
+            q = q.replace(/\btote[\s\-]?bags?\b/gi,   'bags'); // tote bag
+            q = q.replace(/\bholdalls?\b/gi,           'bags'); // holdall
+            q = q.replace(/\bduffel[\s\-]?bags?\b/gi,  'bags'); // duffel bag
+
+            // ── Chefswear ─────────────────────────────────────────────────────────
+            q = q.replace(/\bchef[\s\-]?jackets?\b/gi, 'chefswear'); // chef jacket
+            q = q.replace(/\bchef[\s\-]?coats?\b/gi,   'chefswear'); // chef coat
+            q = q.replace(/\bcook[\s\-]?jackets?\b/gi, 'chefswear'); // cook jacket
+            q = q.replace(/\bchefs?[\s\-]?wear\b/gi,   'chefswear'); // chefwear
+
+            // ── Blouses ───────────────────────────────────────────────────────────
+            q = q.replace(/\bblouse\b/gi, 'blouses'); // singular
+
+            // ── Waistcoats ────────────────────────────────────────────────────────
+            q = q.replace(/\bwaistcoat\b/gi, 'waistcoats'); // singular
+
+            // ── Tunics ────────────────────────────────────────────────────────────
+            q = q.replace(/\btunic\b/gi, 'tunics'); // singular
+
+            // ── Brand name aliases & misspellings ──────────────────────────────
+            // These normalise typos so the q= search finds the right products.
+            // Note: brand-name-only queries are later converted to params.brand
+            q = q.replace(/\bunique(?:\s+clothing)?\b/gi,     'uneek');           // unique → uneek (very common mistype)
+            q = q.replace(/\buneeke?\b/gi,                    'uneek');           // uneeke, unee
+            q = q.replace(/\babsolute[\s\-]?appeal\b/gi,     'absolute apparel'); // absolute appeal
+            q = q.replace(/\babsolute[\s\-]?apparell?\b/gi,  'absolute apparel'); // apparell typo
+            q = q.replace(/\bfruit\s+of\s+the?\s+loom\b/gi, 'fruit of the loom'); // normalise spacing
+            q = q.replace(/\bfotl\b/gi,                       'fruit of the loom'); // acronym
+            q = q.replace(/\bbuild\s+your\s+brand\b/gi,      'build your brand'); // spacing normalise
+            q = q.replace(/\basquith\s*[&and]+\s*fox\b/gi,   'asquith and fox');  // & vs and
+            q = q.replace(/\bfinden\s*[&and]+\s*hales\b/gi,  'finden and hales'); // & vs and
+
+            return q;
+        }
+
+        /**
+         * Map normalised brand names (as typed in search box) to API brand slugs.
+         * If the entire search query matches a known brand, we switch from q= to brand=
+         * so results are identical to clicking a brand link in the navigation.
+         */
+        const BRAND_SEARCH_MAP = {
+            'uneek':              'uneek',
+            'uneek clothing':     'uneek',
+            'absolute apparel':   'absolute-apparel',
+            'absolute':           'absolute-apparel',
+            'awdis':              'awdis',
+            'just cool':          'awdis-just-cool',
+            'just hoods':         'awdis-just-hoods',
+            'just ts':            'awdis-just-ts',
+            'just polos':         'awdis-just-polos',
+            'fruit of the loom':  'fruit-of-the-loom',
+            'fotl':               'fruit-of-the-loom',
+            'gildan':             'gildan',
+            'gildan hammer':      'gildan-hammer',
+            'regatta':            'regatta',
+            'kariban':            'kariban',
+            'stedman':            'stedman',
+            'b&c':                'b%26c-collection',
+            'b and c':            'b%26c-collection',
+            'b&c collection':     'b%26c-collection',
+            'pro rtx':            'pro-rtx',
+            'portwest':           'portwest',
+            'dickies':            'dickies',
+            'yoko':               'yoko',
+            'result':             'result',
+            'beechfield':         'beechfield',
+            'bagbase':            'bagbase',
+            'craghoppers':        'craghoppers',
+            'nike':               'nike',
+            'adidas':             'adidas',
+            'under armour':       'under-armour',
+            'kustom kit':         'kustom-kit',
+            'henbury':            'henbury',
+            'comfort colors':     'comfort-colors',
+            'bella canvas':       'bella-canvas',
+            'bella+canvas':       'bella-canvas',
+            'mumbles':            'mumbles',
+            'asquith and fox':    'asquith-and-fox',
+            'finden and hales':   'finden-and-hales',
+            'build your brand':   'build-your-brand',
+        };
+
         // Build API params from current state
         function buildApiParams() {
             const params = {};
@@ -4056,11 +4280,16 @@
             // Search query (mutually exclusive with productType)
             // According to API spec: if q is present, productType is set to null
             if (currentState.search && currentState.search.trim()) {
-                // Normalise hi-viz / hi viz / hiviz → hi-vis (API uses "hi-vis" spelling)
-                let searchQuery = currentState.search.trim();
-                searchQuery = searchQuery.replace(/\bhi[\s\-]?viz\b/gi, 'hi-vis');
-                searchQuery = searchQuery.replace(/\bhiviz\b/gi, 'hi-vis');
-                params.q = searchQuery;
+                // Normalise spelling first
+                const normQ = normalizeSearchQuery(currentState.search.trim());
+                // If the whole query matches a known brand name, use brand= for precise results
+                const brandSlug = BRAND_SEARCH_MAP[normQ.toLowerCase().trim()];
+                if (brandSlug) {
+                    params.brand = brandSlug;
+                    console.log('🏷️ Brand-name search detected, using brand filter:', brandSlug);
+                } else {
+                    params.q = normQ;
+                }
                 // Don't set productType when search is present (mutually exclusive)
             } else if (currentState.productType) {
                 // If productType is set from URL, use it directly (may need mapping)
@@ -7775,6 +8004,65 @@
 
 <!-- ORDER DRAWER PC - Slide-in basket summary -->
 <script src="order-drawer-pc.js?v=20260509a"></script>
+
+<script>
+(function () {
+    var DESCRIPTIONS = {
+        'accessories':      { title: 'Accessories', desc: 'Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use.' },
+        'aprons':           { title: 'Aprons', desc: 'Personalised aprons are ideal for restaurants, cafés, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use.' },
+        'bags':             { title: 'Bags', desc: 'Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions.' },
+        'baselayers':       { title: 'Baselayers', desc: 'Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear.' },
+        'beanies':          { title: 'Beanies', desc: 'Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs.' },
+        'blouses':          { title: 'Blouses', desc: 'Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish.' },
+        'bodywarmers':      { title: 'Bodywarmers & Gilets', desc: 'Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility.' },
+        'caps':             { title: 'Caps', desc: 'Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise.' },
+        'chefswear':        { title: 'Chef Jackets', desc: 'Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance.' },
+        'coveralls':        { title: 'Coveralls', desc: 'Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear.' },
+        'dresses':          { title: 'Dresses', desc: 'Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments.' },
+        'fleece':           { title: 'Fleece', desc: 'Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish.' },
+        'footwear':         { title: 'Footwear', desc: 'Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance.' },
+        'gloves':           { title: 'Gloves', desc: 'Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages.' },
+        'helmets':          { title: 'Helmets', desc: 'Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals.' },
+        'safety-vests':     { title: 'Hi-Vis / Safety Vests', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+        'hivis':            { title: 'Hi-Vis', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
+        'hoodies':          { title: 'Hoodies', desc: 'Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish.' },
+        'jackets':          { title: 'Jackets', desc: 'Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print.' },
+        'joggers':          { title: 'Joggers', desc: 'Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look.' },
+        'knitwear':         { title: 'Knitted Jumpers', desc: 'Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important.' },
+        'polos':            { title: 'Polo Shirts', desc: 'Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear.' },
+        'scarves':          { title: 'Scarves', desc: 'Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns.' },
+        'shirts':           { title: 'Shirts', desc: 'Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish.' },
+        'shorts':           { title: 'Shorts', desc: 'Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments.' },
+        'skirts':           { title: 'Skirts', desc: 'Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important.' },
+        'socks':            { title: 'Socks', desc: 'Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns.' },
+        'softshells':       { title: 'Softshell Jackets', desc: 'Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish.' },
+        'sports-teamwear':  { title: 'Sports & Teamwear', desc: 'Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish.' },
+        'sweatshirts':      { title: 'Sweatshirts', desc: 'Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish.' },
+        'tabards':          { title: 'Tabards', desc: 'Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform.' },
+        'ties':             { title: 'Ties', desc: 'Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff.' },
+        'towels':           { title: 'Towels', desc: 'Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products.' },
+        'trousers':         { title: 'Trousers', desc: 'Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform.' },
+        't-shirts':         { title: 'T-Shirts', desc: 'Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits.' },
+        'tunics':           { title: 'Tunics', desc: 'Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish.' },
+        'umbrellas':        { title: 'Umbrellas', desc: 'Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways.' },
+        'waistcoats':       { title: 'Waistcoats', desc: 'Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles.' },
+    };
+
+    var params = new URLSearchParams(window.location.search);
+    var type = (params.get('productType') || '').toLowerCase().trim();
+    var data = DESCRIPTIONS[type];
+    if (!data) return;
+
+    var banner = document.getElementById('cat-desc-banner');
+    var titleEl = document.getElementById('cat-desc-title');
+    var textEl = document.getElementById('cat-desc-text');
+    if (!banner || !titleEl || !textEl) return;
+
+    titleEl.textContent = data.title;
+    textEl.textContent = data.desc;
+    banner.classList.add('visible');
+})();
+</script>
 </body>
 
 </html>

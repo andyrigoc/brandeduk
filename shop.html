@@ -2800,12 +2800,198 @@
             return mapping && mapping[frontendValue] ? mapping[frontendValue] : frontendValue;
         }
 
-        function buildApiParams() {
-            const params = {};
+        /**
+         * Normalise search query variants, misspellings and aliases
+         * to the canonical terms matched by the API productType field.
+         * Applied before sending q= to the API so results are consistent
+         * regardless of how the user typed the term.
+         */
+        function normalizeSearchQuery(q) {
+            if (!q) return q;
 
-            // Pagination (always included)
-            params.page = currentState.page || 1;
-            params.limit = currentState.limit || 24;
+            // ── Hi-Vis ───────────────────────────────────────────────────────────
+            q = q.replace(/\bhigh[\s\-_]?visib[a-z]*/gi, 'hi-vis'); // high visibility, high visability
+            q = q.replace(/\bhigh[\s\-_]?vi[sz]+/gi,      'hi-vis'); // high vis, high-vis, high viz
+            q = q.replace(/\bhi[\s\-_]?vi[sz]+/gi,        'hi-vis'); // hi-vis, hi vis, hi-viz, hiviz
+            q = q.replace(/\bhi[\s\-_]?v[sz]\b/gi,        'hi-vis'); // hi-vz, hivz (missing 'i')
+
+            // ── T-Shirts ─────────────────────────────────────────────────────────
+            q = q.replace(/\btee[\s\-]?shirts?\b/gi,  't-shirts'); // tee shirt, tee-shirt
+            q = q.replace(/\bt[\s\-]?shirts?\b/gi,    't-shirts'); // t shirt, t-shirt
+            q = q.replace(/\btshirts?\b/gi,            't-shirts'); // tshirt, tshirts
+            q = q.replace(/\btees\b/gi,                't-shirts'); // tees (plural standalone)
+
+            // ── Polo Shirts ───────────────────────────────────────────────────────
+            q = q.replace(/\bpolo[\s\-]?shirts?\b/gi, 'polos'); // polo shirt, polo-shirt
+
+            // ── Hoodies ───────────────────────────────────────────────────────────
+            q = q.replace(/\bhodd?ie[s]?\b/gi,                'hoodies'); // hoodie, hoddie
+            q = q.replace(/\bhood[yz]s?\b/gi,                 'hoodies'); // hoody, hoodz
+            q = q.replace(/\bhooded[\s\-]?sweatshirts?\b/gi,  'hoodies'); // hooded sweatshirt
+            q = q.replace(/\bhooded[\s\-]?tops?\b/gi,         'hoodies'); // hooded top
+
+            // ── Sweatshirts ───────────────────────────────────────────────────────
+            q = q.replace(/\bsweat[\s\-]?shirts?\b/gi, 'sweatshirts'); // sweat shirt, sweat-shirt
+
+            // ── Fleece ────────────────────────────────────────────────────────────
+            q = q.replace(/\bfleeces\b/gi,    'fleece'); // plural → API slug is "fleece"
+            q = q.replace(/\bfleec[iy]\b/gi,  'fleece'); // fleecy, fleeci (typos)
+
+            // ── Jackets ───────────────────────────────────────────────────────────
+            q = q.replace(/\bjacket\b/gi,     'jackets'); // singular
+            q = q.replace(/\bjackits?\b/gi,   'jackets'); // typo: jackit
+            q = q.replace(/\bjacked[s]?\b/gi, 'jackets'); // typo: jacked
+
+            // ── Softshells ────────────────────────────────────────────────────────
+            q = q.replace(/\bsoft[\s\-]?shells?\b/gi, 'softshells'); // soft shell, soft-shell
+
+            // ── Bodywarmers / Gilets ──────────────────────────────────────────────
+            q = q.replace(/\bbody[\s\-]?warmers?\b/gi, 'bodywarmers'); // body warmer, body-warmer
+            q = q.replace(/\bgilets?\b/gi,              'bodywarmers'); // gilet, gilets
+
+            // ── Caps ──────────────────────────────────────────────────────────────
+            q = q.replace(/\bbaseball[\s\-]?caps?\b/gi, 'caps'); // baseball cap
+            q = q.replace(/\btrucker[\s\-]?caps?\b/gi,  'caps'); // trucker cap
+
+            // ── Beanies ───────────────────────────────────────────────────────────
+            q = q.replace(/\bbeann?ie[s]?\b/gi,       'beanies'); // beanie, beannie
+            q = q.replace(/\bbean[iy]s?\b/gi,         'beanies'); // beany, beanis
+            q = q.replace(/\bbobble[\s\-]?hats?\b/gi, 'beanies'); // bobble hat
+            q = q.replace(/\bwoolly[\s\-]?hats?\b/gi, 'beanies'); // woolly hat
+
+            // ── Knitwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bknit[\s\-]?wear\b/gi, 'knitwear'); // knit wear, knit-wear
+            q = q.replace(/\bjumpers?\b/gi,         'knitwear'); // jumper (UK English)
+            q = q.replace(/\bpullovers?\b/gi,       'knitwear'); // pullover
+
+            // ── Baselayers ────────────────────────────────────────────────────────
+            q = q.replace(/\bbase[\s\-]?layers?\b/gi, 'baselayers'); // base layer, base-layer
+            q = q.replace(/\bthermals?\b/gi,           'baselayers'); // thermal, thermals
+            q = q.replace(/\bunderlayers?\b/gi,        'baselayers'); // underlayer
+
+            // ── Trousers ──────────────────────────────────────────────────────────
+            q = q.replace(/\btrouser\b/gi, 'trousers'); // singular
+
+            // ── Coveralls ─────────────────────────────────────────────────────────
+            q = q.replace(/\bcoverall\b/gi,             'coveralls'); // singular
+            q = q.replace(/\bboiler[\s\-]?suits?\b/gi,  'coveralls'); // boiler suit
+            q = q.replace(/\bboilersuits?\b/gi,          'coveralls'); // boilersuit (no space)
+            q = q.replace(/\boveralls?\b/gi,             'coveralls'); // overall, overalls
+
+            // ── Joggers ───────────────────────────────────────────────────────────
+            q = q.replace(/\bjogger\b/gi,                 'joggers'); // singular
+            q = q.replace(/\bjogging[\s\-]?bottoms?\b/gi, 'joggers'); // jogging bottoms
+            q = q.replace(/\bjogging[\s\-]?pants?\b/gi,   'joggers'); // jogging pants
+            q = q.replace(/\bsweatpants?\b/gi,             'joggers'); // sweatpants
+            q = q.replace(/\bsweat[\s\-]?pants?\b/gi,      'joggers'); // sweat pants
+
+            // ── Workwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bwork[\s\-]?wear\b/gi, 'workwear'); // work wear, work-wear
+
+            // ── Scarves ───────────────────────────────────────────────────────────
+            q = q.replace(/\bscarfs?\b/gi, 'scarves'); // scarf, scarfs
+
+            // ── Aprons ────────────────────────────────────────────────────────────
+            q = q.replace(/\bapron\b/gi, 'aprons'); // singular
+
+            // ── Tabards ───────────────────────────────────────────────────────────
+            q = q.replace(/\btabard\b/gi, 'tabards'); // singular
+
+            // ── Footwear ──────────────────────────────────────────────────────────
+            q = q.replace(/\bfoot[\s\-]?wear\b/gi,     'footwear'); // foot wear, foot-wear
+            q = q.replace(/\bsafety[\s\-]?boots?\b/gi, 'footwear'); // safety boot/boots
+            q = q.replace(/\bsafety[\s\-]?shoes?\b/gi, 'footwear'); // safety shoe/shoes
+            q = q.replace(/\bwork[\s\-]?boots?\b/gi,   'footwear'); // work boot/boots
+
+            // ── Sports & Teamwear ─────────────────────────────────────────────────
+            q = q.replace(/\bteam[\s\-]?wear\b/gi,    'sports-teamwear'); // teamwear, team wear
+            q = q.replace(/\bsports?[\s\-]?wear\b/gi, 'sports-teamwear'); // sportswear, sport wear
+            q = q.replace(/\bactivewear\b/gi,          'sports-teamwear'); // activewear
+            q = q.replace(/\bsports?[\s\-]?kit\b/gi,  'sports-teamwear'); // sports kit
+
+            // ── Bags ──────────────────────────────────────────────────────────────
+            q = q.replace(/\bback[\s\-]?packs?\b/gi,  'bags'); // backpack
+            q = q.replace(/\btote[\s\-]?bags?\b/gi,   'bags'); // tote bag
+            q = q.replace(/\bholdalls?\b/gi,           'bags'); // holdall
+            q = q.replace(/\bduffel[\s\-]?bags?\b/gi,  'bags'); // duffel bag
+
+            // ── Chefswear ─────────────────────────────────────────────────────────
+            q = q.replace(/\bchef[\s\-]?jackets?\b/gi, 'chefswear'); // chef jacket
+            q = q.replace(/\bchef[\s\-]?coats?\b/gi,   'chefswear'); // chef coat
+            q = q.replace(/\bcook[\s\-]?jackets?\b/gi, 'chefswear'); // cook jacket
+            q = q.replace(/\bchefs?[\s\-]?wear\b/gi,   'chefswear'); // chefwear
+
+            // ── Blouses ───────────────────────────────────────────────────────────
+            q = q.replace(/\bblouse\b/gi, 'blouses'); // singular
+
+            // ── Waistcoats ────────────────────────────────────────────────────────
+            q = q.replace(/\bwaistcoat\b/gi, 'waistcoats'); // singular
+
+            // ── Tunics ────────────────────────────────────────────────────────────
+            q = q.replace(/\btunic\b/gi, 'tunics'); // singular
+
+            // ── Brand name aliases & misspellings ──────────────────────────────
+            // These normalise typos so the q= search finds the right products.
+            // Note: brand-name-only queries are later converted to params.brand
+            q = q.replace(/\bunique(?:\s+clothing)?\b/gi,     'uneek');           // unique → uneek (very common mistype)
+            q = q.replace(/\buneeke?\b/gi,                    'uneek');           // uneeke, unee
+            q = q.replace(/\babsolute[\s\-]?appeal\b/gi,     'absolute apparel'); // absolute appeal
+            q = q.replace(/\babsolute[\s\-]?apparell?\b/gi,  'absolute apparel'); // apparell typo
+            q = q.replace(/\bfruit\s+of\s+the?\s+loom\b/gi, 'fruit of the loom'); // normalise spacing
+            q = q.replace(/\bfotl\b/gi,                       'fruit of the loom'); // acronym
+            q = q.replace(/\bbuild\s+your\s+brand\b/gi,      'build your brand'); // spacing normalise
+            q = q.replace(/\basquith\s*[&and]+\s*fox\b/gi,   'asquith and fox');  // & vs and
+            q = q.replace(/\bfinden\s*[&and]+\s*hales\b/gi,  'finden and hales'); // & vs and
+
+            return q;
+        }
+
+        /**
+         * Map normalised brand names (as typed in search box) to API brand slugs.
+         * If the entire search query matches a known brand, we switch from q= to brand=
+         * so results are identical to clicking a brand link in the navigation.
+         */
+        const BRAND_SEARCH_MAP = {
+            'uneek':              'uneek',
+            'uneek clothing':     'uneek',
+            'absolute apparel':   'absolute-apparel',
+            'absolute':           'absolute-apparel',
+            'awdis':              'awdis',
+            'just cool':          'awdis-just-cool',
+            'just hoods':         'awdis-just-hoods',
+            'just ts':            'awdis-just-ts',
+            'just polos':         'awdis-just-polos',
+            'fruit of the loom':  'fruit-of-the-loom',
+            'fotl':               'fruit-of-the-loom',
+            'gildan':             'gildan',
+            'gildan hammer':      'gildan-hammer',
+            'regatta':            'regatta',
+            'kariban':            'kariban',
+            'stedman':            'stedman',
+            'b&c':                'b%26c-collection',
+            'b and c':            'b%26c-collection',
+            'b&c collection':     'b%26c-collection',
+            'pro rtx':            'pro-rtx',
+            'portwest':           'portwest',
+            'dickies':            'dickies',
+            'yoko':               'yoko',
+            'result':             'result',
+            'beechfield':         'beechfield',
+            'bagbase':            'bagbase',
+            'craghoppers':        'craghoppers',
+            'nike':               'nike',
+            'adidas':             'adidas',
+            'under armour':       'under-armour',
+            'kustom kit':         'kustom-kit',
+            'henbury':            'henbury',
+            'comfort colors':     'comfort-colors',
+            'bella canvas':       'bella-canvas',
+            'bella+canvas':       'bella-canvas',
+            'mumbles':            'mumbles',
+            'asquith and fox':    'asquith-and-fox',
+            'finden and hales':   'finden-and-hales',
+            'build your brand':   'build-your-brand',
+        };
 
             // Sort parameter
             if (currentState.sort) {
@@ -2826,7 +3012,16 @@
 
             // Search query (mutually exclusive with productType)
             if (currentState.search && currentState.search.trim()) {
-                params.q = currentState.search.trim();
+                // Normalise spelling first
+                const normQ = normalizeSearchQuery(currentState.search.trim());
+                // If the whole query matches a known brand name, use brand= for precise results
+                const brandSlug = BRAND_SEARCH_MAP[normQ.toLowerCase().trim()];
+                if (brandSlug) {
+                    params.brand = brandSlug;
+                    console.log('🏷️ Brand-name search detected, using brand filter:', brandSlug);
+                } else {
+                    params.q = normQ;
+                }
             } else if (currentState.category !== 'all') {
                 // Pass category slug directly - BrandedAPI.getProducts() handles the mapping
                 params.category = currentState.category;
@@ -2998,9 +3193,9 @@
                     }
                 }
 
-                // Add search query if present
+                // Add search query if present (normalized for consistent API results)
                 if (currentState.search && currentState.search.trim()) {
-                    params.append('q', currentState.search.trim());
+                    params.append('q', normalizeSearchQuery(currentState.search.trim()));
                 }
 
                 // Add price range if set

@@ -1262,6 +1262,74 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+
+        /* === All Products mega menu – category description panel === */
+        .main-nav .nav-megamenu.allprod-megamenu {
+            padding: 0;
+        }
+        .main-nav .menu > li.has-megamenu.is-open > .nav-megamenu.allprod-megamenu {
+            display: flex !important;
+        }
+        .allprod-list {
+            flex: 1;
+            min-width: 0;
+            column-count: 6;
+            column-gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 24px 24px 24px 32px;
+        }
+        .allprod-list .brand-heading {
+            display: block;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #273469;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+        .allprod-list .brand-heading:first-of-type { margin-top: 0; }
+        .allprod-list li { break-inside: avoid; margin-bottom: 5px; list-style: none; }
+        .allprod-list li a { color: #1f2937; text-decoration: none; font-size: 13px; }
+        .allprod-list li a:hover { color: #8b2fd4; }
+        .allprod-list li[data-catdesc] > a { font-weight: 500; }
+        .allprod-desc-panel {
+            width: 290px;
+            flex-shrink: 0;
+            border-left: 1px solid #eef2f7;
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(160deg, #f9fafc 0%, #f3f0ff 100%);
+            border-radius: 0 0 20px 0;
+            transition: background 0.2s;
+        }
+        .allprod-desc-hint {
+            color: #9ca3af;
+            font-size: 13px;
+            font-style: italic;
+            text-align: center;
+            margin: 0;
+        }
+        .allprod-desc-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 10px;
+            display: none;
+        }
+        .allprod-desc-text {
+            font-size: 13px;
+            line-height: 1.65;
+            color: #4b5563;
+            margin: 0;
+            display: none;
+        }
+        .allprod-desc-panel.has-content .allprod-desc-hint { display: none; }
+        .allprod-desc-panel.has-content .allprod-desc-name,
+        .allprod-desc-panel.has-content .allprod-desc-text { display: block; }
         
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1658,104 +1726,111 @@
                             All Products
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
-                        <ul class="nav-megamenu brand-grid">
-                            <li class="brand-heading">A</li>
-                            <li><a href="#">Accessories</a></li>
-                            <li><a href="#">Anti Static / ESD</a></li>
-                            <li><a href="#">Aprons</a></li>
-                            <li><a href="#">Arc Flash</a></li>
-                            <li><a href="#">Autumn Workwear</a></li>
-                            <li class="brand-heading">B</li>
-                            <li><a href="#">Bags</a></li>
-                            <li><a href="#">Beanies</a></li>
-                            <li><a href="#">Bib &amp; Brace Overalls</a></li>
-                            <li><a href="#">Blouses</a></li>
-                            <li><a href="#">Bodywarmers &amp; Gilets</a></li>
-                            <li class="brand-heading">C</li>
-                            <li><a href="#">Caps</a></li>
-                            <li><a href="#">Chainsaw and Forestry</a></li>
-                            <li><a href="#">Chefswear</a></li>
-                            <li><a href="#">Chem Splash</a></li>
-                            <li><a href="#">Coats &amp; Jackets</a></li>
-                            <li><a href="#">Coldstore</a></li>
-                            <li><a href="#">Construction</a></li>
-                            <li><a href="#">Coveralls</a></li>
-                            <li><a href="#">Covid Test Kit</a></li>
-                            <li class="brand-heading">D</li>
-                            <li><a href="#">Disposable</a></li>
-                            <li><a href="#">Dresses</a></li>
-                            <li><a href="#">DTF Supplies</a></li>
-                            <li class="brand-heading">F</li>
-                            <li><a href="#">Face Masks &amp; Covers</a></li>
-                            <li><a href="#">Flame Retardant</a></li>
-                            <li><a href="#">Fleece Jackets</a></li>
-                            <li><a href="#">Footwear</a></li>
-                            <li class="brand-heading">G</li>
-                            <li><a href="#">Gilets</a></li>
-                            <li><a href="#">Golf</a></li>
-                            <li><a href="#">Gloves PPE</a></li>
-                            <li><a href="#">Gloves Winter</a></li>
-                            <li class="brand-heading">H</li>
-                            <li><a href="#">Headwear</a></li>
-                            <li><a href="#">Healthcare</a></li>
-                            <li><a href="#">Helmets</a></li>
-                            <li><a href="#">Hi-Vis</a></li>
-                            <li><a href="#">Hoodies</a></li>
-                            <li><a href="#">Hospitality</a></li>
-                            <li class="brand-heading">J</li>
-                            <li><a href="#">Jackets</a></li>
-                            <li><a href="#">Joggers</a></li>
-                            <li class="brand-heading">K</li>
-                            <li><a href="#">Knitwear</a></li>
-                            <li class="brand-heading">L</li>
-                            <li><a href="#">Lab / Medical Coats</a></li>
-                            <li><a href="#">Lateral Flow Tests</a></li>
-                            <li><a href="#">Lounge &amp; Underwear</a></li>
-                            <li class="brand-heading">M</li>
-                            <li><a href="#">Maternity</a></li>
-                            <li class="brand-heading">O</li>
-                            <li><a href="#">Offshore Clothing</a></li>
-                            <li><a href="#">Overalls</a></li>
-                            <li class="brand-heading">P</li>
-                            <li><a href="#">Painter &amp; Decorator Clothing</a></li>
-                            <li><a href="#">Plus Size</a></li>
-                            <li><a href="#">Polo Shirts</a></li>
-                            <li><a href="#">PPE</a></li>
-                            <li class="brand-heading">R</li>
-                            <li><a href="#">Rail Spec</a></li>
-                            <li class="brand-heading">S</li>
-                            <li><a href="#">Scarves</a></li>
-                            <li><a href="#">Schoolwear</a></li>
-                            <li><a href="#">Scrubs</a></li>
-                            <li><a href="#">Security</a></li>
-                            <li><a href="#">Shirts</a></li>
-                            <li><a href="#">Shorts</a></li>
-                            <li><a href="#">Skirts</a></li>
-                            <li><a href="#">Socks</a></li>
-                            <li><a href="#">Softshell Jackets</a></li>
-                            <li><a href="#">Sports &amp; Teamwear</a></li>
-                            <li><a href="#">Spring Workwear</a></li>
-                            <li><a href="#">Suits &amp; Tailoring</a></li>
-                            <li><a href="#">Summer Workwear</a></li>
-                            <li><a href="#">Sustainable</a></li>
-                            <li><a href="#">Sweatshirts</a></li>
-                            <li class="brand-heading">T</li>
-                            <li><a href="#">Tabards</a></li>
-                            <li><a href="#">Thermals &amp; Base Layers</a></li>
-                            <li><a href="#">Ties</a></li>
-                            <li><a href="#">Tote Bags</a></li>
-                            <li><a href="#">Towelling</a></li>
-                            <li><a href="#">Trades</a></li>
-                            <li><a href="#">Trousers</a></li>
-                            <li><a href="#">T-Shirts</a></li>
-                            <li><a href="#">Tunics</a></li>
-                            <li class="brand-heading">U</li>
-                            <li><a href="#">Umbrellas</a></li>
-                            <li class="brand-heading">W</li>
-                            <li><a href="#">Waistcoats</a></li>
-                            <li><a href="#">Welding Workwear</a></li>
-                            <li><a href="#">Winter Workwear</a></li>
-                        </ul>
+                        <div class="nav-megamenu allprod-megamenu">
+                            <ul class="allprod-list">
+                                <li class="brand-heading">A</li>
+                                <li data-catdesc="Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use."><a href="shop-pc.html?productType=accessories">Accessories</a></li>
+                                <li><a href="shop-pc.html?productType=anti-static">Anti Static / ESD</a></li>
+                                <li data-catdesc="Personalised aprons are ideal for restaurants, cafés, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use."><a href="shop-pc.html?productType=aprons">Aprons</a></li>
+                                <li><a href="shop-pc.html?productType=arc-flash">Arc Flash</a></li>
+                                <li><a href="shop-pc.html?productType=autumn-workwear">Autumn Workwear</a></li>
+                                <li class="brand-heading">B</li>
+                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="shop-pc.html?productType=bags">Bags</a></li>
+                                <li data-catdesc="Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs."><a href="shop-pc.html?productType=beanies">Beanies</a></li>
+                                <li><a href="shop-pc.html?productType=bib-brace-overalls">Bib &amp; Brace Overalls</a></li>
+                                <li data-catdesc="Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish."><a href="shop-pc.html?productType=blouses">Blouses</a></li>
+                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="shop-pc.html?productType=bodywarmers">Bodywarmers &amp; Gilets</a></li>
+                                <li class="brand-heading">C</li>
+                                <li data-catdesc="Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise."><a href="shop-pc.html?productType=caps">Caps</a></li>
+                                <li><a href="shop-pc.html?productType=chainsaw-forestry">Chainsaw and Forestry</a></li>
+                                <li data-catdesc="Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance."><a href="shop-pc.html?productType=chefswear">Chefswear</a></li>
+                                <li><a href="shop-pc.html?productType=chem-splash">Chem Splash</a></li>
+                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="shop-pc.html?productType=jackets">Coats &amp; Jackets</a></li>
+                                <li><a href="shop-pc.html?productType=coldstore">Coldstore</a></li>
+                                <li><a href="shop-pc.html?productType=construction">Construction</a></li>
+                                <li data-catdesc="Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear."><a href="shop-pc.html?productType=coveralls">Coveralls</a></li>
+                                <li><a href="shop-pc.html?productType=covid-test-kit">Covid Test Kit</a></li>
+                                <li class="brand-heading">D</li>
+                                <li><a href="shop-pc.html?productType=disposable">Disposable</a></li>
+                                <li data-catdesc="Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments."><a href="shop-pc.html?productType=dresses">Dresses</a></li>
+                                <li><a href="shop-pc.html?productType=dtf-supplies">DTF Supplies</a></li>
+                                <li class="brand-heading">F</li>
+                                <li><a href="shop-pc.html?productType=face-masks">Face Masks &amp; Covers</a></li>
+                                <li><a href="shop-pc.html?productType=flame-retardant">Flame Retardant</a></li>
+                                <li data-catdesc="Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish."><a href="shop-pc.html?productType=fleece">Fleece Jackets</a></li>
+                                <li data-catdesc="Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance."><a href="shop-pc.html?productType=footwear">Footwear</a></li>
+                                <li class="brand-heading">G</li>
+                                <li data-catdesc="Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility."><a href="shop-pc.html?productType=bodywarmers">Gilets</a></li>
+                                <li><a href="shop-pc.html?productType=golf">Golf</a></li>
+                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="shop-pc.html?productType=gloves">Gloves PPE</a></li>
+                                <li data-catdesc="Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages."><a href="shop-pc.html?productType=gloves">Gloves Winter</a></li>
+                                <li class="brand-heading">H</li>
+                                <li data-catdesc="Personalised hats and headwear are ideal for staff uniforms, outdoor work, schools, clubs and promotional campaigns. Add embroidery or print to create practical branded headwear. Choose from styles suitable for both everyday workwear and seasonal use."><a href="shop-pc.html?productType=caps">Headwear</a></li>
+                                <li><a href="shop-pc.html?productType=healthcare">Healthcare</a></li>
+                                <li data-catdesc="Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals."><a href="shop-pc.html?productType=helmets">Helmets</a></li>
+                                <li data-catdesc="Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear."><a href="shop-pc.html?productType=safety-vests">Hi-Vis</a></li>
+                                <li data-catdesc="Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish."><a href="shop-pc.html?productType=hoodies">Hoodies</a></li>
+                                <li><a href="shop-pc.html?productType=hospitality">Hospitality</a></li>
+                                <li class="brand-heading">J</li>
+                                <li data-catdesc="Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print."><a href="shop-pc.html?productType=jackets">Jackets</a></li>
+                                <li data-catdesc="Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look."><a href="shop-pc.html?productType=joggers">Joggers</a></li>
+                                <li class="brand-heading">K</li>
+                                <li data-catdesc="Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important."><a href="shop-pc.html?productType=knitwear">Knitwear</a></li>
+                                <li class="brand-heading">L</li>
+                                <li><a href="shop-pc.html?productType=lab-coats">Lab / Medical Coats</a></li>
+                                <li><a href="shop-pc.html?productType=lateral-flow-tests">Lateral Flow Tests</a></li>
+                                <li><a href="shop-pc.html?productType=lounge-underwear">Lounge &amp; Underwear</a></li>
+                                <li class="brand-heading">M</li>
+                                <li><a href="shop-pc.html?productType=maternity">Maternity</a></li>
+                                <li class="brand-heading">O</li>
+                                <li><a href="shop-pc.html?productType=offshore">Offshore Clothing</a></li>
+                                <li><a href="shop-pc.html?productType=overalls">Overalls</a></li>
+                                <li class="brand-heading">P</li>
+                                <li><a href="shop-pc.html?productType=painter-decorator">Painter &amp; Decorator Clothing</a></li>
+                                <li><a href="shop-pc.html?productType=plus-size">Plus Size</a></li>
+                                <li data-catdesc="Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear."><a href="shop-pc.html?productType=polos">Polo Shirts</a></li>
+                                <li><a href="shop-pc.html?productType=ppe">PPE</a></li>
+                                <li class="brand-heading">R</li>
+                                <li><a href="shop-pc.html?productType=rail-spec">Rail Spec</a></li>
+                                <li class="brand-heading">S</li>
+                                <li data-catdesc="Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns."><a href="shop-pc.html?productType=scarves">Scarves</a></li>
+                                <li><a href="shop-pc.html?productType=schoolwear">Schoolwear</a></li>
+                                <li><a href="shop-pc.html?productType=scrubs">Scrubs</a></li>
+                                <li><a href="shop-pc.html?productType=security">Security</a></li>
+                                <li data-catdesc="Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish."><a href="shop-pc.html?productType=shirts">Shirts</a></li>
+                                <li data-catdesc="Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments."><a href="shop-pc.html?productType=shorts">Shorts</a></li>
+                                <li data-catdesc="Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important."><a href="shop-pc.html?productType=skirts">Skirts</a></li>
+                                <li data-catdesc="Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns."><a href="shop-pc.html?productType=socks">Socks</a></li>
+                                <li data-catdesc="Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish."><a href="shop-pc.html?productType=softshells">Softshell Jackets</a></li>
+                                <li data-catdesc="Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish."><a href="shop-pc.html?productType=sports-teamwear">Sports &amp; Teamwear</a></li>
+                                <li><a href="shop-pc.html?productType=spring-workwear">Spring Workwear</a></li>
+                                <li><a href="shop-pc.html?productType=suits">Suits &amp; Tailoring</a></li>
+                                <li><a href="shop-pc.html?productType=summer-workwear">Summer Workwear</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled">Sustainable</a></li>
+                                <li data-catdesc="Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish."><a href="shop-pc.html?productType=sweatshirts">Sweatshirts</a></li>
+                                <li class="brand-heading">T</li>
+                                <li data-catdesc="Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform."><a href="shop-pc.html?productType=tabards">Tabards</a></li>
+                                <li data-catdesc="Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear."><a href="shop-pc.html?productType=baselayers">Thermals &amp; Base Layers</a></li>
+                                <li data-catdesc="Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff."><a href="shop-pc.html?productType=ties">Ties</a></li>
+                                <li data-catdesc="Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions."><a href="shop-pc.html?productType=bags">Tote Bags</a></li>
+                                <li data-catdesc="Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products."><a href="shop-pc.html?productType=towels">Towelling</a></li>
+                                <li><a href="shop-pc.html?productType=trades">Trades</a></li>
+                                <li data-catdesc="Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform."><a href="shop-pc.html?productType=trousers">Trousers</a></li>
+                                <li data-catdesc="Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits."><a href="shop-pc.html?productType=t-shirts">T-Shirts</a></li>
+                                <li data-catdesc="Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish."><a href="shop-pc.html?productType=tunics">Tunics</a></li>
+                                <li class="brand-heading">U</li>
+                                <li data-catdesc="Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways."><a href="shop-pc.html?productType=umbrellas">Umbrellas</a></li>
+                                <li class="brand-heading">W</li>
+                                <li data-catdesc="Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles."><a href="shop-pc.html?productType=waistcoats">Waistcoats</a></li>
+                                <li><a href="shop-pc.html?productType=welding">Welding Workwear</a></li>
+                                <li><a href="shop-pc.html?productType=winter-workwear">Winter Workwear</a></li>
+                            </ul>
+                            <div class="allprod-desc-panel">
+                                <p class="allprod-desc-hint">Hover over a category to read more</p>
+                                <h4 class="allprod-desc-name"></h4>
+                                <p class="allprod-desc-text"></p>
+                            </div>
+                        </div>
                     </li>
                     <li class="has-megamenu brands-menu">
                         <a href="#" aria-haspopup="true">
@@ -4170,6 +4245,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- ORDER DRAWER PC - Slide-in order process (PC only, doesn't affect mobile/tablet) -->
 <script src="order-drawer-pc.js?v=20260509a"></script>
+
+<script>
+(function () {
+    var items = document.querySelectorAll('.allprod-list li[data-catdesc]');
+    var panel = document.querySelector('.allprod-desc-panel');
+    if (!panel || !items.length) return;
+    var nameEl = panel.querySelector('.allprod-desc-name');
+    var textEl = panel.querySelector('.allprod-desc-text');
+    items.forEach(function (li) {
+        li.addEventListener('mouseenter', function () {
+            var a = li.querySelector('a');
+            nameEl.textContent = a ? a.textContent : '';
+            textEl.textContent = li.dataset.catdesc;
+            panel.classList.add('has-content');
+        });
+        li.addEventListener('mouseleave', function () {
+            panel.classList.remove('has-content');
+        });
+    });
+})();
+</script>
 
 </body>
 </html>
