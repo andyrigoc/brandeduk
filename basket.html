@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260220">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
@@ -48,11 +47,13 @@
             margin-top: 0;
         }
 
-        /* ── MOBILE (< 768px): only show searchbar-header + basket-header page title ── */
+        /* ── MOBILE (< 768px): only basket-header (back + title + clear) — hide site header entirely ── */
         @media (max-width: 767px) {
-            body.basket-page .header-top  { display: none !important; }
-            body.basket-page .header-bottom { display: none !important; }
-            body.basket-page .top-promo-bar { display: none !important; }
+            body.basket-page .header-top        { display: none !important; }
+            body.basket-page .header-bottom     { display: none !important; }
+            body.basket-page .top-promo-bar     { display: none !important; }
+            /* Hide the entire site header (logo bar) on mobile basket page */
+            body.basket-page .searchbar-header  { display: none !important; }
         }
 
         /* ── TABLET (768-1023px): full site header, hide basket-header page title ── */
@@ -402,7 +403,7 @@
         .basket-trust-badges { margin-top: 20px; font-size: 13px; color: #374151; }
         .basket-trust-badges .trust-badge {
             display: flex; align-items: center; gap: 10px; padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid #f3f4f6; color: #374151;
         }
         .basket-trust-badges .trust-badge:last-child { border-bottom: none; }
 
@@ -2140,6 +2141,8 @@
 
         const clearBtn = document.getElementById('clearBasketBtn');
         if (clearBtn) clearBtn.addEventListener('click', openClearConfirmModal);
+        const clearBtnDesktop = document.getElementById('clearBasketBtnDesktop');
+        if (clearBtnDesktop) clearBtnDesktop.addEventListener('click', openClearConfirmModal);
         clearConfirmCancel?.addEventListener('click', closeClearConfirmModal);
         clearConfirmModal?.addEventListener('click', (e) => { if (e.target === clearConfirmModal) closeClearConfirmModal(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && clearConfirmModal?.classList.contains('active')) closeClearConfirmModal(); });
@@ -2163,7 +2166,13 @@
             const popupOverlay = document.getElementById('quotePopupOverlay');
             if (popupOverlay) { popupOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         };
-        if (checkoutBtn) checkoutBtn.addEventListener('click', openQuotePopup);
+        // "Proceed to Checkout" → 3-step checkout page
+        if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+            const basket = getBasket();
+            if (basket.length === 0) { alert('Please add items to your basket first'); return; }
+            saveOrderNotes();
+            window.location.href = 'checkout.html';
+        });
         if (quoteBtn) quoteBtn.addEventListener('click', openQuotePopup);
 
         // Quote popup close

@@ -2,752 +2,1275 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Request Quote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout – BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
-    <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
-    <link rel="stylesheet" href="mobile/css/checkout.css?v=20260102b">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="brandedukv15-child/assets/images/favicon.ico" type="image/x-icon">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="129125842951-iggopjs9263kr0iisncbbievrlumcuv1.apps.googleusercontent.com">
+
     <style>
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
-        .social-icons-mobile {
-            gap: 3px !important;
-            margin-left: 8px !important;
-            padding-left: 0 !important;
+        /* ── Reset scoped to checkout ── */
+        .co-wrap *, .co-wrap *::before, .co-wrap *::after { box-sizing: border-box; }
+
+        /* ── Variables ── */
+        :root {
+            --co-orange:      #f97316;
+            --co-orange-dark: #ea6c00;
+            --co-navy:        #273469;
+            --co-grey:        #6b7280;
+            --co-light:       #f3f4f6;
+            --co-border:      #e5e7eb;
+            --co-white:       #ffffff;
+            --co-error:       #ef4444;
+            --co-success:     #22c55e;
+            --co-radius:      12px;
+            --co-shadow:      0 2px 10px rgba(0,0,0,0.07);
         }
-        .social-icons-mobile .social-icon {
-            width: 27px !important;
-            height: 27px !important;
-            min-width: 27px !important;
-            min-height: 27px !important;
-            max-width: 27px !important;
-            max-height: 27px !important;
-            border-radius: 7px !important;
+
+        /* ── Checkout Page wrapper ── */
+        body.checkout-v2 {
+            background: #f4f5f7;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-        .social-icons-mobile .social-icon i {
-            font-size: 12px !important;
+
+        /* ── Mobile checkout header (hidden on desktop) ── */
+        .co-mobile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--co-white);
+            border-bottom: 1px solid var(--co-border);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+        .co-mobile-header__back {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            color: var(--co-navy);
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .co-mobile-header__back:hover { background: var(--co-light); }
+        .co-mobile-header__title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--co-navy);
+        }
+
+        /* ── Step progress bar ── */
+        .co-steps-bar {
+            background: var(--co-white);
+            border-bottom: 1px solid var(--co-border);
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .co-step-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #9ca3af;
+            cursor: default;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: color .2s, background .2s;
+            white-space: nowrap;
+        }
+        .co-step-pill.done {
+            color: var(--co-navy);
+            cursor: pointer;
+        }
+        .co-step-pill.done:hover { background: var(--co-light); }
+        .co-step-pill.active { color: var(--co-orange); }
+        .co-step-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #d1d5db;
+            flex-shrink: 0;
+            transition: background .2s;
+        }
+        .co-step-pill.active .co-step-dot  { background: var(--co-orange); }
+        .co-step-pill.done  .co-step-dot  { background: var(--co-navy); }
+        .co-step-sep { color: #d1d5db; font-size: 15px; }
+
+        /* ── Step content areas ── */
+        .co-step { display: none; }
+        .co-step.active { display: block; }
+        .co-step-inner {
+            max-width: 580px;
+            margin: 0 auto;
+            padding: 16px 16px 40px;
+        }
+
+        /* ── Card panel (accordion) ── */
+        .co-card {
+            background: var(--co-white);
+            border: 1.5px solid var(--co-border);
+            border-radius: var(--co-radius);
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: var(--co-shadow);
+            transition: border-color .2s;
+        }
+        .co-card.open { border-color: var(--co-orange); }
+
+        .co-card-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .co-card-head:hover { background: #fafafa; }
+        .co-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--co-navy);
+            flex: 1;
+        }
+
+        /* radio dot */
+        .co-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color .2s;
+        }
+        .co-radio::after {
+            content: '';
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: transparent;
+            transition: background .2s;
+        }
+        .co-radio.on { border-color: var(--co-orange); }
+        .co-radio.on::after { background: var(--co-orange); }
+
+        .co-card-body {
+            padding: 4px 16px 18px;
+            border-top: 1px solid var(--co-light);
+        }
+
+        /* ── Social login buttons ── */
+        .co-social-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0 4px;
+        }
+        .co-social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity .15s, transform .1s;
+        }
+        .co-social-btn:hover  { opacity: .92; transform: translateY(-1px); }
+        .co-social-btn:active { transform: translateY(0); }
+        .co-btn-google   { background: #fff; border: 1.5px solid #d1d5db !important; color: #3c4043; }
+        .co-btn-facebook { background: #1877f2; color: #fff; }
+        /* Google rendered button wrapper */
+        .co-google-btn-wrap { display: flex; justify-content: center; margin-bottom: 4px; min-height: 44px; }
+        .co-google-btn-wrap > div { width: 100% !important; }
+
+        /* ── OR divider ── */
+        .co-or {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 14px 0;
+            color: var(--co-grey);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .co-or::before, .co-or::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--co-border);
+        }
+
+        /* ── Form fields ── */
+        .co-field { margin-bottom: 13px; }
+        .co-field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .co-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--co-grey);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 6px;
+        }
+        .co-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--co-border);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--co-navy);
+            background: var(--co-white);
+            transition: border-color .2s, box-shadow .2s;
+            -webkit-appearance: none;
+            appearance: none;
+            font-family: inherit;
+        }
+        .co-input:focus {
+            outline: none;
+            border-color: var(--co-orange);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+        }
+        .co-input::placeholder { color: #9ca3af; }
+        .co-input.bad { border-color: var(--co-error); }
+        .co-input-pw-wrap { position: relative; }
+        .co-input-pw-wrap .co-input { padding-right: 44px; }
+        .co-eye-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            display: flex;
+            padding: 4px;
+        }
+        .co-hint {
+            font-size: 11px;
+            color: var(--co-grey);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .co-field-err {
+            font-size: 12px;
+            color: var(--co-error);
+            margin-top: 4px;
+            display: none;
+        }
+        .co-field-err.show { display: block; }
+
+        /* ── Buttons ── */
+        .co-btn-primary {
+            background: var(--co-orange);
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .co-btn-primary:hover    { background: var(--co-orange-dark); }
+        .co-btn-primary:disabled { opacity: .65; cursor: not-allowed; }
+        .co-btn-primary.full     { width: 100%; padding: 14px; font-size: 16px; }
+
+        .co-btn-outline {
+            background: #fff;
+            color: var(--co-navy);
+            border: 1.5px solid var(--co-navy);
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+            font-family: inherit;
+        }
+        .co-btn-outline:hover { background: var(--co-light); }
+        .co-btn-outline.full  { width: 100%; padding: 14px; font-size: 15px; }
+
+        /* login actions row */
+        .co-login-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-top: 16px;
+        }
+        .co-link {
+            font-size: 13px;
+            color: var(--co-navy);
+            text-decoration: underline;
+            cursor: pointer;
+            white-space: nowrap;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 0;
+        }
+        .co-link-orange { color: var(--co-orange); }
+        .co-sep { color: #d1d5db; font-size: 12px; }
+
+        /* register actions */
+        .co-reg-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        /* guest section */
+        .co-guest {
+            text-align: center;
+            padding: 10px 0 4px;
+        }
+        .co-guest > p {
+            font-size: 13px;
+            color: var(--co-grey);
+            margin-bottom: 10px;
+        }
+
+        /* ── Delivery step card ── */
+        .co-delivery-wrap {
+            background: var(--co-white);
+            border: 1.5px solid var(--co-border);
+            border-radius: var(--co-radius);
+            padding: 20px 16px;
+            box-shadow: var(--co-shadow);
+        }
+        .co-step-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--co-navy);
+            margin-bottom: 18px;
+        }
+
+        /* back link */
+        .co-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--co-navy);
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            margin-bottom: 14px;
+            font-family: inherit;
+        }
+
+        /* ── Payment step ── */
+        .co-payment-wrap {
+            background: var(--co-white);
+            border: 1.5px solid var(--co-border);
+            border-radius: var(--co-radius);
+            padding: 20px 16px;
+            box-shadow: var(--co-shadow);
+            margin-bottom: 14px;
+        }
+        .co-payment-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--co-navy);
+            margin-bottom: 16px;
+        }
+
+        /* ── Order summary (collapsible) ── */
+        .co-summary {
+            background: var(--co-white);
+            border: 1.5px solid var(--co-border);
+            border-radius: var(--co-radius);
+            overflow: hidden;
+            margin-bottom: 14px;
+            box-shadow: var(--co-shadow);
+        }
+        .co-summary-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .co-summary-toggle-lbl {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--co-navy);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .co-summary-toggle-total {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--co-navy);
+        }
+        .co-summary-chevron { transition: transform .2s; }
+        .co-summary-body { display: none; }
+        .co-summary-body.open { display: block; }
+        .co-summary-items {
+            border-top: 1px solid var(--co-border);
+            padding: 10px 16px;
+        }
+        .co-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--co-light);
+            font-size: 13px;
+        }
+        .co-summary-item:last-child { border-bottom: none; }
+        .co-summary-qty {
+            background: var(--co-navy);
+            color: #fff;
+            border-radius: 5px;
+            padding: 2px 7px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .co-summary-name { flex: 1; color: var(--co-navy); }
+        .co-summary-price { color: var(--co-grey); font-weight: 600; }
+        .co-summary-footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--co-border);
+        }
+        .co-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--co-grey);
+            margin-bottom: 6px;
+        }
+        .co-summary-row.total-row {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--co-navy);
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px solid var(--co-border);
+            margin-bottom: 0;
+        }
+
+        /* ── Stripe elements (reused from old checkout) ── */
+        .payment-loading { display:flex; flex-direction:column; align-items:center; padding:28px 0; gap:12px; color:#666; font-size:14px; }
+        .payment-spinner { width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--co-navy); border-radius:50%; animation:co-spin .7s linear infinite; }
+        @keyframes co-spin { to { transform:rotate(360deg); } }
+        .stripe-card-wrapper { background:#f8f9fa; border:1.5px solid var(--co-border); border-radius:8px; padding:14px; margin-bottom:14px; }
+        .stripe-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--co-grey); margin-bottom:8px; display:block; }
+        .card-element  { min-height:24px; }
+        .card-errors   { color:var(--co-error); font-size:13px; margin-top:6px; }
+        .stripe-pay-btn { width:100%; background:var(--co-navy); color:#fff; border:none; border-radius:8px; padding:15px; font-size:16px; font-weight:700; cursor:pointer; transition:background .2s; font-family:inherit; }
+        .stripe-pay-btn:hover { background:#1e2749; }
+        .stripe-pay-btn:disabled { opacity:.65; cursor:not-allowed; }
+        .payment-success { text-align:center; padding:36px 16px; }
+        .payment-success-icon { width:60px; height:60px; background:var(--co-success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; margin:0 auto 14px; }
+        .payment-success p { font-size:15px; color:#374151; margin-top:8px; }
+        .payment-error-state { text-align:center; padding:20px 0; }
+        .payment-error-state p { color:var(--co-error); font-size:14px; margin-bottom:12px; }
+        .payment-retry-btn { background:transparent; border:1.5px solid var(--co-navy); border-radius:8px; padding:10px 22px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+
+        /* quote form fallback */
+        .co-quote-note {
+            font-size: 13px;
+            color: var(--co-grey);
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        /* ── Toast ── */
+        .co-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            transition: transform .28s ease;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .co-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── Terms footer ── */
+        .co-terms {
+            font-size: 11px;
+            color: var(--co-grey);
+            text-align: center;
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+        .co-terms a { color: var(--co-navy); text-decoration: underline; }
+
+        /* ── Hide full site header on mobile checkout ── */
+        @media (max-width: 767px) {
+            body.checkout-v2 .tablet-top-bar,
+            body.checkout-v2 .promo-banner,
+            body.checkout-v2 .mobile-header,
+            body.checkout-v2 .site-breadcrumbs,
+            body.checkout-v2 .header-top,
+            body.checkout-v2 .header-bottom,
+            body.checkout-v2 .searchbar-header,
+            body.checkout-v2 .top-promo-bar { display: none !important; }
+
+            .co-mobile-header { display: flex; }
+            .co-steps-bar { position: sticky; top: 57px; z-index: 190; }
+        }
+
+        /* ── Desktop / Tablet ── */
+        @media (min-width: 768px) {
+            .co-mobile-header { display: none; }
+            .co-wrap { padding-top: 24px; padding-bottom: 48px; }
+            .co-steps-bar {
+                max-width: 620px;
+                margin: 0 auto 0;
+                border: 1.5px solid var(--co-border);
+                border-radius: var(--co-radius);
+                margin-bottom: 16px;
+            }
+            .co-step-inner { padding: 24px 0 48px; }
         }
     </style>
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=FTR10APR2026">
 </head>
-<body>
-        <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
-        <div class="tablet-top-bar">
-            <div class="tablet-top-bar__left">
-                <div class="social-icons-container social-icons-mobile">
-                    <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
-                        <i class="fab fa-pinterest-p"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="tablet-top-bar__center">
-                <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    info@brandeduk.com
-                </a>
-                <a href="tel:02089742722" class="tablet-top-bar__phone">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    0208 974 2722
-                </a>
-            </div>
-            <div class="tablet-top-bar__right">
-                <div class="vat-toggle-tablet">
-                    <span class="vat-label vat-label--exc">EXC VAT</span>
-                    <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
-                    <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
-                    <span class="vat-label vat-label--inc">INC VAT</span>
-                </div>
+
+<body class="checkout-v2">
+
+    <!-- ── Full site header (tablet / desktop only, hidden mobile) ── -->
+    <div class="tablet-top-bar">
+        <div class="tablet-top-bar__left">
+            <div class="social-icons-container social-icons-mobile">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
-    <!-- Top Banner -->
-    <div class="promo-banner">
-        🎁 You have 10% OFF! <span class="timer" id="promoTimer">145H : 26M : 52S</span>
+        <div class="tablet-top-bar__center">
+            <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                info@brandeduk.com
+            </a>
+            <a href="tel:02089742722" class="tablet-top-bar__phone">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.11 14a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                0208 974 2722
+            </a>
+        </div>
+        <div class="tablet-top-bar__right">
+            <a href="index.html" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">← Back to Shop</a>
+        </div>
     </div>
 
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-        <!-- Top Row: Social + VAT Toggle -->
-        <div class="header-top-row">
-            <!-- Social Buttons Left -->
-            <div class="social-icons-container social-icons-mobile">
-                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
-                    <i class="fab fa-pinterest-p"></i>
-                </a>
-            </div>
-
-            <!-- VAT Toggle Right -->
-            <div class="vat-toggle-mobile" id="vatToggleContainer">
-                <span class="vat-label vat-label--exc">EX VAT</span>
-                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
-                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
-                <span class="vat-label vat-label--inc">INC VAT</span>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Back + Logo + Search -->
-        <div class="header-logo-row">
-            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
-            <a href="index.html" class="mobile-logo-center">
-                <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-badge-img">
-            </a>
-            <!-- Search Bar inline -->
-            <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
-                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </div>
-        </div>
-    </header>
-
-    <!-- Breadcrumbs -->
-    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
-        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ── Mobile-only sticky header ── -->
+    <header class="co-mobile-header" id="coMobileHeader">
+        <button class="co-mobile-header__back" id="coBackBtn" aria-label="Go back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
             </svg>
         </button>
-        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+        <span class="co-mobile-header__title">Checkout</span>
+    </header>
+
+    <!-- ── Step indicator ── -->
+    <nav class="co-steps-bar" id="coStepsBar" aria-label="Checkout steps">
+        <div class="co-step-pill active" id="coNav1" onclick="coJumpBack(1)" role="button" tabindex="0">
+            <span class="co-step-dot"></span>Account
+        </div>
+        <span class="co-step-sep">›</span>
+        <div class="co-step-pill" id="coNav2" onclick="coJumpBack(2)" role="button" tabindex="0">
+            <span class="co-step-dot"></span>Delivery
+        </div>
+        <span class="co-step-sep">›</span>
+        <div class="co-step-pill" id="coNav3" role="button" tabindex="0">
+            <span class="co-step-dot"></span>Payment
+        </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="checkout-container">
-        <h1 class="checkout-title">Checkout</h1>
+    <div class="co-wrap">
 
-        <!-- Tabs -->
-        <div class="checkout-tabs">
-            <button class="tab-btn active" data-tab="address">ADDRESS</button>
-            <button class="tab-btn" data-tab="shipping">SHIPPING</button>
-            <button class="tab-btn" data-tab="payment">PAYMENT</button>
-            <button class="tab-btn" data-tab="products">PRODUCTS</button>
-        </div>
+        <!-- ════════════════ STEP 1 — ACCOUNT ════════════════ -->
+        <section class="co-step active" id="coStep1" aria-label="Account step">
+            <div class="co-step-inner">
 
-        <!-- Tab Content -->
-        <div class="tab-content active" id="address-tab">
-            <div class="section-header">
-                <h2>Address</h2>
-                <button class="change-address-btn">
-                    Change address
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="address-card" id="currentAddress">
-                <div class="address-header">
-                    <div class="address-name">Anderson Ricotta,</div>
-                    <div class="address-phone">7447348564</div>
-                    <span class="badge-default">Default</span>
-                    <button class="edit-btn" onclick="openAddressModal()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        Edit
-                    </button>
-                </div>
-                <div class="address-details">
-                    Red Lion Business Center, Surbiton, England, United Kingdom<br>
-                    KT6 7QD
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="shipping-tab">
-            <h2>Shipping</h2>
-            <div class="shipping-info">
-                <label class="info-label">Fulfilled from</label>
-                <div class="fulfilled-box">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                    </svg>
-                    <span>International</span>
-                </div>
-
-                <div class="time-grid">
-                    <div class="time-item">
-                        <label>Production Time</label>
-                        <div class="time-value">1 - 3 days</div>
+                <!-- LOGIN panel (open by default) -->
+                <div class="co-card open" id="coCardLogin">
+                    <div class="co-card-head" onclick="coPanel('login')" role="button" tabindex="0">
+                        <span class="co-radio on" id="coRadioLogin"></span>
+                        <span class="co-card-title">Login</span>
                     </div>
-                    <div class="time-item">
-                        <label>Shipping Time</label>
-                        <div class="time-value">7 - 9 days</div>
-                    </div>
-                    <div class="time-item">
-                        <label>Total Fulfilment Time</label>
-                        <div class="time-value">8 - 12 days</div>
-                    </div>
-                    <div class="time-item">
-                        <label>Estimated Delivery</label>
-                        <div class="time-value">Dec 31 - Jan 04</div>
-                    </div>
-                </div>
+                    <div class="co-card-body" id="coBodyLogin">
 
-                <div class="shipping-note">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    <span>The order shipment time is determined by the longest fulfillment time among all items in the entire order.</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="payment-tab">
-            <h2>Payment</h2>
-            <p class="payment-note">No payment required. You will receive a quotation after submitting your request.</p>
-        </div>
-
-        <div class="tab-content" id="products-tab">
-            <h2>Products</h2>
-            <div class="product-summary">
-                <div class="product-item">
-                    <img src="brandedukv15-child/assets/images/products/hoodie-black.jpg" alt="Product" class="product-thumb">
-                    <div class="product-details">
-                        <h3>Snow Washed Oversized Cotton T-Shirt</h3>
-                        <div class="product-code">#R00037-C001-V9 / Black</div>
-                        <div class="product-badge">DTG</div>
-                        <div class="product-sizes">S(1) M(1) XL(1) 3XL(1)</div>
-                        <div class="product-pricing">
-                            <div class="price-row">
-                                <span>Unit Price</span>
-                                <span>£7.99</span>
-                            </div>
-                            <div class="price-row">
-                                <span>Customization</span>
-                                <span>£2.26</span>
-                            </div>
-                            <div class="price-row total">
-                                <span>Subtotal (4 items)</span>
-                                <span>£41.00</span>
-                            </div>
-                        </div>
-                        <div class="product-time">
-                            ⏱️ Product Time: 1 - 3 days
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Summary -->
-        <div class="checkout-summary">
-            <div class="summary-row">
-                <span class="summary-label">Total</span>
-                <div class="summary-prices">
-                    <div class="vat-price">GBP 171.62</div>
-                    <div class="no-vat-price">GBP 184.86</div>
-                </div>
-            </div>
-            <button class="request-quote-btn">Request Quote</button>
-            <p class="terms-text">
-                By clicking the "Request Quote" button, you confirm that you have read, understand, and accept our 
-                <a href="#">Term of Service</a>, <a href="#">Privacy Policy</a> and <a href="#">FAQ</a>.
-            </p>
-        </div>
-    </main>
-
-    <!-- Edit Address Modal -->
-    <div class="modal-overlay" id="addressModal">
-        <div class="modal-panel">
-            <div class="modal-header">
-                <h2>Edit address</h2>
-                <button class="close-btn" onclick="closeAddressModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-content">
-                <form id="addressForm">
-                    <div class="form-group">
-                        <label>Country/Region</label>
-                        <select class="form-select" id="country">
-                            <option value="uk" selected>United Kingdom</option>
-                            <option value="us">United States</option>
-                            <option value="ca">Canada</option>
-                            <option value="au">Australia</option>
-                            <option value="bg">Bulgaria</option>
-                            <option value="al">Albania</option>
-                            <option value="dz">Algeria</option>
-                        </select>
-                    </div>
-
-                    <div class="form-section-title">Contact information</div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <input type="text" class="form-input" placeholder="First name" value="Anderson">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-input" placeholder="Last name" value="Ricotta">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="tel" class="form-input" placeholder="Phone" value="+44 7447348564">
-                    </div>
-
-                    <div class="form-section-title">Address</div>
-
-                    <div class="form-group">
-                        <div class="search-input">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                            <input type="text" placeholder="ADDRESS FINDER: Search by postcode, street">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Address line 1" value="Red Lion Business Center">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Apartment, Suite, Unit etc. (optional)">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <select class="form-select">
-                                <option value="england" selected>England</option>
-                                <option value="scotland">Scotland</option>
-                                <option value="wales">Wales</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-select">
-                                <option value="surbiton" selected>Surbiton</option>
-                                <option value="london">London</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" class="form-input" placeholder="County" value="Greater London">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Postcode" value="KT6 7QD">
-                    </div>
-
-                    <div class="form-checkbox">
-                        <input type="checkbox" id="defaultAddress" checked>
-                        <label for="defaultAddress">Set as my default address</label>
-                    </div>
-
-                    <button type="submit" class="save-btn">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shipping Address Modal -->
-    <div class="modal-overlay" id="shippingModal">
-        <div class="modal-panel">
-            <div class="modal-header">
-                <h2>Shipping address</h2>
-                <button class="close-btn" onclick="closeShippingModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-content">
-                <div class="address-search">
-                    <div class="search-input">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" placeholder="Search for the name">
-                    </div>
-                    <button class="add-address-btn" onclick="openAddressModal()">Add new address</button>
-                </div>
-
-                <div class="saved-addresses">
-                    <label class="address-option">
-                        <input type="radio" name="shippingAddress" checked>
-                        <div class="address-card-compact">
-                            <div class="address-header">
-                                <strong>Anderson Ricotta, 7447348564</strong>
-                                <span class="badge-default">Default</span>
-                            </div>
-                            <div class="address-text">
-                                Red Lion Business Center<br>
-                                Greater London, Surbiton, England, United Kingdom.<br>
-                                KT6 7QD
-                            </div>
-                            <button class="edit-icon" onclick="openAddressModal()">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        <!-- Social buttons -->
+                        <div class="co-social-wrap">
+                            <!-- Google Sign-In button rendered by GIS library -->
+                            <div id="coGoogleSignInBtn" class="co-google-btn-wrap"></div>
+                            <button class="co-social-btn co-btn-facebook" onclick="coSocial('facebook')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                                 </svg>
+                                Continue with Facebook
                             </button>
                         </div>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item" id="accountNavBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span class="nav-item-label">Account</span>
-        </a>
-        <a href="shop.html" class="nav-item">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-            </svg>
-            <span class="nav-item-label">Shop</span>
-        </a>
-        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
-            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <line x1="6" y1="21" x2="6" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="3"></line>
-                <line x1="18" y1="21" x2="18" y2="3"></line>
-                <circle cx="6" cy="8" r="2"></circle>
-                <circle cx="12" cy="14" r="2"></circle>
-                <circle cx="18" cy="10" r="2"></circle>
-            </svg>
-            <span class="nav-item-label">Filter</span>
-        </button>
-        <a href="basket.html#orderSummary" class="nav-item" id="basketNavLink">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            <span class="nav-badge" id="navCartBadge">0</span>
-            <span class="nav-item-label">Basket</span>
-        </a>
-        <a href="#" class="nav-item" id="chatNavBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
-                <g fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
-                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
-                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
-                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
-                </g>
-            </svg>
-            <span class="nav-item-label">Chat</span>
-        </a>
-    </nav>
 
-    <!-- Account Panel Overlay -->
-    <div class="account-overlay" id="accountOverlay"></div>
-    
-    <!-- Account Sign In / Sign Up Panel -->
-    <div class="account-panel" id="accountPanel">
-        <div class="account-panel-header">
-            <button class="account-close-btn" id="accountCloseBtn" aria-label="Close">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        
-        <div class="account-forms-container">
-            <!-- Arrow Back -->
-            <div class="account-arrow" id="accountArrow">
-                <i class="fas fa-arrow-left"></i>
-            </div>
-            
-            <div class="account-forms-wrapper">
-                <!-- Sign In Form -->
-                <div class="account-form-holder signin-form" id="signinForm">
-                    <div class="account-form-icon">
-                        <i class="fas fa-user"></i>
-                        <span>Sign In</span>
-                    </div>
-                    <div class="account-form-content">
-                        <form id="signinFormData">
-                            <div class="account-input-group">
-                                <input type="email" id="signinEmail" required>
-                                <label for="signinEmail">Email</label>
-                            </div>
-                            <div class="account-input-group">
-                                <input type="password" id="signinPassword" required>
-                                <label for="signinPassword">Password</label>
-                            </div>
-                            <div class="account-form-actions">
-                                <button type="submit" class="account-submit-btn">
-                                    <i class="fas fa-arrow-right"></i>
+
+                        <div class="co-or">or sign in with email</div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coLoginEmail">Email Address *</label>
+                            <input type="email" id="coLoginEmail" class="co-input" placeholder="your@email.com" autocomplete="email">
+                            <span class="co-field-err" id="coLoginEmailErr">Please enter a valid email address</span>
+                        </div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coLoginPwd">Password *</label>
+                            <div class="co-input-pw-wrap">
+                                <input type="password" id="coLoginPwd" class="co-input" placeholder="Your password" autocomplete="current-password">
+                                <button class="co-eye-btn" type="button" onclick="coEye('coLoginPwd',this)" aria-label="Toggle password visibility">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
-                            <a href="#" class="account-forgot-link">Forgot Password?</a>
-                        </form>
+                            <span class="co-field-err" id="coLoginPwdErr">Please enter your password</span>
+                        </div>
+
+                        <div class="co-login-row">
+                            <button class="co-link" onclick="coToast('Password reset coming soon')">Forgot Password?</button>
+                            <span class="co-sep">|</span>
+                            <button class="co-link co-link-orange" onclick="coToast('Passwordless login coming soon')">Passwordless Login</button>
+                            <button class="co-btn-primary" onclick="coDoLogin()">Login</button>
+                        </div>
+                    </div><!-- /co-card-body login -->
+                </div><!-- /co-card login -->
+
+                <!-- NEW CUSTOMER panel (collapsed) -->
+                <div class="co-card" id="coCardReg">
+                    <div class="co-card-head" onclick="coPanel('reg')" role="button" tabindex="0">
+                        <span class="co-radio" id="coRadioReg"></span>
+                        <span class="co-card-title">New Customer</span>
                     </div>
-                </div>
-                
-                <!-- Sign Up Form -->
-                <div class="account-form-holder signup-form" id="signupForm">
-                    <div class="account-form-icon">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Sign Up</span>
-                    </div>
-                    <div class="account-form-content">
-                        <form id="signupFormData">
-                            <div class="account-input-row">
-                                <div class="account-input-group half">
-                                    <input type="text" id="signupFirstName" required>
-                                    <label for="signupFirstName">First Name</label>
-                                </div>
-                                <div class="account-input-group half">
-                                    <input type="text" id="signupLastName" required>
-                                    <label for="signupLastName">Last Name</label>
-                                </div>
+                    <div class="co-card-body" id="coBodyReg" style="display:none">
+
+                        <div class="co-field" style="margin-top:12px">
+                            <label class="co-label" for="coRegCompany">Company Name</label>
+                            <input type="text" id="coRegCompany" class="co-input" placeholder="Company (optional)" autocomplete="organization">
+                        </div>
+
+                        <div class="co-field-row">
+                            <div class="co-field">
+                                <label class="co-label" for="coRegFirst">First Name *</label>
+                                <input type="text" id="coRegFirst" class="co-input" placeholder="First name" autocomplete="given-name">
+                                <span class="co-field-err" id="coRegFirstErr">Required</span>
                             </div>
-                            <div class="account-input-group">
-                                <input type="email" id="signupEmail" required>
-                                <label for="signupEmail">Email</label>
+                            <div class="co-field">
+                                <label class="co-label" for="coRegLast">Last Name *</label>
+                                <input type="text" id="coRegLast" class="co-input" placeholder="Last name" autocomplete="family-name">
+                                <span class="co-field-err" id="coRegLastErr">Required</span>
                             </div>
-                            <div class="account-input-group">
-                                <input type="tel" id="signupPhone" required>
-                                <label for="signupPhone">Phone Number</label>
-                            </div>
-                            <div class="account-input-group">
-                                <input type="text" id="signupCompany">
-                                <label for="signupCompany">Company Name (optional)</label>
-                            </div>
-                            <div class="account-input-group">
-                                <input type="password" id="signupPassword" required>
-                                <label for="signupPassword">Password</label>
-                            </div>
-                            <div class="account-form-actions">
-                                <button type="submit" class="account-submit-btn">
-                                    <i class="fas fa-arrow-right"></i>
+                        </div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coRegEmail">Email Address *</label>
+                            <input type="email" id="coRegEmail" class="co-input" placeholder="your@email.com" autocomplete="email">
+                            <span class="co-field-err" id="coRegEmailErr">Please enter a valid email address</span>
+                        </div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coRegEmailC">Confirm Email *</label>
+                            <input type="email" id="coRegEmailC" class="co-input" placeholder="Confirm email" autocomplete="email">
+                            <span class="co-field-err" id="coRegEmailCErr">Emails do not match</span>
+                        </div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coRegPwd">New Password *</label>
+                            <div class="co-input-pw-wrap">
+                                <input type="password" id="coRegPwd" class="co-input" placeholder="Create a password" autocomplete="new-password">
+                                <button class="co-eye-btn" type="button" onclick="coEye('coRegPwd',this)" aria-label="Toggle password visibility">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
-                        </form>
-                    </div>
+                            <span class="co-field-err" id="coRegPwdErr">Must be at least 8 characters</span>
+                            <p class="co-hint">Minimum 8 characters, with at least one letter and one number.</p>
+                        </div>
+
+                        <div class="co-field">
+                            <label class="co-label" for="coRegPwdC">Confirm Password *</label>
+                            <div class="co-input-pw-wrap">
+                                <input type="password" id="coRegPwdC" class="co-input" placeholder="Confirm password" autocomplete="new-password">
+                                <button class="co-eye-btn" type="button" onclick="coEye('coRegPwdC',this)" aria-label="Toggle password visibility">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <span class="co-field-err" id="coRegPwdCErr">Passwords do not match</span>
+                        </div>
+
+                        <div class="co-reg-actions">
+                            <button class="co-btn-primary" onclick="coDoRegister()">Register</button>
+                            <button class="co-link" onclick="coToast('Password reset coming soon')">Forgot Your Password?</button>
+                        </div>
+                    </div><!-- /co-card-body reg -->
+                </div><!-- /co-card reg -->
+
+                <!-- Guest option -->
+                <div class="co-guest">
+                    <p>Don't have an account?</p>
+                    <button class="co-btn-outline full" onclick="coGoStep(2)">Continue as Guest &rarr;</button>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Logged In View -->
-        <div class="account-logged-in" id="accountLoggedIn" style="display: none;">
-            <div class="account-user-avatar">
-                <i class="fas fa-user-circle"></i>
-            </div>
-            <h3 class="account-user-name" id="accountUserName">Welcome!</h3>
-            <p class="account-user-email" id="accountUserEmail"></p>
-            <div class="account-user-details" id="accountUserDetails"></div>
-            <button class="account-logout-btn" id="accountLogoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Sign Out
-            </button>
-        </div>
-    </div>
 
-    <script src="mobile/js/mobile.js?v=20260411A"></script>
-    <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
-    <script src="mobile/js/checkout.js?v=20251230"></script>
-    <!-- Mini-chat popup (tawk iframe) -->
-    <script type="text/javascript">
-        (function() {
-            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
-            var isOpen = false;
+            </div><!-- /co-step-inner -->
+        </section>
 
-            var overlay = document.createElement('div');
-            overlay.id = 'tawkOverlay';
-            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
+        <!-- ════════════════ STEP 2 — DELIVERY ════════════════ -->
+        <section class="co-step" id="coStep2" aria-label="Delivery step">
+            <div class="co-step-inner">
 
-            var chatBox = document.createElement('div');
-            chatBox.id = 'tawkMiniChat';
-            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
+                <button class="co-back-link" onclick="coGoStep(1)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back to Account
+                </button>
 
-            var closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
-            chatBox.appendChild(closeBtn);
+                <div class="co-delivery-wrap">
+                    <p class="co-step-title">Delivery Address</p>
 
-            var iframe = document.createElement('iframe');
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
-            chatBox.appendChild(iframe);
+                    <div class="co-field-row">
+                        <div class="co-field">
+                            <label class="co-label" for="coDelFirst">First Name *</label>
+                            <input type="text" id="coDelFirst" class="co-input" placeholder="First name" autocomplete="given-name">
+                            <span class="co-field-err" id="coDelFirstErr">Required</span>
+                        </div>
+                        <div class="co-field">
+                            <label class="co-label" for="coDelLast">Last Name *</label>
+                            <input type="text" id="coDelLast" class="co-input" placeholder="Last name" autocomplete="family-name">
+                            <span class="co-field-err" id="coDelLastErr">Required</span>
+                        </div>
+                    </div>
 
-            document.body.appendChild(overlay);
-            document.body.appendChild(chatBox);
+                    <div class="co-field">
+                        <label class="co-label" for="coDelCompany">Company Name</label>
+                        <input type="text" id="coDelCompany" class="co-input" placeholder="Company (optional)" autocomplete="organization">
+                    </div>
 
-            function openChat() {
-                if (!iframe.src) iframe.src = TAWK_DIRECT;
-                overlay.style.display = 'block';
-                chatBox.style.display = 'block';
-                isOpen = true;
+                    <div class="co-field">
+                        <label class="co-label" for="coDelEmail">Email Address *</label>
+                        <input type="email" id="coDelEmail" class="co-input" placeholder="Email" autocomplete="email">
+                        <span class="co-field-err" id="coDelEmailErr">Please enter a valid email address</span>
+                    </div>
+
+                    <div class="co-field">
+                        <label class="co-label" for="coDelPhone">Phone Number *</label>
+                        <input type="tel" id="coDelPhone" class="co-input" placeholder="Phone" autocomplete="tel">
+                        <span class="co-field-err" id="coDelPhoneErr">Required</span>
+                    </div>
+
+                    <div class="co-field">
+                        <label class="co-label" for="coDelAddr1">Address Line 1 *</label>
+                        <input type="text" id="coDelAddr1" class="co-input" placeholder="Address line 1" autocomplete="address-line1">
+                        <span class="co-field-err" id="coDelAddr1Err">Required</span>
+                    </div>
+
+                    <div class="co-field">
+                        <label class="co-label" for="coDelAddr2">Address Line 2</label>
+                        <input type="text" id="coDelAddr2" class="co-input" placeholder="Apartment, suite, unit (optional)" autocomplete="address-line2">
+                    </div>
+
+                    <div class="co-field-row">
+                        <div class="co-field">
+                            <label class="co-label" for="coDelCity">City *</label>
+                            <input type="text" id="coDelCity" class="co-input" placeholder="City" autocomplete="address-level2">
+                            <span class="co-field-err" id="coDelCityErr">Required</span>
+                        </div>
+                        <div class="co-field">
+                            <label class="co-label" for="coDelPost">Postcode *</label>
+                            <input type="text" id="coDelPost" class="co-input" placeholder="Postcode" autocomplete="postal-code">
+                            <span class="co-field-err" id="coDelPostErr">Required</span>
+                        </div>
+                    </div>
+
+                    <div class="co-field">
+                        <label class="co-label" for="coDelCountry">Country *</label>
+                        <select id="coDelCountry" class="co-input" autocomplete="country-name">
+                            <option value="GB" selected>United Kingdom</option>
+                            <option value="IE">Ireland</option>
+                            <option value="US">United States</option>
+                            <option value="AU">Australia</option>
+                            <option value="CA">Canada</option>
+                            <option value="FR">France</option>
+                            <option value="DE">Germany</option>
+                            <option value="ES">Spain</option>
+                            <option value="IT">Italy</option>
+                            <option value="NL">Netherlands</option>
+                        </select>
+                    </div>
+                </div><!-- /co-delivery-wrap -->
+
+                <div style="margin-top:16px">
+                    <button class="co-btn-primary full" onclick="coDoDelivery()">Continue to Payment &rarr;</button>
+                </div>
+
+            </div><!-- /co-step-inner -->
+        </section>
+
+        <!-- ════════════════ STEP 3 — PAYMENT ════════════════ -->
+        <section class="co-step" id="coStep3" aria-label="Payment step">
+            <div class="co-step-inner">
+
+                <button class="co-back-link" onclick="coGoStep(2)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back to Delivery
+                </button>
+
+                <!-- Order summary -->
+                <div class="co-summary" id="coSummary">
+                    <div class="co-summary-toggle" onclick="coToggleSummary()" role="button" tabindex="0" aria-expanded="false" id="coSummaryToggle">
+                        <span class="co-summary-toggle-lbl">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                            Order Summary
+                            <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                        <span class="co-summary-toggle-total" id="coSummaryTotal">£0.00</span>
+                    </div>
+                    <div class="co-summary-body" id="coSummaryBody">
+                        <div class="co-summary-items" id="coSummaryItems">
+                            <!-- populated by JS -->
+                        </div>
+                        <div class="co-summary-footer">
+                            <div class="co-summary-row">
+                                <span>Subtotal</span>
+                                <span id="coSubtotal">£0.00</span>
+                            </div>
+                            <div class="co-summary-row">
+                                <span>Shipping</span>
+                                <span>Quoted separately</span>
+                            </div>
+                            <div class="co-summary-row total-row">
+                                <span>Total (ex. VAT)</span>
+                                <span id="coTotal">£0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /co-summary -->
+
+                <!-- Payment card -->
+                <div class="co-payment-wrap">
+                    <p class="co-payment-title">Payment Details</p>
+
+                    <!-- Loading while creating PaymentIntent -->
+                    <div id="payment-loading" class="payment-loading" style="display:none">
+                        <div class="payment-spinner"></div>
+                        <p>Setting up secure payment…</p>
+                    </div>
+
+                    <!-- Stripe card form -->
+                    <form id="stripe-payment-form" style="display:none">
+                        <div class="stripe-card-wrapper">
+                            <label class="stripe-label">Card details</label>
+                            <div id="card-element" class="card-element"></div>
+                            <div id="card-errors" class="card-errors" role="alert"></div>
+                        </div>
+                        <button type="submit" id="stripe-pay-btn" class="stripe-pay-btn">
+                            <span id="stripe-btn-text">Pay &amp; Submit Quote</span>
+                            <span id="stripe-btn-spinner" style="display:none">Processing…</span>
+                        </button>
+                    </form>
+
+                    <!-- Quote request fallback (shown when Stripe not configured) -->
+                    <div id="coQuoteForm">
+                        <p class="co-quote-note">
+                            We'll prepare your quote and send a payment link via email.<br>No card details required now.
+                        </p>
+                        <button class="co-btn-primary full" id="coSubmitQuoteBtn" onclick="coSubmitQuote()">
+                            Submit Quote Request
+                        </button>
+                    </div>
+
+                    <!-- Success state -->
+                    <div id="payment-success" class="payment-success" style="display:none">
+                        <div class="payment-success-icon">&#10003;</div>
+                        <p><strong>Quote submitted!</strong></p>
+                        <p>We'll be in touch shortly with your personalised quote.</p>
+                    </div>
+
+                    <!-- Error state -->
+                    <div id="payment-error-state" class="payment-error-state" style="display:none">
+                        <p id="payment-error-msg"></p>
+                        <button class="payment-retry-btn" id="payment-retry-btn">Try again</button>
+                    </div>
+
+                </div><!-- /co-payment-wrap -->
+
+                <p class="co-terms">
+                    By submitting you confirm you have read and accept our
+                    <a href="#">Terms of Service</a>, <a href="#">Privacy Policy</a> and <a href="#">FAQ</a>.
+                </p>
+
+            </div><!-- /co-step-inner -->
+        </section>
+
+    </div><!-- /co-wrap -->
+
+    <!-- Toast -->
+    <div class="co-toast" id="coToastEl" role="status" aria-live="polite"></div>
+
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- ── Checkout 3-step logic ── -->
+    <script>
+    (function () {
+        'use strict';
+
+        var _step = 1;
+        var _panel = 'login';
+        var _summaryOpen = false;
+
+        /* ── Toast ── */
+        function coToast(msg, ms) {
+            var el = document.getElementById('coToastEl');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._t);
+            el._t = setTimeout(function () { el.classList.remove('show'); }, ms || 2800);
+        }
+        window.coToast = coToast;
+
+        /* ── Step navigation ── */
+        function coGoStep(n) {
+            [1, 2, 3].forEach(function (s) {
+                var el = document.getElementById('coStep' + s);
+                if (el) {
+                    el.classList.remove('active');
+                    if (s === n) el.classList.add('active');
+                }
+                var nav = document.getElementById('coNav' + s);
+                if (nav) {
+                    nav.classList.remove('active', 'done');
+                    if (s < n)  nav.classList.add('done');
+                    if (s === n) nav.classList.add('active');
+                }
+            });
+            _step = n;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (n === 3) {
+                coPopulateSummary();
+                // Try initialising Stripe; if it fails, quote form stays visible
+                if (typeof initStripePayment === 'function') {
+                    document.getElementById('coQuoteForm').style.display = 'none';
+                    initStripePayment();
+                }
             }
-            function closeChat() {
-                overlay.style.display = 'none';
-                chatBox.style.display = 'none';
-                isOpen = false;
+        }
+        window.coGoStep = coGoStep;
+
+        /* Jump back to a completed step from nav bar */
+        window.coJumpBack = function (n) {
+            if (n < _step) coGoStep(n);
+        };
+
+        /* Back button in mobile header */
+        document.getElementById('coBackBtn').addEventListener('click', function () {
+            if (_step > 1) coGoStep(_step - 1);
+            else history.back();
+        });
+
+        /* ── Panel accordion ── */
+        window.coPanel = function (p) {
+            ['login', 'reg'].forEach(function (id) {
+                var card  = document.getElementById('coCard'  + (id === 'login' ? 'Login' : 'Reg'));
+                var body  = document.getElementById('coBody'  + (id === 'login' ? 'Login' : 'Reg'));
+                var radio = document.getElementById('coRadio' + (id === 'login' ? 'Login' : 'Reg'));
+                var on = (id === p);
+                card.classList.toggle('open', on);
+                body.style.display = on ? 'block' : 'none';
+                radio.classList.toggle('on', on);
+            });
+            _panel = p;
+        };
+        /* open login by default */
+        coPanel('login');
+
+        /* ── Google Login (Google Identity Services) ── */
+        var GOOGLE_CLIENT_ID = '129125842951-iggopjs9263kr0iisncbbievrlumcuv1.apps.googleusercontent.com';
+
+        function coHandleGoogleCredential(response) {
+            try {
+                // Decode the JWT payload (base64)
+                var parts  = response.credential.split('.');
+                var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+                var name   = payload.name  || '';
+                var email  = payload.email || '';
+                var first  = payload.given_name  || name.split(' ')[0] || '';
+                var last   = payload.family_name || name.split(' ').slice(1).join(' ') || '';
+
+                // Pre-fill delivery form
+                _autoFill('coDelFirst', first);
+                _autoFill('coDelLast',  last);
+                _autoFill('coDelEmail', email);
+
+                coToast('Signed in as ' + (name || email));
+                setTimeout(function () { coGoStep(2); }, 800);
+            } catch (e) {
+                coToast('Google sign-in failed. Please try again.');
             }
+        }
+        window.coHandleGoogleCredential = coHandleGoogleCredential;
 
-            overlay.addEventListener('click', closeChat);
-            closeBtn.addEventListener('click', closeChat);
-
-            var chatNavBtn = document.getElementById('chatNavBtn');
-            if (chatNavBtn) {
-                chatNavBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openChat();
+        /* Render real Google button (more reliable than prompt/One Tap) */
+        function coInitGoogleSignIn() {
+            if (typeof google === 'undefined' || !google.accounts) {
+                setTimeout(coInitGoogleSignIn, 300);
+                return;
+            }
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback:  coHandleGoogleCredential,
+                ux_mode:   'popup',
+            });
+            var wrap = document.getElementById('coGoogleSignInBtn');
+            if (wrap) {
+                google.accounts.id.renderButton(wrap, {
+                    theme: 'outline',
+                    size:  'large',
+                    text:  'continue_with',
+                    shape: 'rectangular',
+                    width: wrap.offsetWidth || 300,
                 });
             }
-        })();
+        }
+        document.addEventListener('DOMContentLoaded', coInitGoogleSignIn);
+
+        window.coSocial = function (provider) {
+            if (provider === 'facebook') {
+                coToast('Facebook login coming soon');
+            }
+        };
+
+        /* ── Password eye toggle ── */
+        window.coEye = function (inputId, btn) {
+            var inp = document.getElementById(inputId);
+            var isText = inp.type === 'text';
+            inp.type = isText ? 'password' : 'text';
+            btn.style.opacity = isText ? '1' : '0.5';
+        };
+
+        /* ── Field error helpers ── */
+        function fieldOk(inputEl, errId, valid) {
+            inputEl.classList.toggle('bad', !valid);
+            var err = document.getElementById(errId);
+            if (err) err.classList.toggle('show', !valid);
+            return valid;
+        }
+        function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+
+        /* ── Login ── */
+        window.coDoLogin = function () {
+            var email = document.getElementById('coLoginEmail');
+            var pwd   = document.getElementById('coLoginPwd');
+            var ok = true;
+            if (!fieldOk(email, 'coLoginEmailErr',  isEmail(email.value)))  ok = false;
+            if (!fieldOk(pwd,   'coLoginPwdErr',    pwd.value.length >= 1)) ok = false;
+            if (!ok) return;
+            coToast('Logging in…');
+            // TODO: call auth API
+            setTimeout(function () { coGoStep(2); }, 700);
+        };
+
+        /* ── Register ── */
+        window.coDoRegister = function () {
+            var first   = document.getElementById('coRegFirst');
+            var last    = document.getElementById('coRegLast');
+            var email   = document.getElementById('coRegEmail');
+            var emailC  = document.getElementById('coRegEmailC');
+            var pwd     = document.getElementById('coRegPwd');
+            var pwdC    = document.getElementById('coRegPwdC');
+            var ok = true;
+
+            if (!fieldOk(first,  'coRegFirstErr',  first.value.trim().length > 0))   ok = false;
+            if (!fieldOk(last,   'coRegLastErr',   last.value.trim().length > 0))    ok = false;
+            if (!fieldOk(email,  'coRegEmailErr',  isEmail(email.value)))             ok = false;
+            if (!fieldOk(emailC, 'coRegEmailCErr', emailC.value.trim() === email.value.trim() && emailC.value.trim().length > 0)) ok = false;
+            if (!fieldOk(pwd,    'coRegPwdErr',    pwd.value.length >= 8))            ok = false;
+            if (!fieldOk(pwdC,   'coRegPwdCErr',   pwdC.value === pwd.value && pwdC.value.length >= 1)) ok = false;
+
+            if (!ok) return;
+
+            /* Pre-fill delivery form */
+            _autoFill('coDelFirst', first.value);
+            _autoFill('coDelLast',  last.value);
+            _autoFill('coDelEmail', email.value);
+
+            coToast('Account created!');
+            // TODO: call registration API
+            setTimeout(function () { coGoStep(2); }, 700);
+        };
+
+        function _autoFill(id, val) {
+            var el = document.getElementById(id);
+            if (el && !el.value) el.value = val;
+        }
+
+        /* ── Delivery ── */
+        window.coDoDelivery = function () {
+            var required = [
+                ['coDelFirst', 'coDelFirstErr'],
+                ['coDelLast',  'coDelLastErr'],
+                ['coDelEmail', 'coDelEmailErr'],
+                ['coDelPhone', 'coDelPhoneErr'],
+                ['coDelAddr1', 'coDelAddr1Err'],
+                ['coDelCity',  'coDelCityErr'],
+                ['coDelPost',  'coDelPostErr'],
+            ];
+            var ok = true;
+            required.forEach(function (pair) {
+                var el    = document.getElementById(pair[0]);
+                var valid = pair[0] === 'coDelEmail' ? isEmail(el.value) : el.value.trim().length > 0;
+                if (!fieldOk(el, pair[1], valid)) ok = false;
+            });
+            if (!ok) {
+                coToast('Please fill in all required fields');
+                var first = document.querySelector('.co-input.bad');
+                if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            coGoStep(3);
+        };
+
+        /* ── Order summary ── */
+        window.coToggleSummary = function () {
+            _summaryOpen = !_summaryOpen;
+            var body    = document.getElementById('coSummaryBody');
+            var chevron = document.getElementById('coChevron');
+            var toggle  = document.getElementById('coSummaryToggle');
+            body.classList.toggle('open', _summaryOpen);
+            chevron.style.transform = _summaryOpen ? 'rotate(180deg)' : 'rotate(0)';
+            toggle.setAttribute('aria-expanded', String(_summaryOpen));
+        };
+
+        function coPopulateSummary() {
+            try {
+                var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                var total  = 0;
+                var itemsEl = document.getElementById('coSummaryItems');
+
+                if (!basket.length) {
+                    itemsEl.innerHTML = '<p style="font-size:13px;color:#6b7280;padding:8px 0">Your basket is empty</p>';
+                } else {
+                    itemsEl.innerHTML = basket.map(function (item) {
+                        var qty   = item.quantity || item.totalQty || 1;
+                        var price = item.itemTotal || 0;
+                        total += price;
+                        var name  = item.productName || item.name || 'Product';
+                        return '<div class="co-summary-item">' +
+                               '<span class="co-summary-qty">' + qty + '</span>' +
+                               '<span class="co-summary-name">' + _esc(name) + '</span>' +
+                               '<span class="co-summary-price">£' + price.toFixed(2) + '</span>' +
+                               '</div>';
+                    }).join('');
+                }
+
+                var fmt = '£' + total.toFixed(2);
+                document.getElementById('coSummaryTotal').textContent = fmt;
+                document.getElementById('coSubtotal').textContent     = fmt;
+                document.getElementById('coTotal').textContent        = fmt;
+            } catch (e) { /* silent */ }
+        }
+
+        function _esc(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        /* ── Quote submission (Stripe not configured) ── */
+        window.coSubmitQuote = async function () {
+            var btn = document.getElementById('coSubmitQuoteBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting…';
+
+            var basket   = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            var customer = coGetCustomer();
+
+            try {
+                var res = await fetch('/api/quotes/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ basket: basket, customer: customer }),
+                });
+                // 404 is fine in prototype – endpoint may not be wired yet
+            } catch (e) { /* network/CORS error acceptable in prototype */ }
+
+            // Always show success in prototype
+            document.getElementById('coQuoteForm').style.display    = 'none';
+            document.getElementById('payment-success').style.display = 'block';
+            localStorage.setItem('quoteBasket', '[]');
+            setTimeout(function () { window.location.replace('/'); }, 3200);
+        };
+
+        /* ── Customer data (used by checkout.js Stripe integration) ── */
+        function coGetCustomer() {
+            return {
+                fullName: [
+                    (document.getElementById('coDelFirst') || {}).value,
+                    (document.getElementById('coDelLast')  || {}).value,
+                ].filter(Boolean).join(' ') || 'Guest',
+                firstName: ((document.getElementById('coDelFirst') || {}).value || ''),
+                lastName:  ((document.getElementById('coDelLast')  || {}).value || ''),
+                company:   ((document.getElementById('coDelCompany') || {}).value || ''),
+                email:     ((document.getElementById('coDelEmail') || {}).value || ''),
+                phone:     ((document.getElementById('coDelPhone') || {}).value || ''),
+                address:   ((document.getElementById('coDelAddr1') || {}).value || ''),
+                address2:  ((document.getElementById('coDelAddr2') || {}).value || ''),
+                city:      ((document.getElementById('coDelCity')  || {}).value || ''),
+                postcode:  ((document.getElementById('coDelPost')  || {}).value || ''),
+                country:   ((document.getElementById('coDelCountry') || {}).value || 'GB'),
+            };
+        }
+        window.coGetCustomer = coGetCustomer;
+
+        /* Patch getCustomerData for checkout.js compatibility */
+        window.getCustomerData = coGetCustomer;
+
+    })();
     </script>
 
-<script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-(function(){
-    var host = window.location.hostname;
-    // Tawk often blocks localhost; avoid noisy console errors during local dev.
-    // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
-    var allowLocal = false;
-    try {
-        var params = new URLSearchParams(window.location.search);
-        allowLocal = params.has('tawk') || params.has('chat');
-    } catch (e) {
-        allowLocal = false;
-    }
-    if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
+    <!-- Stripe checkout.js (initialises card element when step 3 is reached) -->
+    <script src="mobile/js/checkout.js?v=20260516"></script>
 
-    var propertyId = '69628dafb346e51985794182';
-    var widgetId = '1jekfitse';
-
-    // If you create a separate Tawk property for staging, set it here:
-    // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
-
-    window.Tawk_API = window.Tawk_API || {};
-    // Hide default bubble; open only from our in-site trigger.
-    window.Tawk_API.onLoad = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_API.onChatMinimized = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_LoadStart = new Date();
-
-    var s1 = document.createElement('script');
-    var s0 = document.getElementsByTagName('script')[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/' + propertyId + '/' + widgetId;
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1, s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
-
-<style>
-/* Hide the Tawk launcher bubble by default (only show when user opens chat). */
-body:not(.tawk-open) iframe[title="chat widget"],
-body:not(.tawk-open) .tawk-min-container,
-body:not(.tawk-open) #tawk-bubble-container {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translateY(120px) !important;
-}
-body.tawk-open iframe[title="chat widget"],
-body.tawk-open .tawk-min-container,
-body.tawk-open #tawk-bubble-container {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transform: none !important;
-}
-
-@media (max-width: 1023px) {
-    iframe[title="chat widget"],
-    .tawk-min-container,
-    #tawk-bubble-container {
-        bottom: 75px !important;
-    }
-}
-</style>
-
-    <!-- WhatsApp Floating Button -->
-    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
-        <i class="fa-brands fa-whatsapp"></i>
-    </button>
-
-    <!-- WhatsApp Popup -->
-    <div class="wa-popup" id="waPopup">
-        <div class="wa-popup__card">
-            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
-            <div class="wa-popup__header">
-                <div class="wa-popup__avatar"><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK"></div>
-                <div class="wa-popup__info">
-                    <h3><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK"></h3>
-                    <span>Typically replies quickly</span>
-                </div>
-            </div>
-            <div class="wa-popup__body">
-                <div class="wa-message">Hi, how can we help you?</div>
-            </div>
-            <div class="wa-popup__footer">
-                <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-whatsapp"></i> Start chat on WhatsApp
-                </a>
-            </div>
-        </div>
-    </div>
-    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
-
-    <!-- Footer (injected from /mobile/footer/footer.html) -->
-    <div data-mobile-footer></div>
-    <script src="mobile/footer/footer.js?v=FTR10APR2026" defer></script>
 </body>
 </html>

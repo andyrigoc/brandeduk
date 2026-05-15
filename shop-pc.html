@@ -4636,59 +4636,71 @@
         // Fetch filter counts and render dynamic filters
         async function fetchFilterCounts() {
             try {
-                // Build query params for filters API (using the same logic as product API)
-                const apiParams = buildApiParams();
-
-                // Remove parameters that are not relevant for filter counts
-                delete apiParams.sort;
-                delete apiParams.page;
-                delete apiParams.limit;
-
                 const params = new URLSearchParams();
 
                 // Determine which filters API to use: brand-specific or general
                 let filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
 
-                if (currentState.brand) {
-                    filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(currentState.brand)}/filters`;
-                    console.log('Ã°Å¸ÂÂ·Ã¯Â¸Â Using brand-specific filters API for:', currentState.brand);
+                // Use brand-specific API if URL has ?brand= or sidebar brand filter is active
+                const activeBrandFilter = currentState.brand ||
+                    (currentState.filters.brand && currentState.filters.brand.length > 0
+                        ? currentState.filters.brand[0]
+                        : null);
+
+                if (activeBrandFilter) {
+                    filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
+                    console.log('🏷️ Using brand-specific filters API for:', activeBrandFilter);
+                } else {
+                    // Add productType from URL param or category slug
+                    if (currentState.productType) {
+                        params.append('productType', currentState.productType);
+                    } else if (currentState.category && currentState.category !== 'all') {
+                        const apiCategoryName = getApiCategoryName(currentState.category);
+                        if (apiCategoryName) params.append('productType', apiCategoryName);
+                    }
+                    // Add productType from sidebar filter if active
+                    if (currentState.filters.productType && currentState.filters.productType.length > 0) {
+                        params.append('productType', currentState.filters.productType[0]);
+                    }
                 }
 
-                // Append all params from buildApiParams to URLSearchParams
-                Object.keys(apiParams).forEach(key => {
-                    const value = apiParams[key];
-                    if (value === null || value === undefined || value === '') return;
+                // Add search query if present
+                if (currentState.search && currentState.search.trim()) {
+                    params.append('q', normalizeSearchQuery(currentState.search.trim()));
+                }
 
-                    if (Array.isArray(value)) {
-                        value.forEach(v => {
-                            // If key already ends with [], don't add it again
-                            const paramKey = key.endsWith('[]') ? key : `${key}[]`;
-                            params.append(paramKey, v);
-                        });
-                    } else {
-                        params.append(key, value);
-                    }
-                });
+                // Add price range if set
+                if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
+                    params.append('priceMin', currentState.priceMin);
+                }
+                if (currentState.priceMax !== null && currentState.priceMax !== undefined) {
+                    params.append('priceMax', currentState.priceMax);
+                }
+
+                // Add quick filters (flag[])
+                if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
+                    currentState.filters.quickFilters.forEach(flag => {
+                        const mappedFlag = FILTER_MAPPINGS.quickFilter?.[flag] || flag;
+                        params.append('flag[]', mappedFlag);
+                    });
+                }
 
                 const queryString = params.toString();
                 const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
 
-                console.log('Ã°Å¸â€œÅ  Fetching filter counts from:', url);
+                console.log('📊 Fetching filter counts from:', url);
 
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Filter API error: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Filter API error: ${response.status}`);
 
                 const data = await response.json();
-                console.log('Ã°Å¸â€œÅ  Filter counts received:', data);
+                console.log('📊 Filter counts received:', data);
 
                 if (data && data.filters) {
-                    // Render dynamic filters from API response
                     renderDynamicFilters(data.filters);
                 }
             } catch (err) {
-                console.error('Ã¢ÂÅ’ Error fetching filter counts:', err);
+                console.error('❌ Error fetching filter counts:', err);
                 // Keep static fallback filters on error
             }
         }
