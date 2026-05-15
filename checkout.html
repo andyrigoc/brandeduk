@@ -767,6 +767,12 @@
                     Back to Account
                 </button>
 
+                <!-- Signed-in bar (shown when session is restored from localStorage) -->
+                <div id="coSignedInBar" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#166534;align-items:center;justify-content:space-between">
+                    <span id="coSignedInName"></span>
+                    <button onclick="coSignOut()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;text-decoration:underline;padding:0;margin-left:12px">Sign out</button>
+                </div>
+
                 <div class="co-delivery-wrap">
                     <p class="co-step-title">Delivery Address</p>
 
@@ -961,6 +967,74 @@
         var _panel = 'login';
         var _summaryOpen = false;
 
+        /* ── Persistent session helpers ── */
+        function coSaveUser(u) {
+            try { localStorage.setItem('coUser', JSON.stringify(u)); } catch(e) {}
+        }
+        function coSaveDelivery() {
+            try {
+                localStorage.setItem('coDelivery', JSON.stringify({
+                    first:   (document.getElementById('coDelFirst')   || {}).value || '',
+                    last:    (document.getElementById('coDelLast')    || {}).value || '',
+                    company: (document.getElementById('coDelCompany') || {}).value || '',
+                    email:   (document.getElementById('coDelEmail')   || {}).value || '',
+                    phone:   (document.getElementById('coDelPhone')   || {}).value || '',
+                    addr1:   (document.getElementById('coDelAddr1')   || {}).value || '',
+                    addr2:   (document.getElementById('coDelAddr2')   || {}).value || '',
+                    city:    (document.getElementById('coDelCity')    || {}).value || '',
+                    post:    (document.getElementById('coDelPost')    || {}).value || '',
+                    country: (document.getElementById('coDelCountry') || {}).value || 'GB',
+                }));
+            } catch(e) {}
+        }
+        function coFillDelivery(d) {
+            var map = {
+                coDelFirst: d.first, coDelLast: d.last, coDelCompany: d.company,
+                coDelEmail: d.email, coDelPhone: d.phone, coDelAddr1: d.addr1,
+                coDelAddr2: d.addr2, coDelCity: d.city, coDelPost: d.post
+            };
+            Object.keys(map).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && map[id]) el.value = map[id];
+            });
+            var sel = document.getElementById('coDelCountry');
+            if (sel && d.country) sel.value = d.country;
+        }
+        function coShowSignedInBar(user) {
+            var bar = document.getElementById('coSignedInBar');
+            var nm  = document.getElementById('coSignedInName');
+            if (bar && nm) {
+                nm.textContent = 'Signed in as '
+                    + (user.firstName ? user.firstName + (user.lastName ? ' ' + user.lastName : '') + '  ·  ' : '')
+                    + (user.email || '');
+                bar.style.display = 'flex';
+            }
+        }
+        window.coSignOut = function () {
+            localStorage.removeItem('coUser');
+            localStorage.removeItem('coDelivery');
+            var bar = document.getElementById('coSignedInBar');
+            if (bar) bar.style.display = 'none';
+            coGoStep(1);
+        };
+        function coRestoreSession() {
+            try {
+                var user = JSON.parse(localStorage.getItem('coUser') || 'null');
+                var del  = JSON.parse(localStorage.getItem('coDelivery') || 'null');
+                if (!user) return;
+                coShowSignedInBar(user);
+                if (del && del.addr1) {
+                    coFillDelivery(del);
+                    coGoStep(3);
+                } else {
+                    _autoFill('coDelFirst', user.firstName || '');
+                    _autoFill('coDelLast',  user.lastName  || '');
+                    _autoFill('coDelEmail', user.email     || '');
+                    coGoStep(2);
+                }
+            } catch(e) {}
+        }
+
         /* ── Toast ── */
         function coToast(msg, ms) {
             var el = document.getElementById('coToastEl');
@@ -1039,10 +1113,12 @@
                 var first  = payload.given_name  || name.split(' ')[0] || '';
                 var last   = payload.family_name || name.split(' ').slice(1).join(' ') || '';
 
-                // Pre-fill delivery form
+                // Save session & pre-fill delivery form
+                coSaveUser({ firstName: first, lastName: last, email: email, provider: 'google' });
                 _autoFill('coDelFirst', first);
                 _autoFill('coDelLast',  last);
                 _autoFill('coDelEmail', email);
+                coShowSignedInBar({ firstName: first, lastName: last, email: email });
 
                 coToast('Signed in as ' + (name || email));
                 setTimeout(function () { coGoStep(2); }, 800);
@@ -1077,6 +1153,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             coInitGoogleSignIn();
             coPopulateSummary();
+            coRestoreSession();
         });
 
         window.coSocial = function (provider) {
@@ -1110,6 +1187,8 @@
             if (!fieldOk(email, 'coLoginEmailErr',  isEmail(email.value)))  ok = false;
             if (!fieldOk(pwd,   'coLoginPwdErr',    pwd.value.length >= 1)) ok = false;
             if (!ok) return;
+            coSaveUser({ firstName: '', lastName: '', email: email.value.trim(), provider: 'email' });
+            coShowSignedInBar({ email: email.value.trim() });
             coToast('Logging in…');
             // TODO: call auth API
             setTimeout(function () { coGoStep(2); }, 700);
@@ -1139,6 +1218,8 @@
             _autoFill('coDelLast',  last.value);
             _autoFill('coDelEmail', email.value);
 
+            coSaveUser({ firstName: first.value.trim(), lastName: last.value.trim(), email: email.value.trim(), provider: 'email' });
+            coShowSignedInBar({ firstName: first.value.trim(), lastName: last.value.trim(), email: email.value.trim() });
             coToast('Account created!');
             // TODO: call registration API
             setTimeout(function () { coGoStep(2); }, 700);
@@ -1172,6 +1253,7 @@
                 if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+            coSaveDelivery();
             coGoStep(3);
         };
 
