@@ -2993,6 +2993,11 @@
             'build your brand':   'build-your-brand',
         };
 
+        function buildApiParams() {
+            const params = {};
+            params.page = currentState.page || 1;
+            params.limit = currentState.limit || 24;
+
             // Sort parameter
             if (currentState.sort) {
                 const sortMap = {
@@ -3548,13 +3553,17 @@
                     priceRange = currentState.apiPriceRange;
                     console.log('ðŸ“¡ Using price range from latest API response (mobile):', priceRange);
                 } else {
-                    // Fallback: fetch price range from API (without filters to get full range)
+                    // Fallback: fetch price range from API filtered by current category
                     console.log('ðŸ“¡ Fetching price range from API (mobile, no cached range)...');
-                    const data = await BrandedAPI.getProducts({ limit: 1 });
+                    const rangeParams = { limit: 1 };
+                    if (currentState.category && currentState.category !== 'all') {
+                        rangeParams.category = currentState.category;
+                    }
+                    const data = await BrandedAPI.getProducts(rangeParams);
                     priceRange = data.priceRange || { min: 14, max: 65 };
                 }
 
-                mobileCatalogMinPrice = Math.floor(priceRange.min || 14);
+                mobileCatalogMinPrice = Math.max(1, Math.floor(priceRange.min || 14));
                 mobileCatalogMaxPrice = Math.ceil(priceRange.max || 65);
                 console.log('âœ… Price range determined (mobile):', { mobileCatalogMinPrice, mobileCatalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
 
@@ -3706,7 +3715,7 @@
                 return;
             }
 
-            const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
+            const apiMin = Math.max(1, Math.floor(currentState.apiPriceRange.min || 0));
             const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
 
             console.log('ðŸ”„ Updating mobile price slider range from API:', { apiMin, apiMax });

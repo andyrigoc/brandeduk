@@ -1059,10 +1059,16 @@ const ShopManager = (function () {
             });
         }
 
-        // Sort select
+        // Sort select (desktop + mobile)
         const sortSelect = document.getElementById('sortSelect');
         if (sortSelect) {
             sortSelect.addEventListener('change', (e) => {
+                setSort(e.target.value);
+            });
+        }
+        const mobileSortSelect = document.getElementById('mobileSortSelect');
+        if (mobileSortSelect) {
+            mobileSortSelect.addEventListener('change', (e) => {
                 setSort(e.target.value);
             });
         }
