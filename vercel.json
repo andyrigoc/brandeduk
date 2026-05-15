@@ -12,6 +12,9 @@
     },
     "api/quotes/stripe/payment-intent.js": {
       "maxDuration": 10
+    },
+    "api/quotes/submit.js": {
+      "maxDuration": 10
     }
   },
 
