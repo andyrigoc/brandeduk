@@ -132,10 +132,17 @@ async function initStripePayment() {
             el.textContent = error ? error.message : '';
         });
 
+        // Hide quote fallback now that Stripe is ready
+        const qf = document.getElementById('coQuoteForm');
+        if (qf) qf.style.display = 'none';
+
         setPaymentView('form');
 
     } catch (err) {
         console.error('[STRIPE INIT]', err);
+        // Show quote fallback so user can still submit
+        const qf = document.getElementById('coQuoteForm');
+        if (qf) qf.style.display = 'block';
         showPaymentError(err.message || 'Could not initialise payment. Please try again.');
     }
 }

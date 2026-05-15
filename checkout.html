@@ -991,9 +991,8 @@
 
             if (n === 3) {
                 coPopulateSummary();
-                // Try initialising Stripe; if it fails, quote form stays visible
+                // Try initialising Stripe; quote form stays visible until Stripe succeeds
                 if (typeof initStripePayment === 'function') {
-                    document.getElementById('coQuoteForm').style.display = 'none';
                     initStripePayment();
                 }
             }
@@ -1075,7 +1074,10 @@
                 });
             }
         }
-        document.addEventListener('DOMContentLoaded', coInitGoogleSignIn);
+        document.addEventListener('DOMContentLoaded', function () {
+            coInitGoogleSignIn();
+            coPopulateSummary();
+        });
 
         window.coSocial = function (provider) {
             if (provider === 'facebook') {
