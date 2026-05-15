@@ -65,6 +65,6 @@ module.exports = async function handler(req, res) {
 
     } catch (err) {
         console.error('[payment-intent]', err.message);
-        return res.status(500).json({ error: err.message || 'Internal server error' });
+        return res.status(500).json({ message: err.message || 'Internal server error' });
     }
 };
