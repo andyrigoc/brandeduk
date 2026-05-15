@@ -1196,8 +1196,8 @@
                     itemsEl.innerHTML = '<p style="font-size:13px;color:#6b7280;padding:8px 0">Your basket is empty</p>';
                 } else {
                     itemsEl.innerHTML = basket.map(function (item) {
-                        var qty   = item.quantity || item.totalQty || 1;
-                        var price = item.itemTotal || 0;
+                        var qty   = item.qty || item.quantity || item.totalQty || 1;
+                        var price = item.itemTotal || (parseFloat(item.unitPrice || 0) * qty);
                         total += price;
                         var name  = item.productName || item.name || 'Product';
                         return '<div class="co-summary-item">' +

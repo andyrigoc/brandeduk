@@ -33,7 +33,9 @@ module.exports = async function handler(req, res) {
         // Calculate total server-side from basket items (pence)
         let totalPence = 0;
         for (const item of basket) {
-            const itemTotal = parseFloat(item.itemTotal || 0);
+            const qty       = parseFloat(item.qty || item.quantity || 1);
+            const unitPrice = parseFloat(item.unitPrice || item.price || 0);
+            const itemTotal = parseFloat(item.itemTotal || (unitPrice * qty) || 0);
             if (!isNaN(itemTotal) && itemTotal > 0) {
                 totalPence += Math.round(itemTotal * 100);
             }
