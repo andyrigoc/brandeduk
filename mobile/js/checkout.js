@@ -140,10 +140,12 @@ async function initStripePayment() {
 
     } catch (err) {
         console.error('[STRIPE INIT]', err);
-        // Show quote fallback so user can still submit
+        // Silently fall back to quote form — no error shown to customer
+        // (business model is quote-based; Stripe card payment is optional)
+        document.getElementById('payment-loading').style.display = 'none';
+        document.getElementById('payment-error-state').style.display = 'none';
         const qf = document.getElementById('coQuoteForm');
         if (qf) qf.style.display = 'block';
-        showPaymentError(err.message || 'Could not initialise payment. Please try again.');
     }
 }
 
