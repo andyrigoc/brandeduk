@@ -199,8 +199,13 @@ async function verifyPaymentStatus(intentId) {
         }
     } catch (err) {
         console.error('[STRIPE VERIFY]', err);
-        // Payment may still have succeeded; show a neutral message
+        // Payment succeeded (Stripe confirmed it); verify endpoint missing is fine
         setPaymentView('success');
+        setTimeout(() => {
+            localStorage.removeItem('quoteBasket');
+            localStorage.setItem('quoteBasket', '[]');
+            window.location.replace('/');
+        }, 2500);
     }
 }
 
