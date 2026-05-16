@@ -73,12 +73,17 @@
                                     <span>Total</span>
                                     <strong id="basketTotalAmount">£0.00 ex VAT</strong>
                                 </div>
-                                <button class="btn-order-next" id="basketNextBtn">
-                                    Proceed to Checkout
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </button>
+                                <div class="order-drawer-cta-row">
+                                    <button class="btn-view-basket" onclick="window.location.href='basket.html'">
+                                        View Basket ›
+                                    </button>
+                                    <button class="btn-order-next" id="basketNextBtn">
+                                        Proceed to Checkout
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -521,6 +526,34 @@
                 opacity: 0.5;
                 cursor: not-allowed;
                 transform: none;
+            }
+
+            .order-drawer-cta-row {
+                display: flex;
+                gap: 10px;
+            }
+
+            .order-drawer-cta-row .btn-order-next {
+                flex: 1;
+                width: auto;
+            }
+
+            .btn-view-basket {
+                flex: 0 0 auto;
+                padding: 16px 18px;
+                background: #fff;
+                color: #273469;
+                border: 2px solid #273469;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                white-space: nowrap;
+            }
+
+            .btn-view-basket:hover {
+                background: #f0f2fa;
             }
 
             /* Form Styles */
