@@ -4094,6 +4094,21 @@
     </script>
 
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
+    <script>
+        (function() {
+            function anchorStickyBar() {
+                var nav = document.querySelector('.bottom-nav');
+                var sticky = document.getElementById('mobileStickyBar');
+                if (!nav || !sticky) return;
+                var navH = nav.getBoundingClientRect().height;
+                if (navH > 0) {
+                    sticky.style.bottom = navH + 'px';
+                }
+            }
+            document.addEventListener('DOMContentLoaded', anchorStickyBar);
+            window.addEventListener('resize', anchorStickyBar);
+        })();
+    </script>
 </body>
 </html>
 
