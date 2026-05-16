@@ -1566,6 +1566,32 @@
     background: #f9fafb;
 }
 
+/* Go to Basket & Pay — full-width primary CTA */
+.btn-go-basket {
+    width: 100%;
+    background: #273469;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin-top: 4px;
+}
+
+.btn-go-basket:hover {
+    background: #1a2450;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(39, 52, 105, 0.35);
+}
+
+.add-quote-success {
+    flex-wrap: wrap;
+}
+
 /* Responsive */
 @media (max-width: 968px) {
     .product-shop-layout {
