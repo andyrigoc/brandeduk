@@ -178,7 +178,7 @@ function buildQuoteData(basket) {
     const customer = typeof window.coGetCustomer === 'function' ? window.coGetCustomer() : getCustomerData();
     const totals = calculateBasketTotals(basket);
 
-    return {
+    return sanitizeQuotePayload({
         customer,
         summary: {
             totalQuantity: totals.totalQuantity,
@@ -199,7 +199,7 @@ function buildQuoteData(basket) {
         selectedGraphic: readJson('selectedGraphic') || readJson('vecteezySelectedGraphic') || undefined,
         notes: [localStorage.getItem('orderNotes') || ''].filter(Boolean),
         timestamp: new Date().toISOString(),
-    };
+    });
 }
 
 function calculateBasketTotals(basket) {
@@ -221,8 +221,8 @@ function calculateBasketTotals(basket) {
             const lineTotal = number(customization.lineTotal || (unit * qty), 0);
             customizationCost += lineTotal;
 
-            if (String(customization.method || '').toLowerCase() === 'embroidery' && customization.logo) {
-                uniqueEmbLogos.add(customization.logo);
+            if (String(customization.method || '').toLowerCase() === 'embroidery' && (customization.logo || customization.logoData)) {
+                uniqueEmbLogos.add(getLogoKey(customization));
             }
 
             customizations.push({
@@ -231,7 +231,7 @@ function calculateBasketTotals(basket) {
                 position: customization.positionLabel || customization.position || '',
                 method: normalizeMethod(customization.method),
                 hasLogo: Boolean(customization.logo || customization.logoData),
-                logo: customization.logo || null,
+                logo: safeLogoRef(customization.logo || customization.logoData),
                 unitPrice: unit,
                 lineTotal,
                 quantity: qty,
@@ -267,8 +267,8 @@ function buildBasketItems(basket) {
             quantity: qty,
             unitPrice,
             itemTotal: unitPrice * qty,
-            image: item.image || item.colorImage || '',
-            logos: Array.isArray(item.logos) ? item.logos : [],
+            image: safeMediaRef(item.image || item.colorImage || ''),
+            logos: sanitizeCustomizations(Array.isArray(item.logos) ? item.logos : []),
         };
     });
 }
@@ -300,6 +300,72 @@ function normalizeMethod(method) {
     if (value === 'print') return 'Print';
     if (value === 'text') return 'Text';
     return method || '';
+}
+
+function sanitizeCustomizations(customizations) {
+    return customizations.map(customization => ({
+        position: customization.positionLabel || customization.position || '',
+        positionLabel: customization.positionLabel || customization.position || '',
+        method: normalizeMethod(customization.method),
+        hasLogo: Boolean(customization.logo || customization.logoData),
+        logo: safeLogoRef(customization.logo || customization.logoData),
+        unitPrice: number(customization.unitPrice || customization.price, 0),
+        lineTotal: number(customization.lineTotal || customization.total, 0),
+    }));
+}
+
+function sanitizeQuotePayload(value, key = '') {
+    if (Array.isArray(value)) {
+        return value.map(item => sanitizeQuotePayload(item, key)).filter(item => item !== undefined);
+    }
+
+    if (value && typeof value === 'object') {
+        const cleaned = {};
+        Object.entries(value).forEach(([childKey, childValue]) => {
+            if (isLargeMediaKey(childKey)) return;
+            const sanitized = sanitizeQuotePayload(childValue, childKey);
+            if (sanitized !== undefined) cleaned[childKey] = sanitized;
+        });
+        return cleaned;
+    }
+
+    if (typeof value === 'string') {
+        if (isBase64Media(value)) return undefined;
+        if (value.length > 2000 && isMediaLikeKey(key)) return undefined;
+    }
+
+    return value;
+}
+
+if (typeof window !== 'undefined') {
+    window.sanitizeQuotePayload = sanitizeQuotePayload;
+}
+
+function isLargeMediaKey(key) {
+    return /^(logoData|imageData|base64|blob|file|fileData|previewData|originalFile)$/i.test(key);
+}
+
+function isMediaLikeKey(key) {
+    return /(logo|image|graphic|preview|file)/i.test(key);
+}
+
+function isBase64Media(value) {
+    return /^data:(image|application)\//i.test(value) || /^data:.*;base64,/i.test(value);
+}
+
+function safeMediaRef(value) {
+    if (!value || typeof value !== 'string' || isBase64Media(value)) return '';
+    return value.length > 2000 ? '' : value;
+}
+
+function safeLogoRef(value) {
+    if (!value || typeof value !== 'string' || isBase64Media(value)) return null;
+    return value.length > 2000 ? null : value;
+}
+
+function getLogoKey(customization) {
+    const ref = safeLogoRef(customization.logo || customization.logoData);
+    return ref || `${customization.positionLabel || customization.position || 'logo'}-${customization.method || 'method'}`;
 }
 
 function readBasket() {

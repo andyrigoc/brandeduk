@@ -1336,7 +1336,7 @@
             return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
-        /* ── Quote submission (Stripe not configured) ── */
+        /* ── Quote submission fallback ── */
         window.coSubmitQuote = async function () {
             var btn = document.getElementById('coSubmitQuoteBtn');
             btn.disabled = true;
@@ -1344,15 +1344,24 @@
 
             var basket   = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             var customer = coGetCustomer();
+            var apiBase = (window.API_BASE_URL || (
+                location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+                    ? 'http://localhost:3004'
+                    : 'https://api.brandeduk.com'
+            )).replace(/\/+$/, '');
+            var payload = { basket: basket, customer: customer };
+            if (typeof window.sanitizeQuotePayload === 'function') {
+                payload = window.sanitizeQuotePayload(payload);
+            }
 
             try {
-                var res = await fetch('/api/quotes/submit', {
+                var res = await fetch(apiBase + '/api/quotes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ basket: basket, customer: customer }),
+                    body: JSON.stringify(payload),
                 });
-                // 404 is fine in prototype – endpoint may not be wired yet
-            } catch (e) { /* network/CORS error acceptable in prototype */ }
+                if (!res.ok) throw new Error('Quote API error: ' + res.status);
+            } catch (e) { console.warn('[Checkout] Quote fallback failed:', e); }
 
             // Always show success in prototype
             document.getElementById('coQuoteForm').style.display    = 'none';
