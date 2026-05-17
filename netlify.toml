@@ -52,6 +52,18 @@
   force = true
 
 [[redirects]]
+  from = "/payment-success.html"
+  to = "/payment-success"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/payment-cancel.html"
+  to = "/payment-cancel"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/customize.html"
   to = "/customize"
   status = 301
@@ -95,6 +107,16 @@
 [[redirects]]
   from = "/checkout"
   to = "/checkout.html"
+  status = 200
+
+[[redirects]]
+  from = "/payment-success"
+  to = "/payment-success.html"
+  status = 200
+
+[[redirects]]
+  from = "/payment-cancel"
+  to = "/payment-cancel.html"
   status = 200
 
 [[redirects]]

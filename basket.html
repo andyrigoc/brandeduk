@@ -2163,6 +2163,12 @@
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
             saveOrderNotes();
+            const submitBtn = document.getElementById('quotePopupSubmitBtn');
+            if (submitBtn) {
+                submitBtn.classList.remove('submitted');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Quote Request';
+            }
             const popupOverlay = document.getElementById('quotePopupOverlay');
             if (popupOverlay) { popupOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         };
@@ -2260,9 +2266,8 @@
                         notes: [document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || ''].filter(Boolean),
                         timestamp: new Date().toISOString()
                     };
-
                     let result = { success: false };
-                    const API_BASE_URL = 'https://api.brandeduk.com';
+                    const API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
                     try {
                         const response = await fetch(`${API_BASE_URL}/api/quotes`, {
                             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2285,7 +2290,7 @@
                         }
                     }
 
-                    if (result.success) {
+                    if (result.success || result.ok || result.data) {
                         if (submitBtn) { submitBtn.classList.add('submitted'); submitBtn.textContent = 'Quote Sent'; }
                         setTimeout(() => {
                             localStorage.removeItem('quoteBasket');
@@ -2296,7 +2301,10 @@
                 } catch (err) {
                     console.error('Quote submission error:', err);
                     alert('Failed to send quote. Please try again.');
-                    if (submitBtn) { submitBtn.textContent = 'Submit Quote Request'; submitBtn.disabled = false; }
+                    if (submitBtn) {
+                        submitBtn.textContent = 'Submit Quote Request';
+                        submitBtn.disabled = false;
+                    }
                 }
             });
         }
@@ -2380,16 +2388,6 @@
     if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
     if (icon)  icon.addEventListener('click', submitSearch);
 })();
-// Request Quote button → same handler as checkout but marks as quote
-document.addEventListener('DOMContentLoaded', function() {
-    var rqBtn = document.getElementById('requestQuoteBtn');
-    if (rqBtn) {
-        rqBtn.addEventListener('click', function() {
-            var checkoutBtn = document.getElementById('checkoutBtn');
-            if (checkoutBtn) checkoutBtn.click();
-        });
-    }
-});
 </script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->

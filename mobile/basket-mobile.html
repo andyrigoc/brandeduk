@@ -1652,7 +1652,8 @@
                             timestamp: new Date().toISOString()
                         };
                         
-                        const response = await fetch('https://api.brandeduk.com/api/quotes', {
+                        const API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+                        const response = await fetch(`${API_BASE_URL}/api/quotes`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(quoteData)
@@ -1661,7 +1662,7 @@
                         if (!response.ok) throw new Error(`API Error: ${response.status}`);
                         const result = await response.json();
                         
-                        if (result.success) {
+                        if (result.success || result.ok || result.data) {
                             bqSubmitBtn.classList.add('submitted');
                             bqSubmitBtn.innerHTML = 'Ã¢Å“â€œ Quote Submitted!';
                             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);

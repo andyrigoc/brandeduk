@@ -27,6 +27,8 @@
 
     { "source": "/basket", "destination": "/basket.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/payment-success", "destination": "/payment-success.html" },
+    { "source": "/payment-cancel", "destination": "/payment-cancel.html" },
     { "source": "/customize", "destination": "/customize.html" },
     { "source": "/quote", "destination": "/quote-form.html" },
     { "source": "/services", "destination": "/services.html" },
@@ -63,6 +65,16 @@
     {
       "source": "/checkout.html",
       "destination": "/checkout",
+      "permanent": true
+    },
+    {
+      "source": "/payment-success.html",
+      "destination": "/payment-success",
+      "permanent": true
+    },
+    {
+      "source": "/payment-cancel.html",
+      "destination": "/payment-cancel",
       "permanent": true
     },
     {

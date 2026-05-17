@@ -1,18 +1,16 @@
 // Checkout Page JavaScript
 
-// ─── Stripe configuration ────────────────────────────────────────────────────
-// Replace with your actual publishable key from the Stripe Dashboard.
-// For Netlify/Vercel you can inject it via a meta tag or window variable.
-const STRIPE_PK = (typeof window.STRIPE_PUBLISHABLE_KEY !== 'undefined')
-    ? window.STRIPE_PUBLISHABLE_KEY
-    : 'pk_live_51TOc1NBorzr6Fe4Yg49Hwzl9AGX1Q5RzI21LfUo3eP6TaaTuUUCtqc9h578i5OkUaCtR4v5zgXN2epeZ6hfoCIkP00y9x6a04G';
+// For local testing you can set `window.API_BASE_URL = "http://localhost:3004"` before this script loads.
+const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL)
+    ? String(window.API_BASE_URL).replace(/\/+$/, '')
+    : 'https://api.brandeduk.com';
 
-let stripe = null;
-let cardElement = null;
-let paymentIntentId = null;
-let paymentIntentClientSecret = null;
+const QUOTES_ENDPOINT = `${API_BASE_URL}/api/quotes`;
+const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-session`;
+const VAT_RATE = 0.20;
 
-// ─── Tab switching ────────────────────────────────────────────────────────────
+let checkoutSessionPending = false;
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tabName = btn.dataset.tab;
@@ -21,29 +19,26 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
         btn.classList.add('active');
-        document.getElementById(`${tabName}-tab`).classList.add('active');
+        document.getElementById(`${tabName}-tab`)?.classList.add('active');
 
         if (navigator.vibrate) navigator.vibrate(5);
-
-        if (tabName === 'payment') initStripePayment();
     });
 });
 
-// ─── Modal helpers ─────────────────────────────────────────────────────────────
 function openAddressModal() {
-    document.getElementById('addressModal').classList.add('active');
+    document.getElementById('addressModal')?.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 function closeAddressModal() {
-    document.getElementById('addressModal').classList.remove('active');
+    document.getElementById('addressModal')?.classList.remove('active');
     document.body.style.overflow = '';
 }
 function openShippingModal() {
-    document.getElementById('shippingModal').classList.add('active');
+    document.getElementById('shippingModal')?.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 function closeShippingModal() {
-    document.getElementById('shippingModal').classList.remove('active');
+    document.getElementById('shippingModal')?.classList.remove('active');
     document.body.style.overflow = '';
 }
 
@@ -64,186 +59,268 @@ document.getElementById('addressForm')?.addEventListener('submit', (e) => {
     if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
 });
 
-// ─── "Request Quote" button → switch to Payment tab ──────────────────────────
 document.querySelector('.request-quote-btn')?.addEventListener('click', () => {
-    // Switch to payment tab
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-    const payBtn = document.querySelector('[data-tab="payment"]');
-    if (payBtn) payBtn.classList.add('active');
-    const payTab = document.getElementById('payment-tab');
-    if (payTab) payTab.classList.add('active');
-
-    initStripePayment();
+    document.querySelector('[data-tab="payment"]')?.classList.add('active');
+    document.getElementById('payment-tab')?.classList.add('active');
 });
 
-// ─── Stripe initialisation ────────────────────────────────────────────────────
-async function initStripePayment() {
-    // Avoid re-initialising if already done
-    if (cardElement) return;
+document.getElementById('stripe-payment-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await startStripeCheckout();
+});
 
-    // Show loading state
+document.getElementById('payment-retry-btn')?.addEventListener('click', () => {
+    setCheckoutButtonLoading(false);
+    showPaymentStart();
+});
+
+async function initStripePayment() {
+    showPaymentStart();
+}
+
+async function startStripeCheckout() {
+    if (checkoutSessionPending) return;
+
+    const basket = readBasket();
+    if (!basket.length) {
+        showPaymentError('Your basket is empty. Please add items before paying.');
+        return;
+    }
+
+    checkoutSessionPending = true;
+    setCheckoutButtonLoading(true);
     setPaymentView('loading');
 
     try {
-        // 1️⃣  Create a PaymentIntent on the server
-        const basket  = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const summary = buildBasketSummary(basket);
+        const quoteData = buildQuoteData(basket);
 
-        const intentRes = await fetch('/api/quotes/stripe/payment-intent', {
+        // Call Quotes API first (this is what triggers the "code/quote" email).
+        // Business requirement: if this fails, do NOT proceed to Stripe Checkout.
+        let quoteId = '';
+        try {
+            const quoteRes = await fetch(QUOTES_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(quoteData),
+            });
+            const quoteJson = await quoteRes.json().catch(() => ({}));
+            if (!quoteRes.ok) {
+                throw new Error(quoteJson.message || `Unable to submit quote (${quoteRes.status})`);
+            }
+            quoteId = quoteJson.quoteId || quoteJson.data?.quoteId || quoteJson.id || '';
+        } catch (e) {
+            throw new Error(e?.message || 'Unable to submit quote. Please try again.');
+        }
+
+        const response = await fetch(CHECKOUT_SESSION_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                currency: 'gbp',
-                basket,
-                summary,
-                customer: getCustomerData(),
-            }),
+            body: JSON.stringify({ quoteData }),
         });
 
-        if (!intentRes.ok) {
-            const err = await intentRes.json().catch(() => ({}));
-            throw new Error(err.message || `Server error ${intentRes.status}`);
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.success || !result.data?.checkoutUrl) {
+            throw new Error(result.message || result.error || `Unable to start payment (${response.status})`);
         }
 
-        const { clientSecret, id } = await intentRes.json();
-        paymentIntentId       = id;
-        paymentIntentClientSecret = clientSecret;
+        try {
+            sessionStorage.setItem('pendingStripeQuoteId', quoteId || result.data.quoteId || '');
+            sessionStorage.setItem('pendingStripeCheckoutSessionId', result.data.checkoutSessionId || '');
+        } catch (storageError) {}
 
-        // 2️⃣  Mount Stripe Elements card form
-        stripe = Stripe(STRIPE_PK);
-        const elements = stripe.elements();
-        cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '15px',
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#1a1a1a',
-                    '::placeholder': { color: '#9ca3af' },
-                },
-                invalid: { color: '#ef4444' },
-            },
-        });
-        cardElement.mount('#card-element');
-
-        cardElement.on('change', ({ error }) => {
-            const el = document.getElementById('card-errors');
-            el.textContent = error ? error.message : '';
-        });
-
-        // Hide quote fallback now that Stripe is ready
-        const qf = document.getElementById('coQuoteForm');
-        if (qf) qf.style.display = 'none';
-
-        setPaymentView('form');
-
+        window.location.href = result.data.checkoutUrl;
     } catch (err) {
-        console.error('[STRIPE INIT]', err);
-        // Silently fall back to quote form — no error shown to customer
-        // (business model is quote-based; Stripe card payment is optional)
-        document.getElementById('payment-loading').style.display = 'none';
-        document.getElementById('payment-error-state').style.display = 'none';
-        const qf = document.getElementById('coQuoteForm');
-        if (qf) qf.style.display = 'block';
+        checkoutSessionPending = false;
+        setCheckoutButtonLoading(false);
+        showPaymentError(err.message || 'Unable to start secure checkout. Please try again.');
     }
 }
 
-// ─── Stripe payment form submit ───────────────────────────────────────────────
-document.getElementById('stripe-payment-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!stripe || !cardElement || !paymentIntentClientSecret) return;
-
-    setPayBtnLoading(true);
-
-    try {
-        const { paymentIntent, error } = await stripe.confirmCardPayment(
-            paymentIntentClientSecret,
-            { payment_method: { card: cardElement } }
-        );
-
-        if (error) {
-            document.getElementById('card-errors').textContent = error.message;
-            setPayBtnLoading(false);
-            return;
-        }
-
-        // 3️⃣  Verify status via GET endpoint
-        await verifyPaymentStatus(paymentIntent.id || paymentIntentId);
-
-    } catch (err) {
-        console.error('[STRIPE CONFIRM]', err);
-        showPaymentError(err.message || 'Payment failed. Please try again.');
-        setPayBtnLoading(false);
-    }
-});
-
-async function verifyPaymentStatus(intentId) {
-    try {
-        const res = await fetch(`/api/quotes/stripe/payment-intent/${intentId}`);
-        if (!res.ok) throw new Error(`Status check failed (${res.status})`);
-
-        const { status } = await res.json();
-
-        if (status === 'succeeded') {
-            setPaymentView('success');
-            // Clear basket and redirect after short delay
-            setTimeout(() => {
-                localStorage.removeItem('quoteBasket');
-                localStorage.setItem('quoteBasket', '[]');
-                window.location.replace('/');
-            }, 2500);
-        } else {
-            // Payment is in a pending/processing state – show friendly message
-            showPaymentError(`Payment status: ${status}. Please contact us if the problem persists.`);
-        }
-    } catch (err) {
-        console.error('[STRIPE VERIFY]', err);
-        // Payment succeeded (Stripe confirmed it); verify endpoint missing is fine
-        setPaymentView('success');
-        setTimeout(() => {
-            localStorage.removeItem('quoteBasket');
-            localStorage.setItem('quoteBasket', '[]');
-            window.location.replace('/');
-        }, 2500);
-    }
+function showPaymentStart() {
+    const qf = document.getElementById('coQuoteForm');
+    if (qf) qf.style.display = 'none';
+    setPaymentView('form');
 }
 
-// ─── Retry button ─────────────────────────────────────────────────────────────
-document.getElementById('payment-retry-btn')?.addEventListener('click', () => {
-    cardElement = null;
-    paymentIntentId = null;
-    paymentIntentClientSecret = null;
-    initStripePayment();
-});
-
-// ─── UI helpers ───────────────────────────────────────────────────────────────
 function setPaymentView(view) {
-    // view: 'loading' | 'form' | 'success' | 'error'
-    document.getElementById('payment-loading').style.display       = view === 'loading' ? 'flex'  : 'none';
-    document.getElementById('stripe-payment-form').style.display   = view === 'form'    ? 'block' : 'none';
-    document.getElementById('payment-success').style.display       = view === 'success' ? 'block' : 'none';
-    document.getElementById('payment-error-state').style.display   = view === 'error'   ? 'block' : 'none';
+    const loading = document.getElementById('payment-loading');
+    const form = document.getElementById('stripe-payment-form');
+    const success = document.getElementById('payment-success');
+    const error = document.getElementById('payment-error-state');
+
+    if (loading) loading.style.display = view === 'loading' ? 'flex' : 'none';
+    if (form) form.style.display = view === 'form' ? 'block' : 'none';
+    if (success) success.style.display = view === 'success' ? 'block' : 'none';
+    if (error) error.style.display = view === 'error' ? 'block' : 'none';
 }
 
 function showPaymentError(msg) {
-    document.getElementById('payment-error-msg').textContent = msg;
+    const err = document.getElementById('payment-error-msg');
+    if (err) err.textContent = msg;
     setPaymentView('error');
 }
 
-function setPayBtnLoading(loading) {
-    const btn     = document.getElementById('stripe-pay-btn');
-    const text    = document.getElementById('stripe-btn-text');
+function setCheckoutButtonLoading(loading) {
+    const btn = document.getElementById('stripe-pay-btn');
+    const text = document.getElementById('stripe-btn-text');
     const spinner = document.getElementById('stripe-btn-spinner');
-    btn.disabled        = loading;
-    text.style.display  = loading ? 'none'   : 'inline';
-    spinner.style.display = loading ? 'inline' : 'none';
+
+    if (btn) btn.disabled = loading;
+    if (text) text.style.display = loading ? 'none' : 'inline';
+    if (spinner) spinner.style.display = loading ? 'inline' : 'none';
 }
 
-// ─── Data helpers ──────────────────────────────────────────────────────────────
-function buildBasketSummary(basket) {
-    const total = basket.reduce((sum, item) => sum + (item.itemTotal || 0), 0);
-    return { totalGBP: parseFloat(total.toFixed(2)), itemCount: basket.length };
+function buildQuoteData(basket) {
+    const customer = typeof window.coGetCustomer === 'function' ? window.coGetCustomer() : getCustomerData();
+    const totals = calculateBasketTotals(basket);
+
+    return {
+        customer,
+        summary: {
+            totalQuantity: totals.totalQuantity,
+            totalItems: basket.length,
+            garmentCost: roundMoney(totals.garmentCost),
+            customizationCost: roundMoney(totals.customizationCost),
+            digitizingFee: roundMoney(totals.digitizingFee),
+            subtotal: roundMoney(totals.totalExVat),
+            vatRate: VAT_RATE,
+            vatAmount: roundMoney(totals.vatAmount),
+            totalExVat: roundMoney(totals.totalExVat),
+            totalIncVat: roundMoney(totals.totalIncVat),
+            displayTotal: roundMoney(totals.totalIncVat),
+            vatMode: 'inc',
+        },
+        basket: buildBasketItems(basket),
+        customizations: totals.customizations,
+        selectedGraphic: readJson('selectedGraphic') || readJson('vecteezySelectedGraphic') || undefined,
+        notes: [localStorage.getItem('orderNotes') || ''].filter(Boolean),
+        timestamp: new Date().toISOString(),
+    };
+}
+
+function calculateBasketTotals(basket) {
+    let garmentCost = 0;
+    let customizationCost = 0;
+    let totalQuantity = 0;
+    const customizations = [];
+    const uniqueEmbLogos = new Set();
+
+    basket.forEach(item => {
+        const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
+        const unitPrice = number(item.unitPrice || item.price || 0, 0);
+        const itemTotal = unitPrice * qty;
+        garmentCost += itemTotal;
+        totalQuantity += qty;
+
+        extractItemCustomizations(item).forEach(customization => {
+            const unit = number(customization.unitPrice || customization.price || 0, 0);
+            const lineTotal = number(customization.lineTotal || (unit * qty), 0);
+            customizationCost += lineTotal;
+
+            if (String(customization.method || '').toLowerCase() === 'embroidery' && customization.logo) {
+                uniqueEmbLogos.add(customization.logo);
+            }
+
+            customizations.push({
+                productName: item.productName || item.name || 'Product',
+                productCode: item.code || item.productCode || '',
+                position: customization.positionLabel || customization.position || '',
+                method: normalizeMethod(customization.method),
+                hasLogo: Boolean(customization.logo || customization.logoData),
+                logo: customization.logo || null,
+                unitPrice: unit,
+                lineTotal,
+                quantity: qty,
+            });
+        });
+    });
+
+    const digitizingFee = uniqueEmbLogos.size > 0 ? 25 : 0;
+    const totalExVat = garmentCost + customizationCost + digitizingFee;
+    const vatAmount = totalExVat * VAT_RATE;
+
+    return {
+        garmentCost,
+        customizationCost,
+        digitizingFee,
+        totalQuantity,
+        totalExVat,
+        vatAmount,
+        totalIncVat: totalExVat + vatAmount,
+        customizations,
+    };
+}
+
+function buildBasketItems(basket) {
+    return basket.map(item => {
+        const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
+        const unitPrice = number(item.unitPrice || item.price || 0, 0);
+        return {
+            name: item.name || item.productName || 'Product',
+            code: item.code || item.productCode || '',
+            color: item.color || item.colour || '',
+            size: item.size || '',
+            quantity: qty,
+            unitPrice,
+            itemTotal: unitPrice * qty,
+            image: item.image || item.colorImage || '',
+            logos: Array.isArray(item.logos) ? item.logos : [],
+        };
+    });
+}
+
+function extractItemCustomizations(item) {
+    if (Array.isArray(item.logos)) return item.logos;
+    if (Array.isArray(item.customizations)) return item.customizations;
+
+    if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+        return Object.entries(item.positionDesigns).map(([position, data]) => ({ position, ...data }));
+    }
+
+    if (Array.isArray(item.positions)) {
+        return item.positions.map(position => ({
+            position: position.position || position.id || position,
+            method: position.method,
+            logo: position.logo,
+            logoData: position.logoData,
+            unitPrice: position.unitPrice,
+        }));
+    }
+
+    return [];
+}
+
+function normalizeMethod(method) {
+    const value = String(method || '').toLowerCase();
+    if (value === 'embroidery') return 'Embroidery';
+    if (value === 'print') return 'Print';
+    if (value === 'text') return 'Text';
+    return method || '';
+}
+
+function readBasket() {
+    return readJson('quoteBasket') || [];
+}
+
+function readJson(key) {
+    try {
+        return JSON.parse(localStorage.getItem(key) || 'null');
+    } catch (e) {
+        return null;
+    }
+}
+
+function number(value, fallback) {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function roundMoney(value) {
+    return Math.round((number(value, 0) + Number.EPSILON) * 100) / 100;
 }
 
 function getCustomerData() {
@@ -258,7 +335,6 @@ function getCustomerData() {
     };
 }
 
-// ─── Promo timer ───────────────────────────────────────────────────────────────
 function startPromoTimer() {
     const timerEl = document.getElementById('promoTimer');
     if (!timerEl) return;
@@ -268,15 +344,13 @@ function startPromoTimer() {
     setInterval(() => {
         seconds--;
         if (seconds < 0) { seconds = 59; minutes--; }
-        if (minutes < 0) { minutes = 59; hours--;   }
-        if (hours   < 0) { hours = minutes = seconds = 0; }
+        if (minutes < 0) { minutes = 59; hours--; }
+        if (hours < 0) { hours = minutes = seconds = 0; }
         timerEl.textContent = `${hours}H : ${minutes}M : ${String(seconds).padStart(2, '0')}S`;
     }, 1000);
 }
 
-// ─── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     startPromoTimer();
-    const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-    console.log('[CHECKOUT] Basket items:', basket.length);
+    console.log('[CHECKOUT] Basket items:', readBasket().length);
 });

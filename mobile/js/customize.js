@@ -9134,7 +9134,9 @@
                     total: (c.unitPrice || 0) * existing.totalQty
                 }));
                 existing.colorImage = baseColorImage || existing.colorImage;
-                console.log('🔄 Updated basket item in-place:', existing.productName, existing.color, Object.keys(existing.quantities).join(','));
+                // `quantities` may be missing on some basket items; avoid Object.keys(undefined).
+                const quantityKeys = Object.keys(existing.quantities || {});
+                console.log('🔄 Updated basket item in-place:', existing.productName, existing.color, quantityKeys.join(','));
             }
         } else if (isFromBasket && !_autoSavedItemId) {
             // iframe positionsOnly mode: _autoSavedItemId is null (fresh JS instance).
