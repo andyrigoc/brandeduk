@@ -1648,19 +1648,26 @@
                             },
                             basket: basketItems,
                             customizations: customizationsList,
+                            logoFiles: collectQuoteLogoFiles(basket),
                             notes: allNotes,
                             timestamp: new Date().toISOString()
                         };
+                        if (!Object.keys(quoteData.logoFiles).length) delete quoteData.logoFiles;
                         
                         const API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
-                        const response = await fetch(`${API_BASE_URL}/api/quotes`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(sanitizeQuotePayload(quoteData))
-                        });
-                        
-                        if (!response.ok) throw new Error(`API Error: ${response.status}`);
-                        const result = await response.json();
+                        let result;
+                        if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
+                            result = await window.BrandedAPI.submitQuote(quoteData);
+                        } else {
+                            const response = await fetch(`${API_BASE_URL}/api/quotes`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(sanitizeQuotePayload(quoteData))
+                            });
+                            
+                            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                            result = await response.json();
+                        }
                         
                         if (result.success || result.ok || result.data) {
                             bqSubmitBtn.classList.add('submitted');
@@ -1692,7 +1699,7 @@
                 if (value && typeof value === 'object') {
                     const cleaned = {};
                     Object.entries(value).forEach(([childKey, childValue]) => {
-                        if (/^(logoData|imageData|base64|blob|file|fileData|previewData|originalFile)$/i.test(childKey)) return;
+                        if (/^(logoFiles|logoData|imageData|base64|blob|file|fileData|previewData|originalFile)$/i.test(childKey)) return;
                         const sanitized = sanitizeQuotePayload(childValue, childKey);
                         if (sanitized !== undefined) cleaned[childKey] = sanitized;
                     });
@@ -1709,6 +1716,33 @@
                 if (!value || typeof value !== 'string') return null;
                 if (/^data:(image|application)\//i.test(value) || /^data:.*;base64,/i.test(value)) return null;
                 return value.length > 2000 ? null : value;
+            }
+
+            function collectQuoteLogoFiles(basket) {
+                const logoFiles = {};
+                (basket || []).forEach(item => {
+                    if (item.positions && typeof item.positions === 'object') {
+                        Object.entries(item.positions).forEach(([position, pd]) => {
+                            const value = pd && (pd.logoData || pd.logo || pd.fileData || pd.previewData);
+                            if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
+                                logoFiles[position] = value;
+                            }
+                        });
+                    }
+                    (item.customizations || []).forEach(c => {
+                        const value = c.logoData || c.logo || c.fileData || c.previewData;
+                        if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
+                            logoFiles[c.position || 'logo'] = value;
+                        }
+                    });
+                    (item.logos || []).forEach(logo => {
+                        const value = logo.logoData || logo.logo || logo.fileData || logo.previewData;
+                        if (/^data:(image|application)\//i.test(String(value || '')) || /^data:.*;base64,/i.test(String(value || ''))) {
+                            logoFiles[logo.position || logo.positionLabel || 'logo'] = value;
+                        }
+                    });
+                });
+                return logoFiles;
             }
 
             // Select All checkbox
@@ -1854,6 +1888,7 @@
             window.location.href = 'customize-mobile.html';
         }
     </script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20260107"></script>
     <script src="footer/footer.js?v=FTR10APR2026"></script>
 </body>
 </html>

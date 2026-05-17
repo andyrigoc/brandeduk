@@ -101,24 +101,17 @@ async function startStripeCheckout() {
         // Business requirement: if this fails, do NOT proceed to Stripe Checkout.
         let quoteId = '';
         try {
-            const quoteRes = await fetch(QUOTES_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(quoteData),
-            });
-            const quoteJson = await quoteRes.json().catch(() => ({}));
-            if (!quoteRes.ok) {
-                throw new Error(quoteJson.message || `Unable to submit quote (${quoteRes.status})`);
-            }
+            const quoteJson = await submitQuoteWithLogos(quoteData);
             quoteId = quoteJson.quoteId || quoteJson.data?.quoteId || quoteJson.id || '';
         } catch (e) {
             throw new Error(e?.message || 'Unable to submit quote. Please try again.');
         }
 
+        const checkoutQuoteData = sanitizeQuotePayload(quoteData);
         const response = await fetch(CHECKOUT_SESSION_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quoteData }),
+            body: JSON.stringify({ quoteData: checkoutQuoteData }),
         });
 
         const result = await response.json().catch(() => ({}));
@@ -178,7 +171,7 @@ function buildQuoteData(basket) {
     const customer = typeof window.coGetCustomer === 'function' ? window.coGetCustomer() : getCustomerData();
     const totals = calculateBasketTotals(basket);
 
-    return sanitizeQuotePayload({
+    const quoteData = {
         customer,
         summary: {
             totalQuantity: totals.totalQuantity,
@@ -196,10 +189,51 @@ function buildQuoteData(basket) {
         },
         basket: buildBasketItems(basket),
         customizations: totals.customizations,
+        logoFiles: collectLogoFiles(basket),
         selectedGraphic: readJson('selectedGraphic') || readJson('vecteezySelectedGraphic') || undefined,
         notes: [localStorage.getItem('orderNotes') || ''].filter(Boolean),
         timestamp: new Date().toISOString(),
+    };
+
+    if (!Object.keys(quoteData.logoFiles).length) delete quoteData.logoFiles;
+    return quoteData;
+}
+
+async function submitQuoteWithLogos(quoteData) {
+    if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
+        return window.BrandedAPI.submitQuote(quoteData);
+    }
+
+    if (quoteData.logoFiles && Object.keys(quoteData.logoFiles).length) {
+        const formData = new FormData();
+        formData.append('quoteData', JSON.stringify(sanitizeQuotePayload(quoteData)));
+        Object.entries(quoteData.logoFiles).forEach(([position, logo]) => {
+            const blob = dataUrlToBlob(logo);
+            if (!blob) return;
+            formData.append(`logo_${mapPositionToBackendSlug(position)}`, blob, `logo-${mapPositionToBackendSlug(position)}.png`);
+        });
+
+        const quoteRes = await fetch(QUOTES_ENDPOINT, {
+            method: 'POST',
+            body: formData,
+        });
+        const quoteJson = await quoteRes.json().catch(() => ({}));
+        if (!quoteRes.ok || quoteJson.success === false) {
+            throw new Error(quoteJson.message || `Unable to submit quote (${quoteRes.status})`);
+        }
+        return quoteJson;
+    }
+
+    const quoteRes = await fetch(QUOTES_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sanitizeQuotePayload(quoteData)),
     });
+    const quoteJson = await quoteRes.json().catch(() => ({}));
+    if (!quoteRes.ok || quoteJson.success === false) {
+        throw new Error(quoteJson.message || `Unable to submit quote (${quoteRes.status})`);
+    }
+    return quoteJson;
 }
 
 function calculateBasketTotals(basket) {
@@ -294,6 +328,21 @@ function extractItemCustomizations(item) {
     return [];
 }
 
+function collectLogoFiles(basket) {
+    const logoFiles = {};
+
+    basket.forEach(item => {
+        extractItemCustomizations(item).forEach(customization => {
+            const logo = customization.logoData || customization.logo || customization.fileData || customization.previewData;
+            if (!isBase64Media(logo)) return;
+            const position = customization.position || customization.positionId || customization.positionLabel || 'logo';
+            logoFiles[position] = logo;
+        });
+    });
+
+    return logoFiles;
+}
+
 function normalizeMethod(method) {
     const value = String(method || '').toLowerCase();
     if (value === 'embroidery') return 'Embroidery';
@@ -342,7 +391,7 @@ if (typeof window !== 'undefined') {
 }
 
 function isLargeMediaKey(key) {
-    return /^(logoData|imageData|base64|blob|file|fileData|previewData|originalFile)$/i.test(key);
+    return /^(logoFiles|logoData|imageData|base64|blob|file|fileData|previewData|originalFile)$/i.test(key);
 }
 
 function isMediaLikeKey(key) {
@@ -366,6 +415,35 @@ function safeLogoRef(value) {
 function getLogoKey(customization) {
     const ref = safeLogoRef(customization.logo || customization.logoData);
     return ref || `${customization.positionLabel || customization.position || 'logo'}-${customization.method || 'method'}`;
+}
+
+function mapPositionToBackendSlug(position) {
+    const positionMap = {
+        'left-breast': 'left-breast',
+        'right-breast': 'right-breast',
+        'small-centre-front': 'small-centre-front',
+        'large-front-center': 'large-front-center',
+        'large-centre-front': 'large-centre-front',
+        'left-arm': 'left-sleeve',
+        'right-arm': 'right-sleeve',
+        'large-back': 'back-center',
+        'back-center': 'back-center',
+        'left-sleeve': 'left-sleeve',
+        'right-sleeve': 'right-sleeve',
+    };
+    return positionMap[position] || String(position || 'logo').replace(/\s+/g, '-').toLowerCase();
+}
+
+function dataUrlToBlob(dataUrl) {
+    if (!isBase64Media(dataUrl)) return null;
+    const parts = String(dataUrl).split(',');
+    if (parts.length < 2) return null;
+    const mimeMatch = parts[0].match(/^data:([^;]+);base64$/i);
+    const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+    const binary = atob(parts[1]);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type: mimeType });
 }
 
 function readBasket() {

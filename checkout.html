@@ -1349,18 +1349,24 @@
                     ? 'http://localhost:3004'
                     : 'https://api.brandeduk.com'
             )).replace(/\/+$/, '');
-            var payload = { basket: basket, customer: customer };
-            if (typeof window.sanitizeQuotePayload === 'function') {
-                payload = window.sanitizeQuotePayload(payload);
-            }
+            var payload = (typeof window.buildQuoteData === 'function')
+                ? window.buildQuoteData(basket)
+                : { basket: basket, customer: customer };
 
             try {
-                var res = await fetch(apiBase + '/api/quotes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) throw new Error('Quote API error: ' + res.status);
+                if (typeof window.submitQuoteWithLogos === 'function') {
+                    await window.submitQuoteWithLogos(payload);
+                } else {
+                    if (typeof window.sanitizeQuotePayload === 'function') {
+                        payload = window.sanitizeQuotePayload(payload);
+                    }
+                    var res = await fetch(apiBase + '/api/quotes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    if (!res.ok) throw new Error('Quote API error: ' + res.status);
+                }
             } catch (e) { console.warn('[Checkout] Quote fallback failed:', e); }
 
             // Always show success in prototype
@@ -1404,8 +1410,9 @@
       }
     </script>
 
+    <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
     <!-- Stripe Checkout redirect flow -->
-    <script src="mobile/js/checkout.js?v=20260516"></script>
+    <script src="mobile/js/checkout.js?v=20260517-logo"></script>
 
 </body>
 </html>
