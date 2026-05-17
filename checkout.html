@@ -876,7 +876,19 @@
                         </div>
                         <div class="co-summary-footer">
                             <div class="co-summary-row">
-                                <span>Subtotal</span>
+                                <span>Product Costs</span>
+                                <span id="coGarmentCost">£0.00</span>
+                            </div>
+                            <div class="co-summary-row">
+                                <span>Costs To Add Logo</span>
+                                <span id="coCustomizationCost">£0.00</span>
+                            </div>
+                            <div class="co-summary-row" id="coDigitizingRow" style="display:none">
+                                <span>Digitizing and test (ONE OFF)</span>
+                                <span id="coDigitizingFee">£0.00</span>
+                            </div>
+                            <div class="co-summary-row">
+                                <span>Total (ex. VAT)</span>
                                 <span id="coSubtotal">£0.00</span>
                             </div>
                             <div class="co-summary-row">
@@ -1303,6 +1315,41 @@
                                '<span class="co-summary-price">£' + line.toFixed(2) + '</span>' +
                                '</div>';
                     }).join('');
+                }
+
+                var totals = (typeof calculateBasketTotals === 'function')
+                    ? calculateBasketTotals(basket)
+                    : null;
+                if (totals) {
+                    var garmentCost = _num(totals.garmentCost, total);
+                    var customizationCost = _num(totals.customizationCost, 0);
+                    var digitizingFee = _num(totals.digitizingFee, 0);
+                    var totalExFromBasket = _num(totals.totalExVat, total);
+                    var vatFromBasket = _num(totals.vatAmount, totalExFromBasket * 0.20);
+                    var totalIncFromBasket = _num(totals.totalIncVat, totalExFromBasket + vatFromBasket);
+
+                    var subtotalFmtFromBasket = '\u00A3' + totalExFromBasket.toFixed(2);
+                    var totalFmtFromBasket = '\u00A3' + totalIncFromBasket.toFixed(2);
+
+                    document.getElementById('coSummaryTotal').textContent = totalFmtFromBasket;
+                    document.getElementById('coGarmentCost').textContent = '\u00A3' + garmentCost.toFixed(2);
+                    document.getElementById('coCustomizationCost').textContent = '\u00A3' + customizationCost.toFixed(2);
+                    document.getElementById('coSubtotal').textContent = subtotalFmtFromBasket;
+
+                    var digitizingRow = document.getElementById('coDigitizingRow');
+                    var digitizingEl = document.getElementById('coDigitizingFee');
+                    if (digitizingRow) digitizingRow.style.display = digitizingFee > 0 ? '' : 'none';
+                    if (digitizingEl) digitizingEl.textContent = '\u00A3' + digitizingFee.toFixed(2);
+
+                    var vatRowFromBasket = document.getElementById('coVatRow');
+                    var vatElFromBasket = document.getElementById('coVat');
+                    var totalLabelFromBasket = document.getElementById('coTotalLabel');
+                    if (vatRowFromBasket) vatRowFromBasket.style.display = '';
+                    if (vatElFromBasket) vatElFromBasket.textContent = '\u00A3' + vatFromBasket.toFixed(2);
+                    if (totalLabelFromBasket) totalLabelFromBasket.textContent = 'Total (inc. VAT)';
+
+                    document.getElementById('coTotal').textContent = totalFmtFromBasket;
+                    return;
                 }
 
                 var totalEx = total;
