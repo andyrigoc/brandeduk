@@ -208,9 +208,9 @@ async function submitQuoteWithLogos(quoteData) {
         const formData = new FormData();
         formData.append('quoteData', JSON.stringify(sanitizeQuotePayload(quoteData)));
         Object.entries(quoteData.logoFiles).forEach(([position, logo]) => {
-            const blob = dataUrlToBlob(logo);
-            if (!blob) return;
-            formData.append(`logo_${mapPositionToBackendSlug(position)}`, blob, `logo-${mapPositionToBackendSlug(position)}.png`);
+            const file = dataUrlToFile(logo, `logo-${mapPositionToBackendSlug(position)}`);
+            if (!file) return;
+            formData.append(`logo_${mapPositionToBackendSlug(position)}`, file, file.name);
         });
 
         const quoteRes = await fetch(QUOTES_ENDPOINT, {
@@ -434,7 +434,15 @@ function mapPositionToBackendSlug(position) {
     return positionMap[position] || String(position || 'logo').replace(/\s+/g, '-').toLowerCase();
 }
 
-function dataUrlToBlob(dataUrl) {
+function extensionForMimeType(mimeType) {
+    if (mimeType === 'image/jpeg') return 'jpg';
+    if (mimeType === 'image/png') return 'png';
+    if (mimeType === 'image/webp') return 'webp';
+    if (mimeType === 'image/gif') return 'gif';
+    return 'bin';
+}
+
+function dataUrlToFile(dataUrl, baseName) {
     if (!isBase64Media(dataUrl)) return null;
     const parts = String(dataUrl).split(',');
     if (parts.length < 2) return null;
@@ -443,7 +451,7 @@ function dataUrlToBlob(dataUrl) {
     const binary = atob(parts[1]);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return new Blob([bytes], { type: mimeType });
+    return new File([bytes], `${baseName}.${extensionForMimeType(mimeType)}`, { type: mimeType });
 }
 
 function readBasket() {

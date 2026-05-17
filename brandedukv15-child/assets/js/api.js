@@ -565,6 +565,26 @@ const BrandedAPI = (function () {
      * @param {string} filename - Optional filename for the blob
      * @returns {Blob} - Blob object
      */
+    function getExtensionForMimeType(mimeType) {
+        if (mimeType === 'image/jpeg') return 'jpg';
+        if (mimeType === 'image/png') return 'png';
+        if (mimeType === 'image/webp') return 'webp';
+        if (mimeType === 'image/gif') return 'gif';
+        return 'bin';
+    }
+
+    function buildUploadFileName(baseName, mimeType, currentName = '') {
+        const normalizedBase = (baseName || 'logo').replace(/\.[^.]+$/, '');
+        const extension = getExtensionForMimeType(mimeType);
+        const sourceName = currentName || normalizedBase;
+
+        if (sourceName && /\.[^.]+$/.test(sourceName)) {
+            return sourceName.replace(/\.[^.]+$/, `.${extension}`);
+        }
+
+        return `${normalizedBase}.${extension}`;
+    }
+
     function base64ToBlob(dataUrl, filename = 'logo.png') {
         try {
             const matches = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
@@ -585,9 +605,12 @@ const BrandedAPI = (function () {
             const blob = new Blob([byteArray], { type: mimeType });
 
             // Convert Blob to File for better compatibility
-            const fileExtension = filename.split('.').pop() || matches[1];
             const timestamp = Date.now();
-            const finalFilename = filename.includes('.') ? filename : `logo-${timestamp}.${fileExtension}`;
+            const finalFilename = buildUploadFileName(
+                filename || `logo-${timestamp}`,
+                mimeType,
+                filename
+            );
 
             return new File([blob], finalFilename, { type: mimeType });
         } catch (error) {
@@ -752,7 +775,11 @@ const BrandedAPI = (function () {
                             }
                         }
 
-                        formData.append(formDataKey, fileToUpload, fileToUpload.name || `logo-${positionSlug}.jpg`);
+                        formData.append(
+                            formDataKey,
+                            fileToUpload,
+                            buildUploadFileName(`logo-${positionSlug}`, fileToUpload.type, fileToUpload.name || '')
+                        );
                         fileSizes[position] = fileToUpload.size;
                         totalFileSize += fileToUpload.size;
                         console.log(`📎 [BrandedAPI] Added file to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
@@ -775,7 +802,11 @@ const BrandedAPI = (function () {
                             fileToUpload = blob;
                         }
 
-                        formData.append(formDataKey, fileToUpload, `logo-${positionSlug}.jpg`);
+                        formData.append(
+                            formDataKey,
+                            fileToUpload,
+                            buildUploadFileName(`logo-${positionSlug}`, fileToUpload.type, fileToUpload.name || '')
+                        );
                         fileSizes[position] = fileToUpload.size;
                         totalFileSize += fileToUpload.size;
                         console.log(`📎 [BrandedAPI] Converted base64 to Blob and added to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
@@ -924,7 +955,11 @@ const BrandedAPI = (function () {
                                 console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = file;
                             }
-                            compressedFormData.append(formDataKey, fileToUpload, fileToUpload.name || `logo-${positionSlug}.png`);
+                            compressedFormData.append(
+                                formDataKey,
+                                fileToUpload,
+                                buildUploadFileName(`logo-${positionSlug}`, fileToUpload.type, fileToUpload.name || '')
+                            );
                         } else if (typeof file === 'string' && file.startsWith('data:')) {
                             const blob = base64ToBlob(file, `logo-${positionSlug}.png`);
                             try {
@@ -942,7 +977,11 @@ const BrandedAPI = (function () {
                                 console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = blob;
                             }
-                            compressedFormData.append(formDataKey, fileToUpload, `logo-${positionSlug}.png`);
+                            compressedFormData.append(
+                                formDataKey,
+                                fileToUpload,
+                                buildUploadFileName(`logo-${positionSlug}`, fileToUpload.type, fileToUpload.name || '')
+                            );
                         }
                     }
 
