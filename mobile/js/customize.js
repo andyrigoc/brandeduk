@@ -723,6 +723,13 @@
                 state.positionCustomizations = {};
                 state.positionDesigns = {};
                 state.positions = [];
+                try {
+                    savedState.positionMethods = {};
+                    savedState.positionCustomizations = {};
+                    savedState.positionDesigns = {};
+                    savedState.positions = [];
+                    sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(savedState));
+                } catch (e) { /* ignore */ }
             }
             
             // CRITICAL FIX: Don't restore selectedColorImage from sessionStorage
@@ -1962,6 +1969,8 @@
             return;
         }
 
+        clearStaleBasketEditSessionUnlessEditing();
+
         // Detect positionsOnly mode (opened from basket "Add Logo" popup)
         const _urlParams = new URLSearchParams(window.location.search);
         const isPositionsOnly = _urlParams.get('positionsOnly') === '1';
@@ -3148,6 +3157,7 @@
             if (state.quantity > 0) {
                 addToQuote({ silent: true });
             }
+            beginNextItemSession();
 
             // Phase 2.2: If coming from basket, return there
             const returnTarget = sessionStorage.getItem('returnAfterCustomize');
@@ -8671,6 +8681,17 @@
         if (addToBasketBtn) {
             addToBasketBtn.addEventListener('click', () => {
                 console.log('🔘 Add to basket button clicked! state.quantity:', state.quantity);
+                if (state.quantity === 0 && !isBasketSingleItemEdit()) {
+                    showToast('Please add at least one item', true);
+                    return;
+                }
+                if (!selectionHasLogoOnCheckedPositions() && !isBasketSingleItemEdit()) {
+                    runRainbowAtcAnimation(addToBasketBtn);
+                    addToQuote({ silent: true });
+                    setTimeout(function () { openPositionsPopup(); }, 450);
+                    showToast('Choose logo position(s) for this item');
+                    return;
+                }
                 runRainbowAtcAnimation(addToBasketBtn);
                 addToQuote();
             });
@@ -9052,6 +9073,8 @@
         });
         Object.entries(positionDesigns || {}).forEach(([posKey, d]) => {
             if (!d || !d.logo) return;
+            const checkbox = document.querySelector('.position-card input[type="checkbox"][value="' + posKey + '"]');
+            if (checkbox && !checkbox.checked) return;
             const method = (positionMethods && positionMethods[posKey]) || d.method || 'embroidery';
             const unitPrice = byPos.has(posKey) && byPos.get(posKey).unitPrice != null
                 ? byPos.get(posKey).unitPrice
@@ -9128,7 +9151,7 @@
         if (!state.quantity || state.quantity === 0) return;
 
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket' && isActiveBasketItemEdit();
 
         const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
@@ -9309,6 +9332,61 @@
             sessionStorage.getItem('basketEditSingleItem') === '1';
     }
 
+    function isActiveBasketItemEdit() {
+        const idx = sessionStorage.getItem('customizingBasketIndex');
+        if (idx === null || idx === '') return false;
+        return sessionStorage.getItem('returnAfterCustomize') === 'basket' ||
+            sessionStorage.getItem('basketEditSingleItem') === '1' ||
+            new URLSearchParams(window.location.search).get('positionsOnly') === '1';
+    }
+
+    /** Clear basket-edit session keys when starting a fresh product (not editing one line from basket). */
+    function clearStaleBasketEditSessionUnlessEditing() {
+        if (isActiveBasketItemEdit()) return;
+        sessionStorage.removeItem('customizingBasketIndex');
+        sessionStorage.removeItem('returnAfterCustomize');
+        sessionStorage.removeItem('basketEditSingleItem');
+        sessionStorage.removeItem('basketEditItemId');
+        sessionStorage.removeItem('basketEditNewColor');
+        sessionStorage.removeItem('pendingLogoPromptId');
+        sessionStorage.removeItem('editingPosition');
+        sessionStorage.removeItem('editingLogoIndex');
+        _autoSavedItemId = null;
+        _sessionSavedIds.clear();
+    }
+
+    /** After add-to-basket / continue shopping — next product must not inherit logos or overwrite prior lines. */
+    function beginNextItemSession() {
+        clearStaleBasketEditSessionUnlessEditing();
+        _autoSavedItemId = null;
+        _sessionSavedIds.clear();
+        state.selectionSaved = true;
+        clearPositionState();
+        state.sizeQuantities = {};
+        state.quantity = 0;
+        try {
+            sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify({
+                productCode: state.product?.code || sessionStorage.getItem('selectedProduct') || '',
+                positionMethods: {},
+                positionCustomizations: {},
+                positionDesigns: {},
+                positions: [],
+                sizeQuantities: {},
+                quantity: 0,
+                technique: state.technique || 'embroidery'
+            }));
+        } catch (e) { /* ignore */ }
+    }
+
+    function selectionHasLogoOnCheckedPositions() {
+        const positions = mergePositionsWithDesigns(
+            buildPositionsFromDOM(),
+            state.positionDesigns || {},
+            state.positionMethods
+        );
+        return positions.some(function (p) { return p && p.logo; });
+    }
+
     function clearPositionState(clearUI) {
         state.positionMethods = {};
         state.positionCustomizations = {};
@@ -9452,7 +9530,7 @@
         if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
         
         // Validate that we have items (skip check when editing existing basket item)
-        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket';
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket' && isActiveBasketItemEdit();
         if (state.quantity === 0 && !isFromBasket && !isBasketSingleItemEdit()) {
             showToast('Please add at least one item', true);
             return;
@@ -9574,15 +9652,16 @@
             // Normal flow: create separate items per size
             const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
 
-            // Remove any previously auto-saved items from this session
-            if (_autoSavedItemId) {
-                const oldIdx = basket.findIndex(i => i.id === _autoSavedItemId);
-                if (oldIdx !== -1) basket.splice(oldIdx, 1);
+            // Replace only draft lines for THIS product (never remove other products e.g. apron after t-shirt)
+            function removeDraftIfSameProduct(itemId) {
+                const oldIdx = basket.findIndex(i => i.id === itemId);
+                if (oldIdx === -1) return;
+                const row = basket[oldIdx];
+                const rowCode = row.productCode || row.code || '';
+                if (rowCode === baseProductCode) basket.splice(oldIdx, 1);
             }
-            _sessionSavedIds.forEach(sid => {
-                const oldIdx = basket.findIndex(i => i.id === sid);
-                if (oldIdx !== -1) basket.splice(oldIdx, 1);
-            });
+            if (_autoSavedItemId) removeDraftIfSameProduct(_autoSavedItemId);
+            _sessionSavedIds.forEach(sid => removeDraftIfSameProduct(sid));
             _sessionSavedIds.clear();
             _autoSavedItemId = null;
 
@@ -9929,32 +10008,16 @@
     }
 
     function resetCustomizationForm() {
-        // CRITICAL: Reset basket-tracking so the NEXT save creates a NEW item
-        // instead of overwriting the one we just saved
-        _autoSavedItemId = null;
-        _sessionSavedIds.clear();
+        beginNextItemSession();
         state.selectionSaved = false;
-        clearPositionState();
 
-        // Reset quantities
-        state.quantity = 0;
-        state.sizeQuantities = {};
-        
-        // Clear ALL size rows
         const container = document.querySelector('.selected-sizes');
-        if (container) {
-            container.innerHTML = '';
-        }
-        
-        // Update displays
+        if (container) container.innerHTML = '';
+
         updateSizeQuantities();
         updatePricingSummary();
         updateLiveBadge();
-
-        // Re-build size rows so user can pick sizes for the next colour
         rebuildSizeRows();
-        
-        // Show toast
         showToast('Ready for next item!');
     }
 
