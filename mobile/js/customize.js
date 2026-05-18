@@ -5788,8 +5788,18 @@
                     closeMobileLogoUploadOverlay();
                 },
                 onFileUploaded: function (dataUrl, file) {
-                    _applyLogoToPositionFromMobile(position, method, dataUrl);
-                    closeMobileLogoUploadOverlay();
+                    const status = document.createElement('p');
+                    status.className = 'mobile-logo-upload-status';
+                    status.textContent = 'Removing background…';
+                    galleryHost.innerHTML = '';
+                    galleryHost.appendChild(status);
+                    applyLogoWithAutoBackgroundRemoval(position, method, dataUrl, file && file.name)
+                        .then(function () {
+                            closeMobileLogoUploadOverlay();
+                        })
+                        .catch(function () {
+                            closeMobileLogoUploadOverlay();
+                        });
                 }
             });
         } else {
@@ -5803,8 +5813,9 @@
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = function (ev) {
-                    _applyLogoToPositionFromMobile(position, method, ev.target.result);
-                    closeMobileLogoUploadOverlay();
+                    applyLogoWithAutoBackgroundRemoval(position, method, ev.target.result, file.name)
+                        .then(function () { closeMobileLogoUploadOverlay(); })
+                        .catch(function () { closeMobileLogoUploadOverlay(); });
                 };
                 reader.readAsDataURL(file);
             });
@@ -6476,6 +6487,103 @@
         }
     }
     
+    function processLogoBackgroundRemovalFromDataUrl(imgSrc) {
+        return new Promise(function (resolve, reject) {
+            if (!imgSrc) {
+                reject(new Error('No image'));
+                return;
+            }
+            const img = new Image();
+            if (!imgSrc.startsWith('data:')) {
+                img.crossOrigin = 'Anonymous';
+            }
+            img.onload = function () {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    const width = canvas.width;
+                    const height = canvas.height;
+
+                    const corners = [
+                        getPixelColorAt(data, 0, 0, width),
+                        getPixelColorAt(data, width - 1, 0, width),
+                        getPixelColorAt(data, 0, height - 1, width),
+                        getPixelColorAt(data, width - 1, height - 1, width)
+                    ];
+
+                    const bgColor = findDominantCornerColor(corners);
+                    const tolerance = 45;
+                    const visited = new Uint8Array(width * height);
+                    const qx = [];
+                    const qy = [];
+
+                    for (let x = 0; x < width; x++) {
+                        qx.push(x); qy.push(0);
+                        qx.push(x); qy.push(height - 1);
+                    }
+                    for (let y = 1; y < height - 1; y++) {
+                        qx.push(0); qy.push(y);
+                        qx.push(width - 1); qy.push(y);
+                    }
+
+                    let qi = 0;
+                    while (qi < qx.length) {
+                        const x = qx[qi];
+                        const y = qy[qi];
+                        qi += 1;
+
+                        if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                        const idx = y * width + x;
+                        if (visited[idx]) continue;
+                        visited[idx] = 1;
+
+                        const pixelIdx = idx * 4;
+                        const r = data[pixelIdx];
+                        const g = data[pixelIdx + 1];
+                        const b = data[pixelIdx + 2];
+
+                        if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
+                            data[pixelIdx + 3] = 0;
+                            qx.push(x + 1); qy.push(y);
+                            qx.push(x - 1); qy.push(y);
+                            qx.push(x); qy.push(y + 1);
+                            qx.push(x); qy.push(y - 1);
+                        }
+                    }
+
+                    ctx.putImageData(imageData, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                } catch (err) {
+                    reject(err);
+                }
+            };
+            img.onerror = function () {
+                reject(new Error('Image load failed'));
+            };
+            img.src = imgSrc;
+        });
+    }
+
+    async function applyLogoWithAutoBackgroundRemoval(position, method, dataUrl, filename) {
+        let processedUrl = dataUrl;
+        try {
+            processedUrl = await processLogoBackgroundRemovalFromDataUrl(dataUrl);
+        } catch (e) {
+            console.warn('Background removal failed, using original:', e);
+        }
+        if (typeof window.BrandedLogoLibrary !== 'undefined') {
+            window.BrandedLogoLibrary.uploadToServer(processedUrl, position, filename || 'logo.png').catch(function () {});
+        }
+        await _applyLogoToPositionFromMobile(position, method, processedUrl);
+    }
+
     // === Background Removal Algorithm (recreated for mobile/tablet) ===
     function removeImageBackground() {
         const previewImg = document.getElementById('designPreviewImg');
@@ -6497,74 +6605,10 @@
             if (spanEl) spanEl.textContent = 'PROCESSING';
         }
 
-        const img = new Image();
         const imgSrc = previewImg.src;
-        if (!imgSrc.startsWith('data:')) {
-            img.crossOrigin = 'Anonymous';
-        }
 
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            const width = canvas.width;
-            const height = canvas.height;
-
-            const corners = [
-                getPixelColorAt(data, 0, 0, width),
-                getPixelColorAt(data, width - 1, 0, width),
-                getPixelColorAt(data, 0, height - 1, width),
-                getPixelColorAt(data, width - 1, height - 1, width)
-            ];
-
-            const bgColor = findDominantCornerColor(corners);
-            const tolerance = 45;
-            const visited = new Uint8Array(width * height);
-            const qx = [];
-            const qy = [];
-
-            for (let x = 0; x < width; x++) {
-                qx.push(x); qy.push(0);
-                qx.push(x); qy.push(height - 1);
-            }
-            for (let y = 1; y < height - 1; y++) {
-                qx.push(0); qy.push(y);
-                qx.push(width - 1); qy.push(y);
-            }
-
-            let qi = 0;
-            while (qi < qx.length) {
-                const x = qx[qi];
-                const y = qy[qi];
-                qi += 1;
-
-                if (x < 0 || x >= width || y < 0 || y >= height) continue;
-
-                const idx = y * width + x;
-                if (visited[idx]) continue;
-                visited[idx] = 1;
-
-                const pixelIdx = idx * 4;
-                const r = data[pixelIdx];
-                const g = data[pixelIdx + 1];
-                const b = data[pixelIdx + 2];
-
-                if (isColorSimilarTo(r, g, b, bgColor, tolerance)) {
-                    data[pixelIdx + 3] = 0;
-                    qx.push(x + 1); qy.push(y);
-                    qx.push(x - 1); qy.push(y);
-                    qx.push(x); qy.push(y + 1);
-                    qx.push(x); qy.push(y - 1);
-                }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-            previewImg.src = canvas.toDataURL('image/png');
+        processLogoBackgroundRemovalFromDataUrl(imgSrc).then(function (processedUrl) {
+            previewImg.src = processedUrl;
 
             if (removeBgBtn) {
                 removeBgBtn.classList.remove('processing');
@@ -6576,20 +6620,16 @@
 
             state.backgroundRemoved = true;
 
-            // If file is pending gallery add, save processed image now
             if (state._pendingGalleryFile) {
                 const pending = state._pendingGalleryFile;
                 state._pendingGalleryFile = null;
-                const processedUrl = previewImg.src;
                 if (typeof window.BrandedLogoLibrary !== 'undefined') {
                     window.BrandedLogoLibrary.add({
                         url: processedUrl,
                         filename: pending.filename,
                         uploadedAt: new Date().toISOString()
                     });
-                    // Upload processed image to server in background
-                    window.BrandedLogoLibrary.uploadToServer(processedUrl, null, pending.filename).catch(() => {});
-                    // Re-render gallery quietly
+                    window.BrandedLogoLibrary.uploadToServer(processedUrl, null, pending.filename).catch(function () {});
                     const gc = document.getElementById('logoGalleryContainer');
                     if (gc) _renderLogoGalleryInModal();
                 }
@@ -6600,16 +6640,13 @@
             }
 
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-        };
-
-        img.onerror = function() {
+        }).catch(function () {
             if (removeBgBtn) {
                 removeBgBtn.classList.remove('processing');
                 removeBgBtn.disabled = false;
                 const spanEl = removeBgBtn.querySelector('span');
                 if (spanEl) spanEl.textContent = 'REMOVE BG';
             }
-            // If pending gallery add, save original image anyway
             if (state._pendingGalleryFile) {
                 const pending = state._pendingGalleryFile;
                 state._pendingGalleryFile = null;
@@ -6619,15 +6656,12 @@
                         filename: pending.filename,
                         uploadedAt: new Date().toISOString()
                     });
-                    window.BrandedLogoLibrary.uploadToServer(pending.originalDataUrl, null, pending.filename).catch(() => {});
-                    // Re-render gallery quietly
+                    window.BrandedLogoLibrary.uploadToServer(pending.originalDataUrl, null, pending.filename).catch(function () {});
                     const gc = document.getElementById('logoGalleryContainer');
                     if (gc) _renderLogoGalleryInModal();
                 }
             }
-        };
-
-        img.src = imgSrc;
+        });
     }
     
     // Get pixel color at specific coordinates
