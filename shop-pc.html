@@ -9,8 +9,8 @@
         // Redirect to mobile version on smaller screens
         if (window.innerWidth < 1024) {
             const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('category') || 'all';
-            window.location.href = '../mobile/shop-mobile.html?category=' + category;
+            const qs = urlParams.toString();
+            window.location.replace('/shop.html' + (qs ? '?' + qs : '?category=all'));
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"

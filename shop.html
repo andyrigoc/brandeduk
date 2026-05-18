@@ -59,9 +59,10 @@
                 max-width: 60% !important;
             }
 
-            /* Push entire header down from screen edge */
+            /* Extend header to top edge, 15px white padding to cover gap */
             .mobile-header {
-                top: 10px !important;
+                top: 0 !important;
+                padding-top: 15px !important;
             }
 
             /* Shop mobile promo bar: sit a bit lower like homepage spacing */
@@ -2737,7 +2738,8 @@
 
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
     <!-- API Integration Scripts -->
-    <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
+    <script src="brandedukv15-child/assets/js/color-hex.js?v=20260418"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20260418"></script>
     <script src="brandedukv15-child/assets/js/shop-api.js?v=20260409a"></script>
     <script>
         console.log('=== SHOP SCRIPT STARTED (API MODE) ===');
@@ -3145,6 +3147,12 @@
                     console.log('ðŸ’° API priceRange stored (mobile):', currentState.apiPriceRange);
                 } else {
                     console.log('âš ï¸ API response has no priceRange (mobile)');
+                }
+
+                if (window.BrandedColorHex && data.items) {
+                    data.items.forEach(function (p) {
+                        if (p && p.code) BrandedColorHex.registerProductColors(p.code, p.colors || []);
+                    });
                 }
 
                 return data.items || [];

@@ -133,12 +133,23 @@ const BrandedAPI = (function () {
         // Handle colors - API returns array of color objects
         const colors = (apiProduct.colors || []).map(color => {
             if (typeof color === 'string') {
-                return { name: color, main: apiProduct.image };
+                const name = color;
+                const hex = (typeof window !== 'undefined' && window.BrandedColorHex)
+                    ? (window.BrandedColorHex.lookupByName(name) || '')
+                    : '';
+                return { name: name, main: apiProduct.image, hex: hex };
+            }
+            const name = color.name || color.colour_name || 'Default';
+            const rawHex = color.hex || color.colourHex || color.colorHex || color.colour_hex || color.color_hex || '';
+            let hex = '';
+            if (typeof window !== 'undefined' && window.BrandedColorHex) {
+                hex = window.BrandedColorHex.parseHex(rawHex) || window.BrandedColorHex.lookupByName(name) || '';
             }
             return {
-                name: color.name || color.colour_name || 'Default',
+                name: name,
                 main: color.main || color.image_url || apiProduct.image,
-                thumb: color.thumb || color.thumbnail || null
+                thumb: color.thumb || color.thumbnail || null,
+                hex: hex
             };
         });
 
@@ -184,7 +195,7 @@ const BrandedAPI = (function () {
         // Strip ™ ® © symbols that render as boxes in some fonts
         rawName = rawName.replace(/[\u00AE\u2122\u00A9]/g, '');
 
-        return {
+        const result = {
             code: apiProduct.code || apiProduct.style_code || '',
             name: rawName,
             price: price,
@@ -207,6 +218,12 @@ const BrandedAPI = (function () {
             is_recommended: apiProduct.is_recommended || apiProduct.isRecommended || false,
             is_featured: apiProduct.is_featured || apiProduct.isFeatured || false
         };
+
+        if (typeof window !== 'undefined' && window.BrandedColorHex && result.code) {
+            window.BrandedColorHex.registerProductColors(result.code, result.colors);
+        }
+
+        return result;
     }
 
     // ==========================================================================

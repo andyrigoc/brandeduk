@@ -55,6 +55,16 @@
                         
                         <!-- STEP 1: BASKET -->
                         <div class="order-drawer-step" data-step="1">
+                            <div class="order-drawer-top-cta">
+                                <button class="btn-view-basket" onclick="window.location.href='basket.html'">View Basket ›</button>
+                                <button class="btn-order-next" id="basketNextBtn">
+                                    Go to Checkout
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div class="order-drawer-content">
                                 <div id="basketItemsContainer"></div>
                                 
@@ -68,22 +78,19 @@
                                 </div>
                             </div>
                             
+                            <div class="drawer-stats-bar" id="drawerStatsBar" style="display:none;">
+                                <span>Product Lines <strong id="drProductLines">0</strong></span>
+                                <span>Total Quantity <strong id="drTotalQty">0</strong></span>
+                            </div>
+
                             <div class="order-drawer-footer">
-                                <div class="order-total">
-                                    <span>Total</span>
-                                    <strong id="basketTotalAmount">£0.00 ex VAT</strong>
-                                </div>
-                                <div class="order-drawer-cta-row">
-                                    <button class="btn-view-basket" onclick="window.location.href='basket.html'">
-                                        View Basket ›
-                                    </button>
-                                    <button class="btn-order-next" id="basketNextBtn">
-                                        Proceed to Checkout
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                                        </svg>
-                                    </button>
-                                </div>
+                                <h4 class="drawer-summary-title">Your order summary</h4>
+                                <div class="drawer-summary-row"><span>Product Costs</span><span id="drProductCosts">£0.00</span></div>
+                                <div class="drawer-summary-row"><span>Costs To Add Logo</span><span id="drLogoCosts">£0.00</span></div>
+                                <div class="drawer-summary-row" id="drDigitizingRow" style="display:none;"><span>£25 Digitizing &amp; Test (one-off)</span><span id="drDigitizingFee">£25.00</span></div>
+                                <div class="drawer-summary-row"><span>Total (exc. VAT)</span><span id="drExcVat">£0.00</span></div>
+                                <div class="drawer-summary-row"><span>VAT (20%)</span><span id="drVat">£0.00</span></div>
+                                <div class="drawer-grand-total"><span>Your total (inc. VAT)</span><strong id="basketTotalAmount">£0.00</strong></div>
                             </div>
                         </div>
 
@@ -467,43 +474,91 @@
                 font-size: 16px;
             }
 
-            /* Footer */
+            /* Top CTA (basket step) */
+            .order-drawer-top-cta {
+                display: flex;
+                gap: 10px;
+                padding: 14px 20px;
+                border-bottom: 1px solid #e5e7eb;
+                background: #fff;
+            }
+
+            .order-drawer-top-cta .btn-view-basket {
+                flex: 0 0 auto;
+            }
+
+            .order-drawer-top-cta .btn-order-next {
+                flex: 1;
+                width: auto;
+            }
+
+            /* Stats bar */
+            .drawer-stats-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background: #f3f4f6;
+                border-top: 1px solid #e5e7eb;
+                font-size: 13px;
+                color: #374151;
+            }
+
+            .drawer-stats-bar strong {
+                font-weight: 700;
+                color: #1f2937;
+            }
+
+            /* Footer / order summary */
             .order-drawer-footer {
-                padding: 20px 24px;
+                padding: 16px 20px 20px;
                 border-top: 1px solid #e5e7eb;
                 background: #fff;
             }
 
-            .order-total {
+            .drawer-summary-title {
+                font-size: 14px;
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0 0 12px;
+            }
+
+            .drawer-summary-row {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 16px;
-                padding: 16px;
-                background: #f9fafb;
-                border-radius: 12px;
-            }
-
-            .order-total span {
-                font-size: 16px;
+                font-size: 13px;
                 color: #6b7280;
+                padding: 5px 0;
+                border-bottom: 1px solid #f3f4f6;
             }
 
-            .order-total strong {
-                font-size: 20px;
+            .drawer-grand-total {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 10px;
+                padding-top: 10px;
+                font-size: 15px;
+                font-weight: 700;
                 color: #1f2937;
+            }
+
+            .drawer-grand-total strong {
+                font-size: 18px;
+                color: #273469;
             }
 
             .btn-order-next,
             .btn-order-submit,
             .btn-order-done {
                 width: 100%;
-                padding: 16px;
+                padding: 14px 18px;
                 background: #273469;
                 color: #fff;
                 border: none;
-                border-radius: 12px;
-                font-size: 16px;
+                border-radius: 10px;
+                font-size: 15px;
                 font-weight: 600;
                 cursor: pointer;
                 display: flex;
@@ -528,23 +583,13 @@
                 transform: none;
             }
 
-            .order-drawer-cta-row {
-                display: flex;
-                gap: 10px;
-            }
-
-            .order-drawer-cta-row .btn-order-next {
-                flex: 1;
-                width: auto;
-            }
-
             .btn-view-basket {
                 flex: 0 0 auto;
-                padding: 16px 18px;
+                padding: 14px 18px;
                 background: #fff;
                 color: #273469;
                 border: 2px solid #273469;
-                border-radius: 12px;
+                border-radius: 10px;
                 font-size: 15px;
                 font-weight: 600;
                 cursor: pointer;
@@ -831,11 +876,18 @@
             const nextBtn = document.getElementById('basketNextBtn');
             const totalEl = document.getElementById('basketTotalAmount');
 
+            function setEl(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+
             if (basket.length === 0) {
                 container.innerHTML = '';
                 emptyMsg.style.display = 'flex';
                 nextBtn.disabled = true;
-                totalEl.textContent = '£0.00 ex VAT';
+                totalEl.textContent = '£0.00';
+                setEl('drProductCosts', '£0.00'); setEl('drLogoCosts', '£0.00');
+                setEl('drExcVat', '£0.00'); setEl('drVat', '£0.00');
+                setEl('drProductLines', '0'); setEl('drTotalQty', '0');
+                const sb = document.getElementById('drawerStatsBar'); if (sb) sb.style.display = 'none';
+                const dr = document.getElementById('drDigitizingRow'); if (dr) dr.style.display = 'none';
                 return;
             }
 
@@ -876,8 +928,41 @@
                 `;
             });
 
+            // Calculate logo costs (same logic as basket.html)
+            let logoCosts = 0;
+            let digitizingFee = 0;
+            const uniqueEmbLogos = new Set();
+            let totalQtyAll = 0;
+            basket.forEach(item => {
+                const sizes = item.sizes || item.quantities || null;
+                let qty = 0;
+                if (sizes && typeof sizes === 'object' && Object.keys(sizes).length > 0) {
+                    Object.values(sizes).forEach(q => { qty += Number(q) || 0; });
+                } else { qty = Number(item.quantity || item.totalQty || 0); }
+                totalQtyAll += qty;
+                if (item.logos) {
+                    item.logos.forEach(logo => {
+                        logoCosts += (logo.unitPrice || 0) * qty;
+                        if (logo.method === 'embroidery' && logo.logo) uniqueEmbLogos.add(logo.logo);
+                    });
+                }
+            });
+            digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
+            const subtotalExVat = total + logoCosts + digitizingFee;
+            const vatAmount = subtotalExVat * 0.20;
+            const grandTotal = subtotalExVat + vatAmount;
+
             container.innerHTML = html;
-            totalEl.textContent = `£${total.toFixed(2)} ex VAT`;
+            setEl('drProductCosts', `£${total.toFixed(2)}`);
+            setEl('drLogoCosts', `£${logoCosts.toFixed(2)}`);
+            setEl('drExcVat', `£${subtotalExVat.toFixed(2)}`);
+            setEl('drVat', `£${vatAmount.toFixed(2)}`);
+            totalEl.textContent = `£${grandTotal.toFixed(2)}`;
+            setEl('drProductLines', basket.length);
+            setEl('drTotalQty', totalQtyAll);
+            const sb = document.getElementById('drawerStatsBar'); if (sb) sb.style.display = 'flex';
+            const drRow = document.getElementById('drDigitizingRow');
+            if (drRow) drRow.style.display = digitizingFee > 0 ? 'flex' : 'none';
         }
 
         // Submit quote

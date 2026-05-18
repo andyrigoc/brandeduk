@@ -1,0 +1,348 @@
+/* Full-width Add to Basket bar with rainbow ATC animation (customize mobile) */
+@property --complete {
+    initial-value: 0;
+    inherits: true;
+    syntax: "<number>";
+}
+
+.action-bar.action-bar--atc {
+    position: fixed;
+    bottom: var(--bottom-nav-height, 64px);
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: stretch;
+    padding: 0 !important;
+    margin: 0;
+    background: #1a1f3a;
+    border: none;
+    border-top: 2px solid #ffb20a;
+    box-shadow: 0 -3px 15px rgba(255, 178, 10, 0.15);
+    z-index: 101;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Price block — full height, no margin (avoids white gap) */
+.action-bar.action-bar--atc .action-price {
+    flex-shrink: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    min-width: 112px;
+    height: 100%;
+    margin: 0;
+    padding: 0 18px 0 20px;
+    background: #1a1f3a;
+    border-left: 2px solid rgba(255, 178, 10, 0.45);
+    box-sizing: border-box;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.action-bar.action-bar--atc .price-value,
+.action-bar.action-bar--atc .price-value.total-green {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffb20a;
+    line-height: 1;
+}
+
+.action-bar.action-bar--atc .price-suffix {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffb20a;
+}
+
+/* ================================
+   RAINBOW ATC BUTTON (full-width left)
+================================ */
+
+.action-bar.action-bar--atc .button.rainbow-atc {
+    --background: #1a1f3a;
+    --text: #ffffff;
+    --cart: #ffffff;
+    --tick: var(--background);
+    --complete: 0;
+
+    position: relative;
+    flex: 1;
+    align-self: stretch;
+    min-width: 0;
+    width: auto;
+    height: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #1a1f3a;
+    color: #ffffff;
+    cursor: pointer;
+    text-align: center;
+    overflow: visible;
+    appearance: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    transform: scale(var(--scale, 1));
+    transition: transform 0.4s cubic-bezier(0.36, 1.01, 0.32, 1.27);
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc:active:not(:disabled) {
+    --scale: 0.98;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+    background: #1a1f3a;
+    z-index: 1;
+}
+
+.action-bar.action-bar--atc .button__clip {
+    position: relative;
+    z-index: 4;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-bar.action-bar--atc .button__text {
+    position: relative;
+    z-index: 5;
+    display: block;
+    padding-left: 28px;
+    margin-left: -8px;
+    line-height: 26px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    transform: translateY(var(--span-y, 0));
+    transition: transform 0.7s ease;
+    white-space: nowrap;
+}
+
+.action-bar.action-bar--atc .button__text::before,
+.action-bar.action-bar--atc .button__text::after {
+    content: "";
+    position: absolute;
+    left: var(--l, 8px);
+    top: var(--t, 6px);
+    width: var(--w, 2px);
+    height: var(--h, 14px);
+    border-radius: 1px;
+    background: currentColor;
+    transform: scale(0.75) rotate(var(--icon-r, 0deg)) translateY(var(--icon-y, 0));
+    transition: transform 0.65s ease 0.05s;
+}
+
+.action-bar.action-bar--atc .button__text::after {
+    --w: 14px;
+    --h: 2px;
+    --l: 2px;
+    --t: 12px;
+}
+
+.action-bar.action-bar--atc .button .cart {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: 50%;
+    margin: -13px 0 0 -18px;
+    transform-origin: 12px 23px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-200px) rotate(-18deg);
+}
+
+.action-bar.action-bar--atc .button .cart::before,
+.action-bar.action-bar--atc .button .cart::after {
+    content: "";
+    position: absolute;
+}
+
+.action-bar.action-bar--atc .button .cart::before {
+    width: 6px;
+    height: 6px;
+    left: 9px;
+    bottom: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px var(--cart);
+    filter: drop-shadow(11px 0 0 var(--cart));
+}
+
+.action-bar.action-bar--atc .button .cart::after {
+    width: 16px;
+    height: 9px;
+    left: 9px;
+    bottom: 7px;
+    background: var(--cart);
+    transform-origin: 50% 100%;
+    transform: perspective(4px) rotateX(-6deg) scaleY(var(--fill, 0));
+    transition: transform 1.15s ease var(--fill-d, 0s);
+}
+
+.action-bar.action-bar--atc .button .cart svg {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 36px;
+    height: 26px;
+    fill: none;
+    stroke: var(--cart);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.action-bar.action-bar--atc .button .cart svg polyline:last-child {
+    stroke: var(--tick);
+    stroke-dasharray: 10px;
+    stroke-dashoffset: var(--offset, 10px);
+    transition: stroke-dashoffset 0.4s ease var(--offset-d, 0s);
+}
+
+/* Rainbow borders */
+.action-bar.action-bar--atc .atc__border {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.action-bar.action-bar--atc .atc__border--animated {
+    container-type: inline-size;
+    padding: 2px;
+    border: 2px solid transparent;
+    mask:
+        linear-gradient(#ffffff 0 0) content-box,
+        linear-gradient(#ffffff 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+        linear-gradient(#ffffff 0 0) content-box,
+        linear-gradient(#ffffff 0 0);
+    -webkit-mask-composite: xor;
+}
+
+.action-bar.action-bar--atc .atc__border--animated::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100cqi + 4px);
+    height: calc(100cqi + 4px);
+    translate: -50% -50%;
+    background: conic-gradient(
+        from calc(var(--complete, 0) * 180deg) in hsl increasing hue,
+        #0000 0 calc((1 - var(--complete)) * 20%),
+        hsl(0 100% 65%) calc((1 - var(--complete)) * 30%),
+        hsl(339 100% 65%) calc(100% - ((1 - var(--complete)) * 30%)),
+        #0000 calc(100% - ((1 - var(--complete)) * 20%)) 100%
+    );
+    animation: rainbow-atc-spin 5.5s infinite linear;
+    z-index: -1;
+}
+
+.action-bar.action-bar--atc .atc__border--static {
+    opacity: 0;
+    border: 2px solid #ffffff;
+    z-index: 2;
+    transition: opacity 0.15s ease;
+}
+
+.action-bar.action-bar--atc .atc__border--complete {
+    opacity: 0;
+    border: 2px solid hsl(140 90% 50%);
+    z-index: 2;
+    transition: opacity 0.25s ease;
+}
+
+/* Loading — timings synced with customize.js RAINBOW_ATC_TIMING */
+.action-bar.action-bar--atc .button.rainbow-atc.loading {
+    --scale: 0.98;
+    --span-y: -36px;
+    --icon-r: 180deg;
+    --fill: 1;
+    --fill-d: 0.7s;
+    --offset: 0;
+    --offset-d: 1.85s;
+    --complete: 1;
+    pointer-events: none;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc.loading .cart {
+    opacity: 1;
+    visibility: visible;
+    animation: rainbow-atc-cart-move 2.7s linear forwards 0.08s;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc.loading .atc__border--animated {
+    opacity: 0;
+    transition: opacity 0.12s ease 0.65s;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc.loading .atc__border--static {
+    opacity: 1;
+    transition: opacity 0.12s ease 0.5s;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc.complete .atc__border--static {
+    opacity: 0;
+}
+
+.action-bar.action-bar--atc .button.rainbow-atc.complete .atc__border--complete {
+    opacity: 1;
+}
+
+@keyframes rainbow-atc-spin {
+    to {
+        rotate: 360deg;
+    }
+}
+
+@keyframes rainbow-atc-cart-move {
+    0% {
+        opacity: 1;
+        transform: translateX(-200px) rotate(-18deg);
+    }
+    12% {
+        transform: translateX(-70px) rotate(-18deg);
+    }
+    22% {
+        transform: none;
+    }
+    70% {
+        transform: none;
+    }
+    75% {
+        transform: scale(0.9);
+    }
+    80% {
+        transform: none;
+    }
+    88% {
+        opacity: 1;
+        transform: translateX(70px) rotate(-18deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(160px) rotate(-18deg);
+    }
+}

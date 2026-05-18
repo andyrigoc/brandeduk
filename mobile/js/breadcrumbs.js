@@ -247,7 +247,7 @@
                 }
                 return prefix + 'shop.html';
             case 'basket':
-                return prefix + 'shop.html';
+                return prefix + 'shop.html?category=all';
             case 'checkout':
                 return prefix + 'basket.html';
             case 'quote':

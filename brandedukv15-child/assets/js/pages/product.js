@@ -2429,6 +2429,7 @@ function saveCurrentSelectionToBasket() {
     }
 
     const productData = {
+        id: 'pd-' + Date.now() + '-' + String(selectedColorName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         name: PRODUCT_NAME,
         code: PRODUCT_CODE,
         color: selectedColorName,
@@ -2437,10 +2438,11 @@ function saveCurrentSelectionToBasket() {
         size: getSizesSummary(),
         price: newUnitPrice.toFixed(2),
         sizes: cleanSizes,
-        priceBreaks: typeof DISCOUNTS !== 'undefined' ? DISCOUNTS : []
+        priceBreaks: typeof DISCOUNTS !== 'undefined' ? DISCOUNTS : [],
+        pendingLogoPrompt: preservedLogos.length === 0 && preservedPositions.length === 0
     };
 
-    // Restore preserved customization data
+    // Restore preserved customization data (same colour re-save only)
     productData.logos = preservedLogos;
     productData.positionDesigns = preservedPositionDesigns;
     productData.positions = preservedPositions;
@@ -2449,6 +2451,11 @@ function saveCurrentSelectionToBasket() {
     productData.notes = preservedNotes;
 
     basket.push(productData);
+    if (productData.pendingLogoPrompt) {
+        sessionStorage.setItem('pendingLogoPromptId', productData.id);
+    } else {
+        sessionStorage.removeItem('pendingLogoPromptId');
+    }
 
     // Update price for ALL items of the SAME PRODUCT (all colors) - handle both V2 and old format
     basket.forEach(item => {
@@ -2661,6 +2668,15 @@ window.addEventListener("click", (e) => {
         if (popup) popup.style.display = "none";
     }
 });
+
+// View Basket — keep logo prompt flag so basket shows quick-logo popup
+const popupViewBasketBtn = document.getElementById('popupViewBasketBtn');
+if (popupViewBasketBtn) {
+    popupViewBasketBtn.onclick = function () {
+        if (popup) popup.style.display = 'none';
+        window.location.href = 'basket.html?promptLogo=1';
+    };
+}
 
 // "Add your logo now" button in popup â€” navigate to customize page
 const popupAddLogoBtn = document.getElementById('popupAddLogoBtn');

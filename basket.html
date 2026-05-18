@@ -28,6 +28,9 @@
 
         body.basket-page {
             padding-top: 0 !important;
+            --basket-navy: #273469;
+            --basket-orange: #ef4444;
+            --basket-link-blue: #2563eb;
         }
 
         /* Never hide the header on basket page — keep it always visible */
@@ -151,17 +154,38 @@
         .basket-header h1 {
             font-size: 20px;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--basket-navy);
             margin: 0;
             flex: 1;
         }
+        .basket-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--basket-navy);
+        }
+        .basket-desktop-title h2 {
+            color: var(--basket-navy);
+        }
         .basket-header .clear-btn {
             font-size: 14px;
-            color: #ef4444;
+            color: var(--basket-orange);
             background: none;
             border: none;
             font-weight: 600;
             cursor: pointer;
+        }
+        .basket-header .clear-btn:hover {
+            color: #dc2626;
+            text-decoration: underline;
+        }
+        body.basket-page .basket-header .clear-btn,
+        body.basket-page .item-row-remove {
+            color: var(--basket-orange) !important;
+        }
+        body.basket-page .basket-header .clear-btn:hover,
+        body.basket-page .item-row-remove:hover {
+            color: #dc2626 !important;
         }
 
         /* Clear All confirmation modal */
@@ -217,9 +241,9 @@
         .basket-item-row {
             background: #fff;
             border-bottom: 1px solid #e5e7eb;
-            padding: 20px 0;
+            padding: 12px 0;
         }
-        .basket-item-row:first-child { padding-top: 16px; }
+        .basket-item-row:first-child { padding-top: 10px; }
 
         /* Item header: image + info + remove */
         .item-row-header {
@@ -227,28 +251,43 @@
             gap: 12px;
             align-items: flex-start;
         }
+        .item-row-header--clickable {
+            cursor: pointer;
+            border-radius: 8px;
+            margin: -4px -6px;
+            padding: 4px 6px;
+            transition: background 0.15s ease;
+        }
+        .item-row-header--clickable:hover { background: #f3f4f6; }
+        .item-row-header--clickable:active { background: #e5e7eb; }
+        .item-edit-hint {
+            font-size: 11px;
+            color: #2563eb;
+            margin: 2px 0 0;
+            font-weight: 500;
+        }
         .item-row-image {
-            width: 64px; height: 64px; flex-shrink: 0;
-            border-radius: 8px; overflow: hidden; background: #f5f7fb;
+            width: 52px; height: 52px; flex-shrink: 0;
+            border-radius: 6px; overflow: hidden; background: #f5f7fb;
         }
         .item-row-image img { width: 100%; height: 100%; object-fit: cover; }
         .item-row-info { flex: 1; min-width: 0; }
-        .item-row-info h4 { font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 0 2px; }
-        .item-row-info .item-code { font-size: 12px; color: #9ca3af; margin: 0; }
-        .item-row-info .item-color { font-size: 13px; color: #6b7280; margin: 0; }
-        .item-row-info .item-size { font-size: 13px; color: #6b7280; margin: 0; }
+        .item-row-info h4 { font-size: 13px; font-weight: 700; color: var(--basket-navy); margin: 0 0 1px; }
+        .item-row-info .item-code { font-size: 11px; color: #9ca3af; margin: 0; }
+        .item-row-info .item-color { font-size: 12px; color: #6b7280; margin: 0; }
+        .item-row-info .item-size { font-size: 12px; color: #6b7280; margin: 0; }
         .item-row-remove {
-            color: #ef4444; font-size: 13px; font-weight: 600; background: none; border: none;
+            color: var(--basket-orange); font-size: 13px; font-weight: 600; background: none; border: none;
             cursor: pointer; padding: 0; margin-top: 4px;
         }
-        .item-row-remove:hover { text-decoration: underline; }
+        .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
 
         /* Qty controls + price per item */
         .item-row-qty-price {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 14px;
+            margin-top: 8px;
         }
         .qty-controls {
             display: inline-flex;
@@ -258,21 +297,21 @@
             overflow: hidden;
         }
         .qty-controls .qty-btn {
-            width: 36px; height: 36px; border: none; background: #f9fafb;
-            color: #374151; font-size: 18px; font-weight: 600; cursor: pointer;
+            width: 30px; height: 30px; border: none; background: #f9fafb;
+            color: #374151; font-size: 16px; font-weight: 600; cursor: pointer;
             display: flex; align-items: center; justify-content: center; padding: 0;
         }
         .qty-controls .qty-btn:hover { background: #e5e7eb; }
         .qty-controls .qty-value {
-            width: 40px; text-align: center; font-size: 15px; font-weight: 700;
+            width: 36px; text-align: center; font-size: 14px; font-weight: 700;
             color: #1f2937; border-left: 1px solid #d1d5db; border-right: 1px solid #d1d5db;
-            height: 36px; line-height: 36px;
+            height: 30px; line-height: 30px;
         }
         .item-row-price {
             text-align: right;
         }
         .item-row-price .price-amount {
-            font-size: 15px; font-weight: 700; color: #1f2937;
+            font-size: 15px; font-weight: 700; color: var(--basket-navy);
         }
         .item-row-price .price-detail {
             font-size: 12px; color: #9ca3af; margin-top: 2px;
@@ -289,13 +328,21 @@
             padding: 12px 0;
             border-top: 1px solid #f3f4f6;
         }
-        .logo-row .logo-thumb {
+        .logo-thumb-wrap {
             width: 72px; height: 72px; border-radius: 8px;
-            border: 1px solid #e5e7eb; object-fit: contain; background: #f9fafb; flex-shrink: 0;
+            border: 1px solid #e5e7eb; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; box-sizing: border-box;
+            background-color: var(--garment-bg, #f3f4f6);
+        }
+        .logo-thumb-wrap--light { border-color: #cbd5e1; }
+        .logo-row .logo-thumb {
+            width: 100%; height: 100%; object-fit: contain;
+            background: transparent; border: none; display: block;
         }
         .logo-row .logo-info { flex: 1; min-width: 0; }
         .logo-row .logo-method-label {
-            font-size: 13px; font-weight: 600; color: #1f2937;
+            font-size: 13px; font-weight: 600; color: var(--basket-navy);
             display: flex; align-items: center; gap: 4px;
         }
         .logo-row .logo-method-label .method-icons { font-size: 12px; }
@@ -311,14 +358,19 @@
         .logo-row .logo-actions button {
             font-size: 12px; font-weight: 600; padding: 0; border: none; background: none; cursor: pointer;
         }
-        .logo-row .logo-actions .edit-btn { color: #ea580c; }
-        .logo-row .logo-actions .edit-btn:hover { text-decoration: underline; }
-        .logo-row .logo-actions .copy-btn { color: #ea580c; }
-        .logo-row .logo-actions .copy-btn:hover { text-decoration: underline; }
-        .logo-row .logo-actions .remove-btn { color: #ef4444; }
-        .logo-row .logo-actions .remove-btn:hover { text-decoration: underline; }
+        .logo-row .logo-actions .edit-btn { color: var(--basket-link-blue); }
+        .logo-row .logo-actions .edit-btn:hover { color: #1d4ed8; text-decoration: underline; }
+        .logo-row .logo-actions .copy-btn { color: var(--basket-link-blue); }
+        .logo-row .logo-actions .copy-btn:hover { color: #1d4ed8; text-decoration: underline; }
+        .logo-row .logo-actions .remove-btn { color: var(--basket-link-blue); }
+        .logo-row .logo-actions .remove-btn:hover { color: #1d4ed8; text-decoration: underline; }
+        body.basket-page .logo-row .logo-actions .edit-btn,
+        body.basket-page .logo-row .logo-actions .copy-btn,
+        body.basket-page .logo-row .logo-actions .remove-btn {
+            color: var(--basket-link-blue) !important;
+        }
         .logo-row .logo-price {
-            font-size: 14px; font-weight: 600; color: #1f2937; white-space: nowrap; text-align: right;
+            font-size: 14px; font-weight: 600; color: var(--basket-navy); white-space: nowrap; text-align: right;
         }
 
         /* Add another logo button (black) */
@@ -326,10 +378,10 @@
             display: flex; align-items: center; justify-content: center; gap: 6px;
             margin: 12px 0 0 auto;
             padding: 10px 20px;
-            background: #1f2937; color: #fff; border: none; border-radius: 6px;
+            background: var(--basket-navy); color: #fff; border: none; border-radius: 6px;
             font-size: 13px; font-weight: 700; cursor: pointer;
         }
-        .add-logo-btn:hover { background: #374151; }
+        .add-logo-btn:hover { background: #1E2749; }
 
         /* Total item cost */
         .item-row-total {
@@ -643,68 +695,74 @@
             /* Outer page */
             body.basket-page { background: #f3f4f6; }
 
-            /* Full-width container */
+            /* Full-width container — matches header-container width */
             .basket-content {
-                max-width: 1280px;
+                max-width: 1240px;
+                width: calc(100% - 48px);
                 margin: 0 auto;
-                padding: 32px 40px 60px;
-                display: grid;
-                grid-template-columns: 1fr 360px;
-                gap: 32px;
-                align-items: start;
-            }
-
-            /* Left column: items list */
-            #basketContent {
-                display: contents; /* children flow into grid */
-            }
-            .basket-items-col {
+                padding: 32px 0 60px;
                 display: flex;
                 flex-direction: column;
                 gap: 16px;
-            }
-            .basket-items-col .basket-item-row {
-                background: #fff;
-                border-radius: 12px;
-                padding: 20px;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+                align-items: stretch;
             }
 
-            /* Right column: order summary sticky */
+            /* Items list spans full width */
+            #basketContent { display: contents; }
+            .basket-items-col {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                background: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+                padding: 0 20px;
+            }
+            .basket-items-col .basket-item-row {
+                padding: 12px 0;
+                border-radius: 0;
+                box-shadow: none;
+                background: transparent;
+            }
+
+            /* Order summary: full-width card below items */
             .order-summary-bottom {
                 background: #fff;
                 border-radius: 12px;
-                padding: 24px;
+                padding: 20px 24px;
                 box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-                position: sticky;
-                top: 24px;
+                max-width: 480px;
+                align-self: flex-end;
             }
             .order-summary-bottom h3 {
-                font-size: 18px;
+                font-size: 16px;
                 font-weight: 700;
                 color: #1f2937;
-                margin: 0 0 16px;
+                margin: 0 0 12px;
             }
 
-            /* Push summary to right column */
-            #orderSummaryBottom { grid-column: 2; grid-row: 1 / 99; }
-            #basketItemsList    { grid-column: 1; }
-            #emptyBasket        { grid-column: 1 / 3; }
-            .order-notes-section { grid-column: 1; }
-            .basket-trust-badges { grid-column: 1; }
-            .vat-toggle-row     { grid-column: 1; }
-            .discount-code-section { grid-column: 1; }
+            /* Single-column: all grid children flow naturally */
+            #orderSummaryBottom { grid-column: unset; grid-row: unset; }
+            #basketItemsList    { grid-column: unset; }
+            #emptyBasket        { grid-column: unset; }
+            .order-notes-section { grid-column: unset; }
+            .basket-trust-badges { grid-column: unset; }
+            .vat-toggle-row      { grid-column: unset; }
+            .discount-code-section { grid-column: unset; }
+
+            /* Compact image on desktop */
+            .item-row-image { width: 56px; height: 56px; }
 
             /* Page title row */
             .basket-desktop-title {
-                grid-column: 1 / 3;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                margin-bottom: -8px;
+                margin-bottom: 4px;
             }
             .basket-desktop-title h2 {
-                font-size: 24px; font-weight: 800; color: #1f2937; margin: 0;
+                font-size: 22px; font-weight: 800; color: var(--basket-navy); margin: 0;
             }
             .basket-desktop-title .clear-desktop-btn {
                 font-size: 14px; font-weight: 600; color: #ef4444;
@@ -712,7 +770,6 @@
             }
 
             .basket-action-bar { display: none !important; }
-            .item-row-image { width: 80px; height: 80px; }
 
             /* Primary / secondary CTA buttons on desktop */
             .btn-checkout-primary {
@@ -980,7 +1037,7 @@
             </div>
             <h2>Your basket is empty</h2>
             <p>Add some products to get started with your quote</p>
-            <a href="index.html" class="start-btn">
+            <a href="/shop.html?category=all" class="start-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                 </svg>
@@ -991,7 +1048,7 @@
         <!-- Basket Content (visible when items exist) -->
         <div id="basketContent" style="display:none;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                <h2 style="font-size:20px; font-weight:700; margin:0; color:#1f2937;">My Basket</h2>
+                <h2 class="basket-section-title">My Basket</h2>
                 <!-- VAT Toggle -->
                 <div class="vat-toggle-row" style="margin:0; padding:0;">
                     <span>Show prices including VAT</span>
@@ -1056,9 +1113,9 @@
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
-                        Richiedi Quote / Request a Quote
+                        Request a Quote
                     </button>
-                    <a href="shop-pc.html" class="btn-continue-shopping">← Continue Shopping / Add another item</a>
+                    <a href="/shop.html?category=all" class="btn-continue-shopping" id="continueShoppingBtn">← Continue Shopping / Add another item</a>
                 </div>
             </div>
 
@@ -1190,7 +1247,110 @@
         renderBasket();
         initEventListeners();
         loadOrderNotes();
+        hydrateAllBasketColorHex();
+        setTimeout(handlePendingLogoPrompt, 700);
     });
+
+    /** After adding a new garment — show quick-logo popup (reuse / choose position) */
+    function handlePendingLogoPrompt() {
+        const urlWantsPrompt = /(?:\?|&)promptLogo=1/.test(window.location.search);
+        let targetId = sessionStorage.getItem('pendingLogoPromptId') || '';
+        const legacyIdx = sessionStorage.getItem('pendingLogoPromptIndex');
+        sessionStorage.removeItem('pendingLogoPromptId');
+        sessionStorage.removeItem('pendingLogoPromptIndex');
+
+        let basket = getBasket();
+        let itemIndex = -1;
+
+        if (targetId) {
+            itemIndex = basket.findIndex(function (i) { return i.id === targetId; });
+        }
+        if (itemIndex === -1 && legacyIdx !== null && legacyIdx !== '') {
+            const n = parseInt(legacyIdx, 10);
+            if (!isNaN(n) && n >= 0 && n < basket.length) itemIndex = n;
+        }
+        if (itemIndex === -1) {
+            itemIndex = basket.findIndex(function (i) { return i.pendingLogoPrompt; });
+        }
+        if (itemIndex === -1 && !urlWantsPrompt) return;
+
+        if (itemIndex === -1) {
+            itemIndex = basket.findIndex(function (i) {
+                return !(i.logos && i.logos.length) && !itemHasLogoData(i);
+            });
+        }
+        if (itemIndex === -1) return;
+
+        const item = basket[itemIndex];
+
+        // Logo already saved (e.g. from customize) — sync to logos[] and show preview, no modal
+        if (itemHasLogoData(item)) {
+            const logos = _extractLogos(item);
+            if (logos.length > 0) applyExtractedLogos(item, logos);
+            else delete item.pendingLogoPrompt;
+            saveBasket(basket);
+            normalizeBasket();
+            renderBasket();
+            return;
+        }
+
+        if (!item.pendingLogoPrompt && !urlWantsPrompt) return;
+
+        stripLogosFromBasketItem(item);
+        delete item.pendingLogoPrompt;
+        saveBasket(basket);
+
+        setTimeout(function () {
+            basket = getBasket();
+            if (itemIndex >= basket.length) {
+                itemIndex = basket.findIndex(function (i) { return i.id === targetId; });
+            }
+            if (itemIndex < 0) return;
+
+            const existingLogos = _collectAllLogos(basket, itemIndex);
+            if (existingLogos.length > 0) {
+                _showQuickLogoModal(itemIndex, existingLogos);
+            } else {
+                _openFullCustomizeForItem(itemIndex);
+            }
+        }, 350);
+    }
+
+    function itemHasLogoData(item) {
+        if (!item) return false;
+        if (item.logos && item.logos.length > 0) return true;
+        if (Array.isArray(item.positions) && item.positions.some(function (p) { return p && p.logo; })) return true;
+        if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+            return Object.values(item.positionDesigns).some(function (d) { return d && d.logo; });
+        }
+        return false;
+    }
+
+    function stripLogosFromBasketItem(item) {
+        if (!item) return;
+        item.logos = [];
+        delete item.positions;
+        delete item.positionDesigns;
+        delete item.customizations;
+    }
+
+    /** Promote extracted logos onto a basket row and clear pending-logo state */
+    function applyExtractedLogos(item, logos) {
+        if (!item || !logos || logos.length === 0) return false;
+        item.logos = JSON.parse(JSON.stringify(logos));
+        delete item.pendingLogoPrompt;
+        _clearLegacyPositionFields(item);
+        return true;
+    }
+
+    function hydrateAllBasketColorHex() {
+        if (!window.BrandedColorHex) return;
+        const basket = getBasket();
+        BrandedColorHex.hydrateBasketItems(basket, function () {
+            saveBasket(basket);
+            renderBasket();
+        });
+    }
 
     // ========================
     // DATA MODEL & MIGRATION
@@ -1247,12 +1407,14 @@
                 const sizeEntries = Object.entries(sizeObj).filter(([, qty]) => qty > 0);
                 if (sizeEntries.length === 0) { changed = true; return; }
 
-                sizeEntries.forEach(([size, qty]) => {
-                    newBasket.push({
-                        id: makeRowId(item.productCode || item.code, item.color, size),
+                sizeEntries.forEach(([size, qty], entryIdx) => {
+                    const rowLogos = logos.length > 0 ? JSON.parse(JSON.stringify(logos)) : [];
+                    const row = {
+                        id: (entryIdx === 0 && item.id) ? item.id : makeRowId(item.productCode || item.code, item.color, size),
                         code: item.productCode || item.code || '',
                         name: item.productName || item.name || 'Product',
                         color: item.color || item.selectedColorName || '',
+                        colorHex: item.colorHex || '',
                         colorImage: item.colorImage || '',
                         image: item.image || item.colorImage || '',
                         size: size,
@@ -1262,19 +1424,22 @@
                         priceBreaks: item.priceBreaks || [],
                         brand: item.brand || '',
                         productType: item.productType || '',
-                        logos: JSON.parse(JSON.stringify(logos))
-                    });
+                        logos: rowLogos,
+                        pendingLogoPrompt: rowLogos.length === 0 && !!item.pendingLogoPrompt
+                    };
+                    if (enrichItemColorHex(row)) changed = true;
+                    newBasket.push(row);
                 });
                 changed = true;
             } else if (item.size) {
-                // Already V2 format â€” just update logos if old fields present
-                if (logos.length > 0 && (item.positions || item.positionDesigns)) {
-                    item.logos = logos;
-                    delete item.positions;
-                    delete item.positionDesigns;
-                    delete item.customizations;
+                // Already V2 — promote logos from positions/positionDesigns/logos[]
+                if (logos.length > 0) {
+                    if (applyExtractedLogos(item, logos)) changed = true;
+                } else if (item.pendingLogoPrompt) {
+                    item.logos = [];
                     changed = true;
                 }
+                if (enrichItemColorHex(item)) changed = true;
                 newBasket.push(item);
             } else {
                 // No sizes object and no size field — treat as One Size
@@ -1295,12 +1460,12 @@
                     changed = true;
                 }
                 if (logos.length > 0) {
-                    item.logos = logos;
-                    delete item.positions;
-                    delete item.positionDesigns;
-                    delete item.customizations;
+                    if (applyExtractedLogos(item, logos)) changed = true;
+                } else if (item.pendingLogoPrompt) {
+                    item.logos = [];
                     changed = true;
                 }
+                if (enrichItemColorHex(item)) changed = true;
                 newBasket.push(item);
             }
         });
@@ -1309,7 +1474,7 @@
         // If some sizes have a logo and others don't, copy logos to all
         const grouped = {};
         newBasket.forEach((item, idx) => {
-            const key = (item.code || '') + '|' + (item.color || '');
+            const key = getItemCode(item) + '|' + getItemColor(item);
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(idx);
         });
@@ -1324,6 +1489,7 @@
             if (bestLogos.length === 0) return;
             // Apply to all items missing logos
             indices.forEach(idx => {
+                if (newBasket[idx].pendingLogoPrompt) return;
                 const current = newBasket[idx].logos || [];
                 if (current.length === 0) {
                     newBasket[idx].logos = JSON.parse(JSON.stringify(bestLogos));
@@ -1336,7 +1502,7 @@
         const seen = {};
         const deduped = [];
         newBasket.forEach(item => {
-            const key = (item.code || '') + '|' + (item.color || '') + '|' + (item.size || '');
+            const key = getItemCode(item) + '|' + getItemColor(item) + '|' + (item.size || '');
             if (seen[key]) {
                 // Merge qty into the first occurrence
                 seen[key].qty = (seen[key].qty || 0) + (item.qty || 0);
@@ -1378,7 +1544,7 @@
         if (Array.isArray(item.positions) && item.positions.length > 0) {
             console.log('📋 [_extractLogos] Found positions array:', item.positions.length, 'items');
             item.positions.forEach(p => {
-                if (p && (p.logo || p.method)) {
+                if (p && p.logo) {
                     const newLogo = {
                         position: p.position || '',
                         positionLabel: toReadablePosition(p.name || p.position || ''),
@@ -1396,7 +1562,7 @@
         if (logos.length === 0 && item.positionDesigns && typeof item.positionDesigns === 'object') {
             console.log('📐 [_extractLogos] Trying positionDesigns:', Object.keys(item.positionDesigns).length, 'keys');
             Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
-                if (d && (d.logo || d.method)) {
+                if (d && d.logo) {
                     const newLogo = {
                         position: posKey,
                         positionLabel: toReadablePosition(d.position || posKey),
@@ -1410,12 +1576,30 @@
             });
         }
 
-        console.log('📦 [_extractLogos] Final result:', logos.length, 'logos');
-        // Priority 3: existing logos[] â€” keep if old fields were empty
-        if (logos.length === 0 && item.logos && item.logos.length > 0) {
-            return item.logos;
+        // Priority 3: merge existing logos[] (e.g. quick-apply from basket modal)
+        if (item.logos && item.logos.length > 0) {
+            item.logos.forEach(l => {
+                if (!l || !(l.logo || l.method)) return;
+                const method = (l.method || 'embroidery').toLowerCase();
+                const pos = l.position || '';
+                const dup = logos.some(x =>
+                    (x.position || '') === pos &&
+                    (x.method || '').toLowerCase() === method &&
+                    (x.logo || '') === (l.logo || '')
+                );
+                if (!dup) {
+                    logos.push({
+                        position: pos,
+                        positionLabel: l.positionLabel || toReadablePosition(pos),
+                        method: method,
+                        logo: l.logo || '',
+                        unitPrice: l.unitPrice || (method === 'print' ? 3.50 : 5.00)
+                    });
+                }
+            });
         }
 
+        console.log('📦 [_extractLogos] Final result:', logos.length, 'logos');
         return logos;
     }
 
@@ -1429,11 +1613,71 @@
             'front-center': 'Front Center', 'back-large': 'Back Large',
             'left-sleeve': 'Left Sleeve', 'right-sleeve': 'Right Sleeve',
             'left-breast': 'Left Chest', 'right-breast': 'Right Chest',
-            'small-centre-front': 'Centre Front', 'large-front-center': 'Front Center',
+            'small-centre-front': 'Front Centre', 'large-front-center': 'Front Center',
             'large-back': 'Back Large', 'left-arm': 'Left Arm', 'right-arm': 'Right Arm'
         };
         if (!slug) return 'Logo';
         return map[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function getItemCode(item) {
+        return (item && (item.code || item.productCode || '')) || '';
+    }
+
+    function getItemColor(item) {
+        return (item && (item.color || item.selectedColorName || '')) || '';
+    }
+
+    function isEmbroideryOnlyItem(item) {
+        if (!item) return false;
+        const type = String(item.productType || '').trim().toLowerCase();
+        const name = String(item.name || item.productName || '').trim().toLowerCase();
+        if (type === 'beanies' || type === 'beanie') return true;
+        return /beanie|bobble hat|knit hat|pom[\s-]?pom/i.test(name);
+    }
+
+    function mapPositionForTargetItem(position, item) {
+        const pos = String(position || '').toLowerCase();
+        if (!isEmbroideryOnlyItem(item)) return position || 'left-breast';
+        if (pos === 'small-centre-front' || pos === 'front-center' || pos === 'front-centre') {
+            return 'small-centre-front';
+        }
+        if (pos === 'left-breast' || pos === 'left-chest' || pos === 'right-breast' || pos === 'right-chest') {
+            return 'small-centre-front';
+        }
+        return position || 'small-centre-front';
+    }
+
+    function adaptLogoForTargetItem(logoData, targetItem) {
+        const src = logoData || {};
+        const position = mapPositionForTargetItem(src.position, targetItem);
+        let method = String(src.method || 'print').toLowerCase();
+        let unitPrice = parseFloat(src.unitPrice);
+
+        if (isEmbroideryOnlyItem(targetItem)) {
+            method = 'embroidery';
+            unitPrice = Number.isFinite(unitPrice) && unitPrice >= 5 ? unitPrice : 5.00;
+        } else if (method === 'print') {
+            unitPrice = Number.isFinite(unitPrice) ? unitPrice : 3.50;
+        } else {
+            method = 'embroidery';
+            unitPrice = Number.isFinite(unitPrice) ? unitPrice : 5.00;
+        }
+
+        return {
+            logo: src.logo || '',
+            position: position,
+            positionLabel: toReadablePosition(position),
+            method: method,
+            unitPrice: unitPrice
+        };
+    }
+
+    function _clearLegacyPositionFields(item) {
+        if (!item) return;
+        delete item.positions;
+        delete item.positionDesigns;
+        delete item.customizations;
     }
 
     // ========================
@@ -1471,6 +1715,12 @@
 
     function renderBasket() {
         const basket = getBasket();
+        let hexDirty = false;
+        basket.forEach(function (item) {
+            if (enrichItemColorHex(item)) hexDirty = true;
+        });
+        if (hexDirty) saveBasket(basket);
+
         const emptyState = document.getElementById('emptyBasket');
         const content = document.getElementById('basketContent');
         const actionBar = document.getElementById('actionBar');
@@ -1493,6 +1743,48 @@
         renderSummary(basket);
     }
 
+    function normalizeColorHex(hex) {
+        return window.BrandedColorHex ? BrandedColorHex.parseHex(hex) : '';
+    }
+
+    function enrichItemColorHex(item) {
+        if (!item || !window.BrandedColorHex) return false;
+        const stored = BrandedColorHex.parseHex(item.colorHex);
+        if (BrandedColorHex.isUsableHex(stored)) return false;
+        const code = item.code || item.productCode || '';
+        const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image);
+        if (!found) return false;
+        item.colorHex = found;
+        BrandedColorHex.register(item.color, found, code);
+        return true;
+    }
+
+    function getItemColorHex(item) {
+        if (!item) return '#f3f4f6';
+        if (window.BrandedColorHex) {
+            enrichItemColorHex(item);
+            const code = item.code || item.productCode || '';
+            const stored = BrandedColorHex.parseHex(item.colorHex);
+            if (BrandedColorHex.isUsableHex(stored)) return stored;
+            const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image);
+            if (found) {
+                item.colorHex = found;
+                return found;
+            }
+        }
+        return '#f3f4f6';
+    }
+
+    function isLightColorHex(hex) {
+        const h = normalizeColorHex(hex);
+        if (!h) return true;
+        const r = parseInt(h.slice(1, 3), 16);
+        const g = parseInt(h.slice(3, 5), 16);
+        const b = parseInt(h.slice(5, 7), 16);
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return lum > 0.72;
+    }
+
     // ========================
     // RENDER ITEM ROWS
     // ========================
@@ -1506,6 +1798,8 @@
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             const unitPrice = parseFloat(item.unitPrice) || 0;
             const qty = item.qty || 0;
+            const garmentHex = getItemColorHex(item);
+            const garmentHexLight = isLightColorHex(garmentHex);
 
             // Logo rows
             let logosHtml = '';
@@ -1517,10 +1811,12 @@
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
+                    const thumbWrapClass = 'logo-thumb-wrap' + (garmentHexLight ? ' logo-thumb-wrap--light' : '');
+                    const colorTitle = (item.color || '').replace(/"/g, '&quot;');
 
                     logosHtml += `
                         <div class="logo-row">
-                            ${thumbSrc ? `<img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'">` : ''}
+                            ${thumbSrc ? `<div class="${thumbWrapClass}" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
                             <div class="logo-info">
                                 <div class="logo-method-label">${methodLabel}</div>
                                 <div class="logo-position-label">Position: ${posLabel}</div>
@@ -1547,7 +1843,7 @@
 
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
-                    <div class="item-row-header">
+                    <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
                         <div class="item-row-image">
                             <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
@@ -1556,7 +1852,8 @@
                             <p class="item-code">${item.code || ''}</p>
                             <p class="item-color">${item.color || ''}</p>
                             <p class="item-size">${item.size || ''}</p>
-                            <button type="button" class="item-row-remove" onclick="removeItem(${index})">Remove</button>
+                            <p class="item-edit-hint">Tap to change colour or size</p>
+                            <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                         </div>
                     </div>
 
@@ -1741,10 +2038,10 @@
         if (!item) return;
 
         // Find ALL items with same code+color (all sizes)
-        const code = item.code || '';
-        const color = item.color || '';
+        const code = getItemCode(item);
+        const color = getItemColor(item);
         basket.forEach(bi => {
-            if ((bi.code || '') === code && (bi.color || '') === color) {
+            if (getItemCode(bi) === code && getItemColor(bi) === color) {
                 const logos = bi.logos || [];
                 bi.positions = logos.map(l => ({
                     position: l.position,
@@ -1823,12 +2120,14 @@
         }
     }
 
-    /** Collect unique logos from the entire basket (optionally excluding the target item's occupied positions) */
+    /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print → embroidery on beanies) */
     function _collectAllLogos(basket, targetItemIndex) {
         const seen = new Set();
         const logos = [];
         const targetItem = basket[targetItemIndex];
-        const occupiedPositions = (targetItem.logos || []).map(l => l.position);
+        const occupiedPositions = (targetItem.logos || []).map(l =>
+            mapPositionForTargetItem(l.position, targetItem)
+        );
 
         basket.forEach(item => {
             if (!item.logos) return;
@@ -1836,13 +2135,16 @@
                 const key = (logo.logo || '') + '|' + (logo.position || '') + '|' + (logo.method || '');
                 if (!seen.has(key) && logo.logo) {
                     seen.add(key);
-                    logos.push({
+                    const adapted = adaptLogoForTargetItem({
                         logo: logo.logo,
                         position: logo.position,
-                        positionLabel: logo.positionLabel || toReadablePosition(logo.position),
-                        method: logo.method || 'print',
-                        unitPrice: logo.unitPrice || 0,
-                        alreadyOnTarget: occupiedPositions.includes(logo.position)
+                        positionLabel: logo.positionLabel,
+                        method: logo.method,
+                        unitPrice: logo.unitPrice
+                    }, targetItem);
+                    logos.push({
+                        ...adapted,
+                        alreadyOnTarget: occupiedPositions.includes(adapted.position)
                     });
                 }
             });
@@ -1907,34 +2209,65 @@
     function _applyQuickLogo(itemIndex, logoData) {
         const basket = getBasket();
         if (itemIndex < 0 || itemIndex >= basket.length) return;
-        const item = basket[itemIndex];
-        const code = item.code || '';
-        const color = item.color || '';
+        const targetItem = basket[itemIndex];
+        const targetCode = getItemCode(targetItem);
+        const targetColor = getItemColor(targetItem);
+        const newLogo = adaptLogoForTargetItem(logoData, targetItem);
 
-        const newLogo = {
-            position: logoData.position,
-            positionLabel: logoData.positionLabel,
-            method: logoData.method,
-            logo: logoData.logo,
-            unitPrice: logoData.unitPrice
-        };
+        if (!newLogo.logo) {
+            showToast('Logo image missing — upload again from customize', true);
+            return;
+        }
 
         // Add to all items with same code+color (all size rows)
         basket.forEach(bi => {
-            if ((bi.code || '') === code && (bi.color || '') === color) {
+            if (getItemCode(bi) === targetCode && getItemColor(bi) === targetColor) {
                 if (!bi.logos) bi.logos = [];
-                // Don't duplicate same position
-                if (!bi.logos.some(l => l.position === newLogo.position)) {
+                const mappedPos = mapPositionForTargetItem(newLogo.position, bi);
+                if (!bi.logos.some(l => mapPositionForTargetItem(l.position, bi) === mappedPos)) {
                     bi.logos.push(JSON.parse(JSON.stringify(newLogo)));
                 }
+                delete bi.pendingLogoPrompt;
+                _clearLegacyPositionFields(bi);
             }
         });
 
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-        renderBasket();
+        try {
+            saveBasket(basket);
+            renderBasket();
+            if (navigator.vibrate) navigator.vibrate(10);
+        } catch (e) {
+            console.error('Failed to save basket after quick logo apply:', e);
+            showToast('Could not save logo — storage may be full', true);
+        }
     }
 
-    /** Open the full customize positions popup for an item */
+    /** Open customize for this basket line — colours, sizes, logos */
+    window.editBasketItem = function editBasketItem(itemIndex) {
+        const basket = getBasket();
+        const item = basket[itemIndex];
+        if (!item) return;
+
+        _writeLogosAsOldFormat(itemIndex);
+
+        sessionStorage.setItem('customizingBasketIndex', String(itemIndex));
+        sessionStorage.removeItem('returnAfterCustomize');
+        sessionStorage.removeItem('basketEditNewColor');
+        sessionStorage.setItem('basketEditSingleItem', '1');
+        if (item.id) sessionStorage.setItem('basketEditItemId', item.id);
+        sessionStorage.removeItem('editingLogoIndex');
+        sessionStorage.removeItem('editingPosition');
+        sessionStorage.removeItem('occupiedPositions');
+
+        _setCustomizeSessionData(item);
+
+        const isMobile = window.innerWidth < 1024;
+        const codeQ = code ? ('code=' + encodeURIComponent(code) + '&') : '';
+        const url = (isMobile ? 'mobile/customize-mobile.html' : 'customize.html') + '?' + codeQ + 'editItem=1&_cb=' + Date.now();
+        openCustomizePopup(url);
+    };
+
+    /** Open the full customize positions popup for an item (logo only) */
     function _openFullCustomizeForItem(itemIndex) {
         const basket = getBasket();
         const item = basket[itemIndex];
@@ -1942,6 +2275,8 @@
         _writeLogosAsOldFormat(itemIndex);
 
         sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
+        sessionStorage.removeItem('basketEditSingleItem');
+        sessionStorage.removeItem('basketEditItemId');
         sessionStorage.removeItem('editingLogoIndex');
         sessionStorage.removeItem('editingPosition');
         sessionStorage.setItem('returnAfterCustomize', 'basket');
@@ -1960,17 +2295,25 @@
     }
 
     function _setCustomizeSessionData(item) {
-        sessionStorage.setItem('selectedProduct', item.code || item.productCode || '');
+        const code = item.code || item.productCode || '';
+        sessionStorage.setItem('selectedProduct', code);
         if (item.color) sessionStorage.setItem('selectedColorName', item.color);
+        if (item.colorId) sessionStorage.setItem('selectedColorId', item.colorId);
         const itemName = item.productName || item.name || '';
         sessionStorage.setItem('selectedProductData', JSON.stringify({
-            code: item.code || item.productCode || '',
+            code: code,
             name: itemName,
             price: item.unitPrice || 0,
             image: item.image || item.colorImage || '',
+            colorImage: item.colorImage || item.image || '',
             brand: item.brand || '',
             productType: item.productType || '',
-            description: itemName
+            description: itemName,
+            color: item.color || '',
+            colorId: item.colorId || '',
+            colorHex: item.colorHex || '',
+            size: item.size || '',
+            qty: item.qty || 1
         }));
     }
 
@@ -1997,7 +2340,12 @@
         document.body.style.overflow = '';
         // Sync old-format positions/positionDesigns &larr;’ logos[] then re-render
         syncLogosFromOldFormat();
-        setTimeout(() => { renderBasket(); }, 100);
+        sessionStorage.removeItem('basketEditSingleItem');
+        sessionStorage.removeItem('basketEditItemId');
+        setTimeout(() => {
+            renderBasket();
+            hydrateAllBasketColorHex();
+        }, 100);
     }
 
     // Convert positions/positionDesigns written by customize.js back to logos[] (V2)
@@ -2105,10 +2453,14 @@
         checked.forEach(cb => {
             const targetIdx = parseInt(cb.dataset.targetIndex);
             if (targetIdx < 0 || targetIdx >= basket.length) return;
-            if (!basket[targetIdx].logos) basket[targetIdx].logos = [];
-            // Don't duplicate the same position
-            if (basket[targetIdx].logos.some(l => l.position === logo.position)) return;
-            basket[targetIdx].logos.push(JSON.parse(JSON.stringify(logo)));
+            const targetItem = basket[targetIdx];
+            const adapted = adaptLogoForTargetItem(logo, targetItem);
+            if (!adapted.logo) return;
+            if (!targetItem.logos) targetItem.logos = [];
+            const mappedPos = mapPositionForTargetItem(adapted.position, targetItem);
+            if (targetItem.logos.some(l => mapPositionForTargetItem(l.position, targetItem) === mappedPos)) return;
+            targetItem.logos.push(JSON.parse(JSON.stringify(adapted)));
+            _clearLegacyPositionFields(targetItem);
             count++;
         });
 
@@ -2437,22 +2789,41 @@
         </div>
     </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-<script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
-<script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
+<script src="brandedukv15-child/assets/js/header.js?v=20260418"></script>
+<script src="brandedukv15-child/assets/js/color-hex.js?v=20260518"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260418"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>
-// Basket page: search submit → shop-pc
+// Basket page: search submit → mobile shop
 (function() {
     var input = document.getElementById('searchbarHeaderInput');
     var icon  = document.querySelector('.searchbar-header .search-icon-expand');
+    var shopBase = (window.innerWidth < 1024) ? '/shop.html' : 'shop-pc.html';
     function submitSearch() {
         var q = (input ? input.value : '').trim();
-        if (q) window.location.href = 'shop-pc.html?q=' + encodeURIComponent(q);
+        if (q) window.location.href = shopBase + '?q=' + encodeURIComponent(q);
     }
     if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
     if (icon)  icon.addEventListener('click', submitSearch);
 })();
+// Request Quote button → same handler as checkout but marks as quote
+document.addEventListener('DOMContentLoaded', function() {
+    var rqBtn = document.getElementById('requestQuoteBtn');
+    if (rqBtn) {
+        rqBtn.addEventListener('click', function() {
+            var checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) checkoutBtn.click();
+        });
+    }
+    var continueBtn = document.getElementById('continueShoppingBtn');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.assign('/shop.html?category=all');
+        });
+    }
+});
 </script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
