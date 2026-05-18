@@ -346,3 +346,138 @@
         transform: translateX(160px) rotate(-18deg);
     }
 }
+
+/* Bottom nav mini-basket: fill → slide right → checkmark */
+#basketNavLink.nav-item--basket {
+    --nav-cart: #273469;
+    --nav-tick: #ffffff;
+    --nav-fill: 0;
+    --nav-offset: 10px;
+}
+
+#basketNavLink .nav-basket-icon-slot {
+    position: relative;
+    width: 28px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#basketNavLink .nav-basket-icon-static {
+    transition: opacity 0.25s ease;
+}
+
+#basketNavLink .nav-basket-atc-cart {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -9px 0 0 -12px;
+    width: 24px;
+    height: 18px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-48px) rotate(-18deg);
+    transform-origin: 8px 16px;
+}
+
+#basketNavLink .nav-basket-atc-cart::before,
+#basketNavLink .nav-basket-atc-cart::after {
+    content: "";
+    position: absolute;
+}
+
+#basketNavLink .nav-basket-atc-cart::before {
+    width: 4px;
+    height: 4px;
+    left: 6px;
+    bottom: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px var(--nav-cart);
+    filter: drop-shadow(7px 0 0 var(--nav-cart));
+}
+
+#basketNavLink .nav-basket-atc-cart::after {
+    width: 11px;
+    height: 6px;
+    left: 6px;
+    bottom: 5px;
+    background: var(--nav-cart);
+    transform-origin: 50% 100%;
+    transform: perspective(3px) rotateX(-6deg) scaleY(var(--nav-fill, 0));
+    transition: transform 1.15s ease var(--nav-fill-d, 0s);
+}
+
+#basketNavLink .nav-basket-atc-cart svg {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 24px;
+    height: 18px;
+    fill: none;
+    stroke: var(--nav-cart);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#basketNavLink .nav-basket-atc-cart svg polyline:last-child {
+    stroke: var(--nav-tick);
+    stroke-dasharray: 8px;
+    stroke-dashoffset: var(--nav-offset, 8px);
+    transition: stroke-dashoffset 0.35s ease var(--nav-offset-d, 0s);
+}
+
+#basketNavLink.nav-basket-atc-loading {
+    --nav-fill: 1;
+    --nav-fill-d: 0.55s;
+    --nav-offset: 0;
+    --nav-offset-d: 1.75s;
+    color: #273469;
+}
+
+#basketNavLink.nav-basket-atc-loading .nav-basket-icon-static {
+    opacity: 0.15;
+}
+
+#basketNavLink.nav-basket-atc-loading .nav-basket-atc-cart {
+    opacity: 1;
+    visibility: visible;
+    animation: nav-basket-cart-move 2.5s linear forwards 0.06s;
+}
+
+#basketNavLink.nav-basket-atc-complete {
+    color: hsl(140, 55%, 38%);
+}
+
+#basketNavLink.nav-basket-atc-complete .nav-basket-icon-static {
+    opacity: 1;
+}
+
+@keyframes nav-basket-cart-move {
+    0% {
+        opacity: 1;
+        transform: translateX(-48px) rotate(-18deg);
+    }
+    18% {
+        transform: translateX(-16px) rotate(-18deg);
+    }
+    28% {
+        transform: none;
+    }
+    62% {
+        transform: none;
+    }
+    72% {
+        transform: translateX(14px) rotate(-12deg);
+    }
+    82% {
+        opacity: 1;
+        transform: translateX(22px) scale(0.92);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(32px) rotate(-18deg);
+    }
+}

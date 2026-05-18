@@ -1,0 +1,1082 @@
+AB274F
+Cherry Rose
+7C0902
+Molten Lava
+FE6F5E
+Vibrant Coral
+BF4F51
+Blushed Brick
+660000
+Dark Garnet
+FB607F
+Bubblegum Pink
+800020
+Burgundy
+FF0800
+Electric Red
+FDBCB4
+Powder Blush
+C51E3A
+Intense Cherry
+960018
+Deep Crimson
+DE3163
+Magenta Bloom
+E23D28
+Burnt Tangerine
+58111A
+Night Bordeaux
+E44D2E
+Fiery Terracotta
+7F1734
+Dark Amaranth
+FF3800
+Blazing Flame
+F88379
+Sweet Salmon
+893F45
+Burnt Rose
+B31B1B
+Mahogany Red
+DC143C
+Classic Crimson
+8B0000
+Blood Red
+801818
+Dark Wine
+B22222
+Brick Red
+CE2029
+Flag Red
+FF004F
+Hot Fuchsia
+733635
+Bitter Chocolate
+ED2939
+Strawberry Red
+CD5C5C
+Lobster Pink
+D05340
+Rosy Copper
+F08080
+Light Coral
+FF7F7F
+Grapefruit Pink
+A50021
+Ruby Red
+C04000
+Burnt Orange
+800000
+Maroon
+FFE4E1
+Soft Blush
+FE0000
+Pure Red
+C08081
+Dusty Rose
+841617
+Crushed Berry
+990000
+Oxblood
+CC3333
+Tomato Jam
+FFC0CB
+Pastel Pink
+DC343B
+Scarlet Rush
+FF0000
+Red
+A52A2A
+Brown Red
+ED1B24
+Racing Red
+EE204E
+Watermelon
+F2003C
+Lipstick Red
+C40234
+Carmine
+ED2839
+Punch Red
+E60026
+Primary Scarlet
+FF0080
+Neon Pink
+674846
+Chocolate Plum
+C21E56
+Rosewood
+905D5D
+Smoky Rose
+AB4E52
+Dusty Mauve
+65000B
+Black Cherry
+BC8F8F
+Rosy Taupe
+B7410E
+Rusty Spice
+DA2C43
+Raspberry
+FA8072
+Salmon
+FF91A4
+Cotton Candy
+FF2400
+Scarlet Fire
+D44500
+Spicy Orange
+F4C2C2
+Cotton Rose
+FF6347
+Tomato
+A91101
+Inferno
+E34234
+Cinnabar
+722F37
+Wine Plum
+FF4F00
+Flame Orange
+C46210
+Burnt Caramel
+FFBF00
+Amber Gold
+FBCEB1
+Peach Fuzz
+FF9966
+Tangerine Dream
+964B00
+Chocolate Brown
+BF5700
+Autumn Ember
+E09540
+Golden Apricot
+ED9121
+Carrot Orange
+F7E7CE
+Champagne Mist
+FF7F50
+Coral Glow
+FF8C00
+Dark Orange
+EDC9AF
+Desert Sand
+BA160C
+Brick Ember
+E25822
+Spicy Paprika
+FE5A1D
+Tiger Flame
+FFD700
+Gold
+F04A00
+Molten Orange
+DAA520
+Goldenrod
+E8AC41
+Honey Bronze
+FED8B1
+Soft Apricot
+FF7538
+Atomic Tangerine
+FF5800
+Blaze Orange
+FFA000
+Amber Glow
+FFA500
+Orange
+FF8000
+Vivid Tangerine
+FFEFD5
+Papaya Whip
+FFE5B4
+Light Apricot
+D99058
+Toasted Almond
+EC5800
+Cayenne Red
+FF8F00
+Deep Saffron
+FF7518
+Pumpkin Spice
+FF7900
+Harvest Orange
+F4C430
+Saffron
+E86100
+Autumn Leaf
+F94D00
+Crimson Carrot
+F28500
+Tiger Orange
+CD5700
+Bronze Spice
+B56917
+Copperwood
+FF8200
+Princeton Orange
+F1B42F
+Sunflower Gold
+EFDECD
+Almond Cream
+9F8170
+Dusty Taupe
+F5F5DC
+Beige
+3D2B1F
+Dark Coffee
+3D0C02
+Rich Mahogany
+3B3C36
+Charcoal Brown
+79443B
+Clay Soil
+E3DAC9
+Bone
+CD7F32
+Bronze
+993300
+Rust Brown
+AF6E4D
+Cinnamon Wood
+DAA06D
+Light Bronze
+E97451
+Burnt Peach
+8A3324
+Chestnut
+C19A6B
+Camel
+592720
+Espresso
+CC7F3B
+Golden Chestnut
+A0785A
+Faded Copper
+954535
+Reddish Brown
+7B3F00
+Raw Umber
+DDD06A
+Golden Sand
+D2691E
+Chocolate
+6F4E37
+Coffee Bean
+B87333
+Copper
+81613E
+Olive Wood
+4A412A
+Dark Khaki
+DAC8AE
+Pale Oak
+E1A95F
+Sunlit Clay
+C2B280
+Sand
+E5AA70
+Light Caramel
+6C541E
+Olive Bark
+E48400
+Amber Earth
+996515
+Golden Earth
+DA9100
+Harvest Gold
+C3B091
+Khaki Beige
+6B4423
+Brown Bark
+674C47
+Mauve Bark
+CC7722
+Ochre
+926644
+Toffee Brown
+A45A52
+Terracotta Clay
+A81C07
+Oxidized Iron
+80461B
+Saddle Brown
+F4A460
+Sandy Brown
+CBA135
+Golden Bronze
+59260B
+Dark Walnut
+704214
+Walnut
+882D17
+Brandy
+CB410B
+Red Ochre
+D2B48C
+Tan
+483C32
+Taupe
+635147
+Ash Brown
+44362F
+Deep Mocha
+5C5248
+Stone Brown
+645452
+Taupe Grey
+F5DEB3
+Wheat
+E9D66B
+Straw Gold
+FDEE00
+Bright Lemon
+E0AB76
+Sandy Clay
+FFEF00
+Sunbeam Yellow
+DFFF00
+Lime Yellow
+E4D00A
+Golden Glow
+FFF8E7
+Ivory Mist
+FFFDD0
+Cream
+B8860B
+Dark Goldenrod
+CDB280
+Soft Fawn
+EEDC82
+Light Gold
+EF9B0F
+Golden Orange
+D4AF37
+Metallic Gold
+E6A817
+Amber Honey
+FCF75E
+Canary Yellow
+FFFFF0
+Ivory
+F8DE7E
+Jasmine
+FACA16
+Bright Amber
+FFFACD
+Lemon Chiffon
+E3FF00
+Neon Chartreuse
+FFFFE0
+Light Yellow
+FBEC5D
+Banana Cream
+FFC40C
+School Bus Yellow
+E3F988
+Lime Cream
+FFDB58
+Mustard
+FADA5E
+Royal Gold
+FFDEAD
+Navajo White
+CFB53B
+Old Gold
+808000
+Olive
+FADFAD
+Soft Peach
+D1E231
+Lemon Lime
+F4C431
+Tuscan Sun
+FFD800
+Bright Gold
+FFBA00
+Amber Flame
+E4D96F
+Pale Amber
+FFCC33
+Golden Pollen
+FAD6A5
+Apricot Cream
+F3E5AB
+Vanilla Custard
+FFFF00
+Yellow
+8DB600
+Lime Moss
+00FFBF
+Tropical Mint
+7BA05B
+Sage Green
+568203
+Forest Moss
+66FF00
+Neon Grass
+004225
+Deep Forest
+1B4D3E
+Pine Teal
+1E4D2B
+Dark Spruce
+00563B
+Emerald Depths
+ACE1AF
+Celadon
+80FF00
+Lime Flash
+00FFFF
+Cyan
+013220
+Evergreen
+4A5D23
+Olive Leaf
+03C03C
+Jade Green
+177245
+Turf Green
+00693E
+Dark Emerald
+50C878
+Emerald
+00FF40
+Electric Green
+4F7942
+Fern
+228B22
+Forest Green
+00FF00
+Lime
+ADFF2F
+Green Yellow
+3FFF00
+Spring Laser
+F0FFF0
+Honeydew
+49796B
+Deep Teal
+355E3B
+Hunter Green
+138808
+India Green
+00A86B
+Jungle Green
+29AB87
+Seaweed
+4CBB17
+Bright Fern
+7CFC00
+Lawn Green
+90EE90
+Light Green
+C0FF00
+Chartreuse
+32CD32
+Lime Green
+0BDA51
+Malachite
+74C365
+Moss Green
+004953
+Dark Teal
+3EB489
+Mint Leaf
+8A9A5B
+Palm Leaf
+317873
+Pine Blue
+39FF14
+Laser Green
+008000
+Green
+9AB973
+Muted Olive
+00401A
+Black Forest
+00A693
+Verdigris
+00A550
+Medium Jungle
+01796F
+Blue Spruce
+93C572
+Willow Green
+6C7C59
+Dusty Olive
+00CCCC
+Strong Cyan
+BCB88A
+Dry Sage
+76FF7A
+Mint Glow
+2E8B57
+Sea Green
+55DD33
+Radioactive Grass
+009E60
+Shamrock
+A7FC00
+Slime Lime
+00FF7F
+Spring Green
+D0F0C0
+Tea Green
+008080
+Teal
+40E0D0
+Turquoise
+40826D
+Jungle Teal
+9ACD32
+Yellow Green
+F0F8FF
+Alice Blue
+0FFFFF
+Cyan Glow
+7FFFD4
+Aquamarine
+007FFF
+Azure Blue
+F0FFFF
+Azure Mist
+0D98BA
+Blue Green
+00BFFF
+Deep Sky Blue
+006D6F
+Stormy Teal
+B2FFFF
+Icy Aqua
+007BA7
+Cerulean
+008B8B
+Dark Cyan
+7DF9FF
+Electric Aqua
+15F4EE
+Neon Ice
+3AB09E
+Ocean Mist
+99FFFF
+Soft Cyan
+E0FFFF
+Light Cyan
+20B2AA
+Light Sea Green
+DFFFFD
+Frozen Water
+3AA8C1
+Pacific Blue
+1CA9C9
+Turquoise Surf
+00B7EB
+Bright Sky
+007A74
+Deep Ocean
+81D8D0
+Pearl Aqua
+43B3AE
+Tropical Teal
+00CCFF
+Sky Aqua
+39A78D
+Seagrass
+00B9E8
+Sky Surge
+5D8AA8
+Air Force Blue
+72A0C1
+Steel Blue
+6CB4EE
+Cool Sky
+0070BB
+Bright Marine
+89CFF0
+Baby Blue
+003262
+Oxford Navy
+2072AF
+Cornflower Ocean
+318CE7
+Brilliant Azure
+0000FF
+Blue
+6699CC
+Blue Grey
+0095B6
+Bondi Blue
+0070FF
+Digital Blue
+3457D5
+Royal Azure
+85B09A
+Muted Teal
+7BAFD4
+Sky Reflection
+4997D0
+Blue Bell
+246BCE
+Sapphire Sky
+468FEA
+Blue Energy
+3B00DB
+Ultrasonic Blue
+0047AB
+Cobalt Blue
+B9D9EB
+Pale Sky
+6495ED
+Cornflower Blue
+1F75FE
+Crayola Blue
+0000B8
+True Azure
+1F305E
+Twilight Indigo
+1560BD
+Tech Blue
+1E90FF
+Dodger Blue
+00009C
+Navy Electric
+1034A6
+Egyptian Blue
+16166B
+Deep Twilight
+6082B6
+Glaucous
+1164B4
+Ocean Deep
+6F00FF
+Electric Indigo
+0072BB
+Twitter Blue
+4B0082
+Indigo
+00416A
+Yale Blue
+002FA7
+International Klein Blue
+8AB9F1
+Baby Blue Ice
+26619C
+Baltic Blue
+ADD8E6
+Light Blue
+87CEFA
+Sky Blue
+6050DC
+Majorelle Blue
+2B4593
+French Blue
+73C2FB
+Maya Blue
+0000CD
+Medium Blue
+7B68EE
+Medium Slate Blue
+191970
+Midnight Blue
+0093AF
+Pacific Cyan
+000080
+Navy
+0087BD
+Ocean Blue
+4666FF
+Electric Sapphire
+A4DDED
+Frosted Blue
+002147
+Prussian Blue
+273BE2
+Bright Indigo
+87D3F8
+Frozen Lake
+011F5B
+Deep Navy
+CCCCFF
+Periwinkle
+1C39BB
+Persian Blue
+000F89
+Electric Royal
+45B1E8
+Fresh Sky
+224C98
+Steel Azure
+9EB9D4
+Powder Blue
+003153
+Deep Space Blue
+002387
+True Cobalt
+2454FF
+Full Spectrum Blue
+4169E1
+Royal Blue
+002366
+Imperial Blue
+76ABDF
+Cool Horizon
+0F52BA
+Sapphire
+0076B6
+Bright Teal Blue
+4B61D1
+Slate Indigo
+5D89BA
+Dusty Denim
+87CEEB
+Sky Blue (Light)
+1E2952
+Space Indigo
+4682B4
+Steel Blue
+0059CF
+Laser Blue
+2D68C4
+Smart Blue
+3E8EDE
+Bright Ocean
+2774AE
+Rich Cerulean
+120A8F
+Dark Ultramarine
+4B92DB
+Cloudy Sky
+AFDBF5
+Icy Blue
+324AB2
+Ocean Twilight
+7C9ED9
+Wisteria Blue
+00356B
+Regal Navy
+2E5090
+Dusk Blue
+0014A8
+Vivid Royal
+B284BE
+Amethyst Smoke
+9966CC
+Lavender Purple
+8A2BE2
+Blue Violet
+702963
+Royal Plum
+856088
+Dusty Lavender
+301934
+Midnight Violet
+9400D3
+Dark Violet
+614051
+Mauve Shadow
+BF00FF
+Hyper Magenta
+8F00FF
+Violet Ray
+563C5C
+Vintage Grape
+6C3082
+Velvet Orchid
+F2C1D1
+Pastel Petal
+B53389
+Raspberry Plum
+D473D4
+Orchid Mist
+8806CE
+Royal Violet
+FF00FF
+Magenta
+6F2DA8
+Indigo Bloom
+DF73FF
+Mauve Magic
+5A4FCF
+Violet Twilight
+5B3256
+Blackberry Cream
+FFF0F5
+Lavender Blush
+B57EDC
+Bright Lavender
+E6E6FA
+Lavender
+C8A2C8
+Lilac
+880085
+Dark Magenta
+E0B0FF
+Mauve
+8D029B
+Royal Orchid
+997A8D
+Dusty Mauve
+C54B8C
+Fuchsia Plum
+8B004B
+Dark Raspberry
+DA70D6
+Orchid
+682860
+Deep Purple
+FAE6FA
+Lavender Veil
+32127A
+Indigo Ink
+DF00FF
+Neon Violet
+DBB2D1
+Pink Orchid
+DDA0DD
+Plum
+86608E
+Vintage Lavender
+CC8899
+Old Rose
+800080
+Purple
+9A4EAE
+Amethyst
+663399
+Rebecca Purple
+7851A9
+Deep Lilac
+C71585
+Medium Violet Red
+32174D
+Dark Amethyst
+6A5ACD
+Slate Blue
+CC33CC
+Vivid Orchid
+512888
+Indigo Velvet
+D8BFD8
+Thistle
+9683EC
+Soft Periwinkle
+66023C
+Crimson Violet
+645394
+Dusty Grape
+A020F0
+Purple (X11)
+8000FF
+Ultra Violet
+C9A0DC
+Wisteria
+E52B50
+Amaranth
+FF91AF
+Cotton Candy
+8B008B
+Dark Magenta
+683068
+Velvet Purple
+FF1DCE
+Neon Fuchsia
+CA1F7B
+Hot Rose
+FF0090
+Barbie Pink
+F653A6
+Deep Pink
+D0417E
+Rose Punch
+9F4576
+Berry Blush
+8E4585
+Grape Soda
+FE4EDA
+Cotton Bloom
+8E3A59
+Vintage Berry
+E30B5C
+Raspberry Red
+FF33CC
+Fuchsia Pop
+FF66CC
+Bubblegum Fizz
+AA98A9
+Lilac Ash
+FC0FC0
+Shocking Pink
+FF6FFF
+Bright Peony
+CF71AF
+Petal Pink
+CF3476
+Hot Berry
+EE82EE
+Violet
+F19CBB
+Pink Mist
+DE5D83
+Blush Rose
+FFA6C9
+Baby Pink
+F1DDCF
+Powder Petal
+FFB7C5
+Cherry Blossom
+A8516E
+Rosewood
+F56FA1
+Rose Kiss
+FF1493
+Deep Pink
+D71868
+Berry Lipstick
+F64A8A
+Wild Strawberry
+C74375
+Rose Wine
+F400A1
+Electric Rose
+FF00CC
+Neon Rose
+FF69B4
+Hot Pink (Web)
+FBAED2
+Blush Pop
+E4007C
+Fuchsia Flame
+FFDAE9
+Petal Frost
+F2BDCD
+Soft Blossom
+EDCDC2
+Almond Silk
+FFCBA4
+Peach Glow
+FE28A2
+Brilliant Rose
+F77FBE
+Pink Carnation
+ED7A9B
+Petal Rouge
+E3256B
+Razzmatazz
+B3446C
+Berry Crush
+F9429E
+Dragonfruit
+FFF5EE
+Seashell
+FC89AC
+Bubblegum Tint
+DE6FA1
+Sweet Peony
+EDEAE0
+Soft Linen
+F2F3F4
+Platinum
+FAEBD7
+Antique White
+FEFEFA
+Porcelain
+FFF8DC
+Cornsilk
+EFDFBB
+Pearl Beige
+F0EAD6
+Eggshell
+FFFAF0
+Floral White
+F8F8FF
+Ghost White
+F4F0EC
+Parchment
+FAF0E6
+Linen
+F8F4FF
+Lavender Mist
+F5FFFA
+Mint Cream
+E9FFDB
+Frosted Mint
+FDF5E6
+Old Lace
+F1E9D2
+Vanilla Cream
+EAE0C8
+Sand Dune
+E5E4E2
+Alabaster Grey
+F7F7F7
+Bright Snow
+FFFAFA
+Snow
+FFFFFF
+White
+F5F5F5
+White Smoke
+DBD7D2
+Dust Grey
+C0C0C0
+Silver
+BEBFC5
+Pale Slate
+B2BEB5
+Ash Grey
+98817B
+Taupe
+91A3B0
+Cool Steel
+8C92AC
+Lavender Grey
+8B8589
+Rosy Granite
+848482
+Grey Olive
+808080
+Grey
+708090
+Slate Grey
+696969
+Dim Grey
+555555
+Charcoal
+536878
+Blue Slate
+2A3439
+Jet Black
+4D5D53
+Granite
+2F4F4F
+Dark Slate Grey
+000000
+Black
+4B3621
+Deep Walnut
+36454F
+Charcoal Blue
+555D50
+Ebony
+1B1B1B
+Carbon Black
+343434
+Graphite
+1A1110
+Coffee Bean
+111111
+Onyx
+353839
+Gunmetal
+414A4C
+Iron Grey
+242124
+Shadow Grey
+010B13
+Ink Black
+100C08
+Pitch Black
+4B4E53
+Graphite Grey

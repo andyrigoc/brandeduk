@@ -268,9 +268,11 @@
         }
         .item-row-image {
             width: 52px; height: 52px; flex-shrink: 0;
-            border-radius: 6px; overflow: hidden; background: #f5f7fb;
+            border-radius: 6px; overflow: hidden;
+            background-color: var(--garment-bg, #f3f4f6);
+            display: flex; align-items: center; justify-content: center;
         }
-        .item-row-image img { width: 100%; height: 100%; object-fit: cover; }
+        .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
         .item-row-info { flex: 1; min-width: 0; }
         .item-row-info h4 { font-size: 13px; font-weight: 700; color: var(--basket-navy); margin: 0 0 1px; }
         .item-row-info .item-code { font-size: 11px; color: #9ca3af; margin: 0; }
@@ -1844,7 +1846,7 @@
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
-                        <div class="item-row-image">
+                        <div class="item-row-image" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${(item.color || '').replace(/"/g, '&quot;')}">
                             <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="item-row-info">
@@ -2790,7 +2792,7 @@
     </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260418"></script>
-<script src="brandedukv15-child/assets/js/color-hex.js?v=20260518"></script>
+<script src="brandedukv15-child/assets/js/color-hex.js?v=20260519"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260418"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>

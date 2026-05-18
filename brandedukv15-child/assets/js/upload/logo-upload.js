@@ -126,9 +126,11 @@
   function renderGallery(containerEl, opts = {}) {
     if (!containerEl) return;
     const logos = _load();
+    const isMobile = !!opts.mobile || window.matchMedia('(max-width: 1024px)').matches;
 
     containerEl.innerHTML = '';
     containerEl.classList.add('logo-gallery');
+    if (isMobile) containerEl.classList.add('logo-gallery--mobile');
 
     /* ── Drag & Drop Upload Zone ────────────────────── */
     const dropzone = document.createElement('div');
@@ -140,8 +142,8 @@
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
           </svg>
         </div>
-        <h4>Drag &amp; Drop Your Logo</h4>
-        <p>or click to browse from your device</p>
+        <h4>${isMobile ? 'Choose your logo' : 'Drag &amp; Drop Your Logo'}</h4>
+        <p>${isMobile ? 'Tap Add Logo to select from your device' : 'or click to browse from your device'}</p>
         <label class="logo-gallery__browse-btn">
           <span>Add Logo</span>
         </label>
@@ -165,29 +167,28 @@
       fileInput.click();
     });
 
-    // Drag events
-    ['dragenter', 'dragover'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.add('dragover');
+    if (!isMobile) {
+      ['dragenter', 'dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
       });
-    });
-    ['dragleave', 'drop'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove('dragover');
+      ['dragleave', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
       });
-    });
-
-    // Drop handler
-    dropzone.addEventListener('drop', (e) => {
-      const files = [...e.dataTransfer.files].filter(f =>
-        f.type.startsWith('image/') || /\.(pdf|ai|svg|eps)$/i.test(f.name)
-      );
-      if (files.length) _processFiles(files, containerEl, opts);
-    });
+      dropzone.addEventListener('drop', (e) => {
+        const files = [...e.dataTransfer.files].filter(f =>
+          f.type.startsWith('image/') || /\.(pdf|ai|svg|eps)$/i.test(f.name)
+        );
+        if (files.length) _processFiles(files, containerEl, opts);
+      });
+    }
 
     // File input change handler
     fileInput.addEventListener('change', (e) => {

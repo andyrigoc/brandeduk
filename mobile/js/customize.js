@@ -2328,7 +2328,11 @@
         const baseColor = state.selectedColorName || state.selectedColor || 'Black';
         const baseColorId = state.selectedColor;
         const baseColorImage = state.selectedColorImage;
-        const baseColorHex = getSelectedColorHex();
+        let baseColorHex = getSelectedColorHex();
+        if (!baseColorHex && window.BrandedColorHex && baseColor) {
+            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage) || BrandedColorHex.lookupByName(baseColor) || '';
+            if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
+        }
         const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
         const now = new Date().toISOString();
 
@@ -3900,62 +3904,72 @@
         updateSizeQuantities();
     }
     
-    // Apply color change
-    function applyColorChange(btn) {
+    function syncColorSelectionUI(colorId) {
+        const colorData = PRODUCT_COLORS.find(function (c) { return c.id === colorId; });
+        if (!colorData) return;
+
         const colorOptions = document.getElementById('colorOptions');
-        
-        // Update state
-        const colorData = PRODUCT_COLORS.find(c => c.id === btn.dataset.color);
-        if (colorData) {
-            state.selectedColor = colorData.id;
-            state.selectedColorName = colorData.name;
-            state.selectedColorImage = colorData.image;
-            if (window.BrandedColorHex && isUsableColorHex(colorData.hex)) {
-                BrandedColorHex.register(colorData.name, colorData.hex, state.product && state.product.code);
-            }
-            
-            // Update main gallery image with cache buster
-            const mainImage = document.getElementById('mainImage') || document.querySelector('.gallery-main img');
-            if (mainImage) {
-                mainImage.src = '';
-                const cacheBuster = '_t=' + Date.now();
-                mainImage.src = colorData.image + (colorData.image.includes('?') ? '&' : '?') + cacheBuster;
-                if (state.product?.name) {
-                    mainImage.alt = state.product.name;
+        if (colorOptions) {
+            colorOptions.querySelectorAll('.color-btn').forEach(function (b) {
+                b.classList.toggle('active', b.dataset.color === colorId);
+            });
+        }
+
+        const galleryThumbsContainer = document.getElementById('galleryThumbsContainer') || document.querySelector('.gallery-thumbs');
+        if (galleryThumbsContainer) {
+            galleryThumbsContainer.querySelectorAll('.thumb').forEach(function (thumb) {
+                const thumbColorId = thumb.getAttribute('data-color-id');
+                if (thumbColorId) {
+                    thumb.classList.toggle('active', thumbColorId === colorId);
                 }
-            }
-            
-            // Update gallery thumbnails – just highlight the matching color thumb
-            const galleryThumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-            if (galleryThumbs.length > 0) {
-                galleryThumbs.forEach((thumb) => {
-                    thumb.classList.toggle('active', thumb.getAttribute('data-color-id') === colorData.id);
-                });
-                // Scroll active thumb into view within the horizontal strip only (no vertical page scroll)
-                const activeThumb = document.querySelector('.gallery-thumbs .thumb.active');
-                const thumbsContainer = document.querySelector('.gallery-thumbs');
-                if (activeThumb && thumbsContainer) {
-                    const thumbLeft = activeThumb.offsetLeft - thumbsContainer.offsetLeft;
-                    const centerOffset = thumbLeft - (thumbsContainer.clientWidth / 2) + (activeThumb.offsetWidth / 2);
-                    thumbsContainer.scrollTo({ left: centerOffset, behavior: 'smooth' });
-                }
+            });
+            const activeThumb = galleryThumbsContainer.querySelector('.thumb.active');
+            if (activeThumb) {
+                const thumbLeft = activeThumb.offsetLeft - galleryThumbsContainer.offsetLeft;
+                const centerOffset = thumbLeft - (galleryThumbsContainer.clientWidth / 2) + (activeThumb.offsetWidth / 2);
+                galleryThumbsContainer.scrollTo({ left: centerOffset, behavior: 'smooth' });
             }
         }
-        
-        // Update UI
-        colorOptions.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Update label
+
         const selectedColorEl = document.getElementById('selectedColor');
         if (selectedColorEl) {
-            selectedColorEl.textContent = state.selectedColorName;
+            selectedColorEl.textContent = colorData.name;
+        }
+    }
+
+    // Apply color change
+    function applyColorChange(btn) {
+        const colorData = PRODUCT_COLORS.find(c => c.id === btn.dataset.color);
+        if (!colorData) return;
+
+        if (btn.dataset.color === state.selectedColor) {
+            syncColorSelectionUI(state.selectedColor);
+            return;
         }
 
-        // Haptic feedback
+        state.selectedColor = colorData.id;
+        state.selectedColorName = colorData.name;
+        state.selectedColorImage = colorData.image;
+        if (window.BrandedColorHex && isUsableColorHex(colorData.hex)) {
+            BrandedColorHex.register(colorData.name, colorData.hex, state.product && state.product.code);
+        }
+
+        const mainImage = document.getElementById('mainImage') || document.querySelector('.gallery-main img');
+        if (mainImage && colorData.image) {
+            mainImage.src = '';
+            const cacheBuster = '_t=' + Date.now();
+            mainImage.src = colorData.image + (colorData.image.includes('?') ? '&' : '?') + cacheBuster;
+            if (state.product?.name) {
+                mainImage.alt = state.product.name + ' - ' + colorData.name;
+            }
+        }
+
+        syncColorSelectionUI(colorData.id);
+        applyGarmentColorToLogoPreview();
+        applyGarmentColorToPositionPreviews();
+
         if (navigator.vibrate) navigator.vibrate(10);
 
-        // Update summary
         updatePricingSummary();
 
         // Scroll down to Size & Quantity section so the customer can start adding sizes
@@ -4010,6 +4024,10 @@
         
         // Re-render color thumbnails in gallery when colors are updated
         renderColorThumbnails();
+
+        if (state.selectedColor) {
+            syncColorSelectionUI(state.selectedColor);
+        }
         
         console.log('? Colors rendered successfully!');
     }
@@ -4056,16 +4074,10 @@
             
             // Add click handler to change main image and selected color
             thumbButton.addEventListener('click', () => {
-                // Update active state
-                galleryThumbsContainer.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-                thumbButton.classList.add('active');
-                
-                // Update selected color state
                 state.selectedColor = color.id;
                 state.selectedColorName = color.name;
                 state.selectedColorImage = color.image;
-                
-                // Update main image
+
                 const mainImg = document.getElementById('mainImage');
                 if (mainImg && color.image) {
                     mainImg.src = '';
@@ -4073,21 +4085,8 @@
                     mainImg.src = color.image + (color.image.includes('?') ? '&' : '?') + cacheBuster;
                     mainImg.alt = `${state.product?.name || 'Product'} - ${color.name}`;
                 }
-                
-                // Update selected color label
-                const selectedColorEl = document.getElementById('selectedColor');
-                if (selectedColorEl) {
-                    selectedColorEl.textContent = color.name;
-                }
-                
-                // Update active color button in color options
-                const colorOptions = document.getElementById('colorOptions');
-                if (colorOptions) {
-                    colorOptions.querySelectorAll('.color-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.color === color.id);
-                    });
-                }
 
+                syncColorSelectionUI(color.id);
                 applyGarmentColorToLogoPreview();
                 applyGarmentColorToPositionPreviews();
                 
@@ -4916,6 +4915,9 @@
                         checkbox.checked = true;
                         checkbox.dispatchEvent(new Event('change'));
                     }
+
+                    // Logo upload / existing-logo picker — only after method is chosen
+                    openCustomizationTypeModal(position, method);
                     
                     // Haptic feedback
                     if (navigator.vibrate) navigator.vibrate(10);
@@ -5704,29 +5706,130 @@
         `;
     }
 
-    // === Open Customization Type Modal (Choose Your Customization) ===
-    // Now directly opens the design modal since only logo upload option exists
+    function isMobileLogoFlow() {
+        return window.matchMedia('(max-width: 1024px)').matches;
+    }
+
+    function closeMobileLogoUploadOverlay() {
+        const overlay = document.getElementById('mobileLogoUploadOverlay');
+        if (overlay) overlay.remove();
+        document.body.style.overflow = '';
+    }
+
+    async function _applyLogoToPositionFromMobile(position, method, logoUrl) {
+        let url = logoUrl;
+        if (url && url.startsWith('data:')) {
+            try {
+                url = await compressBase64Image(url, 600, 0.65);
+            } catch (e) {
+                console.warn('Logo compress failed:', e);
+            }
+        }
+        if (typeof window.BrandedLogoLibrary !== 'undefined' && url) {
+            window.BrandedLogoLibrary.add({
+                url: url,
+                filename: 'logo.png',
+                uploadedAt: new Date().toISOString()
+            });
+        }
+        _applyExistingLogoToPosition(position, method, url);
+        try { autoSaveToBasket(); } catch (e) { /* ignore */ }
+        showToast('Logo applied!');
+    }
+
+    /** Mobile: gallery + tap-to-browse only — no designModal / drag-and-drop. */
+    function openMobileLogoUploadOverlay(position, method) {
+        closeMobileLogoUploadOverlay();
+
+        const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
+        const positionName = card?.querySelector('.position-checkbox span')?.textContent || String(position || '').replace(/-/g, ' ');
+
+        const overlay = document.createElement('div');
+        overlay.id = 'mobileLogoUploadOverlay';
+        overlay.className = 'mobile-logo-upload-overlay';
+
+        const sheet = document.createElement('div');
+        sheet.className = 'mobile-logo-upload-sheet';
+
+        const header = document.createElement('div');
+        header.className = 'mobile-logo-upload-header';
+        const titleEl = document.createElement('h3');
+        titleEl.textContent = 'Upload Logo – ' + positionName;
+        titleEl.className = 'mobile-logo-upload-title';
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.cssText = 'background:none;border:none;font-size:21px;line-height:1;cursor:pointer;color:#6b7280;padding:0 4px;';
+        closeBtn.addEventListener('click', closeMobileLogoUploadOverlay);
+        header.appendChild(titleEl);
+        header.appendChild(closeBtn);
+
+        const body = document.createElement('div');
+        body.className = 'mobile-logo-upload-body';
+        const galleryHost = document.createElement('div');
+        galleryHost.id = 'mobileLogoGalleryHost';
+        body.appendChild(galleryHost);
+
+        sheet.appendChild(header);
+        sheet.appendChild(body);
+        overlay.appendChild(sheet);
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closeMobileLogoUploadOverlay();
+        });
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        if (typeof window.BrandedLogoLibrary !== 'undefined') {
+            window.BrandedLogoLibrary.renderGallery(galleryHost, {
+                mobile: true,
+                onSelect: function (logoEntry) {
+                    _applyLogoToPositionFromMobile(position, method, logoEntry.url);
+                    closeMobileLogoUploadOverlay();
+                },
+                onFileUploaded: function (dataUrl, file) {
+                    _applyLogoToPositionFromMobile(position, method, dataUrl);
+                    closeMobileLogoUploadOverlay();
+                }
+            });
+        } else {
+            galleryHost.innerHTML = '<p style="text-align:center;color:#6b7280;font-size:14px;">Tap below to choose an image from your device.</p>';
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.cssText = 'display:block;margin:12px auto;';
+            input.addEventListener('change', function (e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    _applyLogoToPositionFromMobile(position, method, ev.target.result);
+                    closeMobileLogoUploadOverlay();
+                };
+                reader.readAsDataURL(file);
+            });
+            galleryHost.appendChild(input);
+        }
+    }
+
     function openCustomizationTypeModal(position, method) {
-        // Check if other basket items already have logos
         const existingLogos = _getExistingLogosFromBasket();
         if (existingLogos.length > 0) {
             _showExistingLogoPopup(position, method, existingLogos);
+        } else if (isMobileLogoFlow()) {
+            openMobileLogoUploadOverlay(position, method);
         } else {
             openDesignModal(position, method, 'logo');
         }
     }
 
-    /** Scan quoteBasket for logos from OTHER items (not the current one) */
     function _getExistingLogosFromBasket() {
         try {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            const currentCode = state.product?.code || '';
-            const currentColor = state.selectedColorName || state.selectedColor || '';
             const seen = new Set();
             const logos = [];
 
             basket.forEach(item => {
-                // Check V2 logos[] array
                 if (item.logos && Array.isArray(item.logos)) {
                     item.logos.forEach(l => {
                         if (l && l.logo && !seen.has(l.logo)) {
@@ -5735,7 +5838,6 @@
                         }
                     });
                 }
-                // Also check legacy positionDesigns
                 if (item.positionDesigns) {
                     Object.values(item.positionDesigns).forEach(d => {
                         if (d && d.logo && !seen.has(d.logo)) {
@@ -5812,7 +5914,11 @@
         uploadBtn.style.cssText = 'width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#6c3fff,#9b59b6);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px;';
         uploadBtn.addEventListener('click', () => {
             overlay.remove();
-            openDesignModal(position, method, 'logo');
+            if (isMobileLogoFlow()) {
+                openMobileLogoUploadOverlay(position, method);
+            } else {
+                openDesignModal(position, method, 'logo');
+            }
         });
         card.appendChild(uploadBtn);
 
@@ -5904,6 +6010,7 @@
 
         container.style.display = '';
         window.BrandedLogoLibrary.renderGallery(container, {
+            mobile: isMobileLogoFlow(),
             onSelect: function (logoEntry) {
                 // User picked/uploaded a logo → apply directly to the preview
                 const previewImg = document.getElementById('designPreviewImg');
@@ -5986,6 +6093,10 @@
 
     // === Open Design Modal (with specific section focus) ===
     function openDesignModal(position, method, section = 'all') {
+        if (isMobileLogoFlow() && section === 'logo') {
+            openMobileLogoUploadOverlay(position, method);
+            return;
+        }
         const modal = document.getElementById('designModal');
         const modalTitle = document.getElementById('designModalTitle');
         
@@ -5994,9 +6105,6 @@
         // Get position name from the card
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
         const positionName = card?.querySelector('.position-checkbox span')?.textContent || position.replace(/-/g, ' ');
-        
-        // ── Render logo gallery if library is available ──
-        _renderLogoGalleryInModal(position, method);
         
         // Update modal title based on section
         if (modalTitle) {
@@ -6011,8 +6119,9 @@
         modal.dataset.position = position;
         modal.dataset.method = method;
         
-        // Reset modal state
+        // Reset modal state, then gallery (hides legacy drag-and-drop zone)
         resetDesignModal();
+        _renderLogoGalleryInModal(position, method);
 
         // ── PRE-POPULATE existing logo when editing from basket ──
         const existingDesign = state.positionDesigns && state.positionDesigns[position];
@@ -7878,7 +7987,8 @@
     }
 
     // Open positions section as a popup overlay
-    function openPositionsPopup() {
+    function openPositionsPopup(options) {
+        const animate = !options || options.animate !== false;
         // If popup already exists, just show it
         let overlay = document.getElementById('positionsPopupOverlay');
         if (overlay) {
@@ -7932,8 +8042,7 @@
                     document.querySelectorAll('.price-badge.price-emb').forEach(b => b.style.display = 'none');
                 }
             }
-            overlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            revealPositionsPopup(overlay, animate);
             const posSec = document.getElementById('positionsSection');
             if (posSec) applyGarmentColorToPositionPreviews(posSec);
             return;
@@ -7946,7 +8055,7 @@
         // Create overlay
         overlay = document.createElement('div');
         overlay.id = 'positionsPopupOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+        overlay.removeAttribute('style');
 
         // Create popup container (header + scroll body + fixed footer)
         const popup = document.createElement('div');
@@ -7961,8 +8070,7 @@
         closeBtn.setAttribute('aria-label', 'Close');
         closeBtn.innerHTML = '&times;';
         closeBtn.addEventListener('click', () => {
-            overlay.style.display = 'none';
-            document.body.style.overflow = '';
+            closePositionsPopup();
         });
         popupHeader.appendChild(closeBtn);
 
@@ -8034,8 +8142,7 @@
             Done
         </button>`;
         doneBar.querySelector('button').addEventListener('click', () => {
-            overlay.style.display = 'none';
-            document.body.style.overflow = '';
+            closePositionsPopup();
             autoSaveToBasket();
             window.location.href = '../basket.html';
         });
@@ -8049,14 +8156,14 @@
         // Close on backdrop click
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
-                overlay.style.display = 'none';
-                document.body.style.overflow = '';
+                closePositionsPopup();
             }
         });
 
         document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
+        overlay.style.display = 'none';
         applyGarmentColorToPositionPreviews(posSection);
+        revealPositionsPopup(overlay, animate);
     }
 
     // Extract logo image src from a basket item
@@ -8625,18 +8732,65 @@
         fillDelayMs: 700,
         fillDurationMs: 1150,
         completeMs: 1950,
-        resetMs: 2900
+        resetMs: 2900,
+        /** Pause after ATC checkmark before Logo Positions popup */
+        logoFlowPauseAfterCompleteMs: 500
     };
+
+    const POSITIONS_POPUP_ANIM_MS = 420;
 
     function getAddedToQuoteModalDelay() {
         const btn = document.getElementById('addToBasketBtn');
         if (btn && btn.classList.contains('rainbow-atc')) {
-            return RAINBOW_ATC_TIMING.fillDelayMs + RAINBOW_ATC_TIMING.fillDurationMs;
+            return RAINBOW_ATC_TIMING.completeMs + RAINBOW_ATC_TIMING.logoFlowPauseAfterCompleteMs;
         }
         return 400;
     }
 
+    function closePositionsPopup() {
+        const overlay = document.getElementById('positionsPopupOverlay');
+        if (!overlay || window.getComputedStyle(overlay).display === 'none') return;
+        overlay.classList.remove('is-visible');
+        window.setTimeout(function () {
+            if (overlay.classList.contains('is-visible')) return;
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        }, POSITIONS_POPUP_ANIM_MS);
+    }
+
+    function revealPositionsPopup(overlay, animate) {
+        if (!overlay) return;
+        overlay.style.display = 'grid';
+        document.body.style.overflow = 'hidden';
+        overlay.classList.remove('is-visible');
+        if (animate === false) {
+            overlay.classList.add('is-visible');
+            return;
+        }
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                overlay.classList.add('is-visible');
+            });
+        });
+    }
+
     let _atcAnimationTimers = [];
+
+    function runNavBasketAddAnimation() {
+        const link = document.getElementById('basketNavLink');
+        if (!link) return;
+
+        link.classList.remove('nav-basket-atc-complete');
+        link.classList.add('nav-basket-atc-loading');
+
+        _atcAnimationTimers.push(setTimeout(function () {
+            link.classList.add('nav-basket-atc-complete');
+        }, RAINBOW_ATC_TIMING.completeMs));
+
+        _atcAnimationTimers.push(setTimeout(function () {
+            link.classList.remove('nav-basket-atc-loading', 'nav-basket-atc-complete');
+        }, RAINBOW_ATC_TIMING.resetMs));
+    }
 
     function runRainbowAtcAnimation(btn) {
         if (!btn || btn.disabled || btn.classList.contains('loading')) return;
@@ -8646,6 +8800,7 @@
 
         btn.classList.remove('complete');
         btn.classList.add('loading');
+        runNavBasketAddAnimation();
 
         _atcAnimationTimers.push(setTimeout(() => btn.classList.add('complete'), RAINBOW_ATC_TIMING.completeMs));
         _atcAnimationTimers.push(setTimeout(() => {
@@ -9427,19 +9582,78 @@
         return positions.some(function (p) { return p && p.logo; });
     }
 
+    function resetAllPositionCardsUI() {
+        document.querySelectorAll('.position-card').forEach(function (card) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = false;
+            card.classList.remove('selected', 'has-logo', 'has-design');
+
+            const embBadge = card.querySelector('.price-emb');
+            const printBadge = card.querySelector('.price-print');
+            resetPriceBadge(embBadge);
+            resetPriceBadge(printBadge);
+
+            const logoOverlayBox = card.querySelector('.logo-overlay-box');
+            const logoOverlayImg = card.querySelector('.logo-overlay-img');
+            if (logoOverlayBox) logoOverlayBox.hidden = true;
+            if (logoOverlayImg) logoOverlayImg.src = '';
+
+            const previewContent = card.querySelector('.position-preview-content');
+            const placeholder = card.querySelector('.position-placeholder');
+            const pill = card.querySelector('.customization-pill');
+            const previewImage = card.querySelector('.preview-image');
+            const previewText = card.querySelector('.preview-text');
+            if (previewContent) previewContent.hidden = true;
+            if (placeholder) placeholder.hidden = false;
+            if (pill) pill.hidden = true;
+            if (previewImage) {
+                previewImage.src = '';
+                previewImage.hidden = true;
+            }
+            if (previewText) {
+                previewText.textContent = '';
+                previewText.hidden = true;
+            }
+
+            const uploadedLogoPreview = card.querySelector('.uploaded-logo-preview');
+            if (uploadedLogoPreview) {
+                uploadedLogoPreview.src = '';
+                uploadedLogoPreview.hidden = true;
+            }
+            const uploadedLogoContainer = card.querySelector('.uploaded-logo-container');
+            if (uploadedLogoContainer) uploadedLogoContainer.hidden = true;
+        });
+    }
+
     function clearPositionState(clearUI) {
         state.positionMethods = {};
         state.positionCustomizations = {};
         state.positionDesigns = {};
         state.positions = [];
         if (clearUI !== false) {
-            document.querySelectorAll('.position-card input[type="checkbox"]').forEach(function (cb) {
-                cb.checked = false;
-            });
-            document.querySelectorAll('.position-card').forEach(function (card) {
-                card.classList.remove('selected', 'has-logo', 'has-design');
-            });
+            resetAllPositionCardsUI();
         }
+    }
+
+    /** After Add to basket: open clean position picker (no success modal). */
+    function beginLogoFlowForNewBasketItem(item) {
+        if (!item || !item.id) {
+            setTimeout(function () { openPositionsPopup(); }, getAddedToQuoteModalDelay());
+            return;
+        }
+        try {
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const idx = basket.findIndex(function (i) { return i.id === item.id; });
+            if (idx !== -1) {
+                sessionStorage.setItem('customizingBasketIndex', String(idx));
+                _autoSavedItemId = item.id;
+            }
+        } catch (e) {
+            console.warn('beginLogoFlowForNewBasketItem:', e);
+        }
+        clearPositionState(true);
+        saveCustomizationState();
+        setTimeout(function () { openPositionsPopup(); }, getAddedToQuoteModalDelay());
     }
 
     function basketItemHasLogo(item) {
@@ -9533,7 +9747,7 @@
         const scope = root && root.querySelectorAll ? root : document;
         const hex = resolveGarmentPreviewHex();
         const bg = hex || 'transparent';
-        scope.querySelectorAll('.position-preview-content, .uploaded-logo-box').forEach(el => {
+        scope.querySelectorAll('.position-preview, .position-preview-content, .uploaded-logo-box').forEach(el => {
             if (hex) el.style.setProperty('--garment-bg', hex);
             else el.style.removeProperty('--garment-bg');
             el.style.backgroundColor = bg;
@@ -9592,7 +9806,11 @@
         const baseColor = state.selectedColorName || state.selectedColor;
         const baseColorId = state.selectedColor;
         const baseColorImage = state.selectedColorImage;
-        const baseColorHex = getSelectedColorHex();
+        let baseColorHex = getSelectedColorHex();
+        if (!baseColorHex && window.BrandedColorHex && baseColor) {
+            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage) || BrandedColorHex.lookupByName(baseColor) || '';
+            if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
+        }
         const baseNote = state.itemNote || '';
         const now = new Date().toISOString();
 
@@ -9827,19 +10045,9 @@
             markItemForLogoPrompt(lastNewItem);
         }
 
-        if (showLogoAddedModal) {
-            const summaryItem = {
-                ...lastNewItem,
-                quantities: { ...state.sizeQuantities },
-                totalQty: state.quantity,
-                productCode: baseProductCode,
-                color: lastNewItem.color || baseColor,
-                colorImage: lastNewItem.colorImage || baseColorImage
-            };
+        if (showLogoAddedModal && lastNewItem && !basketItemHasLogo(lastNewItem)) {
             sessionStorage.removeItem('basketEditNewColor');
-            setTimeout(function () {
-                showAddedToQuoteModal(summaryItem);
-            }, getAddedToQuoteModalDelay());
+            beginLogoFlowForNewBasketItem(lastNewItem);
             return;
         }
 

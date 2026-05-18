@@ -53,6 +53,8 @@
     var byProduct = Object.create(null);
     var byImage = Object.create(null);
     var productFetchPending = Object.create(null);
+    var databaseLoadPromise = null;
+    var DATABASE_URL = '/brandedukv15-child/assets/data/color-hex-database.json';
 
     function normName(name) {
         return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
@@ -114,6 +116,44 @@
             if (!byProduct[code]) byProduct[code] = Object.create(null);
             byProduct[code][n] = h;
         }
+    }
+
+    function mergeDatabaseGlobal(data) {
+        if (!data || typeof data !== 'object') return 0;
+        var src = data.global || data;
+        var added = 0;
+        Object.keys(src).forEach(function (k) {
+            var before = globalMap[normName(k)];
+            register(k, src[k]);
+            if (!before && globalMap[normName(k)]) added++;
+        });
+        return added;
+    }
+
+    function resolveDatabaseUrl() {
+        if (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) {
+            try {
+                return new URL('../data/color-hex-database.json', document.currentScript.src).href;
+            } catch (e) { /* fall through */ }
+        }
+        return DATABASE_URL;
+    }
+
+    function loadExternalDatabase() {
+        if (databaseLoadPromise) return databaseLoadPromise;
+        databaseLoadPromise = fetch(resolveDatabaseUrl(), { cache: 'no-cache' })
+            .then(function (res) {
+                if (!res.ok) throw new Error('color database ' + res.status);
+                return res.json();
+            })
+            .then(function (data) {
+                mergeDatabaseGlobal(data);
+                return true;
+            })
+            .catch(function () {
+                return false;
+            });
+        return databaseLoadPromise;
     }
 
     function registerProductColors(productCode, colors) {
@@ -230,6 +270,12 @@
         if (!Array.isArray(items) || items.length === 0) {
             return Promise.resolve(false);
         }
+        return loadExternalDatabase().then(function () {
+            return hydrateBasketItemsCore(items, onUpdated);
+        });
+    }
+
+    function hydrateBasketItemsCore(items, onUpdated) {
         var changed = false;
         items.forEach(function (item) {
             if (!item) return;
@@ -297,6 +343,7 @@
     }
 
     loadPersisted();
+    loadExternalDatabase();
 
     window.BrandedColorHex = {
         parseHex: parseHex,
@@ -307,6 +354,7 @@
         lookupByName: lookupByName,
         hydrateProduct: hydrateProduct,
         hydrateBasketItems: hydrateBasketItems,
+        loadExternalDatabase: loadExternalDatabase,
         sampleFromImage: sampleFromImage,
         PLACEHOLDER_HEX: PLACEHOLDER_HEX
     };

@@ -168,14 +168,18 @@
             height: 80px;
             border-radius: 10px;
             overflow: hidden;
-            background: #fff;
+            background-color: var(--garment-bg, #f3f4f6);
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .basket-item-image img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            background: transparent;
         }
         
         .basket-item-info {
@@ -1068,17 +1072,52 @@
         </button>
     </div>
 
+    <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260519"></script>
     <script>
         // === Basket Page Logic ===
         
         // State
         let includeVAT = localStorage.getItem('includeVAT') === 'true';
         
+        function getItemGarmentHex(item) {
+            if (!item || !window.BrandedColorHex) return '#f3f4f6';
+            const code = item.code || item.productCode || '';
+            const stored = BrandedColorHex.parseHex(item.colorHex);
+            if (BrandedColorHex.isUsableHex(stored)) return stored;
+            const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image) || BrandedColorHex.lookupByName(item.color || '');
+            if (found) {
+                item.colorHex = found;
+                return found;
+            }
+            return '#f3f4f6';
+        }
+        
+        function hydrateBasketColorHex(basket, done) {
+            if (!window.BrandedColorHex || !Array.isArray(basket)) {
+                if (done) done();
+                return;
+            }
+            BrandedColorHex.hydrateBasketItems(basket, function () {
+                saveBasket(basket);
+                if (done) done();
+            });
+        }
+        
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
-            initVATToggle();
-            renderBasket();
-            initEventListeners();
+            const boot = () => {
+                initVATToggle();
+                const basket = getBasket();
+                hydrateBasketColorHex(basket, () => {
+                    renderBasket();
+                    initEventListeners();
+                });
+            };
+            if (window.BrandedColorHex && BrandedColorHex.loadExternalDatabase) {
+                BrandedColorHex.loadExternalDatabase().then(boot).catch(boot);
+            } else {
+                boot();
+            }
         });
         
         // VAT Toggle
@@ -1179,6 +1218,8 @@
             basket.forEach((item, index) => {
                 const itemImage = item.colorImage || item.image || '../brandedukv15-child/assets/images/products/default.jpg';
                 const itemColor = item.color || 'Black';
+                const garmentHex = getItemGarmentHex(item);
+                const colorTitle = String(itemColor).replace(/"/g, '&quot;');
                 const hasCustomization = (item.customizations && item.customizations.length > 0) || 
                                           (item.positions && Object.keys(item.positions).length > 0);
                 const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
@@ -1215,7 +1256,7 @@
                                 </svg>
                             </span>
                         </label>
-                        <div class="basket-item-image" onclick="openCustomizeForItem(${index})">
+                        <div class="basket-item-image" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${colorTitle}" onclick="openCustomizeForItem(${index})">
                             <img src="${itemImage}" alt="${item.productName || item.name || 'Product'}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="basket-item-info" onclick="openCustomizeForItem(${index})">
