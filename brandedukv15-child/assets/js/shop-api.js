@@ -393,6 +393,7 @@ const ShopManager = (function () {
             const isMobile = window.location.pathname.includes('mobile/') ||
                 window.innerWidth < 1280;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
+            try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
             const url = new URL(targetPage, window.location.origin);
             if (currentState.color) {

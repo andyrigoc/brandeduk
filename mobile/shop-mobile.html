@@ -694,6 +694,7 @@
                 console.log('[MobileShop] Card clicked:', product.code);
                 sessionStorage.setItem('selectedProduct', product.code);
                 sessionStorage.setItem('selectedProductData', JSON.stringify(product));
+                sessionStorage.setItem('customizeFreshItem', '1');
 
                 const activeColorDot = card.querySelector('.color-dot.active');
                 if (activeColorDot) {

@@ -2702,7 +2702,7 @@ if (popupAddLogoBtn) {
                 productType: item.productType || ''
             }));
         }
-        // Navigate to customize page
+        try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
         const isMobile = window.innerWidth < 1024;
         window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
     };

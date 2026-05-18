@@ -656,6 +656,8 @@
 
     // === Session Storage Keys for State Persistence ===
     const STATE_STORAGE_KEY = 'brandeduk-customize-state';
+    const CUSTOMIZE_FRESH_KEY = 'customizeFreshItem';
+    const CUSTOMIZE_LAST_PRODUCT_KEY = 'customizeLastProductCode';
 
     // === Save Customization State to SessionStorage ===
     function saveCustomizationState() {
@@ -701,35 +703,19 @@
             const savedProductCode = savedState.productCode || '';
             const isSameProduct = savedProductCode && currentProductCode && savedProductCode === currentProductCode;
             
-            if (isEditingBasketItem) {
-                // Editing a specific basket item — clear position state so the basket item's
-                // own designs are used (loaded later in Phase 2.1)
+            // Never restore logos/positions from session — each new shop item must run the logo flow.
+            // Basket logos are loaded only in Phase 2.1 when editing a specific basket line.
+            if (!isEditingBasketItem) {
                 state.positionMethods = {};
                 state.positionCustomizations = {};
                 state.positionDesigns = {};
                 state.positions = [];
-                console.log('?? Editing basket item — skipping session position restore (will load from basket)');
-            } else if (isSameProduct) {
-                // Same product — restore position designs/methods
-                if (savedState.positionMethods) state.positionMethods = savedState.positionMethods;
-                if (savedState.positionCustomizations) state.positionCustomizations = savedState.positionCustomizations;
-                if (savedState.positionDesigns) state.positionDesigns = savedState.positionDesigns;
-                if (savedState.positions) state.positions = savedState.positions;
-                console.log('? Same product — restored position designs/methods');
             } else {
-                // Different product — do NOT restore logos/positions from old product
-                console.log('?? Different product (saved:', savedProductCode, 'current:', currentProductCode, ') — skipping position restore');
                 state.positionMethods = {};
                 state.positionCustomizations = {};
                 state.positionDesigns = {};
                 state.positions = [];
-                try {
-                    savedState.positionMethods = {};
-                    savedState.positionCustomizations = {};
-                    savedState.positionDesigns = {};
-                    savedState.positions = [];
-                    sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(savedState));
-                } catch (e) { /* ignore */ }
+                console.log('?? Editing basket item — positions will load from basket row');
             }
             
             // CRITICAL FIX: Don't restore selectedColorImage from sessionStorage
@@ -749,11 +735,13 @@
             }
             // Note: selectedColorImage is NOT restored here - it's set from new product data
             
-            // Only restore quantity/sizes if NOT editing a specific basket item
-            // (basket item's own data is loaded in Phase 2.1)
-            if (!isEditingBasketItem) {
+            const isFreshItem = sessionStorage.getItem(CUSTOMIZE_FRESH_KEY) === '1';
+            if (!isEditingBasketItem && !isFreshItem && isSameProduct) {
                 if (savedState.sizeQuantities) state.sizeQuantities = savedState.sizeQuantities;
                 if (savedState.quantity !== undefined) state.quantity = savedState.quantity;
+            } else if (!isEditingBasketItem) {
+                state.sizeQuantities = {};
+                state.quantity = 0;
             }
             if (savedState.technique) state.technique = savedState.technique;
             
@@ -1997,6 +1985,7 @@
                 console.log('? Product loaded early during init:', state.product.code, state.product.name);
                 
                 // Now restore customization state (colors will be matched against new product's colors)
+                applyFreshItemSessionIfNeeded();
                 restoreCustomizationState();
                 
                 // Refresh DOM with correct product data
@@ -2008,11 +1997,12 @@
                     updatePositionCardsForProductType(state.product.rawData);
                 }
             } else {
-                // If product didn't load, still try to restore state (will use fallback)
+                applyFreshItemSessionIfNeeded();
                 restoreCustomizationState();
             }
         } catch (e) {
             console.warn('Early product load failed, continuing with fallback', e);
+            applyFreshItemSessionIfNeeded();
             restoreCustomizationState();
         }
 
@@ -2140,6 +2130,7 @@
                         });
                     }
 
+                    _logoConfiguredForCurrentItem = basketItemHasLogo(basketItem);
                     console.log('✅ Basket item loaded into customize state');
                 }
             } catch (e) {
@@ -3158,6 +3149,7 @@
                 addToQuote({ silent: true });
             }
             beginNextItemSession();
+            try { sessionStorage.setItem(CUSTOMIZE_FRESH_KEY, '1'); } catch (e) { /* ignore */ }
 
             // Phase 2.2: If coming from basket, return there
             const returnTarget = sessionStorage.getItem('returnAfterCustomize');
@@ -6649,6 +6641,10 @@
         // Also store in positionCustomizations for glow effect tracking
         if (!state.positionCustomizations) state.positionCustomizations = {};
         state.positionCustomizations[position] = designData;
+
+        if (designData.logo) {
+            _logoConfiguredForCurrentItem = true;
+        }
         
         // Update the position card preview
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
@@ -8685,7 +8681,7 @@
                     showToast('Please add at least one item', true);
                     return;
                 }
-                if (!selectionHasLogoOnCheckedPositions() && !isBasketSingleItemEdit()) {
+                if (needsLogoStepBeforeBasket()) {
                     runRainbowAtcAnimation(addToBasketBtn);
                     addToQuote({ silent: true });
                     setTimeout(function () { openPositionsPopup(); }, 450);
@@ -9025,6 +9021,8 @@
     let _autoSavedItemId = null; // Track the ID of the auto-saved item so we can update it
     // Track item IDs saved in THIS customize session (to prevent qty doubling)
     const _sessionSavedIds = new Set();
+    /** True only after user uploads/applies a logo on the current item (stable logo-step gate). */
+    let _logoConfiguredForCurrentItem = false;
 
     /**
      * Reset the 3-second auto-save timer. Called whenever state changes
@@ -9355,18 +9353,10 @@
         _sessionSavedIds.clear();
     }
 
-    /** After add-to-basket / continue shopping — next product must not inherit logos or overwrite prior lines. */
-    function beginNextItemSession() {
-        clearStaleBasketEditSessionUnlessEditing();
-        _autoSavedItemId = null;
-        _sessionSavedIds.clear();
-        state.selectionSaved = true;
-        clearPositionState();
-        state.sizeQuantities = {};
-        state.quantity = 0;
+    function persistCleanCustomizeSession(productCode) {
         try {
             sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify({
-                productCode: state.product?.code || sessionStorage.getItem('selectedProduct') || '',
+                productCode: productCode || '',
                 positionMethods: {},
                 positionCustomizations: {},
                 positionDesigns: {},
@@ -9376,6 +9366,56 @@
                 technique: state.technique || 'embroidery'
             }));
         } catch (e) { /* ignore */ }
+    }
+
+    /** On new product from shop (or after continue shopping) — never inherit previous logos. */
+    function applyFreshItemSessionIfNeeded() {
+        const fresh = sessionStorage.getItem(CUSTOMIZE_FRESH_KEY) === '1';
+        const currentCode = (state.product && state.product.code) || sessionStorage.getItem('selectedProduct') || '';
+        const lastCode = sessionStorage.getItem(CUSTOMIZE_LAST_PRODUCT_KEY) || '';
+        const productChanged = !!(currentCode && lastCode && currentCode !== lastCode);
+
+        if (fresh || productChanged) {
+            _logoConfiguredForCurrentItem = false;
+            clearPositionState();
+            state.sizeQuantities = {};
+            state.quantity = 0;
+            persistCleanCustomizeSession(currentCode);
+            console.log('🆕 Fresh customize item:', currentCode, fresh ? '(from shop)' : '(product changed)');
+        }
+
+        if (fresh) sessionStorage.removeItem(CUSTOMIZE_FRESH_KEY);
+        if (currentCode) sessionStorage.setItem(CUSTOMIZE_LAST_PRODUCT_KEY, currentCode);
+    }
+
+    function updateLogoConfiguredFlagFromState() {
+        _logoConfiguredForCurrentItem = selectionHasLogoOnCheckedPositions();
+    }
+
+    function needsLogoStepBeforeBasket() {
+        if (isBasketSingleItemEdit()) return false;
+        if (isActiveBasketItemEdit()) {
+            try {
+                const idx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const item = basket[idx];
+                if (item && basketItemHasLogo(item)) return false;
+            } catch (e) { /* ignore */ }
+        }
+        return !_logoConfiguredForCurrentItem;
+    }
+
+    /** After add-to-basket / continue shopping — next product must not inherit logos or overwrite prior lines. */
+    function beginNextItemSession() {
+        clearStaleBasketEditSessionUnlessEditing();
+        _autoSavedItemId = null;
+        _sessionSavedIds.clear();
+        _logoConfiguredForCurrentItem = false;
+        state.selectionSaved = true;
+        clearPositionState();
+        state.sizeQuantities = {};
+        state.quantity = 0;
+        persistCleanCustomizeSession(state.product?.code || sessionStorage.getItem('selectedProduct') || '');
     }
 
     function selectionHasLogoOnCheckedPositions() {
