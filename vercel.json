@@ -24,6 +24,7 @@
     { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/home", "destination": "/home-pc.html" },
     { "source": "/shop", "destination": "/shop.html" },
+    { "source": "/shop-pc", "destination": "/shop-pc.html" },
 
     { "source": "/basket", "destination": "/basket.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
@@ -50,11 +51,6 @@
     {
       "source": "/mobile",
       "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/shop-pc.html",
-      "destination": "/shop",
       "permanent": true
     },
     {

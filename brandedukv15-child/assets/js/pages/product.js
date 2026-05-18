@@ -2355,7 +2355,7 @@ if (continueShoppingButton) {
             var msg = 'You have ' + total + ' items of ' + selectedColorName + ' not added to basket.\nLeave and discard them?';
             if (!confirm(msg)) return;
         }
-        window.location.href = 'shop.html';
+        window.location.href = (window.innerWidth < 1024) ? '/shop?category=all' : '/shop-pc.html?category=all';
     };
 }
 

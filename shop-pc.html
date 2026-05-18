@@ -5,22 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop - BrandedUK</title>
+    <script src="brandedukv15-child/assets/js/shop-route.js?v=20260518"></script>
     <script>
-        // Redirect to mobile version on smaller screens
-        if (window.innerWidth < 1024) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const qs = urlParams.toString();
-            window.location.replace('/shop.html' + (qs ? '?' + qs : '?category=all'));
-        }
+        if (window.BrandedShopRoute && BrandedShopRoute.redirectDesktopShopIfMobile()) { /* redirecting */ }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20251230">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20251230">
-    <link rel="stylesheet" href="../mobile/css/social-buttons.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
     <style>
         /* Reduce searchbar header gap - PC only */
