@@ -168,7 +168,8 @@
             height: 80px;
             border-radius: 10px;
             overflow: hidden;
-            background-color: var(--garment-bg, #f3f4f6);
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -555,18 +556,58 @@
             align-items: center;
             gap: 8px;
         }
-        .basket-item-logo img {
+        .basket-item-logo-preview {
             width: 40px;
             height: 40px;
-            object-fit: contain;
             border-radius: 6px;
             border: 1px solid #e5e7eb;
-            background: #fff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: var(--garment-bg, #f3f4f6);
+        }
+        .basket-item-logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
         }
         .basket-item-logo .logo-label {
             font-size: 11px;
             color: #6b7280;
         }
+
+        .item-logos-section-mobile {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+            width: 100%;
+        }
+        .item-logos-section-mobile .logos-applied-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .basket-logo-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-top: 1px solid #f3f4f6;
+        }
+        .basket-logo-row:first-of-type { border-top: none; }
+        .basket-logo-row-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 12px;
+            color: #374151;
+        }
+        .basket-logo-row-info strong { font-size: 13px; color: #1f2937; }
+        .basket-logo-row-price { font-size: 11px; color: #6b7280; }
         .basket-item-note {
             margin-top: 6px;
             font-size: 12px;
@@ -1073,6 +1114,7 @@
     </div>
 
     <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260519"></script>
+    <script src="js/basket-logos.js?v=20260519"></script>
     <script>
         // === Basket Page Logic ===
         
@@ -1143,10 +1185,14 @@
             return includeVAT ? 'inc VAT' : 'ex VAT';
         }
         
-        // Get basket from localStorage
+        // Get basket from localStorage (normalize logo rows on read)
         function getBasket() {
             try {
-                return JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                if (window.BrandedBasketLogos && Array.isArray(basket) && basket.length) {
+                    BrandedBasketLogos.normalizeBasket(basket);
+                }
+                return basket;
             } catch (e) {
                 return [];
             }
@@ -1154,6 +1200,9 @@
         
         // Save basket to localStorage
         function saveBasket(basket) {
+            if (window.BrandedBasketLogos && Array.isArray(basket)) {
+                BrandedBasketLogos.normalizeBasket(basket);
+            }
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
         }
         
@@ -1184,30 +1233,40 @@
             updateItemCount(basket);
         }
         
-        // Extract logos from item data
-        function getItemLogoHtml(item) {
-            const logos = [];
-            // Check positionDesigns first
-            if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-                Object.entries(item.positionDesigns).forEach(([pos, pd]) => {
-                    if (pd && pd.logo) logos.push({ position: pos, src: pd.logo });
-                });
+        function collectItemLogos(item) {
+            if (window.BrandedBasketLogos) {
+                return BrandedBasketLogos.collectFromItem(item);
             }
-            // If no positionDesigns, check positions
-            if (logos.length === 0 && item.positions && typeof item.positions === 'object') {
-                Object.entries(item.positions).forEach(([pos, pd]) => {
-                    if (pd && pd.logo) logos.push({ position: pd.name || pos, src: pd.logo });
-                });
-            }
-            if (logos.length === 0) return '';
-            return logos.map(l => `
-                <div class="basket-item-logo">
-                    <img src="${l.src}" alt="Logo">
-                    <span class="logo-label">${l.position}</span>
-                </div>
-            `).join('');
+            return Array.isArray(item.logos) ? item.logos : [];
         }
-        
+
+        function getItemLogosSectionHtml(item, garmentHex) {
+            const logos = collectItemLogos(item);
+            if (!logos.length) return '';
+            const logoBg = garmentHex || '#f3f4f6';
+            const qty = item.totalQty || item.qty || 1;
+            let html = '<div class="item-logos-section-mobile"><div class="logos-applied-header">Logos applied to this item</div>';
+            logos.forEach(logo => {
+                const isEmb = logo.method === 'embroidery';
+                const methodLabel = isEmb ? 'Embroidery' : 'Print';
+                const posLabel = logo.positionLabel || logo.position;
+                const lineTotal = (logo.unitPrice || 0) * qty;
+                html += `
+                    <div class="basket-logo-row">
+                        <div class="basket-item-logo-preview" style="--garment-bg:${logoBg};background-color:${logoBg}">
+                            <img src="${logo.logo}" alt="Logo">
+                        </div>
+                        <div class="basket-logo-row-info">
+                            <strong>${methodLabel}</strong>
+                            <span>Position: ${posLabel}</span>
+                            <span class="basket-logo-row-price">${formatCurrency(lineTotal)} exc. VAT</span>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
         // Render basket items
         function renderBasketItems(basket) {
             const container = document.getElementById('basketItemsList');
@@ -1220,8 +1279,10 @@
                 const itemColor = item.color || 'Black';
                 const garmentHex = getItemGarmentHex(item);
                 const colorTitle = String(itemColor).replace(/"/g, '&quot;');
-                const hasCustomization = (item.customizations && item.customizations.length > 0) || 
-                                          (item.positions && Object.keys(item.positions).length > 0);
+                const hasCustomization = (item.customizations && item.customizations.length > 0) ||
+                                          (item.logos && item.logos.length > 0) ||
+                                          (item.positions && Object.keys(item.positions).length > 0) ||
+                                          (item.positionDesigns && Object.keys(item.positionDesigns).length > 0);
                 const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
                 const customBadgeText = hasCustomization ? 'Ã¢Å“â€œ Customized' : '+ Add Logo';
                 
@@ -1256,7 +1317,7 @@
                                 </svg>
                             </span>
                         </label>
-                        <div class="basket-item-image" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${colorTitle}" onclick="openCustomizeForItem(${index})">
+                        <div class="basket-item-image" title="${colorTitle}" onclick="openCustomizeForItem(${index})">
                             <img src="${itemImage}" alt="${item.productName || item.name || 'Product'}" onerror="this.src='../brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="basket-item-info" onclick="openCustomizeForItem(${index})">
@@ -1265,7 +1326,7 @@
                             <div class="item-sizes">
                                 ${sizesHtml}
                             </div>
-                            ${getItemLogoHtml(item)}
+                            ${getItemLogosSectionHtml(item, garmentHex)}
                             ${item.note ? `<div class="basket-item-note">Ã°Å¸â€œÂ ${item.note}</div>` : ''}
                             <span class="${customBadgeClass}">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1297,44 +1358,22 @@
             const container = document.getElementById('customizationCardsList');
             if (!container) return;
             
-            console.log('Ã°Å¸Â§Âº BASKET renderCustomizations called with', basket.length, 'items');
-            
-            // Collect all customizations from basket items
             let allCustomizations = [];
             
-            basket.forEach((item, idx) => {
-                console.log('Ã°Å¸Â§Âº Item', idx, '- customizations:', item.customizations);
-                console.log('Ã°Å¸Â§Âº Item', idx, '- positions:', item.positions);
-                
-                // Check customizations array (preferred format)
-                if (item.customizations && Array.isArray(item.customizations) && item.customizations.length > 0) {
-                    item.customizations.forEach(custom => {
-                        console.log('Ã°Å¸Â§Âº Found customization:', custom);
-                        allCustomizations.push({
-                            position: custom.position || 'Unknown',
-                            method: custom.method || 'Print',
-                            qty: custom.qty || item.totalQty || 1,
-                            unitPrice: custom.unitPrice || 0,
-                            total: custom.total || 0
-                        });
+            basket.forEach((item) => {
+                const totalQty = item.totalQty || item.qty || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0) || 1;
+                const logos = collectItemLogos(item);
+                logos.forEach(logo => {
+                    const method = logo.method === 'print' ? 'Print' : 'Embroidery';
+                    const unitPrice = logo.unitPrice || (logo.method === 'print' ? 3.5 : 5);
+                    allCustomizations.push({
+                        position: logo.positionLabel || logo.position || 'Logo',
+                        method: method,
+                        qty: totalQty,
+                        unitPrice: unitPrice,
+                        total: unitPrice * totalQty
                     });
-                }
-                // ONLY use positions if customizations array is empty
-                else if (item.positions && typeof item.positions === 'object' && Object.keys(item.positions).length > 0) {
-                    const totalQty = item.totalQty || Object.values(item.quantities || item.sizes || {}).reduce((s, q) => s + q, 0);
-                    
-                    Object.entries(item.positions).forEach(([posName, posData]) => {
-                        if (posData.method) {
-                            allCustomizations.push({
-                                position: posName,
-                                method: posData.method,
-                                qty: totalQty,
-                                unitPrice: posData.unitPrice || 0,
-                                total: posData.totalPrice || 0
-                            });
-                        }
-                    });
-                }
+                });
             });
             
             if (allCustomizations.length === 0) {
@@ -1370,31 +1409,19 @@
             let customTotal = 0;
             
             basket.forEach(item => {
-                // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
                 const unitPrice = item.unitPrice || item.price || 0;
+                const qty = Object.keys(sizes).length > 0
+                    ? Object.values(sizes).reduce((sum, q) => sum + q, 0)
+                    : (item.qty || item.totalQty || 1);
                 
-                // Calculate garment total
-                if (Object.keys(sizes).length > 0 && unitPrice) {
-                    const qty = Object.values(sizes).reduce((sum, q) => sum + q, 0);
+                if (qty > 0 && unitPrice) {
                     garmentsTotal += qty * unitPrice;
                 }
                 
-                // Calculate customization total from customizations array
-                if (item.customizations && Array.isArray(item.customizations)) {
-                    item.customizations.forEach(custom => {
-                        customTotal += custom.total || 0;
-                    });
-                }
-                
-                // Also check positions object for branding costs
-                if (item.positions && typeof item.positions === 'object') {
-                    Object.values(item.positions).forEach(pos => {
-                        if (pos.totalPrice) {
-                            customTotal += pos.totalPrice;
-                        }
-                    });
-                }
+                collectItemLogos(item).forEach(logo => {
+                    customTotal += (logo.unitPrice || 0) * qty;
+                });
             });
             
             const grandTotal = garmentsTotal + customTotal;

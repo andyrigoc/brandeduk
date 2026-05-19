@@ -269,7 +269,8 @@
         .item-row-image {
             width: 52px; height: 52px; flex-shrink: 0;
             border-radius: 6px; overflow: hidden;
-            background-color: var(--garment-bg, #f3f4f6);
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
             display: flex; align-items: center; justify-content: center;
         }
         .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
@@ -1521,87 +1522,78 @@
         }
     }
 
-    // Extract logos from any combination of positions/positionDesigns/logos fields
+    // Extract logos from positions / positionDesigns / logos[] without duplicating the same placement
     function _extractLogos(item) {
-        console.log('🔍 [_extractLogos] Called for item:', {
-            code: item.code,
-            color: item.color,
-            hasLogos: !!item.logos,
-            logosLength: item.logos?.length,
-            hasPositions: !!item.positions,
-            positionsLength: item.positions?.length,
-            hasPositionDesigns: !!item.positionDesigns,
-            positionDesignsKeys: item.positionDesigns ? Object.keys(item.positionDesigns) : []
-        });
-        
-        // If item already has logos[] and no old fields, return existing
-        if (item.logos && item.logos.length > 0 && !item.positions && !item.positionDesigns) {
-            console.log('✅ [_extractLogos] Returning existing logos:', item.logos.length);
-            return item.logos;
-        }
-
         const logos = [];
+        const seenPos = new Set();
+        const methodByPos = {};
 
-        // Priority 1: positions array (used by customize.js addToQuote)
-        if (Array.isArray(item.positions) && item.positions.length > 0) {
-            console.log('📋 [_extractLogos] Found positions array:', item.positions.length, 'items');
-            item.positions.forEach(p => {
-                if (p && p.logo) {
-                    const newLogo = {
-                        position: p.position || '',
-                        positionLabel: toReadablePosition(p.name || p.position || ''),
-                        method: (p.method || 'embroidery').toLowerCase(),
-                        logo: p.logo || '',
-                        unitPrice: p.unitPrice || (p.method === 'print' ? 3.50 : 5.00)
-                    };
-                    logos.push(newLogo);
-                    console.log('✅ [_extractLogos] Added logo from positions:', newLogo.positionLabel, newLogo.method);
+        if (Array.isArray(item.positions)) {
+            item.positions.forEach(function (p) {
+                if (p && p.position && p.method) {
+                    methodByPos[p.position] = String(p.method).toLowerCase();
                 }
             });
         }
 
-        // Priority 2: positionDesigns object (used by customize.js state)
-        if (logos.length === 0 && item.positionDesigns && typeof item.positionDesigns === 'object') {
-            console.log('📐 [_extractLogos] Trying positionDesigns:', Object.keys(item.positionDesigns).length, 'keys');
-            Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
-                if (d && d.logo) {
-                    const newLogo = {
-                        position: posKey,
-                        positionLabel: toReadablePosition(d.position || posKey),
-                        method: (d.method || 'embroidery').toLowerCase(),
-                        logo: d.logo || '',
-                        unitPrice: d.unitPrice || 5.00
-                    };
-                    logos.push(newLogo);
-                    console.log('✅ [_extractLogos] Added logo from positionDesigns:', newLogo.positionLabel, newLogo.method);
-                }
+        function pushExtractedLogo(entry) {
+            const pos = entry.position || '';
+            if (!pos || !entry.logo) return;
+            const method = (entry.method || methodByPos[pos] || 'embroidery').toLowerCase();
+            if (seenPos.has(pos)) return;
+            seenPos.add(pos);
+            logos.push({
+                position: pos,
+                positionLabel: entry.positionLabel || toReadablePosition(pos),
+                method: method,
+                logo: entry.logo || '',
+                unitPrice: entry.unitPrice != null ? entry.unitPrice : (method === 'print' ? 3.50 : 5.00)
             });
         }
 
-        // Priority 3: merge existing logos[] (e.g. quick-apply from basket modal)
+        // Priority 1: positions[] — canonical method from customize save
+        if (Array.isArray(item.positions)) {
+            item.positions.forEach(function (p) {
+                if (!p || !p.logo) return;
+                pushExtractedLogo({
+                    position: p.position || '',
+                    positionLabel: toReadablePosition(p.name || p.position || ''),
+                    method: (p.method || methodByPos[p.position] || 'embroidery').toLowerCase(),
+                    logo: p.logo || '',
+                    unitPrice: p.unitPrice
+                });
+            });
+        }
+
+        // Priority 2: positionDesigns — only positions not already taken from positions[]
+        if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+            Object.entries(item.positionDesigns).forEach(function ([posKey, d]) {
+                if (!d || !d.logo || seenPos.has(posKey)) return;
+                const method = (d.method || methodByPos[posKey] || 'embroidery').toLowerCase();
+                pushExtractedLogo({
+                    position: posKey,
+                    positionLabel: toReadablePosition(d.position || posKey),
+                    method: method,
+                    logo: d.logo || '',
+                    unitPrice: d.unitPrice
+                });
+            });
+        }
+
+        // Priority 3: existing logos[] (quick-apply / already normalized)
         if (item.logos && item.logos.length > 0) {
-            item.logos.forEach(l => {
-                if (!l || !(l.logo || l.method)) return;
-                const method = (l.method || 'embroidery').toLowerCase();
-                const pos = l.position || '';
-                const dup = logos.some(x =>
-                    (x.position || '') === pos &&
-                    (x.method || '').toLowerCase() === method &&
-                    (x.logo || '') === (l.logo || '')
-                );
-                if (!dup) {
-                    logos.push({
-                        position: pos,
-                        positionLabel: l.positionLabel || toReadablePosition(pos),
-                        method: method,
-                        logo: l.logo || '',
-                        unitPrice: l.unitPrice || (method === 'print' ? 3.50 : 5.00)
-                    });
-                }
+            item.logos.forEach(function (l) {
+                if (!l || !l.logo) return;
+                pushExtractedLogo({
+                    position: l.position || '',
+                    positionLabel: l.positionLabel || toReadablePosition(l.position),
+                    method: (l.method || methodByPos[l.position] || 'embroidery').toLowerCase(),
+                    logo: l.logo || '',
+                    unitPrice: l.unitPrice
+                });
             });
         }
 
-        console.log('📦 [_extractLogos] Final result:', logos.length, 'logos');
         return logos;
     }
 
@@ -1614,8 +1606,8 @@
             'left-chest': 'Left Chest', 'right-chest': 'Right Chest',
             'front-center': 'Front Center', 'back-large': 'Back Large',
             'left-sleeve': 'Left Sleeve', 'right-sleeve': 'Right Sleeve',
-            'left-breast': 'Left Chest', 'right-breast': 'Right Chest',
-            'small-centre-front': 'Front Centre', 'large-front-center': 'Front Center',
+            'left-breast': 'Low Left', 'right-breast': 'Low Right',
+            'small-centre-front': 'Centre Front', 'large-centre-front': 'Centre Front', 'large-front-center': 'Front Center',
             'large-back': 'Back Large', 'left-arm': 'Left Arm', 'right-arm': 'Right Arm'
         };
         if (!slug) return 'Logo';
@@ -1808,8 +1800,9 @@
             if (item.logos && item.logos.length > 0) {
                 logosHtml += `<div class="logos-applied-header">Logos applied to this item</div>`;
                 item.logos.forEach((logo, logoIdx) => {
-                    const isEmb = logo.method === 'embroidery';
-                    const methodLabel = isEmb ? 'Embroidery' : 'Printed Logo';
+                    const methodNorm = (logo.method || 'embroidery').toLowerCase();
+                    const isEmb = methodNorm === 'embroidery';
+                    const methodLabel = isEmb ? 'Embroidery' : 'Print';
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
@@ -1846,7 +1839,7 @@
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
-                        <div class="item-row-image" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${(item.color || '').replace(/"/g, '&quot;')}">
+                        <div class="item-row-image" title="${(item.color || '').replace(/"/g, '&quot;')}">
                             <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
                         </div>
                         <div class="item-row-info">
@@ -2302,6 +2295,7 @@
         if (item.color) sessionStorage.setItem('selectedColorName', item.color);
         if (item.colorId) sessionStorage.setItem('selectedColorId', item.colorId);
         const itemName = item.productName || item.name || '';
+        const inferredType = item.productType || (String(itemName).toLowerCase().includes('apron') ? 'Aprons' : '');
         sessionStorage.setItem('selectedProductData', JSON.stringify({
             code: code,
             name: itemName,
@@ -2309,7 +2303,7 @@
             image: item.image || item.colorImage || '',
             colorImage: item.colorImage || item.image || '',
             brand: item.brand || '',
-            productType: item.productType || '',
+            productType: inferredType,
             description: itemName,
             color: item.color || '',
             colorId: item.colorId || '',

@@ -71,6 +71,14 @@
         return POSITION_DISPLAY_NAMES[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
 
+    function getPositionLabelFromCard(position) {
+        const card = document.querySelector('.position-card[data-position="' + position + '"]')
+            || document.querySelector('.position-card input[value="' + position + '"]')?.closest('.position-card');
+        const labelSpan = card && card.querySelector('.position-checkbox span');
+        if (labelSpan && labelSpan.textContent.trim()) return labelSpan.textContent.trim();
+        return canonicalPositionName(position);
+    }
+
     // === Product Colors (default GD067 fallback) ===
     // Will be replaced at runtime if product API data is available
     let PRODUCT_COLORS = [
@@ -224,6 +232,317 @@
         'left-arm': { embroidery: '5.00', print: '3.50' },
         'right-arm': { embroidery: '5.00', print: '3.50' }
     };
+
+    // Apron tint: neutral PNG + luminance mask (see mobile/apron-tint-poc.html) — do not change apron path for hoodie experiments
+    const APRON_GARMENT_TINT_POC = true;
+    const HOODIE_GARMENT_TINT_POC = true;
+    const HOODIE_GARMENT_TINT_TYPES = ['Hoodies', 'Sweatshirts'];
+    const GARMENT_MASK_WHITE_CUTOFF = 236;
+    const GARMENT_MASK_BLACK_CUTOFF = 48;
+    const APRON_NEUTRAL_IMAGE = 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.png';
+    const APRON_NEUTRAL_FALLBACK = 'brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.svg';
+
+    /** Root-absolute or ../ from /mobile/ pages — fixes 404 on Live Server */
+    function resolveBrandedAssetUrl(assetPath) {
+        const clean = String(assetPath || '').replace(/^\//, '');
+        if (!clean) return '';
+        if (/^https?:\/\//i.test(clean)) return clean;
+        const path = window.location.pathname || '';
+        if (path.indexOf('/mobile/') !== -1 || /\/mobile\/?$/i.test(path)) {
+            return '../' + clean;
+        }
+        return '/' + clean;
+    }
+
+    function apronMaskCssUrl() {
+        return 'url("' + resolveBrandedAssetUrl(APRON_NEUTRAL_IMAGE) + '")';
+    }
+
+    function isApronProductContext(productType) {
+        const pt = productType
+            || (state.product && state.product.rawData && (state.product.rawData.productType || state.product.rawData.category || state.product.rawData.type))
+            || '';
+        if (normalizeProductTypeForFolder(pt) === 'Aprons') return true;
+        const name = (state.product && state.product.name) || (state.product && state.product.rawData && state.product.rawData.name) || '';
+        return inferProductTypeFromName(name) === 'Aprons';
+    }
+
+    function isHoodieGarmentTintContext(productType) {
+        if (!HOODIE_GARMENT_TINT_POC) return false;
+        const pt = productType
+            || (state.product && (state.product.productType || (state.product.rawData && (state.product.rawData.productType || state.product.rawData.category || state.product.rawData.type))))
+            || '';
+        const normalized = normalizeProductTypeForFolder(pt);
+        if (HOODIE_GARMENT_TINT_TYPES.includes(normalized)) return true;
+        const name = (state.product && state.product.name) || (state.product && state.product.rawData && state.product.rawData.name) || '';
+        return HOODIE_GARMENT_TINT_TYPES.includes(inferProductTypeFromName(name));
+    }
+
+    function buildStrictGarmentMaskDataUrl(img) {
+        if (!img || !img.naturalWidth || !img.naturalHeight) return null;
+        try {
+            const w = img.naturalWidth;
+            const h = img.naturalHeight;
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return null;
+            ctx.drawImage(img, 0, 0, w, h);
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const px = imageData.data;
+            const whiteCut = GARMENT_MASK_WHITE_CUTOFF;
+            const blackCut = GARMENT_MASK_BLACK_CUTOFF;
+            const span = Math.max(1, whiteCut - blackCut);
+            for (let i = 0; i < px.length; i += 4) {
+                const r = px[i];
+                const g = px[i + 1];
+                const b = px[i + 2];
+                const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                let maskVal = 0;
+                if (lum < whiteCut && lum > blackCut) {
+                    maskVal = Math.round(Math.min(255, ((whiteCut - lum) / span) * 255));
+                }
+                px[i] = maskVal;
+                px[i + 1] = maskVal;
+                px[i + 2] = maskVal;
+                px[i + 3] = 255;
+            }
+            ctx.putImageData(imageData, 0, 0);
+            return canvas.toDataURL('image/png');
+        } catch (e) {
+            console.warn('Garment mask build failed, using source image mask', e);
+            return null;
+        }
+    }
+
+    function enforceGarmentCardWhiteBackground(scope) {
+        const root = scope && scope.querySelectorAll ? scope : document;
+        root.querySelectorAll('.position-preview--garment-tint, .garment-tint-stack').forEach(function (el) {
+            el.style.setProperty('background-color', '#ffffff', 'important');
+            el.style.removeProperty('--garment-bg');
+        });
+        root.querySelectorAll('.position-card').forEach(function (card) {
+            if (!card.querySelector('.position-preview--garment-tint, .garment-tint-stack')) return;
+            const preview = card.querySelector('.position-preview');
+            if (preview) {
+                preview.classList.add('position-preview--garment-tint');
+                preview.style.setProperty('background-color', '#ffffff', 'important');
+                preview.style.removeProperty('--garment-bg');
+            }
+        });
+    }
+
+    function syncHoodieGarmentTintMaskFromImage(img) {
+        if (!img) return;
+        const stack = img.closest('.garment-tint-stack');
+        if (!stack) return;
+        if (img.dataset.garmentMaskData) {
+            ensureHoodieGarmentTintLayer(stack, img.dataset.garmentMaskData);
+            return;
+        }
+        const strictMask = buildStrictGarmentMaskDataUrl(img);
+        if (strictMask) {
+            img.dataset.garmentMaskData = strictMask;
+            ensureHoodieGarmentTintLayer(stack, strictMask);
+            return;
+        }
+        const src = img.currentSrc || img.src;
+        if (src && src.indexOf('data:') !== 0) {
+            ensureHoodieGarmentTintLayer(stack, src);
+        }
+    }
+
+    function ensureApronGarmentTintLayer(stack) {
+        if (!stack) return;
+        const legacyLayer = stack.querySelector('.garment-tint-layer');
+        if (legacyLayer) legacyLayer.remove();
+        if (!stack.querySelector('.garment-tint-mask')) {
+            const mask = document.createElement('div');
+            mask.className = 'garment-tint-mask';
+            mask.setAttribute('aria-hidden', 'true');
+            stack.appendChild(mask);
+        }
+        stack.style.setProperty('--garment-mask-url', apronMaskCssUrl());
+    }
+
+    function ensureApronGarmentTintStack(img) {
+        if (!img) return;
+        const existing = img.closest('.garment-tint-stack');
+        if (existing) {
+            ensureApronGarmentTintLayer(existing);
+            img.classList.add('garment-tint-base');
+            img.classList.remove('garment-tint-base--hidden');
+            return;
+        }
+        const preview = img.closest('.position-preview');
+        const stack = document.createElement('div');
+        stack.className = 'garment-tint-stack';
+        stack.style.setProperty('--garment-mask-url', apronMaskCssUrl());
+        img.parentNode.insertBefore(stack, img);
+        stack.appendChild(img);
+        img.classList.add('garment-tint-base');
+        ensureApronGarmentTintLayer(stack);
+        if (preview) {
+            preview.classList.add('position-preview--garment-tint');
+            preview.style.backgroundColor = '#ffffff';
+            preview.style.removeProperty('--garment-bg');
+        }
+    }
+
+    function ensureHoodieGarmentTintLayer(stack, maskUrl) {
+        if (!stack) return;
+        const legacyMask = stack.querySelector('.garment-tint-mask');
+        if (legacyMask) legacyMask.remove();
+        if (!stack.querySelector('.garment-tint-layer')) {
+            const layer = document.createElement('span');
+            layer.className = 'garment-tint-layer';
+            layer.setAttribute('aria-hidden', 'true');
+            stack.appendChild(layer);
+        }
+        const url = maskUrl || stack.dataset.garmentMaskUrl || '';
+        if (url) {
+            stack.dataset.garmentMaskUrl = url;
+            stack.style.setProperty('--garment-mask-url', 'url("' + url + '")');
+        }
+    }
+
+    function ensureHoodieGarmentTintStack(img, maskUrl) {
+        if (!img) return;
+        const mask = maskUrl || img.currentSrc || img.src || '';
+        const existing = img.closest('.garment-tint-stack');
+        if (existing) {
+            ensureHoodieGarmentTintLayer(existing, mask);
+            img.classList.add('garment-tint-base');
+            img.classList.remove('garment-tint-base--hidden');
+            return;
+        }
+        const preview = img.closest('.position-preview');
+        const stack = document.createElement('div');
+        stack.className = 'garment-tint-stack';
+        img.parentNode.insertBefore(stack, img);
+        stack.appendChild(img);
+        img.classList.add('garment-tint-base');
+        ensureHoodieGarmentTintLayer(stack, mask);
+        if (preview) {
+            preview.classList.add('position-preview--garment-tint');
+            preview.style.backgroundColor = '#ffffff';
+            preview.style.removeProperty('--garment-bg');
+        }
+    }
+
+    function setPositionCardGarmentImage(img, imageUrl, productType) {
+        if (!img || !imageUrl) return;
+        if (isApronProductContext(productType)) {
+            ensureApronGarmentTintStack(img);
+            setApronNeutralImage(img);
+            return;
+        }
+        if (isHoodieGarmentTintContext(productType)) {
+            delete img.dataset.garmentMaskData;
+            ensureHoodieGarmentTintStack(img, imageUrl);
+            img.src = imageUrl;
+            if (img.complete) {
+                syncHoodieGarmentTintMaskFromImage(img);
+            } else {
+                img.addEventListener('load', function () {
+                    syncHoodieGarmentTintMaskFromImage(img);
+                }, { once: true });
+            }
+            return;
+        }
+        img.src = imageUrl;
+    }
+
+    function applySessionColorFromBasket() {
+        try {
+            const raw = sessionStorage.getItem('selectedProductData');
+            const pd = raw ? JSON.parse(raw) : {};
+            const colorName = pd.color || sessionStorage.getItem('selectedColorName') || '';
+            const colorHex = pd.colorHex || '';
+            const code = state.product && state.product.code ? state.product.code : (pd.code || '');
+            if (colorHex && window.BrandedColorHex && colorName) {
+                BrandedColorHex.register(colorName, colorHex, code);
+            }
+            if (!colorName) return;
+            const match = PRODUCT_COLORS.find(function (c) {
+                return String(c.name || '').toLowerCase() === colorName.toLowerCase();
+            });
+            if (match) {
+                state.selectedColor = match.id;
+                state.selectedColorName = match.name;
+                state.selectedColorImage = match.image;
+                if (colorHex && isUsableColorHex(colorHex)) match.hex = colorHex;
+            } else {
+                state.selectedColorName = colorName;
+                state.selectedColor = slugify(colorName);
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    function refreshApronPositionCardsFromBasket() {
+        if (!APRON_GARMENT_TINT_POC || !isApronProductContext()) return;
+        const grids = document.querySelectorAll('#positionOptions, .positions-grid');
+        const pt = state.product && (state.product.productType || (state.product.rawData && (state.product.rawData.productType || state.product.rawData.category))) || '';
+        reorderPositionCardsInGrids(grids, pt || inferProductTypeFromName(state.product?.name || ''));
+        finalizeApronGarmentTintOnCards(grids);
+        applyGarmentColorToPositionPreviews();
+    }
+
+    function refreshHoodieGarmentTintPositionCardsFromBasket() {
+        if (!HOODIE_GARMENT_TINT_POC || !isHoodieGarmentTintContext()) return;
+        const grids = document.querySelectorAll('#positionOptions, .positions-grid');
+        const pt = state.product && (state.product.productType || (state.product.rawData && (state.product.rawData.productType || state.product.rawData.category))) || '';
+        reorderPositionCardsInGrids(grids, pt || inferProductTypeFromName(state.product?.name || ''));
+        finalizeHoodieGarmentTintOnCards(grids);
+        applyGarmentColorToPositionPreviews();
+    }
+
+    function setApronNeutralImage(img) {
+        if (!img) return;
+        img.src = resolveBrandedAssetUrl(APRON_NEUTRAL_IMAGE);
+        img.onerror = function () {
+            if (img.dataset.apronNeutralFallback === '1') return;
+            img.dataset.apronNeutralFallback = '1';
+            img.src = resolveBrandedAssetUrl(APRON_NEUTRAL_FALLBACK);
+            img.onerror = null;
+        };
+    }
+
+    function finalizeApronGarmentTintOnCards(positionGrids) {
+        if (!APRON_GARMENT_TINT_POC) return;
+        (positionGrids || document.querySelectorAll('#positionOptions, .positions-grid')).forEach(function (grid) {
+            grid.querySelectorAll('.position-card').forEach(function (card) {
+                if (card.style.display === 'none') return;
+                const img = card.querySelector('.position-placeholder');
+                if (!img) return;
+                ensureApronGarmentTintStack(img);
+                setApronNeutralImage(img);
+            });
+        });
+        applyGarmentColorToPositionPreviews();
+    }
+
+    function finalizeHoodieGarmentTintOnCards(positionGrids) {
+        if (!HOODIE_GARMENT_TINT_POC) return;
+        (positionGrids || document.querySelectorAll('#positionOptions, .positions-grid')).forEach(function (grid) {
+            grid.querySelectorAll('.position-card').forEach(function (card) {
+                if (card.style.display === 'none') return;
+                const img = card.querySelector('.position-placeholder');
+                if (!img) return;
+                ensureHoodieGarmentTintStack(img);
+                if (img.complete) {
+                    syncHoodieGarmentTintMaskFromImage(img);
+                } else {
+                    img.addEventListener('load', function () {
+                        syncHoodieGarmentTintMaskFromImage(img);
+                    }, { once: true });
+                }
+            });
+        });
+        enforceGarmentCardWhiteBackground(positionGrids);
+        applyGarmentColorToPositionPreviews();
+    }
     
     // Position code to CSS class mapping
     const POSITION_TO_CSS_CLASS = {
@@ -308,7 +627,7 @@
     const FOLDER_IMAGE_MAP = {
         'aprons/bib-apron': ['center-front.png', 'low-left.png', 'low-right.png'],
         'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
-        'adult-tops/hoodies': ['back.jpg', 'front.jpg', 'left-chest.jpg', 'left-sleeve.jpg', 'right-chest.jpg', 'right-sleeve.jpg'],
+        'adult-tops/hoodies': ['back.png', 'front.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/short-sleeve-polo': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
@@ -419,6 +738,7 @@
         const PRINT_ONLY_TYPES = ['Safety Vests'];
         const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
         const isPrintOnly = PRINT_ONLY_TYPES.includes(normalizedProductType);
+        const useApronNeutral = APRON_GARMENT_TINT_POC && normalizedProductType === 'Aprons';
 
         imageFiles.forEach(filename => {
             const positionInfo = FILENAME_TO_POSITION[filename];
@@ -428,7 +748,7 @@
                 
                 positions[positionCode] = {
                     label: positionInfo.label,
-                    image: `${basePath}/${filename}`,
+                    image: useApronNeutral ? APRON_NEUTRAL_IMAGE : `${basePath}/${filename}`,
                     embroidery: isPrintOnly ? null : prices.embroidery,
                     print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
@@ -531,11 +851,18 @@
                     if (img && positionConfig.image) {
                         const newSrc = positionConfig.image;
                         console.log('🖼️ Setting position card image:', position, '→', newSrc);
-                        img.src = newSrc;
+                        setPositionCardGarmentImage(img, newSrc, productType);
                         img.alt = positionConfig.label;
+                        if (position === 'right-arm') {
+                            img.style.removeProperty('transform');
+                            img.classList.remove('mirrored');
+                        }
                         
                         img.onload = function() {
                             console.log('✅ Image loaded OK:', newSrc);
+                            if (isHoodieGarmentTintContext(productType)) {
+                                syncHoodieGarmentTintMaskFromImage(img);
+                            }
                         };
                         // Handle image load error - DO NOT fall back to hoodie
                         img.onerror = function() {
@@ -603,6 +930,12 @@
         
         console.log('✅ Position cards updated for productType:', productType);
         reorderPositionCardsInGrids(positionGrids, productType);
+
+        if (isApronProductContext(productType)) {
+            finalizeApronGarmentTintOnCards(positionGrids);
+        } else if (isHoodieGarmentTintContext(productType)) {
+            finalizeHoodieGarmentTintOnCards(positionGrids);
+        }
 
         // Hide/show PRINT legend badge based on product type
         const printKeyBadge = document.querySelector('.key-badge.print');
@@ -935,6 +1268,11 @@
                     }
 
                     if (productData) {
+                        if (cachedData) {
+                            if (cachedData.color) productData.color = cachedData.color;
+                            if (cachedData.colorHex) productData.colorHex = cachedData.colorHex;
+                            if (!productData.productType && cachedData.productType) productData.productType = cachedData.productType;
+                        }
                         // Update cache with complete data
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
@@ -1018,7 +1356,10 @@
                         if (!s.startsWith('#')) s = '#' + s;
                         return /^#[0-9A-Fa-f]{6}$/.test(s) ? s.toLowerCase() : '';
                     })(rawHex);
-                    const resolvedHex = parsedHex || (window.BrandedColorHex ? (BrandedColorHex.lookupByName(name) || '') : '');
+                    const code = state.product && state.product.code ? state.product.code : '';
+                    const resolvedHex = parsedHex || (window.BrandedColorHex
+                        ? (BrandedColorHex.lookup(name, code, colorThumb || colorImage) || '')
+                        : '');
                     return {
                         id: slugify(name) || slugify(c.code || c.id || name) || `color-${index}`,
                         name: name,
@@ -1031,7 +1372,8 @@
                 if (window.BrandedColorHex && state.product && state.product.code) {
                     window.BrandedColorHex.registerProductColors(state.product.code, PRODUCT_COLORS);
                 }
-                
+                hydrateProductColorHexFromSwatches();
+
                 // CRITICAL FIX: Set the first color as default for the new product
                 // This ensures the main image shows the correct product immediately
                 if (PRODUCT_COLORS.length > 0) {
@@ -1799,7 +2141,7 @@
             } else {
                 _positionOrder = ['left-breast', 'right-breast', 'left-arm', 'right-arm', 'small-centre-front', 'large-front-center', 'large-back'];
             }
-            document.querySelectorAll('.position-grid').forEach(grid => {
+            document.querySelectorAll('#positionOptions, .positions-grid').forEach(grid => {
                 const cards = Array.from(grid.querySelectorAll('.position-card'));
                 cards.sort((a, b) => {
                     const idxA = _positionOrder.indexOf(a.dataset.position);
@@ -1819,27 +2161,36 @@
                 if (!card) return;
                 const img = card.querySelector('.position-placeholder');
                 if (img) {
-                    const imgUrl = `${_basePath}/${fn}`;
-                    console.log('🎯 [positionsOnly] Setting card image:', pi.code, '→', imgUrl);
-                    img.src = imgUrl;
-                    img.alt = pi.label;
-                    img.onload = function() {
-                        console.log('✅ [positionsOnly] Image loaded OK:', imgUrl);
-                    };
-                    // On error, use product's own image from sessionStorage (not generic hoodie)
-                    img.onerror = function() {
-                        console.error('❌ [positionsOnly] Image FAILED:', imgUrl);
-                        try {
-                            const pd = JSON.parse(sessionStorage.getItem('selectedProductData') || '{}');
-                            if (pd.image) { img.src = pd.image; }
-                        } catch(e) {}
-                        img.onerror = null; // prevent infinite loop
-                    };
+                    if (isApronProductContext(_normalizedType) || isHoodieGarmentTintContext(_normalizedType)) {
+                        setPositionCardGarmentImage(img, `${_basePath}/${fn}`, _normalizedType);
+                        img.alt = pi.label;
+                    } else {
+                        const imgUrl = `${_basePath}/${fn}`;
+                        console.log('🎯 [positionsOnly] Setting card image:', pi.code, '→', imgUrl);
+                        img.src = imgUrl;
+                        img.alt = pi.label;
+                        img.onload = function() {
+                            console.log('✅ [positionsOnly] Image loaded OK:', imgUrl);
+                        };
+                        img.onerror = function() {
+                            console.error('❌ [positionsOnly] Image FAILED:', imgUrl);
+                            try {
+                                const pd = JSON.parse(sessionStorage.getItem('selectedProductData') || '{}');
+                                if (pd.image) { img.src = pd.image; }
+                            } catch(e) {}
+                            img.onerror = null;
+                        };
+                    }
                 }
-                // Update label
                 const labelSpan = card.querySelector('.position-checkbox span');
                 if (labelSpan) labelSpan.textContent = pi.label;
             });
+
+            if (_normalizedType === 'Aprons') {
+                finalizeApronGarmentTintOnCards(document.querySelectorAll('#positionOptions, .positions-grid'));
+            } else if (isHoodieGarmentTintContext(_normalizedType)) {
+                finalizeHoodieGarmentTintOnCards(document.querySelectorAll('#positionOptions, .positions-grid'));
+            }
 
             // Hide/show embroidery-only (beanies) or print-only products
             const EMBROIDERY_ONLY = ['Beanies', 'Fleece'];
@@ -2037,6 +2388,7 @@
                             b.classList.toggle('active', b.dataset.color === matchingColor.id);
                         });
                     }
+                    applyGarmentColorToPositionPreviews();
                 }, 100);
             }
             // Clear the shop session storage so it doesn't override next time
@@ -2076,6 +2428,16 @@
                         state.selectedColorName = matchColor.name;
                         state.selectedColorImage = matchColor.image;
                         console.log('🎨 Set color from basket item:', matchColor.name);
+                    } else if (itemColorName) {
+                        state.selectedColorName = itemColorName;
+                        state.selectedColor = slugify(itemColorName);
+                    }
+                    if (basketItem.colorHex && window.BrandedColorHex) {
+                        BrandedColorHex.register(itemColorName || basketItem.color || '', basketItem.colorHex, basketItem.code || basketItem.productCode || '');
+                        if (state.product && state.product.rawData) {
+                            state.product.rawData.colorHex = basketItem.colorHex;
+                            state.product.rawData.color = itemColorName || basketItem.color || state.product.rawData.color;
+                        }
                     }
 
                     // Pre-populate size quantities
@@ -2149,6 +2511,22 @@
         console.log('About to call renderColorButtons...');
         renderColorButtons();
         console.log('renderColorButtons called');
+        applySessionColorFromBasket();
+        if (isPositionsOnly) {
+            if (isApronProductContext()) {
+                refreshApronPositionCardsFromBasket();
+            } else if (isHoodieGarmentTintContext()) {
+                refreshHoodieGarmentTintPositionCardsFromBasket();
+            }
+        } else if (isApronProductContext()) {
+            finalizeApronGarmentTintOnCards();
+            applyGarmentColorToPositionPreviews();
+        } else if (isHoodieGarmentTintContext()) {
+            finalizeHoodieGarmentTintOnCards();
+            applyGarmentColorToPositionPreviews();
+        } else {
+            applyGarmentColorToPositionPreviews();
+        }
         
         setupVatToggle();
         setupColorSelection();
@@ -2333,7 +2711,7 @@
             baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage) || BrandedColorHex.lookupByName(baseColor) || '';
             if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
         }
-        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const basePositionDesigns = getPositionDesignsForBasket();
         const now = new Date().toISOString();
 
         const sizesToAdd = Object.entries(state.sizeQuantities).filter(([, qty]) => qty > 0);
@@ -3965,20 +4343,71 @@
         }
 
         syncColorSelectionUI(colorData.id);
-        applyGarmentColorToLogoPreview();
-        applyGarmentColorToPositionPreviews();
+
+        const applyTintFromColor = function () {
+            if (window.BrandedColorHex && isUsableColorHex(colorData.hex)) {
+                BrandedColorHex.register(colorData.name, colorData.hex, state.product && state.product.code);
+            }
+            applyGarmentColorToLogoPreview();
+            applyGarmentColorToPositionPreviews();
+        };
+
+        if (isUsableColorHex(colorData.hex)) {
+            applyTintFromColor();
+        } else if (window.BrandedColorHex && (colorData.thumb || colorData.image)) {
+            BrandedColorHex.sampleFromImage(colorData.thumb || colorData.image).then(function (hex) {
+                if (isUsableColorHex(hex)) {
+                    colorData.hex = hex;
+                }
+                applyTintFromColor();
+            });
+        } else {
+            applyTintFromColor();
+        }
 
         if (navigator.vibrate) navigator.vibrate(10);
 
         updatePricingSummary();
 
-        // Scroll down to Size & Quantity section so the customer can start adding sizes
-        const sizeSection = document.getElementById('sizeQtySection') || document.querySelector('.size-qty-section');
-        if (sizeSection) {
-            setTimeout(() => {
-                sizeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 150);
-        }
+        scrollMobileCustomizeAfterColorPick();
+    }
+
+    /** True on mobile + tablet customize (skip desktop wide layout only). */
+    function isCustomizeTouchViewport() {
+        return window.matchMedia('(max-width: 1366px)').matches;
+    }
+
+    /**
+     * After colour pick: scroll so Total Pieces sits just above the ATC bar.
+     * Unit Price stays in view above (natural result when total bar is anchored to footer).
+     * Runs on all products; mobile + tablet only.
+     */
+    function scrollMobileCustomizeAfterColorPick() {
+        if (!isCustomizeTouchViewport()) return;
+
+        const scrollToQtyAnchor = function () {
+            const totalBar = document.querySelector('.qty-total-bar');
+            const actionBar = document.querySelector('.action-bar--atc');
+            if (!totalBar || !actionBar) return;
+
+            const gapPx = 12;
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const totalRect = totalBar.getBoundingClientRect();
+            const actionRect = actionBar.getBoundingClientRect();
+            let targetY = scrollY + totalRect.bottom - actionRect.top + gapPx;
+
+            const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            targetY = Math.min(Math.max(0, targetY), maxY);
+
+            if (Math.abs(targetY - scrollY) < 4) return;
+            window.scrollTo({ top: targetY, left: 0, behavior: 'smooth' });
+        };
+
+        requestAnimationFrame(function () {
+            requestAnimationFrame(scrollToQtyAnchor);
+        });
+        setTimeout(scrollToQtyAnchor, 120);
+        setTimeout(scrollToQtyAnchor, 380);
     }
 
     // Render color buttons with product thumbnails
@@ -5949,10 +6378,15 @@
     function _applyExistingLogoToPosition(position, method, logoUrl) {
         // Save in state
         if (!state.positionDesigns) state.positionDesigns = {};
-        state.positionDesigns[position] = { logo: logoUrl };
+        const methodNorm = (method || 'embroidery').toLowerCase();
+        state.positionDesigns[position] = {
+            logo: logoUrl,
+            method: methodNorm,
+            unitPrice: methodNorm === 'print' ? 3.50 : 5.00
+        };
 
         if (!state.positionMethods) state.positionMethods = {};
-        state.positionMethods[position] = method;
+        state.positionMethods[position] = methodNorm;
 
         // Ensure position is checked
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
@@ -8059,12 +8493,22 @@
                     if (!card) return;
                     const img = card.querySelector('.position-placeholder');
                     if (img) {
-                        img.src = `${imgBase}/${fn}`;
+                        if (isApronProductContext(nt) || isHoodieGarmentTintContext(nt)) {
+                            setPositionCardGarmentImage(img, `${imgBase}/${fn}`, nt);
+                        } else {
+                            img.src = `${imgBase}/${fn}`;
+                        }
                         img.alt = pi.label;
                     }
                     const labelSpan = card.querySelector('.position-checkbox span');
                     if (labelSpan) labelSpan.textContent = pi.label;
                 });
+
+                if (nt === 'Aprons') {
+                    finalizeApronGarmentTintOnCards(document.querySelectorAll('#positionOptions, .positions-grid'));
+                } else if (isHoodieGarmentTintContext(nt)) {
+                    finalizeHoodieGarmentTintOnCards(document.querySelectorAll('#positionOptions, .positions-grid'));
+                }
 
                 // Embroidery-only / Print-only
                 const EMB_ONLY2 = ['Beanies', 'Fleece'];
@@ -8151,12 +8595,22 @@
                 if (!card) return;
                 const img = card.querySelector('.position-placeholder');
                 if (img) {
-                    img.src = `${imgBasePath}/${fn}`;
+                    if (isApronProductContext(normalizedType) || isHoodieGarmentTintContext(normalizedType)) {
+                        setPositionCardGarmentImage(img, `${imgBasePath}/${fn}`, normalizedType);
+                    } else {
+                        img.src = `${imgBasePath}/${fn}`;
+                    }
                     img.alt = pi.label;
                 }
                 const labelSpan = card.querySelector('.position-checkbox span');
                 if (labelSpan) labelSpan.textContent = pi.label;
             });
+
+            if (normalizedType === 'Aprons') {
+                finalizeApronGarmentTintOnCards([posSection]);
+            } else if (isHoodieGarmentTintContext(normalizedType)) {
+                finalizeHoodieGarmentTintOnCards([posSection]);
+            }
 
             // Embroidery-only / Print-only filtering
             const EMB_ONLY = ['Beanies', 'Fleece'];
@@ -9235,7 +9689,7 @@
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
             const position = checkbox.value;
-            const positionName = canonicalPositionName(position);
+            const positionName = getPositionLabelFromCard(position);
             const method = state.positionMethods && state.positionMethods[position];
             if (method) {
                 const activeBadge = card.querySelector(`.price-badge.price-${method === 'embroidery' ? 'emb' : 'print'}.active`);
@@ -9260,8 +9714,6 @@
         });
         Object.entries(positionDesigns || {}).forEach(([posKey, d]) => {
             if (!d || !d.logo) return;
-            const checkbox = document.querySelector('.position-card input[type="checkbox"][value="' + posKey + '"]');
-            if (checkbox && !checkbox.checked) return;
             const method = (positionMethods && positionMethods[posKey]) || d.method || 'embroidery';
             const unitPrice = byPos.has(posKey) && byPos.get(posKey).unitPrice != null
                 ? byPos.get(posKey).unitPrice
@@ -9273,7 +9725,7 @@
             } else {
                 byPos.set(posKey, {
                     position: posKey,
-                    name: canonicalPositionName(posKey),
+                    name: getPositionLabelFromCard(posKey),
                     method,
                     unitPrice,
                     logo: d.logo
@@ -9283,46 +9735,29 @@
         return Array.from(byPos.values());
     }
 
-    /** Sync logos[] on basket row so basket.html shows thumb + garment background */
+    /** Sync logos[] on basket row (mobile: BrandedBasketLogos) */
     function syncBasketItemLogos(item) {
         if (!item) return;
-        const logos = [];
-        const seen = new Set();
-        function pushLogo(entry) {
-            const key = (entry.position || '') + '|' + (entry.method || '') + '|' + String(entry.logo || '').slice(0, 64);
-            if (seen.has(key)) return;
-            seen.add(key);
-            logos.push(entry);
-        }
-        if (Array.isArray(item.positions)) {
-            item.positions.forEach(p => {
-                if (!p || !p.logo) return;
-                pushLogo({
-                    position: p.position || '',
-                    positionLabel: canonicalPositionName(p.name || p.position || ''),
-                    method: (p.method || 'embroidery').toLowerCase(),
-                    logo: p.logo,
-                    unitPrice: p.unitPrice || ((p.method || '').toLowerCase() === 'print' ? 3.50 : 5.00)
-                });
+        if (window.BrandedBasketLogos) {
+            BrandedBasketLogos.syncItemLogos(item, {
+                labelFn: function (pos, entry) {
+                    return entry.positionLabel || entry.name || getPositionLabelFromCard(pos);
+                }
             });
+            return;
         }
-        if (logos.length === 0 && item.positionDesigns && typeof item.positionDesigns === 'object') {
-            Object.entries(item.positionDesigns).forEach(([posKey, d]) => {
-                if (!d || !d.logo) return;
-                const method = (d.method || 'embroidery').toLowerCase();
-                pushLogo({
-                    position: posKey,
-                    positionLabel: canonicalPositionName(d.position || posKey),
-                    method,
-                    logo: d.logo,
-                    unitPrice: d.unitPrice || (method === 'print' ? 3.50 : 5.00)
-                });
-            });
+    }
+
+    function getPositionDesignsForBasket() {
+        const raw = state.positionDesigns ? JSON.parse(JSON.stringify(state.positionDesigns)) : {};
+        if (window.BrandedBasketLogos) {
+            return BrandedBasketLogos.enrichPositionDesigns(raw, state.positionMethods);
         }
-        if (logos.length > 0) {
-            item.logos = logos;
-            delete item.pendingLogoPrompt;
-        }
+        Object.keys(raw).forEach(function (pos) {
+            const m = state.positionMethods && state.positionMethods[pos];
+            if (m && raw[pos]) raw[pos].method = String(m).toLowerCase();
+        });
+        return raw;
     }
 
     function syncAllBasketLogos(basket) {
@@ -9340,7 +9775,7 @@
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket' && isActiveBasketItemEdit();
 
-        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
 
         // If coming from basket "Add Logo", UPDATE the existing item in-place
@@ -9733,45 +10168,71 @@
         return (code || 'ITEM') + '-' + slug + '-' + (size || 'OS');
     }
 
+    function hydrateProductColorHexFromSwatches() {
+        if (!window.BrandedColorHex || !Array.isArray(PRODUCT_COLORS) || PRODUCT_COLORS.length === 0) return;
+        const code = state.product && state.product.code ? state.product.code : '';
+        PRODUCT_COLORS.forEach(function (color) {
+            if (!color || isUsableColorHex(color.hex)) return;
+            const swatchUrl = color.thumb || color.image;
+            if (!swatchUrl) return;
+            BrandedColorHex.sampleFromImage(swatchUrl).then(function (hex) {
+                if (!isUsableColorHex(hex)) return;
+                color.hex = hex;
+                BrandedColorHex.register(color.name, hex, code);
+                if (color.id === state.selectedColor || color.name === state.selectedColorName) {
+                    applyGarmentColorToLogoPreview();
+                    applyGarmentColorToPositionPreviews();
+                }
+            });
+        });
+    }
+
     function getSelectedColorHex() {
         const id = state.selectedColor;
         const name = String(state.selectedColorName || state.selectedColor || '').trim();
         const code = state.product && state.product.code ? state.product.code : '';
-        if (!Array.isArray(PRODUCT_COLORS) || PRODUCT_COLORS.length === 0) {
-            return window.BrandedColorHex ? (BrandedColorHex.lookup(name, code) || '') : '';
+        const imageUrl = state.selectedColorImage || '';
+
+        if (Array.isArray(PRODUCT_COLORS) && PRODUCT_COLORS.length > 0) {
+            if (id) {
+                const byId = PRODUCT_COLORS.find(c => c.id === id);
+                if (byId && isUsableColorHex(byId.hex)) return byId.hex;
+            }
+            if (name) {
+                const lower = name.toLowerCase();
+                const byName = PRODUCT_COLORS.find(c => String(c.name || '').toLowerCase() === lower);
+                if (byName && isUsableColorHex(byName.hex)) return byName.hex;
+            }
         }
-        if (id) {
-            const byId = PRODUCT_COLORS.find(c => c.id === id);
-            if (byId && isUsableColorHex(byId.hex)) return byId.hex;
-        }
-        if (name) {
-            const lower = name.toLowerCase();
-            const byName = PRODUCT_COLORS.find(c => String(c.name || '').toLowerCase() === lower);
-            if (byName && isUsableColorHex(byName.hex)) return byName.hex;
-            const primary = lower.split('/')[0].trim();
-            const byPrimary = PRODUCT_COLORS.find(c => {
-                const cn = String(c.name || '').toLowerCase();
-                return cn === primary || primary.includes(cn) || cn.includes(primary);
-            });
-            if (byPrimary && isUsableColorHex(byPrimary.hex)) return byPrimary.hex;
-        }
-        if (window.BrandedColorHex) {
-            const found = BrandedColorHex.lookup(name, code) || BrandedColorHex.lookupByName(name) || '';
-            if (found && name) BrandedColorHex.register(name, found, code);
-            return found;
+
+        if (window.BrandedColorHex && name) {
+            const found = BrandedColorHex.lookup(name, code, imageUrl);
+            if (BrandedColorHex.isUsableHex(found)) {
+                BrandedColorHex.register(name, found, code);
+                return found;
+            }
         }
         return '';
     }
 
     function resolveGarmentPreviewHex() {
         let hex = getSelectedColorHex();
+        const raw = state.product && state.product.rawData;
+        if (raw && raw.colorHex && window.BrandedColorHex) {
+            const fromBasket = BrandedColorHex.parseHex(raw.colorHex);
+            if (BrandedColorHex.isUsableHex(fromBasket)) hex = fromBasket;
+        }
         if (window.BrandedColorHex) {
             const parsed = BrandedColorHex.parseHex(hex);
-            if (!BrandedColorHex.isUsableHex(parsed)) {
-                const code = state.product && state.product.code ? state.product.code : '';
-                hex = BrandedColorHex.lookup(state.selectedColorName || state.selectedColor || '', code, state.selectedColorImage) || BrandedColorHex.lookupByName(state.selectedColorName || '') || '';
-            } else {
+            if (BrandedColorHex.isUsableHex(parsed)) {
                 hex = parsed;
+            } else {
+                const code = state.product && state.product.code ? state.product.code : '';
+                hex = BrandedColorHex.lookup(
+                    state.selectedColorName || state.selectedColor || '',
+                    code,
+                    state.selectedColorImage
+                ) || '';
             }
         }
         return hex || '';
@@ -9780,8 +10241,71 @@
     function applyGarmentColorToPositionPreviews(root) {
         const scope = root && root.querySelectorAll ? root : document;
         const hex = resolveGarmentPreviewHex();
-        const bg = hex || 'transparent';
-        scope.querySelectorAll('.position-preview, .position-preview-content, .uploaded-logo-box').forEach(el => {
+
+        function applyGarmentTintStacks(scopeRoot, tintHex, enforceWhiteCardBg) {
+            const normalizedTint = String(tintHex || '').replace('#', '').toLowerCase();
+            const isNearWhite = normalizedTint === 'fff' || normalizedTint === 'ffffff' || normalizedTint === 'faf9f6';
+            const useMaskTint = tintHex && !isNearWhite;
+
+            scopeRoot.querySelectorAll('.garment-tint-stack').forEach(function (stack) {
+                const tintMask = stack.querySelector('.garment-tint-mask');
+                const tintLayer = stack.querySelector('.garment-tint-layer');
+                const tintTarget = tintMask || tintLayer;
+                const baseImg = stack.querySelector('.garment-tint-base');
+                if (tintTarget) {
+                    if (useMaskTint) {
+                        tintTarget.style.setProperty('--garment-tint', tintHex);
+                        tintTarget.style.backgroundColor = tintHex;
+                        tintTarget.classList.add('is-active');
+                    } else {
+                        tintTarget.classList.remove('is-active');
+                        tintTarget.style.removeProperty('--garment-tint');
+                        tintTarget.style.backgroundColor = '';
+                    }
+                }
+                if (baseImg) {
+                    if (useMaskTint) {
+                        baseImg.classList.add('garment-tint-base--hidden');
+                    } else {
+                        baseImg.classList.remove('garment-tint-base--hidden');
+                    }
+                }
+                stack.style.backgroundColor = '#ffffff';
+                stack.style.removeProperty('--garment-bg');
+            });
+
+            if (enforceWhiteCardBg) {
+                enforceGarmentCardWhiteBackground(scopeRoot);
+            }
+
+            scopeRoot.querySelectorAll('.position-preview--garment-tint, .position-preview-content, .uploaded-logo-box').forEach(function (el) {
+                el.style.backgroundColor = '#ffffff';
+                el.style.removeProperty('--garment-bg');
+            });
+        }
+
+        if (APRON_GARMENT_TINT_POC && isApronProductContext()) {
+            applyGarmentTintStacks(scope, hex, false);
+            return;
+        }
+
+        if (HOODIE_GARMENT_TINT_POC && isHoodieGarmentTintContext()) {
+            applyGarmentTintStacks(scope, hex, true);
+            return;
+        }
+
+        const isGarmentPhotoPreview = function (el) {
+            if (!el || !el.classList || !el.classList.contains('position-preview')) return false;
+            return !!el.querySelector('.position-placeholder, .garment-tint-stack');
+        };
+
+        scope.querySelectorAll('.position-preview, .position-preview-content, .uploaded-logo-box').forEach(function (el) {
+            if (isGarmentPhotoPreview(el)) {
+                el.style.backgroundColor = '#ffffff';
+                el.style.removeProperty('--garment-bg');
+                return;
+            }
+            const bg = hex || 'transparent';
             if (hex) el.style.setProperty('--garment-bg', hex);
             else el.style.removeProperty('--garment-bg');
             el.style.backgroundColor = bg;
@@ -9827,7 +10351,7 @@
         // Get current basket from localStorage
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
         
-        const basePositionDesigns = state.positionDesigns ? { ...state.positionDesigns } : {};
+        const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
         const positionsHaveLogo = positions.some(function (p) { return p && p.logo; });
 

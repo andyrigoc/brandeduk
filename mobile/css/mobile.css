@@ -1321,6 +1321,17 @@ a {
     box-shadow: 0 4px 12px rgba(39, 52, 105, 0.25);
 }
 
+/* Colour pick autoscroll: park Total Pieces above fixed ATC + bottom nav */
+@media (max-width: 1366px) {
+    .customize-page .qty-total-bar {
+        scroll-margin-bottom: calc(var(--action-bar-height) + var(--bottom-nav-height) + 14px);
+    }
+
+    .customize-page .pricing-section {
+        scroll-margin-top: 72px;
+    }
+}
+
 .qty-total-bar .total-label {
     font-size: 14px;
     font-weight: 500;
@@ -3732,16 +3743,137 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     position: relative;
-    background-color: var(--garment-bg, transparent);
+    background-color: #ffffff;
     border-radius: 12px;
 }
 
 .position-placeholder {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: contain;
+    object-position: center center;
+}
+
+/* =============================================================================
+   GARMENT POSITION CARDS (apron, hoodie, sweatshirt + future PNGs)
+   - Card/preview background: always #ffffff — never catalog hex on the box
+   - Catalog hex: only .garment-tint-layer on garment pixels (strict mask in JS)
+   - New assets: white studio bg, neutral gray garment; tint is applied automatically
+   ============================================================================= */
+.position-preview--garment-tint,
+.position-card:has(.garment-tint-stack) .position-preview,
+#positionsPopupOverlay .position-card:has(.garment-tint-stack) .position-preview {
+    background-color: #ffffff !important;
+    --garment-bg: #ffffff !important;
+}
+
+.position-preview--garment-tint .garment-tint-stack {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 140px;
+    padding: 10px 8px;
+    box-sizing: border-box;
+    background-color: #ffffff !important;
+    border-radius: 10px;
+    isolation: isolate;
+}
+
+.garment-tint-base {
+    display: block;
     width: 100%;
     max-height: 200px;
     object-fit: contain;
+    mix-blend-mode: screen;
+}
+
+.garment-tint-base.garment-tint-base--hidden {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+#positionsPopupOverlay .garment-tint-base {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    object-position: center center;
+}
+
+#positionsPopupOverlay .garment-tint-stack {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.garment-tint-layer {
+    position: absolute;
+    inset: 0;
+    background-color: var(--garment-tint, transparent);
+    -webkit-mask-image: var(--garment-mask-url);
+    mask-image: var(--garment-mask-url);
+    -webkit-mask-mode: luminance;
+    mask-mode: luminance;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.garment-tint-layer.is-active {
+    opacity: 1;
+}
+
+/* Apron tint (mobile/apron-tint-poc.html) — block mask keeps height when base is hidden */
+.garment-tint-mask {
+    display: none;
+    width: 100%;
+    max-height: 200px;
+    min-height: 160px;
+    margin: 0 auto;
+    background-color: var(--garment-tint, transparent);
+    -webkit-mask-image: var(--garment-mask-url);
+    mask-image: var(--garment-mask-url);
+    -webkit-mask-mode: luminance;
+    mask-mode: luminance;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    pointer-events: none;
+}
+
+.garment-tint-mask.is-active {
+    display: block;
+}
+
+.position-preview--garment-tint .garment-tint-stack .garment-tint-base.garment-tint-base--hidden {
+    display: none !important;
+}
+
+.position-preview--garment-tint .position-preview-content,
+.position-preview--garment-tint .uploaded-logo-box {
+    background-color: #ffffff !important;
 }
 
 .position-preview-content {
@@ -11304,10 +11436,33 @@ a.continue-shopping {
     letter-spacing: 0.2px;
 }
 
+#positionsPopupOverlay .position-preview {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 200px;
+    text-align: center !important;
+    background-color: #ffffff !important;
+}
+
 #positionsPopupOverlay .position-preview img,
 #positionsPopupOverlay .position-placeholder {
-    max-width: 100%;
-    height: auto;
+    display: block !important;
+    width: auto !important;
+    max-width: 92% !important;
+    height: auto !important;
+    max-height: 200px !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    align-self: center !important;
+}
+
+#positionsPopupOverlay .position-preview--garment-tint,
+#positionsPopupOverlay .position-preview--garment-tint .garment-tint-stack {
+    background-color: #ffffff !important;
 }
 
 #positionsPopupOverlay .positions-popup-footer {
@@ -11338,8 +11493,10 @@ a.continue-shopping {
     margin: 0 auto;
 }
 
-/* Aprons: Center Front full width on top */
+/* Full-width row: Front Center, Back Large (apron + hoodie popup) */
 #positionsPopupOverlay .positions-grid .position-card[data-position="small-centre-front"],
-#positionsPopupOverlay #positionOptions .position-card[data-position="small-centre-front"] {
+#positionsPopupOverlay #positionOptions .position-card[data-position="small-centre-front"],
+#positionsPopupOverlay .positions-grid .position-card[data-position="large-back"],
+#positionsPopupOverlay #positionOptions .position-card[data-position="large-back"] {
     grid-column: 1 / -1;
 }

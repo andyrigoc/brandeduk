@@ -173,18 +173,8 @@
         if (!raw) return '';
         if (globalMap[raw]) return globalMap[raw];
         var primary = raw.split('/')[0].trim();
-        if (globalMap[primary]) return globalMap[primary];
-        var best = '';
-        var bestLen = 0;
-        Object.keys(globalMap).forEach(function (key) {
-            if (raw.includes(key) || key.includes(raw)) {
-                if (key.length > bestLen) {
-                    bestLen = key.length;
-                    best = globalMap[key];
-                }
-            }
-        });
-        return best;
+        if (primary && globalMap[primary]) return globalMap[primary];
+        return '';
     }
 
     function lookup(colorName, productCode, imageUrl) {

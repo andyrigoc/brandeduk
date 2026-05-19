@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-label="Neutral apron">
+  <defs>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#f4f4f4"/>
+      <stop offset="100%" stop-color="#d8d8d8"/>
+    </linearGradient>
+  </defs>
+    <!-- Neck strap -->
+  <path fill="url(#shade)" stroke="#bdbdbd" stroke-width="2"
+    d="M118 18 C118 8 282 8 282 18 L282 42 C282 52 118 52 118 42 Z"/>
+  <!-- Bib body -->
+  <path fill="url(#shade)" stroke="#bdbdbd" stroke-width="2"
+    d="M72 52 L328 52 C348 52 360 68 360 88 L360 470 C360 498 340 512 312 512 L88 512 C60 512 40 498 40 470 L40 88 C40 68 52 52 72 52 Z"/>
+  <!-- Soft fold lines (grayscale only  tints well with multiply) -->
+  <path fill="none" stroke="#cfcfcf" stroke-width="1.5" opacity="0.9"
+    d="M130 120 Q200 145 270 120"/>
+  <path fill="none" stroke="#c5c5c5" stroke-width="1.2" opacity="0.75"
+    d="M110 220 Q200 250 290 220"/>
+</svg>

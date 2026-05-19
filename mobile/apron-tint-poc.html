@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apron color tint POC - BrandedUK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy: #273469; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: #e5e7eb;
+            color: #111;
+            padding: 20px;
+        }
+        h1 { font-size: 1.25rem; color: var(--navy); margin: 0 0 8px; }
+        p { margin: 0 0 16px; color: #4b5563; font-size: 0.9rem; line-height: 1.5; }
+        .panel {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 4px 24px rgba(39, 52, 105, 0.08);
+        }
+        .preview-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .garment-tint-stack {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: min(280px, 100%);
+            min-height: 200px;
+            background: #ffffff;
+            padding: 10px;
+        }
+        .garment-tint-base {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            mix-blend-mode: screen;
+        }
+        .garment-tint-base.garment-tint-base--hidden { display: none !important; }
+        .garment-tint-mask {
+            display: none;
+            width: 100%;
+            min-height: 180px;
+            background-color: var(--garment-tint, #273469);
+            -webkit-mask-image: var(--garment-mask-url);
+            mask-image: var(--garment-mask-url);
+            -webkit-mask-mode: luminance;
+            mask-mode: luminance;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+        .garment-tint-mask.is-active { display: block; }
+        .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+        .swatch {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 3px solid transparent; cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+        .swatch.active { border-color: var(--navy); transform: scale(1.08); }
+        .meta { margin-top: 14px; font-size: 0.85rem; color: #6b7280; }
+        .meta strong { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <h1>Apron tint POC</h1>
+        <p>White background. Color hex applies to the apron shape only (luminance mask).</p>
+        <div class="preview-wrap">
+            <div class="garment-tint-stack" id="tintStack" style="--garment-mask-url: url('../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.png')">
+                <img id="apronImg" class="garment-tint-base" src="../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron/apron-neutral.png" alt="Neutral apron">
+                <div id="tintMask" class="garment-tint-mask" aria-hidden="true"></div>
+            </div>
+        </div>
+        <div class="swatches" id="swatches"></div>
+        <div class="meta">Selected: <strong id="colorName">Navy</strong> · <strong id="colorHex">#273469</strong></div>
+    </div>
+    <script>
+        const COLORS = [
+            { name: 'White', hex: '#ffffff' },
+            { name: 'Black', hex: '#1a1a1a' },
+            { name: 'Navy', hex: '#273469' },
+            { name: 'Royal', hex: '#2563eb' },
+            { name: 'Red', hex: '#dc2626' },
+            { name: 'Camel', hex: '#c19a6b' },
+            { name: 'Graphite Grey', hex: '#4b4e53' }
+        ];
+        const apronImg = document.getElementById('apronImg');
+        const tintMask = document.getElementById('tintMask');
+        const colorNameEl = document.getElementById('colorName');
+        const colorHexEl = document.getElementById('colorHex');
+        const swatchesEl = document.getElementById('swatches');
+
+        function applyTint(hex, name) {
+            const n = hex.replace('#', '').toLowerCase();
+            const isWhite = n === 'fff' || n === 'ffffff' || n === 'faf9f6';
+            if (isWhite) {
+                tintMask.classList.remove('is-active');
+                apronImg.classList.remove('garment-tint-base--hidden');
+            } else {
+                tintMask.style.setProperty('--garment-tint', hex);
+                tintMask.classList.add('is-active');
+                apronImg.classList.add('garment-tint-base--hidden');
+            }
+            colorNameEl.textContent = name;
+            colorHexEl.textContent = hex;
+            swatchesEl.querySelectorAll('.swatch').forEach(function (el) {
+                el.classList.toggle('active', el.dataset.name === name);
+            });
+        }
+
+        COLORS.forEach(function (c, i) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'swatch' + (i === 2 ? ' active' : '');
+            btn.style.backgroundColor = c.hex;
+            btn.title = c.name;
+            btn.dataset.name = c.name;
+            btn.addEventListener('click', function () { applyTint(c.hex, c.name); });
+            swatchesEl.appendChild(btn);
+        });
+        applyTint(COLORS[2].hex, COLORS[2].name);
+    </script>
+</body>
+</html>

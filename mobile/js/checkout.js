@@ -308,23 +308,14 @@ function buildBasketItems(basket) {
 }
 
 function extractItemCustomizations(item) {
-    if (Array.isArray(item.logos)) return item.logos;
+    if (window.BrandedBasketLogos) {
+        return BrandedBasketLogos.collectFromItem(item);
+    }
+    if (Array.isArray(item.logos) && item.logos.length) return item.logos;
     if (Array.isArray(item.customizations)) return item.customizations;
-
-    if (item.positionDesigns && typeof item.positionDesigns === 'object') {
-        return Object.entries(item.positionDesigns).map(([position, data]) => ({ position, ...data }));
-    }
-
     if (Array.isArray(item.positions)) {
-        return item.positions.map(position => ({
-            position: position.position || position.id || position,
-            method: position.method,
-            logo: position.logo,
-            logoData: position.logoData,
-            unitPrice: position.unitPrice,
-        }));
+        return item.positions.filter(p => p && p.logo);
     }
-
     return [];
 }
 
@@ -455,7 +446,11 @@ function dataUrlToFile(dataUrl, baseName) {
 }
 
 function readBasket() {
-    return readJson('quoteBasket') || [];
+    const basket = readJson('quoteBasket') || [];
+    if (window.BrandedBasketLogos && Array.isArray(basket)) {
+        BrandedBasketLogos.normalizeBasket(basket);
+    }
+    return basket;
 }
 
 function readJson(key) {
