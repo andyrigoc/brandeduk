@@ -1013,6 +1013,7 @@
         /* Product Badges */
         .product-thumb {
             position: relative;
+            overflow: hidden;
         }
 
         .product-badges {
@@ -1020,10 +1021,29 @@
             top: 8px;
             right: 8px;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            flex-direction: row;
+            align-items: center;
             gap: 4px;
             z-index: 10;
+        }
+
+        .best-seller-ribbon {
+            position: absolute;
+            top: 12px;
+            left: -34px;
+            width: 132px;
+            padding: 4px 0;
+            background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.45px;
+            text-align: center;
+            text-transform: uppercase;
+            transform: rotate(-35deg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 11;
+            pointer-events: none;
         }
 
         .badge {
@@ -1051,6 +1071,39 @@
 
         .badge.print {
             background: #eab308;
+        }
+
+        .product-service-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0 0 8px;
+        }
+
+        .service-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            color: #0f172a;
+            border: 1px solid transparent;
+            background: #f8fafc;
+        }
+
+        .service-badge.embroidery {
+            background: #dbeafe;
+            border-color: #93c5fd;
+            color: #1e3a8a;
+        }
+
+        .service-badge.print {
+            background: #fef9c3;
+            border-color: #fde047;
+            color: #854d0e;
         }
 
         /* Reduce searchbar header gap - PC only */
@@ -4196,30 +4249,33 @@
                 }
 
                 const price = (product.priceBreaks && product.priceBreaks.length) ? product.priceBreaks[0].price : product.price;
-                let badgesHtml = '';
+                let thumbBadgesHtml = '';
+                let bestSellerRibbonHtml = '';
+                let serviceBadgesHtml = '';
+
                 if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
-                    badgesHtml += '<span class="badge best-seller">BEST SELLER</span>';
+                    bestSellerRibbonHtml = '<span class="best-seller-ribbon">Best Seller</span>';
                 }
                 if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
-                    badgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
+                    thumbBadgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
                 }
                 if (product.customization && product.customization.includes('embroidery')) {
-                    badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
+                    serviceBadgesHtml += '<span class="service-badge embroidery">Embroidery</span>';
                 }
                 const isBeanie = (product.name || '').toLowerCase().includes('beanie');
                 if (!isBeanie && product.customization && product.customization.includes('print')) {
-                    badgesHtml += '<span class="badge print">PRINT</span>';
+                    serviceBadgesHtml += '<span class="service-badge print">Print</span>';
                 }
 
                 card.innerHTML = `
                     <div class="product-thumb">
-                        <div class="product-badges">
-                            ${badgesHtml}
-                        </div>
+                        ${bestSellerRibbonHtml}
+                        ${thumbBadgesHtml ? `<div class="product-badges">${thumbBadgesHtml}</div>` : ''}
                         <img src="${img}" alt="${product.name}"/>
                     </div>
                     <div class="product-meta">
                         <div class="product-code">${product.code || ''}${(() => { const bn = product.brand || ''; if (!bn || ['absolute','ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const logo = getBrandLogo(bn); return logo ? ` <img src="${logo}" alt="${bn}" class="brand-logo" title="${bn}">` : ` <span class="brand-name">${bn}</span>`; })()}</div>
+                        ${serviceBadgesHtml ? `<div class="product-service-badges">${serviceBadgesHtml}</div>` : ''}
                         <div class="product-name">${(product.name || '').replace(/[\u00AE\u2122\u00A9]/g,'')}</div>
                         <div class="product-price" data-price="${price || 0}"><span class="price-from">FROM</span> ${fmtCurrency(Number(price) || 0)} ${fmtVat()}</div>
                     </div>
