@@ -28,6 +28,10 @@
 
     { "source": "/basket", "destination": "/basket.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/auth/callback", "destination": "/auth/callback.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/orders", "destination": "/orders.html" },
+    { "source": "/track-order", "destination": "/track-order.html" },
     { "source": "/payment-success", "destination": "/payment-success.html" },
     { "source": "/payment-cancel", "destination": "/payment-cancel.html" },
     { "source": "/customize", "destination": "/customize.html" },
@@ -61,6 +65,21 @@
     {
       "source": "/checkout.html",
       "destination": "/checkout",
+      "permanent": true
+    },
+    {
+      "source": "/profile.html",
+      "destination": "/profile",
+      "permanent": true
+    },
+    {
+      "source": "/orders.html",
+      "destination": "/orders",
+      "permanent": true
+    },
+    {
+      "source": "/track-order.html",
+      "destination": "/track-order",
       "permanent": true
     },
     {

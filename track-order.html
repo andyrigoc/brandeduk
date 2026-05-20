@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - BrandedUK</title>
+    <style>
+        :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
+        main { width:min(100%,560px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+        h1 { margin:0 0 8px; font-size:28px; }
+        p { color:var(--grey); line-height:1.55; }
+        label { display:block; font-weight:700; margin:16px 0 6px; }
+        input { width:100%; min-height:46px; border:1px solid var(--border); border-radius:8px; padding:0 12px; font-size:15px; }
+        button { width:100%; min-height:46px; border:0; border-radius:8px; background:var(--orange); color:#fff; font-weight:800; margin-top:16px; cursor:pointer; }
+        .result { margin-top:18px; padding:14px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Track Order</h1>
+        <p>Enter your order number and email to check the latest status.</p>
+        <form id="trackForm">
+            <label for="orderNumber">Order number</label>
+            <input id="orderNumber" name="orderNumber" required>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+            <button type="submit">Track order</button>
+        </form>
+        <div class="result" id="trackResult" style="display:none"></div>
+    </main>
+    <script>
+        (function () {
+            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var form = document.getElementById('trackForm');
+            var result = document.getElementById('trackResult');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                result.style.display = 'block';
+                result.textContent = 'Checking order...';
+                var orderNumber = document.getElementById('orderNumber').value.trim();
+                var email = document.getElementById('email').value.trim();
+                fetch(API_BASE_URL + '/api/orders/track?orderNumber=' + encodeURIComponent(orderNumber) + '&email=' + encodeURIComponent(email))
+                    .then(function (res) { if (!res.ok) throw new Error('Order not found'); return res.json(); })
+                    .then(function (data) {
+                        var order = data.order || data.data || data;
+                        result.innerHTML = '<strong>Order ' + (order.orderNumber || orderNumber) + '</strong><br>Status: ' + (order.status || order.paymentStatus || 'Processing');
+                    })
+                    .catch(function (err) { result.textContent = err.message || 'Unable to track order.'; });
+            });
+        })();
+    </script>
+</body>
+</html>

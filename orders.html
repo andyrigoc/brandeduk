@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - BrandedUK</title>
+    <style>
+        :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
+        main { width:min(100%,820px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+        h1 { margin:0 0 8px; font-size:28px; }
+        p { color:var(--grey); line-height:1.55; }
+        .order { border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; display:grid; gap:6px; }
+        .muted { color:var(--grey); font-size:13px; }
+        a { color:var(--orange); font-weight:700; text-decoration:none; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>My Orders</h1>
+        <p id="ordersStatus">Loading your orders...</p>
+        <div id="ordersList"></div>
+        <p><a href="/checkout">Back to checkout</a></p>
+    </main>
+    <script>
+        (function () {
+            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var token = localStorage.getItem('authToken') || localStorage.getItem('coAuthToken');
+            var status = document.getElementById('ordersStatus');
+            var list = document.getElementById('ordersList');
+            if (!token) {
+                status.textContent = 'Please sign in to view your orders.';
+                return;
+            }
+            fetch(API_BASE_URL + '/api/orders', { headers: { Authorization: 'Bearer ' + token } })
+                .then(function (res) { if (!res.ok) throw new Error('Unable to load orders'); return res.json(); })
+                .then(function (data) {
+                    var orders = data.orders || data.data || data || [];
+                    if (!Array.isArray(orders) || !orders.length) {
+                        status.textContent = 'No orders yet.';
+                        return;
+                    }
+                    status.textContent = '';
+                    list.innerHTML = orders.map(function (order) {
+                        var number = order.orderNumber || order.number || order.id || '-';
+                        var statusText = order.status || order.paymentStatus || 'Processing';
+                        var total = order.totalIncVat || order.total || order.amount || '';
+                        return '<div class="order"><strong>Order ' + number + '</strong><span class="muted">Status: ' + statusText + '</span><span class="muted">Total: ' + total + '</span></div>';
+                    }).join('');
+                })
+                .catch(function (err) { status.textContent = err.message || 'Unable to load orders.'; });
+        })();
+    </script>
+</body>
+</html>

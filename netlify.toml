@@ -52,6 +52,24 @@
   force = true
 
 [[redirects]]
+  from = "/profile.html"
+  to = "/profile"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/orders.html"
+  to = "/orders"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/track-order.html"
+  to = "/track-order"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/payment-success.html"
   to = "/payment-success"
   status = 301
@@ -107,6 +125,26 @@
 [[redirects]]
   from = "/checkout"
   to = "/checkout.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth/callback"
+  to = "/auth/callback.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/orders"
+  to = "/orders.html"
+  status = 200
+
+[[redirects]]
+  from = "/track-order"
+  to = "/track-order.html"
   status = 200
 
 [[redirects]]

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - BrandedUK</title>
+    <style>
+        :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
+        main { width:min(100%,720px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+        h1 { margin:0 0 8px; font-size:28px; }
+        p { color:var(--grey); line-height:1.55; }
+        .row { padding:14px 0; border-top:1px solid var(--border); display:flex; justify-content:space-between; gap:16px; }
+        .label { color:var(--grey); }
+        a, button { min-height:42px; padding:0 16px; border-radius:8px; border:0; background:var(--orange); color:#fff; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; cursor:pointer; }
+        .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>My Profile</h1>
+        <p id="profileStatus">Loading your account...</p>
+        <div id="profileDetails" style="display:none"></div>
+        <div class="actions">
+            <a href="/checkout">Back to checkout</a>
+            <a href="/orders">My orders</a>
+            <button type="button" id="signOutBtn">Sign out</button>
+        </div>
+    </main>
+    <script>
+        (function () {
+            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var token = localStorage.getItem('authToken') || localStorage.getItem('coAuthToken');
+            var status = document.getElementById('profileStatus');
+            var details = document.getElementById('profileDetails');
+            document.getElementById('signOutBtn').addEventListener('click', function () {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('coAuthToken');
+                localStorage.removeItem('authUser');
+                localStorage.removeItem('coUser');
+                document.cookie = 'authToken=; Path=/; Max-Age=0';
+                window.location.href = '/checkout';
+            });
+            if (!token) {
+                status.textContent = 'You are not signed in.';
+                return;
+            }
+            fetch(API_BASE_URL + '/api/auth/me', { headers: { Authorization: 'Bearer ' + token } })
+                .then(function (res) { if (!res.ok) throw new Error('Unable to load profile'); return res.json(); })
+                .then(function (data) {
+                    var user = data.user || data.data || data;
+                    status.textContent = 'Signed in account';
+                    details.style.display = 'block';
+                    details.innerHTML = [
+                        ['Name', user.fullName || user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || '-'],
+                        ['Email', user.email || '-'],
+                        ['Phone', user.phone || '-']
+                    ].map(function (row) {
+                        return '<div class="row"><span class="label">' + row[0] + '</span><strong>' + row[1] + '</strong></div>';
+                    }).join('');
+                })
+                .catch(function (err) { status.textContent = err.message || 'Unable to load profile.'; });
+        })();
+    </script>
+</body>
+</html>
