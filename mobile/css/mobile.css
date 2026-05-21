@@ -11395,6 +11395,90 @@ a.continue-shopping {
     justify-items: stretch;
 }
 
+/* Mobile + tablet: wider panel, larger garment mockups in Logo Positions popup */
+@media (max-width: 1366px) {
+    #positionsPopupOverlay {
+        padding: 12px;
+    }
+
+    #positionsPopupOverlay .positions-popup-panel {
+        max-width: min(640px, calc(100vw - 24px));
+    }
+
+    #positionsPopupOverlay .position-card {
+        padding: 10px;
+    }
+
+    #positionsPopupOverlay .position-card-header {
+        gap: 6px;
+    }
+
+    #positionsPopupOverlay .position-checkbox span {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    #positionsPopupOverlay .position-preview {
+        min-height: clamp(240px, 56vw, 380px) !important;
+        padding: 6px 2px !important;
+    }
+
+    #positionsPopupOverlay .position-preview img,
+    #positionsPopupOverlay .position-placeholder {
+        max-height: min(360px, 50vh) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    #positionsPopupOverlay .garment-tint-stack {
+        min-height: clamp(220px, 52vw, 340px) !important;
+    }
+
+    #positionsPopupOverlay .garment-tint-base,
+    #positionsPopupOverlay .garment-tint-mask.is-active {
+        max-height: min(360px, 50vh) !important;
+    }
+}
+
+/* Phone: one card per row so the t-shirt uses full width */
+@media (max-width: 600px) {
+    #positionsPopupOverlay .positions-grid,
+    #positionsPopupOverlay #positionOptions {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    #positionsPopupOverlay .positions-grid .position-card[data-position="small-centre-front"],
+    #positionsPopupOverlay #positionOptions .position-card[data-position="small-centre-front"],
+    #positionsPopupOverlay .positions-grid .position-card[data-position="large-back"],
+    #positionsPopupOverlay #positionOptions .position-card[data-position="large-back"] {
+        grid-column: 1;
+    }
+}
+
+/* Hide empty overlay / dashed boxes on the garment image */
+#positionsPopupOverlay .logo-overlay-box {
+    display: none !important;
+}
+
+#positionsPopupOverlay .position-preview-content[hidden],
+#positionsPopupOverlay .uploaded-logo-container[hidden] {
+    display: none !important;
+}
+
+#positionsPopupOverlay .position-preview-content:not([hidden]) {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    top: auto;
+    min-height: 0;
+    max-height: 72px;
+    padding: 6px;
+    z-index: 4;
+    border-radius: 10px;
+}
+
 #positionsPopupOverlay .position-card {
     width: 100%;
     max-width: 100%;
@@ -11444,10 +11528,12 @@ a.continue-shopping {
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
-    min-height: 248px;
+    min-height: 280px;
     padding: 4px 2px;
     text-align: center !important;
     background-color: #ffffff !important;
+    position: relative;
+    overflow: hidden;
 }
 
 #positionsPopupOverlay .position-preview img,
@@ -11456,7 +11542,7 @@ a.continue-shopping {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 280px !important;
+    max-height: 320px !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
@@ -11464,13 +11550,13 @@ a.continue-shopping {
 }
 
 #positionsPopupOverlay .garment-tint-stack {
-    min-height: 220px !important;
+    min-height: 260px !important;
     padding: 4px 2px !important;
 }
 
 #positionsPopupOverlay .garment-tint-base,
 #positionsPopupOverlay .garment-tint-mask.is-active {
-    max-height: 280px !important;
+    max-height: 320px !important;
 }
 
 #positionsPopupOverlay .position-preview--garment-tint,
