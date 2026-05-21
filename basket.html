@@ -336,7 +336,8 @@
             border: 1px solid #e5e7eb; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; box-sizing: border-box;
-            background-color: var(--garment-bg, #f3f4f6);
+            /* Garment colour contrast — do not override in mobile.css; set inline + --garment-bg */
+            background-color: var(--garment-bg, #f3f4f6) !important;
         }
         .logo-thumb-wrap--light { border-color: #cbd5e1; }
         .logo-row .logo-thumb {
@@ -2786,7 +2787,7 @@
     </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260418"></script>
-<script src="brandedukv15-child/assets/js/color-hex.js?v=20260519"></script>
+<script src="brandedukv15-child/assets/js/color-hex.js?v=20260526"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260418"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>

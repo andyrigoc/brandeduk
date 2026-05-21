@@ -10278,7 +10278,8 @@
                 enforceGarmentCardWhiteBackground(scopeRoot);
             }
 
-            scopeRoot.querySelectorAll('.position-preview--garment-tint, .position-preview-content, .uploaded-logo-box').forEach(function (el) {
+            /* Logo preview boxes keep garment hex — only tint stack areas stay white */
+            scopeRoot.querySelectorAll('.position-preview--garment-tint, .uploaded-logo-box').forEach(function (el) {
                 el.style.backgroundColor = '#ffffff';
                 el.style.removeProperty('--garment-bg');
             });

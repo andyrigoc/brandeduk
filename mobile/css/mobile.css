@@ -11490,7 +11490,7 @@ a.continue-shopping {
     overflow: hidden;
 }
 
-/* Logo preview box: compact, centered under garment — not full-width strip */
+/* Logo preview box: compact, centered under garment — garment colour from JS (--garment-bg) */
 #positionsPopupOverlay .position-preview-content:not([hidden]) {
     position: static !important;
     display: flex !important;
@@ -11509,6 +11509,7 @@ a.continue-shopping {
     border-radius: 12px !important;
     overflow: hidden !important;
     flex-shrink: 0;
+    background-color: var(--garment-bg, #f3f4f6) !important;
 }
 
 #positionsPopupOverlay .position-preview-content .preview-image:not([hidden]) {

@@ -1,0 +1,32 @@
+---
+description: Garment colour in logo preview boxes (basket + customize). Prevents cross-page CSS/JS regressions.
+globs:
+  - basket.html
+  - mobile/js/customize.js
+  - mobile/css/mobile.css
+  - brandedukv15-child/assets/js/color-hex.js
+---
+
+# Garment colour in logo preview boxes
+
+## Two separate surfaces (do not merge)
+
+| Surface | File | Element | Colour source |
+|---------|------|---------|---------------|
+| **Basket** | `basket.html` | `.logo-thumb-wrap` | `getItemColorHex(item)` + inline `style="--garment-bg:…; background-color:…"` |
+| **Customize popup** | `mobile/js/customize.js` | `.position-preview-content` | `applyGarmentColorToPositionPreviews()` → `--garment-bg` + `backgroundColor` |
+
+Registry: `brandedukv15-child/assets/js/color-hex.js` (`BrandedColorHex`).
+
+## Rules
+
+1. **Never** force `#ffffff` on `.position-preview-content` or `.logo-thumb-wrap` in shared CSS (apron/hoodie white applies only to `.garment-tint-stack` / `.position-preview` photo area).
+2. **Apron/hoodie** tint: white card + mask on PNG — logo preview box below still uses catalog hex for contrast.
+3. Popup layout changes (`#positionsPopupOverlay`) must not remove `var(--garment-bg)` on `.position-preview-content`.
+4. Basket `.logo-thumb-wrap` uses `!important` on `background-color: var(--garment-bg)` so `mobile.css` cannot zero it out.
+5. When fixing popup size/layout, test **basket.html** logo row still shows correct garment colour.
+
+## Colour names
+
+- Strip trailing `*` in `BrandedColorHex.normName`.
+- Add missing catalog names (e.g. `safety orange`) to `BUILTIN` in `color-hex.js`.

@@ -27,7 +27,7 @@
         'royal': '#2563eb', 'royal blue': '#4169E1', 'sage': '#9CAF88', 'sand': '#C2B280',
         'silver': '#c0c0c0', 'sky': '#87CEEB', 'smoke': '#738276', 'sport grey': '#9ca3af',
         'stone': '#928e85', 'stone blue': '#6A8EAE', 'tangerine': '#FF9966', 'teal': '#008080',
-        'texas orange': '#BF5700', 'white': '#ffffff', 'yellow': '#eab308', 'yellow haze': '#E8D44D',
+        'texas orange': '#BF5700', 'safety orange': '#FF6600', 'white': '#ffffff', 'yellow': '#eab308', 'yellow haze': '#E8D44D',
         'beige': '#f5f5dc', 'grey': '#9ca3af', 'gray': '#9ca3af', 'other': '#e5e7eb',
         'aubergine': '#4a2c4a', 'aubergene': '#4a2c4a', 'eggplant': '#4a2c4a',
         'emerald': '#008c5a', 'emerald green': '#008c5a', 'jade': '#00a86b', 'mint': '#98ff98',
@@ -57,7 +57,11 @@
     var DATABASE_URL = '/brandedukv15-child/assets/data/color-hex-database.json';
 
     function normName(name) {
-        return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        return String(name || '')
+            .trim()
+            .toLowerCase()
+            .replace(/\*+$/, '')
+            .replace(/\s+/g, ' ');
     }
 
     function parseHex(hex) {
