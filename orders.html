@@ -3,53 +3,409 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders - BrandedUK</title>
+    <title>Order History - BrandedUK</title>
     <style>
-        :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
+        :root {
+            --navy:#273469;
+            --ink:#18213f;
+            --orange:#f97316;
+            --orange-dark:#c2410c;
+            --line:#dfe4ee;
+            --soft:#f6f8fb;
+            --muted:#657086;
+            --white:#ffffff;
+            --green:#15803d;
+            --red:#b91c1c;
+        }
         * { box-sizing:border-box; }
-        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
-        main { width:min(100%,820px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-        h1 { margin:0 0 8px; font-size:28px; }
-        p { color:var(--grey); line-height:1.55; }
-        .order { border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; display:grid; gap:6px; }
-        .muted { color:var(--grey); font-size:13px; }
-        a { color:var(--orange); font-weight:700; text-decoration:none; }
+        body { margin:0; min-height:100vh; background:#f4f5f7; color:var(--ink); font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding:0; }
+        main { width:min(1140px, 100%); margin:0 auto; }
+        h1, h2, p { margin:0; }
+        h1 { color:var(--ink); font-size:28px; line-height:1.1; letter-spacing:-.035em; }
+        h2 { color:var(--navy); font-size:20px; letter-spacing:-.02em; }
+        p { color:var(--muted); line-height:1.6; }
+        .account-shell { min-height:780px; overflow:hidden; background:#fff; border:1px solid #e4e7ee; }
+        .account-topbar { min-height:82px; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; background:#fff; color:var(--navy); border-bottom:1px solid var(--line); }
+        .brand-mark { display:inline-flex; align-items:center; color:var(--navy); text-decoration:none; font-weight:900; }
+        .brand-logo { height:56px; width:auto; display:block; }
+        .top-user { display:flex; align-items:center; gap:10px; color:var(--navy); font-size:13px; font-weight:800; }
+        .top-avatar { width:30px; height:30px; border-radius:4px; display:grid; place-items:center; background:var(--navy); color:#fff; font-weight:900; }
+        .account-layout { display:grid; grid-template-columns:250px minmax(0, 1fr); min-height:722px; }
+        .side-nav { padding:26px 0; border-right:1px solid var(--line); background:#fff; }
+        .side-link { min-height:44px; padding:0 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; color:#7a8497; text-decoration:none; font-weight:800; font-size:14px; border-left:4px solid transparent; }
+        .side-link span:first-child { display:flex; align-items:center; gap:12px; }
+        .side-icon { width:20px; text-align:center; opacity:.75; }
+        .side-link.is-active { color:var(--navy); background:#f0f2fb; border-left-color:var(--navy); }
+        .side-link:hover { background:#f8fafc; color:var(--navy); }
+        .account-content { padding:30px 36px 36px; background:#fff; }
+        .mobile-back { display:none; margin-bottom:18px; color:var(--muted); text-decoration:none; font-size:13px; }
+        .content-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; }
+        .content-head p { margin-top:8px; font-size:14px; }
+        .actions, .order-actions { display:flex; flex-wrap:wrap; gap:10px; }
+        .btn, button {
+            min-height:44px;
+            padding:0 16px;
+            border:1px solid transparent;
+            border-radius:4px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            background:var(--navy);
+            color:#fff;
+            font:800 14px/1 Inter, system-ui, sans-serif;
+            text-decoration:none;
+            cursor:pointer;
+            transition:transform .18s ease, box-shadow .18s ease;
+        }
+        .btn:hover, button:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(39,52,105,.14); }
+        .btn-secondary { background:#fff; color:var(--navy); border-color:var(--line); }
+        .btn-accent { background:var(--navy); }
+        .side-nav button.side-link { width:100%; border-top:0; border-right:0; border-bottom:0; background:transparent; text-align:left; color:#7a8497; border-radius:0; box-shadow:none; justify-content:space-between; }
+        .side-nav button.side-link:hover { color:var(--navy); box-shadow:none; transform:none; }
+        .side-nav #signOutBtn { color:#b91c1c; }
+        .side-nav #signOutBtn:hover { color:#991b1b; background:#fef2f2; }
+        .panel { background:#f5f7fa; overflow:hidden; }
+        .toolbar {
+            display:grid;
+            grid-template-columns:minmax(0, 1fr) 220px;
+            gap:12px;
+            padding:16px 0 20px;
+        }
+        .search, select {
+            width:100%;
+            min-height:48px;
+            border:1px solid var(--line);
+            border-radius:6px;
+            background:#fff;
+            color:var(--ink);
+            padding:12px 14px;
+            font-size:15px;
+        }
+        .search:focus, select:focus { outline:3px solid rgba(39,52,105,.13); border-color:var(--navy); }
+        .status-line { padding:0 0 14px; color:var(--muted); font-weight:700; font-size:13px; }
+        .orders-list { display:grid; gap:22px; }
+        .order-row {
+            display:grid;
+            grid-template-columns:minmax(0, 1.12fr) 230px;
+            gap:18px;
+            padding:20px;
+            background:#f3f5f8;
+            border-left:3px solid var(--navy);
+        }
+        .order-main { display:grid; gap:14px; min-width:0; }
+        .order-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+        .order-title { min-width:0; }
+        .order-title strong { display:block; color:var(--navy); font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .order-title span { display:block; margin-top:5px; color:var(--muted); font-size:13px; }
+        .badge {
+            display:inline-flex;
+            align-items:center;
+            min-height:28px;
+            padding:0 11px;
+            border-radius:4px;
+            background:#f0f2fb;
+            color:var(--navy);
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+            text-transform:capitalize;
+        }
+        .badge-paid, .badge-confirmed { background:#ecfdf5; color:var(--green); }
+        .badge-failed, .badge-cancelled, .badge-canceled { background:#fef2f2; color:var(--red); }
+        .products { display:flex; gap:14px; align-items:center; min-width:0; padding:14px; border-radius:4px; background:#fff; box-shadow:0 7px 20px rgba(24,33,63,.08); }
+        .thumbs { display:flex; flex:none; align-items:center; }
+        .thumb {
+            width:54px;
+            height:54px;
+            margin-left:-12px;
+            border:3px solid #fff;
+            border-radius:8px;
+            object-fit:contain;
+            background:#f7f9fc;
+        }
+        .thumb:first-child { margin-left:0; }
+        .more-thumb {
+            display:grid;
+            place-items:center;
+            color:var(--navy);
+            font-weight:900;
+            font-size:12px;
+        }
+        .product-copy { min-width:0; }
+        .product-copy strong { display:block; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .product-copy span { display:block; margin-top:5px; color:var(--muted); font-size:13px; }
+        .order-side {
+            display:grid;
+            align-content:space-between;
+            gap:14px;
+            padding-left:0;
+            border-left:0;
+        }
+        .meta-grid { display:grid; gap:10px; }
+        .mini { padding:11px 12px; border-radius:4px; background:var(--soft); }
+        .mini span { display:block; color:var(--muted); font-size:12px; }
+        .mini strong { display:block; margin-top:4px; color:var(--navy); font-size:14px; overflow-wrap:anywhere; }
+        .empty {
+            padding:26px;
+            background:#fff;
+            color:var(--muted);
+            line-height:1.6;
+        }
+        .is-hidden { display:none !important; }
+        @media (max-width: 860px) {
+            body { padding:0; background:#fff; }
+            .account-shell { min-height:100vh; border-radius:0; box-shadow:none; }
+            .account-topbar { min-height:64px; justify-content:center; position:relative; }
+            .brand-logo { height:44px; }
+            .top-user { position:absolute; right:14px; }
+            .top-user span:not(.top-avatar) { display:none; }
+            .account-layout { grid-template-columns:1fr; min-height:auto; }
+            .side-nav { display:none; }
+            .account-content { padding:18px 14px 28px; background:#fff; }
+            .mobile-back { display:inline-flex; }
+            .content-head { align-items:flex-start; }
+            .toolbar, .order-row { grid-template-columns:1fr; }
+            .order-row { border-left:0; border-top:3px solid var(--navy); padding:12px; }
+            .order-side { border-top:0; padding-top:0; }
+        }
+        @media (max-width: 560px) {
+            .order-head { flex-direction:column; }
+            .meta-grid { grid-template-columns:1fr; }
+            .products { align-items:flex-start; }
+        }
     </style>
 </head>
 <body>
     <main>
-        <h1>My Orders</h1>
-        <p id="ordersStatus">Loading your orders...</p>
-        <div id="ordersList"></div>
-        <p><a href="/checkout">Back to checkout</a></p>
+        <div class="account-shell">
+            <header class="account-topbar">
+                <a class="brand-mark" id="homeLink" href="/" aria-label="BrandedUK home">
+                    <img class="brand-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                </a>
+                <div class="top-user"><span id="topUserName">Account</span><span class="top-avatar" id="topAvatar">BU</span></div>
+            </header>
+
+            <div class="account-layout">
+                <nav class="side-nav" aria-label="Account menu">
+                    <a class="side-link" href="#" id="profileMenuLink"><span><span class="side-icon">●</span>Your details</span></a>
+                    <button type="button" class="side-link" id="signOutBtn"><span><span class="side-icon">↩</span>Sign out</span></button>
+                </nav>
+
+                <section class="account-content">
+                    <a class="mobile-back" id="mobileBackLink" href="/">‹ Back to main page</a>
+                    <div class="content-head">
+                        <div>
+                            <h1>Order history</h1>
+                            <p id="ordersCountLabel">Loading orders...</p>
+                        </div>
+                    </div>
+
+                    <section id="signedOutPanel" class="panel is-hidden">
+                        <div class="empty">
+                            <h2>Sign in to see order history</h2>
+                            <p style="margin-top:8px">Use the same Google account and we will pull your saved order history.</p>
+                            <div class="actions" style="margin-top:16px"><a class="btn btn-accent" id="googleSignInLink" href="#">Sign in with Google</a></div>
+                        </div>
+                    </section>
+
+                    <section id="ordersPanel" class="panel">
+                        <div class="toolbar">
+                            <input class="search" id="orderSearch" type="search" placeholder="Search order number or product">
+                            <select id="statusFilter" aria-label="Filter orders by status">
+                                <option value="">All statuses</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                        <div id="ordersStatus" class="status-line">Loading your orders...</div>
+                        <div id="ordersList" class="orders-list"></div>
+                    </section>
+                </section>
+            </div>
+        </div>
     </main>
+    <script src="brandedukv15-child/assets/js/cart.js"></script>
+    <script src="brandedukv15-child/assets/js/account.js"></script>
     <script>
         (function () {
-            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
-            var token = localStorage.getItem('authToken') || localStorage.getItem('coAuthToken');
+            var Account = window.BrandedAccount;
+            var token = Account.token();
+            var fallbackImage = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#f6f8fb"/><path d="M28 72h64v10H28zM34 42h52v10H34zM42 58h36v8H42z" fill="#273469"/><circle cx="60" cy="28" r="10" fill="#f97316"/></svg>');
             var status = document.getElementById('ordersStatus');
             var list = document.getElementById('ordersList');
+            var searchInput = document.getElementById('orderSearch');
+            var statusFilter = document.getElementById('statusFilter');
+            var orders = [];
+
+            document.getElementById('googleSignInLink').href = Account.apiBaseUrl() + '/auth/google';
+            document.getElementById('homeLink').href = Account.pageHref('home');
+            document.getElementById('mobileBackLink').href = Account.pageHref('home');
+            document.getElementById('profileMenuLink').href = Account.pageHref('profile');
+            document.getElementById('signOutBtn').addEventListener('click', function () {
+                Account.clearSession();
+                window.location.href = Account.pageHref('home');
+            });
+            var cachedUser = JSON.parse(localStorage.getItem('authUser') || localStorage.getItem('coUser') || 'null');
+            if (cachedUser) {
+                document.getElementById('topUserName').textContent = cachedUser.name || cachedUser.email || 'Account';
+                document.getElementById('topAvatar').textContent = initials(cachedUser.name || cachedUser.email || 'BU');
+            }
+
+            searchInput.addEventListener('input', renderOrders);
+            statusFilter.addEventListener('change', renderOrders);
+            list.addEventListener('click', function (event) {
+                var button = event.target.closest('[data-reorder-index]');
+                if (!button) return;
+                orderAgain(orders[Number(button.getAttribute('data-reorder-index'))]);
+            });
+
             if (!token) {
-                status.textContent = 'Please sign in to view your orders.';
+                document.getElementById('signedOutPanel').classList.remove('is-hidden');
+                document.getElementById('ordersPanel').classList.add('is-hidden');
                 return;
             }
-            fetch(API_BASE_URL + '/api/orders', { headers: { Authorization: 'Bearer ' + token } })
-                .then(function (res) { if (!res.ok) throw new Error('Unable to load orders'); return res.json(); })
-                .then(function (data) {
-                    var orders = data.orders || data.data || data || [];
-                    if (!Array.isArray(orders) || !orders.length) {
-                        status.textContent = 'No orders yet.';
-                        return;
-                    }
-                    status.textContent = '';
-                    list.innerHTML = orders.map(function (order) {
-                        var number = order.orderNumber || order.number || order.id || '-';
-                        var statusText = order.status || order.paymentStatus || 'Processing';
-                        var total = order.totalIncVat || order.total || order.amount || '';
-                        return '<div class="order"><strong>Order ' + number + '</strong><span class="muted">Status: ' + statusText + '</span><span class="muted">Total: ' + total + '</span></div>';
-                    }).join('');
+
+            Account.request('/api/orders/my-orders', { headers: Account.authHeaders() })
+                .then(function (json) {
+                    orders = Array.isArray(json.data) ? json.data : Array.isArray(json.orders) ? json.orders : [];
+                    document.getElementById('ordersCountLabel').textContent = orders.length + ' order' + (orders.length === 1 ? '' : 's');
+                    renderOrders();
                 })
-                .catch(function (err) { status.textContent = err.message || 'Unable to load orders.'; });
+                .catch(function (err) {
+                    status.textContent = err.message || 'Unable to load orders.';
+                    list.innerHTML = '<div class="empty">Please refresh or sign in again from the account button.</div>';
+                });
+
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+            function initials(value) {
+                return (String(value || 'BU').match(/\b\w/g) || ['B','U']).slice(0, 2).join('').toUpperCase();
+            }
+
+            function formatMoney(value) {
+                var number = parseFloat(value || 0);
+                return 'GBP ' + (Number.isFinite(number) ? number : 0).toFixed(2);
+            }
+
+            function formatDate(value) {
+                if (!value) return 'Unknown date';
+                return new Date(value).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+            }
+
+            function itemName(item) {
+                return (item && (item.productName || item.name || item.title || item.code)) || 'Product';
+            }
+
+            function itemImage(item) {
+                return (item && (item.image || item.imageUrl || item.thumbnail || item.primaryImage)) || fallbackImage;
+            }
+
+            function itemQuantity(item) {
+                var qty = parseInt(item && (item.quantity || item.qty || item.totalQty), 10);
+                return Number.isFinite(qty) && qty > 0 ? qty : 1;
+            }
+
+            function renderThumbs(items) {
+                var first = items.slice(0, 4).map(function (item) {
+                    return '<img class="thumb" src="' + escapeHtml(itemImage(item)) + '" alt="' + escapeHtml(itemName(item)) + '" onerror="this.src=\'' + fallbackImage + '\'">';
+                }).join('');
+                if (items.length > 4) first += '<span class="thumb more-thumb">+' + (items.length - 4) + '</span>';
+                return '<div class="thumbs">' + (first || '<img class="thumb" src="' + fallbackImage + '" alt="Product">') + '</div>';
+            }
+
+            function firstItemLine(items) {
+                if (!items.length) return 'No item details saved';
+                var first = items[0];
+                var extra = items.length > 1 ? ' plus ' + (items.length - 1) + ' more' : '';
+                return itemName(first) + ' x ' + itemQuantity(first) + extra;
+            }
+
+            function badgeClass(value) {
+                var status = String(value || '').toLowerCase();
+                if (status === 'paid') return ' badge-paid';
+                if (status === 'confirmed') return ' badge-confirmed';
+                if (status === 'failed') return ' badge-failed';
+                if (status === 'cancelled') return ' badge-cancelled';
+                if (status === 'canceled') return ' badge-canceled';
+                return '';
+            }
+
+            function matches(order) {
+                var query = searchInput.value.trim().toLowerCase();
+                var wantedStatus = statusFilter.value;
+                var orderStatus = String(order.orderStatus || order.status || '').toLowerCase();
+                var paymentStatus = String(order.paymentStatus || '').toLowerCase();
+                if (wantedStatus && orderStatus !== wantedStatus && paymentStatus !== wantedStatus) return false;
+                if (!query) return true;
+                var items = Array.isArray(order.items) ? order.items : [];
+                var haystack = [
+                    order.orderNumber,
+                    order.number,
+                    order.id,
+                    orderStatus,
+                    paymentStatus,
+                    items.map(itemName).join(' ')
+                ].join(' ').toLowerCase();
+                return haystack.indexOf(query) !== -1;
+            }
+
+            function renderOrders() {
+                if (!orders.length) {
+                    status.textContent = 'No account orders yet.';
+                    document.getElementById('ordersCountLabel').textContent = '0 orders';
+                    list.innerHTML = '<div class="empty">When a signed-in customer places an order from checkout, it will appear here with saved item thumbnails and reorder actions.</div>';
+                    return;
+                }
+                var visible = orders.filter(matches);
+                status.textContent = visible.length + ' of ' + orders.length + ' order' + (orders.length === 1 ? '' : 's') + ' shown.';
+                document.getElementById('ordersCountLabel').textContent = orders.length + ' order' + (orders.length === 1 ? '' : 's');
+                if (!visible.length) {
+                    list.innerHTML = '<div class="empty">No orders match this filter. Try clearing search or choosing another status.</div>';
+                    return;
+                }
+                list.innerHTML = visible.map(function (order) {
+                    var originalIndex = orders.indexOf(order);
+                    var items = Array.isArray(order.items) ? order.items : [];
+                    var number = order.orderNumber || order.number || order.id || '-';
+                    var id = order.id || number;
+                    var paymentStatus = order.paymentStatus || 'pending';
+                    var orderStatus = order.orderStatus || order.status || 'pending';
+                    var link = Account.pageHref('orderDetail') + '?id=' + encodeURIComponent(id);
+                    return '<article class="order-row">' +
+                        '<div class="order-main">' +
+                            '<div class="order-head">' +
+                                '<div class="order-title"><strong>Order ' + escapeHtml(number) + '</strong><span>Placed ' + escapeHtml(formatDate(order.createdAt)) + '</span></div>' +
+                                '<span class="badge' + badgeClass(paymentStatus) + '">' + escapeHtml(paymentStatus) + '</span>' +
+                            '</div>' +
+                            '<div class="products">' + renderThumbs(items) + '<div class="product-copy"><strong>' + escapeHtml(firstItemLine(items)) + '</strong><span>' + items.length + ' saved line item' + (items.length === 1 ? '' : 's') + '</span></div></div>' +
+                        '</div>' +
+                        '<aside class="order-side">' +
+                            '<div class="meta-grid">' +
+                                '<div class="mini"><span>Order status</span><strong>' + escapeHtml(orderStatus) + '</strong></div>' +
+                                '<div class="mini"><span>Total</span><strong>' + escapeHtml(formatMoney(order.totalAmount || order.total)) + '</strong></div>' +
+                            '</div>' +
+                            '<div class="order-actions"><a class="btn btn-secondary" href="' + link + '">View details</a><button type="button" class="btn-accent" data-reorder-index="' + originalIndex + '">Order again</button></div>' +
+                        '</aside>' +
+                    '</article>';
+                }).join('');
+            }
+
+            function orderAgain(order) {
+                try {
+                    Account.saveOrderToBasket(order);
+                    window.location.href = Account.pageHref('basket');
+                } catch (err) {
+                    status.textContent = err.message || 'Unable to reorder this item.';
+                }
+            }
         })();
     </script>
 </body>

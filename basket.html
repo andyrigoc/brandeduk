@@ -1442,8 +1442,16 @@
         initEventListeners();
         loadOrderNotes();
         hydrateAllBasketColorHex();
+        showReorderNotice();
         setTimeout(handlePendingLogoPrompt, 700);
     });
+
+    function showReorderNotice() {
+        const notice = sessionStorage.getItem('reorderNotice');
+        if (!notice) return;
+        sessionStorage.removeItem('reorderNotice');
+        showToast(notice);
+    }
 
     /** After adding a new garment — show quick-logo popup (reuse / choose position) */
     function handlePendingLogoPrompt() {

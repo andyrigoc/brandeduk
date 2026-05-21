@@ -31,6 +31,7 @@
     { "source": "/auth/callback", "destination": "/auth/callback.html" },
     { "source": "/profile", "destination": "/profile.html" },
     { "source": "/orders", "destination": "/orders.html" },
+    { "source": "/order-detail", "destination": "/order-detail.html" },
     { "source": "/track-order", "destination": "/track-order.html" },
     { "source": "/payment-success", "destination": "/payment-success.html" },
     { "source": "/payment-cancel", "destination": "/payment-cancel.html" },
@@ -75,6 +76,11 @@
     {
       "source": "/orders.html",
       "destination": "/orders",
+      "permanent": true
+    },
+    {
+      "source": "/order-detail.html",
+      "destination": "/order-detail",
       "permanent": true
     },
     {

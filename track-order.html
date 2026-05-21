@@ -7,20 +7,22 @@
     <style>
         :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
         * { box-sizing:border-box; }
-        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
-        main { width:min(100%,560px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-        h1 { margin:0 0 8px; font-size:28px; }
+        body { margin:0; min-height:100vh; background:linear-gradient(180deg, #ecfeff 0%, #f4f5f7 34%, #f4f5f7 100%); font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
+        main { width:min(100%,640px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:18px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+        h1 { margin:0 0 8px; font-size:30px; }
         p { color:var(--grey); line-height:1.55; }
         label { display:block; font-weight:700; margin:16px 0 6px; }
-        input { width:100%; min-height:46px; border:1px solid var(--border); border-radius:8px; padding:0 12px; font-size:15px; }
-        button { width:100%; min-height:46px; border:0; border-radius:8px; background:var(--orange); color:#fff; font-weight:800; margin-top:16px; cursor:pointer; }
-        .result { margin-top:18px; padding:14px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; }
+        input { width:100%; min-height:46px; border:1px solid var(--border); border-radius:10px; padding:0 12px; font-size:15px; }
+        button, .link-btn { width:100%; min-height:46px; border:0; border-radius:10px; background:var(--orange); color:#fff; font-weight:800; margin-top:16px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+        .link-btn.secondary { background:#fff; color:var(--navy); border:1px solid var(--border); }
+        .result { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:12px; background:#f9fafb; display:grid; gap:8px; }
+        .actions { display:grid; gap:10px; margin-top:12px; }
     </style>
 </head>
 <body>
     <main>
         <h1>Track Order</h1>
-        <p>Enter your order number and email to check the latest status.</p>
+        <p>Use the guest tracking endpoint to check a real account order without signing in.</p>
         <form id="trackForm">
             <label for="orderNumber">Order number</label>
             <input id="orderNumber" name="orderNumber" required>
@@ -29,23 +31,41 @@
             <button type="submit">Track order</button>
         </form>
         <div class="result" id="trackResult" style="display:none"></div>
+        <div class="actions">
+            <a class="link-btn secondary" id="trackCheckoutLink" href="/checkout">Back to checkout</a>
+            <a class="link-btn secondary" id="trackOrdersLink" href="/orders">Signed-in orders</a>
+        </div>
     </main>
+    <script src="brandedukv15-child/assets/js/account.js"></script>
     <script>
         (function () {
-            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var Account = window.BrandedAccount;
             var form = document.getElementById('trackForm');
             var result = document.getElementById('trackResult');
+            document.getElementById('trackCheckoutLink').href = Account.pageHref('checkout');
+            document.getElementById('trackOrdersLink').href = Account.pageHref('orders');
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
                 result.style.display = 'block';
                 result.textContent = 'Checking order...';
                 var orderNumber = document.getElementById('orderNumber').value.trim();
                 var email = document.getElementById('email').value.trim();
-                fetch(API_BASE_URL + '/api/orders/track?orderNumber=' + encodeURIComponent(orderNumber) + '&email=' + encodeURIComponent(email))
-                    .then(function (res) { if (!res.ok) throw new Error('Order not found'); return res.json(); })
+                Account.request('/api/orders/guest-track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderNumber: orderNumber, email: email })
+                })
                     .then(function (data) {
                         var order = data.order || data.data || data;
-                        result.innerHTML = '<strong>Order ' + (order.orderNumber || orderNumber) + '</strong><br>Status: ' + (order.status || order.paymentStatus || 'Processing');
+                        var detailsUrl = Account.pageHref('orderDetail')
+                            + '?id=' + encodeURIComponent(order.id || order.orderNumber || orderNumber)
+                            + '&email=' + encodeURIComponent(email);
+                        result.innerHTML = '' +
+                            '<strong>Order ' + (order.orderNumber || orderNumber) + '</strong>' +
+                            '<div>Status: ' + (order.orderStatus || order.status || 'pending') + '</div>' +
+                            '<div>Payment: ' + (order.paymentStatus || 'pending') + '</div>' +
+                            '<div>Total: GBP ' + Number(order.totalAmount || 0).toFixed(2) + '</div>' +
+                            '<a class="link-btn" href="' + detailsUrl + '">Open full order details</a>';
                     })
                     .catch(function (err) { result.textContent = err.message || 'Unable to track order.'; });
             });

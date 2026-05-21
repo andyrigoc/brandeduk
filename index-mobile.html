@@ -2026,7 +2026,7 @@
             </button>
         </div>
         
-        <div class="account-forms-container">
+        <div class="account-forms-container" id="accountFormsContainer">
             <!-- Arrow Back -->
             <div class="account-arrow" id="accountArrow">
                 <i class="fas fa-arrow-left"></i>
@@ -2607,6 +2607,8 @@
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
+    <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
+    <script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
 
     <style>
     /* Hero 1: auto-scroll (marquee) + hide scrollbar */
@@ -2893,22 +2895,36 @@
             window.addEventListener('basketUpdated', updateBadge);
         })();
         
-        // Desktop Account Button (placeholder - opens contact popup for now)
-        (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.BrandedAccountPanel) {
+                window.BrandedAccountPanel.init({
+                    triggerId: 'accountNavBtn',
+                    panelId: 'accountPanel',
+                    overlayId: 'accountOverlay',
+                    closeBtnId: 'accountCloseBtn',
+                    arrowId: 'accountArrow',
+                    signinId: 'signinForm',
+                    signupId: 'signupForm',
+                    signinFormId: 'signinFormData',
+                    signupFormId: 'signupFormData',
+                    formsContainerId: 'accountFormsContainer',
+                    loggedInId: 'accountLoggedIn',
+                    logoutBtnId: 'accountLogoutBtn',
+                    userNameId: 'accountUserName',
+                    userEmailId: 'accountUserEmail',
+                    userDetailsId: 'accountUserDetails'
+                });
+            }
+
             const accountBtn = document.getElementById('desktopAccountBtn');
-            if (!accountBtn) return;
-            
-            accountBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Open contact popup as placeholder
-                const contactPopup = document.querySelector('.popup-contact');
-                const overlay = document.querySelector('.popup-contact-overlay');
-                if (contactPopup && overlay) {
-                    contactPopup.classList.add('open');
-                    overlay.classList.add('visible');
-                }
-            });
-        })();
+            const accountNavBtn = document.getElementById('accountNavBtn');
+            if (accountBtn && accountNavBtn) {
+                accountBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    accountNavBtn.click();
+                });
+            }
+        });
         
         // â”€â”€ Search Autocomplete (mobile + desktop header) â”€â”€
         (function() {

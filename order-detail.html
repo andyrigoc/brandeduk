@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - BrandedUK</title>
+    <style>
+        :root { --navy:#273469; --ink:#18213f; --orange:#f97316; --line:#e5e7eb; --muted:#6b7280; --bg:#f6f7fb; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink); font-family:Inter, system-ui, -apple-system, "Segoe UI", sans-serif; padding:24px; }
+        main { width:min(980px, 100%); margin:0 auto; display:grid; gap:16px; }
+        .top, .panel { background:#fff; border:1px solid var(--line); border-radius:18px; }
+        .top { padding:22px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+        h1, h2, p { margin:0; }
+        h1 { color:var(--navy); font-size:30px; letter-spacing:-.035em; }
+        h2 { color:var(--navy); font-size:18px; }
+        p { color:var(--muted); line-height:1.5; }
+        .status { margin-top:8px; color:var(--muted); font-size:14px; }
+        .actions { display:flex; flex-wrap:wrap; gap:8px; }
+        .btn, button { min-height:40px; padding:0 14px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--navy); display:inline-flex; align-items:center; justify-content:center; text-decoration:none; font:800 13px/1 Inter, system-ui, sans-serif; cursor:pointer; }
+        .btn-primary { background:var(--orange); border-color:var(--orange); color:#fff; }
+        .summary { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:1px; background:var(--line); overflow:hidden; }
+        .summary-item { background:#fff; padding:16px; }
+        .summary-item span { display:block; color:var(--muted); font-size:12px; margin-bottom:6px; }
+        .summary-item strong { display:block; color:var(--navy); font-size:14px; overflow-wrap:anywhere; }
+        .panel-head { padding:18px 20px; border-bottom:1px solid var(--line); }
+        .items { display:grid; }
+        .item { display:grid; grid-template-columns:64px minmax(0, 1fr) auto; gap:14px; align-items:center; padding:14px 20px; border-bottom:1px solid var(--line); }
+        .item:last-child { border-bottom:0; }
+        .thumb { width:64px; height:64px; border-radius:14px; object-fit:contain; background:#f8fafc; }
+        .item strong { display:block; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .item span { display:block; margin-top:5px; color:var(--muted); font-size:13px; }
+        .price { font-weight:900; color:var(--navy); white-space:nowrap; }
+        .empty { padding:20px; color:var(--muted); }
+        @media (max-width: 740px) {
+            body { padding:14px; }
+            .top { flex-direction:column; }
+            .summary { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+            .item { grid-template-columns:52px minmax(0, 1fr); }
+            .thumb { width:52px; height:52px; }
+            .price { grid-column:2; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="top">
+            <div>
+                <h1 id="detailTitle">Order details</h1>
+                <p id="detailStatus" class="status">Loading...</p>
+            </div>
+            <div class="actions">
+                <a class="btn" id="detailOrdersLink" href="/orders">Orders</a>
+                <button type="button" class="btn-primary" id="orderAgainBtn">Order again</button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div id="detailMeta" class="summary"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head"><h2>Items</h2></div>
+            <div id="detailItems" class="items"></div>
+        </section>
+    </main>
+    <script src="brandedukv15-child/assets/js/cart.js"></script>
+    <script src="brandedukv15-child/assets/js/account.js"></script>
+    <script>
+        (function () {
+            var Account = window.BrandedAccount;
+            var params = new URLSearchParams(location.search);
+            var orderId = params.get('id');
+            var email = params.get('email') || '';
+            var phone = params.get('phone') || '';
+            var fallbackImage = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" rx="18" fill="#f8fafc"/><path d="M30 75h60v9H30zM36 43h48v10H36zM44 59h32v8H44z" fill="#273469"/></svg>');
+            var status = document.getElementById('detailStatus');
+            var meta = document.getElementById('detailMeta');
+            var items = document.getElementById('detailItems');
+            var loadedOrder = null;
+
+            document.getElementById('detailOrdersLink').href = Account.pageHref('orders');
+            document.getElementById('orderAgainBtn').addEventListener('click', function () {
+                if (!loadedOrder) return;
+                try {
+                    Account.saveOrderToBasket(loadedOrder);
+                    window.location.href = Account.pageHref('basket');
+                } catch (err) {
+                    status.textContent = err.message || 'Unable to reorder this item.';
+                }
+            });
+
+            if (!orderId) {
+                status.textContent = 'Missing order id.';
+                meta.innerHTML = '<div class="empty">Open this page from order history.</div>';
+                document.getElementById('orderAgainBtn').disabled = true;
+                return;
+            }
+
+            var query = [];
+            if (email) query.push('email=' + encodeURIComponent(email));
+            if (phone) query.push('phone=' + encodeURIComponent(phone));
+
+            Account.request('/api/orders/' + encodeURIComponent(orderId) + (query.length ? '?' + query.join('&') : ''), {
+                headers: Account.authHeaders()
+            }).then(function (json) {
+                loadedOrder = json.data || json.order || json;
+                var number = loadedOrder.orderNumber || orderId;
+                document.getElementById('detailTitle').textContent = 'Order ' + number;
+                status.textContent = formatDate(loadedOrder.createdAt);
+                renderMeta(loadedOrder);
+                renderItems(Array.isArray(loadedOrder.items) ? loadedOrder.items : []);
+            }).catch(function (err) {
+                status.textContent = err.message || 'Unable to load order.';
+                meta.innerHTML = '<div class="empty">Please sign in or reopen this from guest tracking.</div>';
+                items.innerHTML = '';
+                document.getElementById('orderAgainBtn').disabled = true;
+            });
+
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+            function money(value) {
+                var number = parseFloat(value || 0);
+                return 'GBP ' + (Number.isFinite(number) ? number : 0).toFixed(2);
+            }
+            function formatDate(value) {
+                if (!value) return 'Unknown date';
+                return new Date(value).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+            }
+            function itemName(item) {
+                return (item && (item.productName || item.name || item.title || item.code)) || 'Product';
+            }
+            function itemImage(item) {
+                return (item && (item.image || item.imageUrl || item.thumbnail || item.primaryImage)) || fallbackImage;
+            }
+            function itemQty(item) {
+                var qty = parseInt(item && (item.quantity || item.qty || item.totalQty), 10);
+                return Number.isFinite(qty) && qty > 0 ? qty : 1;
+            }
+            function renderMeta(order) {
+                var delivery = order.deliveryAddress || {};
+                var deliveryLine = [delivery.addressLine1, delivery.city, delivery.postalCode].filter(Boolean).join(', ') || '-';
+                var entries = [
+                    ['Status', order.orderStatus || 'pending'],
+                    ['Payment', order.paymentStatus || 'pending'],
+                    ['Total', money(order.totalAmount || order.total)],
+                    ['Delivery', deliveryLine]
+                ];
+                meta.innerHTML = entries.map(function (entry) {
+                    return '<div class="summary-item"><span>' + escapeHtml(entry[0]) + '</span><strong>' + escapeHtml(entry[1]) + '</strong></div>';
+                }).join('');
+            }
+            function renderItems(lineItems) {
+                if (!lineItems.length) {
+                    items.innerHTML = '<div class="empty">No items saved for this order.</div>';
+                    document.getElementById('orderAgainBtn').disabled = true;
+                    return;
+                }
+                items.innerHTML = lineItems.map(function (item) {
+                    var name = itemName(item);
+                    var color = item.color || item.selectedColorName || item.colorName || '';
+                    return '<article class="item">' +
+                        '<img class="thumb" src="' + escapeHtml(itemImage(item)) + '" alt="' + escapeHtml(name) + '" onerror="this.src=\'' + fallbackImage + '\'">' +
+                        '<div><strong>' + escapeHtml(name) + '</strong><span>Qty ' + itemQty(item) + (color ? ' - ' + escapeHtml(color) : '') + '</span></div>' +
+                        '<div class="price">' + escapeHtml(money(item.total || item.itemTotal || item.price || item.unitPrice)) + '</div>' +
+                    '</article>';
+                }).join('');
+            }
+        })();
+    </script>
+</body>
+</html>

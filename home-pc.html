@@ -3282,6 +3282,8 @@
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
+<script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
+<script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
 <script src="brandeduk.com/js/hero.js?v=20251230"></script>
 <script src="brandeduk.com/js/main.js?v=20260117"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
@@ -3383,256 +3385,28 @@
     window.addEventListener('basketUpdated', renderBasket);
 })();
 
-// Account Panel functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const accountBtn = document.getElementById('accountBtn');
-    const accountPanel = document.getElementById('accountPanel');
-    const accountOverlay = document.getElementById('accountOverlay');
-    const accountCloseBtn = document.getElementById('accountCloseBtn');
-    const accountArrow = document.getElementById('accountArrow');
-    const signinForm = document.getElementById('signinForm');
-    const signupForm = document.getElementById('signupForm');
-    const signinFormData = document.getElementById('signinFormData');
-    const signupFormData = document.getElementById('signupFormData');
-    const accountLoggedIn = document.getElementById('accountLoggedIn');
-    const accountLogoutBtn = document.getElementById('accountLogoutBtn');
-    
-    console.log('Account Panel Init:', { accountBtn, accountPanel, accountOverlay });
-    
-    if (!accountBtn || !accountPanel) {
-        console.error('Account Panel: Missing elements', { accountBtn: !!accountBtn, accountPanel: !!accountPanel });
-        return;
-    }
-    
-    const USER_SESSION_KEY = 'brandeduk-user-session';
-    
-    function checkLoggedIn() {
-        const session = localStorage.getItem(USER_SESSION_KEY);
-        if (session) {
-            const user = JSON.parse(session);
-            showLoggedInView(user);
-            return true;
-        }
-        return false;
-    }
-    
-    function showLoggedInView(user) {
-        document.querySelector('.account-forms-container').style.display = 'none';
-        accountLoggedIn.style.display = 'block';
-        document.getElementById('accountUserName').textContent = `Welcome, ${user.firstName}!`;
-        document.getElementById('accountUserEmail').textContent = user.email;
-        const detailsHtml = `
-            <p><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>
-            <p><strong>Phone:</strong> ${user.phone || 'Not provided'}</p>
-            <p><strong>Company:</strong> ${user.company || 'Not provided'}</p>
-        `;
-        document.getElementById('accountUserDetails').innerHTML = detailsHtml;
-    }
-    
-    function showFormsView() {
-        document.querySelector('.account-forms-container').style.display = 'flex';
-        accountLoggedIn.style.display = 'none';
-    }
-    
-    function openPanel() {
-        checkLoggedIn();
-        accountPanel.classList.add('active');
-        accountOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closePanel() {
-        accountPanel.classList.remove('active');
-        accountOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-        resetForms();
-    }
-    
-    function resetForms() {
-        signinForm.classList.remove('active', 'inactive');
-        signupForm.classList.remove('active', 'inactive');
-        accountArrow.classList.remove('visible');
-    }
-    
-    accountBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openPanel();
-    });
-
-    // Header top links - open account panel with specific form
-    const headerSignInLink = document.getElementById('headerSignInLink');
-    const headerRegisterLink = document.getElementById('headerRegisterLink');
-    const headerMyAccountLink = document.getElementById('headerMyAccountLink');
-
-    if (headerSignInLink) {
-        headerSignInLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            openPanel();
-            // Auto-expand Sign In form
-            setTimeout(() => {
-                if (!signinForm.classList.contains('active')) {
-                    signinForm.classList.add('active');
-                    signinForm.classList.remove('inactive');
-                    signupForm.classList.add('inactive');
-                    signupForm.classList.remove('active');
-                    accountArrow.classList.add('visible');
-                }
-            }, 100);
+    if (window.BrandedAccountPanel) {
+        window.BrandedAccountPanel.init({
+            triggerId: 'accountBtn',
+            panelId: 'accountPanel',
+            overlayId: 'accountOverlay',
+            closeBtnId: 'accountCloseBtn',
+            arrowId: 'accountArrow',
+            signinId: 'signinForm',
+            signupId: 'signupForm',
+            signinFormId: 'signinFormData',
+            signupFormId: 'signupFormData',
+            formsContainerId: 'accountFormsContainer',
+            loggedInId: 'accountLoggedIn',
+            logoutBtnId: 'accountLogoutBtn',
+            userNameId: 'accountUserName',
+            userEmailId: 'accountUserEmail',
+            userDetailsId: 'accountUserDetails',
+            headerSignInId: 'headerSignInLink',
+            headerRegisterId: 'headerRegisterLink',
+            headerMyAccountId: 'headerMyAccountLink'
         });
-    }
-
-    if (headerRegisterLink) {
-        headerRegisterLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            openPanel();
-            // Auto-expand Register form
-            setTimeout(() => {
-                if (!signupForm.classList.contains('active')) {
-                    signupForm.classList.add('active');
-                    signupForm.classList.remove('inactive');
-                    signinForm.classList.add('inactive');
-                    signinForm.classList.remove('active');
-                    accountArrow.classList.add('visible');
-                }
-            }, 100);
-        });
-    }
-
-    if (headerMyAccountLink) {
-        headerMyAccountLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            openPanel();
-        });
-    }
-    
-    accountCloseBtn.addEventListener('click', closePanel);
-    accountOverlay.addEventListener('click', closePanel);
-    
-    signinForm.addEventListener('click', () => {
-        if (!signinForm.classList.contains('active')) {
-            signinForm.classList.add('active');
-            signinForm.classList.remove('inactive');
-            signupForm.classList.add('inactive');
-            signupForm.classList.remove('active');
-            accountArrow.classList.add('visible');
-        }
-    });
-    
-    signupForm.addEventListener('click', () => {
-        if (!signupForm.classList.contains('active')) {
-            signupForm.classList.add('active');
-            signupForm.classList.remove('inactive');
-            signinForm.classList.add('inactive');
-            signinForm.classList.remove('active');
-            accountArrow.classList.add('visible');
-        }
-    });
-    
-    accountArrow.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetForms();
-    });
-    
-    signinFormData.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('signinEmail').value;
-        const password = document.getElementById('signinPassword').value;
-        
-        try {
-            const response = await fetch('brandedukv15-child/includes/auth.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'signin', email, password })
-            });
-            const result = await response.json();
-            if (result.success) {
-                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
-                showLoggedInView(result.user);
-                showAccountToast('Welcome back, ' + result.user.firstName + '!');
-            } else {
-                showAccountToast(result.message || 'Invalid credentials');
-            }
-        } catch (error) {
-            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(user));
-                showLoggedInView(user);
-                showAccountToast('Welcome back, ' + user.firstName + '!');
-            } else {
-                showAccountToast('Invalid email or password');
-            }
-        }
-    });
-    
-    signupFormData.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const userData = {
-            firstName: document.getElementById('signupFirstName').value,
-            lastName: document.getElementById('signupLastName').value,
-            email: document.getElementById('signupEmail').value,
-            phone: document.getElementById('signupPhone').value,
-            company: document.getElementById('signupCompany').value,
-            password: document.getElementById('signupPassword').value
-        };
-        
-        try {
-            const response = await fetch('brandedukv15-child/includes/auth.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'signup', ...userData })
-            });
-            const result = await response.json();
-            if (result.success) {
-                localStorage.setItem(USER_SESSION_KEY, JSON.stringify(result.user));
-                showLoggedInView(result.user);
-                showAccountToast('Account created! Welcome, ' + result.user.firstName + '!');
-            } else {
-                showAccountToast(result.message || 'Registration failed');
-            }
-        } catch (error) {
-            const users = JSON.parse(localStorage.getItem('brandeduk-users') || '[]');
-            if (users.some(u => u.email === userData.email)) {
-                showAccountToast('Email already registered');
-                return;
-            }
-            userData.id = Date.now();
-            users.push(userData);
-            localStorage.setItem('brandeduk-users', JSON.stringify(users));
-            localStorage.setItem(USER_SESSION_KEY, JSON.stringify(userData));
-            showLoggedInView(userData);
-            showAccountToast('Account created! Welcome, ' + userData.firstName + '!');
-        }
-    });
-    
-    accountLogoutBtn.addEventListener('click', () => {
-        localStorage.removeItem(USER_SESSION_KEY);
-        showFormsView();
-        resetForms();
-        showAccountToast('You have been signed out');
-    });
-    
-    function showAccountToast(message) {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            z-index: 10001;
-            animation: fadeInUp 0.3s ease;
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
     }
 });
 

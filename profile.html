@@ -3,64 +3,776 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - BrandedUK</title>
+    <title>My Account - BrandedUK</title>
     <style>
-        :root { --navy:#273469; --orange:#f97316; --border:#e5e7eb; --grey:#6b7280; }
+        :root {
+            --navy:#273469;
+            --ink:#18213f;
+            --orange:#f97316;
+            --orange-dark:#c2410c;
+            --line:#dfe4ee;
+            --soft:#f6f8fb;
+            --muted:#657086;
+            --success:#15803d;
+            --danger:#b91c1c;
+            --white:#ffffff;
+        }
         * { box-sizing:border-box; }
-        body { margin:0; min-height:100vh; background:#f4f5f7; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--navy); padding:24px; }
-        main { width:min(100%,720px); margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-        h1 { margin:0 0 8px; font-size:28px; }
-        p { color:var(--grey); line-height:1.55; }
-        .row { padding:14px 0; border-top:1px solid var(--border); display:flex; justify-content:space-between; gap:16px; }
-        .label { color:var(--grey); }
-        a, button { min-height:42px; padding:0 16px; border-radius:8px; border:0; background:var(--orange); color:#fff; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; cursor:pointer; }
-        .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+        body { margin:0; min-height:100vh; background:#f4f5f7; color:var(--ink); font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding:0; }
+        a { color:inherit; }
+        main { width:min(1140px, 100%); margin:0 auto; }
+        h1, h2, h3, p { margin:0; }
+        h1 { color:var(--ink); font-size:28px; line-height:1.1; letter-spacing:-.035em; }
+        h2 { color:var(--navy); font-size:20px; letter-spacing:-.02em; }
+        h3 { color:var(--navy); font-size:15px; }
+        p { color:var(--muted); line-height:1.62; }
+        .account-shell { min-height:780px; overflow:hidden; background:#fff; border:1px solid #e4e7ee; }
+        .account-topbar { min-height:82px; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; background:#fff; color:var(--navy); border-bottom:1px solid var(--line); }
+        .brand-mark { display:inline-flex; align-items:center; color:var(--navy); text-decoration:none; font-weight:900; }
+        .brand-logo { height:56px; width:auto; display:block; }
+        .top-user { display:flex; align-items:center; gap:10px; color:var(--navy); font-size:13px; font-weight:800; }
+        .top-avatar { width:30px; height:30px; border-radius:4px; display:grid; place-items:center; background:var(--navy); color:#fff; font-weight:900; }
+        .account-layout { display:grid; grid-template-columns:250px minmax(0, 1fr); min-height:722px; }
+        .side-nav { padding:26px 0; border-right:1px solid var(--line); background:#fff; }
+        .side-link { min-height:44px; padding:0 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; color:#7a8497; text-decoration:none; font-weight:800; font-size:14px; border-left:4px solid transparent; }
+        .side-link span:first-child { display:flex; align-items:center; gap:12px; }
+        .side-icon { width:20px; text-align:center; opacity:.75; }
+        .side-link.is-active { color:var(--navy); background:#f0f2fb; border-left-color:var(--navy); }
+        .side-link:hover { background:#f8fafc; color:var(--navy); }
+        .account-content { padding:30px 36px 36px; background:#fff; }
+        .mobile-back { display:none; margin-bottom:18px; color:var(--muted); text-decoration:none; font-size:13px; }
+        .content-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; }
+        .content-head p { margin-top:8px; font-size:14px; }
+        .actions { display:flex; flex-wrap:wrap; gap:10px; }
+        .btn, button {
+            min-height:44px;
+            padding:0 16px;
+            border:1px solid transparent;
+            border-radius:4px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            background:var(--navy);
+            color:#fff;
+            font:800 14px/1 Inter, system-ui, sans-serif;
+            text-decoration:none;
+            cursor:pointer;
+            transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+        .btn:hover, button:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(39,52,105,.14); }
+        .btn-secondary { background:#fff; color:var(--navy); border-color:var(--line); }
+        .btn-accent { background:var(--navy); }
+        .btn-danger { background:var(--danger); }
+        .btn-quiet { min-height:38px; padding:0 12px; background:#fff; color:var(--navy); border-color:var(--line); font-size:13px; }
+        .side-nav button.side-link { width:100%; border-top:0; border-right:0; border-bottom:0; background:transparent; text-align:left; color:#7a8497; border-radius:0; box-shadow:none; justify-content:space-between; }
+        .side-nav button.side-link:hover { color:var(--navy); box-shadow:none; transform:none; }
+        .side-nav #signOutBtn { color:#b91c1c; }
+        .side-nav #signOutBtn:hover { color:#991b1b; background:#fef2f2; }
+        .mobile-account-actions { display:block; }
+        .mobile-signout {
+            display:none;
+            width:max-content;
+            min-height:36px;
+            padding:0 12px;
+            border:1px solid #fecaca;
+            border-radius:4px;
+            background:#fef2f2;
+            color:#b91c1c;
+            font-size:13px;
+            font-weight:900;
+        }
+        .mobile-signout:hover { background:#fee2e2; color:#991b1b; box-shadow:none; transform:none; }
+        .stats {
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0, 1fr));
+            gap:14px;
+        }
+        .stat {
+            padding:18px;
+            border:1px solid var(--line);
+            border-radius:4px;
+            background:#f7f9fc;
+        }
+        .stat span { display:block; color:var(--muted); font-size:13px; }
+        .stat strong { display:block; margin-top:8px; color:var(--navy); font-size:28px; letter-spacing:-.04em; }
+        .layout {
+            display:grid;
+            grid-template-columns:minmax(0, 1fr);
+            gap:24px;
+            align-items:start;
+        }
+        .stack { display:grid; gap:24px; }
+        .panel {
+            border:1px solid var(--line);
+            border-radius:0;
+            background:#fff;
+            overflow:hidden;
+        }
+        .panel-head {
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:16px;
+            padding:18px 0;
+            border-bottom:1px solid var(--line);
+        }
+        .panel-head p { margin-top:6px; font-size:14px; }
+        .panel-body { padding:18px 0 26px; }
+        .form-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
+        .field { display:grid; gap:8px; }
+        label { color:var(--muted); font-size:12px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+        input {
+            width:100%;
+            min-height:48px;
+            border:1px solid var(--line);
+            border-radius:6px;
+            padding:12px 14px;
+            color:var(--ink);
+            background:#fff;
+            font-size:15px;
+        }
+        input:focus { outline:3px solid rgba(39,52,105,.13); border-color:var(--navy); }
+        input[readonly] { background:#f8fafc; color:var(--muted); }
+        .status { color:var(--muted); font-weight:700; font-size:14px; }
+        .empty {
+            padding:20px;
+            border:1px dashed #cfd6e3;
+            border-radius:4px;
+            background:#fbfcfe;
+            color:var(--muted);
+            line-height:1.6;
+        }
+        .address-list, .orders-list { display:grid; gap:14px; }
+        .logo-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(132px, 1fr)); gap:12px; }
+        .logo-card { border:1px solid var(--line); border-radius:4px; background:#fff; padding:12px; display:grid; gap:10px; min-width:0; }
+        .logo-preview { height:96px; border:1px solid #eef2f7; border-radius:4px; display:grid; place-items:center; background:#f8fafc; overflow:hidden; }
+        .logo-preview img { max-width:100%; max-height:100%; object-fit:contain; display:block; }
+        .logo-card strong { color:var(--navy); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .logo-card span { color:var(--muted); font-size:12px; }
+        .address-card, .order-row {
+            border:1px solid var(--line);
+            border-radius:4px;
+            background:#fff;
+            padding:16px;
+        }
+        .address-top, .order-top {
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:14px;
+        }
+        .address-card address { margin:8px 0 0; color:var(--muted); font-style:normal; line-height:1.55; }
+        .badge {
+            display:inline-flex;
+            align-items:center;
+            min-height:26px;
+            padding:0 10px;
+            border-radius:4px;
+            background:#f0f2fb;
+            color:var(--navy);
+            font-size:12px;
+            font-weight:900;
+            white-space:nowrap;
+        }
+        .badge-green { background:#ecfdf5; color:var(--success); }
+        .address-actions, .order-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+        .address-editor {
+            margin-bottom:18px;
+            padding:18px;
+            border:1px solid var(--line);
+            border-radius:6px;
+            background:#fbfcfe;
+        }
+        .is-hidden { display:none !important; }
+        .order-row { display:grid; gap:14px; }
+        .order-summary { display:flex; gap:14px; align-items:center; min-width:0; }
+        .thumbs { display:flex; flex:none; align-items:center; }
+        .thumb {
+            width:54px;
+            height:54px;
+            margin-left:-12px;
+            border:3px solid #fff;
+            border-radius:4px;
+            object-fit:contain;
+            background:#f7f9fc;
+        }
+        .thumb:first-child { margin-left:0; }
+        .more-thumb {
+            display:grid;
+            place-items:center;
+            color:var(--navy);
+            font-weight:900;
+            font-size:12px;
+        }
+        .order-title { min-width:0; }
+        .order-title strong { display:block; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .order-title span { display:block; margin-top:5px; color:var(--muted); font-size:13px; }
+        .order-meta {
+            display:grid;
+            grid-template-columns:repeat(3, minmax(0, 1fr));
+            gap:10px;
+        }
+        .mini { padding:10px 12px; border-radius:4px; background:var(--soft); }
+        .mini span { display:block; color:var(--muted); font-size:12px; }
+        .mini strong { display:block; margin-top:4px; color:var(--navy); font-size:14px; }
+        @media (max-width: 960px) {
+            body { padding:0; background:#fff; }
+            .account-shell { min-height:100vh; border-radius:0; box-shadow:none; }
+            .account-topbar { min-height:64px; justify-content:center; position:relative; }
+            .brand-logo { height:44px; }
+            .top-user { position:absolute; right:14px; }
+            .top-user span:not(.top-avatar) { display:none; }
+            .account-layout { grid-template-columns:1fr; min-height:auto; }
+            .side-nav { display:none; }
+            .account-content { padding:18px 14px 28px; background:#fff; }
+            .mobile-account-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+            .mobile-back { display:inline-flex; margin-bottom:0; }
+            .mobile-signout { display:inline-flex; }
+            .stats { grid-template-columns:1fr; }
+        }
+        @media (max-width: 680px) {
+            .panel-head, .address-top, .order-top { flex-direction:column; align-items:stretch; }
+            .form-grid, .order-meta { grid-template-columns:1fr; }
+            .order-summary { align-items:flex-start; }
+        }
     </style>
 </head>
 <body>
     <main>
-        <h1>My Profile</h1>
-        <p id="profileStatus">Loading your account...</p>
-        <div id="profileDetails" style="display:none"></div>
-        <div class="actions">
-            <a href="/checkout">Back to checkout</a>
-            <a href="/orders">My orders</a>
-            <button type="button" id="signOutBtn">Sign out</button>
+        <div class="account-shell">
+            <header class="account-topbar">
+                <a class="brand-mark" id="homeLink" href="/" aria-label="BrandedUK home">
+                    <img class="brand-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                </a>
+                <div class="top-user"><span id="identityName">Account</span><span class="top-avatar" id="profileAvatarBox">BU</span></div>
+            </header>
+            <div class="account-layout">
+                <nav class="side-nav" aria-label="Account menu">
+                    <a class="side-link is-active" href="#" id="profileMenuLink"><span><span class="side-icon">●</span>Your details</span></a>
+                    <button type="button" class="side-link" id="signOutBtn"><span><span class="side-icon">↩</span>Sign out</span></button>
+                </nav>
+                <section class="account-content">
+                    <div class="mobile-account-actions">
+                        <a class="mobile-back" id="mobileBackLink" href="/">‹ Back to main page</a>
+                        <button type="button" class="mobile-signout" id="mobileSignOutBtn">Sign out</button>
+                    </div>
+                    <div class="content-head">
+                        <div>
+                            <h1>Personal details</h1>
+                            <p id="profileStatus">Loading account...</p>
+                        </div>
+                        <a class="btn btn-secondary" id="checkoutLink" href="/checkout">Checkout</a>
+                    </div>
+                    <p id="identityEmail" class="is-hidden"></p>
+
+                    <section class="stats" aria-label="Account summary">
+                        <div class="stat"><span>Total orders</span><strong id="orderCountSummary">0</strong></div>
+                        <div class="stat"><span>Saved addresses</span><strong id="addressCountSummary">0</strong></div>
+                        <div class="stat"><span>Default address</span><strong id="defaultAddressCount">No</strong></div>
+                    </section>
+
+                    <section id="signedOutPanel" class="panel is-hidden">
+                        <div class="panel-head">
+                            <div>
+                                <h2>Sign in to see your account</h2>
+                                <p>Sign in with Google to view your account.</p>
+                            </div>
+                            <a class="btn btn-accent" id="googleSignInLink" href="#">Sign in with Google</a>
+                        </div>
+                    </section>
+
+                    <div id="accountContent" class="layout">
+                        <div class="stack">
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Profile details</h2>
+                            <p>Name and email used for your orders.</p>
+                        </div>
+                        <span class="badge badge-green">Signed in</span>
+                    </div>
+                    <div class="panel-body">
+                        <form id="profileForm" class="form-grid">
+                            <div class="field">
+                                <label for="profileName">Full name</label>
+                                <input id="profileName" name="name" autocomplete="name" placeholder="Your name">
+                            </div>
+                            <div class="field">
+                                <label for="profileEmail">Email</label>
+                                <input id="profileEmail" name="email" readonly>
+                            </div>
+                            <div class="field" style="align-self:end">
+                                <button type="submit" class="btn-accent">Save profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Recent orders</h2>
+                            <p>Your latest orders.</p>
+                        </div>
+                        <a class="btn btn-secondary" id="allOrdersLink" href="/orders">See all orders</a>
+                    </div>
+                    <div class="panel-body">
+                        <div id="recentOrders" class="orders-list">
+                            <div class="empty">Loading recent orders...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Saved logos</h2>
+                            <p>Logos you have uploaded or used before.</p>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="savedLogosList" class="logo-list">
+                            <div class="empty">Loading saved logos...</div>
+                        </div>
+                    </div>
+                </section>
+
+                            <section class="panel" id="addresses">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Saved addresses</h2>
+                            <p>Choose these at checkout.</p>
+                        </div>
+                        <button type="button" class="btn-secondary" id="newAddressBtn">Add address</button>
+                    </div>
+                    <div class="panel-body">
+                        <form id="addressForm" class="address-editor is-hidden">
+                            <input type="hidden" id="addressId">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="addressFullName">Full name</label>
+                                    <input id="addressFullName" required>
+                                </div>
+                                <div class="field">
+                                    <label for="addressPhone">Phone</label>
+                                    <input id="addressPhone" required>
+                                </div>
+                            </div>
+                            <div class="field" style="margin-top:14px">
+                                <label for="addressLine1">Address line 1</label>
+                                <input id="addressLine1" required>
+                            </div>
+                            <div class="field" style="margin-top:14px">
+                                <label for="addressLine2">Address line 2</label>
+                                <input id="addressLine2">
+                            </div>
+                            <div class="form-grid" style="margin-top:14px">
+                                <div class="field">
+                                    <label for="addressCity">City</label>
+                                    <input id="addressCity" required>
+                                </div>
+                                <div class="field">
+                                    <label for="addressPostalCode">Postal code</label>
+                                    <input id="addressPostalCode" required>
+                                </div>
+                            </div>
+                            <div class="form-grid" style="margin-top:14px">
+                                <div class="field">
+                                    <label for="addressCountry">Country</label>
+                                    <input id="addressCountry" required value="United Kingdom">
+                                </div>
+                                <div class="field">
+                                    <label for="addressIsDefault">Default</label>
+                                    <input id="addressIsDefault" type="checkbox" style="width:auto; min-height:auto; justify-self:start; margin-top:13px;">
+                                </div>
+                            </div>
+                            <div class="actions" style="margin-top:16px">
+                                <button type="submit" class="btn-accent" id="addressSubmitBtn">Save address</button>
+                                <button type="button" class="btn-secondary" id="cancelAddressBtn">Cancel</button>
+                            </div>
+                        </form>
+                        <p id="addressesStatus" class="status is-hidden"></p>
+                        <div id="addressList" class="address-list"></div>
+                    </div>
+                            </section>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
+    <script src="brandedukv15-child/assets/js/cart.js"></script>
+    <script src="brandedukv15-child/assets/js/account.js"></script>
     <script>
         (function () {
-            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
-            var token = localStorage.getItem('authToken') || localStorage.getItem('coAuthToken');
+            var Account = window.BrandedAccount;
+            var token = Account.token();
+            var fallbackImage = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#f6f8fb"/><path d="M28 72h64v10H28zM34 42h52v10H34zM42 58h36v8H42z" fill="#273469"/><circle cx="60" cy="28" r="10" fill="#f97316"/></svg>');
             var status = document.getElementById('profileStatus');
-            var details = document.getElementById('profileDetails');
-            document.getElementById('signOutBtn').addEventListener('click', function () {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('coAuthToken');
-                localStorage.removeItem('authUser');
-                localStorage.removeItem('coUser');
-                document.cookie = 'authToken=; Path=/; Max-Age=0';
-                window.location.href = '/checkout';
+            var profileForm = document.getElementById('profileForm');
+            var addressForm = document.getElementById('addressForm');
+            var addressList = document.getElementById('addressList');
+            var addressStatus = document.getElementById('addressesStatus');
+            var recentOrders = document.getElementById('recentOrders');
+            var savedLogosList = document.getElementById('savedLogosList');
+            var profileUser = null;
+            var profileAddresses = [];
+            var accountOrders = [];
+
+            setRoutes();
+
+            function signOut() {
+                Account.clearSession();
+                window.location.href = Account.pageHref('home');
+            }
+            document.getElementById('signOutBtn').addEventListener('click', signOut);
+            document.getElementById('mobileSignOutBtn').addEventListener('click', signOut);
+            document.getElementById('newAddressBtn').addEventListener('click', function () {
+                resetAddressForm();
+                addressForm.classList.remove('is-hidden');
+                document.getElementById('addressFullName').focus();
             });
+            document.getElementById('cancelAddressBtn').addEventListener('click', function () {
+                addressForm.classList.add('is-hidden');
+                resetAddressForm();
+            });
+            profileForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                saveProfile();
+            });
+            addressForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                saveAddress();
+            });
+            recentOrders.addEventListener('click', function (event) {
+                var button = event.target.closest('[data-reorder-index]');
+                if (!button) return;
+                orderAgain(accountOrders[Number(button.getAttribute('data-reorder-index'))]);
+            });
+
             if (!token) {
-                status.textContent = 'You are not signed in.';
+                showSignedOut();
                 return;
             }
-            fetch(API_BASE_URL + '/api/auth/me', { headers: { Authorization: 'Bearer ' + token } })
-                .then(function (res) { if (!res.ok) throw new Error('Unable to load profile'); return res.json(); })
-                .then(function (data) {
-                    var user = data.user || data.data || data;
-                    status.textContent = 'Signed in account';
-                    details.style.display = 'block';
-                    details.innerHTML = [
-                        ['Name', user.fullName || user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || '-'],
-                        ['Email', user.email || '-'],
-                        ['Phone', user.phone || '-']
-                    ].map(function (row) {
-                        return '<div class="row"><span class="label">' + row[0] + '</span><strong>' + row[1] + '</strong></div>';
-                    }).join('');
-                })
-                .catch(function (err) { status.textContent = err.message || 'Unable to load profile.'; });
+
+            Promise.all([loadProfile(), loadAddresses(), loadOrders()]).catch(function (err) {
+                status.textContent = err.message || 'Unable to load account.';
+            });
+            renderSavedLogos();
+
+            function setRoutes() {
+                document.getElementById('checkoutLink').href = Account.pageHref('checkout');
+                document.getElementById('allOrdersLink').href = Account.pageHref('orders');
+                document.getElementById('googleSignInLink').href = Account.apiBaseUrl() + '/auth/google';
+                document.getElementById('homeLink').href = Account.pageHref('home');
+                document.getElementById('mobileBackLink').href = Account.pageHref('home');
+                document.getElementById('profileMenuLink').href = Account.pageHref('profile');
+            }
+
+            function showSignedOut() {
+                status.textContent = 'Please sign in to view your account.';
+                document.getElementById('identityName').textContent = 'Not signed in';
+                document.getElementById('identityEmail').textContent = 'Use Google or email login from the account button.';
+                document.getElementById('signedOutPanel').classList.remove('is-hidden');
+                document.getElementById('accountContent').classList.add('is-hidden');
+                document.getElementById('signOutBtn').classList.add('is-hidden');
+                document.getElementById('mobileSignOutBtn').classList.add('is-hidden');
+            }
+
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function formatMoney(value) {
+                var number = parseFloat(value || 0);
+                return 'GBP ' + (Number.isFinite(number) ? number : 0).toFixed(2);
+            }
+
+            function formatDate(value) {
+                if (!value) return 'Unknown date';
+                return new Date(value).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+            }
+
+            function itemName(item) {
+                return (item && (item.productName || item.name || item.title || item.code)) || 'Product';
+            }
+
+            function itemImage(item) {
+                return (item && (item.image || item.imageUrl || item.thumbnail || item.primaryImage)) || fallbackImage;
+            }
+
+            function readJson(key, fallback) {
+                try {
+                    var parsed = JSON.parse(localStorage.getItem(key) || 'null');
+                    return parsed == null ? fallback : parsed;
+                } catch (e) {
+                    return fallback;
+                }
+            }
+
+            function addLogoCandidate(map, logo, sourceLabel) {
+                if (!logo) return;
+                var url = logo.url || logo.logo || logo.logoData || logo.image || logo.thumbnail || logo.src || '';
+                if (!url || typeof url !== 'string') return;
+                var key = url.slice(0, 180);
+                if (map[key]) return;
+                map[key] = {
+                    url: url,
+                    filename: logo.filename || logo.name || logo.logoName || logo.positionLabel || 'Saved logo',
+                    uploadedAt: logo.uploadedAt || logo.createdAt || '',
+                    source: sourceLabel || logo.source || 'Saved'
+                };
+            }
+
+            function collectItemLogos(map, items, sourceLabel) {
+                if (!Array.isArray(items)) return;
+                items.forEach(function (item) {
+                    if (!item) return;
+                    if (Array.isArray(item.logos)) item.logos.forEach(function (logo) { addLogoCandidate(map, logo, sourceLabel); });
+                    if (Array.isArray(item.positions)) item.positions.forEach(function (position) { addLogoCandidate(map, position, sourceLabel); });
+                    if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                        Object.keys(item.positionDesigns).forEach(function (key) {
+                            addLogoCandidate(map, item.positionDesigns[key], sourceLabel);
+                        });
+                    }
+                });
+            }
+
+            function getSavedLogos() {
+                var map = {};
+                readJson('brandeduk-logos', []).forEach(function (logo) { addLogoCandidate(map, logo, 'Logo library'); });
+                collectItemLogos(map, readJson('quoteBasket', []), 'Current basket');
+                accountOrders.forEach(function (order) {
+                    collectItemLogos(map, Array.isArray(order.items) ? order.items : [], 'Order ' + (order.orderNumber || order.number || 'history'));
+                });
+                return Object.keys(map).map(function (key) { return map[key]; });
+            }
+
+            function renderSavedLogos() {
+                var logos = getSavedLogos();
+                if (!logos.length) {
+                    savedLogosList.innerHTML = '<div class="empty">No saved logos yet. Once you upload a logo for an order, it will appear here.</div>';
+                    return;
+                }
+                savedLogosList.innerHTML = logos.slice(0, 12).map(function (logo) {
+                    var date = logo.uploadedAt ? formatDate(logo.uploadedAt) : logo.source;
+                    return '<article class="logo-card">' +
+                        '<div class="logo-preview"><img src="' + escapeHtml(logo.url) + '" alt="' + escapeHtml(logo.filename) + '" onerror="this.remove()"></div>' +
+                        '<strong title="' + escapeHtml(logo.filename) + '">' + escapeHtml(logo.filename) + '</strong>' +
+                        '<span>' + escapeHtml(date || 'Saved logo') + '</span>' +
+                    '</article>';
+                }).join('');
+            }
+
+            function renderThumbs(items) {
+                var first = items.slice(0, 3).map(function (item) {
+                    return '<img class="thumb" src="' + escapeHtml(itemImage(item)) + '" alt="' + escapeHtml(itemName(item)) + '" onerror="this.src=\'' + fallbackImage + '\'">';
+                }).join('');
+                if (items.length > 3) first += '<span class="thumb more-thumb">+' + (items.length - 3) + '</span>';
+                return '<div class="thumbs">' + (first || '<img class="thumb" src="' + fallbackImage + '" alt="Product">') + '</div>';
+            }
+
+            function updateAvatar(user) {
+                var box = document.getElementById('profileAvatarBox');
+                var initials = ((user.name || user.email || 'BU').match(/\b\w/g) || ['B','U']).slice(0, 2).join('').toUpperCase();
+                box.textContent = initials;
+            }
+
+            async function loadProfile() {
+                var json = await Account.request('/api/profile', { headers: Account.authHeaders() });
+                profileUser = json.data || json.user || json;
+                document.getElementById('identityName').textContent = profileUser.name || 'BrandedUK customer';
+                document.getElementById('identityEmail').textContent = profileUser.email || '';
+                status.textContent = (profileUser.provider === 'google' ? 'Signed in with Google.' : 'Signed in.') + ' Your account is ready.';
+                updateAvatar(profileUser);
+                profileForm.classList.remove('is-hidden');
+                document.getElementById('profileName').value = profileUser.name || '';
+                document.getElementById('profileEmail').value = profileUser.email || '';
+            }
+
+            async function saveProfile() {
+                status.textContent = 'Saving profile...';
+                var json = await Account.request('/api/profile', {
+                    method: 'PUT',
+                    headers: Account.authHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        name: document.getElementById('profileName').value.trim()
+                    })
+                });
+                profileUser = json.data || json.user || json;
+                localStorage.setItem('authUser', JSON.stringify(profileUser));
+                localStorage.setItem('coUser', JSON.stringify(profileUser));
+                document.getElementById('identityName').textContent = profileUser.name || 'BrandedUK customer';
+                document.getElementById('identityEmail').textContent = profileUser.email || '';
+                updateAvatar(profileUser);
+                status.textContent = 'Profile saved.';
+            }
+
+            async function loadAddresses() {
+                addressStatus.classList.add('is-hidden');
+                var json = await Account.request('/api/addresses', { headers: Account.authHeaders() });
+                profileAddresses = Array.isArray(json.data) ? json.data : Array.isArray(json.addresses) ? json.addresses : [];
+                renderAddresses();
+                resetAddressForm();
+            }
+
+            function renderAddresses() {
+                document.getElementById('addressCountSummary').textContent = profileAddresses.length;
+                document.getElementById('defaultAddressCount').textContent = profileAddresses.some(function (address) { return address.isDefault; }) ? 'Yes' : 'No';
+                if (!profileAddresses.length) {
+                    addressList.innerHTML = '<div class="empty">No saved addresses yet. Add one now and checkout can reuse it next time.</div>';
+                    return;
+                }
+                addressList.innerHTML = profileAddresses.map(function (address) {
+                    var lines = [address.addressLine1, address.addressLine2, address.city, address.postalCode, address.country].filter(Boolean).map(escapeHtml).join('<br>');
+                    return '<article class="address-card">' +
+                        '<div class="address-top">' +
+                            '<div><h3>' + escapeHtml(address.fullName || 'Delivery address') + '</h3><address>' + escapeHtml(address.phone || '') + (address.phone ? '<br>' : '') + lines + '</address></div>' +
+                            (address.isDefault ? '<span class="badge">Default</span>' : '') +
+                        '</div>' +
+                        '<div class="address-actions">' +
+                            '<button type="button" class="btn-quiet" data-action="edit" data-id="' + escapeHtml(address.id) + '">Edit</button>' +
+                            '<button type="button" class="btn-quiet" data-action="default" data-id="' + escapeHtml(address.id) + '">Make default</button>' +
+                            '<button type="button" class="btn-quiet" data-action="delete" data-id="' + escapeHtml(address.id) + '">Delete</button>' +
+                        '</div>' +
+                    '</article>';
+                }).join('');
+                Array.prototype.forEach.call(addressList.querySelectorAll('[data-action]'), function (button) {
+                    button.addEventListener('click', function () {
+                        var addressId = button.getAttribute('data-id');
+                        var action = button.getAttribute('data-action');
+                        var address = profileAddresses.find(function (item) { return String(item.id) === String(addressId); });
+                        if (!address) return;
+                        if (action === 'edit') fillAddressForm(address);
+                        if (action === 'default') setDefaultAddress(address.id);
+                        if (action === 'delete') deleteAddress(address.id);
+                    });
+                });
+            }
+
+            function resetAddressForm() {
+                document.getElementById('addressId').value = '';
+                document.getElementById('addressFullName').value = profileUser && profileUser.name ? profileUser.name : '';
+                document.getElementById('addressPhone').value = '';
+                document.getElementById('addressLine1').value = '';
+                document.getElementById('addressLine2').value = '';
+                document.getElementById('addressCity').value = '';
+                document.getElementById('addressPostalCode').value = '';
+                document.getElementById('addressCountry').value = 'United Kingdom';
+                document.getElementById('addressIsDefault').checked = profileAddresses.length === 0;
+                document.getElementById('addressSubmitBtn').textContent = 'Save address';
+            }
+
+            function fillAddressForm(address) {
+                addressForm.classList.remove('is-hidden');
+                document.getElementById('addressId').value = address.id || '';
+                document.getElementById('addressFullName').value = address.fullName || '';
+                document.getElementById('addressPhone').value = address.phone || '';
+                document.getElementById('addressLine1').value = address.addressLine1 || '';
+                document.getElementById('addressLine2').value = address.addressLine2 || '';
+                document.getElementById('addressCity').value = address.city || '';
+                document.getElementById('addressPostalCode').value = address.postalCode || '';
+                document.getElementById('addressCountry').value = address.country || '';
+                document.getElementById('addressIsDefault').checked = !!address.isDefault;
+                document.getElementById('addressSubmitBtn').textContent = 'Update address';
+                document.getElementById('addressFullName').focus();
+            }
+
+            async function saveAddress() {
+                var addressId = document.getElementById('addressId').value;
+                var body = {
+                    fullName: document.getElementById('addressFullName').value.trim(),
+                    phone: document.getElementById('addressPhone').value.trim(),
+                    addressLine1: document.getElementById('addressLine1').value.trim(),
+                    addressLine2: document.getElementById('addressLine2').value.trim(),
+                    city: document.getElementById('addressCity').value.trim(),
+                    postalCode: document.getElementById('addressPostalCode').value.trim(),
+                    country: document.getElementById('addressCountry').value.trim(),
+                    isDefault: document.getElementById('addressIsDefault').checked
+                };
+                addressStatus.classList.remove('is-hidden');
+                addressStatus.textContent = addressId ? 'Updating address...' : 'Saving address...';
+                await Account.request(addressId ? '/api/addresses/' + encodeURIComponent(addressId) : '/api/addresses', {
+                    method: addressId ? 'PUT' : 'POST',
+                    headers: Account.authHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify(body)
+                });
+                addressStatus.textContent = addressId ? 'Address updated.' : 'Address saved.';
+                addressForm.classList.add('is-hidden');
+                await loadAddresses();
+            }
+
+            async function deleteAddress(addressId) {
+                if (!window.confirm('Delete this saved address?')) return;
+                addressStatus.classList.remove('is-hidden');
+                addressStatus.textContent = 'Deleting address...';
+                await Account.request('/api/addresses/' + encodeURIComponent(addressId), {
+                    method: 'DELETE',
+                    headers: Account.authHeaders()
+                });
+                addressStatus.textContent = 'Address deleted.';
+                await loadAddresses();
+            }
+
+            async function setDefaultAddress(addressId) {
+                addressStatus.classList.remove('is-hidden');
+                addressStatus.textContent = 'Setting default address...';
+                await Account.request('/api/addresses/' + encodeURIComponent(addressId) + '/default', {
+                    method: 'PATCH',
+                    headers: Account.authHeaders()
+                });
+                addressStatus.textContent = 'Default address updated.';
+                await loadAddresses();
+            }
+
+            async function loadOrders() {
+                var json = await Account.request('/api/orders/my-orders', { headers: Account.authHeaders() });
+                accountOrders = Array.isArray(json.data) ? json.data : Array.isArray(json.orders) ? json.orders : [];
+                document.getElementById('orderCountSummary').textContent = accountOrders.length;
+                renderRecentOrders();
+                renderSavedLogos();
+            }
+
+            function renderRecentOrders() {
+                if (!accountOrders.length) {
+                    recentOrders.innerHTML = '<div class="empty">No orders yet. Once checkout creates an order, it will appear here automatically.</div>';
+                    return;
+                }
+                recentOrders.innerHTML = accountOrders.slice(0, 3).map(function (order, index) {
+                    var items = Array.isArray(order.items) ? order.items : [];
+                    var number = order.orderNumber || order.number || order.id || '-';
+                    var link = Account.pageHref('orderDetail') + '?id=' + encodeURIComponent(order.id || number);
+                    return '<article class="order-row">' +
+                        '<div class="order-top">' +
+                            '<div class="order-summary">' + renderThumbs(items) +
+                                '<div class="order-title"><strong>Order ' + escapeHtml(number) + '</strong><span>' + escapeHtml(formatDate(order.createdAt)) + ' - ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '</span></div>' +
+                            '</div>' +
+                            '<span class="badge">' + escapeHtml(order.paymentStatus || 'pending') + '</span>' +
+                        '</div>' +
+                        '<div class="order-meta">' +
+                            '<div class="mini"><span>Status</span><strong>' + escapeHtml(order.orderStatus || 'pending') + '</strong></div>' +
+                            '<div class="mini"><span>Total</span><strong>' + escapeHtml(formatMoney(order.totalAmount || order.total)) + '</strong></div>' +
+                            '<div class="mini"><span>Payment</span><strong>' + escapeHtml(order.paymentStatus || 'pending') + '</strong></div>' +
+                        '</div>' +
+                        '<div class="order-actions"><a class="btn btn-secondary" href="' + link + '">View details</a><button type="button" class="btn-accent" data-reorder-index="' + index + '">Order again</button></div>' +
+                    '</article>';
+                }).join('');
+            }
+
+            function orderAgain(order) {
+                try {
+                    Account.saveOrderToBasket(order);
+                    window.location.href = Account.pageHref('basket');
+                } catch (err) {
+                    status.textContent = err.message || 'Unable to reorder this item.';
+                }
+            }
         })();
     </script>
 </body>

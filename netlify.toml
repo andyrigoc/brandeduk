@@ -143,6 +143,11 @@
   status = 200
 
 [[redirects]]
+  from = "/order-detail"
+  to = "/order-detail.html"
+  status = 200
+
+[[redirects]]
   from = "/track-order"
   to = "/track-order.html"
   status = 200

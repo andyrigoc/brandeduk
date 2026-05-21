@@ -351,19 +351,39 @@
         .co-address-book-title { margin: 0 0 8px; font-size: 13px; font-weight: 800; color: var(--co-navy); }
         .co-address-list { display: grid; gap: 8px; }
         .co-address-option {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
+            display: grid;
+            gap: 8px;
             padding: 10px;
             border: 1px solid var(--co-border);
             border-radius: 8px;
             background: #fff;
-            cursor: pointer;
             color: var(--co-navy);
             font-size: 13px;
             line-height: 1.45;
         }
-        .co-address-option input { margin-top: 2px; }
+        .co-address-option.is-selected { border-color: var(--co-navy); background: #fffaf0; }
+        .co-address-option strong { color: var(--co-navy); font-size: 13px; }
+        .co-address-option span { color: var(--co-grey); }
+        .co-address-use {
+            width: max-content;
+            min-height: 34px;
+            border: 1px solid var(--co-navy);
+            border-radius: 999px;
+            padding: 0 14px;
+            background: var(--co-navy);
+            color: #fff;
+            font-weight: 900;
+            font-size: 12px;
+            box-shadow: 0 6px 14px rgba(39, 52, 105, 0.2);
+            cursor: pointer;
+        }
+        .co-address-use:hover { background: var(--co-navy-dark); border-color: var(--co-navy-dark); }
+        .co-address-option.is-selected .co-address-use {
+            background: var(--co-primary);
+            border-color: var(--co-primary);
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(22, 163, 74, 0.24);
+        }
         .co-address-empty { margin: 0; color: var(--co-grey); font-size: 13px; }
 
         /* register actions */
@@ -1097,11 +1117,19 @@
                 }));
             } catch(e) {}
         }
+        function coSplitName(fullName) {
+            var parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+            return {
+                first: parts.shift() || '',
+                last: parts.join(' ')
+            };
+        }
         function coFillDelivery(d) {
             d = d || {};
+            var splitName = coSplitName(d.fullName || d.name);
             var map = {
-                coDelFirst: d.first || d.firstName || d.givenName,
-                coDelLast: d.last || d.lastName || d.familyName,
+                coDelFirst: d.first || d.firstName || d.givenName || splitName.first,
+                coDelLast: d.last || d.lastName || d.familyName || splitName.last,
                 coDelCompany: d.company || d.companyName,
                 coDelEmail: d.email,
                 coDelPhone: d.phone || d.phoneNumber,
@@ -1116,6 +1144,17 @@
             });
             var sel = document.getElementById('coDelCountry');
             if (sel && d.country) sel.value = d.country;
+        }
+        function coPrefillDeliveryFromUser(user, fallbackEmail) {
+            user = user || {};
+            var splitName = coSplitName(user.name || user.fullName);
+            coFillDelivery({
+                firstName: user.firstName || user.givenName || splitName.first,
+                lastName: user.lastName || user.familyName || splitName.last,
+                email: user.email || fallbackEmail || '',
+                phone: user.phone || user.phoneNumber || ''
+            });
+            coSaveDelivery();
         }
         function coShowSignedInBar(user) {
             var bar = document.getElementById('coSignedInBar');
@@ -1146,9 +1185,7 @@
                     coFillDelivery(del);
                     coGoStep(3);
                 } else {
-                    _autoFill('coDelFirst', user.firstName || '');
-                    _autoFill('coDelLast',  user.lastName  || '');
-                    _autoFill('coDelEmail', user.email     || '');
+                    coPrefillDeliveryFromUser(user);
                     coGoStep(2);
                 }
             } catch(e) {}
@@ -1168,9 +1205,14 @@
             ].filter(Boolean);
             return parts.join(', ') || 'Saved address';
         }
-        function coUseAddress(address) {
-            _selectedAddressId = coAddressId(address);
+        function coUseAddress(address, silent, fallbackId) {
+            _selectedAddressId = coAddressId(address) || fallbackId || '';
             coFillDelivery(address || {});
+            coSaveDelivery();
+            if (!silent) coToast('Address selected');
+            Array.prototype.forEach.call(document.querySelectorAll('.co-address-option'), function (card) {
+                card.classList.toggle('is-selected', card.getAttribute('data-address-id') === String(_selectedAddressId || ''));
+            });
         }
         function coRenderAddresses(addresses) {
             var book = document.getElementById('coAddressBook');
@@ -1183,18 +1225,26 @@
             }
             list.innerHTML = addresses.map(function (address, i) {
                 var id = coAddressId(address) || String(i);
-                return '<label class="co-address-option">' +
-                    '<input type="radio" name="coSavedAddress" value="' + _esc(id) + '"' + (i === 0 ? ' checked' : '') + '>' +
+                var title = address.fullName || address.name || 'Saved address';
+                return '<div class="co-address-option" data-address-index="' + i + '" data-address-id="' + _esc(id) + '">' +
+                    '<strong>' + _esc(title) + '</strong>' +
                     '<span>' + _esc(coAddressLabel(address)) + '</span>' +
-                    '</label>';
+                    '<button type="button" class="co-address-use" data-address-index="' + i + '">Use this address</button>' +
+                    '</div>';
             }).join('');
             book.classList.add('show');
-            Array.prototype.forEach.call(list.querySelectorAll('input[name="coSavedAddress"]'), function (input, i) {
-                input.addEventListener('change', function () {
-                    if (input.checked) coUseAddress(addresses[i]);
+            Array.prototype.forEach.call(list.querySelectorAll('[data-address-index].co-address-use'), function (button) {
+                button.addEventListener('click', function () {
+                    var index = Number(button.getAttribute('data-address-index'));
+                    var fallbackId = coAddressId(addresses[index]) || String(index);
+                    coUseAddress(addresses[index], false, fallbackId);
                 });
             });
-            coUseAddress(addresses[0]);
+            var defaultAddress = addresses.find(function (address) { return address && address.isDefault; }) || addresses[0];
+            if (defaultAddress) {
+                var defaultIndex = addresses.indexOf(defaultAddress);
+                coUseAddress(defaultAddress, true, coAddressId(defaultAddress) || String(defaultIndex));
+            }
         }
         async function coLoadAddresses() {
             var json = await coFetchJson('/api/addresses', { headers: coAuthHeader() });
@@ -1202,15 +1252,57 @@
             if (!Array.isArray(addresses)) addresses = [];
             coRenderAddresses(addresses);
         }
+        async function coUpsertCheckoutAddress() {
+            if (!coGetAuthToken()) return '';
+            var delivery = coGetDelivery();
+            var payload = {
+                fullName: delivery.fullName,
+                phone: delivery.phone,
+                addressLine1: delivery.address1,
+                addressLine2: delivery.address2,
+                city: delivery.city,
+                postalCode: delivery.postcode,
+                country: delivery.country || 'GB',
+                isDefault: true
+            };
+            var addressId = window.coGetSelectedAddressId();
+            var path = addressId ? '/api/addresses/' + encodeURIComponent(addressId) : '/api/addresses';
+            var method = addressId ? 'PUT' : 'POST';
+            var json = await coFetchJson(path, {
+                method: method,
+                headers: Object.assign({ 'Content-Type': 'application/json' }, coAuthHeader()),
+                body: JSON.stringify(payload)
+            });
+            var saved = json.address || (json.data && (json.data.address || json.data)) || json.data || json;
+            if (saved && (saved.id || saved.addressId)) {
+                _selectedAddressId = saved.id || saved.addressId;
+                try {
+                    await coFetchJson('/api/addresses/' + encodeURIComponent(_selectedAddressId) + '/default', {
+                        method: 'PATCH',
+                        headers: coAuthHeader()
+                    });
+                } catch (e) {}
+            }
+            return _selectedAddressId || '';
+        }
         window.coUseNewAddress = function () {
             _selectedAddressId = '';
-            var checked = document.querySelector('input[name="coSavedAddress"]:checked');
-            if (checked) checked.checked = false;
+            Array.prototype.forEach.call(document.querySelectorAll('.co-address-option'), function (card) {
+                card.classList.remove('is-selected');
+            });
+            ['coDelAddr1', 'coDelAddr2', 'coDelCity', 'coDelPost'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
             var first = document.getElementById('coDelAddr1');
             if (first) first.focus();
+            coToast('Enter a new delivery address');
         };
         window.coStartGoogleAuth = async function () {
-            try { localStorage.setItem('authReturnTo', '/checkout'); } catch(e) {}
+            var returnTo = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+                ? '/checkout.html'
+                : '/checkout';
+            try { localStorage.setItem('authReturnTo', returnTo); } catch(e) {}
             var url = apiBase + '/auth/google';
             coToast('Connecting to Google…');
             try {
@@ -1248,15 +1340,13 @@
                 } catch(e) {}
                 return;
             }
+            coGoStep(2);
             try {
                 var user = await coFetchMe();
                 if (user) {
                     coSaveAuth(token, user);
                     coShowSignedInBar(user);
-                    _autoFill('coDelFirst', user.firstName || user.givenName || '');
-                    _autoFill('coDelLast', user.lastName || user.familyName || '');
-                    _autoFill('coDelEmail', user.email || '');
-                    _autoFill('coDelPhone', user.phone || user.phoneNumber || '');
+                    coPrefillDeliveryFromUser(user);
                     await coLoadAddresses().catch(function (e) {
                         console.warn('[Checkout] Address load failed:', e);
                     });
@@ -1280,6 +1370,7 @@
 
         /* ── Step navigation ── */
         function coGoStep(n) {
+            if (n === 1 && coGetAuthToken()) n = 2;
             [1, 2, 3].forEach(function (s) {
                 var el = document.getElementById('coStep' + s);
                 if (el) {
@@ -1385,10 +1476,7 @@
                 user = await coFetchMe().catch(function () { return user; });
                 coSaveAuth(token, user);
                 coShowSignedInBar(user);
-                _autoFill('coDelFirst', user.firstName || user.givenName || '');
-                _autoFill('coDelLast', user.lastName || user.familyName || '');
-                _autoFill('coDelEmail', user.email || email.value.trim());
-                _autoFill('coDelPhone', user.phone || user.phoneNumber || '');
+                coPrefillDeliveryFromUser(user, email.value.trim());
                 await coLoadAddresses().catch(function (e) {
                     console.warn('[Checkout] Address load failed:', e);
                 });
@@ -1459,7 +1547,19 @@
                 return;
             }
             coSaveDelivery();
-            coGoStep(3);
+            Promise.resolve()
+                .then(function () {
+                    return coUpsertCheckoutAddress().catch(function (e) {
+                        console.warn('[Checkout] Address save failed:', e);
+                        throw e;
+                    });
+                })
+                .then(function () {
+                    coGoStep(3);
+                })
+                .catch(function (e) {
+                    coToast(e.message || 'Unable to save address right now.');
+                });
         };
 
         /* ── Order summary ── */
@@ -1641,7 +1741,7 @@
 
     <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
     <!-- Stripe Checkout redirect flow -->
-    <script src="mobile/js/checkout.js?v=20260520-auth"></script>
+    <script src="mobile/js/checkout.js?v=20260521-order-history"></script>
 
 </body>
 </html>

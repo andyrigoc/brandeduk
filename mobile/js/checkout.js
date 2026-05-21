@@ -6,10 +6,18 @@ const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL)
     : 'https://api.brandeduk.com';
 
 const QUOTES_ENDPOINT = `${API_BASE_URL}/api/quotes`;
+const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-session`;
 const CREATE_ORDER_ENDPOINT = `${API_BASE_URL}/api/checkout/create-order`;
-const PAYMENT_SESSION_ENDPOINT = `${API_BASE_URL}/api/payment/create-session`;
-const ADDRESSES_ENDPOINT = `${API_BASE_URL}/api/addresses`;
 const VAT_RATE = 0.20;
+
+function isLocalApiBase() {
+    try {
+        const url = new URL(API_BASE_URL);
+        return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+    } catch (e) {
+        return false;
+    }
+}
 
 let checkoutSessionPending = false;
 
@@ -98,44 +106,119 @@ async function startStripeCheckout() {
 
     try {
         const quoteData = buildQuoteData(basket);
-        const token = (typeof window.coIsGuestCheckout === 'function' && window.coIsGuestCheckout())
-            ? ''
-            : getCheckoutAuthToken();
-        const orderPayload = buildOrderPayload(basket, quoteData);
+        const mirroredOrder = await createMirroredCustomerOrder(quoteData, basket);
 
-        if (token && !orderPayload.addressId) {
-            const savedAddressId = await saveCheckoutAddress(orderPayload.deliveryAddress, token).catch(error => {
-                console.warn('[Checkout] Address save failed, creating order with inline address:', error);
-                return '';
-            });
-            if (savedAddressId) orderPayload.addressId = savedAddressId;
+        // Keep Pay Now on the existing quote/payment flow. This triggers the
+        // quote email first, then creates the Stripe Checkout session.
+        let quoteId = '';
+        try {
+            const quoteJson = await submitQuoteWithLogos(quoteData);
+            quoteId = quoteJson.quoteId || quoteJson.data?.quoteId || quoteJson.id || '';
+        } catch (e) {
+            throw new Error(e?.message || 'Unable to submit quote. Please try again.');
         }
 
-        const orderJson = await createCheckoutOrder(orderPayload, token);
-        const orderNumber = extractOrderNumber(orderJson);
-        if (!orderNumber) {
-            throw new Error('Order created but no order number was returned.');
-        }
+        const checkoutQuoteData = sanitizeQuotePayload(quoteData);
+        const response = await fetch(CHECKOUT_SESSION_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                quoteData: checkoutQuoteData,
+                orderNumber: mirroredOrder.orderNumber || '',
+            }),
+        });
 
-        const sessionJson = await createPaymentSession(orderNumber, token);
-        const checkoutUrl = extractCheckoutUrl(sessionJson);
-        if (!checkoutUrl) {
-            throw new Error('Payment session created but no Stripe checkout URL was returned.');
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.success || !result.data?.checkoutUrl) {
+            throw new Error(result.message || result.error || `Unable to start payment (${response.status})`);
         }
 
         try {
-            sessionStorage.setItem('pendingOrderNumber', orderNumber);
-            if (sessionJson.data?.checkoutSessionId || sessionJson.checkoutSessionId) {
-                sessionStorage.setItem('pendingStripeCheckoutSessionId', sessionJson.data?.checkoutSessionId || sessionJson.checkoutSessionId);
-            }
+            sessionStorage.setItem('pendingStripeQuoteId', quoteId || result.data.quoteId || '');
+            sessionStorage.setItem('pendingStripeCheckoutSessionId', result.data.checkoutSessionId || '');
+            sessionStorage.setItem('pendingCustomerOrderNumber', mirroredOrder.orderNumber || '');
         } catch (storageError) {}
 
-        window.location.href = checkoutUrl;
+        window.location.href = result.data.checkoutUrl;
     } catch (err) {
         checkoutSessionPending = false;
         setCheckoutButtonLoading(false);
         showPaymentError(err.message || 'Unable to start secure checkout. Please try again.');
     }
+}
+
+async function createMirroredCustomerOrder(quoteData, basket) {
+    const customer = quoteData.customer || {};
+    const selectedAddressId = typeof window.coGetSelectedAddressId === 'function'
+        ? window.coGetSelectedAddressId()
+        : '';
+    const authToken = typeof window.coGetAuthToken === 'function'
+        ? window.coGetAuthToken()
+        : (localStorage.getItem('authToken') || localStorage.getItem('coAuthToken') || '');
+
+    const deliveryAddress = {
+        fullName: customer.fullName || 'Guest',
+        phone: customer.phone || '',
+        addressLine1: customer.address1 || customer.address || '',
+        addressLine2: customer.address2 || '',
+        city: customer.city || '',
+        postalCode: customer.postcode || customer.postalCode || '',
+        country: customer.country || 'GB',
+    };
+
+    const body = {
+        items: buildOrderItems(basket),
+        subtotal: roundMoney(quoteData.summary?.totalExVat || 0),
+        deliveryFee: 0,
+        discount: 0,
+        totalAmount: roundMoney(quoteData.summary?.totalIncVat || quoteData.summary?.displayTotal || 0),
+        paymentMethod: 'stripe',
+    };
+
+    if (authToken) {
+        if (selectedAddressId) {
+            body.addressId = selectedAddressId;
+        } else {
+            body.deliveryAddress = deliveryAddress;
+        }
+    } else {
+        body.guestEmail = customer.email || '';
+        body.guestPhone = customer.phone || '';
+        body.deliveryAddress = deliveryAddress;
+    }
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
+    const response = await fetch(CREATE_ORDER_ENDPOINT, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success || !result.data?.orderNumber) {
+        throw new Error(result.message || result.error || `Unable to create order history (${response.status})`);
+    }
+    return result.data;
+}
+
+function buildOrderItems(basket) {
+    return basket.map(item => {
+        const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
+        const unitPrice = roundMoney(item.unitPrice || item.price || 0);
+        const itemTotal = roundMoney(item.itemTotal || (unitPrice * qty));
+        return {
+            code: item.code || item.productCode || '',
+            name: item.productName || item.name || 'Product',
+            color: item.selectedColorName || item.colorName || item.color || '',
+            quantity: qty,
+            unitPrice,
+            total: itemTotal,
+            image: item.image || item.imageUrl || '',
+            sizes: item.sizes || item.sizeBreakdown || null,
+        };
+    });
 }
 
 function showPaymentStart() {
@@ -205,7 +288,9 @@ function buildQuoteData(basket) {
 }
 
 async function submitQuoteWithLogos(quoteData) {
-    if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
+    // BrandedAPI is hardcoded to production base URL. When testing locally, always
+    // call the local backend directly to avoid sending emails from production.
+    if (!isLocalApiBase() && window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
         return window.BrandedAPI.submitQuote(quoteData);
     }
 
@@ -239,111 +324,6 @@ async function submitQuoteWithLogos(quoteData) {
         throw new Error(quoteJson.message || `Unable to submit quote (${quoteRes.status})`);
     }
     return quoteJson;
-}
-
-function getCheckoutAuthToken() {
-    if (typeof window.coGetAuthToken === 'function') return window.coGetAuthToken();
-    try {
-        return localStorage.getItem('authToken') || localStorage.getItem('coAuthToken') || '';
-    } catch (e) {
-        return '';
-    }
-}
-
-function getCheckoutDeliveryAddress() {
-    if (typeof window.coGetDelivery === 'function') return window.coGetDelivery();
-    const customer = typeof window.coGetCustomer === 'function' ? window.coGetCustomer() : getCustomerData();
-    return {
-        fullName: customer.fullName || 'Guest',
-        firstName: customer.firstName || '',
-        lastName: customer.lastName || '',
-        company: customer.company || '',
-        email: customer.email || '',
-        phone: customer.phone || '',
-        address: customer.address || '',
-        address1: customer.address1 || customer.address || '',
-        address2: customer.address2 || '',
-        city: customer.city || '',
-        postcode: customer.postcode || '',
-        country: customer.country || 'GB',
-    };
-}
-
-function buildOrderPayload(basket, quoteData) {
-    const deliveryAddress = getCheckoutDeliveryAddress();
-    const addressId = typeof window.coGetSelectedAddressId === 'function'
-        ? window.coGetSelectedAddressId()
-        : '';
-
-    const payload = {
-        customer: quoteData.customer,
-        deliveryAddress,
-        basket: quoteData.basket,
-        customizations: quoteData.customizations,
-        summary: quoteData.summary,
-        selectedGraphic: quoteData.selectedGraphic,
-        notes: quoteData.notes,
-        source: 'frontend-checkout',
-        createdAt: new Date().toISOString(),
-    };
-
-    if (addressId) payload.addressId = addressId;
-    return sanitizeQuotePayload(payload);
-}
-
-async function saveCheckoutAddress(address, token) {
-    if (!token || !address) return '';
-    const response = await fetch(ADDRESSES_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ address: sanitizeQuotePayload(address) }),
-    });
-    const json = await response.json().catch(() => ({}));
-    if (!response.ok || json.success === false) {
-        throw new Error(json.message || json.error || `Unable to save address (${response.status})`);
-    }
-    return json.addressId || json.id || json.data?.addressId || json.data?.id || json.address?.id || json.data?.address?.id || '';
-}
-
-async function createCheckoutOrder(orderPayload, token) {
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers.Authorization = `Bearer ${token}`;
-    const response = await fetch(CREATE_ORDER_ENDPOINT, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(orderPayload),
-    });
-    const json = await response.json().catch(() => ({}));
-    if (!response.ok || json.success === false) {
-        throw new Error(json.message || json.error || `Unable to create order (${response.status})`);
-    }
-    return json;
-}
-
-async function createPaymentSession(orderNumber, token) {
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers.Authorization = `Bearer ${token}`;
-    const response = await fetch(PAYMENT_SESSION_ENDPOINT, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ orderNumber }),
-    });
-    const json = await response.json().catch(() => ({}));
-    if (!response.ok || json.success === false) {
-        throw new Error(json.message || json.error || `Unable to start payment (${response.status})`);
-    }
-    return json;
-}
-
-function extractOrderNumber(json) {
-    return json.orderNumber || json.number || json.data?.orderNumber || json.data?.number || json.order?.orderNumber || json.data?.order?.orderNumber || '';
-}
-
-function extractCheckoutUrl(json) {
-    return json.checkoutUrl || json.url || json.data?.checkoutUrl || json.data?.url || json.session?.url || json.data?.session?.url || '';
 }
 
 function calculateBasketTotals(basket) {
