@@ -516,6 +516,29 @@ function populateProductSpecsTable() {
     specsEl.style.display = '';
 }
 
+/** Mobile/tablet: scroll to colour + sizes (above recommendations after layout fix). */
+function scrollTouchProductPageToBuySection() {
+    if (!window.matchMedia('(max-width: 1366px)').matches) return;
+
+    const run = function () {
+        const target = document.querySelector('.right-column .tier-pricing-compact') ||
+            document.getElementById('colorGrid') ||
+            document.querySelector('.right-column .rala-cta-row') ||
+            document.querySelector('.right-column');
+        if (!target) return;
+
+        const topBar = document.querySelector('.tablet-top-bar') || document.querySelector('.searchbar-header');
+        const headerReserve = Math.max(8, (topBar ? topBar.getBoundingClientRect().bottom : 0) + 8);
+        const y = window.scrollY + target.getBoundingClientRect().top - headerReserve;
+        window.scrollTo({ top: Math.max(0, y), left: 0, behavior: 'smooth' });
+    };
+
+    requestAnimationFrame(function () {
+        requestAnimationFrame(run);
+    });
+    setTimeout(run, 350);
+}
+
 function initProductRecommendationsSection() {
     const root = document.getElementById('productRecommendations');
 
@@ -899,6 +922,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Load the collapsed comparison drawer for related and alternative products
         initProductRecommendationsSection();
+
+        scrollTouchProductPageToBuySection();
 
         // ===== FINAL SAFEGUARD: Ensure primary API image is shown =====
         // If no color has been actively selected by the user, force the primary image

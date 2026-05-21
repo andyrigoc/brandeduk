@@ -884,41 +884,50 @@ html, body {
     bottom: calc(64px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
-    background: white;
-    padding: 12px 16px;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    background: #1a1f3a;
+    border-top: 2px solid #ffb20a;
+    padding: 0;
+    min-height: 56px;
+    box-shadow: 0 -3px 15px rgba(255, 178, 10, 0.2);
     z-index: 1000;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
-    gap: 12px;
+    gap: 0;
 }
 
 .sticky-summary {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
     gap: 2px;
+    flex-shrink: 0;
+    min-width: 112px;
+    padding: 0 18px 0 20px;
+    border-left: 2px solid rgba(255, 178, 10, 0.45);
 }
 
 #stickyItemCount {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: #ffb20a;
     font-weight: 500;
 }
 
 #stickyTotal {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    color: #1f2937;
+    color: #ffb20a;
+    line-height: 1;
 }
 
 .sticky-cta {
-    flex: 0 0 auto;
-    padding: 14px 24px;
-    background: linear-gradient(135deg, #E4D9FF, #273469);
-    color: white;
+    flex: 1;
+    padding: 14px 20px;
+    background: #1a1f3a;
+    color: #fff;
     border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    border-radius: 0;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -2068,16 +2077,51 @@ html, body {
    RESPONSIVE - TABLET (768px - 1024px)
 --------------------------------------------------- */
 
-@media (max-width: 1024px) {
+@media (max-width: 1366px) {
+    /* Mobile/tablet: buy form BEFORE recommendations (recommendations were blocking the form) */
     .page-container {
+        display: grid;
         grid-template-columns: 1fr;
-        gap: 32px;
+        grid-template-areas:
+            "visual"
+            "buy"
+            "desc"
+            "recs";
+        gap: 24px;
         padding: 24px 20px 40px;
     }
 
     .left-column {
+        display: contents;
+        max-width: none;
+        margin: 0;
+    }
+
+    .product-visual {
+        grid-area: visual;
+    }
+
+    .description-box {
+        grid-area: desc;
+    }
+
+    #productRecommendations.product-recommendations,
+    .product-recommendations {
+        grid-area: recs;
+    }
+
+    .right-column {
+        grid-area: buy;
         max-width: 600px;
+        width: 100%;
         margin: 0 auto;
+    }
+}
+
+@media (max-width: 1024px) {
+    .page-container {
+        gap: 32px;
+        padding: 24px 20px 40px;
     }
 
     /* Tablet/touch: don't pin the main image; let it scroll normally */

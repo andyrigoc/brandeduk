@@ -3748,14 +3748,15 @@ a {
     position: relative;
     background-color: #ffffff;
     border-radius: 12px;
+    min-height: 200px;
 }
 
 .position-placeholder {
     display: block;
-    width: auto;
+    width: 100%;
     max-width: 100%;
     height: auto;
-    max-height: 200px;
+    max-height: 260px;
     margin-left: auto;
     margin-right: auto;
     object-fit: contain;
@@ -3781,8 +3782,8 @@ a {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 140px;
-    padding: 10px 8px;
+    min-height: 200px;
+    padding: 6px 4px;
     box-sizing: border-box;
     background-color: #ffffff !important;
     border-radius: 10px;
@@ -3792,7 +3793,8 @@ a {
 .garment-tint-base {
     display: block;
     width: 100%;
-    max-height: 200px;
+    max-width: 100%;
+    max-height: 260px;
     object-fit: contain;
     mix-blend-mode: screen;
 }
@@ -3846,8 +3848,8 @@ a {
 .garment-tint-mask {
     display: none;
     width: 100%;
-    max-height: 200px;
-    min-height: 160px;
+    max-height: 260px;
+    min-height: 200px;
     margin: 0 auto;
     background-color: var(--garment-tint, transparent);
     -webkit-mask-image: var(--garment-mask-url);
@@ -11442,7 +11444,8 @@ a.continue-shopping {
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
-    min-height: 200px;
+    min-height: 248px;
+    padding: 4px 2px;
     text-align: center !important;
     background-color: #ffffff !important;
 }
@@ -11450,14 +11453,24 @@ a.continue-shopping {
 #positionsPopupOverlay .position-preview img,
 #positionsPopupOverlay .position-placeholder {
     display: block !important;
-    width: auto !important;
-    max-width: 92% !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
-    max-height: 200px !important;
+    max-height: 280px !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
     align-self: center !important;
+}
+
+#positionsPopupOverlay .garment-tint-stack {
+    min-height: 220px !important;
+    padding: 4px 2px !important;
+}
+
+#positionsPopupOverlay .garment-tint-base,
+#positionsPopupOverlay .garment-tint-mask.is-active {
+    max-height: 280px !important;
 }
 
 #positionsPopupOverlay .position-preview--garment-tint,
