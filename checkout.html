@@ -1298,32 +1298,14 @@
             if (first) first.focus();
             coToast('Enter a new delivery address');
         };
-        window.coStartGoogleAuth = async function () {
+        window.coStartGoogleAuth = function () {
             var returnTo = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
                 ? '/checkout.html'
                 : '/checkout';
             try { localStorage.setItem('authReturnTo', returnTo); } catch(e) {}
             var url = apiBase + '/auth/google';
             coToast('Connecting to Google…');
-            try {
-                var res = await fetch(url, { method: 'GET', redirect: 'manual', credentials: 'include' });
-                /* OAuth starts with 302 to Google; 200/HTML also acceptable on some stacks */
-                if (res.status === 302 || res.status === 301 || res.status === 303 || res.status === 200) {
-                    window.location.href = url;
-                    return;
-                }
-                throw new Error('Sign-in service unavailable (' + res.status + ')');
-            } catch (e) {
-                var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-                var msg = isLocal
-                    ? 'Google sign-in needs the API server running (port 3004). Use Continue as Guest for now.'
-                    : 'Google sign-in is temporarily unavailable. Please use Continue as Guest or email login.';
-                if (e && e.message && !/failed|network|refused|fetch/i.test(e.message)) {
-                    msg = e.message;
-                }
-                console.warn('[Checkout] Google auth unavailable:', e);
-                coToast(msg, 6000);
-            }
+            window.location.href = url;
         };
         window.coContinueGuest = function () {
             _guestCheckout = true;
