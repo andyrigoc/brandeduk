@@ -11419,24 +11419,25 @@ a.continue-shopping {
     }
 
     #positionsPopupOverlay .position-preview {
-        min-height: clamp(240px, 56vw, 380px) !important;
-        padding: 6px 2px !important;
+        min-height: 0 !important;
+        padding: 8px 4px !important;
     }
 
-    #positionsPopupOverlay .position-preview img,
+    #positionsPopupOverlay .position-preview img.position-placeholder,
     #positionsPopupOverlay .position-placeholder {
-        max-height: min(360px, 50vh) !important;
-        width: 100% !important;
+        max-height: min(280px, 42vh) !important;
+        width: auto !important;
         max-width: 100% !important;
     }
 
     #positionsPopupOverlay .garment-tint-stack {
-        min-height: clamp(220px, 52vw, 340px) !important;
+        min-height: 0 !important;
+        max-height: min(280px, 42vh) !important;
     }
 
     #positionsPopupOverlay .garment-tint-base,
     #positionsPopupOverlay .garment-tint-mask.is-active {
-        max-height: min(360px, 50vh) !important;
+        max-height: min(280px, 42vh) !important;
     }
 }
 
@@ -11456,7 +11457,7 @@ a.continue-shopping {
     }
 }
 
-/* Hide empty overlay / dashed boxes on the garment image */
+/* Hide empty overlay on garment — logo preview is the box below the shirt */
 #positionsPopupOverlay .logo-overlay-box {
     display: none !important;
 }
@@ -11466,19 +11467,6 @@ a.continue-shopping {
     display: none !important;
 }
 
-#positionsPopupOverlay .position-preview-content:not([hidden]) {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    top: auto;
-    min-height: 0;
-    max-height: 72px;
-    padding: 6px;
-    z-index: 4;
-    border-radius: 10px;
-}
-
 #positionsPopupOverlay .position-card {
     width: 100%;
     max-width: 100%;
@@ -11486,7 +11474,7 @@ a.continue-shopping {
     margin: 0;
     padding: 12px;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
 }
 
 #positionsPopupOverlay .position-card-header,
@@ -11498,9 +11486,56 @@ a.continue-shopping {
     box-sizing: border-box;
 }
 
-#positionsPopupOverlay .position-preview-content,
 #positionsPopupOverlay .uploaded-logo-box {
     overflow: hidden;
+}
+
+/* Logo preview box: compact, centered under garment — not full-width strip */
+#positionsPopupOverlay .position-preview-content:not([hidden]) {
+    position: static !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: min(176px, 82%) !important;
+    max-width: 200px !important;
+    min-width: 120px !important;
+    height: 80px !important;
+    min-height: 80px !important;
+    max-height: 80px !important;
+    margin: 10px auto 2px !important;
+    padding: 8px 30px 8px 10px !important;
+    box-sizing: border-box !important;
+    border: 2px dashed rgba(39, 52, 105, 0.28) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    flex-shrink: 0;
+}
+
+#positionsPopupOverlay .position-preview-content .preview-image:not([hidden]) {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: calc(100% - 4px) !important;
+    max-height: 64px !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    margin: 0 auto !important;
+}
+
+#positionsPopupOverlay .position-preview-content .preview-text:not([hidden]) {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 64px !important;
+    overflow: hidden !important;
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    word-break: break-word !important;
+}
+
+#positionsPopupOverlay .position-preview-content .preview-delete-btn {
+    top: 6px !important;
+    right: 6px !important;
 }
 
 #positionsPopupOverlay .position-prices {
@@ -11526,37 +11561,40 @@ a.continue-shopping {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     width: 100% !important;
-    min-height: 280px;
-    padding: 4px 2px;
+    min-height: 0;
+    padding: 8px 4px;
+    gap: 0;
     text-align: center !important;
     background-color: #ffffff !important;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
-#positionsPopupOverlay .position-preview img,
-#positionsPopupOverlay .position-placeholder {
+#positionsPopupOverlay .position-preview > .position-placeholder,
+#positionsPopupOverlay .position-preview > img.position-placeholder {
     display: block !important;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 320px !important;
+    max-height: 300px !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
-    align-self: center !important;
+    flex-shrink: 0;
 }
 
 #positionsPopupOverlay .garment-tint-stack {
-    min-height: 260px !important;
+    min-height: 0 !important;
+    max-height: 300px !important;
     padding: 4px 2px !important;
+    flex-shrink: 0;
 }
 
 #positionsPopupOverlay .garment-tint-base,
 #positionsPopupOverlay .garment-tint-mask.is-active {
-    max-height: 320px !important;
+    max-height: 300px !important;
 }
 
 #positionsPopupOverlay .position-preview--garment-tint,
