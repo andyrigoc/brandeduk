@@ -180,11 +180,13 @@
             text-decoration: underline;
         }
         body.basket-page .basket-header .clear-btn,
-        body.basket-page .item-row-remove {
+        body.basket-page .item-row-remove,
+        body.basket-page .logo-row-remove {
             color: var(--basket-orange) !important;
         }
         body.basket-page .basket-header .clear-btn:hover,
-        body.basket-page .item-row-remove:hover {
+        body.basket-page .item-row-remove:hover,
+        body.basket-page .logo-row-remove:hover {
             color: #dc2626 !important;
         }
 
@@ -215,6 +217,69 @@
         .confirm-btn { flex: 1; height: 44px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; font-weight: 700; cursor: pointer; }
         .confirm-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .confirm-btn--danger { border: none; background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+        .confirm-btn--primary { border: none; background: linear-gradient(135deg, #273469, #1E2749); color: #fff; }
+        .confirm-modal__body strong { color: #111827; }
+        .min-order-modal__current {
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        /* Minimum order popup — slightly smaller than default confirm modal */
+        #minOrderModal .confirm-modal {
+            max-width: 300px;
+            border-radius: 14px;
+        }
+        #minOrderModal .confirm-modal__header {
+            padding: 14px 14px 6px;
+        }
+        #minOrderModal .confirm-modal__title {
+            font-size: 16px;
+        }
+        #minOrderModal .confirm-modal__body {
+            padding: 0 14px 12px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        #minOrderModal .confirm-modal__body p {
+            margin: 0 0 6px;
+        }
+        #minOrderModal .confirm-modal__actions {
+            padding: 10px 14px 14px;
+            gap: 8px;
+        }
+        #minOrderModal .confirm-btn {
+            height: 40px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+
+        @keyframes minOrderQuoteHeartbeat {
+            0%, 100% { transform: scale(1); }
+            12% { transform: scale(1.07); }
+            24% { transform: scale(1); }
+            36% { transform: scale(1.05); }
+            48% { transform: scale(1); }
+        }
+
+        #minOrderModalQuote {
+            animation: minOrderQuoteHeartbeat 1.6s ease-in-out infinite;
+            transform-origin: center center;
+        }
+
+        #minOrderModalQuote:hover {
+            animation-play-state: paused;
+            filter: brightness(1.05);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #minOrderModalQuote {
+                animation: none;
+            }
+        }
 
         /* Content & Empty State */
         .basket-content {
@@ -245,11 +310,9 @@
         }
         .basket-item-row:first-child { padding-top: 10px; }
 
-        /* Item header: image + info + remove */
+        /* Item header: thumb + title/Remove on one line; details indented below */
         .item-row-header {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
+            display: block;
         }
         .item-row-header--clickable {
             cursor: pointer;
@@ -260,30 +323,85 @@
         }
         .item-row-header--clickable:hover { background: #f3f4f6; }
         .item-row-header--clickable:active { background: #e5e7eb; }
+        .item-row-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+        }
+        .item-row-image {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
+        .item-row-head-text {
+            flex: 1;
+            min-width: 0;
+            padding-top: 1px;
+        }
+        .item-row-title-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        .item-row-title {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--basket-navy);
+            line-height: 1.3;
+        }
+        .item-row-remove {
+            color: var(--basket-orange);
+            font-size: 13px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
+            line-height: 1.3;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
+        .item-row-meta {
+            margin: 2px 0 0 calc(52px + 12px);
+        }
+        .item-row-meta .item-code { font-size: 11px; color: #9ca3af; margin: 0; }
+        .item-row-meta .item-color { font-size: 12px; color: #6b7280; margin: 0; }
+        .item-row-meta .item-size { font-size: 12px; color: #6b7280; margin: 0; }
         .item-edit-hint {
             font-size: 11px;
             color: #2563eb;
-            margin: 2px 0 0;
-            font-weight: 500;
+            margin: 4px 0 0 calc(52px + 12px);
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            text-align: left;
+            font-family: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            display: block;
         }
-        .item-row-image {
-            width: 52px; height: 52px; flex-shrink: 0;
-            border-radius: 6px; overflow: hidden;
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
-        .item-row-info { flex: 1; min-width: 0; }
-        .item-row-info h4 { font-size: 13px; font-weight: 700; color: var(--basket-navy); margin: 0 0 1px; }
-        .item-row-info .item-code { font-size: 11px; color: #9ca3af; margin: 0; }
-        .item-row-info .item-color { font-size: 12px; color: #6b7280; margin: 0; }
-        .item-row-info .item-size { font-size: 12px; color: #6b7280; margin: 0; }
-        .item-row-remove {
-            color: var(--basket-orange); font-size: 13px; font-weight: 600; background: none; border: none;
-            cursor: pointer; padding: 0; margin-top: 4px;
-        }
-        .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
+        .item-edit-hint:hover { color: #1d4ed8; }
 
         /* Qty controls + price per item */
         .item-row-qty-price {
@@ -325,29 +443,83 @@
             margin-top: 12px;
         }
         .logo-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 12px 0;
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr);
+            column-gap: 10px;
+            align-items: start;
+            padding: 10px 0 12px;
             border-top: 1px solid #f3f4f6;
         }
         .logo-thumb-wrap {
-            width: 72px; height: 72px; border-radius: 8px;
-            border: 1px solid #e5e7eb; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; box-sizing: border-box;
+            grid-column: 1;
+            grid-row: 1;
+            width: 72px;
+            height: 72px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin: 0;
+            padding: 0;
+            align-self: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-sizing: border-box;
             /* Garment colour contrast — do not override in mobile.css; set inline + --garment-bg */
             background-color: var(--garment-bg, #f3f4f6) !important;
+        }
+        .logo-row .logo-thumb-wrap {
+            margin-top: 1px;
         }
         .logo-thumb-wrap--light { border-color: #cbd5e1; }
         .logo-row .logo-thumb {
             width: 100%; height: 100%; object-fit: contain;
             background: transparent; border: none; display: block;
         }
-        .logo-row .logo-info { flex: 1; min-width: 0; }
+        .logo-row .logo-info {
+            grid-column: 2;
+            grid-row: 1;
+            min-width: 0;
+            align-self: start;
+            margin: 0;
+            padding: 1px 0 0;
+        }
+        .logo-row .logo-title-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
         .logo-row .logo-method-label {
-            font-size: 13px; font-weight: 600; color: var(--basket-navy);
-            display: flex; align-items: center; gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--basket-navy);
+            line-height: 1.3;
+            margin: 0;
+            padding: 0;
+            flex: 1;
+            min-width: 0;
+        }
+        .logo-row .logo-row-remove {
+            color: var(--basket-orange);
+            font-size: 13px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
+            line-height: 1.3;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .logo-row .logo-row-remove:hover {
+            color: #dc2626; text-decoration: underline;
         }
         .logo-row .logo-method-label .method-icons { font-size: 12px; }
         .logo-row .logo-position-label { font-size: 12px; color: #6b7280; margin-top: 1px; }
@@ -356,8 +528,18 @@
             font-size: 13px; font-weight: 600; color: #374151;
             padding: 10px 0 4px; border-top: 1px solid #f3f4f6; margin-top: 4px;
         }
+        .logo-row .logo-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 6px;
+            width: 100%;
+        }
         .logo-row .logo-actions {
-            display: flex; gap: 8px; margin-top: 4px;
+            display: flex; gap: 8px; margin-top: 0;
+            flex: 1;
+            flex-wrap: wrap;
         }
         .logo-row .logo-actions button {
             font-size: 12px; font-weight: 600; padding: 0; border: none; background: none; cursor: pointer;
@@ -374,7 +556,15 @@
             color: var(--basket-link-blue) !important;
         }
         .logo-row .logo-price {
-            font-size: 14px; font-weight: 600; color: var(--basket-navy); white-space: nowrap; text-align: right;
+            font-size: 14px; font-weight: 600; color: var(--basket-navy);
+            white-space: nowrap; text-align: right; flex-shrink: 0;
+            line-height: 1.25;
+        }
+        .logo-row .logo-price small {
+            display: block;
+            font-weight: 400;
+            color: #6b7280;
+            font-size: 11px;
         }
 
         /* Add another logo button (black) */
@@ -450,7 +640,7 @@
         .btn-checkout-primary:hover { background: #15803d; }
         .btn-request-quote {
             width: 100%; padding: 14px; background: #fff; color: #7c3aed;
-            border: 2px solid #7c3aed; border-radius: 10px; font-size: 14px; font-weight: 600;
+            border: 2px dashed #7c3aed; border-radius: 10px; font-size: 14px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
         .btn-request-quote:hover { background: #f5f3ff; }
@@ -1814,16 +2004,20 @@
                         <div class="logo-row">
                             ${thumbSrc ? `<div class="${thumbWrapClass}" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
                             <div class="logo-info">
-                                <div class="logo-method-label">${methodLabel}</div>
+                                <div class="logo-title-line">
+                                    <div class="logo-method-label">${methodLabel}</div>
+                                    <button type="button" class="logo-row-remove" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
+                                </div>
                                 <div class="logo-position-label">Position: ${posLabel}</div>
                                 ${logo.notes ? `<div class="logo-notes">${logo.notes}</div>` : ''}
-                                <div class="logo-actions">
-                                    <button class="edit-btn" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
-                                    <button class="copy-btn" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
-                                    <button class="remove-btn" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
+                                <div class="logo-actions-row">
+                                    <div class="logo-actions">
+                                        <button class="edit-btn" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
+                                        <button class="copy-btn" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
+                                    </div>
+                                    <div class="logo-price">${formatCurrency(logoTotal)}<small>exc. VAT</small></div>
                                 </div>
                             </div>
-                            <div class="logo-price">${formatCurrency(logoTotal)}<br><small style="font-weight:400;color:#6b7280">exc. VAT</small></div>
                         </div>
                     `;
                 });
@@ -1840,17 +2034,23 @@
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
-                        <div class="item-row-image" title="${(item.color || '').replace(/"/g, '&quot;')}">
-                            <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                        <div class="item-row-top">
+                            <div class="item-row-image" title="${(item.color || '').replace(/"/g, '&quot;')}">
+                                <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
+                            </div>
+                            <div class="item-row-head-text">
+                                <div class="item-row-title-line">
+                                    <h4 class="item-row-title">${item.name || 'Product'}</h4>
+                                    <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="item-row-info">
-                            <h4>${item.name || 'Product'}</h4>
+                        <div class="item-row-meta">
                             <p class="item-code">${item.code || ''}</p>
                             <p class="item-color">${item.color || ''}</p>
                             <p class="item-size">${item.size || ''}</p>
-                            <p class="item-edit-hint">Tap to change colour or size</p>
-                            <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                         </div>
+                        <button type="button" class="item-edit-hint" onclick="event.stopPropagation(); editBasketItem(${index})">Tap to change colour or size</button>
                     </div>
 
                     <div class="item-row-qty-price">
@@ -1888,13 +2088,15 @@
     // RENDER SUMMARY (bottom)
     // ========================
 
-    function renderSummary(basket) {
+    const MIN_ORDER_EX_VAT = 50;
+    const BASKET_VAT_RATE = 0.20;
+
+    function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
-        let digitizingFee = 0;
         const uniqueEmbLogos = new Set();
 
-        basket.forEach(item => {
+        (basket || []).forEach(item => {
             const qty = item.qty || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
             productCosts += unitPrice * qty;
@@ -1909,10 +2111,53 @@
             }
         });
 
-        digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
+        const digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
         const subtotalExVat = productCosts + logoCosts + digitizingFee;
-        const vatAmount = subtotalExVat * 0.20;
-        const grandTotal = subtotalExVat + vatAmount;
+        const vatAmount = subtotalExVat * BASKET_VAT_RATE;
+        const grandTotalIncVat = subtotalExVat + vatAmount;
+
+        return {
+            productCosts,
+            logoCosts,
+            digitizingFee,
+            subtotalExVat,
+            vatAmount,
+            grandTotalIncVat,
+            meetsMinOrder: subtotalExVat >= MIN_ORDER_EX_VAT
+        };
+    }
+
+    function openMinOrderModal(totals) {
+        const overlay = document.getElementById('minOrderModal');
+        const currentEl = document.getElementById('minOrderModalCurrent');
+        if (!overlay) return;
+        if (currentEl && totals) {
+            currentEl.innerHTML =
+                'Your order total (ex. VAT): <strong>\u00A3' + totals.subtotalExVat.toFixed(2) + '</strong><br>' +
+                'Minimum required: <strong>\u00A3' + MIN_ORDER_EX_VAT.toFixed(2) + ' + VAT</strong>';
+        }
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMinOrderModal() {
+        const overlay = document.getElementById('minOrderModal');
+        if (!overlay) return;
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function renderSummary(basket) {
+        const {
+            productCosts,
+            logoCosts,
+            digitizingFee,
+            subtotalExVat,
+            vatAmount,
+            grandTotalIncVat: grandTotal
+        } = computeBasketTotals(basket);
 
         // Update summary
         const el = (id) => document.getElementById(id);
@@ -2242,12 +2487,15 @@
     window.editBasketItem = function editBasketItem(itemIndex) {
         const basket = getBasket();
         const item = basket[itemIndex];
-        if (!item) return;
+        if (!item) {
+            console.warn('editBasketItem: no item at index', itemIndex);
+            return;
+        }
 
         _writeLogosAsOldFormat(itemIndex);
 
         sessionStorage.setItem('customizingBasketIndex', String(itemIndex));
-        sessionStorage.removeItem('returnAfterCustomize');
+        sessionStorage.setItem('returnAfterCustomize', 'basket');
         sessionStorage.removeItem('basketEditNewColor');
         sessionStorage.setItem('basketEditSingleItem', '1');
         if (item.id) sessionStorage.setItem('basketEditItemId', item.id);
@@ -2258,6 +2506,7 @@
         _setCustomizeSessionData(item);
 
         const isMobile = window.innerWidth < 1024;
+        const code = item.code || item.productCode || '';
         const codeQ = code ? ('code=' + encodeURIComponent(code) + '&') : '';
         const url = (isMobile ? 'mobile/customize-mobile.html' : 'customize.html') + '?' + codeQ + 'editItem=1&_cb=' + Date.now();
         openCustomizePopup(url);
@@ -2332,6 +2581,13 @@
         console.log('🔄 [closeCustomizePopup] Called - syncing logos and re-rendering basket');
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
+        try {
+            if (iframe && iframe.contentWindow && typeof iframe.contentWindow._forceAutoSave === 'function') {
+                iframe.contentWindow._forceAutoSave();
+            }
+        } catch (e) {
+            console.warn('closeCustomizePopup: iframe save skipped', e);
+        }
         if (overlay) overlay.hidden = true;
         if (iframe) iframe.src = '';
         document.body.style.overflow = '';
@@ -2521,14 +2777,32 @@
             const popupOverlay = document.getElementById('quotePopupOverlay');
             if (popupOverlay) { popupOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         };
-        // "Proceed to Checkout" → 3-step checkout page
+        // "Proceed to Checkout" → 3-step checkout page (min £50 ex. VAT)
         if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
+            const totals = computeBasketTotals(basket);
+            if (!totals.meetsMinOrder) {
+                openMinOrderModal(totals);
+                return;
+            }
             saveOrderNotes();
             window.location.href = 'checkout.html';
         });
         if (quoteBtn) quoteBtn.addEventListener('click', openQuotePopup);
+
+        const minOrderModal = document.getElementById('minOrderModal');
+        const minOrderModalOk = document.getElementById('minOrderModalOk');
+        const minOrderModalQuote = document.getElementById('minOrderModalQuote');
+        minOrderModalOk?.addEventListener('click', closeMinOrderModal);
+        minOrderModalQuote?.addEventListener('click', () => {
+            closeMinOrderModal();
+            openQuotePopup();
+        });
+        minOrderModal?.addEventListener('click', (e) => { if (e.target === minOrderModal) closeMinOrderModal(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && minOrderModal?.classList.contains('active')) closeMinOrderModal();
+        });
 
         // Quote popup close
         const closeQuotePopupBtn = document.getElementById('closeQuotePopup');
@@ -2771,6 +3045,23 @@
     </script>
 
     <!-- Clear All confirmation modal (must be outside all containers for proper z-index) -->
+    <div class="confirm-modal-overlay" id="minOrderModal" aria-hidden="true">
+        <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="minOrderModalTitle">
+            <div class="confirm-modal__header">
+                <h3 class="confirm-modal__title" id="minOrderModalTitle">Minimum order not reached</h3>
+            </div>
+            <div class="confirm-modal__body" id="minOrderModalBody">
+                <p>Minimum order <strong>&pound;50 + VAT</strong> not reached.</p>
+                <p>Try <strong>Request a Quote</strong> to discuss your order with our team.</p>
+                <div class="min-order-modal__current" id="minOrderModalCurrent"></div>
+            </div>
+            <div class="confirm-modal__actions">
+                <button type="button" class="confirm-btn" id="minOrderModalOk">OK</button>
+                <button type="button" class="confirm-btn confirm-btn--primary" id="minOrderModalQuote">Request a Quote</button>
+            </div>
+        </div>
+    </div>
+
     <div class="confirm-modal-overlay" id="clearConfirmModal" aria-hidden="true">
         <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="clearConfirmTitle">
             <div class="confirm-modal__header">

@@ -17,9 +17,11 @@
 
         /* ── Variables ── */
         :root {
-            --co-orange:      #f97316;
-            --co-orange-dark: #ea6c00;
+            /* Match basket / order summary palette (no orange) */
             --co-navy:        #273469;
+            --co-navy-dark:   #1E2749;
+            --co-primary:     #16a34a;
+            --co-primary-dark:#15803d;
             --co-grey:        #6b7280;
             --co-light:       #f3f4f6;
             --co-border:      #e5e7eb;
@@ -28,6 +30,7 @@
             --co-success:     #22c55e;
             --co-radius:      12px;
             --co-shadow:      0 2px 10px rgba(0,0,0,0.07);
+            --co-focus-ring:  rgba(39, 52, 105, 0.14);
         }
 
         /* ── Checkout Page wrapper ── */
@@ -94,7 +97,7 @@
             cursor: pointer;
         }
         .co-step-pill.done:hover { background: var(--co-light); }
-        .co-step-pill.active { color: var(--co-orange); }
+        .co-step-pill.active { color: var(--co-navy); }
         .co-step-dot {
             width: 7px;
             height: 7px;
@@ -103,7 +106,7 @@
             flex-shrink: 0;
             transition: background .2s;
         }
-        .co-step-pill.active .co-step-dot  { background: var(--co-orange); }
+        .co-step-pill.active .co-step-dot  { background: var(--co-navy); }
         .co-step-pill.done  .co-step-dot  { background: var(--co-navy); }
         .co-step-sep { color: #d1d5db; font-size: 15px; }
 
@@ -126,7 +129,7 @@
             box-shadow: var(--co-shadow);
             transition: border-color .2s;
         }
-        .co-card.open { border-color: var(--co-orange); }
+        .co-card.open { border-color: var(--co-navy); }
 
         .co-card-head {
             display: flex;
@@ -164,8 +167,8 @@
             background: transparent;
             transition: background .2s;
         }
-        .co-radio.on { border-color: var(--co-orange); }
-        .co-radio.on::after { background: var(--co-orange); }
+        .co-radio.on { border-color: var(--co-navy); }
+        .co-radio.on::after { background: var(--co-navy); }
 
         .co-card-body {
             padding: 4px 16px 18px;
@@ -248,8 +251,8 @@
         }
         .co-input:focus {
             outline: none;
-            border-color: var(--co-orange);
-            box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+            border-color: var(--co-navy);
+            box-shadow: 0 0 0 3px var(--co-focus-ring);
         }
         .co-input::placeholder { color: #9ca3af; }
         .co-input.bad { border-color: var(--co-error); }
@@ -283,7 +286,7 @@
 
         /* ── Buttons ── */
         .co-btn-primary {
-            background: var(--co-orange);
+            background: var(--co-primary);
             color: #fff;
             border: none;
             padding: 12px 22px;
@@ -295,7 +298,7 @@
             white-space: nowrap;
             font-family: inherit;
         }
-        .co-btn-primary:hover    { background: var(--co-orange-dark); }
+        .co-btn-primary:hover    { background: var(--co-primary-dark); }
         .co-btn-primary:disabled { opacity: .65; cursor: not-allowed; }
         .co-btn-primary.full     { width: 100%; padding: 14px; font-size: 16px; }
 
@@ -333,14 +336,14 @@
             font-family: inherit;
             padding: 0;
         }
-        .co-link-orange { color: var(--co-orange); }
+        .co-link-accent { color: var(--co-navy); font-weight: 600; }
         .co-sep { color: #d1d5db; font-size: 12px; }
 
         .co-address-book {
             display: none;
             border: 1.5px solid var(--co-border);
             border-radius: 10px;
-            background: #fff7ed;
+            background: #f0f1f8;
             padding: 12px;
             margin-bottom: 14px;
         }
@@ -696,7 +699,7 @@
                         <div class="co-login-row">
                             <button type="button" class="co-link" onclick="coToast('Password reset coming soon')">Forgot Password?</button>
                             <span class="co-sep">|</span>
-                            <button type="button" class="co-link co-link-orange" onclick="coToast('Passwordless login coming soon')">Passwordless Login</button>
+                            <button type="button" class="co-link co-link-accent" onclick="coToast('Passwordless login coming soon')">Passwordless Login</button>
                             <button type="button" class="co-btn-primary" onclick="coDoLogin()">Login</button>
                         </div>
                     </div><!-- /co-card-body login -->
@@ -797,7 +800,7 @@
                 <div id="coAddressBook" class="co-address-book" aria-live="polite">
                     <p class="co-address-book-title">Saved addresses</p>
                     <div id="coAddressList" class="co-address-list"></div>
-                    <button type="button" class="co-link co-link-orange" onclick="coUseNewAddress()">Use a new address</button>
+                    <button type="button" class="co-link co-link-accent" onclick="coUseNewAddress()">Use a new address</button>
                 </div>
 
                 <div class="co-delivery-wrap">
@@ -1206,9 +1209,29 @@
             var first = document.getElementById('coDelAddr1');
             if (first) first.focus();
         };
-        window.coStartGoogleAuth = function () {
+        window.coStartGoogleAuth = async function () {
             try { localStorage.setItem('authReturnTo', '/checkout'); } catch(e) {}
-            window.location.href = apiBase + '/auth/google';
+            var url = apiBase + '/auth/google';
+            coToast('Connecting to Google…');
+            try {
+                var res = await fetch(url, { method: 'GET', redirect: 'manual', credentials: 'include' });
+                /* OAuth starts with 302 to Google; 200/HTML also acceptable on some stacks */
+                if (res.status === 302 || res.status === 301 || res.status === 303 || res.status === 200) {
+                    window.location.href = url;
+                    return;
+                }
+                throw new Error('Sign-in service unavailable (' + res.status + ')');
+            } catch (e) {
+                var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                var msg = isLocal
+                    ? 'Google sign-in needs the API server running (port 3004). Use Continue as Guest for now.'
+                    : 'Google sign-in is temporarily unavailable. Please use Continue as Guest or email login.';
+                if (e && e.message && !/failed|network|refused|fetch/i.test(e.message)) {
+                    msg = e.message;
+                }
+                console.warn('[Checkout] Google auth unavailable:', e);
+                coToast(msg, 6000);
+            }
         };
         window.coContinueGuest = function () {
             _guestCheckout = true;

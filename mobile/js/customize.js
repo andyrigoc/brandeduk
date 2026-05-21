@@ -2253,8 +2253,7 @@
 
         // Done button handler: close popup (logo is already auto-saved to basket on upload)
         doneBar.querySelector('#positionsDoneBtn').addEventListener('click', () => {
-            // Logo data is saved to localStorage by auto-save branding (design editor close).
-            // Just close the popup — same as the X button.
+            persistEditedBasketItemLogos();
             if (window.parent && window.parent !== window) {
                 try {
                     if (typeof window.parent.closeCustomizePopup === 'function') {
@@ -6428,6 +6427,7 @@
         updatePricingSummary();
         resetAutoSaveTimer();
         applyGarmentColorToPositionPreviews(card);
+        persistEditedBasketItemLogos();
         showToast('Logo applied!');
         if (navigator.vibrate) navigator.vibrate(10);
     }
@@ -6477,6 +6477,20 @@
                 // Store in state so it flows to basket unchanged
                 state.originalLogoImage = logoEntry.url;
                 state.backgroundRemoved = false;
+
+                const methodNorm = (method || 'embroidery').toLowerCase();
+                if (!state.positionDesigns) state.positionDesigns = {};
+                state.positionDesigns[position] = {
+                    logo: logoEntry.url,
+                    method: methodNorm,
+                    position: position,
+                    unitPrice: methodNorm === 'print' ? 3.50 : 5.00
+                };
+                if (!state.positionMethods) state.positionMethods = {};
+                state.positionMethods[position] = methodNorm;
+                if (!state.positionCustomizations) state.positionCustomizations = {};
+                state.positionCustomizations[position] = { ...state.positionDesigns[position] };
+                persistEditedBasketItemLogos();
 
                 // Haptic
                 if (navigator.vibrate) navigator.vibrate(10);
@@ -7222,6 +7236,50 @@
         if (designData.logo) {
             _logoConfiguredForCurrentItem = true;
         }
+
+        if (isActiveBasketItemEdit()) {
+            persistEditedBasketItemLogos();
+        } else if (designData.logo) {
+            // Full customize flow: update all same product+colour rows
+            const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const code = state.product?.code;
+            const color = state.selectedColorName || state.selectedColor;
+            let updated = false;
+            basket.forEach(existing => {
+                if (((existing.productCode || existing.code) === code) &&
+                    (existing.colorId === state.selectedColor || existing.color === color)) {
+                    if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
+                        existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
+                    }
+                    if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
+                        const existingQty = existing.totalQty || existing.qty || 0;
+                        const updatedPositions = [];
+                        const updatedCustomizations = [];
+                        Object.entries(state.positionMethods).forEach(([pos, m]) => {
+                            const unitPrice = m === 'embroidery' ? 5.00 : 3.50;
+                            const posLabel = canonicalPositionName(pos);
+                            const logo = state.positionDesigns?.[pos]?.logo || null;
+                            const methodLabel = m === 'embroidery' ? 'Embroidery' : 'Print';
+                            updatedPositions.push({ position: pos, name: posLabel, method: m, unitPrice, logo });
+                            updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: unitPrice * existingQty, qty: existingQty });
+                        });
+                        existing.positions = updatedPositions;
+                        if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
+                    }
+                    syncBasketItemLogos(existing);
+                    updated = true;
+                }
+            });
+            if (updated) {
+                try {
+                    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+                } catch (e) {
+                    console.error('applyDesignToPosition basket save failed:', e);
+                }
+            }
+        }
+        state.selectionSaved = true;
+        updatePricingSummary();
         
         // Update the position card preview
         const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
@@ -7255,111 +7313,7 @@
             }
             
             if (pill) {
-                pill.hidden = true; // Pill removed — auto-save branding
-                
-                // Auto-save branding to basket immediately — only the specific item being edited
-                const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                let updated = false;
-
-                // If coming from basket, update only the specific item
-                if (_autoSavedItemId) {
-                    let existing = basket.find(i => i.id === _autoSavedItemId);
-                    // Fallback: if ID not found (normalizeBasket may have changed it), use customizingBasketIndex
-                    if (!existing) {
-                        const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
-                        if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
-                            existing = basket[basketIdx];
-                        }
-                    }
-                    if (existing) {
-                        const existingQty = existing.totalQty || existing.qty || 0;
-                        if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
-                            existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
-                        }
-                        if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-                            const updatedPositions = [];
-                            const updatedCustomizations = [];
-                            Object.entries(state.positionMethods).forEach(([pos, method]) => {
-                                const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
-                                const posLabel = canonicalPositionName(pos);
-                                const logo = state.positionDesigns?.[pos]?.logo || null;
-                                const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                                const totalPrice = unitPrice * existingQty;
-                                updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
-                                updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existingQty });
-                            });
-                            existing.positions = updatedPositions;
-                            if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
-                        }
-                        updated = true;
-                    }
-                } else {
-                    // Not from basket — update all items with same product+color (normal customize flow)
-                    const code = state.product?.code;
-                    const color = state.selectedColorName || state.selectedColor;
-                    basket.forEach(existing => {
-                        if (((existing.productCode || existing.code) === code) &&
-                            (existing.colorId === state.selectedColor || existing.color === color)) {
-                            if (state.positionDesigns && Object.keys(state.positionDesigns).length > 0) {
-                                existing.positionDesigns = { ...(existing.positionDesigns || {}), ...state.positionDesigns };
-                            }
-                            if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-                                const updatedPositions = [];
-                                const updatedCustomizations = [];
-                                Object.entries(state.positionMethods).forEach(([pos, method]) => {
-                                    const unitPrice = method === 'embroidery' ? 5.00 : 3.50;
-                                    const posLabel = canonicalPositionName(pos);
-                                    const logo = state.positionDesigns?.[pos]?.logo || null;
-                                    const methodLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                                    const totalPrice = unitPrice * existing.totalQty;
-                                    updatedPositions.push({ position: pos, name: posLabel, method: method, unitPrice, logo });
-                                    updatedCustomizations.push({ posKey: pos, position: posLabel, method: methodLabel, unitPrice, total: totalPrice, qty: existing.totalQty });
-                                });
-                                existing.positions = updatedPositions;
-                                if (updatedCustomizations.length > 0) existing.customizations = updatedCustomizations;
-                            }
-                            updated = true;
-                        }
-                    });
-                }
-                if (updated) {
-                    try {
-                        syncAllBasketLogos(basket);
-                        localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                    } catch (e) {
-                        if (e.name === 'QuotaExceededError') {
-                            console.warn('⚠️ localStorage quota exceeded, compressing all logos...');
-                            // Compress all base64 logos in the basket and retry
-                            for (const item of basket) {
-                                if (item.positionDesigns) {
-                                    for (const key of Object.keys(item.positionDesigns)) {
-                                        const d = item.positionDesigns[key];
-                                        if (d && d.logo && d.logo.startsWith('data:') && d.logo.length > 50000) {
-                                            try { d.logo = await compressBase64Image(d.logo, 400, 0.5); } catch(ce) {}
-                                        }
-                                    }
-                                }
-                                if (Array.isArray(item.positions)) {
-                                    for (const p of item.positions) {
-                                        if (p.logo && p.logo.startsWith('data:') && p.logo.length > 50000) {
-                                            try { p.logo = await compressBase64Image(p.logo, 400, 0.5); } catch(ce) {}
-                                        }
-                                    }
-                                }
-                            }
-                            try {
-                                localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                                showToast('Logo saved (compressed due to storage limit)');
-                            } catch(e2) {
-                                showToast('Storage full! Please remove some items.', true);
-                            }
-                        } else {
-                            throw e;
-                        }
-                    }
-                }
-                state.selectionSaved = true;
-                updatePricingSummary();
+                pill.hidden = true;
             }
             
             // Transform "ADD LOGO" button to green "EDIT" when logo is uploaded
@@ -9679,8 +9633,72 @@
     // Expose force-save so parent (basket iframe popup) can trigger immediate save
     window._forceAutoSave = function() {
         if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
+        if (isActiveBasketItemEdit()) {
+            persistEditedBasketItemLogos();
+            return;
+        }
         autoSaveToBasket();
     };
+
+    /**
+     * Save logo edits back to quoteBasket when editing from basket (Edit logo / positionsOnly popup).
+     * Does not depend on qty state or the removed customization-pill auto-save path.
+     */
+    function persistEditedBasketItemLogos() {
+        if (!isActiveBasketItemEdit()) return false;
+
+        const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+        const basePositionDesigns = getPositionDesignsForBasket();
+        const positions = mergePositionsWithDesigns(
+            buildPositionsFromDOM(),
+            basePositionDesigns,
+            state.positionMethods
+        );
+
+        let existing = null;
+        let existingIdx = -1;
+
+        if (_autoSavedItemId) {
+            existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
+            if (existingIdx !== -1) existing = basket[existingIdx];
+        }
+        if (!existing) {
+            const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+            if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
+                existing = basket[basketIdx];
+                existingIdx = basketIdx;
+            }
+        }
+        if (!existing) {
+            console.warn('persistEditedBasketItemLogos: basket row not found');
+            return false;
+        }
+
+        existing.positions = positions;
+        existing.positionDesigns = JSON.parse(JSON.stringify(state.positionDesigns || {}));
+        syncBasketItemLogos(existing);
+
+        const key = (existing.productCode || existing.code || '') + '|' + (existing.color || '');
+        basket.forEach((item, i) => {
+            if (i === existingIdx) return;
+            const itemKey = (item.productCode || item.code || '') + '|' + (item.color || '');
+            if (itemKey === key) {
+                item.positions = JSON.parse(JSON.stringify(positions));
+                item.positionDesigns = JSON.parse(JSON.stringify(state.positionDesigns || {}));
+                syncBasketItemLogos(item);
+            }
+        });
+
+        try {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            _logoConfiguredForCurrentItem = true;
+            console.log('💾 persistEditedBasketItemLogos: saved', existing.productName || existing.name, existing.color);
+            return true;
+        } catch (e) {
+            console.error('persistEditedBasketItemLogos failed:', e);
+            return false;
+        }
+    }
 
     /** Build positions[] from checked cards + positionDesigns (logo always included) */
     function buildPositionsFromDOM() {
@@ -9770,10 +9788,14 @@
      * Uses REPLACE logic (not merge) so repeated saves don't duplicate quantities.
      */
     function autoSaveToBasket() {
+        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket' && isActiveBasketItemEdit();
+        if (isFromBasket) {
+            persistEditedBasketItemLogos();
+            return;
+        }
         if (!state.quantity || state.quantity === 0) return;
 
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const isFromBasket = sessionStorage.getItem('returnAfterCustomize') === 'basket' && isActiveBasketItemEdit();
 
         const basePositionDesigns = getPositionDesignsForBasket();
         const positions = mergePositionsWithDesigns(buildPositionsFromDOM(), basePositionDesigns, state.positionMethods);
