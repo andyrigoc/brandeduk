@@ -3799,6 +3799,20 @@ a {
     mix-blend-mode: screen;
 }
 
+/* Apron: always show neutral PNG; tint mask overlays when colour selected */
+.garment-tint-stack--apron .garment-tint-base {
+    mix-blend-mode: normal;
+    position: relative;
+    z-index: 1;
+}
+
+.garment-tint-stack--apron .garment-tint-mask.is-active {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    min-height: 180px;
+}
+
 .garment-tint-base.garment-tint-base--hidden {
     opacity: 0;
     visibility: hidden;
@@ -3873,10 +3887,7 @@ a {
     display: none !important;
 }
 
-.position-preview--garment-tint .position-preview-content,
-.position-preview--garment-tint .uploaded-logo-box {
-    background-color: #ffffff !important;
-}
+/* Logo boxes under garment photo use --garment-bg (set in customize.js), not white */
 
 .position-preview-content {
     width: 100%;
@@ -3898,7 +3909,9 @@ a {
 }
 
 .position-preview-content:not([hidden]) {
-    display: flex;
+    display: grid;
+    place-items: center;
+    justify-items: center;
 }
 
 .position-preview-content:hover {
@@ -3913,6 +3926,9 @@ a {
 
 .preview-image:not([hidden]) {
     display: block;
+    margin: 0 auto;
+    object-fit: contain;
+    object-position: center center;
 }
 
 .preview-text {
@@ -11435,6 +11451,11 @@ a.continue-shopping {
         max-height: min(280px, 42vh) !important;
     }
 
+    #positionsPopupOverlay .garment-tint-stack--apron,
+    #positionsPopupOverlay .garment-tint-stack:has(.garment-tint-mask) {
+        min-height: min(220px, 38vh) !important;
+    }
+
     #positionsPopupOverlay .garment-tint-base,
     #positionsPopupOverlay .garment-tint-mask.is-active {
         max-height: min(280px, 42vh) !important;
@@ -11490,12 +11511,13 @@ a.continue-shopping {
     overflow: hidden;
 }
 
-/* Logo preview box: compact, centered under garment — garment colour from JS (--garment-bg) */
-#positionsPopupOverlay .position-preview-content:not([hidden]) {
-    position: static !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+/* Logo preview box under garment — popup + customize mobile in-page (hex via --garment-bg) */
+#positionsPopupOverlay .position-preview-content:not([hidden]),
+.customization-options .position-card .position-preview-content:not([hidden]) {
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+    justify-items: center !important;
     width: min(176px, 82%) !important;
     max-width: 200px !important;
     min-width: 120px !important;
@@ -11503,7 +11525,7 @@ a.continue-shopping {
     min-height: 80px !important;
     max-height: 80px !important;
     margin: 10px auto 2px !important;
-    padding: 8px 30px 8px 10px !important;
+    padding: 8px !important;
     box-sizing: border-box !important;
     border: 2px dashed rgba(39, 52, 105, 0.28) !important;
     border-radius: 12px !important;
@@ -11512,18 +11534,22 @@ a.continue-shopping {
     background-color: var(--garment-bg, #f3f4f6) !important;
 }
 
-#positionsPopupOverlay .position-preview-content .preview-image:not([hidden]) {
+#positionsPopupOverlay .position-preview-content .preview-image:not([hidden]),
+.customization-options .position-card .position-preview-content .preview-image:not([hidden]) {
     display: block !important;
     width: auto !important;
     height: auto !important;
-    max-width: calc(100% - 4px) !important;
+    max-width: calc(100% - 8px) !important;
     max-height: 64px !important;
     object-fit: contain !important;
     object-position: center center !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
+    justify-self: center !important;
+    align-self: center !important;
 }
 
-#positionsPopupOverlay .position-preview-content .preview-text:not([hidden]) {
+#positionsPopupOverlay .position-preview-content .preview-text:not([hidden]),
+.customization-options .position-card .position-preview-content .preview-text:not([hidden]) {
     display: block !important;
     max-width: 100% !important;
     max-height: 64px !important;
@@ -11532,11 +11558,16 @@ a.continue-shopping {
     line-height: 1.2 !important;
     text-align: center !important;
     word-break: break-word !important;
+    margin: 0 !important;
+    justify-self: center !important;
 }
 
-#positionsPopupOverlay .position-preview-content .preview-delete-btn {
+#positionsPopupOverlay .position-preview-content .preview-delete-btn,
+.customization-options .position-card .position-preview-content .preview-delete-btn {
+    position: absolute !important;
     top: 6px !important;
     right: 6px !important;
+    z-index: 8 !important;
 }
 
 #positionsPopupOverlay .position-prices {

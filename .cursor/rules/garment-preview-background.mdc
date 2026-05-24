@@ -30,3 +30,10 @@ Registry: `brandedukv15-child/assets/js/color-hex.js` (`BrandedColorHex`).
 
 - Strip trailing `*` in `BrandedColorHex.normName`.
 - Add missing catalog names (e.g. `safety orange`) to `BUILTIN` in `color-hex.js`.
+- Short API names (e.g. `Forest`) resolve via `colorId` slug (`forest-green`) and prefix match (`forest` → `forest green`).
+- Basket label: `getItemColorLabel(item)` / `BrandedColorHex.resolveDisplayName`.
+
+## Google checkout auth
+
+- **Only** edit `brandedukv15-child/assets/js/checkout-auth.js` for OAuth redirect logic.
+- Do not redefine `coStartGoogleAuth` in `checkout.html` (no fetch pre-checks).

@@ -11,20 +11,9 @@ const BrandedAPI = (function () {
     // CONFIGURATION
     // ==========================================================================
 
-    const BASE_URL = (function () {
-        if (typeof window !== 'undefined' && window.API_BASE_URL) {
-            return String(window.API_BASE_URL).replace(/\/+$/, '');
-        }
-
-        if (typeof window !== 'undefined' && window.location) {
-            const hostname = window.location.hostname;
-            if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                return 'http://localhost:3004';
-            }
-        }
-
-        return 'https://api.brandeduk.com';
-    })();
+    const BASE_URL = (typeof window !== 'undefined' && typeof window.resolveBrandedApiBase === 'function')
+        ? window.resolveBrandedApiBase()
+        : 'https://api.brandeduk.com';
     const DEFAULT_LIMIT = 24;
     const MAX_LIMIT = 200;
 

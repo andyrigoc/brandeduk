@@ -1019,6 +1019,8 @@
     <!-- Toast -->
     <div class="co-toast" id="coToastEl" role="status" aria-live="polite"></div>
 
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/checkout-auth.js?v=20260530"></script>
     <!-- ── Checkout 3-step logic ── -->
     <script>
     (function () {
@@ -1029,11 +1031,9 @@
         var _summaryOpen = false;
 
         /* ── Persistent session helpers ── */
-        var apiBase = (window.API_BASE_URL || (
-            location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-                ? 'http://localhost:3004'
-                : 'https://api.brandeduk.com'
-        )).replace(/\/+$/, '');
+        var apiBase = (typeof window.resolveBrandedApiBase === 'function'
+            ? window.resolveBrandedApiBase()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
         var _selectedAddressId = '';
         var _guestCheckout = false;
 
@@ -1298,15 +1298,7 @@
             if (first) first.focus();
             coToast('Enter a new delivery address');
         };
-        window.coStartGoogleAuth = function () {
-            var returnTo = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-                ? '/checkout.html'
-                : '/checkout';
-            try { localStorage.setItem('authReturnTo', returnTo); } catch(e) {}
-            var url = apiBase + '/auth/google';
-            coToast('Connecting to Google…');
-            window.location.href = url;
-        };
+        /* Google OAuth: brandedukv15-child/assets/js/checkout-auth.js — do not redefine coStartGoogleAuth here */
         window.coContinueGuest = function () {
             _guestCheckout = true;
             _selectedAddressId = '';
@@ -1666,11 +1658,9 @@
 
             var basket   = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             var customer = coGetCustomer();
-            var apiBase = (window.API_BASE_URL || (
-                location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-                    ? 'http://localhost:3004'
-                    : 'https://api.brandeduk.com'
-            )).replace(/\/+$/, '');
+            var apiBase = (typeof window.resolveBrandedApiBase === 'function'
+                ? window.resolveBrandedApiBase()
+                : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
             var payload = (typeof window.buildQuoteData === 'function')
                 ? window.buildQuoteData(basket)
                 : { basket: basket, customer: customer };
@@ -1714,16 +1704,9 @@
     })();
     </script>
 
-    <!-- Local dev override; production falls back to https://api.brandeduk.com in checkout.js -->
-    <script>
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        window.API_BASE_URL = "http://localhost:3004";
-      }
-    </script>
-
-    <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
-    <!-- Stripe Checkout redirect flow -->
-    <script src="mobile/js/checkout.js?v=20260521-order-history"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20260530"></script>
+    <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
+    <script src="mobile/js/checkout.js?v=20260530"></script>
 
 </body>
 </html>

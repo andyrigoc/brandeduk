@@ -1,9 +1,11 @@
 // Checkout Page JavaScript
 
-// For local testing you can set `window.API_BASE_URL = "http://localhost:3004"` before this script loads.
-const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL)
-    ? String(window.API_BASE_URL).replace(/\/+$/, '')
-    : 'https://api.brandeduk.com';
+// Same API as LIVE by default (see api-config.js). Local backend: window.API_USE_LOCAL = true before scripts.
+const API_BASE_URL = (typeof window !== 'undefined' && typeof window.resolveBrandedApiBase === 'function')
+    ? window.resolveBrandedApiBase()
+    : ((typeof window !== 'undefined' && window.API_BASE_URL)
+        ? String(window.API_BASE_URL).replace(/\/+$/, '')
+        : 'https://api.brandeduk.com');
 
 const QUOTES_ENDPOINT = `${API_BASE_URL}/api/quotes`;
 const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-session`;

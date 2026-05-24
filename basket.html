@@ -785,30 +785,42 @@
         }
         .quote-popup-overlay.active { opacity: 1; visibility: visible; }
         .quote-popup {
-            background: #fff; border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 400px;
+            background: #fff; border-radius: 16px; padding: 22px 20px 24px; width: 100%; max-width: 380px;
             position: relative; transform: translateY(20px) scale(0.95); transition: transform 0.3s ease;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .quote-popup-overlay.active .quote-popup { transform: translateY(0) scale(1); }
         .quote-popup-close {
-            position: absolute; top: 16px; right: 16px; background: none; border: none;
+            position: absolute; top: 14px; right: 14px; background: none; border: none;
             cursor: pointer; color: #64748b; padding: 4px;
         }
         .quote-popup-close:hover { color: #1e293b; }
-        .quote-popup-title { font-size: 1.75rem; font-weight: 700; color: #1e293b; text-align: center; margin: 0 0 8px 0; }
-        .quote-popup-subtitle { font-size: 0.95rem; color: #64748b; text-align: center; margin: 0 0 28px 0; line-height: 1.5; }
-        .quote-popup-form .form-group { margin-bottom: 20px; }
-        .quote-popup-form label { display: block; font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
-        .quote-popup-form input {
-            width: 100%; padding: 14px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px;
-            font-size: 1rem; color: #1e293b; background: #fff; transition: all 0.2s ease; box-sizing: border-box;
+        .quote-popup-title { font-size: 1.2rem; font-weight: 700; color: #1e293b; text-align: center; margin: 0 0 6px 0; }
+        .quote-popup-subtitle { font-size: 0.8125rem; color: #64748b; text-align: center; margin: 0 0 18px 0; line-height: 1.45; }
+        .quote-popup-form .form-group { margin-bottom: 12px; }
+        .quote-popup-form label { display: block; font-size: 0.8125rem; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+        .quote-label-optional { font-weight: 500; color: #94a3b8; }
+        .quote-popup-form input,
+        .quote-popup-form textarea {
+            width: 100%; padding: 11px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 0.9375rem; color: #1e293b; background: #fff; transition: all 0.2s ease; box-sizing: border-box;
+            font-family: inherit;
         }
-        .quote-popup-form input::placeholder { color: #94a3b8; }
-        .quote-popup-form input:focus { outline: none; border-color: #273469; box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.15); }
+        .quote-popup-form textarea {
+            min-height: 72px;
+            max-height: 120px;
+            resize: vertical;
+            line-height: 1.4;
+        }
+        .quote-popup-form input::placeholder,
+        .quote-popup-form textarea::placeholder { color: #94a3b8; }
+        .quote-popup-form input:focus,
+        .quote-popup-form textarea:focus { outline: none; border-color: #273469; box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.15); }
+        .quote-popup-form .quote-popup-note { margin-bottom: 10px; }
         .quote-popup-submit {
-            width: 100%; padding: 16px; background: linear-gradient(135deg, #273469, #1E2749);
-            color: #fff; font-size: 1rem; font-weight: 600; border: none; border-radius: 10px;
-            cursor: pointer; margin-top: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(39, 52, 105, 0.3);
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #273469, #1E2749);
+            color: #fff; font-size: 0.9375rem; font-weight: 600; border: none; border-radius: 10px;
+            cursor: pointer; margin-top: 6px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(39, 52, 105, 0.3);
         }
         .quote-popup-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(39, 52, 105, 0.4); }
         .quote-popup-submit.submitted { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
@@ -1380,6 +1392,10 @@
                     <label for="quoteEmail">E-mail</label>
                     <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
                 </div>
+                <div class="form-group quote-popup-note">
+                    <label for="quoteCustomerNote">Note <span class="quote-label-optional">(optional)</span></label>
+                    <textarea id="quoteCustomerNote" name="customerNote" rows="3" placeholder="Anything about your order — sizes, colours, deadline, special requests…"></textarea>
+                </div>
                 <button type="submit" class="quote-popup-submit" id="quotePopupSubmitBtn">Submit Quote Request</button>
             </form>
         </div>
@@ -1945,11 +1961,20 @@
         const stored = BrandedColorHex.parseHex(item.colorHex);
         if (BrandedColorHex.isUsableHex(stored)) return false;
         const code = item.code || item.productCode || '';
-        const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image);
+        const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image, item.colorId);
         if (!found) return false;
         item.colorHex = found;
         BrandedColorHex.register(item.color, found, code);
         return true;
+    }
+
+    function getItemColorLabel(item) {
+        if (!item) return '';
+        const raw = (item.color || '').trim();
+        if (window.BrandedColorHex && BrandedColorHex.resolveDisplayName) {
+            return BrandedColorHex.resolveDisplayName(raw, item.colorId) || raw;
+        }
+        return raw;
     }
 
     function getItemColorHex(item) {
@@ -1959,7 +1984,7 @@
             const code = item.code || item.productCode || '';
             const stored = BrandedColorHex.parseHex(item.colorHex);
             if (BrandedColorHex.isUsableHex(stored)) return stored;
-            const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image);
+            const found = BrandedColorHex.lookup(item.color, code, item.colorImage || item.image, item.colorId);
             if (found) {
                 item.colorHex = found;
                 return found;
@@ -2006,7 +2031,7 @@
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
                     const thumbWrapClass = 'logo-thumb-wrap' + (garmentHexLight ? ' logo-thumb-wrap--light' : '');
-                    const colorTitle = (item.color || '').replace(/"/g, '&quot;');
+                    const colorTitle = getItemColorLabel(item).replace(/"/g, '&quot;');
 
                     logosHtml += `
                         <div class="logo-row">
@@ -2055,7 +2080,7 @@
                         </div>
                         <div class="item-row-meta">
                             <p class="item-code">${item.code || ''}</p>
-                            <p class="item-color">${item.color || ''}</p>
+                            <p class="item-color">${getItemColorLabel(item)}</p>
                             <p class="item-size">${item.size || ''}</p>
                         </div>
                         <button type="button" class="item-edit-hint" onclick="event.stopPropagation(); editBasketItem(${index})">Tap to change colour or size</button>
@@ -2783,6 +2808,8 @@
                 submitBtn.textContent = 'Submit Quote Request';
             }
             const popupOverlay = document.getElementById('quotePopupOverlay');
+            const quoteNoteEl = document.getElementById('quoteCustomerNote');
+            if (quoteNoteEl) quoteNoteEl.value = '';
             if (popupOverlay) { popupOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         };
         // "Proceed to Checkout" → 3-step checkout page (min £50 ex. VAT)
@@ -2829,6 +2856,7 @@
                 const name = document.getElementById('quoteName').value.trim();
                 const phone = document.getElementById('quotePhone').value.trim();
                 const emailVal = document.getElementById('quoteEmail').value.trim();
+                const customerNote = document.getElementById('quoteCustomerNote')?.value.trim() || '';
 
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailVal || !emailRegex.test(emailVal)) {
@@ -2885,22 +2913,31 @@
                     const totalIncVat = totalExVat + vatAmount;
                     const displayTotal = includeVAT ? totalIncVat : totalExVat;
 
+                    const notesList = [];
+                    const orderNotes = document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || '';
+                    if (orderNotes) notesList.push(orderNotes);
+                    if (customerNote) notesList.push('Customer note: ' + customerNote);
+
                     const quoteData = {
                         customer: { fullName: name, phone: phone, email: emailVal },
                         summary: {
                             totalQuantity, totalItems: basket.length, garmentCost: totalGarmentCost,
                             customizationCost: customizationTotal, digitizingFee, subtotal: totalExVat,
                             vatRate: 0.20, vatAmount, totalExVat, totalIncVat,
-                            displayTotal, vatMode: includeVAT ? 'inc' : 'ex'
+                            displayTotal, vatMode: includeVAT ? 'inc' : 'ex',
+                            belowMinimumOrder: !computeBasketTotals(basket).meetsMinOrder
                         },
                         basket: basketItems, customizations: customizationsList,
                         logoFiles: collectQuoteLogoFiles(basket),
-                        notes: [document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || ''].filter(Boolean),
+                        notes: notesList,
+                        source: 'basket_quote_request',
                         timestamp: new Date().toISOString()
                     };
                     if (!Object.keys(quoteData.logoFiles).length) delete quoteData.logoFiles;
                     let result = { success: false };
-                    const API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+                    const API_BASE_URL = (typeof window.resolveBrandedApiBase === 'function'
+                        ? window.resolveBrandedApiBase()
+                        : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
                     try {
                         if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
                             result = await window.BrandedAPI.submitQuote(quoteData);
@@ -3086,8 +3123,9 @@
     </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260418"></script>
-<script src="brandedukv15-child/assets/js/color-hex.js?v=20260526"></script>
-<script src="brandedukv15-child/assets/js/api.js?v=20260418"></script>
+<script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+<script src="brandedukv15-child/assets/js/color-hex.js?v=20260529"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260530"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>

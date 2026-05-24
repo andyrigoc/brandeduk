@@ -6,7 +6,10 @@ window.BrandedAccount = (function () {
     }
 
     function apiBaseUrl() {
-        return (window.API_BASE_URL || (isLocalHost() ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+        if (typeof window.resolveBrandedApiBase === 'function') {
+            return window.resolveBrandedApiBase();
+        }
+        return (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
     }
 
     function token() {

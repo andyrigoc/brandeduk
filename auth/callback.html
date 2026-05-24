@@ -95,9 +95,12 @@
         <p class="error" id="authError"></p>
     </main>
 
+    <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script>
         (function () {
-            var API_BASE_URL = (window.API_BASE_URL || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3004' : 'https://api.brandeduk.com')).replace(/\/+$/, '');
+            var API_BASE_URL = (typeof window.resolveBrandedApiBase === 'function'
+                ? window.resolveBrandedApiBase()
+                : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
             var params = new URLSearchParams(window.location.search);
             var token = params.get('token');
             var defaultNext = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')

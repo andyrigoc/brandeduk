@@ -16,7 +16,7 @@
         'carolina blue': '#99BADD', 'cement': '#9E9E9E', 'charcoal': '#4a4a4a', 'charcoal/black': '#2f3033',
         'cobalt': '#0047AB', 'cocoa': '#5C4033', 'coral': '#ff7f50', 'cream': '#fffdd0', 'daisy': '#FFD700',
         'dark green': '#013220', 'dark grey': '#505050', 'dark heather': '#5a5a5a', 'dusty rose': '#D4A5A5',
-        'forest green': '#228B22', 'french navy': '#002366', 'gold': '#ffd700', 'green': '#008000',
+        'forest': '#228B22', 'forest green': '#228B22', 'french navy': '#002366', 'gold': '#ffd700', 'green': '#008000',
         'heather grey': '#b6b6b4', 'hot pink': '#ff69b4', 'kelly green': '#4CBB17', 'khaki': '#c3b091',
         'light blue': '#add8e6', 'light grey': '#d3d3d3', 'light pink': '#FFB6C1', 'lime': '#00ff00',
         'lime green': '#84BD00', 'maroon': '#800000', 'military green': '#4B5320', 'mustard': '#FFDB58',
@@ -41,7 +41,7 @@
         'sun yellow': '#ffda03', 'tan': '#d2b48c', 'turquoise': '#40e0d0', 'violet': '#8f00ff',
         'wine': '#722f37', 'yellow': '#eab308', 'zinc': '#7d7d7d', 'airforce blue': '#5d8aa8',
         'arctic white': '#f8f9fa', 'bright royal': '#4169e1', 'classic red': '#c41e3a',
-        'classic navy': '#1e3a5f', 'fuchsia': '#ff00ff', 'heather': '#b6b6b4', 'indigo': '#4b0082',
+        'classic navy': '#1e3a5f', 'fuchsia': '#ff00ff', 'heather': '#b6b6b4', 'indigo': '#4b0082', 'indigo blue': '#4b0082',
         'lemon': '#fff44f', 'magenta': '#ff00ff', 'neon green': '#39ff14', 'neon orange': '#ff6700',
         'neon pink': '#ff6ec7', 'neon yellow': '#ffff00', 'oxford navy': '#002147', 'powder blue': '#b0e0e6',
         'process blue': '#0085ca', 'purple': '#7c3aed', 'sand': '#c2b280', 'sky blue': '#87ceeb',
@@ -172,22 +172,64 @@
         persist();
     }
 
-    function lookupByName(colorName) {
+    function nameFromColorId(colorId) {
+        var id = String(colorId || '').trim();
+        if (!id || id.indexOf(' ') >= 0) return '';
+        return normName(id.replace(/[-_]+/g, ' '));
+    }
+
+    function lookupByName(colorName, colorId) {
         var raw = normName(colorName);
+        if (!raw && colorId) raw = nameFromColorId(colorId);
         if (!raw) return '';
         if (globalMap[raw]) return globalMap[raw];
         var primary = raw.split('/')[0].trim();
         if (primary && globalMap[primary]) return globalMap[primary];
+        var fromId = colorId ? nameFromColorId(colorId) : '';
+        if (fromId && fromId !== raw && globalMap[fromId]) return globalMap[fromId];
+        var prefixBest = '';
+        Object.keys(globalMap).forEach(function (k) {
+            if (k.indexOf(raw) !== 0) return;
+            if (k.length === raw.length) return;
+            if (k.charAt(raw.length) !== ' ') return;
+            if (!prefixBest || k.length < prefixBest.length) prefixBest = k;
+        });
+        if (prefixBest) return globalMap[prefixBest];
+        var firstWord = raw.split(/\s+/)[0];
+        if (firstWord && firstWord !== raw && globalMap[firstWord]) return globalMap[firstWord];
         return '';
     }
 
-    function lookup(colorName, productCode, imageUrl) {
+    function resolveDisplayName(colorName, colorId) {
+        var raw = normName(colorName);
+        var fromId = nameFromColorId(colorId);
+        var key = '';
+        if (raw && globalMap[raw]) key = raw;
+        else if (fromId && globalMap[fromId]) key = fromId;
+        else {
+            var hex = lookupByName(colorName, colorId);
+            if (!hex) return String(colorName || '').trim();
+            Object.keys(globalMap).some(function (k) {
+                if (globalMap[k] === hex && (!key || k.length < key.length)) key = k;
+                return false;
+            });
+        }
+        if (!key) key = fromId || raw;
+        if (!key) return String(colorName || '').trim();
+        return key.split(' ').map(function (w) {
+            return w.charAt(0).toUpperCase() + w.slice(1);
+        }).join(' ');
+    }
+
+    function lookup(colorName, productCode, imageUrl, colorId) {
         var code = productCode ? String(productCode).trim().toUpperCase() : '';
         var n = normName(colorName);
-        if (code && byProduct[code] && n && byProduct[code][n]) {
-            return byProduct[code][n];
+        var idName = nameFromColorId(colorId);
+        if (code && byProduct[code]) {
+            if (n && byProduct[code][n]) return byProduct[code][n];
+            if (idName && byProduct[code][idName]) return byProduct[code][idName];
         }
-        var fromName = lookupByName(colorName);
+        var fromName = lookupByName(colorName, colorId);
         if (fromName) return fromName;
         if (imageUrl && byImage[imageUrl]) return byImage[imageUrl];
         return '';
@@ -276,7 +318,7 @@
             var stored = parseHex(item.colorHex);
             if (isUsableHex(stored)) return;
             var code = item.code || item.productCode || '';
-            var found = lookup(item.color, code, item.colorImage || item.image);
+            var found = lookup(item.color, code, item.colorImage || item.image, item.colorId);
             if (found) {
                 item.colorHex = found;
                 changed = true;
@@ -300,7 +342,7 @@
                         if (isUsableHex(item.colorHex)) return;
                         var ic = (item.code || item.productCode || '').toUpperCase();
                         if (ic !== code) return;
-                        var found = lookup(item.color, code, item.colorImage);
+                        var found = lookup(item.color, code, item.colorImage, item.colorId);
                         if (found) {
                             item.colorHex = found;
                             any = true;
@@ -346,6 +388,8 @@
         registerProductColors: registerProductColors,
         lookup: lookup,
         lookupByName: lookupByName,
+        resolveDisplayName: resolveDisplayName,
+        nameFromColorId: nameFromColorId,
         hydrateProduct: hydrateProduct,
         hydrateBasketItems: hydrateBasketItems,
         loadExternalDatabase: loadExternalDatabase,

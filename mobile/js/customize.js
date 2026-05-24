@@ -247,6 +247,9 @@
         const clean = String(assetPath || '').replace(/^\//, '');
         if (!clean) return '';
         if (/^https?:\/\//i.test(clean)) return clean;
+        if (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null') {
+            return window.location.origin.replace(/\/$/, '') + '/' + clean;
+        }
         const path = window.location.pathname || '';
         if (path.indexOf('/mobile/') !== -1 || /\/mobile\/?$/i.test(path)) {
             return '../' + clean;
@@ -370,6 +373,7 @@
         if (!img) return;
         const existing = img.closest('.garment-tint-stack');
         if (existing) {
+            existing.classList.add('garment-tint-stack--apron');
             ensureApronGarmentTintLayer(existing);
             img.classList.add('garment-tint-base');
             img.classList.remove('garment-tint-base--hidden');
@@ -509,18 +513,56 @@
         };
     }
 
+    function applyApronGarmentTintStacks(scopeRoot, tintHex) {
+        const normalizedTint = String(tintHex || '').replace('#', '').toLowerCase();
+        const isNearWhite = normalizedTint === 'fff' || normalizedTint === 'ffffff' || normalizedTint === 'faf9f6';
+        const useMaskTint = tintHex && !isNearWhite;
+        const root = scopeRoot && scopeRoot.querySelectorAll ? scopeRoot : document;
+
+        root.querySelectorAll('.position-card').forEach(function (card) {
+            if (card.style.display === 'none') return;
+            const img = card.querySelector('.position-placeholder');
+            if (!img) return;
+            ensureApronGarmentTintStack(img);
+            setApronNeutralImage(img);
+        });
+
+        root.querySelectorAll('.garment-tint-stack--apron, .garment-tint-stack').forEach(function (stack) {
+            if (!stack.querySelector('.garment-tint-mask')) return;
+            ensureApronGarmentTintLayer(stack);
+            const tintMask = stack.querySelector('.garment-tint-mask');
+            const baseImg = stack.querySelector('.garment-tint-base');
+            if (tintMask) {
+                if (useMaskTint) {
+                    tintMask.style.setProperty('--garment-tint', tintHex);
+                    tintMask.style.backgroundColor = tintHex;
+                    tintMask.classList.add('is-active');
+                } else {
+                    tintMask.classList.remove('is-active');
+                    tintMask.style.removeProperty('--garment-tint');
+                    tintMask.style.backgroundColor = '';
+                }
+            }
+            if (baseImg) {
+                baseImg.classList.remove('garment-tint-base--hidden');
+                setApronNeutralImage(baseImg);
+            }
+            stack.style.backgroundColor = '#ffffff';
+            stack.style.removeProperty('--garment-bg');
+        });
+
+        const logoBoxBg = tintHex || '#f3f4f6';
+        root.querySelectorAll('.position-preview-content, .uploaded-logo-box').forEach(function (el) {
+            if (tintHex) el.style.setProperty('--garment-bg', tintHex);
+            else el.style.removeProperty('--garment-bg');
+            el.style.backgroundColor = logoBoxBg;
+        });
+    }
+
     function finalizeApronGarmentTintOnCards(positionGrids) {
         if (!APRON_GARMENT_TINT_POC) return;
-        (positionGrids || document.querySelectorAll('#positionOptions, .positions-grid')).forEach(function (grid) {
-            grid.querySelectorAll('.position-card').forEach(function (card) {
-                if (card.style.display === 'none') return;
-                const img = card.querySelector('.position-placeholder');
-                if (!img) return;
-                ensureApronGarmentTintStack(img);
-                setApronNeutralImage(img);
-            });
-        });
-        applyGarmentColorToPositionPreviews();
+        const grids = positionGrids || document.querySelectorAll('#positionOptions, .positions-grid');
+        applyApronGarmentTintStacks(grids, resolveGarmentPreviewHex());
     }
 
     function finalizeHoodieGarmentTintOnCards(positionGrids) {
@@ -2431,11 +2473,24 @@
                         state.selectedColorName = itemColorName;
                         state.selectedColor = slugify(itemColorName);
                     }
-                    if (basketItem.colorHex && window.BrandedColorHex) {
-                        BrandedColorHex.register(itemColorName || basketItem.color || '', basketItem.colorHex, basketItem.code || basketItem.productCode || '');
-                        if (state.product && state.product.rawData) {
-                            state.product.rawData.colorHex = basketItem.colorHex;
-                            state.product.rawData.color = itemColorName || basketItem.color || state.product.rawData.color;
+                    if (window.BrandedColorHex) {
+                        const productCode = basketItem.code || basketItem.productCode || '';
+                        let itemHex = BrandedColorHex.parseHex(basketItem.colorHex);
+                        if (!BrandedColorHex.isUsableHex(itemHex)) {
+                            itemHex = BrandedColorHex.lookup(
+                                itemColorName,
+                                productCode,
+                                basketItem.colorImage || basketItem.image,
+                                itemColorId
+                            ) || '';
+                            if (itemHex) basketItem.colorHex = itemHex;
+                        }
+                        if (BrandedColorHex.isUsableHex(itemHex)) {
+                            BrandedColorHex.register(itemColorName || basketItem.color || '', itemHex, productCode);
+                            if (state.product && state.product.rawData) {
+                                state.product.rawData.colorHex = itemHex;
+                                state.product.rawData.color = itemColorName || basketItem.color || state.product.rawData.color;
+                            }
                         }
                     }
 
@@ -2707,7 +2762,7 @@
         const baseColorImage = state.selectedColorImage;
         let baseColorHex = getSelectedColorHex();
         if (!baseColorHex && window.BrandedColorHex && baseColor) {
-            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage) || BrandedColorHex.lookupByName(baseColor) || '';
+            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage, baseColorId) || BrandedColorHex.lookupByName(baseColor, baseColorId) || '';
             if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
         }
         const basePositionDesigns = getPositionDesignsForBasket();
@@ -8475,6 +8530,7 @@
                 }
             }
             revealPositionsPopup(overlay, animate);
+            applyGarmentColorToPositionPreviews(overlay);
             const posSec = document.getElementById('positionsSection');
             if (posSec) applyGarmentColorToPositionPreviews(posSec);
             return;
@@ -8605,7 +8661,11 @@
         document.body.appendChild(overlay);
         overlay.style.display = 'none';
         applyGarmentColorToPositionPreviews(posSection);
+        applyGarmentColorToPositionPreviews(overlay);
         revealPositionsPopup(overlay, animate);
+        requestAnimationFrame(function () {
+            applyGarmentColorToPositionPreviews(overlay);
+        });
     }
 
     // Extract logo image src from a basket item
@@ -9676,6 +9736,11 @@
 
         existing.positions = positions;
         existing.positionDesigns = JSON.parse(JSON.stringify(state.positionDesigns || {}));
+        if (state.selectedColorName) existing.color = state.selectedColorName;
+        if (state.selectedColor) existing.colorId = state.selectedColor;
+        if (state.selectedColorImage) existing.colorImage = state.selectedColorImage;
+        const saveHex = getCurrentGarmentColorHex();
+        if (saveHex) existing.colorHex = saveHex;
         syncBasketItemLogos(existing);
 
         const key = (existing.productCode || existing.code || '') + '|' + (existing.color || '');
@@ -9864,6 +9929,7 @@
             }));
 
             const itemId = Date.now().toString() + '-auto-' + size;
+            const autoColorHex = getCurrentGarmentColorHex();
             lastAutoItem = {
                 id: itemId,
                 productCode: baseProductCode,
@@ -9871,6 +9937,7 @@
                 productType: state.product?.rawData?.productType || state.product?.rawData?.category || state.product?.rawData?.type || '',
                 color: baseColor,
                 colorId: baseColorId,
+                colorHex: autoColorHex || '',
                 colorImage: baseColorImage,
                 quantities: { [size]: qty },
                 totalQty: qty,
@@ -10228,7 +10295,7 @@
         }
 
         if (window.BrandedColorHex && name) {
-            const found = BrandedColorHex.lookup(name, code, imageUrl);
+            const found = BrandedColorHex.lookup(name, code, imageUrl, id);
             if (BrandedColorHex.isUsableHex(found)) {
                 BrandedColorHex.register(name, found, code);
                 return found;
@@ -10237,8 +10304,26 @@
         return '';
     }
 
-    function resolveGarmentPreviewHex() {
+    function getCurrentGarmentColorHex() {
         let hex = getSelectedColorHex();
+        if (!hex && state.product && state.product.rawData && window.BrandedColorHex) {
+            const fromRaw = BrandedColorHex.parseHex(state.product.rawData.colorHex);
+            if (BrandedColorHex.isUsableHex(fromRaw)) hex = fromRaw;
+        }
+        if (!hex && window.BrandedColorHex) {
+            const code = state.product && state.product.code ? state.product.code : '';
+            hex = BrandedColorHex.lookup(
+                state.selectedColorName || state.selectedColor || '',
+                code,
+                state.selectedColorImage,
+                state.selectedColor
+            ) || '';
+        }
+        return hex || '';
+    }
+
+    function resolveGarmentPreviewHex() {
+        let hex = getCurrentGarmentColorHex();
         const raw = state.product && state.product.rawData;
         if (raw && raw.colorHex && window.BrandedColorHex) {
             const fromBasket = BrandedColorHex.parseHex(raw.colorHex);
@@ -10253,7 +10338,8 @@
                 hex = BrandedColorHex.lookup(
                     state.selectedColorName || state.selectedColor || '',
                     code,
-                    state.selectedColorImage
+                    state.selectedColorImage,
+                    state.selectedColor
                 ) || '';
             }
         }
@@ -10300,15 +10386,17 @@
                 enforceGarmentCardWhiteBackground(scopeRoot);
             }
 
-            /* Logo preview boxes keep garment hex — only tint stack areas stay white */
-            scopeRoot.querySelectorAll('.position-preview--garment-tint, .uploaded-logo-box').forEach(function (el) {
-                el.style.backgroundColor = '#ffffff';
-                el.style.removeProperty('--garment-bg');
+            /* Logo preview boxes keep garment hex — only garment photo / tint stack stay white */
+            const logoBoxBg = tintHex || '#f3f4f6';
+            scopeRoot.querySelectorAll('.position-preview-content, .uploaded-logo-box').forEach(function (el) {
+                if (tintHex) el.style.setProperty('--garment-bg', tintHex);
+                else el.style.removeProperty('--garment-bg');
+                el.style.backgroundColor = logoBoxBg;
             });
         }
 
         if (APRON_GARMENT_TINT_POC && isApronProductContext()) {
-            applyGarmentTintStacks(scope, hex, false);
+            applyApronGarmentTintStacks(scope, hex);
             return;
         }
 
@@ -10389,7 +10477,7 @@
         const baseColorImage = state.selectedColorImage;
         let baseColorHex = getSelectedColorHex();
         if (!baseColorHex && window.BrandedColorHex && baseColor) {
-            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage) || BrandedColorHex.lookupByName(baseColor) || '';
+            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage, baseColorId) || BrandedColorHex.lookupByName(baseColor, baseColorId) || '';
             if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
         }
         const baseNote = state.itemNote || '';
