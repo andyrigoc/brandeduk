@@ -13,6 +13,8 @@
     const DEFAULTS = {
         limit: 12,
         pageType: 'desktop',
+        layout: 'tabs',
+        relatedSidebarSelector: '',
         priceFormatter: function (basePrice) {
             return 'From \u00A3' + (Number(basePrice) || 0).toFixed(2);
         },
@@ -47,6 +49,94 @@
         return Number.isFinite(parsed) ? parsed : 0;
     }
 
+    function toArray(value) {
+        if (Array.isArray(value)) {
+            return value;
+        }
+
+        if (typeof value === 'string' && value.trim()) {
+            return value.split(/[|,\/]+/g).map(function (item) {
+                return item.trim();
+            }).filter(Boolean);
+        }
+
+        return [];
+    }
+
+    function normalizeSizeValue(sizeEntry) {
+        if (!sizeEntry) {
+            return '';
+        }
+
+        if (typeof sizeEntry === 'string' || typeof sizeEntry === 'number') {
+            return String(sizeEntry).trim();
+        }
+
+        if (typeof sizeEntry === 'object') {
+            return String(sizeEntry.size || sizeEntry.name || sizeEntry.label || '').trim();
+        }
+
+        return '';
+    }
+
+    function sizeOrderIndex(size) {
+        const order = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'];
+        const normalized = String(size || '').toUpperCase().replace(/\s+/g, '');
+        const direct = order.indexOf(normalized);
+
+        if (direct >= 0) {
+            return direct;
+        }
+
+        const numeric = normalized.match(/^(\d+)XL$/);
+        if (numeric) {
+            return 5 + parseInt(numeric[1], 10);
+        }
+
+        return 999;
+    }
+
+    function deriveSizeLabel(source, transformed) {
+        const rawSizes = []
+            .concat(toArray(source && source.sizes))
+            .concat(toArray(source && source.available_sizes))
+            .concat(toArray(transformed && transformed.sizes));
+
+        const unique = Array.from(new Set(rawSizes.map(normalizeSizeValue).filter(Boolean)));
+        if (!unique.length) {
+            return '';
+        }
+
+        const hasOneSize = unique.some(function (size) {
+            return /^(one\s*size|os)$/i.test(size);
+        });
+
+        if (hasOneSize || unique.length === 1) {
+            return 'One size';
+        }
+
+        const sorted = unique.slice().sort(function (a, b) {
+            return sizeOrderIndex(a) - sizeOrderIndex(b);
+        });
+
+        return sorted[0] + '-' + sorted[sorted.length - 1];
+    }
+
+    function deriveSideDescription(productName, code) {
+        const name = String(productName || '').replace(/[\u00AE\u2122\u00A9]/g, '').trim();
+        const safeCode = String(code || '').trim();
+        if (!name) {
+            return '';
+        }
+
+        if (!safeCode) {
+            return name;
+        }
+
+        const codeRegex = new RegExp('^' + safeCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\s:-]*', 'i');
+        return name.replace(codeRegex, '').trim() || name;
+    }
+
     function normalizeProduct(rawProduct) {
         const source = rawProduct || {};
         const transformed = (typeof window !== 'undefined' &&
@@ -58,6 +148,8 @@
         return {
             code: source.code || source.style_code || transformed.code || '',
             name: transformed.name || source.name || source.product_name || 'Product',
+            description: deriveSideDescription(transformed.name || source.name || source.product_name || 'Product', source.code || source.style_code || transformed.code || ''),
+            sizeLabel: deriveSizeLabel(source, transformed),
             price: asNumber(source.price || transformed.price),
             image: source.image || source.main_image || transformed.image || '',
             brand: source.brand || transformed.brand || '',
@@ -148,6 +240,64 @@
         return card;
     }
 
+    function createRelatedSideCard(product, options) {
+        const card = document.createElement('a');
+        card.className = 'product-recommendations__side-card';
+        card.href = buildProductUrl(product.code, options.pageType);
+
+        if (typeof options.onSelect === 'function') {
+            card.addEventListener('click', function () {
+                options.onSelect(product);
+            });
+        }
+
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'product-recommendations__side-image-wrap';
+
+        if (product.image) {
+            const image = document.createElement('img');
+            image.className = 'product-recommendations__side-image';
+            image.src = product.image;
+            image.alt = product.name || 'Product';
+            image.loading = 'lazy';
+            imageWrap.appendChild(image);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'product-recommendations__side-meta';
+
+        const top = document.createElement('div');
+        top.className = 'product-recommendations__side-top';
+
+        const code = document.createElement('span');
+        code.className = 'product-recommendations__side-code';
+        code.textContent = product.code || '';
+
+        const size = document.createElement('span');
+        size.className = 'product-recommendations__side-size';
+        size.textContent = product.sizeLabel || '';
+
+        top.appendChild(code);
+        top.appendChild(size);
+
+        const desc = document.createElement('p');
+        desc.className = 'product-recommendations__side-desc';
+        desc.textContent = product.description || product.name || '';
+
+        const cta = document.createElement('span');
+        cta.className = 'product-recommendations__side-cta';
+        cta.textContent = 'Buy Now';
+
+        meta.appendChild(top);
+        meta.appendChild(desc);
+        meta.appendChild(cta);
+
+        card.appendChild(imageWrap);
+        card.appendChild(meta);
+
+        return card;
+    }
+
     function applyPricing(root, options) {
         const formatter = typeof options.priceFormatter === 'function'
             ? options.priceFormatter
@@ -175,7 +325,11 @@
         return empty;
     }
 
-    function getVisibleCount(tabKey) {
+    function getVisibleCount(tabKey, options) {
+        if (options && options.layout === 'split' && tabKey === 'alternatives') {
+            return 1;
+        }
+
         if (tabKey === 'related') {
             return 2;
         }
@@ -234,7 +388,7 @@
         let resizeFrame = null;
 
         function getCurrentVisibleCount() {
-            return Math.min(getVisibleCount(tabKey), Math.max(products.length, 1));
+            return Math.min(getVisibleCount(tabKey, options), Math.max(products.length, 1));
         }
 
         function shouldShowControls(visibleCount) {
@@ -333,6 +487,86 @@
         return carousel;
     }
 
+    function buildSplitLayout(related, alternatives, options) {
+        const split = document.createElement('div');
+        split.className = 'product-recommendations__split';
+
+        const left = document.createElement('div');
+        left.className = 'product-recommendations__split-left';
+
+        const alternativesTitle = document.createElement('h3');
+        alternativesTitle.className = 'product-recommendations__split-heading';
+        alternativesTitle.textContent = 'Alternatives';
+        left.appendChild(alternativesTitle);
+
+        left.appendChild(
+            alternatives.length
+                ? buildCarousel(alternatives, options, 'alternatives')
+                : createEmptyState(TAB_COPY.alternatives.empty)
+        );
+
+        const right = document.createElement('div');
+        right.className = 'product-recommendations__split-right';
+
+        const relatedTitle = document.createElement('h3');
+        relatedTitle.className = 'product-recommendations__split-heading';
+        relatedTitle.textContent = 'Related Products';
+        right.appendChild(relatedTitle);
+
+        const relatedList = document.createElement('div');
+        relatedList.className = 'product-recommendations__side-list';
+
+        if (related.length) {
+            related.slice(0, 2).forEach(function (product) {
+                relatedList.appendChild(createRelatedSideCard(product, options));
+            });
+        } else {
+            relatedList.appendChild(createEmptyState(TAB_COPY.related.empty));
+        }
+
+        right.appendChild(relatedList);
+
+        split.appendChild(left);
+
+        if (!options.relatedSidebarSelector) {
+            split.appendChild(right);
+        }
+
+        return split;
+    }
+
+    function mountRelatedSidebar(related, options) {
+        if (!options.relatedSidebarSelector) {
+            return;
+        }
+
+        const host = document.querySelector(options.relatedSidebarSelector);
+        if (!host) {
+            return;
+        }
+
+        host.innerHTML = '';
+
+        if (!related.length) {
+            host.setAttribute('data-has-related', 'false');
+            return;
+        }
+
+        const title = document.createElement('h3');
+        title.className = 'product-recommendations__split-heading';
+        title.textContent = 'Alternative products';
+
+        const list = document.createElement('div');
+        list.className = 'product-recommendations__side-list';
+        related.slice(0, 2).forEach(function (product) {
+            list.appendChild(createRelatedSideCard(product, options));
+        });
+
+        host.appendChild(title);
+        host.appendChild(list);
+        host.setAttribute('data-has-related', 'true');
+    }
+
     async function fetchCollection(productCode, type, limit) {
         const response = await fetch(
             resolveApiBaseUrl() + '/products/' + encodeURIComponent(productCode) + '/' + type + '?limit=' + encodeURIComponent(limit),
@@ -412,6 +646,7 @@
         const state = {
             activeTab: null
         };
+        const splitLayout = options.layout === 'split';
 
         const buttons = root.querySelectorAll('.product-recommendations__tab[data-tab]');
         const panels = {
@@ -429,7 +664,20 @@
         setExpanded(root, false);
         setStatusText(root, 'Finding related and alternative styles for this product...', false);
 
+        if (splitLayout) {
+            root.classList.add('product-recommendations--split');
+            if (options.relatedSidebarSelector) {
+                root.classList.add('product-recommendations--sidebar-hosted');
+            }
+            setExpanded(root, true);
+        }
+
         buttons.forEach(function (button) {
+            if (splitLayout) {
+                button.hidden = true;
+                return;
+            }
+
             button.disabled = true;
             button.addEventListener('click', function () {
                 if (button.disabled) {
@@ -466,6 +714,30 @@
         ]).then(function (results) {
             const related = results[0].status === 'fulfilled' ? results[0].value : [];
             const alternatives = results[1].status === 'fulfilled' ? results[1].value : [];
+
+            mountRelatedSidebar(alternatives, options);
+
+            if (splitLayout) {
+                const body = root.querySelector('[data-recommendation-body]');
+                if (body) {
+                    body.hidden = false;
+                    const splitNode = buildSplitLayout(related, alternatives, options);
+                    body.appendChild(splitNode);
+                }
+
+                if (panels.related) panels.related.hidden = true;
+                if (panels.alternatives) panels.alternatives.hidden = true;
+
+                if (related.length === 0 && alternatives.length === 0) {
+                    root.hidden = true;
+                    return;
+                }
+
+                setStatusText(root, '', true);
+                applyPricing(root, options);
+                refreshVisibleCarousels(root);
+                return;
+            }
 
             if (panels.related) {
                 panels.related.innerHTML = '';

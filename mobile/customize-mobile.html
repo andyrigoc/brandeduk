@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260407a">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260403a">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260526b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer/footer.css?v=FTR10APR2026">
@@ -194,6 +194,15 @@
         
         <!-- Product Gallery -->
         <section class="product-gallery">
+            <div class="product-hero-head">
+                <div class="product-hero-text">
+                    <div class="product-sku" id="productSku">Loading...</div>
+                    <h1 class="product-title" id="productTitle">Loading...</h1>
+                </div>
+                <div class="product-brand-box" id="productBrandBox" hidden>
+                    <img id="brandLogoHero" class="product-brand-logo" src="" alt="" loading="lazy">
+                </div>
+            </div>
             <div class="gallery-main">
                 <div class="gallery-badge bestseller" id="bestsellerBadge" style="display: none;">BESTSELLER</div>
                 <div class="product-img-placeholder large" id="productPreviewContainer">
@@ -212,6 +221,9 @@
                     <div class="logo-overlay-box" id="logoOverlayBox" hidden>
                         <img src="" alt="Your Logo" id="logoOverlayImg" class="logo-overlay-img">
                     </div>
+
+                    <!-- Related products slot (inside gallery, right side) -->
+                    <aside id="galleryRelatedProducts" class="product-gallery-related" aria-label="Related products"></aside>
                 </div>
                 <div class="gallery-zoom">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -247,10 +259,6 @@
 
         <!-- Product Info -->
         <section class="product-info">
-            <!-- Code centered at top -->
-            <div class="product-sku" id="productSku">Loading...</div>
-            <!-- Product name -->
-            <h1 class="product-title" id="productTitle">Loading...</h1>
             <!-- Price + Brand Logo row -->
             <div class="price-brand-row">
                 <div class="product-main-price" id="productMainPrice">
@@ -770,7 +778,7 @@
         <section class="customize-section" id="custRecommendationsSection" style="display:none;">
             <div class="product-recommendations" id="custProductRecommendations" aria-labelledby="custRecommendationsTitle" data-expanded="false">
                 <div class="product-recommendations__topline">
-                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">You May Also Like</h2>
+                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">Alternatives</h2>
                     <span class="product-recommendations__rule" aria-hidden="true"></span>
                 </div>
                 <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
@@ -1015,10 +1023,10 @@
     <script src="../brandedukv15-child/assets/js/upload/logo-upload.js?v=20260518n"></script>
     <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260529"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
-    <script src="js/customize.js?v=20260530"></script>
+    <script src="js/customize.js?v=20260530a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260530"></script>
-    <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260403c"></script>
+    <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260526d"></script>
     <script>
     // Initialize Related & Alternative Recommendations on Customize page
     (function () {
@@ -1056,6 +1064,8 @@
             controller = window.BrandedProductRecommendations.init('#custProductRecommendations', {
                 productCode: productCode,
                 pageType: 'mobile',
+                layout: 'split',
+                relatedSidebarSelector: '#galleryRelatedProducts',
                 priceFormatter: formatPrice,
                 priceNoteFormatter: vatNote,
                 onSelect: function (product) {
@@ -1823,9 +1833,54 @@
 </div>
 
 <style>
-/* Gallery main — mobile: 70% width, full image visible */
+/* Gallery main — full width with right-side related column */
+.product-hero-head {
+    padding: 8px 10px 6px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 98px;
+    gap: 8px;
+    align-items: start;
+}
+
+.product-hero-text {
+    min-width: 0;
+}
+
+.product-hero-head .product-sku {
+    margin: 0 0 4px;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.product-hero-head .product-title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.product-brand-box {
+    min-height: 46px;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+}
+
+.product-brand-logo {
+    max-width: 100%;
+    max-height: 34px;
+    object-fit: contain;
+}
+
 .gallery-main {
-    max-width: 70% !important;
+    max-width: 100% !important;
     margin: 0 auto;
     aspect-ratio: auto !important;
     overflow: visible !important;
@@ -1841,13 +1896,127 @@
 .product-img-placeholder.large {
     min-height: 0 !important;
     height: auto !important;
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 6px;
+    align-items: stretch;
 }
 
 .product-img-placeholder.large img {
     width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     max-height: none !important;
     object-fit: contain !important;
+    object-position: left center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.product-gallery-related {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 3;
+    display: none;
+}
+
+.product-gallery-related[data-has-related="true"] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 4px;
+}
+
+.product-gallery-related .product-recommendations__split-heading {
+    margin: 0;
+    font-size: 0.54rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1.15;
+}
+
+.product-gallery-related .product-recommendations__side-list {
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    height: auto;
+    gap: 6px;
+}
+
+.product-gallery-related .product-recommendations__side-card {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+}
+
+.product-gallery-related .product-recommendations__side-image-wrap {
+    background: #ffffff;
+    box-shadow: none;
+    border: 1px solid #9ca3af;
+    padding: 2px;
+    border-radius: 6px;
+    aspect-ratio: auto;
+    height: 100%;
+    position: relative;
+}
+
+.product-gallery-related .product-recommendations__side-image {
+    width: 100%;
+    height: 100%;
+}
+
+.product-gallery-related .product-recommendations__side-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+}
+
+.product-gallery-related .product-recommendations__side-code {
+    font-size: 0.66rem;
+    font-weight: 500;
+}
+
+.product-gallery-related .product-recommendations__side-size {
+    font-size: 0.62rem;
+    color: #2b2d33;
+    white-space: nowrap;
+}
+
+.product-gallery-related .product-recommendations__side-desc {
+    margin: 0;
+    font-size: 0.56rem;
+    line-height: 1.2;
+    color: #79818c;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.product-gallery-related .product-recommendations__side-cta {
+    min-height: 21px;
+    font-size: 0.62rem;
+    border-radius: 3px;
+}
+
+.product-gallery-related .product-recommendations__side-image-wrap button,
+.product-gallery-related .product-recommendations__side-image-wrap [class*="remove"],
+.product-gallery-related .product-recommendations__side-image-wrap [class*="close"] {
+    display: none !important;
+}
+
+/* Remove zoom-plus from this hero layout to avoid overlap with right cards */
+.gallery-main .gallery-zoom {
+    display: none !important;
+}
+
+@media (max-width: 400px) {
+    .product-img-placeholder.large {
+        grid-template-columns: minmax(0, 1fr) 78px;
+    }
 }
 
 .lightbox-overlay {

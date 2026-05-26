@@ -235,7 +235,7 @@
 
     // Apron tint: neutral PNG + luminance mask (see mobile/apron-tint-poc.html) — do not change apron path for hoodie experiments
     const APRON_GARMENT_TINT_POC = true;
-    const HOODIE_GARMENT_TINT_POC = true;
+    const HOODIE_GARMENT_TINT_POC = false; // Disabled: hoodie PNGs are light-gray on transparent — screen blend on white bg makes them invisible. Use hex background only.
     const HOODIE_GARMENT_TINT_TYPES = ['Hoodies', 'Sweatshirts'];
     const GARMENT_MASK_WHITE_CUTOFF = 236;
     const GARMENT_MASK_BLACK_CUTOFF = 48;
@@ -1469,12 +1469,10 @@
     // Update visible product DOM elements after dynamic load
     function refreshProductDOM() {
         try {
-            // Bestseller badge - show only if API says so
+            // On opened product page, never show bestseller badge over hero image.
             const bestsellerBadge = document.getElementById('bestsellerBadge');
             if (bestsellerBadge) {
-                const raw = state.product?.rawData;
-                const isBestSeller = raw && (raw.is_best_seller === true || raw.is_best_seller === 'true' || raw.is_best_seller === 1);
-                bestsellerBadge.style.display = isBestSeller ? '' : 'none';
+                bestsellerBadge.style.display = 'none';
             }
 
             // Title and SKU
@@ -1614,7 +1612,8 @@
             }
 
             // === Brand Logo (local files) ===
-            const brandLogoEl = document.getElementById('brandLogoCustomize');
+            const brandLogoEl = document.getElementById('brandLogoHero') || document.getElementById('brandLogoCustomize');
+            const brandBoxEl = document.getElementById('productBrandBox');
             if (brandLogoEl && state.product?.brand) {
                 const BRAND_LOGO_MAP = {
                     '2786': '27862020.webp',
@@ -1720,8 +1719,14 @@
                     'wombat': 'wombat-logo.jpg',
                     'yoko': 'yoko.webp'
                 };
-                const brandKey = state.product.brand.toLowerCase();
-                const logoFile = BRAND_LOGO_MAP[brandKey];
+                const rawBrandKey = String(state.product.brand || '').toLowerCase().trim();
+                const normalizedBrandKey = rawBrandKey
+                    .replace(/[®™]/g, '')
+                    .replace(/[+&/]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                const logoFile = BRAND_LOGO_MAP[rawBrandKey] || BRAND_LOGO_MAP[normalizedBrandKey];
                 if (logoFile) {
                     const basePath = window.location.pathname.includes('/mobile/') 
                         ? '../brandedukv15-child/assets/images/brands/' 
@@ -1729,9 +1734,17 @@
                     brandLogoEl.src = basePath + logoFile;
                     brandLogoEl.alt = state.product.brand;
                     brandLogoEl.style.display = '';
+                    if (brandBoxEl) brandBoxEl.hidden = false;
+                    brandLogoEl.onerror = function () {
+                        this.style.display = 'none';
+                        if (brandBoxEl) brandBoxEl.hidden = true;
+                    };
                 } else {
                     brandLogoEl.style.display = 'none';
+                    if (brandBoxEl) brandBoxEl.hidden = true;
                 }
+            } else if (brandBoxEl) {
+                brandBoxEl.hidden = true;
             }
 
             // === Specs Table (Fabric, Weight, Size) ===
@@ -6384,11 +6397,6 @@
             img.alt = 'Logo';
             img.style.cssText = 'width:72px;height:72px;object-fit:contain;border-radius:8px;display:block;';
             wrapper.appendChild(img);
-
-            const label = document.createElement('span');
-            label.textContent = logo.productName ? logo.productName.substring(0, 18) : 'Logo';
-            label.style.cssText = 'display:block;font-size:10px;color:#888;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px;';
-            wrapper.appendChild(label);
 
             wrapper.addEventListener('click', () => {
                 // Apply this logo directly

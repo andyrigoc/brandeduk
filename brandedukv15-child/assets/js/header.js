@@ -603,10 +603,14 @@
 
                 // Premium UI for Products
                 const isMobile = window.innerWidth < 1280;
+                const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
+                const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                 let html = '<div class="suggestion-group-title">Product Results</div>';
 
                 products.slice(0, 8).forEach(product => {
-                    const detailUrl = `product-detail.html?code=${product.value}`;
+                    const detailUrl = isMobile
+                        ? `${mobileBasePath}customize-mobile.html?code=${encodeURIComponent(product.value)}`
+                        : `product-detail.html?code=${encodeURIComponent(product.value)}`;
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
 
                     html += `
@@ -623,7 +627,7 @@
 
                 // View all results link
                 const viewAllUrl = isMobile
-                    ? `shop.html?q=${encodeURIComponent(query)}`
+                    ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(query)}`
                     : `shop-pc.html?q=${encodeURIComponent(query)}`;
                 html += `
                     <a href="${viewAllUrl}" class="view-all-results">
@@ -668,8 +672,10 @@
                     const query = e.target.value.trim();
                     if (query) {
                         const isMobile = window.innerWidth < 1280;
+                        const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
+                        const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                         window.location.href = isMobile
-                            ? `shop.html?q=${encodeURIComponent(query)}`
+                            ? `${mobileBasePath}shop-mobile.html?q=${encodeURIComponent(query)}`
                             : `shop-pc.html?q=${encodeURIComponent(query)}`;
                     }
                 }
