@@ -8332,6 +8332,15 @@ a {
     padding: 16px;
     padding-top: 8px;
     padding-bottom: calc(80px + var(--safe-area-bottom));
+    /* Keep mobile footer pushed to the bottom even when few/no products are shown
+       (e.g. a search returning only 1 item) so it doesn't float right under the grid. */
+    min-height: calc(100vh - 220px);
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-products-container > [data-mobile-footer] {
+    margin-top: auto;
 }
 
 .products-grid-shop {
