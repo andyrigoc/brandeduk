@@ -3148,15 +3148,7 @@
     if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
     if (icon)  icon.addEventListener('click', submitSearch);
 })();
-// Request Quote button → same handler as checkout but marks as quote
 document.addEventListener('DOMContentLoaded', function() {
-    var rqBtn = document.getElementById('requestQuoteBtn');
-    if (rqBtn) {
-        rqBtn.addEventListener('click', function() {
-            var checkoutBtn = document.getElementById('checkoutBtn');
-            if (checkoutBtn) checkoutBtn.click();
-        });
-    }
     var continueBtn = document.getElementById('continueShoppingBtn');
     if (continueBtn) {
         continueBtn.addEventListener('click', function(e) {

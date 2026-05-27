@@ -4315,22 +4315,35 @@
             let totalItems = 0;
             basket.forEach(item => {
                 const sizes = item.sizes || item.quantities || {};
-                totalItems += Object.values(sizes).reduce((sum, q) => sum + (Number(q) || 0), 0);
+                const sizedCount = Object.values(sizes).reduce((sum, q) => sum + (Number(q) || 0), 0);
+                totalItems += sizedCount > 0 ? sizedCount : (Number(item.quantity) || Number(item.totalQty) || 0);
             });
-            const badge = document.getElementById('navBasketBadge');
-            if (badge) {
+            const badgeValue = totalItems > 99 ? '99+' : String(totalItems);
+            ['navBasketBadge', 'headerBasketBadge'].forEach(function (badgeId) {
+                const badge = document.getElementById(badgeId);
+                if (!badge) return;
                 if (totalItems > 0) {
-                    badge.textContent = totalItems > 99 ? '99+' : String(totalItems);
+                    badge.textContent = badgeValue;
                     badge.style.display = 'flex';
                 } else {
+                    badge.textContent = '';
                     badge.style.display = 'none';
                 }
-            }
+            });
+        }
+
+        function syncBasketBadge() {
+            updateBasketBadge();
+            window.requestAnimationFrame(updateBasketBadge);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateBasketBadge();
+            syncBasketBadge();
         });
+        window.addEventListener('pageshow', syncBasketBadge);
+        window.addEventListener('focus', syncBasketBadge);
+        window.addEventListener('storage', function (e) { if (e.key === 'quoteBasket') syncBasketBadge(); });
+        window.addEventListener('basketUpdated', syncBasketBadge);
 
         document.addEventListener('DOMContentLoaded', function () {
             const tabletSocialIcons = document.querySelectorAll('.tablet-top-bar .social-icon');

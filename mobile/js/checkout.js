@@ -23,6 +23,16 @@ function isLocalApiBase() {
 
 let checkoutSessionPending = false;
 
+function isQuoteMode() {
+    try {
+        if (typeof window.coIsQuoteMode === 'function') return !!window.coIsQuoteMode();
+        const mode = new URLSearchParams(window.location.search).get('mode') || '';
+        return String(mode).toLowerCase() === 'quote';
+    } catch (e) {
+        return false;
+    }
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tabName = btn.dataset.tab;
@@ -90,6 +100,19 @@ document.getElementById('payment-retry-btn')?.addEventListener('click', () => {
 });
 
 async function initStripePayment() {
+    if (isQuoteMode()) {
+        const quoteForm = document.getElementById('coQuoteForm');
+        if (quoteForm) quoteForm.style.display = 'block';
+        const loading = document.getElementById('payment-loading');
+        const form = document.getElementById('stripe-payment-form');
+        const error = document.getElementById('payment-error-state');
+        if (loading) loading.style.display = 'none';
+        if (form) form.style.display = 'none';
+        if (error) error.style.display = 'none';
+        const success = document.getElementById('payment-success');
+        if (success) success.style.display = 'none';
+        return;
+    }
     showPaymentStart();
 }
 
@@ -224,6 +247,19 @@ function buildOrderItems(basket) {
 }
 
 function showPaymentStart() {
+    if (isQuoteMode()) {
+        const qf = document.getElementById('coQuoteForm');
+        if (qf) qf.style.display = 'block';
+        const loading = document.getElementById('payment-loading');
+        const form = document.getElementById('stripe-payment-form');
+        const success = document.getElementById('payment-success');
+        const error = document.getElementById('payment-error-state');
+        if (loading) loading.style.display = 'none';
+        if (form) form.style.display = 'none';
+        if (success) success.style.display = 'none';
+        if (error) error.style.display = 'none';
+        return;
+    }
     const qf = document.getElementById('coQuoteForm');
     if (qf) qf.style.display = 'none';
     setPaymentView('form');

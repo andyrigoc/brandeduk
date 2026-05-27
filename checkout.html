@@ -898,7 +898,8 @@
                 </div><!-- /co-delivery-wrap -->
 
                 <div style="margin-top:16px">
-                    <button type="button" class="co-btn-primary full" onclick="coDoDelivery()">Continue to Payment &rarr;</button>
+                    <button type="button" class="co-btn-primary full" onclick="coDoDelivery('payment')">Continue to Payment &rarr;</button>
+                    <button type="button" class="co-btn-outline full" style="margin-top:10px" onclick="coDoDelivery('quote')">Continue to Quote Request &rarr;</button>
                 </div>
 
             </div><!-- /co-step-inner -->
@@ -1036,9 +1037,36 @@
             : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
         var _selectedAddressId = '';
         var _guestCheckout = false;
+        var _checkoutMode = (function () {
+            try {
+                var mode = (new URLSearchParams(window.location.search)).get('mode') || '';
+                mode = String(mode || '').toLowerCase();
+                return mode === 'quote' ? 'quote' : 'payment';
+            } catch (e) {
+                return 'payment';
+            }
+        })();
+
+        function coSetCheckoutMode(mode) {
+            _checkoutMode = String(mode || '').toLowerCase() === 'quote' ? 'quote' : 'payment';
+            try { sessionStorage.setItem('checkoutMode', _checkoutMode); } catch (e) {}
+        }
+        function coIsQuoteMode() {
+            return _checkoutMode === 'quote';
+        }
+        window.coIsQuoteMode = coIsQuoteMode;
+        window.coSetCheckoutMode = coSetCheckoutMode;
 
         function coGetAuthToken() {
             return localStorage.getItem('authToken') || localStorage.getItem('coAuthToken') || '';
+        }
+        function coGetBasketHref() {
+            var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+            return isLocal ? '/basket.html#orderSummary' : '/basket#orderSummary';
+        }
+        function coGetHomeHref() {
+            var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+            return isLocal ? '/index.html' : '/';
         }
         function coSaveAuth(token, user) {
             if (token) {
@@ -1344,7 +1372,10 @@
 
         /* ── Step navigation ── */
         function coGoStep(n) {
-            if (n === 1 && coGetAuthToken()) n = 2;
+            if (n === 1 && coGetAuthToken()) {
+                window.location.href = coGetBasketHref();
+                return;
+            }
             [1, 2, 3].forEach(function (s) {
                 var el = document.getElementById('coStep' + s);
                 if (el) {
@@ -1363,9 +1394,20 @@
 
             if (n === 3) {
                 coPopulateSummary();
-                // Try initialising Stripe; quote form stays visible until Stripe succeeds
-                if (typeof initStripePayment === 'function') {
+                // In quote mode, force quote UI and skip Stripe setup.
+                if (!coIsQuoteMode() && typeof initStripePayment === 'function') {
                     initStripePayment();
+                } else {
+                    var stripeForm = document.getElementById('stripe-payment-form');
+                    var loading = document.getElementById('payment-loading');
+                    var quoteForm = document.getElementById('coQuoteForm');
+                    var success = document.getElementById('payment-success');
+                    var error = document.getElementById('payment-error-state');
+                    if (loading) loading.style.display = 'none';
+                    if (stripeForm) stripeForm.style.display = 'none';
+                    if (success) success.style.display = 'none';
+                    if (error) error.style.display = 'none';
+                    if (quoteForm) quoteForm.style.display = 'block';
                 }
             }
         }
@@ -1382,8 +1424,15 @@
 
         /* Back button in mobile header */
         document.getElementById('coBackBtn').addEventListener('click', function () {
-            if (_step > 1) coGoStep(_step - 1);
-            else history.back();
+            if (coGetAuthToken()) {
+                window.location.href = coGetBasketHref();
+                return;
+            }
+            if (_step > 1) {
+                coGoStep(_step - 1);
+                return;
+            }
+            window.location.href = coGetHomeHref();
         });
 
         /* ── Panel accordion ── */
@@ -1498,7 +1547,7 @@
         }
 
         /* ── Delivery ── */
-        window.coDoDelivery = function () {
+        window.coDoDelivery = function (mode) {
             var required = [
                 ['coDelFirst', 'coDelFirstErr'],
                 ['coDelLast',  'coDelLastErr'],
@@ -1520,6 +1569,7 @@
                 if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+            coSetCheckoutMode(mode || 'payment');
             coSaveDelivery();
             Promise.resolve()
                 .then(function () {
@@ -1664,10 +1714,12 @@
             var payload = (typeof window.buildQuoteData === 'function')
                 ? window.buildQuoteData(basket)
                 : { basket: basket, customer: customer };
+            var quoteOk = false;
 
             try {
                 if (typeof window.submitQuoteWithLogos === 'function') {
                     await window.submitQuoteWithLogos(payload);
+                    quoteOk = true;
                 } else {
                     if (typeof window.sanitizeQuotePayload === 'function') {
                         payload = window.sanitizeQuotePayload(payload);
@@ -1678,10 +1730,25 @@
                         body: JSON.stringify(payload),
                     });
                     if (!res.ok) throw new Error('Quote API error: ' + res.status);
+                    quoteOk = true;
                 }
-            } catch (e) { console.warn('[Checkout] Quote fallback failed:', e); }
+            } catch (e) {
+                console.warn('[Checkout] Quote fallback failed:', e);
+                var errEl = document.getElementById('payment-error-msg');
+                if (errEl) errEl.textContent = 'Failed to send quote request. Please try again.';
+                var errState = document.getElementById('payment-error-state');
+                if (errState) errState.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Submit Quote Request';
+                return;
+            }
 
-            // Always show success in prototype
+            // Show success only after a confirmed submission.
+            if (!quoteOk) {
+                btn.disabled = false;
+                btn.textContent = 'Submit Quote Request';
+                return;
+            }
             document.getElementById('coQuoteForm').style.display    = 'none';
             document.getElementById('payment-success').style.display = 'block';
             localStorage.setItem('quoteBasket', '[]');

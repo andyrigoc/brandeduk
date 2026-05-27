@@ -907,14 +907,10 @@
             let totalItems = 0;
 
             basket.forEach(item => {
-                // V2 format: item.qty is a number
-                if (typeof item.qty === 'number') {
-                    totalItems += item.qty;
-                } else {
-                    // Old format: item.sizes or item.quantities is an object
-                    const sizes = item.sizes || item.quantities || {};
-                    totalItems += Object.values(sizes).reduce((sum, q) => sum + q, 0);
-                }
+                const sizes = item.sizes || item.quantities || {};
+                const sizedCount = Object.values(sizes).reduce((sum, q) => sum + (Number(q) || 0), 0);
+                const directCount = Number(item.qty) || Number(item.quantity) || Number(item.totalQty) || 0;
+                totalItems += sizedCount > 0 ? sizedCount : (directCount > 0 ? directCount : 1);
             });
 
             const badge = document.getElementById('navBasketBadge');
@@ -923,9 +919,15 @@
                     badge.textContent = totalItems > 99 ? '99+' : totalItems;
                     badge.style.display = 'flex';
                 } else {
+                    badge.textContent = '';
                     badge.style.display = 'none';
                 }
             }
+        }
+
+        function syncBasketBadge() {
+            updateBasketBadge();
+            window.requestAnimationFrame(updateBasketBadge);
         }
 
         // Initialize
@@ -955,7 +957,7 @@
             }
 
             // Update basket badge
-            updateBasketBadge();
+            syncBasketBadge();
 
             // Search input handler
             const searchInput = document.getElementById('searchInput');
@@ -987,6 +989,10 @@
         } else {
             init();
         }
+        window.addEventListener('pageshow', syncBasketBadge);
+        window.addEventListener('focus', syncBasketBadge);
+        window.addEventListener('storage', function(e) { if (e.key === 'quoteBasket') syncBasketBadge(); });
+        window.addEventListener('basketUpdated', syncBasketBadge);
     </script>
     <script>
     // â”€â”€ Search Autocomplete (API-powered with product images) â”€â”€

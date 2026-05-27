@@ -17,9 +17,10 @@
     }
 
     function startGoogleAuth() {
-        var returnTo = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        var basePath = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
             ? '/checkout.html'
             : '/checkout';
+        var returnTo = basePath + (location.search || '') + (location.hash || '');
         try {
             localStorage.setItem('authReturnTo', returnTo);
         } catch (e) { /* private mode */ }
