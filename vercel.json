@@ -28,6 +28,7 @@
 
     { "source": "/basket", "destination": "/basket.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/quote-review", "destination": "/quote-review.html" },
     { "source": "/auth/callback", "destination": "/auth/callback.html" },
     { "source": "/profile", "destination": "/profile.html" },
     { "source": "/orders", "destination": "/orders.html" },

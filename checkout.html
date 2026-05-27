@@ -997,6 +997,9 @@
                         <div class="payment-success-icon">&#10003;</div>
                         <p><strong>Order Request Received!</strong></p>
                         <p>You will receive a confirmation email shortly.<br>We'll be in touch with your personalised quote and payment details.</p>
+                        <p id="co-quote-review-link-wrap" style="display:none;margin-top:14px;">
+                            <a id="co-quote-review-link" href="#" style="display:inline-block;background:#1c4d8f;color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;text-decoration:none;">Review &amp; pay your quote</a>
+                        </p>
                     </div>
 
                     <!-- Error state -->
@@ -1715,10 +1718,11 @@
                 ? window.buildQuoteData(basket)
                 : { basket: basket, customer: customer };
             var quoteOk = false;
+            var quoteResponse = null;
 
             try {
                 if (typeof window.submitQuoteWithLogos === 'function') {
-                    await window.submitQuoteWithLogos(payload);
+                    quoteResponse = await window.submitQuoteWithLogos(payload);
                     quoteOk = true;
                 } else {
                     if (typeof window.sanitizeQuotePayload === 'function') {
@@ -1730,6 +1734,7 @@
                         body: JSON.stringify(payload),
                     });
                     if (!res.ok) throw new Error('Quote API error: ' + res.status);
+                    try { quoteResponse = await res.json(); } catch (e) { quoteResponse = null; }
                     quoteOk = true;
                 }
             } catch (e) {
@@ -1751,8 +1756,32 @@
             }
             document.getElementById('coQuoteForm').style.display    = 'none';
             document.getElementById('payment-success').style.display = 'block';
+
+            // If the backend returned a quoteId (+optional token), surface a "Review & pay" link.
+            // Falls back gracefully when backend doesn't provide an id.
+            var hasReviewLink = false;
+            try {
+                var r = quoteResponse || {};
+                var qid = r.quoteId || (r.data && r.data.quoteId) || r.id || (r.quote && (r.quote.quoteId || r.quote.id)) || '';
+                var qtoken = r.token || (r.data && r.data.token) || (r.quote && r.quote.token) || '';
+                if (qid) {
+                    var linkWrap = document.getElementById('co-quote-review-link-wrap');
+                    var link = document.getElementById('co-quote-review-link');
+                    if (linkWrap && link) {
+                        var href = '/quote-review?id=' + encodeURIComponent(qid);
+                        if (qtoken) href += '&token=' + encodeURIComponent(qtoken);
+                        link.href = href;
+                        linkWrap.style.display = 'block';
+                        hasReviewLink = true;
+                    }
+                }
+            } catch (e) { /* non-fatal */ }
+
             localStorage.setItem('quoteBasket', '[]');
-            setTimeout(function () { window.location.replace('/'); }, 3200);
+            // When we have a review link, stay on the page so the customer can use it.
+            if (!hasReviewLink) {
+                setTimeout(function () { window.location.replace('/'); }, 3200);
+            }
         };
 
         /* ── Customer data (used by checkout.js Stripe Checkout redirect) ── */

@@ -128,6 +128,11 @@
   status = 200
 
 [[redirects]]
+  from = "/quote-review"
+  to = "/quote-review.html"
+  status = 200
+
+[[redirects]]
   from = "/auth/callback"
   to = "/auth/callback.html"
   status = 200

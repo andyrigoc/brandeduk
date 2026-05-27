@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Review & Approve Your Quote — brandeduk.com</title>
+<meta name="robots" content="noindex,nofollow" />
+<!--
+  ============================================================================
+   QUOTE REVIEW PAGE  (frontend only — backend endpoints TODO)
+  ============================================================================
+   Purpose:
+     Customer receives an email with a link like:
+       https://brandeduk.com/quote-review?id=<quoteId>&token=<token>
+     This page loads the quote from the backend and lets the customer:
+       1. Review items, customizations, totals (and see logos)
+       2. Click "Approve & Pay" → existing Stripe checkout-session endpoint
+       3. Click "Request changes" → mailto info@brandeduk.com (or future form)
+
+   Expected backend contract (NOT YET IMPLEMENTED — coordinate with backend dev):
+     GET  {API_BASE}/api/quotes/:id?token=:token
+       200 { success:true, quote: {
+               quoteId, status, customer, basket, customizations,
+               summary: { totalQuantity, garmentCost, customizationCost,
+                          digitizingFee, subtotal, vatAmount, totalIncVat, ... },
+               logos: [ { position, url } ],   // public URLs, not base64
+               createdAt, expiresAt
+           } }
+       401/403 → token mismatch
+       404     → not found / expired
+
+     The Stripe approval reuses the EXISTING endpoint already used by checkout:
+       POST {API_BASE}/api/quotes/stripe/checkout-session
+       body: { quoteId, customer? }
+       → { url: "https://checkout.stripe.com/..." }
+============================================================================
+-->
+<style>
+  :root{
+    --brand:#1c4d8f;
+    --brand-dark:#143a6c;
+    --accent:#f4a300;
+    --ok:#16a34a;
+    --err:#dc2626;
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--brand);text-decoration:none;}
+
+  .qr-header{background:#fff;border-bottom:1px solid var(--line);padding:14px 16px;
+    display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;}
+  .qr-header .logo{font-weight:800;color:var(--brand);font-size:18px;letter-spacing:.3px;}
+  .qr-header .nav-back{font-size:14px;color:var(--muted);background:none;border:none;cursor:pointer;}
+
+  .qr-wrap{max-width:880px;margin:0 auto;padding:18px 14px 120px;}
+  .qr-title{font-size:22px;font-weight:800;margin:6px 0 4px;}
+  .qr-sub{color:var(--muted);font-size:14px;margin:0 0 18px;}
+  .qr-ref{display:inline-block;background:#eef3fb;color:var(--brand-dark);
+    font-weight:700;border-radius:999px;padding:4px 12px;font-size:12px;letter-spacing:.5px;}
+  .qr-status{display:inline-block;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;margin-left:8px;}
+  .qr-status.draft{background:#fef3c7;color:#92400e;}
+  .qr-status.sent{background:#dbeafe;color:#1e40af;}
+  .qr-status.approved{background:#dcfce7;color:#166534;}
+  .qr-status.paid{background:#dcfce7;color:#166534;}
+  .qr-status.expired{background:#fee2e2;color:#991b1b;}
+
+  .qr-card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:16px;margin-top:14px;box-shadow:0 1px 2px rgba(0,0,0,0.03);}
+  .qr-card h3{margin:0 0 10px;font-size:15px;color:#374151;text-transform:uppercase;letter-spacing:.5px;}
+
+  .qr-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
+  .qr-item:first-of-type{border-top:none;padding-top:4px;}
+  .qr-item-thumb{width:64px;height:64px;border-radius:10px;background:#f3f4f6;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:11px;color:#9ca3af;}
+  .qr-item-thumb img{width:100%;height:100%;object-fit:cover;}
+  .qr-item-body{flex:1;min-width:0;}
+  .qr-item-name{font-weight:700;font-size:14px;line-height:1.3;}
+  .qr-item-meta{color:var(--muted);font-size:12px;margin-top:3px;}
+  .qr-item-price{font-weight:700;text-align:right;white-space:nowrap;font-size:14px;}
+
+  .qr-custom-list{margin-top:8px;padding-left:0;list-style:none;}
+  .qr-custom-list li{font-size:12px;color:#4b5563;display:flex;justify-content:space-between;
+    border-top:1px dashed var(--line);padding:6px 0;gap:8px;}
+  .qr-custom-list li:first-child{border-top:none;}
+
+  .qr-logos{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .qr-logo{width:48px;height:48px;border:1px solid var(--line);border-radius:8px;
+    background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .qr-logo img{max-width:100%;max-height:100%;}
+  .qr-logo span{font-size:10px;color:#9ca3af;padding:4px;text-align:center;}
+
+  .qr-totals dl{margin:0;}
+  .qr-totals .row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:#374151;}
+  .qr-totals .row.grand{border-top:1px solid var(--line);margin-top:8px;padding-top:12px;
+    font-size:17px;font-weight:800;color:var(--text);}
+
+  .qr-customer p{margin:4px 0;font-size:14px;color:#374151;}
+  .qr-customer .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-top:8px;}
+
+  .qr-cta-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;
+    border-top:1px solid var(--line);padding:12px 14px env(safe-area-inset-bottom,12px);
+    display:flex;gap:10px;z-index:30;box-shadow:0 -2px 8px rgba(0,0,0,0.04);}
+  .qr-btn{flex:1;border:none;border-radius:12px;padding:14px 12px;font-size:15px;font-weight:700;
+    cursor:pointer;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .qr-btn.primary{background:var(--brand);color:#fff;}
+  .qr-btn.primary:hover{background:var(--brand-dark);}
+  .qr-btn.primary:disabled{background:#9ca3af;cursor:not-allowed;}
+  .qr-btn.ghost{background:#fff;color:var(--brand);border:1.5px solid var(--brand);}
+
+  .qr-state{padding:60px 18px;text-align:center;color:var(--muted);}
+  .qr-state h2{color:var(--text);margin:8px 0 6px;font-size:18px;}
+  .qr-spinner{width:32px;height:32px;border:3px solid #d1d5db;border-top-color:var(--brand);
+    border-radius:50%;animation:qr-spin 0.9s linear infinite;margin:0 auto 12px;}
+  @keyframes qr-spin{to{transform:rotate(360deg);}}
+
+  .qr-paid-banner{background:#dcfce7;color:#166534;padding:12px 14px;border-radius:10px;
+    font-weight:700;text-align:center;margin-top:12px;}
+  .qr-expired-banner{background:#fee2e2;color:#991b1b;padding:12px 14px;border-radius:10px;
+    font-weight:700;text-align:center;margin-top:12px;}
+
+  @media (min-width:760px){
+    .qr-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start;}
+    .qr-cta-bar{position:static;border:none;box-shadow:none;background:transparent;padding:0;margin-top:10px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="qr-header">
+  <div class="logo">brandeduk.com</div>
+  <button type="button" class="nav-back" onclick="window.location.href='/'">Home</button>
+</header>
+
+<main class="qr-wrap">
+
+  <!-- Loading -->
+  <div id="qr-loading" class="qr-state">
+    <div class="qr-spinner"></div>
+    <h2>Loading your quote…</h2>
+    <p>Just a moment.</p>
+  </div>
+
+  <!-- Error / not found -->
+  <div id="qr-error" class="qr-state" style="display:none;">
+    <h2 id="qr-error-title">We couldn't load this quote</h2>
+    <p id="qr-error-msg">The link may have expired or is invalid.</p>
+    <p style="margin-top:20px;">
+      <a href="mailto:info@brandeduk.com?subject=Quote%20link%20issue">Contact us</a>
+      &nbsp;·&nbsp;
+      <a href="/">Back to home</a>
+    </p>
+  </div>
+
+  <!-- Quote content -->
+  <div id="qr-content" style="display:none;">
+    <span class="qr-ref" id="qr-ref">Quote</span>
+    <span class="qr-status" id="qr-status-pill" style="display:none;"></span>
+    <h1 class="qr-title">Review &amp; approve your quote</h1>
+    <p class="qr-sub">Check the items, customizations and total below. When you're happy, tap <strong>Approve &amp; Pay</strong> to complete your order securely with Stripe.</p>
+
+    <div id="qr-status-banner"></div>
+
+    <div class="qr-grid">
+      <div>
+        <!-- Items -->
+        <section class="qr-card">
+          <h3>Items</h3>
+          <div id="qr-items"></div>
+        </section>
+
+        <!-- Notes -->
+        <section class="qr-card" id="qr-notes-wrap" style="display:none;">
+          <h3>Notes</h3>
+          <div id="qr-notes" style="font-size:14px;color:#374151;white-space:pre-wrap;"></div>
+        </section>
+
+        <!-- Customer -->
+        <section class="qr-card qr-customer">
+          <h3>Delivery details</h3>
+          <div id="qr-customer"></div>
+        </section>
+      </div>
+
+      <div>
+        <!-- Totals -->
+        <section class="qr-card qr-totals">
+          <h3>Summary</h3>
+          <dl id="qr-totals"></dl>
+        </section>
+
+        <!-- Desktop CTA inline; mobile uses fixed bottom bar -->
+        <div class="qr-cta-bar" id="qr-cta-bar">
+          <button type="button" class="qr-btn ghost" id="qr-btn-changes">Request changes</button>
+          <button type="button" class="qr-btn primary" id="qr-btn-approve">
+            <span id="qr-btn-approve-text">Approve &amp; Pay</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- API config (resolves api.brandeduk.com or local) -->
+<script src="brandedukv15-child/assets/js/api-config.js"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- helpers ----------
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });}
+  function num(v, d){ var n = Number(v); return isFinite(n)? n : (d||0); }
+  function money(v){ return '\u00A3' + num(v,0).toFixed(2); }
+  function qs(name){
+    try { return new URLSearchParams(window.location.search).get(name) || ''; }
+    catch(e){ return ''; }
+  }
+
+  function apiBase(){
+    if (typeof window.resolveBrandedApiBase === 'function') {
+      return window.resolveBrandedApiBase();
+    }
+    return (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/,'');
+  }
+
+  // ---------- state ----------
+  var quoteId = qs('id') || qs('quoteId');
+  var token   = qs('token') || '';
+  var quote   = null;
+
+  // ---------- UI states ----------
+  function showLoading(){
+    $('qr-loading').style.display='';
+    $('qr-error').style.display='none';
+    $('qr-content').style.display='none';
+  }
+  function showError(title, msg){
+    $('qr-loading').style.display='none';
+    $('qr-content').style.display='none';
+    $('qr-error').style.display='';
+    if (title) $('qr-error-title').textContent = title;
+    if (msg)   $('qr-error-msg').textContent   = msg;
+  }
+  function showContent(){
+    $('qr-loading').style.display='none';
+    $('qr-error').style.display='none';
+    $('qr-content').style.display='';
+  }
+
+  // ---------- fetch ----------
+  async function loadQuote(){
+    if (!quoteId){
+      showError('Missing quote reference', 'This link is missing the quote id. Please use the link from your email.');
+      return;
+    }
+    showLoading();
+    try {
+      var url = apiBase() + '/api/quotes/' + encodeURIComponent(quoteId);
+      if (token) url += '?token=' + encodeURIComponent(token);
+      var res = await fetch(url, { headers: { 'Accept':'application/json' }});
+      if (res.status === 404){
+        showError('Quote not found', 'This quote link is no longer available. It may have expired.');
+        return;
+      }
+      if (res.status === 401 || res.status === 403){
+        showError('Link not valid', 'This link is not authorized. Please use the latest link from your email.');
+        return;
+      }
+      if (!res.ok){
+        showError('Something went wrong', 'Please try again in a moment, or contact us at info@brandeduk.com.');
+        return;
+      }
+      var data = await res.json().catch(function(){ return {}; });
+      var q = data.quote || data.data || data;
+      if (!q || !(q.basket || q.items)){
+        showError('Quote unavailable', 'We could not read the quote details. Please contact us.');
+        return;
+      }
+      quote = q;
+      render(q);
+      showContent();
+    } catch (e){
+      console.warn('[quote-review] load failed', e);
+      showError('Connection problem', 'Please check your internet connection and try again.');
+    }
+  }
+
+  // ---------- render ----------
+  function statusPill(status){
+    var s = String(status||'').toLowerCase();
+    var labels = { draft:'Draft', sent:'Awaiting your approval', approved:'Approved', paid:'Paid', expired:'Expired' };
+    var pill = $('qr-status-pill');
+    if (!s){ pill.style.display='none'; return; }
+    pill.className = 'qr-status ' + s;
+    pill.textContent = labels[s] || status;
+    pill.style.display = '';
+  }
+
+  function render(q){
+    // ref + status
+    $('qr-ref').textContent = 'Quote #' + (q.quoteId || q.id || quoteId);
+    statusPill(q.status);
+
+    // banner & button state
+    var banner = $('qr-status-banner');
+    banner.innerHTML = '';
+    var approveBtn = $('qr-btn-approve');
+    var approveTxt = $('qr-btn-approve-text');
+    var st = String(q.status||'').toLowerCase();
+    if (st === 'paid'){
+      banner.innerHTML = '<div class="qr-paid-banner">This quote has already been paid. Thank you!</div>';
+      approveBtn.disabled = true; approveTxt.textContent = 'Already paid';
+    } else if (st === 'expired'){
+      banner.innerHTML = '<div class="qr-expired-banner">This quote has expired. Please request a fresh one.</div>';
+      approveBtn.disabled = true; approveTxt.textContent = 'Expired';
+    }
+
+    // items
+    var basket = q.basket || q.items || [];
+    var logos  = Array.isArray(q.logos) ? q.logos : [];
+    var logosByPos = {};
+    logos.forEach(function(l){ if (l && l.position) logosByPos[String(l.position).toLowerCase()] = l.url || l.dataUrl || ''; });
+
+    var itemsEl = $('qr-items');
+    itemsEl.innerHTML = '';
+    if (!basket.length){
+      itemsEl.innerHTML = '<p style="color:#6b7280;font-size:14px;">No items in this quote.</p>';
+    }
+    basket.forEach(function(item){
+      var qty = num(item.qty || item.quantity || item.totalQty, 1);
+      var unit = num(item.unitPrice || item.price, 0);
+      var name = item.productName || item.name || item.title || 'Product';
+      var code = item.code || item.productCode || '';
+      var color = item.color || item.colour || '';
+      var size  = item.size || (item.sizes ? Object.keys(item.sizes||{}).join(', ') : '');
+      var img   = item.imageUrl || item.image || '';
+      var customs = Array.isArray(item.customizations) ? item.customizations
+                  : Array.isArray(item.customisations) ? item.customisations : [];
+
+      var row = document.createElement('div');
+      row.className = 'qr-item';
+      var thumb = img
+        ? '<div class="qr-item-thumb"><img src="'+esc(img)+'" alt=""></div>'
+        : '<div class="qr-item-thumb">No image</div>';
+
+      var customsHtml = '';
+      if (customs.length){
+        customsHtml = '<ul class="qr-custom-list">';
+        customs.forEach(function(c){
+          var pos = c.positionLabel || c.position || '';
+          var meth = c.method || '';
+          var line = num(c.lineTotal || (num(c.unitPrice||c.price,0)*qty), 0);
+          customsHtml += '<li><span>'+esc(pos)+(meth?' &middot; '+esc(meth):'')+'</span><span>'+money(line)+'</span></li>';
+        });
+        customsHtml += '</ul>';
+
+        // logos block
+        var posLogos = customs.map(function(c){
+          var key = String(c.positionLabel||c.position||'').toLowerCase();
+          var url = logosByPos[key] || c.logoUrl || c.logo || '';
+          return { pos: c.positionLabel||c.position||'', url: url };
+        }).filter(function(x){ return x.url; });
+        if (posLogos.length){
+          customsHtml += '<div class="qr-logos">';
+          posLogos.forEach(function(l){
+            customsHtml += '<div class="qr-logo" title="'+esc(l.pos)+'">'+
+              (l.url ? '<img src="'+esc(l.url)+'" alt="'+esc(l.pos)+'">' : '<span>'+esc(l.pos)+'</span>')+
+              '</div>';
+          });
+          customsHtml += '</div>';
+        }
+      }
+
+      row.innerHTML =
+        thumb +
+        '<div class="qr-item-body">'+
+          '<div class="qr-item-name">'+esc(name)+'</div>'+
+          '<div class="qr-item-meta">'+
+            (code  ? 'Code: '+esc(code)+' &middot; ' : '')+
+            (color ? esc(color)+' &middot; ' : '')+
+            (size  ? esc(size)+' &middot; ' : '')+
+            'Qty: '+qty+
+          '</div>'+
+          customsHtml+
+        '</div>'+
+        '<div class="qr-item-price">'+money(unit*qty)+'</div>';
+      itemsEl.appendChild(row);
+    });
+
+    // notes
+    var notes = (q.notes && (Array.isArray(q.notes) ? q.notes.join('\n') : String(q.notes))) || '';
+    if (notes.trim()){
+      $('qr-notes-wrap').style.display = '';
+      $('qr-notes').textContent = notes;
+    }
+
+    // customer
+    var c = q.customer || {};
+    var fullName = (c.firstName||'')+' '+(c.lastName||c.surname||'');
+    $('qr-customer').innerHTML =
+      (fullName.trim() ? '<p><strong>'+esc(fullName.trim())+'</strong></p>' : '') +
+      (c.company ? '<p>'+esc(c.company)+'</p>' : '') +
+      '<span class="lbl">Email</span><p>'+esc(c.email||'—')+'</p>' +
+      (c.phone ? '<span class="lbl">Phone</span><p>'+esc(c.phone)+'</p>' : '') +
+      '<span class="lbl">Delivery address</span>' +
+      '<p>'+
+        [c.addressLine1||c.address1||c.address, c.addressLine2||c.address2, c.city||c.town, c.postcode||c.postCode||c.zip, c.country]
+          .filter(Boolean).map(esc).join('<br>') +
+      '</p>';
+
+    // totals
+    var s = q.summary || {};
+    var totalsEl = $('qr-totals');
+    var rows = [
+      ['Items',              num(s.garmentCost, 0)],
+      ['Customization',      num(s.customizationCost, 0)],
+      ['Digitizing fee',     num(s.digitizingFee, 0)],
+      ['Subtotal (ex VAT)',  num(s.totalExVat || s.subtotal, 0)],
+      ['VAT (20%)',          num(s.vatAmount, 0)],
+    ];
+    var html = '';
+    rows.forEach(function(r){
+      if (r[1] > 0 || r[0] === 'Subtotal (ex VAT)'){
+        html += '<div class="row"><span>'+r[0]+'</span><span>'+money(r[1])+'</span></div>';
+      }
+    });
+    var grand = num(s.totalIncVat || s.displayTotal || s.total, 0);
+    html += '<div class="row grand"><span>Total</span><span>'+money(grand)+'</span></div>';
+    totalsEl.innerHTML = html;
+  }
+
+  // ---------- actions ----------
+  async function approveAndPay(){
+    if (!quote){ return; }
+    var btn = $('qr-btn-approve');
+    var txt = $('qr-btn-approve-text');
+    btn.disabled = true;
+    var prev = txt.textContent;
+    txt.textContent = 'Redirecting to Stripe…';
+
+    try {
+      var url = apiBase() + '/api/quotes/stripe/checkout-session';
+      var res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          quoteId: quote.quoteId || quote.id || quoteId,
+          token: token || undefined,
+          customer: quote.customer || undefined,
+          source: 'quote-review',
+        }),
+      });
+      var data = await res.json().catch(function(){ return {}; });
+      if (!res.ok || !(data.url || data.checkoutUrl)){
+        throw new Error(data.message || ('Stripe session error '+res.status));
+      }
+      window.location.href = data.url || data.checkoutUrl;
+    } catch (e){
+      console.warn('[quote-review] approve failed', e);
+      btn.disabled = false;
+      txt.textContent = prev;
+      alert('Sorry, we could not start payment. Please try again or email info@brandeduk.com.');
+    }
+  }
+
+  function requestChanges(){
+    var ref = (quote && (quote.quoteId || quote.id)) || quoteId || '';
+    var subject = encodeURIComponent('Changes to quote ' + ref);
+    var body = encodeURIComponent(
+      'Hi brandeduk team,\n\nI would like the following changes to my quote ('+ref+'):\n\n- \n\nThanks!'
+    );
+    window.location.href = 'mailto:info@brandeduk.com?subject='+subject+'&body='+body;
+  }
+
+  // ---------- init ----------
+  document.addEventListener('DOMContentLoaded', function(){
+    $('qr-btn-approve').addEventListener('click', approveAndPay);
+    $('qr-btn-changes').addEventListener('click', requestChanges);
+    loadQuote();
+  });
+
+})();
+</script>
+</body>
+</html>
