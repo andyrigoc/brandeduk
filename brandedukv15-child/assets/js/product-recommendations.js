@@ -491,18 +491,31 @@
         const split = document.createElement('div');
         split.className = 'product-recommendations__split';
 
+        // When alternatives are mounted in a sidebar (e.g. customize page), the
+        // bottom section should highlight RELATED products instead of duplicating
+        // the alternatives. Otherwise, default = alternatives left + related right.
+        const sidebarHostsAlternatives = !!options.relatedSidebarSelector;
+        const primaryItems   = sidebarHostsAlternatives ? related : alternatives;
+        const primaryType    = sidebarHostsAlternatives ? 'related' : 'alternatives';
+        const primaryHeading = sidebarHostsAlternatives ? 'Related Products' : 'Alternatives';
+        const primaryEmpty   = sidebarHostsAlternatives ? TAB_COPY.related.empty : TAB_COPY.alternatives.empty;
+
         const left = document.createElement('div');
         left.className = 'product-recommendations__split-left';
 
-        const alternativesTitle = document.createElement('h3');
-        alternativesTitle.className = 'product-recommendations__split-heading';
-        alternativesTitle.textContent = 'Alternatives';
-        left.appendChild(alternativesTitle);
+        // Skip the inner heading when the outer <h2 class="product-recommendations__title">
+        // already labels the section (sidebar-hosted variant uses the outer title only).
+        if (!sidebarHostsAlternatives) {
+            const leftTitle = document.createElement('h3');
+            leftTitle.className = 'product-recommendations__split-heading';
+            leftTitle.textContent = primaryHeading;
+            left.appendChild(leftTitle);
+        }
 
         left.appendChild(
-            alternatives.length
-                ? buildCarousel(alternatives, options, 'alternatives')
-                : createEmptyState(TAB_COPY.alternatives.empty)
+            primaryItems.length
+                ? buildCarousel(primaryItems, options, primaryType)
+                : createEmptyState(primaryEmpty)
         );
 
         const right = document.createElement('div');
