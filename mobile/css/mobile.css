@@ -11678,3 +11678,17 @@ a.continue-shopping {
 #positionsPopupOverlay #positionOptions .position-card[data-position="large-back"] {
     grid-column: 1 / -1;
 }
+
+/* =============================================================================
+   CUSTOMIZATION TOOL — HIDE GARMENT PREVIEW IMAGES
+   Per design decision: position cards show only the EMBROIDERY / PRINT buttons
+   and the logo upload flow. The garment photo (and the in-context overlay
+   preview) inside .position-preview is hidden in both the customize-mobile
+   page and the positions popup. The uploaded-logo-container (sibling of
+   .position-preview) remains visible so the customer still sees their logo
+   thumbnail after upload.
+   ============================================================================= */
+.position-card .position-preview,
+#positionsPopupOverlay .position-card .position-preview {
+    display: none !important;
+}
