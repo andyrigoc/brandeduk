@@ -11573,16 +11573,17 @@ a.continue-shopping {
 }
 
 #positionsPopupOverlay .position-prices {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 6px;
 }
 
 #positionsPopupOverlay .price-badge {
+    flex: 0 0 auto;
+    width: 58px;
     min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    padding: 3px 2px;
+    padding: 3px 4px;
     min-height: 0 !important;
     box-sizing: border-box;
 }
