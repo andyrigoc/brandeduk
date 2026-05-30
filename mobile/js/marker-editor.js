@@ -51,7 +51,7 @@
 
     // Lock state — when true, dots render but cannot be moved.
     // Toggle from console: window.unlockMarkers() / window.lockMarkers()
-    var LOCKED = true;
+    var LOCKED = false;
 
     // Keys that should remain draggable even when LOCKED is true.
     var UNLOCKED_KEYS = {};
