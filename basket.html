@@ -2578,7 +2578,23 @@
         if (item.color) sessionStorage.setItem('selectedColorName', item.color);
         if (item.colorId) sessionStorage.setItem('selectedColorId', item.colorId);
         const itemName = item.productName || item.name || '';
-        const inferredType = item.productType || (String(itemName).toLowerCase().includes('apron') ? 'Aprons' : '');
+        const lname = String(itemName).toLowerCase();
+        // Try to infer product type from explicit field first, then from name keywords.
+        let inferredType = item.productType || '';
+        if (!inferredType) {
+            if (lname.includes('apron'))                        inferredType = 'Aprons';
+            else if (lname.includes('beanie'))                  inferredType = 'Beanies';
+            else if (lname.includes('cap') || lname.includes('hat')) inferredType = 'Caps';
+            else if (lname.includes('hi-vis') || lname.includes('hivis') || lname.includes('hi vis')) inferredType = 'HiVis';
+            else if (lname.includes('hoodie') || lname.includes('hooded')) inferredType = 'Hoodies';
+            else if (lname.includes('jacket') || lname.includes('softshell') || lname.includes('coat')) inferredType = 'Jackets';
+            else if (lname.includes('polo'))                    inferredType = 'Polos';
+            else if (lname.includes('fleece'))                  inferredType = 'Fleeces';
+            else if (lname.includes('bag'))                     inferredType = 'Bags';
+            else if (lname.includes('t-shirt') || lname.includes('tshirt') || lname.includes('t shirt')) inferredType = 'T-Shirts';
+            else if (lname.includes('sweat'))                   inferredType = 'Sweatshirts';
+            else if (lname.includes('trouser') || lname.includes('pant'))      inferredType = 'Workwear';
+        }
         sessionStorage.setItem('selectedProductData', JSON.stringify({
             code: code,
             name: itemName,
