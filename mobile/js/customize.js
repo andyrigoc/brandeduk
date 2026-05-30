@@ -8506,10 +8506,15 @@
                 const imgs = FOLDER_IMAGE_MAP[fp] || [];
                 const avail = [];
                 imgs.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) avail.push(pi.code); });
-                document.querySelectorAll('#positionOptions .position-card, .positions-grid .position-card').forEach(card => {
-                    const pos = card.dataset.position;
-                    if (!avail.includes(pos)) card.style.display = 'none';
-                });
+                // Only hide cards when there are configured images; if empty, show all static defaults
+                if (avail.length > 0) {
+                    document.querySelectorAll('#positionOptions .position-card, .positions-grid .position-card').forEach(card => {
+                        const pos = card.dataset.position;
+                        if (!avail.includes(pos)) card.style.display = 'none';
+                    });
+                } else {
+                    document.querySelectorAll('#positionOptions .position-card, .positions-grid .position-card').forEach(card => { card.style.display = ''; });
+                }
 
                 // Direct image update (same as basket flow)
                 const imgBase = `/brandedukv15-child/assets/images/customization/positions/${fp}`;
@@ -8606,12 +8611,17 @@
             const imageFiles = FOLDER_IMAGE_MAP[folderPath] || [];
             const availablePositions = [];
             imageFiles.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) availablePositions.push(pi.code); });
-            posSection.querySelectorAll('.position-card').forEach(card => {
-                const pos = card.dataset.position;
-                if (!availablePositions.includes(pos)) {
-                    card.style.display = 'none';
-                }
-            });
+            // Only hide cards when there are configured images; if empty, show all static defaults
+            if (availablePositions.length > 0) {
+                posSection.querySelectorAll('.position-card').forEach(card => {
+                    const pos = card.dataset.position;
+                    if (!availablePositions.includes(pos)) {
+                        card.style.display = 'none';
+                    }
+                });
+            } else {
+                posSection.querySelectorAll('.position-card').forEach(card => { card.style.display = ''; });
+            }
 
             // Direct image update for each visible position card
             // (same approach as applyPositionsOnlyMode in basket flow)
