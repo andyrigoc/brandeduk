@@ -69,10 +69,47 @@
         return Math.max(min, Math.min(max, v));
     }
 
-    function applyToBox(box, pos) {
-        box.style.top  = pos.top  + '%';
-        box.style.left = pos.left + '%';
+    function getImg(preview) {
+        return preview.querySelector('img.position-placeholder');
+    }
+
+    // Position the marker box in PIXELS relative to .position-preview,
+    // but calculated from the IMAGE's rendered box. This way the dot stays
+    // anchored to the same spot on the t-shirt even if the card grows /
+    // shrinks (e.g. when a logo preview row appears below).
+    function applyToBox(box, pos, preview) {
+        if (!preview) preview = box.parentElement;
+        var img = getImg(preview);
+        if (!img || !img.complete || !img.naturalWidth) {
+            // Fallback to % of preview until the image is ready.
+            box.style.top  = pos.top  + '%';
+            box.style.left = pos.left + '%';
+            return;
+        }
+        var prevRect = preview.getBoundingClientRect();
+        var imgRect  = img.getBoundingClientRect();
+        var offTop   = imgRect.top  - prevRect.top;
+        var offLeft  = imgRect.left - prevRect.left;
+        var topPx    = offTop  + (pos.top  / 100) * imgRect.height;
+        var leftPx   = offLeft + (pos.left / 100) * imgRect.width;
+        box.style.top  = topPx  + 'px';
+        box.style.left = leftPx + 'px';
         // width/height are fixed via CSS for the dot; ignore pos.width/height
+    }
+
+    // Keep references so we can reposition all markers when an image resizes
+    var registry = []; // [{ box, key, preview, img }]
+    var repositionScheduled = false;
+    function scheduleReposition() {
+        if (repositionScheduled) return;
+        repositionScheduled = true;
+        requestAnimationFrame(function () {
+            repositionScheduled = false;
+            registry.forEach(function (r) {
+                if (!r.box.isConnected) return;
+                applyToBox(r.box, state[r.key] || getInitial(r.key), r.preview);
+            });
+        });
     }
 
     function setupCard(card) {
@@ -94,7 +131,29 @@
 
         var pos = getInitial(key);
         state[key] = pos;
-        applyToBox(box, pos);
+        applyToBox(box, pos, preview);
+
+        // Reposition once the image finishes loading (rect known then)
+        var img = getImg(preview);
+        if (img) {
+            if (!img.complete) {
+                img.addEventListener('load', function () {
+                    applyToBox(box, state[key], preview);
+                });
+            }
+            // Re-anchor whenever the image's rendered size changes
+            if (window.ResizeObserver) {
+                try {
+                    var ro = new ResizeObserver(function () {
+                        applyToBox(box, state[key], preview);
+                    });
+                    ro.observe(img);
+                    ro.observe(preview);
+                } catch (e) { /* noop */ }
+            }
+        }
+
+        registry.push({ box: box, key: key, preview: preview, img: img });
 
         if (!LOCKED) {
             bindDrag(box, key, preview);
@@ -118,7 +177,7 @@
         var dragging = false;
         var startX = 0, startY = 0;
         var startPos = null;
-        var parentRect = null;
+        var imgRect = null;
 
         function onDown(e) {
             // Ignore if starting on the resize handle
@@ -126,7 +185,8 @@
             e.preventDefault();
             e.stopPropagation();
             dragging = true;
-            parentRect = parent.getBoundingClientRect();
+            var img = getImg(parent);
+            imgRect = img ? img.getBoundingClientRect() : parent.getBoundingClientRect();
             var p = pointer(e);
             startX = p.x;
             startY = p.y;
@@ -138,16 +198,16 @@
         }
 
         function onMove(e) {
-            if (!dragging || !parentRect) return;
+            if (!dragging || !imgRect) return;
             e.preventDefault();
             var p = pointer(e);
-            var dxPct = ((p.x - startX) / parentRect.width)  * 100;
-            var dyPct = ((p.y - startY) / parentRect.height) * 100;
-            var newLeft = clamp(startPos.left + dxPct, 0, 100);
-            var newTop  = clamp(startPos.top  + dyPct, 0, 100);
+            var dxPct = ((p.x - startX) / imgRect.width)  * 100;
+            var dyPct = ((p.y - startY) / imgRect.height) * 100;
+            var newLeft = clamp(startPos.left + dxPct, -10, 110);
+            var newTop  = clamp(startPos.top  + dyPct, -10, 110);
             state[key].left = newLeft;
             state[key].top  = newTop;
-            applyToBox(box, state[key]);
+            applyToBox(box, state[key], parent);
         }
 
         function onUp() {
@@ -198,7 +258,7 @@
             var newHeight = clamp(startPos.height + dyPct, 3, 110 - startPos.top);
             state[key].width  = newWidth;
             state[key].height = newHeight;
-            applyToBox(box, state[key]);
+            applyToBox(box, state[key], parent);
         }
 
         function onUp() {
@@ -235,8 +295,13 @@
         // #positionsPopupOverlay.
         var observer = new MutationObserver(function () {
             scanAndSetup();
+            scheduleReposition();
         });
         observer.observe(document.body, { childList: true, subtree: true });
+
+        // Reposition on viewport changes
+        window.addEventListener('resize', scheduleReposition);
+        window.addEventListener('orientationchange', scheduleReposition);
     }
 
     function scanAndSetup() {
