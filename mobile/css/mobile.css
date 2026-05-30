@@ -11582,7 +11582,8 @@ a.continue-shopping {
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    padding: 4px 2px;
+    padding: 3px 2px;
+    min-height: 0 !important;
     box-sizing: border-box;
 }
 
@@ -11613,7 +11614,7 @@ a.continue-shopping {
 #positionsPopupOverlay .position-preview > .position-placeholder,
 #positionsPopupOverlay .position-preview > img.position-placeholder {
     display: block !important;
-    width: auto !important;
+    width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     max-height: 260px !important;
