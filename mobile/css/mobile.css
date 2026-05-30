@@ -11641,45 +11641,45 @@ a.continue-shopping {
 #positionsPopupOverlay .position-card .position-preview::after {
     content: "";
     position: absolute;
-    border: 1.5px dashed #f5c542;
-    background: rgba(245, 197, 66, 0.12);
+    border: 1.5px dashed #b8860b;
+    background: rgba(184, 134, 11, 0.15);
     border-radius: 3px;
     pointer-events: none;
     z-index: 3;
     box-sizing: border-box;
 }
 
-/* Left Chest — small box upper-left */
+/* Left Chest — viewer's left side of chest */
 #positionsPopupOverlay .position-card[data-position="left-breast"] .position-preview::after {
-    top: 38%;
-    left: 36%;
+    top: 40%;
+    left: 32%;
     width: 13%;
-    height: 11%;
+    height: 8%;
 }
 
-/* Right Chest — small box upper-right */
+/* Right Chest — viewer's right side of chest */
 #positionsPopupOverlay .position-card[data-position="right-breast"] .position-preview::after {
-    top: 38%;
-    left: 51%;
+    top: 40%;
+    left: 55%;
     width: 13%;
-    height: 11%;
+    height: 8%;
 }
 
-/* Front Center — medium box center */
+/* Front Center — wide horizontal box at chest level */
 #positionsPopupOverlay .position-card[data-position="small-centre-front"] .position-preview::after {
-    top: 42%;
-    left: 41%;
-    width: 18%;
-    height: 14%;
+    top: 44%;
+    left: 33%;
+    width: 34%;
+    height: 9%;
 }
 
-/* Large Front — big box center */
+/* Large Front — tall box covering most of front torso */
 #positionsPopupOverlay .position-card[data-position="large-front-center"] .position-preview::after,
 #positionsPopupOverlay .position-card[data-position="large-centre-front"] .position-preview::after {
-    top: 36%;
-    left: 32%;
-    width: 36%;
-    height: 38%;
+    top: 34%;
+    left: 33%;
+    width: 34%;
+    height: 45%;
 }
 
 /* Large Back — big box on back */
@@ -11687,23 +11687,23 @@ a.continue-shopping {
     top: 30%;
     left: 30%;
     width: 40%;
-    height: 42%;
+    height: 45%;
 }
 
-/* Left Sleeve — small box on sleeve */
+/* Left Sleeve — small box on the visible sleeve */
 #positionsPopupOverlay .position-card[data-position="left-arm"] .position-preview::after {
-    top: 38%;
-    left: 38%;
-    width: 24%;
-    height: 12%;
+    top: 42%;
+    left: 39%;
+    width: 22%;
+    height: 8%;
 }
 
-/* Right Sleeve — same but mirrored container; box stays centered */
+/* Right Sleeve — image is mirrored, so position is same */
 #positionsPopupOverlay .position-card[data-position="right-arm"] .position-preview::after {
-    top: 38%;
-    left: 38%;
-    width: 24%;
-    height: 12%;
+    top: 42%;
+    left: 39%;
+    width: 22%;
+    height: 8%;
 }
 
 #positionsPopupOverlay .garment-tint-stack {
