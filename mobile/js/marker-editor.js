@@ -51,7 +51,14 @@
 
     // Lock state — when true, dots render but cannot be moved.
     // Toggle from console: window.unlockMarkers() / window.lockMarkers()
-    var LOCKED = false;
+    var LOCKED = true;
+
+    // Keys that should remain draggable even when LOCKED is true.
+    var UNLOCKED_KEYS = { 'large-front-center': true };
+    function isKeyLocked(key) {
+        if (!LOCKED) return false;
+        return !UNLOCKED_KEYS[key];
+    }
 
     window.unlockMarkers = function () { LOCKED = false; console.log('Markers UNLOCKED — drag enabled'); };
     window.lockMarkers   = function () { LOCKED = true;  console.log('Markers LOCKED — drag disabled'); };
@@ -155,7 +162,7 @@
 
         registry.push({ box: box, key: key, preview: preview, img: img });
 
-        if (!LOCKED) {
+        if (!isKeyLocked(key)) {
             bindDrag(box, key, preview);
             bindResize(box, key, preview);
         } else {
