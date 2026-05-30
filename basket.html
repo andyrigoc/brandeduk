@@ -1459,8 +1459,27 @@
         loadOrderNotes();
         hydrateAllBasketColorHex();
         showReorderNotice();
-        setTimeout(handlePendingLogoPrompt, 700);
+        // Disabled: auto-opening the logo-positions popup on basket load was
+        // showing an empty intermediate page. Users add logos via the
+        // "Add logo to this item" button on each row instead.
+        // setTimeout(handlePendingLogoPrompt, 700);
+        clearPendingLogoPrompts();
     });
+
+    // Clear any leftover pendingLogoPrompt flags so they don't trigger
+    // unwanted auto-popups in the future.
+    function clearPendingLogoPrompts() {
+        try {
+            const basket = getBasket();
+            let changed = false;
+            basket.forEach(function (i) {
+                if (i && i.pendingLogoPrompt) { delete i.pendingLogoPrompt; changed = true; }
+            });
+            sessionStorage.removeItem('pendingLogoPromptId');
+            sessionStorage.removeItem('pendingLogoPromptIndex');
+            if (changed) saveBasket(basket);
+        } catch (e) { /* noop */ }
+    }
 
     function showReorderNotice() {
         const notice = sessionStorage.getItem('reorderNotice');
