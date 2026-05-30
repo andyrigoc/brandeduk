@@ -225,10 +225,10 @@
     const DEFAULT_POSITION_PRICES = {
         'left-breast': { embroidery: '5.00', print: '3.50' },
         'right-breast': { embroidery: '5.00', print: '3.50' },
-        'small-centre-front': { embroidery: '5.00', print: '3.50' },
-        'large-front-center': { embroidery: 'POA', print: '6.00' },
-        'large-centre-front': { embroidery: 'POA', print: '6.00' },
-        'large-back': { embroidery: 'POA', print: '5.00' },
+        'small-centre-front': { embroidery: '5.00', print: '6.50' },
+        'large-front-center': { embroidery: 'POA', print: '8.00' },
+        'large-centre-front': { embroidery: 'POA', print: '8.00' },
+        'large-back': { embroidery: 'POA', print: '8.00' },
         'left-arm': { embroidery: '5.00', print: '3.50' },
         'right-arm': { embroidery: '5.00', print: '3.50' }
     };
