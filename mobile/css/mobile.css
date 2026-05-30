@@ -11659,6 +11659,17 @@ a.continue-shopping {
     cursor: grabbing;
 }
 
+/* Bigger dot for Front Center, Large Front, Large Back */
+#positionsPopupOverlay .position-card[data-position="small-centre-front"] .marker-edit-box,
+#positionsPopupOverlay .position-card[data-position="large-front-center"] .marker-edit-box,
+#positionsPopupOverlay .position-card[data-position="large-centre-front"] .marker-edit-box,
+#positionsPopupOverlay .position-card[data-position="large-back"] .marker-edit-box {
+    width: 32px !important;
+    height: 32px !important;
+    margin: -16px 0 0 -16px;
+    border-width: 2.5px;
+}
+
 #positionsPopupOverlay .marker-edit-box .marker-label,
 #positionsPopupOverlay .marker-edit-box .marker-handle {
     display: none !important;
