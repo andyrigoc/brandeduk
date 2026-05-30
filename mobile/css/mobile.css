@@ -11683,16 +11683,8 @@ a.continue-shopping {
     display: none !important;
 }
 
-/* Hide the position marker when the user has added a logo/text to that card
-   (the preview-content or uploaded-logo box appears) — otherwise the card
-   grows and the dot shifts out of its visual spot on the garment. */
-#positionsPopupOverlay .position-card:has(.position-preview-content:not([hidden])) .marker-edit-box,
-#positionsPopupOverlay .position-card:has(.uploaded-logo-container:not([hidden])) .marker-edit-box,
-#positionsPopupOverlay .position-card:has(.customization-pill:not([hidden])) .marker-edit-box,
-#positionsPopupOverlay .position-card.has-customization .marker-edit-box,
-#positionsPopupOverlay .position-card.selected .marker-edit-box {
-    display: none !important;
-}
+/* Dot stays visible even after a logo is uploaded — it's anchored to the
+   t-shirt image so it remains correctly positioned. */
 
 #positionsPopupOverlay .garment-tint-stack {
     min-height: 0 !important;
