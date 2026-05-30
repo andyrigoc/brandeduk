@@ -11649,60 +11649,60 @@ a.continue-shopping {
     box-sizing: border-box;
 }
 
-/* Left Chest — viewer's left side of chest */
+/* Left Chest — small box on upper chest (viewer's left) */
 #positionsPopupOverlay .position-card[data-position="left-breast"] .position-preview::after {
-    top: 40%;
-    left: 32%;
-    width: 13%;
-    height: 8%;
+    top: 30%;
+    left: 38%;
+    width: 12%;
+    height: 7%;
 }
 
-/* Right Chest — viewer's right side of chest */
+/* Right Chest — small box on upper chest (viewer's right) */
 #positionsPopupOverlay .position-card[data-position="right-breast"] .position-preview::after {
-    top: 40%;
-    left: 55%;
-    width: 13%;
-    height: 8%;
+    top: 30%;
+    left: 50%;
+    width: 12%;
+    height: 7%;
 }
 
-/* Front Center — wide horizontal box at chest level */
+/* Front Center — wide horizontal box at upper chest */
 #positionsPopupOverlay .position-card[data-position="small-centre-front"] .position-preview::after {
-    top: 44%;
-    left: 33%;
-    width: 34%;
+    top: 33%;
+    left: 30%;
+    width: 40%;
     height: 9%;
 }
 
-/* Large Front — tall box covering most of front torso */
+/* Large Front — tall box covering chest + torso */
 #positionsPopupOverlay .position-card[data-position="large-front-center"] .position-preview::after,
 #positionsPopupOverlay .position-card[data-position="large-centre-front"] .position-preview::after {
-    top: 34%;
-    left: 33%;
-    width: 34%;
-    height: 45%;
+    top: 28%;
+    left: 30%;
+    width: 40%;
+    height: 50%;
 }
 
 /* Large Back — big box on back */
 #positionsPopupOverlay .position-card[data-position="large-back"] .position-preview::after {
-    top: 30%;
-    left: 30%;
-    width: 40%;
-    height: 45%;
+    top: 26%;
+    left: 28%;
+    width: 44%;
+    height: 50%;
 }
 
-/* Left Sleeve — small box on the visible sleeve */
+/* Left Sleeve — small box on upper sleeve */
 #positionsPopupOverlay .position-card[data-position="left-arm"] .position-preview::after {
-    top: 42%;
-    left: 39%;
-    width: 22%;
+    top: 32%;
+    left: 38%;
+    width: 24%;
     height: 8%;
 }
 
 /* Right Sleeve — image is mirrored, so position is same */
 #positionsPopupOverlay .position-card[data-position="right-arm"] .position-preview::after {
-    top: 42%;
-    left: 39%;
-    width: 22%;
+    top: 32%;
+    left: 38%;
+    width: 24%;
     height: 8%;
 }
 
