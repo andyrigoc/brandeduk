@@ -51,7 +51,7 @@
 
     // Lock state — when true, dots render but cannot be moved.
     // Toggle from console: window.unlockMarkers() / window.lockMarkers()
-    var LOCKED = true;
+    var LOCKED = false;
 
     window.unlockMarkers = function () { LOCKED = false; console.log('Markers UNLOCKED — drag enabled'); };
     window.lockMarkers   = function () { LOCKED = true;  console.log('Markers LOCKED — drag disabled'); };
