@@ -11659,48 +11659,6 @@ a.continue-shopping {
     cursor: grabbing;
 }
 
-/* Dashed rectangle centered on the dot — default (small chest box) */
-#positionsPopupOverlay .marker-edit-box::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 48px;
-    height: 36px;
-    border: 2px dashed #8b5cf6;
-    border-radius: 4px;
-    background: transparent;
-    pointer-events: none;
-    box-sizing: border-box;
-}
-
-/* Sleeves — small horizontal box */
-#positionsPopupOverlay .position-card[data-position="left-arm"] .marker-edit-box::before,
-#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box::before {
-    width: 56px;
-    height: 28px;
-}
-
-/* Front Center — medium horizontal box */
-#positionsPopupOverlay .position-card[data-position="small-centre-front"] .marker-edit-box::before {
-    width: 90px;
-    height: 42px;
-}
-
-/* Large Front — big tall box */
-#positionsPopupOverlay .position-card[data-position="large-front-center"] .marker-edit-box::before,
-#positionsPopupOverlay .position-card[data-position="large-centre-front"] .marker-edit-box::before {
-    width: 105px;
-    height: 140px;
-}
-
-/* Large Back — big tall box */
-#positionsPopupOverlay .position-card[data-position="large-back"] .marker-edit-box::before {
-    width: 120px;
-    height: 150px;
-}
-
 #positionsPopupOverlay .marker-edit-box .marker-label,
 #positionsPopupOverlay .marker-edit-box .marker-handle {
     display: none !important;
