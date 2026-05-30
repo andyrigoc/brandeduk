@@ -11498,6 +11498,9 @@ a.continue-shopping {
     padding: 8px;
     box-sizing: border-box;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 #positionsPopupOverlay .position-card-header,
@@ -11601,10 +11604,11 @@ a.continue-shopping {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     width: 100% !important;
+    flex: 1 1 auto;
     min-height: 0;
-    padding: 8px 4px;
+    padding: 2px !important;
     gap: 0;
     text-align: center !important;
     background-color: #ffffff !important;
@@ -11618,7 +11622,7 @@ a.continue-shopping {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 260px !important;
+    max-height: none !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
