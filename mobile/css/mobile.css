@@ -11635,58 +11635,37 @@ a.continue-shopping {
 }
 
 /* =========================================================================
-   Logo position MARKER — interactive draggable/resizable box (popup only)
+   Logo position MARKER — single draggable dot (popup only)
    Powered by mobile/js/marker-editor.js
    ========================================================================= */
 #positionsPopupOverlay .marker-edit-box {
     position: absolute;
-    border: 2px dashed #b8860b;
-    background: rgba(184, 134, 11, 0.18);
-    border-radius: 3px;
+    width: 16px !important;
+    height: 16px !important;
+    margin: -8px 0 0 -8px; /* center the dot on the (left, top) point */
+    background: #8b5cf6;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
     z-index: 5;
     box-sizing: border-box;
-    cursor: move;
+    cursor: grab;
     touch-action: none;
 }
 
-#positionsPopupOverlay .marker-edit-box .marker-label {
-    position: absolute;
-    top: -16px;
-    left: 0;
-    font-size: 8px;
-    line-height: 1;
-    font-weight: 700;
-    color: #ffffff;
-    background: #b8860b;
-    padding: 2px 4px;
-    border-radius: 2px;
-    white-space: nowrap;
-    pointer-events: none;
+#positionsPopupOverlay .marker-edit-box:active {
+    cursor: grabbing;
+    transform: scale(1.15);
 }
 
+#positionsPopupOverlay .marker-edit-box .marker-label,
 #positionsPopupOverlay .marker-edit-box .marker-handle {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: #b8860b;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    cursor: nwse-resize;
-    touch-action: none;
+    display: none !important;
 }
 
-#positionsPopupOverlay .marker-edit-box .marker-handle-br {
-    right: -7px;
-    bottom: -7px;
-}
-
-/* Right sleeve image is mirrored; counter-mirror the marker so it stays normal */
+/* Right sleeve image is mirrored; counter-mirror the dot so it stays normal */
 #positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box {
-    transform: scaleX(-1);
-}
-#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box .marker-label {
-    transform: scaleX(-1);
-    transform-origin: left top;
+    transform-origin: center center;
 }
 
 #positionsPopupOverlay .garment-tint-stack {

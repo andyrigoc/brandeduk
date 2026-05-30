@@ -63,18 +63,9 @@
     }
 
     function applyToBox(box, pos) {
-        box.style.top    = pos.top    + '%';
-        box.style.left   = pos.left   + '%';
-        box.style.width  = pos.width  + '%';
-        box.style.height = pos.height + '%';
-        var label = box.querySelector('.marker-label');
-        if (label) {
-            label.textContent =
-                'T:' + pos.top.toFixed(0) + '% ' +
-                'L:' + pos.left.toFixed(0) + '% ' +
-                'W:' + pos.width.toFixed(0) + '% ' +
-                'H:' + pos.height.toFixed(0) + '%';
-        }
+        box.style.top  = pos.top  + '%';
+        box.style.left = pos.left + '%';
+        // width/height are fixed via CSS for the dot; ignore pos.width/height
     }
 
     function setupCard(card) {
@@ -140,8 +131,8 @@
             var p = pointer(e);
             var dxPct = ((p.x - startX) / parentRect.width)  * 100;
             var dyPct = ((p.y - startY) / parentRect.height) * 100;
-            var newLeft = clamp(startPos.left + dxPct, -10, 110 - startPos.width);
-            var newTop  = clamp(startPos.top  + dyPct, -10, 110 - startPos.height);
+            var newLeft = clamp(startPos.left + dxPct, 0, 100);
+            var newTop  = clamp(startPos.top  + dyPct, 0, 100);
             state[key].left = newLeft;
             state[key].top  = newTop;
             applyToBox(box, state[key]);
