@@ -671,8 +671,8 @@
         'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
         'adult-tops/hoodies': ['back.png', 'front.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
-        'adult-tops/short-sleeve-polo': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
-        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        // 'adult-tops/short-sleeve-polo': [],   // no images yet — falls back to static HTML cards
+        // 'adult-tops/short-sleeve-crew-neck': [], // no images yet — falls back to static HTML cards
         'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
         'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
         'headwear/beanie': ['front-logo.png'],
@@ -869,8 +869,18 @@
         
         if (!config) {
             reorderPositionCardsInGrids(positionGrids, productType);
+            // Show static garment-preview images for enabled categories (expand one at a time)
+            const STATIC_PREVIEW_TYPES = ['T-shirts', 'Short Sleeve Polos'];
+            const normalizedForPreview = normalizeProductTypeForFolder(productType);
+            const showPreview = STATIC_PREVIEW_TYPES.includes(normalizedForPreview);
+            positionGrids.forEach(function(grid) {
+                if (showPreview) grid.setAttribute('data-show-preview', '');
+                else grid.removeAttribute('data-show-preview');
+            });
             return; // Keep default images
         }
+        // Dynamic config found — hide garment preview (images not yet loaded for this category)
+        positionGrids.forEach(function(grid) { grid.removeAttribute('data-show-preview'); });
         
         positionGrids.forEach(grid => {
             const allCards = grid.querySelectorAll('.position-card');

@@ -11692,3 +11692,10 @@ a.continue-shopping {
 #positionsPopupOverlay .position-card .position-preview {
     display: none !important;
 }
+
+/* Show garment-preview images for categories that have been enabled.
+   JS sets data-show-preview on the grid; expand STATIC_PREVIEW_TYPES in customize.js */
+.positions-grid[data-show-preview] .position-card .position-preview,
+#positionOptions[data-show-preview] .position-card .position-preview {
+    display: flex !important;
+}
