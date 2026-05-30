@@ -11635,75 +11635,58 @@ a.continue-shopping {
 }
 
 /* =========================================================================
-   Logo position MARKER (dashed yellow box) — popup only
-   Indicates where the logo will be placed on the garment.
+   Logo position MARKER — interactive draggable/resizable box (popup only)
+   Powered by mobile/js/marker-editor.js
    ========================================================================= */
-#positionsPopupOverlay .position-card .position-preview::after {
-    content: "";
+#positionsPopupOverlay .marker-edit-box {
     position: absolute;
-    border: 1.5px dashed #b8860b;
-    background: rgba(184, 134, 11, 0.15);
+    border: 2px dashed #b8860b;
+    background: rgba(184, 134, 11, 0.18);
     border-radius: 3px;
-    pointer-events: none;
-    z-index: 3;
+    z-index: 5;
     box-sizing: border-box;
+    cursor: move;
+    touch-action: none;
 }
 
-/* Left Chest — small box on upper chest (viewer's left) */
-#positionsPopupOverlay .position-card[data-position="left-breast"] .position-preview::after {
-    top: 30%;
-    left: 38%;
-    width: 12%;
-    height: 7%;
+#positionsPopupOverlay .marker-edit-box .marker-label {
+    position: absolute;
+    top: -16px;
+    left: 0;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: 700;
+    color: #ffffff;
+    background: #b8860b;
+    padding: 2px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
-/* Right Chest — small box on upper chest (viewer's right) */
-#positionsPopupOverlay .position-card[data-position="right-breast"] .position-preview::after {
-    top: 30%;
-    left: 50%;
-    width: 12%;
-    height: 7%;
+#positionsPopupOverlay .marker-edit-box .marker-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #b8860b;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: nwse-resize;
+    touch-action: none;
 }
 
-/* Front Center — wide horizontal box at upper chest */
-#positionsPopupOverlay .position-card[data-position="small-centre-front"] .position-preview::after {
-    top: 33%;
-    left: 30%;
-    width: 40%;
-    height: 9%;
+#positionsPopupOverlay .marker-edit-box .marker-handle-br {
+    right: -7px;
+    bottom: -7px;
 }
 
-/* Large Front — tall box covering chest + torso */
-#positionsPopupOverlay .position-card[data-position="large-front-center"] .position-preview::after,
-#positionsPopupOverlay .position-card[data-position="large-centre-front"] .position-preview::after {
-    top: 28%;
-    left: 30%;
-    width: 40%;
-    height: 50%;
+/* Right sleeve image is mirrored; counter-mirror the marker so it stays normal */
+#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box {
+    transform: scaleX(-1);
 }
-
-/* Large Back — big box on back */
-#positionsPopupOverlay .position-card[data-position="large-back"] .position-preview::after {
-    top: 26%;
-    left: 28%;
-    width: 44%;
-    height: 50%;
-}
-
-/* Left Sleeve — small box on upper sleeve */
-#positionsPopupOverlay .position-card[data-position="left-arm"] .position-preview::after {
-    top: 32%;
-    left: 38%;
-    width: 24%;
-    height: 8%;
-}
-
-/* Right Sleeve — image is mirrored, so position is same */
-#positionsPopupOverlay .position-card[data-position="right-arm"] .position-preview::after {
-    top: 32%;
-    left: 38%;
-    width: 24%;
-    height: 8%;
+#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box .marker-label {
+    transform: scaleX(-1);
+    transform-origin: left top;
 }
 
 #positionsPopupOverlay .garment-tint-stack {
