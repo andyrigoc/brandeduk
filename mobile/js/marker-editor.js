@@ -54,7 +54,7 @@
     var LOCKED = true;
 
     // Keys that should remain draggable even when LOCKED is true.
-    var UNLOCKED_KEYS = { 'large-front-center': true, 'large-back': true };
+    var UNLOCKED_KEYS = {};
     function isKeyLocked(key) {
         if (!LOCKED) return false;
         return !UNLOCKED_KEYS[key];

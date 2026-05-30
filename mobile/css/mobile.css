@@ -11670,18 +11670,12 @@ a.continue-shopping {
     border-width: 2.5px;
 }
 
-/* Large Front Center & Large Back: +15% bigger than the other big dots, plus draggable. */
+/* Large Front Center & Large Back: +15% bigger than the other big dots. */
 #positionsPopupOverlay .position-card[data-position="large-front-center"] .marker-edit-box,
 #positionsPopupOverlay .position-card[data-position="large-back"] .marker-edit-box {
     width: 37px !important;
     height: 37px !important;
     margin: -18.5px 0 0 -18.5px;
-    cursor: grab !important;
-    pointer-events: auto !important;
-}
-#positionsPopupOverlay .position-card[data-position="large-front-center"] .marker-edit-box:active,
-#positionsPopupOverlay .position-card[data-position="large-back"] .marker-edit-box:active {
-    cursor: grabbing !important;
 }
 
 #positionsPopupOverlay .marker-edit-box .marker-label,
