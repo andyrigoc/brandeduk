@@ -49,6 +49,13 @@
         catch (e) { /* noop */ }
     }
 
+    // Lock state — when true, dots render but cannot be moved.
+    // Toggle from console: window.unlockMarkers() / window.lockMarkers()
+    var LOCKED = true;
+
+    window.unlockMarkers = function () { LOCKED = false; console.log('Markers UNLOCKED — drag enabled'); };
+    window.lockMarkers   = function () { LOCKED = true;  console.log('Markers LOCKED — drag disabled'); };
+
     var saved = loadSaved();
     var state = {};
 
@@ -89,8 +96,13 @@
         state[key] = pos;
         applyToBox(box, pos);
 
-        bindDrag(box, key, preview);
-        bindResize(box, key, preview);
+        if (!LOCKED) {
+            bindDrag(box, key, preview);
+            bindResize(box, key, preview);
+        } else {
+            box.style.cursor = 'default';
+            box.style.pointerEvents = 'none';
+        }
     }
 
     function getPercent(rect, parentRect) {
