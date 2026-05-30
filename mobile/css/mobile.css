@@ -11635,18 +11635,20 @@ a.continue-shopping {
 }
 
 /* =========================================================================
-   Logo position MARKER — single draggable dot (popup only)
+   Logo position MARKER — purple dashed rectangle with center dot (popup only)
    Powered by mobile/js/marker-editor.js
+   - The dot is draggable; the dashed rectangle is centered on the dot.
+   - Rectangle size varies per data-position (bigger for full-front / back).
    ========================================================================= */
 #positionsPopupOverlay .marker-edit-box {
     position: absolute;
-    width: 16px !important;
-    height: 16px !important;
-    margin: -8px 0 0 -8px; /* center the dot on the (left, top) point */
-    background: #8b5cf6;
-    border: 2px solid #ffffff;
+    width: 14px !important;
+    height: 14px !important;
+    margin: -7px 0 0 -7px; /* center the dot on the (left, top) point */
+    background: transparent;
+    border: 2px solid #8b5cf6;
     border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85);
     z-index: 5;
     box-sizing: border-box;
     cursor: grab;
@@ -11655,17 +11657,53 @@ a.continue-shopping {
 
 #positionsPopupOverlay .marker-edit-box:active {
     cursor: grabbing;
-    transform: scale(1.15);
+}
+
+/* Dashed rectangle centered on the dot — default (small chest box) */
+#positionsPopupOverlay .marker-edit-box::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 36px;
+    border: 2px dashed #8b5cf6;
+    border-radius: 4px;
+    background: transparent;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+/* Sleeves — small horizontal box */
+#positionsPopupOverlay .position-card[data-position="left-arm"] .marker-edit-box::before,
+#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box::before {
+    width: 56px;
+    height: 28px;
+}
+
+/* Front Center — medium horizontal box */
+#positionsPopupOverlay .position-card[data-position="small-centre-front"] .marker-edit-box::before {
+    width: 90px;
+    height: 42px;
+}
+
+/* Large Front — big tall box */
+#positionsPopupOverlay .position-card[data-position="large-front-center"] .marker-edit-box::before,
+#positionsPopupOverlay .position-card[data-position="large-centre-front"] .marker-edit-box::before {
+    width: 105px;
+    height: 140px;
+}
+
+/* Large Back — big tall box */
+#positionsPopupOverlay .position-card[data-position="large-back"] .marker-edit-box::before {
+    width: 120px;
+    height: 150px;
 }
 
 #positionsPopupOverlay .marker-edit-box .marker-label,
 #positionsPopupOverlay .marker-edit-box .marker-handle {
     display: none !important;
-}
-
-/* Right sleeve image is mirrored; counter-mirror the dot so it stays normal */
-#positionsPopupOverlay .position-card[data-position="right-arm"] .marker-edit-box {
-    transform-origin: center center;
 }
 
 #positionsPopupOverlay .garment-tint-stack {
