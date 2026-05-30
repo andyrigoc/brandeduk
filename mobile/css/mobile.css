@@ -11502,7 +11502,7 @@ a.continue-shopping {
     max-width: 100%;
     min-width: 0;
     margin: 0;
-    padding: 12px;
+    padding: 8px;
     box-sizing: border-box;
     overflow: visible;
 }
@@ -11589,13 +11589,17 @@ a.continue-shopping {
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    padding: 8px 4px;
+    padding: 5px 3px;
     box-sizing: border-box;
 }
 
 #positionsPopupOverlay .price-badge .price-label {
-    font-size: 8px;
-    letter-spacing: 0.2px;
+    font-size: 7px;
+    letter-spacing: 0.1px;
+}
+
+#positionsPopupOverlay .price-badge .price-value {
+    font-size: 10px;
 }
 
 #positionsPopupOverlay .position-preview {
@@ -11619,7 +11623,7 @@ a.continue-shopping {
     width: auto !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 300px !important;
+    max-height: 130px !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
@@ -11671,13 +11675,7 @@ a.continue-shopping {
     margin: 0 auto;
 }
 
-/* Full-width row: Front Center, Back Large (apron + hoodie popup) */
-#positionsPopupOverlay .positions-grid .position-card[data-position="small-centre-front"],
-#positionsPopupOverlay #positionOptions .position-card[data-position="small-centre-front"],
-#positionsPopupOverlay .positions-grid .position-card[data-position="large-back"],
-#positionsPopupOverlay #positionOptions .position-card[data-position="large-back"] {
-    grid-column: 1 / -1;
-}
+/* Full-width row removed — all position cards show 2 per row */
 
 /* =============================================================================
    CUSTOMIZATION TOOL — HIDE GARMENT PREVIEW IMAGES
