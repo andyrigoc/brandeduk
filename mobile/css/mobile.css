@@ -11646,7 +11646,7 @@ a.continue-shopping {
     height: 14px !important;
     margin: -7px 0 0 -7px; /* center the dot on the (left, top) point */
     background: transparent;
-    border: 2px solid #8b5cf6;
+    border: 2px dashed #8b5cf6;
     border-radius: 50%;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85);
     z-index: 5;
