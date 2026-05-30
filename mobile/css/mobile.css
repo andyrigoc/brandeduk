@@ -11439,7 +11439,7 @@ a.continue-shopping {
     }
 
     #positionsPopupOverlay .position-checkbox span {
-        font-size: 15px;
+        font-size: 12px;
         font-weight: 700;
     }
 
@@ -11471,19 +11471,12 @@ a.continue-shopping {
     }
 }
 
-/* Phone: one card per row so the t-shirt uses full width */
+/* Phone: 2 cards per row */
 @media (max-width: 600px) {
     #positionsPopupOverlay .positions-grid,
     #positionsPopupOverlay #positionOptions {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
-    #positionsPopupOverlay .positions-grid .position-card[data-position="small-centre-front"],
-    #positionsPopupOverlay #positionOptions .position-card[data-position="small-centre-front"],
-    #positionsPopupOverlay .positions-grid .position-card[data-position="large-back"],
-    #positionsPopupOverlay #positionOptions .position-card[data-position="large-back"] {
-        grid-column: 1;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
     }
 }
 
@@ -11589,17 +11582,17 @@ a.continue-shopping {
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    padding: 5px 3px;
+    padding: 4px 2px;
     box-sizing: border-box;
 }
 
 #positionsPopupOverlay .price-badge .price-label {
-    font-size: 7px;
-    letter-spacing: 0.1px;
+    font-size: 6px;
+    letter-spacing: 0;
 }
 
 #positionsPopupOverlay .price-badge .price-value {
-    font-size: 10px;
+    font-size: 9px;
 }
 
 #positionsPopupOverlay .position-preview {
@@ -11623,7 +11616,7 @@ a.continue-shopping {
     width: auto !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 130px !important;
+    max-height: 200px !important;
     margin: 0 auto !important;
     object-fit: contain !important;
     object-position: center center !important;
