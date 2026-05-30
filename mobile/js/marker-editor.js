@@ -224,6 +224,19 @@
     }
 
     function init() {
+        // Initial scan (in case popup already exists)
+        scanAndSetup();
+
+        // The popup is built dynamically by customize.js, so watch the body
+        // for new nodes and (re-)setup any .position-card we find inside
+        // #positionsPopupOverlay.
+        var observer = new MutationObserver(function () {
+            scanAndSetup();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function scanAndSetup() {
         var popup = document.getElementById('positionsPopupOverlay');
         if (!popup) return;
         var cards = popup.querySelectorAll('.position-card');
