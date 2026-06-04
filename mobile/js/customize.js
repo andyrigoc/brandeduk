@@ -9368,9 +9368,7 @@
                 }
                 if (needsLogoStepBeforeBasket()) {
                     runRainbowAtcAnimation(addToBasketBtn);
-                    addToQuote({ silent: true });
-                    setTimeout(function () { openPositionsPopup(); }, 450);
-                    showToast('Choose logo position(s) for this item');
+                    addToQuote();
                     return;
                 }
                 runRainbowAtcAnimation(addToBasketBtn);
@@ -10224,7 +10222,7 @@
     /** After Add to basket: open clean position picker (no success modal). */
     function beginLogoFlowForNewBasketItem(item) {
         if (!item || !item.id) {
-            setTimeout(function () { openPositionsPopup(); }, getAddedToQuoteModalDelay());
+            setTimeout(function () { showAddedToQuoteModal(item); }, getAddedToQuoteModalDelay());
             return;
         }
         try {
@@ -10239,7 +10237,7 @@
         }
         clearPositionState(true);
         saveCustomizationState();
-        setTimeout(function () { openPositionsPopup(); }, getAddedToQuoteModalDelay());
+        setTimeout(function () { showAddedToQuoteModal(item); }, getAddedToQuoteModalDelay());
     }
 
     function basketItemHasLogo(item) {
@@ -10913,7 +10911,7 @@
             modal.remove();
         });
 
-        // Add your logo now — open position picker on this page
+        // Add your logo now — start the new customization tool
         modal.querySelector('#addLogoNowBtn').addEventListener('click', () => {
             modal.remove();
             clearPositionState();
@@ -10925,7 +10923,21 @@
                 _autoSavedItemId = basket[idx].id;
                 sessionStorage.removeItem('basketEditSingleItem');
             }
-            openPositionsPopup();
+            const productCode = encodeURIComponent((state.product && state.product.code) || item.productCode || item.code || '');
+            const productName = String((item && (item.productName || item.name)) || '').toLowerCase();
+            const productCategory = String((item && item.category) || '').toLowerCase();
+            let toolProduct = '';
+            if (/t\s*-?shirt|tee/.test(productName) || /t\s*-?shirt|tee/.test(productCategory)) toolProduct = 'tshirt';
+            else if (/hoodie|sweatshirt/.test(productName) || /hoodie|sweatshirt/.test(productCategory)) toolProduct = 'hoodie';
+            else if (/beanie/.test(productName) || /beanie/.test(productCategory)) toolProduct = 'beanie';
+            else if (/cap/.test(productName) || /cap/.test(productCategory)) toolProduct = 'cap';
+            else if (/polo/.test(productName) || /polo/.test(productCategory)) toolProduct = 'polo';
+
+            const queryParts = ['from=customize-mobile'];
+            if (productCode) queryParts.unshift('code=' + productCode);
+            if (toolProduct) queryParts.push('product=' + encodeURIComponent(toolProduct));
+            const query = '?' + queryParts.join('&');
+            window.location.href = '../customization-tool/index.html' + query;
         });
 
         // View Basket — basket quick-logo popup if item still needs logo
