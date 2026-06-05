@@ -1,0 +1,6 @@
+.history/
+node_modules/
+*.log
+assets/fonts/
+assets/img/
+img/

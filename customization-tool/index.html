@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Branded UK Customiser</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css?v=20260604ae" />
+</head>
+
+<body class="tool-with-site-header">
+
+<header class="tool-site-header" aria-label="BrandedUK Header">
+  <div class="tool-header-top-row">
+    <div class="social-icons-container social-icons-mobile">
+      <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener" aria-label="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+      <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener" aria-label="YouTube">
+        <i class="fab fa-youtube"></i>
+      </a>
+      <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener" aria-label="Pinterest">
+        <i class="fab fa-pinterest-p"></i>
+      </a>
+    </div>
+
+    <div class="vat-toggle-mobile" id="vatToggleContainer">
+      <span class="vat-label vat-label--exc">EX VAT</span>
+      <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
+      <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+      <span class="vat-label vat-label--inc">INC VAT</span>
+    </div>
+  </div>
+
+  <div class="tool-header-logo-row">
+    <a href="../index.html" class="mobile-logo-center" aria-label="BrandedUK Home">
+      <img src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-badge-img">
+    </a>
+    <div class="search-wrapper-expand">
+      <input type="text" id="searchInput" placeholder="Search 9,000+ products..." class="search-input-expand" aria-label="Search products">
+      <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </div>
+  </div>
+
+  <div class="tool-header-ticker" aria-hidden="true">
+    <div class="tool-header-ticker-track">
+      <span>Custom Workwear &amp; Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades &amp; Construction • Schools &amp; Leavers • Hospitality &amp; Restaurants • Corporate &amp; Office Teams • Warehouses &amp; Delivery Companies • Sports Clubs • Events &amp; Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+      <span>Custom Workwear &amp; Uniforms UK • Embroidery • DTF Printing • Screen Printing • Vinyl Heat Transfer • Trades &amp; Construction • Schools &amp; Leavers • Hospitality &amp; Restaurants • Corporate &amp; Office Teams • Warehouses &amp; Delivery Companies • Sports Clubs • Events &amp; Promotions • T-Shirts • Polo Shirts • Hoodies • Hi-Vis • Jackets • Fleeces • Aprons • Caps • Bags • Fast Turnaround • Bulk Pricing Available</span>
+    </div>
+  </div>
+</header>
+
+<div class="customiser-app">
+
+  <section id="mainEditor" class="screen active-screen">
+
+    <!-- Top navigation + tab bar (wrapped for desktop layout) -->
+    <div class="editor-top">
+
+    <div class="top-nav">
+      <button class="nav-icon-btn" id="menuBtn" title="Menu" aria-label="Menu">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect y="0" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="6.75" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="13.5" width="20" height="2.5" rx="1.25" fill="#222"/></svg>
+      </button>
+      <div class="nav-logo"><span class="logo-c">C</span></div>
+      <div class="nav-spacer"></div>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="undoBtn" title="Undo" aria-label="Undo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+        </button>
+        <button class="nav-icon-btn" id="redoBtn" title="Redo" aria-label="Redo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"></polyline><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg>
+        </button>
+        <button class="nav-icon-btn cart-wrap" id="basketBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <span class="cart-badge">2</span>
+        </button>
+        <button class="nav-icon-btn" id="closeCustomiserBtn" title="Close" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div><!-- /.top-nav -->
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active-tab">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"></path></svg>
+        <span>Product</span>
+      </button>
+      <button class="tab-btn" data-open="textTypePage">
+        <span class="tab-T">T</span>
+        <span>Add text</span>
+      </button>
+      <button class="tab-btn" data-open="designTypePage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>Add design</span>
+      </button>
+      <button class="tab-btn" data-open="namesPage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Names</span>
+      </button>
+      <button class="tab-btn" data-open="locationsPage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 3"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+        <span>Area</span>
+      </button>
+    </div><!-- /.tab-bar -->
+
+    </div><!-- /.editor-top -->
+
+    <!-- Hidden legacy elements kept for JS compatibility -->
+    <div style="display:none">
+      <button id="colourShortcut"></button>
+      <button id="deleteDesignShortcut"></button>
+      <button id="resizeSmallBtn"></button>
+      <button id="resizeLargeBtn"></button>
+      <button id="priceBtn"></button>
+      <button id="downloadBtn"></button>
+      <button id="shareBtn"></button>
+      <input id="mainQtyInput" type="number" min="1" value="1">
+    </div>
+
+    <!-- Product header (above canvas) -->
+    <div class="product-header">
+      <h2 class="ph-title" id="cibModelName">Polo Shirt</h2>
+      <p class="ph-sub">
+        <span class="ph-code" id="cibCode">SKU-2024</span>
+        <span class="ph-divider"> | </span>
+        <span class="ph-brand">GILDAN</span>
+      </p>
+    </div>
+
+    <!-- Canvas area -->
+    <div class="canvas-wrap">
+
+      <!-- view name hidden, kept for JS -->
+      <span id="viewNameLabel" style="display:none"></span>
+
+      <div class="view-tabs-side">
+        <button class="view-tab active-view" data-area="front">
+          <img class="view-thumb" src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Front">
+          <span class="view-thumb-label">Front</span>
+        </button>
+        <button class="view-tab" data-area="back">
+          <img class="view-thumb" src="https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png" alt="Back">
+          <span class="view-thumb-label">Back</span>
+        </button>
+        <button class="view-tab" data-area="left">
+          <img class="view-thumb" src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Left">
+          <span class="view-thumb-label">Left</span>
+        </button>
+        <button class="view-tab" data-area="right">
+          <img class="view-thumb" src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Right">
+          <span class="view-thumb-label">Right</span>
+        </button>
+      </div>
+
+
+      <div id="productPreview" class="product-preview area-front">
+        <div class="polo-colour-wrap">
+          <img
+            id="productShape"
+            class="product-image"
+            src="https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png"
+            alt="White polo mockup"
+          />
+          <div id="colourLayer" class="colour-layer"></div>
+
+          <div id="customArea" class="custom-area">
+
+            <div id="designLayer" class="design-layer">
+              <img id="uploadedLogo" src="" alt="Uploaded logo">
+              <button id="deleteLogoBtn" class="logo-delete-btn">×</button>
+              <button id="logoSettingsBtn" class="logo-settings-btn">settings</button>
+              <span id="logoSizeLabel" class="logo-size-label">0.00cm x 0.00cm</span>
+              <span class="resize-dot dot-br" data-resize="br"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="9" x2="9" y2="1"/><polyline points="5,1 9,1 9,5"/><polyline points="1,5 1,9 5,9"/></svg></span>
+              <span id="rotateHandle" class="rotate-handle">↻</span>
+            </div>
+
+            <div id="textLayer" class="text-layer">
+              <span id="textContent">ANDERSON</span>
+              <button id="deleteTextBtn" class="text-delete-btn">×</button>
+              <button id="textSettingsBtn" class="text-settings-btn">settings</button>
+              <span id="textSizeLabel" class="text-size-label">0.00cm x 0.00cm</span>
+              <span class="text-resize-dot text-dot-br" data-text-resize="br"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="9" x2="9" y2="1"/><polyline points="5,1 9,1 9,5"/><polyline points="1,5 1,9 5,9"/></svg></span>
+              <span id="textRotateHandle" class="text-rotate-handle">↻</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <button class="right-action-btn active-tool" id="selectToolBtn" title="Select">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.36z"/></svg>
+          <span>Select</span>
+        </button>
+        <button class="right-action-btn" id="panToolBtn" title="Pan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+          <span>Pan</span>
+        </button>
+        <div class="right-divider"></div>
+        <button class="right-action-btn" id="previewBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>Preview</span>
+        </button>
+        <div class="right-divider"></div>
+        <button class="right-action-btn" id="zoomInBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+          <span>Zoom in</span>
+        </button>
+        <button class="right-action-btn" id="zoomOutBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+          <span>Zoom out</span>
+        </button>
+        <button class="right-action-btn" id="resetViewBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span>Reset</span>
+        </button>
+        <button class="right-action-btn" id="straightenBtn" title="Straighten">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36"></path><polyline points="3 3 3 9 9 9"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>
+          <span>Straight</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Logo quality bar -->
+    <div class="main-quality-bar" id="mainQualityBar">
+      <div class="main-quality-header">
+        <span class="main-quality-title">LOGO QUALITY</span>
+        <span class="main-quality-pct" id="mainQualityPct" style="color:#9098a3">0%</span>
+      </div>
+      <div class="main-quality-meter">
+        <div class="main-quality-mask" id="mainQualityMask" style="width:100%;border-radius:0 6px 6px 0"></div>
+      </div>
+    </div>
+
+    <!-- Quality warning -->
+    <div class="quality-warning" id="qualityWarning" style="display:none">
+      <span class="quality-warning-icon">&#9888;</span>
+      <span class="quality-warning-text">If you have any concerns about the quality of your image, please contact us. Our team will be happy to guide you and help you identify the most suitable file for printing.</span>
+    </div>
+
+    <!-- Bottom sheet -->
+    <div class="bottom-sheet">
+      <div class="sheet-pill"></div>
+
+      <div class="sheet-row sheet-row-qty">
+        <div class="sheet-label">Quantity</div>
+        <div class="qty-controls qty-controls-inline">
+          <button class="qty-btn" id="qtyMinusBtn">−</button>
+          <span id="qtyDisplay">1</span>
+          <button class="qty-btn" id="qtyPlusBtn">+</button>
+        </div>
+      </div>
+
+      <div class="sheet-row">
+        <div class="sheet-label">Product type</div>
+        <div class="sheet-select-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"></path></svg>
+          <select id="mainProductSelect" class="sheet-select" aria-label="Product type">
+            <option value="polo" selected>Polo Shirt</option>
+            <option value="tshirt">T-Shirt</option>
+            <option value="hoodie">Hoodie</option>
+            <option value="cap">Cap</option>
+            <option value="beanie">Beanie</option>
+          </select>
+          <svg class="select-chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="sheet-row">
+        <div class="sheet-label">Colour</div>
+        <div class="mini-colour-wrap">
+          <div class="mini-colour-row" id="miniColourRow"></div>
+          <div class="colour-dropdown" id="colourDropdown"></div>
+        </div>
+      </div>
+
+
+      <div class="sheet-info-row">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Product info</span>
+        <svg class="info-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+      <div class="sheet-info-row">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <span>Size guide</span>
+        <svg class="info-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <section class="tool-basket-embed" aria-label="Quote Basket Summary">
+        <div class="tool-basket-embed-head">Your Quote Basket</div>
+        <iframe
+          id="toolBasketFrame"
+          class="tool-basket-embed-frame"
+          src="../basket.html#orderSummary"
+          title="Quote Basket"
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </section>
+    </div>
+
+  </section>
+
+  <section id="productPage" class="screen">
+    <div class="black-header">Product</div>
+
+    <div class="page-body">
+
+      <div class="product-info-row">
+        <div class="product-photo">
+          <img class="product-thumb" src="https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png" alt="Product">
+        </div>
+
+        <div>
+          <h2 id="productPageTitle" class="product-title">Custom Polo Shirt</h2>
+          <button class="change-product-btn" id="changeProductBtn">Change Product</button>
+          <a href="#" class="more-info">More Product Info</a>
+        </div>
+      </div>
+
+      <div id="productChanger" style="display:none; margin-bottom:18px;">
+        <div class="form-title">Choose Product</div>
+        <select id="productSelect" class="select-field">
+          <option value="polo" selected>Polo</option>
+          <option value="tshirt">T-Shirt</option>
+          <option value="hoodie">Hoodie</option>
+          <option value="cap">Cap</option>
+          <option value="beanie">Beanie</option>
+        </select>
+      </div>
+
+      <div id="colourGrid" class="colour-grid"></div>
+      <div id="selectedColourName" class="selected-colour-name">White</div>
+
+      <div class="form-title">Size</div>
+
+      <div id="sizesContainer">
+        <div class="size-row">
+          <select class="size-select">
+            <option>XS</option>
+            <option>Small</option>
+            <option selected>Medium</option>
+            <option>Large</option>
+            <option>XL</option>
+            <option>XXL</option>
+            <option>3XL</option>
+          </select>
+          <input class="size-qty" type="number" min="1" value="1">
+        </div>
+      </div>
+
+      <button class="add-size-btn" id="addSizeBtn"><span>+</span> Add Another Size</button>
+
+    </div>
+
+    <div class="full-action-bar">
+      <button class="btn-black" id="applyProductBtn">APPLY</button>
+    </div>
+  </section>
+
+  <section id="textTypePage" class="screen">
+    <div class="sub-header">
+      <button class="sub-back-btn" data-open="mainEditor">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span class="sub-header-title">Select type of text</span>
+      <div class="sub-header-cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="sub-cart-badge">2</span>
+      </div>
+    </div>
+
+    <div class="print-type-list">
+      <div class="print-type-card" data-text-type="embroidery" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="Embroidery">
+        <div class="print-type-body">
+          <div class="print-type-title">Add Embroidery Text</div>
+          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <div class="print-type-card" data-text-type="dtf" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="DTF Printing">
+        <div class="print-type-body">
+          <div class="print-type-title">Add DTF Printing Text</div>
+          <div class="print-type-desc">Best for full colour prints, small runs and detailed text.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <div class="print-type-card" data-text-type="screen" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/rsTJ7DTk/Screenshot-2026-06-01-112942.png" alt="Screen Printing">
+        <div class="print-type-body">
+          <div class="print-type-title">Add Screen Printing Text</div>
+          <div class="print-type-desc">Best for bold designs, large runs and durable prints.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <div class="print-type-card" data-text-type="vinyl" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/G3PzGxF7/Screenshot-2026-06-01-113433.png" alt="Vinyl Heat Press">
+        <div class="print-type-body">
+          <div class="print-type-title">Add Vinyl Heat Press Text</div>
+          <div class="print-type-desc">Best for single-colour designs, names and numbers. Durable, vibrant colours with a clean, professional finish.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
+    <div class="sub-action-bar">
+      <button class="sub-btn-ok" id="textTypeOkBtn" data-open="textEditorPage">OK</button>
+      <button class="sub-btn-cancel" data-open="mainEditor">Cancel</button>
+    </div>
+  </section>
+
+  <section id="textEditorPage" class="screen">
+    <div class="sub-header">
+      <button class="sub-back-btn" data-open="textTypePage">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span class="sub-header-title">Add Text</span>
+      <div class="sub-header-cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="sub-cart-badge">2</span>
+      </div>
+    </div>
+
+    <div class="text-editor-wrap">
+      <div class="te-section">
+        <div class="te-label te-label-row">
+          <span>Text</span>
+          <div class="te-text-tools">
+            <button id="teInlineBoldBtn" class="te-mini-btn" type="button" title="Grassetto">B</button>
+            <button id="teInlineItalicBtn" class="te-mini-btn" type="button" title="Corsivo"><em>I</em></button>
+            <button id="teInlineAlignLeft" class="te-mini-btn te-inline-align-btn" data-inline-align="left" type="button" title="Allinea a sinistra" aria-label="Allinea a sinistra">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="10" height="2" fill="currentColor"></rect>
+                <rect x="2" y="6" width="8" height="2" fill="currentColor"></rect>
+                <rect x="2" y="10" width="11" height="2" fill="currentColor"></rect>
+              </svg>
+            </button>
+            <button id="teInlineAlignCenter" class="te-mini-btn te-inline-align-btn" data-inline-align="center" type="button" title="Allinea al centro" aria-label="Allinea al centro">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="3" y="2" width="10" height="2" fill="currentColor"></rect>
+                <rect x="4" y="6" width="8" height="2" fill="currentColor"></rect>
+                <rect x="2.5" y="10" width="11" height="2" fill="currentColor"></rect>
+              </svg>
+            </button>
+            <button id="teInlineAlignRight" class="te-mini-btn te-inline-align-btn" data-inline-align="right" type="button" title="Allinea a destra" aria-label="Allinea a destra">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="4" y="2" width="10" height="2" fill="currentColor"></rect>
+                <rect x="6" y="6" width="8" height="2" fill="currentColor"></rect>
+                <rect x="3" y="10" width="11" height="2" fill="currentColor"></rect>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="te-textarea-wrap">
+          <textarea id="customTextInput" class="te-textarea" placeholder="Enter your text" maxlength="50"></textarea>
+          <button id="teLineBreakBtn" class="te-inline-break-btn" type="button" title="Vai a capo" aria-label="Vai a capo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6v6a4 4 0 0 1-4 4H6"></path>
+              <polyline points="10 12 6 16 10 20"></polyline>
+            </svg>
+          </button>
+          <span class="te-char-counter"><span id="teCharCount">0</span> / 50</span>
+        </div>
+      </div>
+
+      <div class="te-section" style="position:relative;z-index:300;">
+        <div class="te-label">Font</div>
+        <!-- hidden native select for JS compatibility -->
+        <select id="fontSelect" style="display:none;"></select>
+        <!-- custom font picker -->
+        <div class="te-font-picker" id="teFontPicker">
+          <div class="te-font-trigger" id="teFontTrigger">
+            <span class="te-font-selected" id="teFontSelected" style="font-family:Arial;">Arial</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="te-font-dropdown" id="teFontDropdown"></div>
+        </div>
+      </div>
+
+      <div class="te-section">
+        <div class="te-label">Text Colour</div>
+        <div class="te-swatches" id="teSwatches">
+          <button class="te-dot" data-colour="#ffffff" style="background:#ffffff;border-color:#ccc;"></button>
+          <button class="te-dot" data-colour="#000000" style="background:#000000;"></button>
+          <button class="te-dot" data-colour="#444444" style="background:#444444;"></button>
+          <button class="te-dot" data-colour="#888888" style="background:#888888;"></button>
+          <button class="te-dot selected" data-colour="#ff2b2b" style="background:#ff2b2b;"></button>
+          <button class="te-dot" data-colour="#f97316" style="background:#f97316;"></button>
+          <button class="te-dot" data-colour="#facc15" style="background:#facc15;"></button>
+          <button class="te-dot" data-colour="#22c55e" style="background:#22c55e;"></button>
+          <button class="te-dot" data-colour="#3b82f6" style="background:#3b82f6;"></button>
+          <button class="te-dot" data-colour="#1e3a8a" style="background:#1e3a8a;"></button>
+          <button class="te-dot" data-colour="#7c3aed" style="background:#7c3aed;"></button>
+          <button class="te-dot" data-colour="#ec4899" style="background:#ec4899;"></button>
+          <button class="te-dot" data-colour="#be185d" style="background:#be185d;"></button>
+          <button class="te-dot" data-colour="#92400e" style="background:#92400e;"></button>
+          <button class="te-dot" data-colour="#3b1a08" style="background:#3b1a08;"></button>
+          <button class="te-dot" data-colour="#d4b483" style="background:#d4b483;"></button>
+          <label class="te-dot te-dot-custom" title="Custom colour">
+            +
+            <input type="color" id="textColourInput" value="#ff2b2b" style="opacity:0;position:absolute;width:0;height:0;">
+          </label>
+        </div>
+      </div>
+
+      <div class="te-property-links">
+        <div class="te-accordion-item" id="tePositionItem">
+          <button id="openTePositionSize" class="te-property-link" type="button" aria-expanded="false">
+            <span>Position and Size</span>
+            <span class="te-link-chevron">⌄</span>
+          </button>
+          <div id="tePositionPanel" class="te-dropdown-panel">
+            <div class="property-controls te-property-controls-inline">
+              <div>
+                <div class="control-title">Position</div>
+                <div class="position-pad">
+                  <button data-inline-text-move="up-left">◤</button>
+                  <button data-inline-text-move="up">▲</button>
+                  <button data-inline-text-move="up-right">◥</button>
+                  <button data-inline-text-move="left">◀</button>
+                  <button data-inline-text-move="center">●</button>
+                  <button data-inline-text-move="right">▶</button>
+                  <button data-inline-text-move="down-left">◣</button>
+                  <button data-inline-text-move="down">▼</button>
+                  <button data-inline-text-move="down-right">◢</button>
+                </div>
+              </div>
+
+              <div class="size-box">
+                <div class="control-title">Size</div>
+                <button id="teInlineSizeUpBtn">▲</button>
+                <button id="teInlineSizeDownBtn">▼</button>
+              </div>
+
+              <div class="rotate-box">
+                <div class="control-title">Rotate</div>
+                <input id="teInlineRotateInput" type="number" value="0">
+              </div>
+            </div>
+
+            <div class="property-size-line te-size-line-inline">
+              <span id="teInlineSizeLabel">0.00cm x 0.00cm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="te-accordion-item" id="teTextPropertiesItem">
+          <button id="openTeTextProperties" class="te-property-link" type="button" aria-expanded="false">
+            <span>Text Properties</span>
+            <span class="te-link-chevron">⌄</span>
+          </button>
+          <div id="teTextPropertiesPanel" class="te-dropdown-panel">
+            <textarea id="teInlineTextInput" class="text-property-input te-property-input-inline" placeholder="Enter your text" maxlength="50">ANDERSON</textarea>
+
+            <div class="te-inline-property-row">
+              <label for="teInlineColourInput">Text Colour</label>
+              <input id="teInlineColourInput" class="colour-box" type="color" value="#ff2b2b">
+            </div>
+
+            <label class="property-check te-property-check-inline">
+              <input id="teInlineResizeProportionallyCheck" type="checkbox" checked>
+              <span>Resize proportionally</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-action-bar">
+      <button class="sub-btn-ok" id="applyTextBtn">OK</button>
+      <button class="sub-btn-cancel" data-open="mainEditor">Cancel</button>
+    </div>
+  </section>
+
+  <section id="designTypePage" class="screen">
+    <div class="sub-header">
+      <button class="sub-back-btn" data-open="mainEditor">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span class="sub-header-title">Select type of logo</span>
+      <div class="sub-header-cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="sub-cart-badge">2</span>
+      </div>
+    </div>
+
+    <div class="print-type-list">
+      <div class="print-type-card" data-design-type="embroidery">
+        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="Embroidery Logo">
+        <div class="print-type-body">
+          <div class="print-type-title">Add Embroidery Logo</div>
+          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <div class="print-type-card" data-design-type="dtf">
+        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="DTF Printing Logo">
+        <div class="print-type-body">
+          <div class="print-type-title">Add DTF Printing Logo</div>
+          <div class="print-type-desc">Best for full colour prints, small runs and detailed logos.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+
+      <div class="print-type-card" data-design-type="screen">
+        <img class="print-type-img" src="https://i.postimg.cc/rsTJ7DTk/Screenshot-2026-06-01-112942.png" alt="Screen Printing Logo">
+        <div class="print-type-body">
+          <div class="print-type-title">Add Screen Printing Logo</div>
+          <div class="print-type-desc">Best for bold designs, large runs and durable logos.</div>
+        </div>
+        <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="logoUploadPage" class="screen">
+    <div class="black-header">Upload Design</div>
+
+    <div class="page-body">
+      <label class="upload-box" for="logoFileInput">
+        Click here to upload your logo or graphic
+        <input id="logoFileInput" type="file" accept="image/*" hidden>
+      </label>
+    </div>
+
+    <div class="fixed-action-bar">
+      <button class="btn-black" id="continueLogoBtn">NEXT</button>
+      <button class="btn-grey" data-open="mainEditor">Cancel</button>
+    </div>
+  </section>
+
+  <section id="copyrightPage" class="screen">
+    <div class="copyright-shell">
+      <div class="copyright-topbar">
+        <div class="copyright-title">Confirm Copyright Permission</div>
+        <button class="copyright-close-btn" data-open="mainEditor" aria-label="Close copyright screen">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="copyright-content">
+        <div class="copyright-preview">
+          <img id="copyrightImagePreview" src="" alt="Copyright preview">
+        </div>
+
+        <div class="copyright-intro-card copyright-info-card">
+          <div class="copyright-info-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V6l-8-3-8 3v6c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-5"></path></svg>
+          </div>
+          <p class="copyright-intro">Before submitting or saving any artwork, you must ensure that you have the legal right to use, reproduce, and customise the design.</p>
+        </div>
+
+        <div class="copyright-card-list">
+          <div class="copyright-info-card">
+            <div class="copyright-info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3"></path><path d="M9 12l2 2 4-4"></path></svg>
+            </div>
+            <p>You own, or have obtained, all rights, licences, and permissions required to reproduce the artwork.</p>
+          </div>
+
+          <div class="copyright-info-card">
+            <div class="copyright-info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M3 8l4-5 4 5a4 4 0 0 1-8 0z"/><path d="M13 8l4-5 4 5a4 4 0 0 1-8 0z"/></svg>
+            </div>
+            <p>You accept full responsibility for any copyright, trademark, design right, or intellectual property claims.</p>
+          </div>
+
+          <div class="copyright-info-card">
+            <div class="copyright-info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11V7a4 4 0 0 0-8 0v4"></path><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M12 15v2"></path></svg>
+            </div>
+            <p>Unauthorised use may result in legal action, financial penalties, and other enforcement measures.</p>
+          </div>
+        </div>
+
+        <label class="copyright-check copyright-info-card">
+          <input id="copyrightCheckbox" type="checkbox">
+          <span>You confirm you are legally authorised to reproduce and print the artwork submitted.</span>
+        </label>
+      </div>
+
+      <div class="copyright-actions">
+        <button class="btn-black" id="copyrightOkBtn">OK</button>
+        <button class="btn-grey" data-open="mainEditor">Cancel</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="imagePropertiesPage" class="screen img-props-screen">
+    <div class="img-props-topbar">
+      <button class="img-props-back-btn" data-open="mainEditor">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="img-props-title">Image Properties</span>
+      <div style="width:36px"></div>
+    </div>
+
+    <div class="img-props-body">
+      <div class="img-props-card">
+        <div class="img-props-quality-header">
+          <span class="img-props-row-label">Print Quality</span>
+          <span class="img-props-quality-pct" id="qualityPct">—</span>
+        </div>
+        <div class="img-props-quality-meter">
+          <div class="img-props-quality-mask" id="qualityMask"></div>
+        </div>
+        <div class="img-props-quality-hint">Smaller logo = sharper print</div>
+      </div>
+
+      <div class="img-props-card">
+        <label class="img-props-toggle-row">
+          <span class="img-props-toggle-label">Remove background</span>
+          <div class="img-props-toggle">
+            <input id="removeBackgroundCheck" type="checkbox">
+            <span class="img-props-toggle-track"></span>
+          </div>
+        </label>
+        <div class="img-props-divider"></div>
+        <label class="img-props-toggle-row">
+          <span class="img-props-toggle-label">Resize proportionally</span>
+          <div class="img-props-toggle">
+            <input id="resizeProportionallyCheck" type="checkbox" checked>
+            <span class="img-props-toggle-track"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="img-props-card">
+        <div class="img-props-section-header">Position &amp; Size</div>
+        <div class="img-props-controls">
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Position</div>
+            <div class="img-props-position-pad">
+              <button data-move="up-left">◤</button>
+              <button data-move="up">▲</button>
+              <button data-move="up-right">◥</button>
+              <button data-move="left">◀</button>
+              <button data-move="center">●</button>
+              <button data-move="right">▶</button>
+              <button data-move="down-left">◣</button>
+              <button data-move="down">▼</button>
+              <button data-move="down-right">◢</button>
+            </div>
+          </div>
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Size</div>
+            <div class="img-props-size-btns">
+              <button id="sizeUpBtn">▲</button>
+              <button id="sizeDownBtn">▼</button>
+            </div>
+          </div>
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Rotate</div>
+            <input id="rotateInput" class="img-props-rotate-input" type="number" value="0">
+          </div>
+        </div>
+        <div class="img-props-size-display">
+          <span id="propertySizeLabel">0.00cm × 0.00cm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="copyright-actions">
+      <button class="btn-black" id="applyImagePropertiesBtn">Apply</button>
+      <button class="btn-grey" data-open="mainEditor">Cancel</button>
+    </div>
+  </section>
+
+  <section id="textPropertiesPage" class="screen">
+    <div class="black-header center">TEXT PROPERTIES</div>
+
+    <div class="text-properties-body">
+      <textarea id="textPropertyInput" class="text-property-input">ANDERSON</textarea>
+
+      <div class="property-section-title">Formatting <span>⌄</span></div>
+
+      <div class="font-row">
+        <button id="fontSelectorBtn" class="font-selector">Arial</button>
+        <input id="textPropertyColour" class="colour-box" type="color" value="#ff2b2b">
+      </div>
+
+      <div class="format-buttons">
+        <button id="boldTextBtn">B</button>
+        <button id="italicTextBtn"><em>I</em></button>
+        <div></div>
+        <button id="alignLeftBtn" class="text-align-btn" data-align="left" title="Allinea a sinistra">⯇</button>
+        <button id="alignCenterBtn" class="text-align-btn" data-align="center" title="Allinea al centro">≡</button>
+        <button id="alignRightBtn" class="text-align-btn" data-align="right" title="Allinea a destra">⯈</button>
+      </div>
+      <div class="te-format-help">Allineamento testo: 1 sinistra, 2 centro, 3 destra.</div>
+
+      <label class="property-label">Outline</label>
+
+      <div class="outline-row">
+        <input id="outlineRange" type="range" min="0" max="8" value="0">
+        <input id="outlineColour" class="colour-box" type="color" value="#000000">
+      </div>
+
+      <label class="property-check">
+        <input id="textResizeProportionallyCheck" type="checkbox" checked>
+        <span>Resize proportionally</span>
+      </label>
+
+      <div class="property-section-title" id="openTextPositionSize">Position and Size <span>›</span></div>
+
+      <div id="textPositionSizePanel" class="text-position-panel">
+        <div class="property-controls">
+          <div>
+            <div class="control-title">Position</div>
+            <div class="position-pad">
+              <button data-text-move="up-left">◤</button>
+              <button data-text-move="up">▲</button>
+              <button data-text-move="up-right">◥</button>
+              <button data-text-move="left">◀</button>
+              <button data-text-move="center">●</button>
+              <button data-text-move="right">▶</button>
+              <button data-text-move="down-left">◣</button>
+              <button data-text-move="down">▼</button>
+              <button data-text-move="down-right">◢</button>
+            </div>
+          </div>
+
+          <div class="size-box">
+            <div class="control-title">Size</div>
+            <button id="textSizeUpBtn">▲</button>
+            <button id="textSizeDownBtn">▼</button>
+          </div>
+
+          <div class="rotate-box">
+            <div class="control-title">Rotate</div>
+            <input id="textRotateInput" type="number" value="0">
+          </div>
+        </div>
+
+        <div class="property-size-line">
+          <span id="textPropertySizeLabel">0.00cm x 0.00cm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="full-action-bar">
+      <button class="btn-black" id="applyTextPropertiesBtn">APPLY</button>
+    </div>
+  </section>
+
+  <section id="fontPage" class="screen">
+    <div class="orange-header">Select A Font</div>
+
+    <div class="font-list" id="fontPageList"></div>
+
+    <div class="fixed-action-bar">
+      <button class="btn-grey" data-open="textEditorPage">Cancel</button>
+      <button class="btn-black" data-open="textEditorPage">OK</button>
+    </div>
+  </section>
+
+  <section id="namesPage" class="screen">
+    <div class="black-header">Add Team name</div>
+
+    <div class="page-body">
+      <div class="helper-text">Set up sizing - can be changed later.</div>
+
+      <div class="names-row">
+        <select id="namesSizeSelect" class="select-field">
+          <option>XS</option>
+          <option>Small</option>
+          <option selected>Medium</option>
+          <option>Large</option>
+          <option>XL</option>
+          <option>XXL</option>
+          <option>3XL</option>
+        </select>
+        <input id="namesQtyInput" class="field" type="number" min="1" value="1">
+      </div>
+
+      <input id="teamNameInput" class="field" type="text" placeholder="Name">
+      <br><br>
+      <input id="teamNumberInput" class="field" type="text" placeholder="Number">
+
+      <button class="add-size-btn" id="addNameBtn"><span>+</span> Add Name / Number</button>
+      <div id="namesList" class="names-list"></div>
+    </div>
+
+    <div class="fixed-action-bar">
+      <button class="btn-black" id="namesNextBtn">NEXT</button>
+      <button class="btn-grey" data-open="mainEditor">Cancel</button>
+    </div>
+  </section>
+
+  <section id="locationsPage" class="screen">
+    <div class="black-header center">Locations</div>
+
+    <div class="locations-wrapper page-body">
+      <div class="location-item" data-area="front"><div>Front</div></div>
+      <div class="location-item" data-area="back"><div>Back</div></div>
+      <div class="location-item" data-area="left-chest"><div>Left Chest</div></div>
+      <div class="location-item" data-area="right-chest"><div>Right Chest</div></div>
+      <div class="location-item" data-area="left-sleeve"><div>Left Sleeve</div></div>
+      <div class="location-item" data-area="right-sleeve"><div>Right Sleeve</div></div>
+    </div>
+
+    <div class="full-action-bar">
+      <button class="btn-black" data-open="mainEditor">OK</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="preview-modal" role="dialog" aria-modal="true">
+  <div class="preview-modal-card">
+    <button class="preview-modal-close" id="previewCloseBtn" aria-label="Close preview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <p class="preview-modal-label">Preview</p>
+    <div id="previewPoloSlot"></div>
+  </div>
+</div>
+
+<script src="app.js?v=20260604ab"></script>
+</body>
+</html>
