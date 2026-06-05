@@ -1,0 +1,4 @@
+[submodule "customization-tool"]
+	path = customization-tool
+	url = https://github.com/andyrigoc/customization-tool.git
+	branch = main
