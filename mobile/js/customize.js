@@ -10923,6 +10923,34 @@
                 _autoSavedItemId = basket[idx].id;
                 sessionStorage.removeItem('basketEditSingleItem');
             }
+
+            // Pass the currently selected garment colour to the standalone tool.
+            try {
+                const chosenColorName = String(state.selectedColorName || item.color || '').trim();
+                const chosenColorHex = String(getCurrentGarmentColorHex() || item.colorHex || '').trim();
+
+                if (chosenColorName) {
+                    sessionStorage.setItem('selectedColorName', chosenColorName);
+                }
+                if (chosenColorHex) {
+                    sessionStorage.setItem('selectedColorHex', chosenColorHex);
+                }
+
+                const existingRaw = sessionStorage.getItem('selectedProductData');
+                const existingData = existingRaw ? JSON.parse(existingRaw) : {};
+                const mergedData = Object.assign({}, existingData, {
+                    code: existingData.code || (state.product && state.product.code) || item.productCode || item.code || '',
+                    name: existingData.name || (state.product && state.product.name) || item.productName || item.name || '',
+                    color: chosenColorName || existingData.color || '',
+                    selectedColorName: chosenColorName || existingData.selectedColorName || '',
+                    colorHex: chosenColorHex || existingData.colorHex || '',
+                    selectedColorHex: chosenColorHex || existingData.selectedColorHex || ''
+                });
+                sessionStorage.setItem('selectedProductData', JSON.stringify(mergedData));
+            } catch (e) {
+                // Keep redirect flow working even if sessionStorage is unavailable.
+            }
+
             const productCode = encodeURIComponent((state.product && state.product.code) || item.productCode || item.code || '');
             const productName = String((item && (item.productName || item.name)) || '').toLowerCase();
             const productCategory = String((item && item.category) || '').toLowerCase();

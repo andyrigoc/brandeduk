@@ -1016,7 +1016,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #995BD5;
+  background: #facc15;
 }
 
 .hero-bounce-headline {
@@ -1024,7 +1024,7 @@
   font-weight: 700;
   font-size: clamp(56px, 14vw, 160px);
   line-height: 1;
-  color: #fff;
+  color: #273469;
 }
 
 .hero-bounce-char {

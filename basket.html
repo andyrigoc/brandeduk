@@ -1762,6 +1762,15 @@
         const seenPos = new Set();
         const methodByPos = {};
 
+        function defaultLogoUnitPrice(method) {
+            const m = String(method || '').toLowerCase();
+            if (m === 'embroidery') return 5.00;
+            if (m === 'dtf') return 3.95;
+            if (m === 'screen') return 2.95;
+            if (m === 'vinyl') return 3.50;
+            return 3.50;
+        }
+
         if (Array.isArray(item.positions)) {
             item.positions.forEach(function (p) {
                 if (p && p.position && p.method) {
@@ -1776,12 +1785,14 @@
             const method = (entry.method || methodByPos[pos] || 'embroidery').toLowerCase();
             if (seenPos.has(pos)) return;
             seenPos.add(pos);
+            const rawUnitPrice = parseFloat(entry.unitPrice);
+            const safeUnitPrice = Number.isFinite(rawUnitPrice) && rawUnitPrice > 0 ? rawUnitPrice : defaultLogoUnitPrice(method);
             logos.push({
                 position: pos,
                 positionLabel: entry.positionLabel || toReadablePosition(pos),
                 method: method,
                 logo: entry.logo || '',
-                unitPrice: entry.unitPrice != null ? entry.unitPrice : (method === 'print' ? 3.50 : 5.00)
+                unitPrice: safeUnitPrice
             });
         }
 
@@ -1886,10 +1897,16 @@
             method = 'embroidery';
             unitPrice = Number.isFinite(unitPrice) && unitPrice >= 5 ? unitPrice : 5.00;
         } else if (method === 'print') {
-            unitPrice = Number.isFinite(unitPrice) ? unitPrice : 3.50;
+            unitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 3.50;
+        } else if (method === 'dtf') {
+            unitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 3.95;
+        } else if (method === 'screen') {
+            unitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 2.95;
+        } else if (method === 'vinyl') {
+            unitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 3.50;
         } else {
             method = 'embroidery';
-            unitPrice = Number.isFinite(unitPrice) ? unitPrice : 5.00;
+            unitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : 5.00;
         }
 
         return {
@@ -2382,9 +2399,8 @@
         if (logo) sessionStorage.setItem('editingPosition', logo.position);
         sessionStorage.setItem('returnAfterCustomize', 'basket');
         _setCustomizeSessionData(item);
-
-        const isMobile = window.innerWidth < 1024;
-        openCustomizePopup(isMobile ? 'mobile/customize-mobile.html?positionsOnly=1&_cb=' + Date.now() : 'customize.html?positionsOnly=1&_cb=' + Date.now());
+        const code = encodeURIComponent(item.code || item.productCode || '');
+        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&editLogo=1&_cb=${Date.now()}`;
     }
 
     function copyLogo(itemIndex, logoIndex) {
@@ -2399,18 +2415,7 @@
     function addLogoToItem(itemIndex) {
         const basket = getBasket();
         if (itemIndex < 0 || itemIndex >= basket.length) return;
-        const item = basket[itemIndex];
-
-        // Collect all unique logos from ALL basket items
-        const existingLogos = _collectAllLogos(basket, itemIndex);
-
-        if (existingLogos.length > 0) {
-            // Show quick picker modal
-            _showQuickLogoModal(itemIndex, existingLogos);
-        } else {
-            // No existing logos anywhere — go straight to full customize flow
-            _openFullCustomizeForItem(itemIndex);
-        }
+        _openFullCustomizeForItem(itemIndex);
     }
 
     /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print → embroidery on beanies) */
@@ -2587,8 +2592,31 @@
 
         _setCustomizeSessionData(item);
 
-        const isMobile = window.innerWidth < 1024;
-        openCustomizePopup(isMobile ? 'mobile/customize-mobile.html?positionsOnly=1&_cb=' + Date.now() : 'customize.html?positionsOnly=1&_cb=' + Date.now());
+        try {
+            const reusableLogos = _collectAllLogos(basket, itemIndex)
+                .filter(function (logo) { return !!(logo && logo.logo); })
+                .map(function (logo) {
+                    return {
+                        logo: logo.logo,
+                        method: logo.method || 'logo',
+                        position: logo.position || 'front',
+                        positionLabel: logo.positionLabel || logo.position || 'Front'
+                    };
+                });
+
+            if (reusableLogos.length > 0) {
+                sessionStorage.setItem('toolReusableLogos', JSON.stringify(reusableLogos));
+                sessionStorage.setItem('toolAskLogoChoice', '1');
+            } else {
+                sessionStorage.removeItem('toolReusableLogos');
+                sessionStorage.removeItem('toolAskLogoChoice');
+            }
+        } catch (e) {
+            sessionStorage.removeItem('toolReusableLogos');
+            sessionStorage.removeItem('toolAskLogoChoice');
+        }
+        const code = encodeURIComponent(item.code || item.productCode || '');
+        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&askLogoChoice=1&_cb=${Date.now()}`;
     }
 
     function _setCustomizeSessionData(item) {

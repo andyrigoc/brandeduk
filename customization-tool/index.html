@@ -101,7 +101,7 @@
       </button>
       <button class="tab-btn" data-open="designTypePage">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        <span>Add design</span>
+        <span>Add logo</span>
       </button>
       <button class="tab-btn" data-open="namesPage">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -133,7 +133,10 @@
       <p class="ph-sub">
         <span class="ph-code" id="cibCode">SKU-2024</span>
         <span class="ph-divider"> | </span>
-        <span class="ph-brand">GILDAN</span>
+        <span class="ph-brand-wrap">
+          <img id="phBrandLogo" class="ph-brand-logo" src="" alt="Brand logo">
+          <span class="ph-brand" id="phBrandText">GILDAN</span>
+        </span>
       </p>
     </div>
 
@@ -168,8 +171,8 @@
           <img
             id="productShape"
             class="product-image"
-            src="https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png"
-            alt="White polo mockup"
+            src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png"
+            alt="White t-shirt mockup"
           />
           <div id="colourLayer" class="colour-layer"></div>
 
@@ -198,14 +201,6 @@
       </div>
 
       <div class="right-panel">
-        <button class="right-action-btn active-tool" id="selectToolBtn" title="Select">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.36z"/></svg>
-          <span>Select</span>
-        </button>
-        <button class="right-action-btn" id="panToolBtn" title="Pan">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
-          <span>Pan</span>
-        </button>
         <div class="right-divider"></div>
         <button class="right-action-btn" id="previewBtn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -231,6 +226,11 @@
       </div>
     </div>
 
+    <div class="canvas-selected-colour" aria-live="polite">
+      <span class="canvas-selected-colour-label">COLOUR</span>
+      <span id="selectedCanvasColourName" class="canvas-selected-colour-value">White</span>
+    </div>
+
     <!-- Logo quality bar -->
     <div class="main-quality-bar" id="mainQualityBar">
       <div class="main-quality-header">
@@ -241,6 +241,8 @@
         <div class="main-quality-mask" id="mainQualityMask" style="width:100%;border-radius:0 6px 6px 0"></div>
       </div>
     </div>
+
+    <button class="confirm-quality-btn" id="confirmQualityBtn" type="button" disabled>CONFIRM &amp; UPDATE BASKET</button>
 
     <!-- Quality warning -->
     <div class="quality-warning" id="qualityWarning" style="display:none">
@@ -262,22 +264,7 @@
       </div>
 
       <div class="sheet-row">
-        <div class="sheet-label">Product type</div>
-        <div class="sheet-select-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"></path></svg>
-          <select id="mainProductSelect" class="sheet-select" aria-label="Product type">
-            <option value="polo" selected>Polo Shirt</option>
-            <option value="tshirt">T-Shirt</option>
-            <option value="hoodie">Hoodie</option>
-            <option value="cap">Cap</option>
-            <option value="beanie">Beanie</option>
-          </select>
-          <svg class="select-chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-      </div>
-
-      <div class="sheet-row">
-        <div class="sheet-label">Colour</div>
+        <div class="sheet-label" id="sheetColourLabel">Colour</div>
         <div class="mini-colour-wrap">
           <div class="mini-colour-row" id="miniColourRow"></div>
           <div class="colour-dropdown" id="colourDropdown"></div>
@@ -381,20 +368,20 @@
     </div>
 
     <div class="print-type-list">
-      <div class="print-type-card" data-text-type="embroidery" data-open="textEditorPage">
-        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="Embroidery">
+      <div class="print-type-card" data-text-type="dtf" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="DTF Printing">
         <div class="print-type-body">
-          <div class="print-type-title">Add Embroidery Text</div>
-          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
+          <div class="print-type-title">Add DTF Printing Text</div>
+          <div class="print-type-desc">Best for full colour prints, small runs and detailed text.</div>
         </div>
         <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </div>
 
-      <div class="print-type-card" data-text-type="dtf" data-open="textEditorPage">
-        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="DTF Printing">
+      <div class="print-type-card" data-text-type="embroidery" data-open="textEditorPage">
+        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="Embroidery">
         <div class="print-type-body">
-          <div class="print-type-title">Add DTF Printing Text</div>
-          <div class="print-type-desc">Best for full colour prints, small runs and detailed text.</div>
+          <div class="print-type-title">Add Embroidery Text</div>
+          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
         </div>
         <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </div>
@@ -600,20 +587,20 @@
     </div>
 
     <div class="print-type-list">
-      <div class="print-type-card" data-design-type="embroidery">
-        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="Embroidery Logo">
+      <div class="print-type-card" data-design-type="dtf">
+        <img class="print-type-img" src="https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png" alt="DTF Printing Logo">
         <div class="print-type-body">
-          <div class="print-type-title">Add Embroidery Logo</div>
-          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
+          <div class="print-type-title">Add DTF Printing Logo</div>
+          <div class="print-type-desc">Best for full colour prints, small runs and detailed logos.</div>
         </div>
         <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </div>
 
-      <div class="print-type-card" data-design-type="dtf">
-        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="DTF Printing Logo">
+      <div class="print-type-card" data-design-type="embroidery">
+        <img class="print-type-img" src="https://i.postimg.cc/63ncHdDc/Screenshot-2026-06-01-112518.png" alt="Embroidery Logo">
         <div class="print-type-body">
-          <div class="print-type-title">Add DTF Printing Logo</div>
-          <div class="print-type-desc">Best for full colour prints, small runs and detailed logos.</div>
+          <div class="print-type-title">Add Embroidery Logo</div>
+          <div class="print-type-desc">Best for polos, caps, beanies and left chest uniforms.</div>
         </div>
         <svg class="print-type-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </div>
@@ -648,7 +635,10 @@
   <section id="copyrightPage" class="screen">
     <div class="copyright-shell">
       <div class="copyright-topbar">
-        <div class="copyright-title">Confirm Copyright Permission</div>
+        <div class="copyright-title">
+            <span>Confirm Copyright</span>
+          <span>Permission</span>
+        </div>
         <button class="copyright-close-btn" data-open="mainEditor" aria-label="Close copyright screen">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
@@ -663,35 +653,38 @@
           <div class="copyright-info-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V6l-8-3-8 3v6c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-5"></path></svg>
           </div>
-          <p class="copyright-intro">Before submitting or saving any artwork, you must ensure that you have the legal right to use, reproduce, and customise the design.</p>
+          <p class="copyright-intro">Before submitting or saving any artwork, you must ensure that you have the legal right to use, reproduce, and customise the design. If you are uncertain about ownership, copyright status, or licensing permissions, please obtain confirmation from the rights holder before proceeding.</p>
         </div>
 
         <div class="copyright-card-list">
           <div class="copyright-info-card">
             <div class="copyright-info-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3"></path><path d="M9 12l2 2 4-4"></path></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path><circle cx="12" cy="16" r="1.1"></circle></svg>
             </div>
-            <p>You own, or have obtained, all rights, licences, and permissions required to reproduce the artwork.</p>
+            <p>You own, or have obtained, all necessary rights, licences, and permissions required to reproduce the artwork for commercial purposes.</p>
           </div>
 
           <div class="copyright-info-card">
             <div class="copyright-info-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M3 8l4-5 4 5a4 4 0 0 1-8 0z"/><path d="M13 8l4-5 4 5a4 4 0 0 1-8 0z"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z"></path><path d="M14 3v4h4"></path><path d="M9 12h6"></path><path d="M9 16h5"></path></svg>
             </div>
-            <p>You accept full responsibility for any copyright, trademark, design right, or intellectual property claims.</p>
+            <p>You accept full responsibility for any copyright, trademark, design right, or intellectual property claims arising from the use of the submitted artwork.</p>
           </div>
 
           <div class="copyright-info-card">
             <div class="copyright-info-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11V7a4 4 0 0 0-8 0v4"></path><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M12 15v2"></path></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
-            <p>Unauthorised use may result in legal action, financial penalties, and other enforcement measures.</p>
+            <p>Should any third party dispute the ownership or authorised use of the design, all enquiries and claims will be directed to you as the submitting party.</p>
           </div>
         </div>
 
         <label class="copyright-check copyright-info-card">
           <input id="copyrightCheckbox" type="checkbox">
-          <span>You confirm you are legally authorised to reproduce and print the artwork submitted.</span>
+          <div class="copyright-check-copy">
+            <span>By saving, uploading, or approving a design,</span>
+            <span>you confirm and agree that:</span>
+          </div>
         </label>
       </div>
 
@@ -900,23 +893,6 @@
     <div class="fixed-action-bar">
       <button class="btn-black" id="namesNextBtn">NEXT</button>
       <button class="btn-grey" data-open="mainEditor">Cancel</button>
-    </div>
-  </section>
-
-  <section id="locationsPage" class="screen">
-    <div class="black-header center">Locations</div>
-
-    <div class="locations-wrapper page-body">
-      <div class="location-item" data-area="front"><div>Front</div></div>
-      <div class="location-item" data-area="back"><div>Back</div></div>
-      <div class="location-item" data-area="left-chest"><div>Left Chest</div></div>
-      <div class="location-item" data-area="right-chest"><div>Right Chest</div></div>
-      <div class="location-item" data-area="left-sleeve"><div>Left Sleeve</div></div>
-      <div class="location-item" data-area="right-sleeve"><div>Right Sleeve</div></div>
-    </div>
-
-    <div class="full-action-bar">
-      <button class="btn-black" data-open="mainEditor">OK</button>
     </div>
   </section>
 

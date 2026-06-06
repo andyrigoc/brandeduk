@@ -1,6 +1,10 @@
 const state = {
   product: "polo",
   productName: "Polo",
+  productCode: "SKU-2024",
+  brandName: "GILDAN",
+  brandLogo: "",
+  selectedColorImage: "",
   colourName: "White",
   colourHex: "#ffffff",
   sizes: [{ size: "Medium", qty: 1 }],
@@ -36,6 +40,8 @@ const customArea = document.getElementById("customArea");
 const productShape = document.getElementById("productShape");
 const colourGrid = document.getElementById("colourGrid");
 const selectedColourName = document.getElementById("selectedColourName");
+const selectedCanvasColourName = document.getElementById("selectedCanvasColourName");
+const sheetColourLabel = document.getElementById("sheetColourLabel");
 const productSelect = document.getElementById("productSelect");
 const productPageTitle = document.getElementById("productPageTitle");
 const sizesContainer = document.getElementById("sizesContainer");
@@ -43,6 +49,7 @@ const mainQtyInput = document.getElementById("mainQtyInput");
 const basketTotalAmount = document.getElementById("basketTotalAmount");
 const basketTotalMeta = document.getElementById("basketTotalMeta");
 const cartBadge = document.querySelector(".cart-badge");
+const confirmQualityBtn = document.getElementById("confirmQualityBtn");
 
 const colourLayer = document.getElementById("colourLayer");
 const designLayer = document.getElementById("designLayer");
@@ -58,6 +65,51 @@ const textSettingsBtn = document.getElementById("textSettingsBtn");
 const deleteTextBtn = document.getElementById("deleteTextBtn");
 const textRotateHandle = document.getElementById("textRotateHandle");
 const textSizeLabel = document.getElementById("textSizeLabel");
+const phBrandLogo = document.getElementById("phBrandLogo");
+const phBrandText = document.getElementById("phBrandText");
+
+function updateSelectedColourLabels(colourName) {
+  const safeName = String(colourName || "").trim() || "White";
+  if (selectedColourName) selectedColourName.textContent = safeName;
+  if (selectedCanvasColourName) selectedCanvasColourName.textContent = safeName;
+}
+
+function updateAvailableColoursLabel() {
+  if (!sheetColourLabel) return;
+  const count = Array.isArray(colours) ? colours.length : 0;
+  sheetColourLabel.textContent = count > 0 ? `Colour (${count})` : "Colour";
+}
+
+function syncViewThumbTint() {
+  const safeHex = normalizeHex(state.colourHex) || "#ffffff";
+
+  document.querySelectorAll(".view-tabs-side .view-tab").forEach((tabBtn) => {
+    const thumbImg = tabBtn.querySelector(".view-thumb");
+    if (!thumbImg) return;
+
+    let thumbWrap = tabBtn.querySelector(".view-thumb-wrap");
+    if (!thumbWrap) {
+      thumbWrap = document.createElement("span");
+      thumbWrap.className = "view-thumb-wrap";
+      thumbImg.parentNode.insertBefore(thumbWrap, thumbImg);
+      thumbWrap.appendChild(thumbImg);
+    }
+
+    let colourLayer = thumbWrap.querySelector(".view-thumb-colour-layer");
+    if (!colourLayer) {
+      colourLayer = document.createElement("span");
+      colourLayer.className = "view-thumb-colour-layer";
+      thumbWrap.appendChild(colourLayer);
+    }
+
+    const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
+    if (!thumbSrc) return;
+
+    colourLayer.style.backgroundColor = safeHex;
+    colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
+    colourLayer.style.maskImage = `url("${thumbSrc}")`;
+  });
+}
 
 function enforceDeleteButtonStyle() {
   [deleteLogoBtn, deleteTextBtn].forEach(btn => {
@@ -95,7 +147,7 @@ const textResizeProportionallyCheck = document.getElementById("textResizeProport
 const textRotateInput = document.getElementById("textRotateInput");
 const textPropertySizeLabel = document.getElementById("textPropertySizeLabel");
 
-const colours = [
+const FALLBACK_COLOURS = [
   ["White", "#ffffff"],
   ["Black", "#1d2327"],
   ["Navy", "#24153b"],
@@ -109,6 +161,604 @@ const colours = [
   ["Purple", "#a64b93"],
   ["Cream", "#efd8a9"]
 ];
+
+let colours = [...FALLBACK_COLOURS];
+let colourImageByName = new Map();
+const API_BASE_URL = "https://api.brandeduk.com/api";
+
+const LOGO_METHOD_UNIT_PRICES = {
+  print: 3.50,
+  embroidery: 5.00,
+  dtf: 3.95,
+  screen: 2.95,
+  vinyl: 3.50,
+  logo: 3.50
+};
+
+const BRAND_LOGO_MAP = {
+  "gildan": "gildan2020.webp",
+  "fruit of the loom": "fruit-of-the-loom.jpg",
+  "awdis": "awdis.webp",
+  "beechfield": "beechfield.jpeg",
+  "bagbase": "bagbase.jpeg",
+  "russell": "russell.webp",
+  "russell europe": "russell.webp",
+  "kustom kit": "kustom-kit2020.webp",
+  "regatta professional": "regatta-professional2020.webp",
+  "portwest": "portwest.webp"
+};
+
+function isUsableHex(hex) {
+  if (!hex) return false;
+  return /^#[0-9A-Fa-f]{6}$/.test(String(hex).trim());
+}
+
+const cssColorHexCache = new Map();
+
+function toHexComponent(value) {
+  const n = Math.max(0, Math.min(255, Number(value) || 0));
+  return n.toString(16).padStart(2, "0");
+}
+
+function rgbToHex(r, g, b) {
+  return `#${toHexComponent(r)}${toHexComponent(g)}${toHexComponent(b)}`;
+}
+
+function hslToHex(h, s, l) {
+  const hue = ((Number(h) % 360) + 360) % 360;
+  const sat = Math.max(0, Math.min(100, Number(s) || 0)) / 100;
+  const light = Math.max(0, Math.min(100, Number(l) || 0)) / 100;
+
+  const c = (1 - Math.abs(2 * light - 1)) * sat;
+  const x = c * (1 - Math.abs((hue / 60) % 2 - 1));
+  const m = light - c / 2;
+  let r1 = 0;
+  let g1 = 0;
+  let b1 = 0;
+
+  if (hue < 60) [r1, g1, b1] = [c, x, 0];
+  else if (hue < 120) [r1, g1, b1] = [x, c, 0];
+  else if (hue < 180) [r1, g1, b1] = [0, c, x];
+  else if (hue < 240) [r1, g1, b1] = [0, x, c];
+  else if (hue < 300) [r1, g1, b1] = [x, 0, c];
+  else [r1, g1, b1] = [c, 0, x];
+
+  return rgbToHex(
+    Math.round((r1 + m) * 255),
+    Math.round((g1 + m) * 255),
+    Math.round((b1 + m) * 255)
+  );
+}
+
+function parseRgbLike(value) {
+  const match = String(value || "").trim().match(/^rgba?\(([^)]+)\)$/i);
+  if (!match) return "";
+
+  const parts = match[1].split(",").map((part) => part.trim());
+  if (parts.length < 3) return "";
+
+  const nums = parts.slice(0, 3).map((part) => {
+    if (part.endsWith("%")) {
+      const pct = parseFloat(part);
+      if (Number.isNaN(pct)) return NaN;
+      return Math.round((pct / 100) * 255);
+    }
+    const n = parseFloat(part);
+    return Number.isNaN(n) ? NaN : n;
+  });
+
+  if (nums.some((n) => Number.isNaN(n))) return "";
+  return rgbToHex(nums[0], nums[1], nums[2]);
+}
+
+function parseHslLike(value) {
+  const match = String(value || "").trim().match(/^hsla?\(([^)]+)\)$/i);
+  if (!match) return "";
+
+  const parts = match[1].split(",").map((part) => part.trim());
+  if (parts.length < 3) return "";
+
+  const h = parseFloat(parts[0]);
+  const s = parseFloat(parts[1]);
+  const l = parseFloat(parts[2]);
+  if ([h, s, l].some((n) => Number.isNaN(n))) return "";
+
+  return hslToHex(h, s, l);
+}
+
+function parseCssColorToHex(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (cssColorHexCache.has(raw)) return cssColorHexCache.get(raw);
+
+  const probe = document.createElement("span");
+  probe.style.color = "";
+  probe.style.color = raw;
+  if (!probe.style.color) {
+    cssColorHexCache.set(raw, "");
+    return "";
+  }
+
+  document.body.appendChild(probe);
+  const resolved = window.getComputedStyle(probe).color || "";
+  probe.remove();
+
+  const parsed = parseRgbLike(resolved) || "";
+  cssColorHexCache.set(raw, parsed);
+  return parsed;
+}
+
+function normalizeHex(hex) {
+  if (!hex) return "";
+  const value = String(hex).trim();
+  if (!value) return "";
+
+  const shortHexMatch = value.match(/^#?([0-9A-Fa-f]{3})$/);
+  if (shortHexMatch) {
+    const [r, g, b] = shortHexMatch[1].split("");
+    return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+  }
+
+  let maybeHex = value;
+  if (!maybeHex.startsWith("#") && /^[0-9A-Fa-f]{6}$/.test(maybeHex)) {
+    maybeHex = `#${maybeHex}`;
+  }
+  if (isUsableHex(maybeHex)) return maybeHex.toLowerCase();
+
+  const rgbHex = parseRgbLike(value);
+  if (rgbHex) return rgbHex.toLowerCase();
+
+  const hslHex = parseHslLike(value);
+  if (hslHex) return hslHex.toLowerCase();
+
+  const cssHex = parseCssColorToHex(value);
+  return cssHex ? cssHex.toLowerCase() : "";
+}
+
+function normalizeBrandName(value) {
+  return String(value || "")
+    .replace(/[®™]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeColorKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[®™*]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const COLOR_NAME_HEX_HINTS = {
+  "model": "#d9dde3",
+  "ash": "#c5c8cd",
+  "black": "#111111",
+  "blue dusk": "#4f6586",
+  "cardinal red": "#a02134",
+  "carolina blue": "#7aa4d8",
+  "charcoal": "#44474c",
+  "cherry red": "#b32636",
+  "daisy": "#f2d338",
+  "dark chocolate": "#4a3128",
+  "dark heather": "#575b63",
+  "forest": "#1f5c37",
+  "gold": "#e3b12e",
+  "heather navy": "#2d3c56",
+  "heliconia": "#cf3f82",
+  "ice grey": "#d5d8dd",
+  "indigo blue": "#365f8e",
+  "jade dome": "#0f8a71",
+  "light blue": "#9dc0e8",
+  "light pink": "#efbfd0",
+  "lime": "#8ecf4c",
+  "mint green": "#98d8b3",
+  "maroon": "#6b1f30",
+  "military green": "#4d5a43",
+  "natural": "#f1ead8",
+  "navy": "#1f2f4f",
+  "olive": "#5f6741",
+  "orange": "#de6a24",
+  "orchid": "#ae78b7",
+  "prairie dust": "#d6c5a7",
+  "purple": "#4a3f8e",
+  "red": "#c02b33",
+  "royal": "#1f4fa8",
+  "safety green": "#b7d43a",
+  "safety orange": "#ef7f28",
+  "sand": "#d8c5a3",
+  "sapphire": "#1360a8",
+  "sky": "#8fb8d8",
+  "sport grey": "#b5b8be",
+  "stone blue": "#70879e",
+  "tan": "#c8ad83",
+  "texas orange": "#c45b23",
+  "white": "#ffffff"
+};
+
+function resolveBrandLogoUrl(brandName, productData) {
+  const explicitLogo = productData?.brandLogo || productData?.brand_logo || productData?.logo || "";
+  if (explicitLogo) return explicitLogo;
+
+  const normalized = normalizeBrandName(brandName).toLowerCase();
+  if (!normalized) return "";
+
+  const fileName = BRAND_LOGO_MAP[normalized] || BRAND_LOGO_MAP[normalized.replace(/&/g, "and")];
+  return fileName ? `../brandedukv15-child/assets/images/brands/${fileName}` : "";
+}
+
+function findFallbackHexByName(name) {
+  const key = normalizeColorKey(name);
+  if (COLOR_NAME_HEX_HINTS[key]) return COLOR_NAME_HEX_HINTS[key];
+
+  const lower = String(name || "").toLowerCase();
+  const match = FALLBACK_COLOURS.find(([fallbackName]) => normalizeColorKey(fallbackName) === key || fallbackName.toLowerCase() === lower);
+  return match ? match[1] : "";
+}
+
+const sampledColourHexCache = new Map();
+
+function getVariantImageUrl(entry) {
+  return String(entry?.main || entry?.image || entry?.thumb || entry?.thumbnail || "").trim();
+}
+
+function rgbToHsl(r, g, b) {
+  const rn = (Number(r) || 0) / 255;
+  const gn = (Number(g) || 0) / 255;
+  const bn = (Number(b) || 0) / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const delta = max - min;
+
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1));
+    if (max === rn) h = ((gn - bn) / delta) % 6;
+    else if (max === gn) h = (bn - rn) / delta + 2;
+    else h = (rn - gn) / delta + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+
+  return {
+    h,
+    s: s * 100,
+    l: l * 100
+  };
+}
+
+async function sampleHexFromImage(url) {
+  const source = String(url || "").trim();
+  if (!source) return "";
+  if (sampledColourHexCache.has(source)) return sampledColourHexCache.get(source);
+
+  const task = new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+      try {
+        const sampleSize = 24;
+        const canvas = document.createElement("canvas");
+        canvas.width = sampleSize;
+        canvas.height = sampleSize;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) {
+          resolve("");
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
+        const { data } = ctx.getImageData(0, 0, sampleSize, sampleSize);
+
+        let sumR = 0;
+        let sumG = 0;
+        let sumB = 0;
+        let weightTotal = 0;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          if (a < 140) continue;
+
+          const { s, l } = rgbToHsl(r, g, b);
+          if (l < 6 || l > 95) continue;
+
+          const satWeight = 0.45 + Math.min(1, s / 100);
+          const lightWeight = l > 82 ? 0.5 : 1;
+          const weight = satWeight * lightWeight;
+
+          sumR += r * weight;
+          sumG += g * weight;
+          sumB += b * weight;
+          weightTotal += weight;
+        }
+
+        if (weightTotal <= 0) {
+          resolve("");
+          return;
+        }
+
+        const avgR = Math.round(sumR / weightTotal);
+        const avgG = Math.round(sumG / weightTotal);
+        const avgB = Math.round(sumB / weightTotal);
+        resolve(rgbToHex(avgR, avgG, avgB));
+      } catch (error) {
+        resolve("");
+      }
+    };
+
+    img.onerror = () => resolve("");
+    img.src = source;
+  }).then((hex) => normalizeHex(hex));
+
+  sampledColourHexCache.set(source, task);
+  return task;
+}
+
+async function refineSwatchesFromVariantImages(productData, productCode) {
+  const source = productData?.colors || productData?.colorOptions || productData?.variants || [];
+  if (!Array.isArray(source) || source.length === 0) return false;
+
+  const byName = new Map();
+  for (const entry of source) {
+    const name = String(entry?.name || entry?.displayName || entry?.label || entry?.id || "").trim();
+    if (!name) continue;
+    byName.set(normalizeColorKey(name), entry);
+  }
+
+  if (byName.size === 0 || !Array.isArray(colours) || colours.length === 0) return false;
+
+  let changed = false;
+  const nextColours = [];
+
+  for (const [name, currentHex] of colours) {
+    const entry = byName.get(normalizeColorKey(name));
+    const imageUrl = getVariantImageUrl(entry);
+    const sampledHex = imageUrl ? await sampleHexFromImage(imageUrl) : "";
+    const directHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
+    const lookupHex = window.BrandedColorHex && typeof window.BrandedColorHex.lookup === "function"
+      ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, imageUrl))
+      : "";
+    const fallbackHex = findFallbackHexByName(name);
+
+    const nextHex = sampledHex || directHex || lookupHex || fallbackHex || normalizeHex(currentHex) || "#d1d5db";
+    if (normalizeHex(nextHex) !== normalizeHex(currentHex)) changed = true;
+    nextColours.push([name, nextHex]);
+  }
+
+  if (changed) {
+    colours = nextColours;
+  }
+  return changed;
+}
+
+function normalizeProductColours(productData, productCode) {
+  const source = productData?.colors || productData?.colorOptions || productData?.variants || [];
+  if (!Array.isArray(source) || source.length === 0) return [];
+
+  return source.map((entry) => {
+    const name = String(entry?.name || entry?.displayName || entry?.label || entry?.id || "").trim();
+    if (!name) return null;
+
+    const directHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
+    const nameHintHex = findFallbackHexByName(name);
+    const resolvedHex = directHex
+      || nameHintHex
+      || (window.BrandedColorHex && typeof window.BrandedColorHex.lookup === "function"
+        ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, getVariantImageUrl(entry)))
+        : "")
+      || "#d1d5db";
+
+    return [name, resolvedHex];
+  }).filter(Boolean);
+}
+
+function setColourLoading(isLoading) {
+  if (colourGrid) {
+    colourGrid.classList.toggle("is-loading", !!isLoading);
+  }
+  const miniRow = document.getElementById("miniColourRow");
+  if (miniRow) {
+    miniRow.classList.toggle("is-loading", !!isLoading);
+  }
+}
+
+function buildColourImageMap(productData) {
+  const source = productData?.colors || productData?.colorOptions || productData?.variants || [];
+  const map = new Map();
+  if (!Array.isArray(source)) return map;
+
+  source.forEach((entry) => {
+    const name = String(entry?.name || entry?.displayName || entry?.label || entry?.id || "").trim();
+    if (!name) return;
+
+    const image = String(entry?.main || entry?.image || entry?.thumb || entry?.thumbnail || "").trim();
+    if (!image) return;
+
+    map.set(normalizeColorKey(name), image);
+  });
+
+  return map;
+}
+
+function getColourImageForName(name) {
+  return colourImageByName.get(normalizeColorKey(name)) || "";
+}
+
+function normalizeDecorationMethod(method) {
+  const normalized = String(method || "").trim().toLowerCase();
+  if (normalized === "embroidery" || normalized === "print" || normalized === "dtf" || normalized === "screen" || normalized === "vinyl") {
+    return normalized;
+  }
+  return "print";
+}
+
+function getLogoUnitPrice(method) {
+  return LOGO_METHOD_UNIT_PRICES[normalizeDecorationMethod(method)] || LOGO_METHOD_UNIT_PRICES.print;
+}
+
+function applyProductHeaderUI() {
+  const modelEl = document.getElementById("cibModelName");
+  const codeEl = document.getElementById("cibCode");
+  if (modelEl) modelEl.textContent = state.productName || "Product";
+  if (codeEl) codeEl.textContent = state.productCode || "SKU-2024";
+  if (productPageTitle) productPageTitle.textContent = `Custom ${state.productName || "Product"}`;
+
+  if (phBrandText) {
+    phBrandText.textContent = state.brandName || "BRANDED";
+  }
+
+  if (phBrandLogo) {
+    if (state.brandLogo) {
+      phBrandLogo.src = state.brandLogo;
+      phBrandLogo.alt = state.brandName ? `${state.brandName} logo` : "Brand logo";
+      phBrandLogo.style.display = "inline-block";
+    } else {
+      phBrandLogo.src = "";
+      phBrandLogo.style.display = "none";
+    }
+  }
+}
+
+function applySelectedProductContext() {
+  let selectedProductData = null;
+  try {
+    selectedProductData = JSON.parse(sessionStorage.getItem("selectedProductData") || "null");
+  } catch (error) {
+    selectedProductData = null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const urlCode = String(params.get("code") || "").trim();
+
+  if (!selectedProductData && urlCode) {
+    try {
+      const basket = JSON.parse(localStorage.getItem("quoteBasket") || "[]");
+      const matched = Array.isArray(basket)
+        ? basket.find((item) => String(item?.productCode || item?.code || "").trim() === urlCode)
+        : null;
+
+      if (matched) {
+        selectedProductData = {
+          code: matched.productCode || matched.code,
+          name: matched.productName || matched.name,
+          brand: matched.brand || "",
+          brandLogo: matched.brandLogo || "",
+          color: matched.color || "",
+          colorHex: matched.colorHex || "",
+          colorImage: matched.colorImage || matched.image || "",
+          image: matched.image || matched.colorImage || "",
+          colors: Array.isArray(matched.colorsSnapshot) ? matched.colorsSnapshot : []
+        };
+      }
+    } catch (error) {
+      // no-op
+    }
+  }
+
+  state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
+  state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
+  state.brandName = selectedProductData?.brand || selectedProductData?.brand_name || state.brandName;
+  state.brandLogo = resolveBrandLogoUrl(state.brandName, selectedProductData);
+  state.selectedColorImage = selectedProductData?.colorImage || selectedProductData?.selectedColorImage || selectedProductData?.image || state.selectedColorImage || "";
+
+  colourImageByName = buildColourImageMap(selectedProductData);
+
+  const productColours = normalizeProductColours(selectedProductData, state.productCode);
+  colours = productColours.length > 0 ? productColours : [...FALLBACK_COLOURS];
+  updateAvailableColoursLabel();
+
+  const selectedFromSession = String(
+    selectedProductData?.color
+    || selectedProductData?.selectedColorName
+    || sessionStorage.getItem("selectedColorName")
+    || ""
+  ).trim();
+  const selectedFromSessionKey = normalizeColorKey(selectedFromSession);
+  const colorMatch = colours.find(([name]) => normalizeColorKey(name) === selectedFromSessionKey);
+  const firstColour = colours[0] || ["White", "#ffffff"];
+  const activeColour = colorMatch || (selectedFromSession ? [selectedFromSession, ""] : firstColour);
+
+  state.colourName = activeColour[0];
+  state.colourHex = normalizeHex(
+    selectedProductData?.colorHex
+    || selectedProductData?.selectedColorHex
+    || sessionStorage.getItem("selectedColorHex")
+    || ""
+  ) || activeColour[1] || firstColour[1];
+  const mappedColourImage = getColourImageForName(state.colourName);
+  if (mappedColourImage) {
+    state.selectedColorImage = mappedColourImage;
+  }
+  colourLayer.style.backgroundColor = state.colourHex;
+  updateSelectedColourLabels(state.colourName);
+  syncViewThumbTint();
+
+  applyProductHeaderUI();
+}
+
+async function hydrateSelectedProductFromApi() {
+  const productCode = String(state.productCode || "").trim();
+  if (!productCode) return;
+
+  setColourLoading(true);
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
+    if (!response.ok) return;
+
+    const productData = await response.json();
+    if (!productData || typeof productData !== "object") return;
+
+    state.productName = productData.name || productData.title || state.productName;
+    state.brandName = productData.brand || productData.brand_name || state.brandName;
+    state.brandLogo = resolveBrandLogoUrl(state.brandName, productData);
+
+    colourImageByName = buildColourImageMap(productData);
+    const dynamicColours = normalizeProductColours(productData, productCode);
+    if (dynamicColours.length > 0) {
+      colours = dynamicColours;
+      updateAvailableColoursLabel();
+      const incomingName = String(state.colourName || sessionStorage.getItem("selectedColorName") || "").trim();
+      const currentMatch = colours.find(([name]) => normalizeColorKey(name) === normalizeColorKey(incomingName));
+      const activeColour = currentMatch || (incomingName ? [incomingName, ""] : colours[0]);
+      state.colourName = activeColour[0];
+      state.colourHex = normalizeHex(state.colourHex) || activeColour[1];
+      const mappedColourImage = getColourImageForName(state.colourName);
+      if (mappedColourImage) {
+        state.selectedColorImage = mappedColourImage;
+      }
+      colourLayer.style.backgroundColor = state.colourHex;
+      updateSelectedColourLabels(state.colourName);
+      syncViewThumbTint();
+    }
+    updateAvailableColoursLabel();
+
+    applyProductHeaderUI();
+    renderColours();
+    renderMiniColours();
+
+    const refined = await refineSwatchesFromVariantImages(productData, productCode);
+    if (refined) {
+      renderColours();
+      renderMiniColours();
+    }
+  } catch (error) {
+    // keep session/fallback product data when API is unavailable
+  } finally {
+    setColourLoading(false);
+  }
+}
+
+function updateConfirmButtonState() {
+  if (!confirmQualityBtn) return;
+  confirmQualityBtn.disabled = !(state.uploadedLogo && state.copyrightConfirmed);
+}
 
 const BASE_FONT_OPTIONS = [
   { name: "Arial", cssFamily: "Arial, Helvetica, sans-serif" },
@@ -240,6 +890,17 @@ loadCustomFontsFromFolder().finally(() => {
 });
 
 function openScreen(screenId) {
+  if (screenId === "locationsPage") {
+    showPositionPickerModal({
+      title: "Pick your new position",
+      subtitle: "",
+      restrictToRemaining: !!state.uploadedLogo,
+      onPick: () => openScreen("mainEditor"),
+      onCancel: () => openScreen("mainEditor")
+    });
+    return;
+  }
+
   screens.forEach(screen => screen.classList.remove("active-screen"));
   document.getElementById(screenId).classList.add("active-screen");
   if (screenId === "textEditorPage") {
@@ -311,6 +972,7 @@ function updateVisibilityByPrintArea(layer) {
 }
 
 function renderColours() {
+  updateAvailableColoursLabel();
   colourGrid.innerHTML = "";
 
   colours.forEach(([name, hex]) => {
@@ -324,8 +986,10 @@ function renderColours() {
     swatch.addEventListener("click", () => {
       state.colourName = name;
       state.colourHex = hex;
-      selectedColourName.textContent = name;
+      state.selectedColorImage = getColourImageForName(name) || "";
+      updateSelectedColourLabels(name);
       colourLayer.style.backgroundColor = hex;
+      syncViewThumbTint();
 
       document.querySelectorAll(".colour-swatch").forEach(item => item.classList.remove("selected"));
       swatch.classList.add("selected");
@@ -336,21 +1000,62 @@ function renderColours() {
 }
 
 const tshirtImages = {
-  front: "https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png",
+  front: "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png",
   back:  "https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png",
   "left-sleeve": "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
+  "right-sleeve": "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
   right: "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
   left:  "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png"
 };
 
 const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png";
 
+const garmentImageLoadCache = new Map();
+let areaRenderRequestId = 0;
+
+function ensureGarmentImageLoaded(url) {
+  if (!url) return Promise.resolve(false);
+  if (garmentImageLoadCache.has(url)) return garmentImageLoadCache.get(url);
+
+  const loadPromise = new Promise((resolve) => {
+    const img = new Image();
+    let settled = false;
+
+    const done = (ok) => {
+      if (settled) return;
+      settled = true;
+      resolve(ok);
+    };
+
+    img.onload = () => done(true);
+    img.onerror = () => done(false);
+    img.src = url;
+
+    if (img.complete && img.naturalWidth > 0) {
+      done(true);
+    }
+  });
+
+  garmentImageLoadCache.set(url, loadPromise);
+  return loadPromise;
+}
+
+// Preload active garment images so area switches do not flash old assets.
+(function preloadTshirtImages() {
+  const urls = new Set([...Object.values(tshirtImages), tshirtFrontCustomImage]);
+  urls.forEach((url) => {
+    ensureGarmentImageLoaded(url);
+  });
+})();
+
 function getFrontThumbImageSrc() {
   if (state.product === "tshirt") return tshirtFrontCustomImage;
   return tshirtImages.front;
 }
 
-function applyArea() {
+async function applyArea() {
+  const requestId = ++areaRenderRequestId;
+
   productPreview.className = "product-preview";
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
@@ -367,24 +1072,38 @@ function applyArea() {
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
 
+  if (wrapEl) {
+    wrapEl.classList.add("is-switching-area");
+  }
+
+  await ensureGarmentImageLoaded(imgSrc);
+  if (requestId !== areaRenderRequestId) return;
+
   productShapeEl.src = imgSrc;
 
   // Keep the colour tint mask aligned with the active garment PNG for every view.
   colourLayerEl.style.webkitMaskImage = `url("${imgSrc}")`;
   colourLayerEl.style.maskImage = `url("${imgSrc}")`;
-  colourLayerEl.style.webkitMaskSize = "100% 100%";
-  colourLayerEl.style.maskSize = "100% 100%";
+  colourLayerEl.style.webkitMaskSize = "contain";
+  colourLayerEl.style.maskSize = "contain";
   colourLayerEl.style.webkitMaskRepeat = "no-repeat";
   colourLayerEl.style.maskRepeat = "no-repeat";
-  colourLayerEl.style.webkitMaskPosition = "center";
-  colourLayerEl.style.maskPosition = "center";
+  colourLayerEl.style.webkitMaskPosition = "center center";
+  colourLayerEl.style.maskPosition = "center center";
+  syncViewThumbTint();
 
   // Size T-shirt views via layout width so the canvas collapses to the visible garment height.
   const tshirtWidth = (state.selectedArea === "left" || state.selectedArea === "right") ? "56%" : "86%";
   wrapEl.style.setProperty("--wrap-width", state.product === "tshirt" ? tshirtWidth : "100%");
   wrapEl.style.setProperty("--wrap-mirror", state.selectedArea === "right" ? "-1" : "1");
 
+  requestAnimationFrame(() => {
+    if (requestId !== areaRenderRequestId) return;
+    wrapEl?.classList.remove("is-switching-area");
+  });
+
   setTimeout(() => {
+    if (requestId !== areaRenderRequestId) return;
     if (state.uploadedLogo) centerLogo();
     if (state.text) centerText();
   }, 0);
@@ -526,7 +1245,37 @@ function buildBasketItemFromState() {
   });
 
   const unitPrice = state.totalQty > 0 ? state.price / state.totalQty : state.basePrice;
-  const productCode = new URLSearchParams(window.location.search).get("code") || "GD067";
+  const productCode = state.productCode || new URLSearchParams(window.location.search).get("code") || "GD067";
+  const logoQualityPct = parseInt((document.getElementById("mainQualityPct")?.textContent || "0").replace(/[^0-9]/g, ""), 10) || 0;
+  const logoMethod = normalizeDecorationMethod(state.decorationType);
+  const logoUnitPrice = getLogoUnitPrice(logoMethod);
+  const logos = state.uploadedLogo ? [{
+    type: "logo",
+    method: logoMethod,
+    area: state.selectedArea,
+    position: state.selectedArea,
+    logo: state.uploadedLogo,
+    image: state.uploadedLogo,
+    unitPrice: logoUnitPrice,
+    qualityPct: logoQualityPct
+  }] : [];
+  const legacyPositions = state.uploadedLogo ? [{
+    position: state.selectedArea,
+    name: state.selectedArea,
+    method: logoMethod,
+    logo: state.uploadedLogo,
+    unitPrice: logoUnitPrice
+  }] : [{ area: state.selectedArea, method: logoMethod }];
+  const legacyPositionDesigns = state.uploadedLogo ? {
+    [state.selectedArea]: {
+      position: state.selectedArea,
+      method: logoMethod,
+      logo: state.uploadedLogo,
+      unitPrice: logoUnitPrice
+    }
+  } : {};
+
+  const basketColorImage = state.selectedColorImage || productShape.currentSrc || productShape.src || "";
 
   return {
     id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -534,16 +1283,87 @@ function buildBasketItemFromState() {
     productCode,
     name: state.productName,
     productName: state.productName,
+    brand: state.brandName || "",
+    brandLogo: state.brandLogo || "",
+    colorsSnapshot: colours.map(([name, hex]) => ({ name, hex })),
     color: state.colourName,
-    colorImage: productShape.currentSrc || productShape.src || "",
-    image: productShape.currentSrc || productShape.src || "",
+    colorHex: state.colourHex,
+    colorImage: basketColorImage,
+    image: basketColorImage,
     quantities,
     totalQty: state.totalQty,
     unitPrice: parseFloat(unitPrice.toFixed(2)),
-    positions: [],
-    positionDesigns: {},
-    logos: []
+    positions: legacyPositions,
+    positionDesigns: legacyPositionDesigns,
+    logos
   };
+}
+
+function isNeutralToolMockupImage(url) {
+  const source = String(url || "").trim();
+  if (!source) return true;
+
+  return Object.values(tshirtImages).some((imgUrl) => source.includes(imgUrl)) || source.includes(tshirtFrontCustomImage);
+}
+
+function upsertBasketItemFromState() {
+  collectSizes();
+  if (state.totalQty < 1) state.totalQty = 1;
+  calculatePrice();
+
+  const routeParams = new URLSearchParams(window.location.search);
+  const isBasketLogoFlow = String(routeParams.get("from") || "").toLowerCase() === "basket" && routeParams.get("logoOnly") === "1";
+
+  const basket = readQuoteBasket();
+  const nextItem = buildBasketItemFromState();
+
+  const matchIndex = basket.findIndex((item) => {
+    const sameCode = String(item?.productCode || item?.code || "") === String(nextItem.productCode);
+    const sameColor = String(item?.color || "").toLowerCase() === String(nextItem.color || "").toLowerCase();
+    return sameCode && sameColor;
+  });
+
+  if (matchIndex >= 0) {
+    const previousId = basket[matchIndex].id;
+    const prevItem = basket[matchIndex] || {};
+    const previousPreview = prevItem.colorImage || prevItem.image || "";
+    const nextLooksNeutral = isNeutralToolMockupImage(nextItem.colorImage || nextItem.image || "");
+    const mergedLogos = isBasketLogoFlow && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
+      ? [...(Array.isArray(prevItem.logos) ? prevItem.logos : []), ...nextItem.logos]
+      : nextItem.logos;
+
+    basket[matchIndex] = {
+      ...prevItem,
+      ...nextItem,
+      logos: mergedLogos,
+      colorImage: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.colorImage || previousPreview || ""),
+      image: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.image || previousPreview || ""),
+      id: previousId
+    };
+  } else {
+    basket.push(nextItem);
+  }
+
+  writeQuoteBasket(basket);
+  updateBasketUIFromStorage();
+
+  const frame = document.getElementById("toolBasketFrame");
+  if (frame?.contentWindow) {
+    try {
+      frame.contentWindow.postMessage({
+        type: "customizer:commit",
+        productCode: nextItem.productCode,
+        color: nextItem.color,
+        colorHex: nextItem.colorHex,
+        colorImage: nextItem.colorImage,
+        logos: nextItem.logos
+      }, "*");
+    } catch (error) {
+      // no-op
+    }
+  }
+
+  return nextItem;
 }
 
 document.getElementById("changeProductBtn").addEventListener("click", () => {
@@ -554,9 +1374,7 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 productSelect.addEventListener("change", () => {
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
-  productPageTitle.textContent = `Custom ${state.productName}`;
-  const cibModel = document.getElementById("cibModelName");
-  if (cibModel) cibModel.textContent = state.productName;
+  applyProductHeaderUI();
 });
 
 document.getElementById("addSizeBtn").addEventListener("click", () => {
@@ -965,6 +1783,250 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
   });
 });
 
+function maybeHandleBasketLogoChoice() {
+  const params = new URLSearchParams(window.location.search);
+  const fromBasket = String(params.get("from") || "").toLowerCase() === "basket";
+  const wantsChoice = params.get("askLogoChoice") === "1" || sessionStorage.getItem("toolAskLogoChoice") === "1";
+  if (!fromBasket || !wantsChoice) return;
+
+  let reusableLogos = [];
+  try {
+    const parsed = JSON.parse(sessionStorage.getItem("toolReusableLogos") || "[]");
+    reusableLogos = Array.isArray(parsed) ? parsed.filter((logo) => !!(logo && logo.logo)) : [];
+  } catch (error) {
+    reusableLogos = [];
+  }
+
+  sessionStorage.removeItem("toolAskLogoChoice");
+  if (params.get("askLogoChoice") === "1") {
+    params.delete("askLogoChoice");
+    const nextQuery = params.toString();
+    const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash || ""}`;
+    window.history.replaceState({}, "", nextUrl);
+  }
+
+  if (reusableLogos.length === 0) {
+    showPositionPickerModal({
+      title: "Pick your new position",
+      subtitle: "Choose where to place your new logo",
+      restrictToRemaining: true,
+      onPick: () => {
+        clearLogo();
+        openScreen("designTypePage");
+      }
+    });
+    return;
+  }
+
+  const existing = document.getElementById("basketLogoChoiceOverlay");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "basketLogoChoiceOverlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+  const panel = document.createElement("div");
+  panel.style.cssText = "width:min(92vw,420px);background:#fff;border-radius:16px;box-shadow:0 16px 36px rgba(2,8,23,.22);padding:18px 16px;";
+
+  panel.innerHTML = `
+    <h3 style="margin:0 0 8px;font-size:18px;line-height:1.2;color:#0f172a;">Add Another Logo</h3>
+    <p style="margin:0 0 14px;font-size:14px;line-height:1.45;color:#334155;">Choose one option:</p>
+    <button id="choiceUseSameLogo" type="button" style="display:block;width:100%;margin:0 0 10px;padding:12px 14px;border-radius:10px;border:1px solid #0f172a;background:#0f172a;color:#fff;font-weight:700;cursor:pointer;">Use same logo</button>
+    <button id="choiceAddNewLogo" type="button" style="display:block;width:100%;margin:0 0 10px;padding:12px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;">Add new logo</button>
+    <button id="choiceCancelLogo" type="button" style="display:block;width:100%;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-weight:600;cursor:pointer;">Cancel</button>
+  `;
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  const closeChoice = () => {
+    overlay.remove();
+  };
+
+  const useSameBtn = panel.querySelector("#choiceUseSameLogo");
+  const addNewBtn = panel.querySelector("#choiceAddNewLogo");
+  const cancelBtn = panel.querySelector("#choiceCancelLogo");
+
+  if (useSameBtn) {
+    useSameBtn.addEventListener("click", () => {
+      const selected = reusableLogos[0];
+      closeChoice();
+      showPositionPickerModal({
+        title: "Pick your new position",
+        subtitle: "Select one of the remaining positions",
+        restrictToRemaining: true,
+        onPick: () => {
+          state.decorationType = selected.method || state.decorationType || "logo";
+          state.copyrightConfirmed = true;
+          showLogoOnCanvas(selected.logo);
+          updateConfirmButtonState();
+          openScreen("mainEditor");
+        }
+      });
+    });
+  }
+
+  if (addNewBtn) {
+    addNewBtn.addEventListener("click", () => {
+      closeChoice();
+      showPositionPickerModal({
+        title: "Pick your new position",
+        subtitle: "Then upload your new logo",
+        restrictToRemaining: true,
+        onPick: () => {
+          clearLogo();
+          openScreen("designTypePage");
+        }
+      });
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      closeChoice();
+    });
+  }
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeChoice();
+  });
+}
+
+function normalizeAreaForPicker(area) {
+  const raw = String(area || "").toLowerCase().trim();
+  if (!raw) return "";
+  if (raw.includes("front")) return "front";
+  if (raw.includes("back")) return "back";
+  if (raw.includes("left")) return "left";
+  if (raw.includes("right")) return "right";
+  return raw;
+}
+
+function areaLabelForPicker(area) {
+  const normalized = normalizeAreaForPicker(area);
+  if (normalized === "front") return "Front";
+  if (normalized === "back") return "Back";
+  if (normalized === "left") return "Left";
+  if (normalized === "right") return "Right";
+  return "Front";
+}
+
+function getPickerAreas() {
+  const areas = [];
+  document.querySelectorAll(".view-tab[data-area]").forEach((btn) => {
+    const normalized = normalizeAreaForPicker(btn.dataset.area);
+    if (normalized && !areas.includes(normalized)) {
+      areas.push(normalized);
+    }
+  });
+  if (areas.length === 0) return ["front", "back", "left", "right"];
+  return areas;
+}
+
+function getUsedLogoAreasForCurrentProduct() {
+  const used = new Set();
+  const code = String(state.productCode || "").trim().toLowerCase();
+  const color = String(state.colourName || "").trim().toLowerCase();
+  if (!code) return used;
+
+  const basket = readQuoteBasket();
+  basket.forEach((item) => {
+    const itemCode = String(item?.productCode || item?.code || "").trim().toLowerCase();
+    const itemColor = String(item?.color || "").trim().toLowerCase();
+    if (itemCode !== code || itemColor !== color) return;
+
+    const logos = Array.isArray(item?.logos) ? item.logos : [];
+    logos.forEach((logo) => {
+      const area = normalizeAreaForPicker(logo?.position || logo?.area);
+      if (area) used.add(area);
+    });
+  });
+
+  return used;
+}
+
+function setSelectedAreaFromPicker(area) {
+  const normalized = normalizeAreaForPicker(area) || "front";
+  state.selectedArea = normalized;
+
+  document.querySelectorAll(".view-tab").forEach((btn) => {
+    const isActive = normalizeAreaForPicker(btn.dataset.area) === normalized;
+    btn.classList.toggle("active-view", isActive);
+  });
+
+  const viewLabel = document.getElementById("viewNameLabel");
+  if (viewLabel) viewLabel.textContent = normalized.toUpperCase();
+
+  applyArea();
+}
+
+function showPositionPickerModal(options = {}) {
+  const {
+    title = "Pick your new position",
+    subtitle = "",
+    restrictToRemaining = false,
+    onPick,
+    onCancel
+  } = options;
+
+  const existing = document.getElementById("toolPositionPickerOverlay");
+  if (existing) existing.remove();
+
+  const allAreas = getPickerAreas();
+  const usedAreas = getUsedLogoAreasForCurrentProduct();
+  let choices = restrictToRemaining
+    ? allAreas.filter((area) => !usedAreas.has(area))
+    : [...allAreas];
+
+  if (choices.length === 0) choices = [...allAreas];
+
+  const overlay = document.createElement("div");
+  overlay.id = "toolPositionPickerOverlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+  const panel = document.createElement("div");
+  panel.style.cssText = "width:min(94vw,520px);background:#fff;border-radius:16px;box-shadow:0 16px 36px rgba(2,8,23,.22);padding:16px;";
+
+  const subtitleHtml = subtitle ? `<p style=\"margin:0 0 12px;font-size:13px;line-height:1.4;color:#475569;\">${subtitle}</p>` : "";
+  panel.innerHTML = `
+    <h3 style="margin:0 0 8px;font-size:18px;line-height:1.2;color:#0f172a;">${title}</h3>
+    ${subtitleHtml}
+    <div id="toolPositionPickerChoices" style="display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding-bottom:2px;"></div>
+    <button id="toolPositionPickerCancel" type="button" style="display:block;width:100%;margin-top:12px;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-weight:600;cursor:pointer;">Cancel</button>
+  `;
+
+  const choicesWrap = panel.querySelector("#toolPositionPickerChoices");
+  choices.forEach((area) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = areaLabelForPicker(area);
+    btn.style.cssText = "flex:0 0 auto;padding:10px 14px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;";
+    btn.addEventListener("click", () => {
+      setSelectedAreaFromPicker(area);
+      overlay.remove();
+      if (typeof onPick === "function") onPick(area);
+    });
+    choicesWrap.appendChild(btn);
+  });
+
+  const cancelBtn = panel.querySelector("#toolPositionPickerCancel");
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      overlay.remove();
+      if (typeof onCancel === "function") onCancel();
+    });
+  }
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target !== overlay) return;
+    overlay.remove();
+    if (typeof onCancel === "function") onCancel();
+  });
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
 document.getElementById("logoFileInput").addEventListener("change", event => {
   const file = event.target.files[0];
   if (!file) return;
@@ -974,11 +2036,21 @@ document.getElementById("logoFileInput").addEventListener("change", event => {
   reader.onload = e => {
     state.uploadedLogo = e.target.result;
     state.originalUploadedLogo = e.target.result;
-    // Keep the same immediate upload flow as polo: no full-screen copyright step.
-    state.copyrightConfirmed = true;
-    openScreen("mainEditor");
-    showLogoOnCanvas(state.uploadedLogo);
-    calculatePrice();
+
+    const copyrightPreview = document.getElementById("copyrightImagePreview");
+    if (copyrightPreview) {
+      copyrightPreview.src = state.uploadedLogo;
+    }
+
+    const checkbox = document.getElementById("copyrightCheckbox");
+    if (checkbox) {
+      checkbox.checked = false;
+      checkbox.dispatchEvent(new Event("change"));
+    }
+
+    state.copyrightConfirmed = false;
+    updateConfirmButtonState();
+    openScreen("copyrightPage");
   };
 
   reader.readAsDataURL(file);
@@ -990,10 +2062,20 @@ document.getElementById("continueLogoBtn").addEventListener("click", () => {
     return;
   }
 
-  state.copyrightConfirmed = true;
-  openScreen("mainEditor");
-  showLogoOnCanvas(state.uploadedLogo);
-  calculatePrice();
+  const copyrightPreview = document.getElementById("copyrightImagePreview");
+  if (copyrightPreview) {
+    copyrightPreview.src = state.uploadedLogo;
+  }
+
+  const checkbox = document.getElementById("copyrightCheckbox");
+  if (checkbox) {
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event("change"));
+  }
+
+  state.copyrightConfirmed = false;
+  updateConfirmButtonState();
+  openScreen("copyrightPage");
 });
 
 const copyrightCheckbox = document.getElementById("copyrightCheckbox");
@@ -1010,9 +2092,17 @@ if (copyrightCheckbox && copyrightCheckCard) {
 
 document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   const checkbox = document.getElementById("copyrightCheckbox");
+  const checkCard = document.querySelector(".copyright-check");
 
   if (!checkbox.checked) {
-    alert("Please confirm you own the rights to print this image.");
+    if (checkCard) {
+      checkCard.classList.remove("needs-attention");
+      void checkCard.offsetWidth;
+      checkCard.classList.add("needs-attention");
+      checkCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => checkCard.classList.remove("needs-attention"), 2600);
+    }
+    checkbox.focus({ preventScroll: true });
     return;
   }
 
@@ -1020,6 +2110,7 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   openScreen("mainEditor");
   showLogoOnCanvas(state.uploadedLogo);
   calculatePrice();
+  updateConfirmButtonState();
 });
 
 function showLogoOnCanvas(imageSrc) {
@@ -1189,6 +2280,7 @@ function clearLogo() {
   state.originalUploadedLogo = null;
   state.copyrightConfirmed = false;
   state.logoRotation = 0;
+  updateConfirmButtonState();
 
   // Reset quality bar to 0%
   const mainBarReset = document.getElementById('mainQualityBar');
@@ -1200,6 +2292,27 @@ function clearLogo() {
   if (warningReset) warningReset.style.display = 'none';
 
   calculatePrice();
+}
+
+if (confirmQualityBtn) {
+  confirmQualityBtn.addEventListener("click", () => {
+    if (!state.uploadedLogo) {
+      alert("Please upload your logo before confirming.");
+      return;
+    }
+
+    if (!state.copyrightConfirmed) {
+      alert("Please confirm copyright permission first.");
+      return;
+    }
+
+    upsertBasketItemFromState();
+    const previousText = confirmQualityBtn.textContent;
+    confirmQualityBtn.textContent = "CONFIRMED";
+    setTimeout(() => {
+      confirmQualityBtn.textContent = previousText;
+    }, 1200);
+  });
 }
 
 let logoAction = null;
@@ -2193,12 +3306,17 @@ if (inferredProduct) {
   productSelect.dispatchEvent(new Event("change"));
 }
 
+applySelectedProductContext();
+
 renderColours();
 applyArea();
 calculatePrice();
 updateBasketUIFromStorage();
 setupToolHeaderSearch();
 setupEmbeddedBasket();
+updateConfirmButtonState();
+maybeHandleBasketLogoChoice();
+hydrateSelectedProductFromApi();
 
 /* =====================================================
    REDESIGNED MAIN EDITOR — new interactions
@@ -2206,6 +3324,7 @@ setupEmbeddedBasket();
 
 // Mini colour row (4 swatches + plus)
 function renderMiniColours() {
+  updateAvailableColoursLabel();
   const row = document.getElementById("miniColourRow");
   const dropdown = document.getElementById("colourDropdown");
   if (!row) return;
@@ -2216,8 +3335,10 @@ function renderMiniColours() {
   function selectColour(name, hex) {
     state.colourName = name;
     state.colourHex = hex;
+    state.selectedColorImage = getColourImageForName(name) || "";
     colourLayer.style.backgroundColor = hex;
-    if (typeof selectedColourName !== "undefined") selectedColourName.textContent = name;
+    updateSelectedColourLabels(name);
+    syncViewThumbTint();
     document.querySelectorAll(".mini-swatch").forEach(s => s.classList.remove("selected"));
     document.querySelectorAll(".mini-swatch").forEach(s => {
       if (s.title === name) s.classList.add("selected");
@@ -2327,22 +3448,6 @@ document.getElementById("qtyPlusBtn").addEventListener("click", () => {
 mainQtyInput.addEventListener("input", () => {
   if (qtyDisplay) qtyDisplay.textContent = mainQtyInput.value;
 });
-
-// Tool buttons — Select / Pan
-(function () {
-  const selectBtn = document.getElementById("selectToolBtn");
-  const panBtn    = document.getElementById("panToolBtn");
-  if (!selectBtn || !panBtn) return;
-
-  function activateTool(activeBtn, inactiveBtn) {
-    activeBtn.classList.add("active-tool");
-    inactiveBtn.classList.remove("active-tool");
-    state.activeTool = activeBtn.id === "selectToolBtn" ? "select" : "pan";
-  }
-
-  selectBtn.addEventListener("click", () => activateTool(selectBtn, panBtn));
-  panBtn.addEventListener("click",    () => activateTool(panBtn, selectBtn));
-})();
 
 // Zoom buttons
 let currentZoom = 1;
