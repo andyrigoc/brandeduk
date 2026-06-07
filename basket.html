@@ -1447,7 +1447,19 @@
     // =============================================
 
     // --- State ---
-    let includeVAT = localStorage.getItem('includeVAT') === 'true';
+    function readVatPreference() {
+        const mode = localStorage.getItem('brandeduk-vat-mode');
+        if (mode === 'on') return true;
+        if (mode === 'off') return false;
+        return localStorage.getItem('includeVAT') === 'true';
+    }
+
+    function persistVatPreference(isOn) {
+        localStorage.setItem('includeVAT', isOn ? 'true' : 'false');
+        localStorage.setItem('brandeduk-vat-mode', isOn ? 'on' : 'off');
+    }
+
+    let includeVAT = readVatPreference();
 
     // --- Init ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -1943,15 +1955,45 @@
     // ========================
 
     function initVATToggle() {
-        const toggle = document.getElementById('vatToggle');
-        if (toggle) {
-            toggle.checked = includeVAT;
-            toggle.addEventListener('change', () => {
-                includeVAT = toggle.checked;
-                localStorage.setItem('includeVAT', includeVAT);
-                renderBasket();
+        const sideToggle = document.getElementById('vatToggle');
+        const mobileToggle = document.getElementById('vatToggleCheckbox');
+        const headerToggles = Array.from(document.querySelectorAll('.header-top-vat-toggle'));
+
+        const applyVatUiState = () => {
+            if (sideToggle) sideToggle.checked = includeVAT;
+            if (mobileToggle) mobileToggle.checked = includeVAT;
+            headerToggles.forEach((btn) => {
+                btn.setAttribute('aria-pressed', includeVAT ? 'true' : 'false');
+                btn.classList.toggle('is-on', includeVAT);
+            });
+        };
+
+        const setIncludeVat = (nextValue) => {
+            includeVAT = !!nextValue;
+            persistVatPreference(includeVAT);
+            applyVatUiState();
+            renderBasket();
+        };
+
+        applyVatUiState();
+
+        if (sideToggle) {
+            sideToggle.addEventListener('change', () => {
+                setIncludeVat(sideToggle.checked);
             });
         }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('change', () => {
+                setIncludeVat(mobileToggle.checked);
+            });
+        }
+
+        headerToggles.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                setIncludeVat(!includeVAT);
+            });
+        });
     }
 
     // ========================

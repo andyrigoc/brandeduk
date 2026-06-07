@@ -175,6 +175,10 @@ const LOGO_METHOD_UNIT_PRICES = {
   logo: 3.50
 };
 
+const VAT_STORAGE_KEY = "brandeduk-vat-mode";
+const LEGACY_INCLUDE_VAT_KEY = "includeVAT";
+const VAT_RATE = 0.20;
+
 const BRAND_LOGO_MAP = {
   "gildan": "gildan2020.webp",
   "fruit of the loom": "fruit-of-the-loom.jpg",
@@ -1137,6 +1141,60 @@ function calculatePrice() {
   state.price = qty * unit;
 }
 
+function isVatOn() {
+  try {
+    const mode = localStorage.getItem(VAT_STORAGE_KEY);
+    if (mode === "on") return true;
+    if (mode === "off") return false;
+    return localStorage.getItem(LEGACY_INCLUDE_VAT_KEY) === "true";
+  } catch (error) {
+    return false;
+  }
+}
+
+function persistVatMode(isOn) {
+  try {
+    localStorage.setItem(VAT_STORAGE_KEY, isOn ? "on" : "off");
+    localStorage.setItem(LEGACY_INCLUDE_VAT_KEY, isOn ? "true" : "false");
+  } catch (error) {
+    // no-op
+  }
+}
+
+function toDisplayAmount(exVatAmount) {
+  const safe = Number(exVatAmount) || 0;
+  return isVatOn() ? safe * (1 + VAT_RATE) : safe;
+}
+
+function vatSuffixLabel() {
+  return isVatOn() ? "inc. VAT" : "exc. VAT";
+}
+
+function setupVatToggle() {
+  const checkbox = document.getElementById("vatToggleCheckbox");
+  const container = document.getElementById("vatToggleContainer");
+  if (!checkbox) return;
+
+  const syncUi = () => {
+    const vatOn = isVatOn();
+    checkbox.checked = vatOn;
+    if (container) {
+      container.classList.toggle("is-on", vatOn);
+      container.setAttribute("aria-checked", vatOn ? "true" : "false");
+    }
+  };
+
+  syncUi();
+
+  checkbox.addEventListener("change", () => {
+    persistVatMode(checkbox.checked);
+    syncUi();
+    updateBasketUIFromStorage();
+    calculatePrice();
+    window.dispatchEvent(new CustomEvent("vatToggleChanged", { detail: { vatOn: checkbox.checked } }));
+  });
+}
+
 function readQuoteBasket() {
   try {
     const raw = localStorage.getItem("quoteBasket");
@@ -1187,9 +1245,10 @@ function getBasketTotals(basket) {
 function updateBasketUIFromStorage() {
   const basket = readQuoteBasket();
   const totals = getBasketTotals(basket);
+  const shownTotal = toDisplayAmount(totals.subtotal);
 
-  if (basketTotalAmount) basketTotalAmount.textContent = `£${totals.subtotal.toFixed(2)}`;
-  if (basketTotalMeta) basketTotalMeta.textContent = `${totals.items} item${totals.items === 1 ? "" : "s"}`;
+  if (basketTotalAmount) basketTotalAmount.textContent = `£${shownTotal.toFixed(2)}`;
+  if (basketTotalMeta) basketTotalMeta.textContent = `${totals.items} item${totals.items === 1 ? "" : "s"} • ${vatSuffixLabel()}`;
   if (cartBadge) cartBadge.textContent = String(totals.items);
 
   refreshEmbeddedBasket();
@@ -1255,6 +1314,8 @@ function buildBasketItemFromState() {
     area: state.selectedArea,
     position: state.selectedArea,
     logo: state.uploadedLogo,
+    dataUrl: state.uploadedLogo,
+    url: state.uploadedLogo,
     image: state.uploadedLogo,
     unitPrice: logoUnitPrice,
     qualityPct: logoQualityPct
@@ -1271,6 +1332,8 @@ function buildBasketItemFromState() {
       position: state.selectedArea,
       method: logoMethod,
       logo: state.uploadedLogo,
+      dataUrl: state.uploadedLogo,
+      url: state.uploadedLogo,
       unitPrice: logoUnitPrice
     }
   } : {};
@@ -1313,31 +1376,55 @@ function upsertBasketItemFromState() {
 
   const routeParams = new URLSearchParams(window.location.search);
   const isBasketLogoFlow = String(routeParams.get("from") || "").toLowerCase() === "basket" && routeParams.get("logoOnly") === "1";
+  const sessionBasketIndexRaw = sessionStorage.getItem("customizingBasketIndex");
+  const sessionBasketIndex = sessionBasketIndexRaw === null ? -1 : parseInt(sessionBasketIndexRaw, 10);
+  const hasSessionBasketIndex = Number.isInteger(sessionBasketIndex) && sessionBasketIndex >= 0;
+  const isBasketContext = isBasketLogoFlow || hasSessionBasketIndex || sessionStorage.getItem("returnAfterCustomize") === "basket";
 
   const basket = readQuoteBasket();
   const nextItem = buildBasketItemFromState();
 
-  const matchIndex = basket.findIndex((item) => {
+  const inferredIndex = hasSessionBasketIndex && basket[sessionBasketIndex] ? sessionBasketIndex : -1;
+  const fallbackIndex = basket.findIndex((item) => {
     const sameCode = String(item?.productCode || item?.code || "") === String(nextItem.productCode);
     const sameColor = String(item?.color || "").toLowerCase() === String(nextItem.color || "").toLowerCase();
     return sameCode && sameColor;
   });
+  const matchIndex = inferredIndex >= 0 ? inferredIndex : fallbackIndex;
 
   if (matchIndex >= 0) {
     const previousId = basket[matchIndex].id;
     const prevItem = basket[matchIndex] || {};
     const previousPreview = prevItem.colorImage || prevItem.image || "";
     const nextLooksNeutral = isNeutralToolMockupImage(nextItem.colorImage || nextItem.image || "");
-    const mergedLogos = isBasketLogoFlow && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
+    const mergedLogos = isBasketContext && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
       ? [...(Array.isArray(prevItem.logos) ? prevItem.logos : []), ...nextItem.logos]
       : nextItem.logos;
+    const nextColorHex = normalizeHex(nextItem.colorHex || "");
+    const prevColorHex = normalizeHex(prevItem.colorHex || "");
+
+    const mergedPositions = isBasketContext
+      ? (prevItem.positions || nextItem.positions)
+      : nextItem.positions;
+
+    const mergedPositionDesigns = isBasketContext
+      ? { ...(prevItem.positionDesigns || {}), ...(nextItem.positionDesigns || {}) }
+      : nextItem.positionDesigns;
 
     basket[matchIndex] = {
       ...prevItem,
       ...nextItem,
+      positions: mergedPositions,
+      positionDesigns: mergedPositionDesigns,
       logos: mergedLogos,
+      colorHex: nextColorHex || prevColorHex || "",
       colorImage: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.colorImage || previousPreview || ""),
       image: (previousPreview && nextLooksNeutral) ? previousPreview : (nextItem.image || previousPreview || ""),
+      quantities: isBasketContext ? (prevItem.quantities || nextItem.quantities) : nextItem.quantities,
+      qty: isBasketContext ? (prevItem.qty || nextItem.qty) : nextItem.qty,
+      size: isBasketContext ? (prevItem.size || nextItem.size) : nextItem.size,
+      totalQty: isBasketContext ? (prevItem.totalQty || nextItem.totalQty) : nextItem.totalQty,
+      unitPrice: isBasketContext ? (prevItem.unitPrice || nextItem.unitPrice) : nextItem.unitPrice,
       id: previousId
     };
   } else {
@@ -3199,7 +3286,7 @@ document.getElementById("basketBtn").addEventListener("click", () => {
 
 document.getElementById("priceBtn").addEventListener("click", () => {
   calculatePrice();
-  alert(`Estimated total: £${state.price.toFixed(2)}`);
+  alert(`Estimated total: £${toDisplayAmount(state.price).toFixed(2)} (${vatSuffixLabel()})`);
 });
 
 document.getElementById("downloadBtn").addEventListener("click", () => {
@@ -3308,6 +3395,7 @@ if (inferredProduct) {
 
 applySelectedProductContext();
 
+setupVatToggle();
 renderColours();
 applyArea();
 calculatePrice();
