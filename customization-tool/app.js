@@ -49,6 +49,7 @@ const mainQtyInput = document.getElementById("mainQtyInput");
 const basketTotalAmount = document.getElementById("basketTotalAmount");
 const basketTotalMeta = document.getElementById("basketTotalMeta");
 const cartBadge = document.querySelector(".cart-badge");
+const toolBottomBasketBadge = document.getElementById("toolBottomBasketBadge");
 const confirmQualityBtn = document.getElementById("confirmQualityBtn");
 
 const colourLayer = document.getElementById("colourLayer");
@@ -67,6 +68,68 @@ const textRotateHandle = document.getElementById("textRotateHandle");
 const textSizeLabel = document.getElementById("textSizeLabel");
 const phBrandLogo = document.getElementById("phBrandLogo");
 const phBrandText = document.getElementById("phBrandText");
+const customizerBackLink = document.getElementById("customizerBackLink");
+const customizerBreadcrumbLabel = document.getElementById("customizerBreadcrumbLabel");
+const customizerLoadingOverlay = document.getElementById("customizerLoadingOverlay");
+const customizerLoadingStatus = document.getElementById("customizerLoadingStatus");
+const customizerLoadingProgress = document.getElementById("customizerLoadingProgress");
+const customizerLoadingProgressBar = document.getElementById("customizerLoadingProgressBar");
+
+let customizerLoadingValue = 12;
+let customizerLoadingTimer = null;
+let customizerLoadingFinished = false;
+
+function updateCustomizerLoadingProgress(nextValue) {
+  const value = Math.max(0, Math.min(100, Number(nextValue) || 0));
+  customizerLoadingValue = value;
+  if (customizerLoadingProgressBar) {
+    customizerLoadingProgressBar.style.width = `${value}%`;
+  }
+  if (customizerLoadingProgress) {
+    customizerLoadingProgress.setAttribute("aria-valuenow", String(Math.round(value)));
+  }
+}
+
+function setCustomizerLoadingStatus(text) {
+  if (!customizerLoadingStatus) return;
+  customizerLoadingStatus.textContent = String(text || "Loading colours and mockups...");
+}
+
+function startCustomizerLoadingProgress() {
+  if (!customizerLoadingOverlay || customizerLoadingTimer) return;
+
+  updateCustomizerLoadingProgress(customizerLoadingValue);
+  customizerLoadingTimer = setInterval(() => {
+    if (customizerLoadingValue >= 92) return;
+    const step = 2 + Math.random() * 5;
+    updateCustomizerLoadingProgress(Math.min(92, customizerLoadingValue + step));
+  }, 130);
+}
+
+function finishCustomizerLoading() {
+  if (!customizerLoadingOverlay || customizerLoadingFinished) return;
+  customizerLoadingFinished = true;
+
+  if (customizerLoadingTimer) {
+    clearInterval(customizerLoadingTimer);
+    customizerLoadingTimer = null;
+  }
+
+  setCustomizerLoadingStatus("Customiser ready");
+  updateCustomizerLoadingProgress(100);
+
+  window.setTimeout(() => {
+    customizerLoadingOverlay.classList.add("is-hidden");
+    customizerLoadingOverlay.setAttribute("aria-busy", "false");
+  }, 220);
+}
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise((resolve) => setTimeout(resolve, timeoutMs))
+  ]);
+}
 
 function updateSelectedColourLabels(colourName) {
   const safeName = String(colourName || "").trim() || "White";
@@ -366,6 +429,7 @@ const COLOR_NAME_HEX_HINTS = {
   "orchid": "#ae78b7",
   "prairie dust": "#d6c5a7",
   "purple": "#4a3f8e",
+  "radiant purple": "#7c3aed",
   "red": "#c02b33",
   "royal": "#1f4fa8",
   "safety green": "#b7d43a",
@@ -398,6 +462,19 @@ function findFallbackHexByName(name) {
   const lower = String(name || "").toLowerCase();
   const match = FALLBACK_COLOURS.find(([fallbackName]) => normalizeColorKey(fallbackName) === key || fallbackName.toLowerCase() === lower);
   return match ? match[1] : "";
+}
+
+function inferHexFromColourName(name) {
+  const normalized = normalizeColorKey(name);
+  if (!normalized) return "";
+
+  if (normalized.includes("lilac") || normalized.includes("lavender")) return "#b7a3d2";
+  if (normalized.includes("violet") || normalized.includes("plum")) return "#7b5ca7";
+  if (normalized.includes("purple")) return "#6f53a6";
+  if (normalized.includes("charcoal") || normalized.includes("graphite") || normalized.includes("anthracite")) return "#4b515a";
+  if (normalized.includes("heather") && normalized.includes("grey")) return "#9aa0a9";
+
+  return "";
 }
 
 const sampledColourHexCache = new Map();
@@ -530,8 +607,9 @@ async function refineSwatchesFromVariantImages(productData, productCode) {
       ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, imageUrl))
       : "";
     const fallbackHex = findFallbackHexByName(name);
+    const inferredHex = inferHexFromColourName(name);
 
-    const nextHex = sampledHex || directHex || lookupHex || fallbackHex || normalizeHex(currentHex) || "#d1d5db";
+    const nextHex = sampledHex || directHex || lookupHex || fallbackHex || inferredHex || normalizeHex(currentHex) || "#d1d5db";
     if (normalizeHex(nextHex) !== normalizeHex(currentHex)) changed = true;
     nextColours.push([name, nextHex]);
   }
@@ -552,11 +630,13 @@ function normalizeProductColours(productData, productCode) {
 
     const directHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
     const nameHintHex = findFallbackHexByName(name);
+    const inferredHex = inferHexFromColourName(name);
     const resolvedHex = directHex
       || nameHintHex
       || (window.BrandedColorHex && typeof window.BrandedColorHex.lookup === "function"
         ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, getVariantImageUrl(entry)))
         : "")
+      || inferredHex
       || "#d1d5db";
 
     return [name, resolvedHex];
@@ -593,6 +673,63 @@ function buildColourImageMap(productData) {
 
 function getColourImageForName(name) {
   return colourImageByName.get(normalizeColorKey(name)) || "";
+}
+
+function syncCurrentColourHexFromPalette() {
+  if (!Array.isArray(colours) || colours.length === 0) return;
+  const currentName = normalizeColorKey(state.colourName || "");
+  if (!currentName) return;
+
+  const match = colours.find(([name]) => normalizeColorKey(name) === currentName);
+  if (!match) return;
+
+  const nextHex = normalizeHex(match[1]);
+  if (!nextHex) return;
+
+  state.colourHex = nextHex;
+  if (colourLayer) {
+    colourLayer.style.backgroundColor = nextHex;
+  }
+  syncViewThumbTint();
+}
+
+function setupCustomizerBreadcrumb() {
+  const params = new URLSearchParams(window.location.search);
+  const from = String(params.get("from") || "").toLowerCase();
+  const code = String(params.get("code") || "").trim();
+
+  let fallbackTarget = "../shop.html";
+  let label = "Home > Logo Tool";
+
+  if (from === "basket" || sessionStorage.getItem("returnAfterCustomize") === "basket") {
+    fallbackTarget = "../basket.html";
+    label = "Home > Quote Basket > Logo Tool";
+  } else if (from === "customize-mobile") {
+    fallbackTarget = code ? `../mobile/customize-mobile.html?code=${encodeURIComponent(code)}` : "../mobile/customize-mobile.html";
+    label = "Home > Customize > Logo Tool";
+  }
+
+  if (customizerBreadcrumbLabel) {
+    customizerBreadcrumbLabel.textContent = label;
+  }
+
+  const goBack = () => {
+    const sameOriginReferrer = !!(document.referrer && document.referrer.indexOf(window.location.origin) === 0);
+    if (sameOriginReferrer && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.href = fallbackTarget;
+  };
+
+  if (customizerBackLink) {
+    customizerBackLink.addEventListener("click", goBack);
+  }
+
+  const closeBtn = document.getElementById("closeCustomiserBtn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", goBack);
+  }
 }
 
 function normalizeDecorationMethod(method) {
@@ -701,6 +838,7 @@ function applySelectedProductContext() {
     state.selectedColorImage = mappedColourImage;
   }
   colourLayer.style.backgroundColor = state.colourHex;
+  syncCurrentColourHexFromPalette();
   updateSelectedColourLabels(state.colourName);
   syncViewThumbTint();
 
@@ -738,6 +876,7 @@ async function hydrateSelectedProductFromApi() {
         state.selectedColorImage = mappedColourImage;
       }
       colourLayer.style.backgroundColor = state.colourHex;
+      syncCurrentColourHexFromPalette();
       updateSelectedColourLabels(state.colourName);
       syncViewThumbTint();
     }
@@ -749,6 +888,7 @@ async function hydrateSelectedProductFromApi() {
 
     const refined = await refineSwatchesFromVariantImages(productData, productCode);
     if (refined) {
+      syncCurrentColourHexFromPalette();
       renderColours();
       renderMiniColours();
     }
@@ -994,6 +1134,7 @@ function renderColours() {
       updateSelectedColourLabels(name);
       colourLayer.style.backgroundColor = hex;
       syncViewThumbTint();
+      applyArea();
 
       document.querySelectorAll(".colour-swatch").forEach(item => item.classList.remove("selected"));
       swatch.classList.add("selected");
@@ -1057,6 +1198,27 @@ function getFrontThumbImageSrc() {
   return tshirtImages.front;
 }
 
+function preloadCurrentColourSet() {
+  const urls = new Set();
+
+  if (state.selectedColorImage) {
+    urls.add(String(state.selectedColorImage).trim());
+  }
+
+  if (colourImageByName && typeof colourImageByName.forEach === "function") {
+    colourImageByName.forEach((url) => {
+      if (url) urls.add(String(url).trim());
+    });
+  }
+
+  const jobs = [];
+  urls.forEach((url) => {
+    if (url) jobs.push(ensureGarmentImageLoaded(url));
+  });
+
+  return Promise.allSettled(jobs);
+}
+
 async function applyArea() {
   const requestId = ++areaRenderRequestId;
 
@@ -1065,13 +1227,17 @@ async function applyArea() {
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
   productPreview.classList.toggle("mirror-right", state.selectedArea === "right");
 
+  const isFrontArea = state.selectedArea === "front";
+  const hasRealColourImage = isFrontArea && !!String(state.selectedColorImage || "").trim();
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
   if (isTshirtFront) {
     productPreview.classList.add("custom-tshirt-front");
   }
-  const imgSrc = isTshirtFront
-    ? tshirtFrontCustomImage
-    : (tshirtImages[state.selectedArea] || tshirtImages.front);
+  const imgSrc = hasRealColourImage
+    ? String(state.selectedColorImage).trim()
+    : (isTshirtFront
+      ? tshirtFrontCustomImage
+      : (tshirtImages[state.selectedArea] || tshirtImages.front));
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -1084,6 +1250,7 @@ async function applyArea() {
   if (requestId !== areaRenderRequestId) return;
 
   productShapeEl.src = imgSrc;
+  colourLayerEl.style.opacity = hasRealColourImage ? "0" : "1";
 
   // Keep the colour tint mask aligned with the active garment PNG for every view.
   colourLayerEl.style.webkitMaskImage = `url("${imgSrc}")`;
@@ -1250,51 +1417,22 @@ function updateBasketUIFromStorage() {
   if (basketTotalAmount) basketTotalAmount.textContent = `£${shownTotal.toFixed(2)}`;
   if (basketTotalMeta) basketTotalMeta.textContent = `${totals.items} item${totals.items === 1 ? "" : "s"} • ${vatSuffixLabel()}`;
   if (cartBadge) cartBadge.textContent = String(totals.items);
-
-  refreshEmbeddedBasket();
-}
-
-function setupEmbeddedBasket() {
-  const frame = document.getElementById("toolBasketFrame");
-  if (!frame) return;
-
-  const resizeFrame = () => {
-    try {
-      const doc = frame.contentDocument;
-      if (!doc) return;
-
-      const bodyHeight = doc.body ? doc.body.scrollHeight : 0;
-      const docHeight = doc.documentElement ? doc.documentElement.scrollHeight : 0;
-      const nextHeight = Math.max(bodyHeight, docHeight, 1200);
-      frame.style.height = `${nextHeight}px`;
-    } catch (error) {
-      // Keep fallback min-height when content cannot be measured.
-    }
-  };
-
-  frame.addEventListener("load", () => {
-    resizeFrame();
-    setTimeout(resizeFrame, 250);
-    setTimeout(resizeFrame, 800);
-  });
-
-  window.addEventListener("resize", resizeFrame);
-}
-
-function refreshEmbeddedBasket() {
-  const frame = document.getElementById("toolBasketFrame");
-  if (!frame) return;
-
-  try {
-    const src = frame.getAttribute("src") || "../basket.html#orderSummary";
-    const hashIndex = src.indexOf("#");
-    const basePart = hashIndex >= 0 ? src.slice(0, hashIndex) : src;
-    const hashPart = hashIndex >= 0 ? src.slice(hashIndex) : "";
-    const joiner = basePart.includes("?") ? "&" : "?";
-    frame.setAttribute("src", `${basePart}${joiner}_=${Date.now()}${hashPart}`);
-  } catch (error) {
-    // no-op
+  if (toolBottomBasketBadge) {
+    toolBottomBasketBadge.textContent = String(totals.items);
+    toolBottomBasketBadge.classList.toggle("is-empty", totals.items <= 0);
   }
+}
+
+function showPostConfirmModal() {
+  const modal = document.getElementById("postConfirmModal");
+  if (!modal) return;
+  modal.classList.add("open");
+}
+
+function closePostConfirmModal() {
+  const modal = document.getElementById("postConfirmModal");
+  if (!modal) return;
+  modal.classList.remove("open");
 }
 
 function buildBasketItemFromState() {
@@ -1433,22 +1571,6 @@ function upsertBasketItemFromState() {
 
   writeQuoteBasket(basket);
   updateBasketUIFromStorage();
-
-  const frame = document.getElementById("toolBasketFrame");
-  if (frame?.contentWindow) {
-    try {
-      frame.contentWindow.postMessage({
-        type: "customizer:commit",
-        productCode: nextItem.productCode,
-        color: nextItem.color,
-        colorHex: nextItem.colorHex,
-        colorImage: nextItem.colorImage,
-        logos: nextItem.logos
-      }, "*");
-    } catch (error) {
-      // no-op
-    }
-  }
 
   return nextItem;
 }
@@ -2399,6 +2521,44 @@ if (confirmQualityBtn) {
     setTimeout(() => {
       confirmQualityBtn.textContent = previousText;
     }, 1200);
+    showPostConfirmModal();
+  });
+}
+
+const postConfirmAddAnotherLogoBtn = document.getElementById("postConfirmAddAnotherLogo");
+if (postConfirmAddAnotherLogoBtn) {
+  postConfirmAddAnotherLogoBtn.addEventListener("click", () => {
+    closePostConfirmModal();
+    clearLogo();
+    openScreen("designTypePage");
+  });
+}
+
+const postConfirmContinueShoppingBtn = document.getElementById("postConfirmContinueShopping");
+if (postConfirmContinueShoppingBtn) {
+  postConfirmContinueShoppingBtn.addEventListener("click", () => {
+    window.location.href = "../shop.html";
+  });
+}
+
+const postConfirmViewBasketBtn = document.getElementById("postConfirmViewBasket");
+if (postConfirmViewBasketBtn) {
+  postConfirmViewBasketBtn.addEventListener("click", () => {
+    window.location.href = "../basket.html";
+  });
+}
+
+const postConfirmCloseBtn = document.getElementById("postConfirmClose");
+if (postConfirmCloseBtn) {
+  postConfirmCloseBtn.addEventListener("click", closePostConfirmModal);
+}
+
+const postConfirmModal = document.getElementById("postConfirmModal");
+if (postConfirmModal) {
+  postConfirmModal.addEventListener("click", (event) => {
+    if (event.target === postConfirmModal) {
+      closePostConfirmModal();
+    }
   });
 }
 
@@ -3196,7 +3356,6 @@ document.querySelectorAll(".location-item").forEach(item => {
 });
 
 document.getElementById("colourShortcut").addEventListener("click", () => openScreen("productPage"));
-document.getElementById("closeCustomiserBtn").addEventListener("click", () => alert("Customiser closed."));
 document.getElementById("previewBtn").addEventListener("click", () => {
   const origPreview = document.getElementById("productPreview");
   const slot = document.getElementById("previewPoloSlot");
@@ -3393,18 +3552,25 @@ if (inferredProduct) {
   productSelect.dispatchEvent(new Event("change"));
 }
 
+startCustomizerLoadingProgress();
+setCustomizerLoadingStatus("Loading colours and mockups...");
+
 applySelectedProductContext();
 
 setupVatToggle();
+setupCustomizerBreadcrumb();
 renderColours();
-applyArea();
+const initialAreaPromise = applyArea();
 calculatePrice();
 updateBasketUIFromStorage();
 setupToolHeaderSearch();
-setupEmbeddedBasket();
 updateConfirmButtonState();
 maybeHandleBasketLogoChoice();
-hydrateSelectedProductFromApi();
+const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 3000);
+
+Promise.allSettled([initialAreaPromise, hydratePromise])
+  .then(() => withTimeout(preloadCurrentColourSet(), 800))
+  .finally(() => finishCustomizerLoading());
 
 /* =====================================================
    REDESIGNED MAIN EDITOR — new interactions
@@ -3427,6 +3593,7 @@ function renderMiniColours() {
     colourLayer.style.backgroundColor = hex;
     updateSelectedColourLabels(name);
     syncViewThumbTint();
+    applyArea();
     document.querySelectorAll(".mini-swatch").forEach(s => s.classList.remove("selected"));
     document.querySelectorAll(".mini-swatch").forEach(s => {
       if (s.title === name) s.classList.add("selected");

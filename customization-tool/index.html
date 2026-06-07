@@ -10,6 +10,18 @@
 
 <body class="tool-with-site-header">
 
+<div id="customizerLoadingOverlay" class="customizer-loading-overlay" aria-live="polite" aria-busy="true">
+  <div class="container" aria-hidden="true">
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+  </div>
+</div>
+
 <header class="tool-site-header" aria-label="BrandedUK Header">
   <div class="tool-header-top-row">
     <div class="social-icons-container social-icons-mobile">
@@ -65,6 +77,11 @@
 
     <!-- Top navigation + tab bar (wrapped for desktop layout) -->
     <div class="editor-top">
+
+    <div class="customizer-breadcrumb" id="customizerBreadcrumb">
+      <button type="button" class="customizer-breadcrumb-back" id="customizerBackLink" aria-label="Go back">&larr; Back</button>
+      <span class="customizer-breadcrumb-label" id="customizerBreadcrumbLabel">Home &gt; Logo Tool</span>
+    </div>
 
     <div class="top-nav">
       <button class="nav-icon-btn" id="menuBtn" title="Menu" aria-label="Menu">
@@ -282,18 +299,6 @@
         <span>Size guide</span>
         <svg class="info-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </div>
-
-      <section class="tool-basket-embed" aria-label="Quote Basket Summary">
-        <div class="tool-basket-embed-head">Your Quote Basket</div>
-        <iframe
-          id="toolBasketFrame"
-          class="tool-basket-embed-frame"
-          src="../basket.html#orderSummary"
-          title="Quote Basket"
-          loading="eager"
-          scrolling="no"
-        ></iframe>
-      </section>
     </div>
 
   </section>
@@ -898,6 +903,26 @@
 
 </div>
 
+<nav class="tool-bottom-nav" aria-label="Quick navigation">
+  <a class="tool-bottom-nav-item" href="../profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <span>Sign in</span>
+  </a>
+  <a class="tool-bottom-nav-item" href="../shop.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+    <span>Shop</span>
+  </a>
+  <a class="tool-bottom-nav-item tool-bottom-nav-item-basket" href="../basket.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    <span>Basket</span>
+    <span class="tool-bottom-nav-badge" id="toolBottomBasketBadge">0</span>
+  </a>
+  <a class="tool-bottom-nav-item" href="../quote-form.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <span>Chat</span>
+  </a>
+</nav>
+
 <!-- Preview Modal -->
 <div id="previewModal" class="preview-modal" role="dialog" aria-modal="true">
   <div class="preview-modal-card">
@@ -906,6 +931,17 @@
     </button>
     <p class="preview-modal-label">Preview</p>
     <div id="previewPoloSlot"></div>
+  </div>
+</div>
+
+<div id="postConfirmModal" class="post-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="postConfirmTitle">
+  <div class="post-confirm-card">
+    <h3 id="postConfirmTitle" class="post-confirm-title">Logo added to basket</h3>
+    <p class="post-confirm-subtitle">What would you like to do next?</p>
+    <button id="postConfirmAddAnotherLogo" type="button" class="post-confirm-btn post-confirm-btn-primary">Add another logo</button>
+    <button id="postConfirmContinueShopping" type="button" class="post-confirm-btn">Continue shopping</button>
+    <button id="postConfirmViewBasket" type="button" class="post-confirm-btn">View basket</button>
+    <button id="postConfirmClose" type="button" class="post-confirm-close" aria-label="Close">Close</button>
   </div>
 </div>
 

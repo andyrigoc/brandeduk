@@ -10892,13 +10892,20 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         Add your logo now
                     </button>
-                    <button class="btn-secondary" id="viewBasketBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#1f2937;">View Basket</button>
-                    <a href="#" id="continueShoppingLink" style="display:block;text-align:center;font-size:13px;color:#6b7280;text-decoration:underline;margin-top:2px;">Continue Shopping</a>
+                    <button class="btn-secondary" id="viewBasketBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #15803d;background:#16a34a;color:#ffffff;">View Basket</button>
+                    <button class="btn-secondary" id="continueShoppingBtn" style="width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px dashed #7c3aed;background:#ffffff;color:#7c3aed;">Continue Shopping</button>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
+
+        const clearModalButtonFocus = () => {
+            const active = document.activeElement;
+            if (active && modal.contains(active) && typeof active.blur === 'function') {
+                active.blur();
+            }
+        };
 
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -10908,11 +10915,13 @@
         
         // Close button
         modal.querySelector('#closeAddedModal').addEventListener('click', () => {
+            clearModalButtonFocus();
             modal.remove();
         });
 
         // Add your logo now — start the new customization tool
         modal.querySelector('#addLogoNowBtn').addEventListener('click', () => {
+            clearModalButtonFocus();
             modal.remove();
             clearPositionState();
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
@@ -10970,6 +10979,7 @@
 
         // View Basket — basket quick-logo popup if item still needs logo
         modal.querySelector('#viewBasketBtn').addEventListener('click', () => {
+            clearModalButtonFocus();
             modal.remove();
             if (!basketItemHasLogo(item) && item.id) {
                 sessionStorage.setItem('pendingLogoPromptId', item.id);
@@ -10978,8 +10988,15 @@
         });
         
         // Continue Shopping
-        modal.querySelector('#continueShoppingLink').addEventListener('click', (e) => {
-            e.preventDefault();
+        modal.querySelector('#continueShoppingBtn').addEventListener('click', () => {
+            // Force clear basket-edit context so next product does not auto-redirect to basket.
+            sessionStorage.removeItem('customizingBasketIndex');
+            sessionStorage.removeItem('returnAfterCustomize');
+            sessionStorage.removeItem('basketEditSingleItem');
+            sessionStorage.removeItem('basketEditItemId');
+            sessionStorage.removeItem('basketEditNewColor');
+            sessionStorage.removeItem('pendingLogoPromptId');
+            clearModalButtonFocus();
             modal.remove();
             resetCustomizationForm();
         });
@@ -10987,7 +11004,15 @@
         // Close on backdrop click
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
+                clearModalButtonFocus();
                 modal.remove();
+            }
+        });
+
+        modal.addEventListener('pointerdown', (e) => {
+            const card = modal.querySelector('.quote-added-content');
+            if (card && !card.contains(e.target)) {
+                clearModalButtonFocus();
             }
         });
     }

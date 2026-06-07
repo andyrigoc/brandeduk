@@ -8754,6 +8754,14 @@ a {
     background: var(--purple-dark);
 }
 
+.quote-added-actions .btn-primary:focus,
+.quote-added-actions .btn-primary:focus-visible,
+.quote-added-actions .btn-secondary:focus,
+.quote-added-actions .btn-secondary:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
 /* ============================================
    CUSTOMIZATION TYPE MODAL (Choose Your Customization)
    ============================================ */
