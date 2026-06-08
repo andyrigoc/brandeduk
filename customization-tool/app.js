@@ -50,6 +50,7 @@ const basketTotalAmount = document.getElementById("basketTotalAmount");
 const basketTotalMeta = document.getElementById("basketTotalMeta");
 const cartBadge = document.querySelector(".cart-badge");
 const toolBottomBasketBadge = document.getElementById("toolBottomBasketBadge");
+const toolBottomNav = document.querySelector(".tool-bottom-nav");
 const confirmQualityBtn = document.getElementById("confirmQualityBtn");
 
 const colourLayer = document.getElementById("colourLayer");
@@ -1047,6 +1048,9 @@ function openScreen(screenId) {
 
   screens.forEach(screen => screen.classList.remove("active-screen"));
   document.getElementById(screenId).classList.add("active-screen");
+  if (toolBottomNav) {
+    toolBottomNav.classList.toggle("is-hidden", screenId !== "mainEditor");
+  }
   if (screenId === "textEditorPage") {
     syncTextEditorFieldsFromState();
   }

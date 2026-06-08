@@ -205,6 +205,10 @@ textarea {
   z-index: 420;
 }
 
+.tool-bottom-nav.is-hidden {
+  display: none;
+}
+
 .tool-bottom-nav-item {
   position: relative;
   display: flex;
@@ -1532,13 +1536,13 @@ textarea {
   position: fixed;
   left: 12px;
   right: 12px;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   display: flex;
   gap: 8px;
   padding: 9px 10px 11px;
   border-top: 1px solid #ececf2;
   background: rgba(255, 255, 255, 0.96);
-  z-index: 40;
+  z-index: 460;
   align-items: center;
   border-radius: 14px 14px 0 0;
   backdrop-filter: blur(6px);
