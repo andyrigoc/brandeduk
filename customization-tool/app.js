@@ -29,9 +29,51 @@ const state = {
 
 // Calibration: print area width = 30cm. Computed dynamically from actual rendered customArea.
 const PRINT_AREA_WIDTH_CM = 30;
+const INITIAL_LOGO_WIDTH_CM = 30;
+
+function getPrintableAreaRatioByView(area) {
+  const key = String(area || "").toLowerCase();
+  if (key === "left" || key === "right") return { w: 0.26, h: 0.46 };
+  if (key === "left-sleeve" || key === "right-sleeve") return { w: 0.2, h: 0.36 };
+  if (key === "left-chest" || key === "right-chest") return { w: 0.24, h: 0.3 };
+  return { w: 0.42, h: 0.52 }; // front/back default
+}
+
+function getPrintableReferenceWidthPx() {
+  const ratio = getPrintableAreaRatioByView(state.selectedArea);
+  const garmentWidth = Math.max(
+    0,
+    productShape?.clientWidth || 0,
+    Math.round(productShape?.getBoundingClientRect?.().width || 0)
+  );
+
+  if (garmentWidth > 20) {
+    return Math.max(96, garmentWidth * ratio.w);
+  }
+
+  const fallback = customArea ? customArea.clientWidth * ratio.w : 120;
+  return Math.max(96, fallback || 120);
+}
+
+function getPrintableReferenceHeightPx() {
+  const ratio = getPrintableAreaRatioByView(state.selectedArea);
+  const garmentHeight = Math.max(
+    0,
+    productShape?.clientHeight || 0,
+    Math.round(productShape?.getBoundingClientRect?.().height || 0)
+  );
+
+  if (garmentHeight > 20) {
+    return Math.max(120, garmentHeight * ratio.h);
+  }
+
+  const fallback = customArea ? customArea.clientHeight * ratio.h : 180;
+  return Math.max(120, fallback || 180);
+}
+
 function getPxPerCm() {
-  const w = customArea ? customArea.clientWidth : 180;
-  return (w > 10 ? w : 180) / PRINT_AREA_WIDTH_CM;
+  const refWidth = getPrintableReferenceWidthPx();
+  return refWidth / PRINT_AREA_WIDTH_CM;
 }
 
 const screens = document.querySelectorAll(".screen");
@@ -1062,61 +1104,13 @@ document.querySelectorAll("[data-open]").forEach(button => {
 });
 
 function updateVisibilityByPrintArea(layer) {
-  const layerRect = layer.getBoundingClientRect();
-  const areaRect = customArea.getBoundingClientRect();
   const contentEl = layer === textLayer ? textContent : uploadedLogo;
-  const contentRect = contentEl ? contentEl.getBoundingClientRect() : layerRect;
-
-  const isFullyInside =
-    layerRect.left >= areaRect.left &&
-    layerRect.right <= areaRect.right &&
-    layerRect.top >= areaRect.top &&
-    layerRect.bottom <= areaRect.bottom;
-
-  const isCompletelyOutside =
-    layerRect.right < areaRect.left ||
-    layerRect.left > areaRect.right ||
-    layerRect.bottom < areaRect.top ||
-    layerRect.top > areaRect.bottom;
-
   if (contentEl) {
-    if (contentRect.width <= 0 || contentRect.height <= 0) {
-      contentEl.style.clipPath = "none";
-      contentEl.style.webkitClipPath = "none";
-    } else if (isCompletelyOutside) {
-      const hiddenClip = "inset(100% 100% 100% 100%)";
-      contentEl.style.clipPath = hiddenClip;
-      contentEl.style.webkitClipPath = hiddenClip;
-    } else {
-      const clipTop = Math.max(0, areaRect.top - contentRect.top);
-      const clipRight = Math.max(0, contentRect.right - areaRect.right);
-      const clipBottom = Math.max(0, contentRect.bottom - areaRect.bottom);
-      const clipLeft = Math.max(0, areaRect.left - contentRect.left);
-
-      const clippedTop = Math.min(contentRect.height, clipTop);
-      const clippedRight = Math.min(contentRect.width, clipRight);
-      const clippedBottom = Math.min(contentRect.height, clipBottom);
-      const clippedLeft = Math.min(contentRect.width, clipLeft);
-
-      const clipRule = `inset(${clippedTop}px ${clippedRight}px ${clippedBottom}px ${clippedLeft}px)`;
-      contentEl.style.clipPath = clipRule;
-      contentEl.style.webkitClipPath = clipRule;
-    }
+    contentEl.style.clipPath = "none";
+    contentEl.style.webkitClipPath = "none";
   }
-
   layer.classList.remove("inside-print-area", "outside-print-area", "fully-outside-print-area");
-
-  if (isFullyInside) {
-    layer.classList.add("inside-print-area");
-    return;
-  }
-
-  if (isCompletelyOutside) {
-    layer.classList.add("fully-outside-print-area");
-    return;
-  }
-
-  layer.classList.add("outside-print-area");
+  layer.classList.add("inside-print-area");
 }
 
 function renderColours() {
@@ -2366,16 +2360,23 @@ function showLogoOnCanvas(imageSrc) {
 function fitLogoToPrintArea() {
   const imageRatio = getLogoAspectRatio();
 
-  // Fill almost all printable area while preserving aspect ratio.
-  const maxWidth = Math.max(30, customArea.clientWidth * 0.96);
-  const maxHeight = Math.max(30, customArea.clientHeight * 0.96);
+  // Start each newly loaded logo at ~30cm relative to garment printable area.
+  const pxPerCm = getPxPerCm();
+  const targetWidth = Math.max(30, INITIAL_LOGO_WIDTH_CM * pxPerCm);
+  const maxWidth = Math.max(60, getPrintableReferenceWidthPx() * 1.04);
+  const maxHeight = Math.max(60, getPrintableReferenceHeightPx() * 0.98);
 
-  let width = maxWidth;
+  let width = Math.min(targetWidth, maxWidth);
   let height = width / imageRatio;
 
   if (height > maxHeight) {
     height = maxHeight;
     width = height * imageRatio;
+  }
+
+  if (width > maxWidth) {
+    width = maxWidth;
+    height = width / imageRatio;
   }
 
   designLayer.style.width = `${Math.round(width)}px`;
@@ -2521,9 +2522,11 @@ if (confirmQualityBtn) {
 
     upsertBasketItemFromState();
     const previousText = confirmQualityBtn.textContent;
+    confirmQualityBtn.classList.add("is-confirmed");
     confirmQualityBtn.textContent = "CONFIRMED";
     setTimeout(() => {
       confirmQualityBtn.textContent = previousText;
+      confirmQualityBtn.classList.remove("is-confirmed");
     }, 1200);
     showPostConfirmModal();
   });

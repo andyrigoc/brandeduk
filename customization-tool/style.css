@@ -843,21 +843,21 @@ textarea {
 
 .custom-area {
   position: absolute;
-  width: 155px;
-  height: 145px;
-  top: 185px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 2px dashed #22c55e;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: none;
+  border: none;
   overflow: visible;
   z-index: 20;
   pointer-events: auto;
-  transition: border-color 0.15s;
+  transition: none;
 }
 
 .custom-area:has(.active-logo),
 .custom-area:has(.active-text) {
-  border-color: #22c55e;
+  border-color: transparent;
 }
 
 .inside-print-area {
@@ -986,7 +986,7 @@ textarea {
 
 .logo-settings-btn,
 .text-settings-btn {
-  bottom: -26px;
+  bottom: -38px;
   left: 50%;
   transform: translateX(-50%);
   background: #444;
@@ -994,33 +994,34 @@ textarea {
   border-radius: 5px;
   padding: 3px 8px;
   font-size: 11px;
+  z-index: 110;
 }
 
 .resize-dot,
 .text-resize-dot {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   background: #333;
   border: 2px solid #fff;
   border-radius: 4px;
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 120;
+  z-index: 150;
   touch-action: none;
 }
 
 .dot-br,
 .text-dot-br {
-  bottom: -9px;
-  right: -9px;
+  bottom: -12px;
+  right: -12px;
   cursor: nwse-resize;
 }
 
 .text-dot-br {
-  bottom: -16px;
-  right: -16px;
+  bottom: -18px;
+  right: -18px;
 }
 
 .rotate-handle,
@@ -1788,6 +1789,12 @@ textarea {
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+.confirm-quality-btn.is-confirmed {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #ffffff;
+}
+
 .confirm-quality-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 }
@@ -2408,62 +2415,19 @@ textarea {
   cursor: pointer;
 }
 
-.area-front .custom-area {
-  width: 160px;
-  height: 220px;
-  top: 100px;
-  left: 50%;
-}
-
-.area-back .custom-area {
-  width: 160px;
-  height: 220px;
-  top: 100px;
-  left: 50%;
-}
-
-.area-left-chest .custom-area {
-  width: 80px;
-  height: 80px;
-  top: 185px;
-  left: 43%;
-}
-
-.area-right-chest .custom-area {
-  width: 80px;
-  height: 80px;
-  top: 185px;
-  left: 57%;
-}
-
-.area-left-sleeve .custom-area {
-  width: 70px;
-  height: 90px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.area-right-sleeve .custom-area {
-  width: 70px;
-  height: 90px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.area-right .custom-area {
-  width: 74px;
-  height: 82px;
-  top: 64px;
-  left: 50%;
-}
-
+.area-front .custom-area,
+.area-back .custom-area,
+.area-left-chest .custom-area,
+.area-right-chest .custom-area,
+.area-left-sleeve .custom-area,
+.area-right-sleeve .custom-area,
+.area-right .custom-area,
 .area-left .custom-area {
-  width: 74px;
-  height: 82px;
-  top: 64px;
-  left: 46%;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: none;
 }
 
 @media (max-width: 520px) {
@@ -2475,16 +2439,13 @@ textarea {
     width: 100%;
   }
 
-  .area-front .custom-area {
-    width: 130px;
-    height: 195px;
-    top: 52px;
-  }
-
+  .area-front .custom-area,
   .area-back .custom-area {
-    width: 130px;
-    height: 195px;
-    top: 52px;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: none;
   }
 
   .font-list button {
@@ -3491,16 +3452,22 @@ textarea {
 .post-confirm-modal {
   position: fixed;
   inset: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(15, 23, 42, 0.56);
   z-index: 3000;
   padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 }
 
 .post-confirm-modal.open {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .post-confirm-card {
@@ -3510,6 +3477,14 @@ textarea {
   border: 1px solid #e5e7eb;
   box-shadow: 0 20px 40px rgba(2, 8, 23, 0.25);
   padding: 16px;
+  transform: translateY(10px) scale(0.985);
+  opacity: 0;
+  transition: transform 0.24s ease, opacity 0.24s ease;
+}
+
+.post-confirm-modal.open .post-confirm-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 .post-confirm-title {
@@ -3538,9 +3513,21 @@ textarea {
 }
 
 .post-confirm-btn-primary {
-  border-color: #0f172a;
-  background: #0f172a;
-  color: #fff;
+  border-color: #f59e0b;
+  background: #f59e0b;
+  color: #111111;
+}
+
+#postConfirmContinueShopping {
+  border: 2px dashed #6d28d9;
+  background: #ffffff;
+  color: #6d28d9;
+}
+
+#postConfirmViewBasket {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #ffffff;
 }
 
 .post-confirm-close {

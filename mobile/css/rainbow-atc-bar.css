@@ -15,10 +15,10 @@
     align-items: stretch;
     padding: 0 !important;
     margin: 0;
-    background: #1a1f3a;
+    background: #ffffff;
     border: none;
     border-top: 2px solid #ffb20a;
-    box-shadow: 0 -3px 15px rgba(255, 178, 10, 0.15);
+    box-shadow: 0 -3px 15px rgba(17, 24, 39, 0.08);
     z-index: 101;
     overflow: hidden;
     box-sizing: border-box;
@@ -37,7 +37,7 @@
     height: 100%;
     margin: 0;
     padding: 0 18px 0 20px;
-    background: #1a1f3a;
+    background: #ffffff;
     border-left: 2px solid rgba(255, 178, 10, 0.45);
     box-sizing: border-box;
     z-index: 6;
@@ -63,9 +63,9 @@
 ================================ */
 
 .action-bar.action-bar--atc .button.rainbow-atc {
-    --background: #1a1f3a;
-    --text: #ffffff;
-    --cart: #ffffff;
+    --background: #ffffff;
+    --text: #111111;
+    --cart: #111111;
     --tick: var(--background);
     --complete: 0;
 
@@ -80,8 +80,8 @@
     margin: 0;
     border: 0;
     border-radius: 0;
-    background: #1a1f3a;
-    color: #ffffff;
+    background: #ffffff;
+    color: #111111;
     cursor: pointer;
     text-align: center;
     overflow: visible;
@@ -97,7 +97,8 @@
 }
 
 .action-bar.action-bar--atc .button.rainbow-atc:disabled {
-    opacity: 0.45;
+    opacity: 1;
+    color: #111111;
     cursor: not-allowed;
 }
 
@@ -106,7 +107,7 @@
     position: absolute;
     inset: 0;
     border-radius: 0;
-    background: #1a1f3a;
+    background: #ffffff;
     z-index: 1;
 }
 
@@ -131,7 +132,7 @@
     line-height: 26px;
     font-size: 15px;
     font-weight: 800;
-    color: #ffffff;
+    color: #111111;
     transform: translateY(var(--span-y, 0));
     transition: transform 0.7s ease;
     white-space: nowrap;
