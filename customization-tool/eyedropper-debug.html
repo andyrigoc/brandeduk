@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eyedropper Debug</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #0f172a; color: #e2e8f0; }
+  h1 { font-size: 18px; }
+  .row { display: flex; align-items: center; gap: 12px; margin: 10px 0; padding: 10px; background: #1e293b; border-radius: 8px; }
+  .label { flex: 1; font-size: 13px; }
+  .status { font-weight: 700; font-size: 13px; }
+  .ok { color: #4ade80; }
+  .fail { color: #f87171; }
+  .pending { color: #fbbf24; }
+  .swatch { width: 60px; height: 60px; border-radius: 8px; border: 2px solid #fff; flex-shrink: 0; }
+  .hex { font-family: monospace; font-size: 14px; }
+  input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; font-size: 12px; }
+  button { padding: 10px 16px; border-radius: 8px; border: none; background: #3b82f6; color: #fff; font-weight: 700; cursor: pointer; margin: 8px 0; }
+  pre { background: #020617; padding: 12px; border-radius: 8px; font-size: 11px; overflow-x: auto; white-space: pre-wrap; }
+  .garment { position: relative; width: 200px; height: 240px; margin: 16px 0; }
+  .garment img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .garment .tint { position: absolute; inset: 0; mix-blend-mode: multiply;
+    -webkit-mask-image: url("https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png");
+    mask-image: url("https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png");
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center; }
+</style>
+</head>
+<body>
+  <h1>Eyedropper Debug — campionamento RGB dal thumbnail</h1>
+
+  <div class="row">
+    <span class="label">1. <code>BrandedColorEyedropper</code> caricato</span>
+    <span class="status pending" id="s-eyedropper">…</span>
+  </div>
+  <div class="row">
+    <span class="label">2. <code>BrandedColorHex</code> caricato</span>
+    <span class="status pending" id="s-colorhex">…</span>
+  </div>
+  <div class="row">
+    <span class="label">3. Endpoint proxy selezionati</span>
+    <span class="status hex" id="s-endpoints">…</span>
+  </div>
+
+  <label class="label">Thumbnail da campionare:</label>
+  <input id="thumbUrl" value="https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/13bdc30c/5c5c3e3deb9f5b1c75ce2903/68d6be11/GD001_Azalea_FT.jpg">
+  <button id="runBtn">Campiona colore (eyedropper)</button>
+
+  <div class="row">
+    <span class="label">A. Canvas in-browser (atteso: FALLISCE per CORS)</span>
+    <span class="status pending" id="s-canvas">…</span>
+    <div class="swatch" id="sw-canvas" style="background:#333"></div>
+  </div>
+  <div class="row">
+    <span class="label">B. Proxy server <code>:8787</code> (atteso: OK)</span>
+    <span class="status pending" id="s-proxy">…</span>
+    <div class="swatch" id="sw-proxy" style="background:#333"></div>
+  </div>
+  <div class="row">
+    <span class="label">C. <code>sampleFromImage()</code> (quello che usa il tool)</span>
+    <span class="status pending" id="s-sample">…</span>
+    <div class="swatch" id="sw-sample" style="background:#333"></div>
+  </div>
+
+  <h1>Anteprima maglia con il colore campionato</h1>
+  <div class="garment">
+    <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="t-shirt">
+    <div class="tint" id="garmentTint" style="background:#ffffff"></div>
+  </div>
+
+  <h1>Log</h1>
+  <pre id="log"></pre>
+
+<script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
+<script src="../brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
+<script>
+  const logEl = document.getElementById('log');
+  function log(...args) {
+    logEl.textContent += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
+    console.log('[debug]', ...args);
+  }
+  function setStatus(id, ok, text) {
+    const el = document.getElementById(id);
+    el.className = 'status ' + (ok ? 'ok' : 'fail');
+    el.textContent = text;
+  }
+
+  setStatus('s-eyedropper', !!window.BrandedColorEyedropper, window.BrandedColorEyedropper ? 'OK' : 'MANCANTE');
+  setStatus('s-colorhex', !!window.BrandedColorHex, window.BrandedColorHex ? 'OK' : 'MANCANTE');
+  document.getElementById('s-endpoints').textContent = 'hostname=' + location.hostname;
+  log('location.hostname =', location.hostname);
+
+  function sampleViaCanvas(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const ED = window.BrandedColorEyedropper;
+          const s = ED.sampleEyedropperFromImageElement(img, 48);
+          resolve(s ? s.hex : '');
+        } catch (e) {
+          log('canvas error:', e.message);
+          resolve('__error:' + e.name);
+        }
+      };
+      img.onerror = () => { log('canvas img onerror (CORS block)'); resolve('__error:onerror'); };
+      img.src = url;
+    });
+  }
+
+  async function sampleViaProxy(url) {
+    const endpoint = 'http://127.0.0.1:8787/api/sample-color?url=' + encodeURIComponent(url);
+    log('fetching proxy:', endpoint);
+    try {
+      const res = await fetch(endpoint, { mode: 'cors', credentials: 'omit' });
+      log('proxy status:', res.status);
+      if (!res.ok) return '';
+      const data = await res.json();
+      log('proxy data:', data);
+      return data.hex || '';
+    } catch (e) {
+      log('proxy fetch error:', e.message);
+      return '__error:' + e.message;
+    }
+  }
+
+  document.getElementById('runBtn').addEventListener('click', async () => {
+    const url = document.getElementById('thumbUrl').value.trim();
+    logEl.textContent = '';
+    log('=== START ===', url);
+
+    // A. canvas
+    const cv = await sampleViaCanvas(url);
+    if (cv && cv.indexOf('__error') !== 0) {
+      setStatus('s-canvas', true, cv);
+      document.getElementById('sw-canvas').style.background = cv;
+    } else {
+      setStatus('s-canvas', false, cv || 'vuoto');
+    }
+
+    // B. proxy
+    const px = await sampleViaProxy(url);
+    if (px && px.indexOf('__error') !== 0) {
+      setStatus('s-proxy', true, px);
+      document.getElementById('sw-proxy').style.background = px;
+    } else {
+      setStatus('s-proxy', false, px || 'vuoto');
+    }
+
+    // C. real tool path
+    if (window.BrandedColorHex && window.BrandedColorHex.sampleFromImage) {
+      const sm = await window.BrandedColorHex.sampleFromImage(url);
+      log('sampleFromImage result:', sm);
+      if (sm) {
+        setStatus('s-sample', true, sm);
+        document.getElementById('sw-sample').style.background = sm;
+        document.getElementById('garmentTint').style.background = sm;
+      } else {
+        setStatus('s-sample', false, 'vuoto');
+      }
+    } else {
+      setStatus('s-sample', false, 'BrandedColorHex.sampleFromImage mancante');
+    }
+    log('=== END ===');
+  });
+</script>
+</body>
+</html>

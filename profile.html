@@ -465,7 +465,21 @@
             function setRoutes() {
                 document.getElementById('checkoutLink').href = Account.pageHref('checkout');
                 document.getElementById('allOrdersLink').href = Account.pageHref('orders');
-                document.getElementById('googleSignInLink').href = Account.apiBaseUrl() + '/auth/google';
+                var googleLink = document.getElementById('googleSignInLink');
+                googleLink.href = Account.apiBaseUrl() + '/auth/google';
+                // Preserve the page the user came from so login returns there with
+                // the basket intact, instead of dumping them on the home page.
+                googleLink.addEventListener('click', function () {
+                    try {
+                        if (!localStorage.getItem('authReturnTo')) {
+                            var sameOriginReferrer = document.referrer &&
+                                document.referrer.indexOf(window.location.origin) === 0 &&
+                                document.referrer.indexOf('/profile') === -1;
+                            localStorage.setItem('authReturnTo',
+                                sameOriginReferrer ? document.referrer : Account.pageHref('basket'));
+                        }
+                    } catch (e) {}
+                });
                 document.getElementById('homeLink').href = Account.pageHref('home');
                 document.getElementById('mobileBackLink').href = Account.pageHref('home');
                 document.getElementById('profileMenuLink').href = Account.pageHref('profile');
@@ -582,7 +596,18 @@
             function updateAvatar(user) {
                 var box = document.getElementById('profileAvatarBox');
                 var initials = ((user.name || user.email || 'BU').match(/\b\w/g) || ['B','U']).slice(0, 2).join('').toUpperCase();
-                box.textContent = initials;
+                var photo = user.picture || user.avatar || user.avatarUrl || user.photo ||
+                    user.photoURL || user.image || user.imageUrl || user.profileImage || '';
+                if (photo) {
+                    box.style.overflow = 'hidden';
+                    box.style.padding = '0';
+                    box.innerHTML = '<img src="' + escapeHtml(photo) + '" alt="" ' +
+                        'referrerpolicy="no-referrer" ' +
+                        'style="width:100%;height:100%;object-fit:cover;display:block;" ' +
+                        'onerror="this.remove();this.parentNode.textContent=\'' + escapeHtml(initials) + '\';">';
+                } else {
+                    box.textContent = initials;
+                }
             }
 
             async function loadProfile() {

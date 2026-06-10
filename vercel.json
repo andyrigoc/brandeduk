@@ -15,6 +15,9 @@
     },
     "api/quotes/submit.js": {
       "maxDuration": 10
+    },
+    "api/sample-color.js": {
+      "maxDuration": 10
     }
   },
 

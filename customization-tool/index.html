@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Branded UK Customiser</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css?v=20260604ae" />
+  <link rel="stylesheet" href="style.css?v=20260610r" />
 </head>
 
 <body class="tool-with-site-header">
@@ -196,12 +196,19 @@
           <div id="customArea" class="custom-area">
 
             <div id="designLayer" class="design-layer">
-              <img id="uploadedLogo" src="" alt="Uploaded logo">
-              <button id="deleteLogoBtn" class="logo-delete-btn">×</button>
-              <button id="logoSettingsBtn" class="logo-settings-btn">settings</button>
               <span id="logoSizeLabel" class="logo-size-label">0.00cm x 0.00cm</span>
-              <span class="resize-dot dot-br" data-resize="br"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="9" x2="9" y2="1"/><polyline points="5,1 9,1 9,5"/><polyline points="1,5 1,9 5,9"/></svg></span>
-              <span id="rotateHandle" class="rotate-handle">↻</span>
+              <div class="logo-frame">
+                <img id="uploadedLogo" src="" alt="Uploaded logo">
+                <span class="resize-dot dot-tl" data-resize="tl" aria-hidden="true"></span>
+                <span class="resize-dot dot-tr" data-resize="tr" aria-hidden="true"></span>
+                <span class="resize-dot dot-bl" data-resize="bl" aria-hidden="true"></span>
+                <span class="resize-dot dot-br" data-resize="br" aria-hidden="true"></span>
+              </div>
+              <div class="logo-toolbar">
+                <button id="deleteLogoBtn" class="logo-delete-btn" type="button" aria-label="Delete logo">×</button>
+                <button id="logoSettingsBtn" class="logo-settings-btn" type="button">settings</button>
+                <button id="rotateHandle" class="rotate-handle" type="button" aria-label="Rotate logo">↻</button>
+              </div>
             </div>
 
             <div id="textLayer" class="text-layer">
@@ -945,6 +952,9 @@
   </div>
 </div>
 
-<script src="app.js?v=20260604ab"></script>
+<script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
+<script src="../brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
+<script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610n"></script>
+<script src="app.js?v=20260610y"></script>
 </body>
 </html>

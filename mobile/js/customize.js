@@ -1401,17 +1401,18 @@
                     
                     console.log(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '?' : '?'}`);
                     
-                    const rawHex = c.hex || c.colourHex || c.colorHex || '';
-                    const parsedHex = (function parseHex(h) {
-                        if (!h) return '';
-                        let s = String(h).trim();
-                        if (!s.startsWith('#')) s = '#' + s;
-                        return /^#[0-9A-Fa-f]{6}$/.test(s) ? s.toLowerCase() : '';
-                    })(rawHex);
                     const code = state.product && state.product.code ? state.product.code : '';
-                    const resolvedHex = parsedHex || (window.BrandedColorHex
-                        ? (BrandedColorHex.lookup(name, code, colorThumb || colorImage) || '')
-                        : '');
+                    const resolvedHex = window.BrandedColorHex && typeof BrandedColorHex.resolveForEntry === 'function'
+                        ? BrandedColorHex.resolveForEntry(c, code)
+                        : (function () {
+                            const rawHex = c.hex || c.colourHex || c.colorHex || '';
+                            const parsedHex = window.BrandedColorHex
+                                ? BrandedColorHex.parseHex(rawHex)
+                                : '';
+                            return parsedHex || (window.BrandedColorHex
+                                ? (BrandedColorHex.lookup(name, code, colorThumb || colorImage) || '')
+                                : '');
+                        })();
                     return {
                         id: slugify(name) || slugify(c.code || c.id || name) || `color-${index}`,
                         name: name,
@@ -4431,6 +4432,13 @@
 
         if (isUsableColorHex(colorData.hex)) {
             applyTintFromColor();
+        } else if (window.GarmentColorBehindScenes && (colorData.thumb || colorData.image)) {
+            refreshGarmentLogoBackgroundBehindScenes().then(function (hex) {
+                if (isUsableColorHex(hex)) {
+                    colorData.hex = hex;
+                }
+                applyTintFromColor();
+            });
         } else if (window.BrandedColorHex && (colorData.thumb || colorData.image)) {
             BrandedColorHex.sampleFromImage(colorData.thumb || colorData.image).then(function (hex) {
                 if (isUsableColorHex(hex)) {
@@ -10059,9 +10067,12 @@
     }
 
     function isUsableColorHex(hex) {
+        if (window.BrandedColorHex && typeof BrandedColorHex.isUsableHex === 'function') {
+            return BrandedColorHex.isUsableHex(hex);
+        }
         if (!hex) return false;
         const h = String(hex).trim().toLowerCase();
-        return h !== '#cccccc' && h !== '#ccc';
+        return h !== '#cccccc' && h !== '#ccc' && h !== '#d1d5db';
     }
 
     function isBasketSingleItemEdit() {
@@ -10079,7 +10090,11 @@
 
     /** Clear basket-edit session keys when starting a fresh product (not editing one line from basket). */
     function clearStaleBasketEditSessionUnlessEditing() {
-        if (isActiveBasketItemEdit()) return;
+        // A brand-new product opened from the shop must NEVER inherit a lingering
+        // basket-edit context (e.g. left over from a previous item's "Add logo" flow),
+        // otherwise it skips the "Add logo / Continue" popup and jumps to the basket.
+        var isFreshFromShop = sessionStorage.getItem(CUSTOMIZE_FRESH_KEY) === '1';
+        if (!isFreshFromShop && isActiveBasketItemEdit()) return;
         sessionStorage.removeItem('customizingBasketIndex');
         sessionStorage.removeItem('returnAfterCustomize');
         sessionStorage.removeItem('basketEditSingleItem');
@@ -10288,6 +10303,23 @@
         const code = state.product && state.product.code ? state.product.code : '';
         PRODUCT_COLORS.forEach(function (color) {
             if (!color || isUsableColorHex(color.hex)) return;
+            if (typeof BrandedColorHex.resolveForName === 'function') {
+                const resolved = BrandedColorHex.resolveForName(
+                    color.name,
+                    code,
+                    color.thumb || color.image || '',
+                    color.hex || ''
+                );
+                if (isUsableColorHex(resolved)) {
+                    color.hex = resolved;
+                    BrandedColorHex.register(color.name, resolved, code);
+                    if (color.id === state.selectedColor || color.name === state.selectedColorName) {
+                        applyGarmentColorToLogoPreview();
+                        applyGarmentColorToPositionPreviews();
+                    }
+                    return;
+                }
+            }
             const swatchUrl = color.thumb || color.image;
             if (!swatchUrl) return;
             BrandedColorHex.sampleFromImage(swatchUrl).then(function (hex) {
@@ -10330,6 +10362,42 @@
         return '';
     }
 
+    function getGarmentThumbUrlForSampling() {
+        const id = state.selectedColor;
+        if (Array.isArray(PRODUCT_COLORS) && id) {
+            const match = PRODUCT_COLORS.find(function (c) { return c.id === id; });
+            if (match) return match.thumb || match.image || '';
+        }
+        return state.selectedColorImage || '';
+    }
+
+    /** Campiona colore dalla foto prodotto nascosta; non tocca il PNG front nelle card posizione. */
+    function refreshGarmentLogoBackgroundBehindScenes(root) {
+        const G = window.GarmentColorBehindScenes;
+        if (!G) return Promise.resolve('');
+        const thumbUrl = getGarmentThumbUrlForSampling();
+        if (!thumbUrl) return Promise.resolve('');
+
+        const selectedHex = getSelectedColorHex();
+        return G.resolveGarmentLogoBackgroundHex({
+            colorImageUrl: thumbUrl,
+            apiHex: isUsableColorHex(selectedHex) ? selectedHex : ''
+        }).then(function (result) {
+            if (!result || !result.hex) return '';
+            const name = state.selectedColorName || '';
+            const code = state.product && state.product.code ? state.product.code : '';
+            if (window.BrandedColorHex) {
+                BrandedColorHex.register(name, result.hex, code);
+            }
+            if (Array.isArray(PRODUCT_COLORS) && state.selectedColor) {
+                const colorRow = PRODUCT_COLORS.find(function (c) { return c.id === state.selectedColor; });
+                if (colorRow) colorRow.hex = result.hex;
+            }
+            G.applyLogoBoxGarmentBackground(root || document, result.hex);
+            return result.hex;
+        });
+    }
+
     function getCurrentGarmentColorHex() {
         let hex = getSelectedColorHex();
         if (!hex && state.product && state.product.rawData && window.BrandedColorHex) {
@@ -10349,6 +10417,9 @@
     }
 
     function resolveGarmentPreviewHex() {
+        const code = state.product && state.product.code ? state.product.code : '';
+        const colourName = state.selectedColorName || state.selectedColor || '';
+        const imageUrl = state.selectedColorImage || '';
         let hex = getCurrentGarmentColorHex();
         const raw = state.product && state.product.rawData;
         if (raw && raw.colorHex && window.BrandedColorHex) {
@@ -10356,20 +10427,18 @@
             if (BrandedColorHex.isUsableHex(fromBasket)) hex = fromBasket;
         }
         if (window.BrandedColorHex) {
-            const parsed = BrandedColorHex.parseHex(hex);
-            if (BrandedColorHex.isUsableHex(parsed)) {
-                hex = parsed;
-            } else {
-                const code = state.product && state.product.code ? state.product.code : '';
-                hex = BrandedColorHex.lookup(
-                    state.selectedColorName || state.selectedColor || '',
-                    code,
-                    state.selectedColorImage,
-                    state.selectedColor
-                ) || '';
+            const cached = typeof BrandedColorHex.getImageHexSync === 'function'
+                ? BrandedColorHex.getImageHexSync(imageUrl)
+                : '';
+            if (BrandedColorHex.isUsableHex(cached)) return cached;
+            if (typeof BrandedColorHex.resolveGarmentTint === 'function') {
+                const tinted = BrandedColorHex.resolveGarmentTint(hex, colourName, code, imageUrl);
+                if (BrandedColorHex.isUsableHex(tinted) && tinted !== '#ffffff') return tinted;
             }
+            const parsed = BrandedColorHex.parseHex(hex);
+            if (BrandedColorHex.isUsableHex(parsed)) return parsed;
         }
-        return hex || '';
+        return '';
     }
 
     function applyGarmentColorToPositionPreviews(root) {
@@ -10714,9 +10783,11 @@
         // ── Background: upgrade base64 logos to server URLs ──
         _upgradeBasketLogosToServer();
         
-        // Logo-only flow from basket (positions popup) — return to basket
+        // Logo-only flow from basket (positions popup) — return to basket.
+        // Only when genuinely editing an existing basket line; a fresh product
+        // must fall through to the "Add logo / Continue" popup below.
         const returnTarget = sessionStorage.getItem('returnAfterCustomize');
-        if (returnTarget === 'basket' && !isBasketSingleItemEdit()) {
+        if (returnTarget === 'basket' && !isBasketSingleItemEdit() && isActiveBasketItemEdit()) {
             sessionStorage.removeItem('customizingBasketIndex');
             sessionStorage.removeItem('returnAfterCustomize');
             showToast('Logo saved! Returning to basket…');

@@ -690,6 +690,19 @@ textarea {
   transform-origin: center center;
 }
 
+/* Beanie: centre an oversized (>100%) wrap with symmetric overflow via flex,
+   so it grows without a transform scale (which would break logo drag math). */
+.product-preview.product-beanie {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.product-preview.product-beanie .polo-colour-wrap {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
 /* --- Canvas info bar (hidden — replaced by product-header above canvas) --- */
 .canvas-info-bar { display: none; }
 
@@ -884,20 +897,42 @@ textarea {
   rotate: 0deg;
   transform-origin: center center;
   transition: opacity 0.12s linear;
+  overflow: visible;
+  --logo-chrome-gap: 10px;
+  --logo-chrome-btn: 24px;
 }
 
 .design-layer {
-  width: 130px;
-  height: 130px;
   top: 50px;
   left: 30px;
   display: none;
-  justify-content: center;
-  align-items: center;
+  /* Shrink-wrap to the logo frame so the chrome (label/toolbar at left:50%) is
+     centred over the logo — not over the whole canvas — and dragging stays put. */
+  width: fit-content;
+  height: fit-content;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  --logo-chrome-gap: 8px;
+  --logo-handle-size: 14px;
+  --logo-toolbar-btn: 30px;
 }
 
 .design-layer.active-logo {
-  border: 1px dashed #111;
+  border: none;
+}
+
+.logo-frame {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  border: 1px dashed transparent;
+  box-sizing: border-box;
+}
+
+.design-layer.active-logo .logo-frame {
+  border-color: #111;
 }
 
 .design-layer img {
@@ -906,6 +941,7 @@ textarea {
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  display: block;
 }
 
 .text-layer {
@@ -940,122 +976,173 @@ textarea {
 .logo-size-label,
 .text-size-label {
   position: absolute;
-  top: -22px;
   left: 50%;
+  bottom: calc(100% + var(--logo-chrome-gap));
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.65);
-  color: #fff;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: #fff;
+  color: #111;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
   white-space: nowrap;
   display: none;
-  z-index: 120;
+  z-index: 220;
+  pointer-events: none;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  max-width: calc(100vw - 24px);
+  text-align: center;
+}
+
+.logo-toolbar {
+  position: absolute;
+  top: calc(100% + var(--logo-chrome-gap));
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 220;
+  pointer-events: auto;
 }
 
 .logo-delete-btn,
 .logo-settings-btn,
+.logo-toolbar .rotate-handle,
 .text-delete-btn,
-.text-settings-btn {
-  position: absolute;
+.text-settings-btn,
+.text-rotate-handle {
+  position: relative;
   display: none;
-  border: none;
-  z-index: 120;
+  z-index: 220;
   cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  padding: 0;
+  font-family: inherit;
 }
 
 .logo-delete-btn,
 .text-delete-btn {
-  right: -14px;
-  top: -14px;
-  width: 16px;
-  height: 16px;
-  background: transparent !important;
-  color: #dc2626 !important;
-  border: 1.5px dashed #dc2626 !important;
-  box-shadow: none;
+  width: var(--logo-toolbar-btn);
+  height: var(--logo-toolbar-btn);
   border-radius: 50%;
-  font-size: 11px;
+  background: transparent;
+  color: #dc2626;
+  border: 1px dashed #fff;
+  box-shadow: none;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  z-index: 220;
 }
 
 .logo-settings-btn,
 .text-settings-btn {
-  bottom: -38px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #444;
+  height: auto;
+  min-width: 0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: #4b5563;
   color: #fff;
-  border-radius: 5px;
-  padding: 3px 8px;
+  border: 1px solid #fff;
   font-size: 11px;
-  z-index: 110;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+.logo-toolbar .rotate-handle,
+.text-rotate-handle {
+  width: var(--logo-toolbar-btn);
+  height: var(--logo-toolbar-btn);
+  border-radius: 50%;
+  background: #6b7280;
+  color: #fff;
+  border: 2px solid #fff;
+  font-size: 15px;
+  cursor: grab;
+  touch-action: none;
+  transform: none;
 }
 
 .resize-dot,
 .text-resize-dot {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  background: #333;
+  width: var(--logo-handle-size);
+  height: var(--logo-handle-size);
+  background: #6b7280;
   border: 2px solid #fff;
-  border-radius: 4px;
+  border-radius: 50%;
   display: none;
-  align-items: center;
-  justify-content: center;
   z-index: 150;
   touch-action: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  padding: 0;
+}
+
+/* Enlarge the touch target around each corner handle (finger-friendly) so
+   grabbing a corner resizes instead of accidentally dragging the logo. */
+.resize-dot::before,
+.text-resize-dot::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+}
+
+.dot-tl,
+.text-dot-tl {
+  top: calc(var(--logo-handle-size) / -2);
+  left: calc(var(--logo-handle-size) / -2);
+  cursor: nwse-resize;
+}
+
+.dot-tr,
+.text-dot-tr {
+  top: calc(var(--logo-handle-size) / -2);
+  right: calc(var(--logo-handle-size) / -2);
+  cursor: nesw-resize;
+}
+
+.dot-bl,
+.text-dot-bl {
+  bottom: calc(var(--logo-handle-size) / -2);
+  left: calc(var(--logo-handle-size) / -2);
+  cursor: nesw-resize;
 }
 
 .dot-br,
 .text-dot-br {
-  bottom: -12px;
-  right: -12px;
+  bottom: calc(var(--logo-handle-size) / -2);
+  right: calc(var(--logo-handle-size) / -2);
   cursor: nwse-resize;
 }
 
-.text-dot-br {
-  bottom: -18px;
-  right: -18px;
-}
-
-.rotate-handle,
-.text-rotate-handle {
-  position: absolute;
-  right: -30px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  background: transparent;
-  color: #6b7280;
-  border: 1.5px dashed #9ca3af;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  cursor: grab;
-  z-index: 120;
-  touch-action: none;
-}
-
 .design-layer.active-logo .logo-size-label,
-.design-layer.active-logo .logo-delete-btn,
-.design-layer.active-logo .logo-settings-btn,
-.design-layer.active-logo .resize-dot,
-.design-layer.active-logo .rotate-handle,
+.design-layer.active-logo .logo-toolbar,
+.design-layer.active-logo .logo-frame .resize-dot,
 .text-layer.active-text .text-delete-btn,
 .text-layer.active-text .text-settings-btn,
 .text-layer.active-text .text-size-label,
 .text-layer.active-text .text-resize-dot,
 .text-layer.active-text .text-rotate-handle {
   display: flex;
+}
+
+.design-layer.active-logo .logo-toolbar .logo-delete-btn,
+.design-layer.active-logo .logo-toolbar .logo-settings-btn,
+.design-layer.active-logo .logo-toolbar .rotate-handle {
+  display: flex;
+}
+
+.design-layer.active-logo .logo-frame .resize-dot {
+  display: block;
 }
 
 .side-actions {
@@ -2802,6 +2889,22 @@ textarea {
   overflow: hidden;
 }
 
+.preview-modal .product-preview {
+  width: min(100%, 420px);
+  margin: 0 auto;
+  transform: none !important;
+  transition: none !important;
+}
+
+.preview-modal .polo-colour-wrap {
+  isolation: isolate;
+}
+
+.preview-modal .product-image,
+.preview-modal .colour-layer {
+  opacity: 1 !important;
+}
+
 /* --- Bottom Sheet --- */
 .bottom-sheet {
   background: #fff;
@@ -2951,6 +3054,59 @@ textarea {
 
 .customiser-app.product-tshirt .view-tabs-side .view-tab[data-area="left-sleeve"] {
   display: flex;
+}
+
+.customiser-app.product-beanie .view-tab[data-area="back"],
+.customiser-app.product-beanie .view-tab[data-area="left"],
+.customiser-app.product-beanie .view-tab[data-area="right"],
+.customiser-app.product-beanie .view-tab[data-area="left-sleeve"],
+.customiser-app.product-beanie .view-tab[data-area="right-sleeve"] {
+  display: none !important;
+}
+
+.product-preview.product-beanie.area-front .polo-colour-wrap,
+.product-preview.product-beanie.area-back .polo-colour-wrap {
+  aspect-ratio: 1 / 1;
+}
+
+.product-preview.product-beanie .product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+}
+
+/* Beanie: embroidery-only — disabled DTF / Screen Printing logo options */
+.print-type-card.is-disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.print-type-card.is-disabled .print-type-chevron {
+  display: none;
+}
+
+/* Folding-area embroidery height warning */
+.embroidery-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.embroidery-warning svg {
+  flex: 0 0 auto;
+  color: #ea580c;
 }
 
 .view-tabs-side .view-tab {

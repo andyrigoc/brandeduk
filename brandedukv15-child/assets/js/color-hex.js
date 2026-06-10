@@ -5,8 +5,27 @@
 (function (window) {
     'use strict';
 
-    var STORAGE_KEY = 'brandedukColorHexIndex';
+    var STORAGE_KEY = 'brandedukColorHexIndexV2';
     var PLACEHOLDER_HEX = new Set(['#cccccc', '#ccc', '#f3f4f6']);
+    /** Never use for garment tint or swatch fill — catalogue unknown fallback only */
+    var PLACEHOLDER_SWATCH = new Set(['#d1d5db', '#cccccc', '#ccc']);
+
+    /** Extra catalog hints (substring match) — all products, all suppliers */
+    var COLOR_HINTS = {
+        'classic olive': '#5f6741', 'olive': '#5f6741', 'bottle green': '#1b4d3e',
+        'deep navy': '#1a2744', 'heather grey': '#9aa0a9', 'light graphite': '#6b7280',
+        'royal blue': '#1f4fa8', 'classic navy': '#1f2f4f', 'classic red': '#c02b33',
+        'black marl': '#2e2e2e', 'carbon': '#4a4a4a', 'dark grey marl': '#8f9399',
+        'desert sand': '#d8c5a3', 'eco raw': '#e8dcc8', 'forest green': '#2d6a3e',
+        'grey marl': '#9aa0a9', 'hot pink': '#ff69b4', 'kelly green': '#4cbb17',
+        'navy marl': '#2d3c56', 'pine green': '#1f5c37', 'orchid': '#ae78b7',
+        'lavender': '#b7a3d2', 'sage': '#9caf88', 'sport grey': '#b5b8be',
+        'ice grey': '#d5d8dd', 'military green': '#4d5a43', 'stone blue': '#70879e',
+        'light blue': '#9dc0e8', 'sky': '#8fb8d8', 'sapphire': '#1360a8',
+        'cardinal red': '#a02134', 'cherry red': '#b32636', 'texas orange': '#c45b23',
+        'safety orange': '#ef7f28', 'safety green': '#b7d43a', 'prairie dust': '#d6c5a7',
+        'dark heather': '#575b63', 'heather navy': '#2d3c56', 'graphite': '#4b515a'
+    };
 
     /** Gildan / catalog defaults + shop primary-colour swatches + common workwear names */
     var BUILTIN = {
@@ -53,8 +72,30 @@
     var byProduct = Object.create(null);
     var byImage = Object.create(null);
     var productFetchPending = Object.create(null);
+    var samplePending = Object.create(null);
     var databaseLoadPromise = null;
     var DATABASE_URL = '/brandedukv15-child/assets/data/color-hex-database.json';
+    function resolveProxyEndpoints() {
+        var list = [];
+        var isLocal = false;
+        try {
+            var host = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '';
+            isLocal = host === '127.0.0.1' || host === 'localhost' || host === '';
+        } catch (e) { isLocal = false; }
+
+        if (isLocal) {
+            // Local dev (Live Server :5507 has no /api): hit the standalone eyedropper server first.
+            list.push('http://127.0.0.1:8787/api/sample-color');
+            list.push('/api/sample-color');
+            list.push('https://www.brandeduk.com/api/sample-color');
+        } else {
+            list.push('/api/sample-color');
+            list.push('https://www.brandeduk.com/api/sample-color');
+        }
+        return list;
+    }
+
+    var SAMPLE_COLOR_PROXY_ENDPOINTS = resolveProxyEndpoints();
 
     function normName(name) {
         return String(name || '')
@@ -77,7 +118,156 @@
 
     function isUsableHex(hex) {
         var p = parseHex(hex);
-        return p && !PLACEHOLDER_HEX.has(p);
+        return p && !PLACEHOLDER_HEX.has(p) && !PLACEHOLDER_SWATCH.has(p);
+    }
+
+    function isPlaceholderSwatchHex(hex) {
+        var p = parseHex(hex);
+        return !p || PLACEHOLDER_SWATCH.has(p);
+    }
+
+    function inferHexFromColourName(name) {
+        var n = normName(name);
+        if (!n) return '';
+        if (n.indexOf('lilac') >= 0 || n.indexOf('lavender') >= 0) return '#b7a3d2';
+        if (n.indexOf('violet') >= 0 || n.indexOf('plum') >= 0) return '#7b5ca7';
+        if (n.indexOf('purple') >= 0) return '#6f53a6';
+        if (n.indexOf('orchid') >= 0) return '#ae78b7';
+        if (n.indexOf('sage') >= 0) return '#9caf88';
+        if (n.indexOf('olive') >= 0) return '#5f6741';
+        if (n.indexOf('charcoal') >= 0 || n.indexOf('graphite') >= 0 || n.indexOf('anthracite') >= 0) return '#4b515a';
+        if (n.indexOf('heather') >= 0 && (n.indexOf('grey') >= 0 || n.indexOf('gray') >= 0)) return '#9aa0a9';
+        if (n.indexOf('marl') >= 0 && n.indexOf('black') >= 0) return '#2e2e2e';
+        if (n.indexOf('marl') >= 0 && n.indexOf('navy') >= 0) return '#2d3c56';
+        if (n.indexOf('marl') >= 0 && (n.indexOf('grey') >= 0 || n.indexOf('gray') >= 0)) return '#9aa0a9';
+        if (n.indexOf('carbon') >= 0) return '#4a4a4a';
+        if (n.indexOf('desert sand') >= 0) return '#d8c5a3';
+        if (n.indexOf('eco raw') >= 0) return '#e8dcc8';
+        if (n.indexOf('hot pink') >= 0) return '#ff69b4';
+        if (n.indexOf('bottle') >= 0) return '#1b4d3e';
+        if (n.indexOf('forest') >= 0 || n.indexOf('pine') >= 0 || n.indexOf('kelly') >= 0) return '#2d6a3e';
+        if (n.indexOf('green') >= 0) return '#2d6a3e';
+        if (n.indexOf('khaki') >= 0) return '#c3b091';
+        if (n.indexOf('teal') >= 0) return '#008080';
+        if (n.indexOf('yellow') >= 0) return '#eab308';
+        if (n.indexOf('sand') >= 0) return '#d8c5a3';
+        if (n.indexOf('pink') >= 0) return '#e96aa3';
+        if (n.indexOf('orange') >= 0) return '#de6a24';
+        if (n.indexOf('royal') >= 0) return '#1f4fa8';
+        if (n.indexOf('navy') >= 0) return '#1f2f4f';
+        if (n.indexOf('blue') >= 0) return '#4a90c6';
+        if (n.indexOf('grey') >= 0 || n.indexOf('gray') >= 0) return '#9ca3af';
+        if (n.indexOf('red') >= 0) return '#c02b33';
+        if (n.indexOf('black') >= 0) return '#1a1a1a';
+        if (n.indexOf('white') >= 0) return '#ffffff';
+        return '';
+    }
+
+    function findHintHexByName(name) {
+        var key = normName(name);
+        if (!key) return '';
+        if (COLOR_HINTS[key]) return COLOR_HINTS[key];
+        var best = '';
+        var bestLen = 0;
+        Object.keys(COLOR_HINTS).forEach(function (hintKey) {
+            if (hintKey === 'model') return;
+            if (key.indexOf(hintKey) >= 0 && hintKey.length > bestLen) {
+                best = COLOR_HINTS[hintKey];
+                bestLen = hintKey.length;
+            }
+        });
+        return best;
+    }
+
+    function variantImageUrl(entry) {
+        if (!entry || typeof entry !== 'object') return '';
+        return String(entry.main || entry.image || entry.thumb || entry.thumbnail || '').trim();
+    }
+
+    function resolveForName(colorName, productCode, imageUrl, directHex) {
+        var direct = parseHex(directHex);
+        if (isUsableHex(direct)) return direct;
+        var fromLookup = lookup(colorName, productCode, imageUrl);
+        if (isUsableHex(fromLookup)) return fromLookup;
+        var hint = findHintHexByName(colorName);
+        if (isUsableHex(hint)) return hint;
+        var inferred = inferHexFromColourName(colorName);
+        if (isUsableHex(inferred)) return inferred;
+        return '';
+    }
+
+    function resolveForEntry(entry, productCode) {
+        if (!entry || typeof entry !== 'object') return '';
+        var name = String(entry.name || entry.displayName || entry.label || entry.id || '').trim();
+        if (!name) return '';
+        return resolveForName(
+            name,
+            productCode,
+            variantImageUrl(entry),
+            entry.hex || entry.colourHex || entry.colorHex || ''
+        );
+    }
+
+    function getImageHexSync(imageUrl) {
+        var url = String(imageUrl || '').trim();
+        if (!url) return '';
+        return parseHex(byImage[url] || '');
+    }
+
+    /**
+     * Garment tint, progressive:
+     *  1) eyedropper-sampled hex (best, from thumbnail RGB)
+     *  2) explicit API hex
+     *  3) known colour (DB / name) so the garment is never blank
+     */
+    function resolveGarmentTint(hex, colorName, productCode, imageUrl) {
+        var fromImage = getImageHexSync(imageUrl);
+        if (isUsableHex(fromImage)) return fromImage;
+        var direct = parseHex(hex);
+        if (isUsableHex(direct)) return direct;
+        var byNameHex = resolveForName(colorName, productCode, imageUrl, '');
+        if (isUsableHex(byNameHex)) return byNameHex;
+        return '#ffffff';
+    }
+
+    function fillColourPairs(pairs, productCode, getImageForName) {
+        if (!Array.isArray(pairs) || !pairs.length) return false;
+        var changed = false;
+        for (var i = 0; i < pairs.length; i++) {
+            var hex = pairs[i][1];
+            if (!isPlaceholderSwatchHex(hex) && isUsableHex(hex)) continue;
+            var imageUrl = typeof getImageForName === 'function' ? getImageForName(pairs[i][0]) : '';
+            var fromImage = getImageHexSync(imageUrl);
+            if (fromImage) {
+                pairs[i][1] = fromImage;
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    function applySwatchAppearance(el, name, hex, thumbUrl) {
+        if (!el) return;
+        el.style.backgroundColor = '';
+        el.style.backgroundImage = '';
+        el.style.backgroundSize = '';
+        el.style.backgroundPosition = '';
+        el.style.backgroundRepeat = '';
+        delete el.dataset.swatchSource;
+        var thumb = String(thumbUrl || '').trim();
+        if (thumb) {
+            el.style.backgroundColor = '#f3f4f6';
+            el.style.backgroundImage = 'url("' + thumb + '")';
+            el.style.backgroundSize = 'cover';
+            el.style.backgroundPosition = 'center top';
+            el.dataset.swatchSource = 'thumb';
+            return;
+        }
+        if (!isPlaceholderSwatchHex(hex) && isUsableHex(hex)) {
+            el.style.backgroundColor = hex;
+            return;
+        }
+        el.style.backgroundColor = '#f3f4f6';
     }
 
     function loadPersisted() {
@@ -131,32 +321,41 @@
             register(k, src[k]);
             if (!before && globalMap[normName(k)]) added++;
         });
+        // Merge eyedropper-sampled colours keyed by thumbnail URL (exact RGB match).
+        if (data.byImage && typeof data.byImage === 'object') {
+            Object.keys(data.byImage).forEach(function (url) {
+                var h = parseHex(data.byImage[url]);
+                if (url && isUsableHex(h) && !byImage[url]) byImage[url] = h;
+            });
+        }
         return added;
     }
 
-    function resolveDatabaseUrl() {
+    function resolveDatabaseUrls() {
+        var names = ['color-hex-database.json', 'color-hex-sampled.json'];
         if (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) {
             try {
-                return new URL('../data/color-hex-database.json', document.currentScript.src).href;
+                return names.map(function (n) {
+                    return new URL('../data/' + n, document.currentScript.src).href;
+                });
             } catch (e) { /* fall through */ }
         }
-        return DATABASE_URL;
+        return names.map(function (n) {
+            return '/brandedukv15-child/assets/data/' + n;
+        });
     }
 
     function loadExternalDatabase() {
         if (databaseLoadPromise) return databaseLoadPromise;
-        databaseLoadPromise = fetch(resolveDatabaseUrl(), { cache: 'no-cache' })
-            .then(function (res) {
-                if (!res.ok) throw new Error('color database ' + res.status);
-                return res.json();
-            })
-            .then(function (data) {
-                mergeDatabaseGlobal(data);
-                return true;
-            })
-            .catch(function () {
-                return false;
-            });
+        var urls = resolveDatabaseUrls();
+        databaseLoadPromise = Promise.all(urls.map(function (url) {
+            return fetch(url, { cache: 'no-cache' })
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (data) { if (data) mergeDatabaseGlobal(data); return !!data; })
+                .catch(function () { return false; });
+        })).then(function (results) {
+            return results.some(Boolean);
+        });
         return databaseLoadPromise;
     }
 
@@ -165,8 +364,8 @@
         colors.forEach(function (c) {
             if (!c) return;
             var name = c.name || c.colour_name || c.label || '';
-            var hex = c.hex || c.colourHex || c.colorHex || c.colour_hex || c.color_hex || '';
-            if (!isUsableHex(hex)) hex = lookupByName(name);
+            var imageUrl = variantImageUrl(c);
+            var hex = getImageHexSync(imageUrl) || parseHex(c.hex || c.colourHex || c.colorHex || '');
             register(name, hex, productCode);
         });
         persist();
@@ -197,7 +396,19 @@
         if (prefixBest) return globalMap[prefixBest];
         var firstWord = raw.split(/\s+/)[0];
         if (firstWord && firstWord !== raw && globalMap[firstWord]) return globalMap[firstWord];
-        return '';
+        var hint = findHintHexByName(colorName);
+        if (hint) return hint;
+        var best = '';
+        var bestLen = 0;
+        Object.keys(globalMap).forEach(function (k) {
+            if (k === 'model' || k === 'neutral') return;
+            if (raw.indexOf(k) >= 0 && k.length > bestLen) {
+                best = globalMap[k];
+                bestLen = k.length;
+            }
+        });
+        if (best) return best;
+        return inferHexFromColourName(colorName) || '';
     }
 
     function resolveDisplayName(colorName, colorId) {
@@ -232,7 +443,9 @@
         var fromName = lookupByName(colorName, colorId);
         if (fromName) return fromName;
         if (imageUrl && byImage[imageUrl]) return byImage[imageUrl];
-        return '';
+        var hint = findHintHexByName(colorName);
+        if (hint) return hint;
+        return inferHexFromColourName(colorName) || '';
     }
 
     function hydrateProduct(productCode) {
@@ -252,52 +465,149 @@
         return productFetchPending[code];
     }
 
-    function sampleFromImage(imageUrl) {
-        if (!imageUrl || byImage[imageUrl]) {
-            return Promise.resolve(byImage[imageUrl] || '');
+    function cacheSampledHex(imageUrl, hex) {
+        var url = String(imageUrl || '').trim();
+        var parsed = parseHex(hex);
+        if (!url || !isUsableHex(parsed)) return '';
+        byImage[url] = parsed;
+        persist();
+        return parsed;
+    }
+
+    function sampleImageElement(imageUrl, img) {
+        var ED = global.BrandedColorEyedropper;
+        try {
+            var sample = ED && typeof ED.sampleEyedropperFromImageElement === 'function'
+                ? ED.sampleEyedropperFromImageElement(img, 48)
+                : null;
+            return sample && sample.hex ? cacheSampledHex(imageUrl, sample.hex) : '';
+        } catch (e) {
+            return '';
         }
+    }
+
+    /**
+     * Bulletproof browser eyedropper: fetch the thumbnail as a CORS blob and draw it
+     * from an object URL. Object URLs are same-origin, so the canvas is never tainted
+     * even if the swatch already cached the image without CORS. The CDN
+     * (cdn.pimber.ly) returns Access-Control-Allow-Origin:* so this works with no server.
+     */
+    function sampleFromBlob(imageUrl) {
+        return fetchWithTimeout(imageUrl, 6000)
+            .then(function (res) { return res && res.ok ? res.blob() : null; })
+            .then(function (blob) {
+                if (!blob) return '';
+                return new Promise(function (resolve) {
+                    var objUrl = URL.createObjectURL(blob);
+                    var img = new Image();
+                    img.onload = function () {
+                        var hex = sampleImageElement(imageUrl, img);
+                        URL.revokeObjectURL(objUrl);
+                        resolve(hex);
+                    };
+                    img.onerror = function () { URL.revokeObjectURL(objUrl); resolve(''); };
+                    img.src = objUrl;
+                });
+            })
+            .catch(function () { return ''; });
+    }
+
+    /** Fallback: crossOrigin <img> direct (works when not previously cached no-cors). */
+    function sampleFromCrossOriginImage(imageUrl) {
         return new Promise(function (resolve) {
             var img = new Image();
             img.crossOrigin = 'anonymous';
-            img.onload = function () {
-                try {
-                    var canvas = document.createElement('canvas');
-                    var size = 24;
-                    canvas.width = size;
-                    canvas.height = size;
-                    var ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, size, size);
-                    var data = ctx.getImageData(0, 0, size, size).data;
-                    var r = 0, g = 0, b = 0, count = 0;
-                    var margin = Math.floor(size * 0.25);
-                    for (var y = margin; y < size - margin; y++) {
-                        for (var x = margin; x < size - margin; x++) {
-                            var i = (y * size + x) * 4;
-                            var pr = data[i], pg = data[i + 1], pb = data[i + 2], pa = data[i + 3];
-                            if (pa < 128) continue;
-                            var lum = (0.299 * pr + 0.587 * pg + 0.114 * pb) / 255;
-                            if (lum > 0.94 || lum < 0.06) continue;
-                            r += pr; g += pg; b += pb; count++;
-                        }
-                    }
-                    if (!count) {
-                        resolve('');
-                        return;
-                    }
-                    var hex = '#' + [r, g, b].map(function (v) {
-                        return Math.round(v / count).toString(16).padStart(2, '0');
-                    }).join('');
-                    if (isUsableHex(hex)) {
-                        byImage[imageUrl] = hex;
-                        persist();
-                    }
-                    resolve(hex);
-                } catch (e) {
-                    resolve('');
-                }
-            };
+            img.onload = function () { resolve(sampleImageElement(imageUrl, img)); };
             img.onerror = function () { resolve(''); };
             img.src = imageUrl;
+        });
+    }
+
+    function sampleFromImageViaCanvas(imageUrl) {
+        return sampleFromBlob(imageUrl).then(function (hex) {
+            if (isUsableHex(hex)) return hex;
+            return sampleFromCrossOriginImage(imageUrl);
+        });
+    }
+
+    function fetchWithTimeout(url, timeoutMs) {
+        if (typeof AbortController === 'undefined') {
+            return fetch(url, { mode: 'cors', credentials: 'omit' });
+        }
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeoutMs || 4000);
+        return fetch(url, { mode: 'cors', credentials: 'omit', signal: controller.signal })
+            .finally(function () { clearTimeout(timer); });
+    }
+
+    function sampleFromImageViaProxy(imageUrl) {
+        var encoded = encodeURIComponent(imageUrl);
+        var chain = Promise.resolve('');
+
+        SAMPLE_COLOR_PROXY_ENDPOINTS.forEach(function (base) {
+            chain = chain.then(function (hex) {
+                if (isUsableHex(hex)) return hex;
+                var proxyUrl = base + '?url=' + encoded;
+                return fetchWithTimeout(proxyUrl, 4000)
+                    .then(function (res) {
+                        if (!res.ok) return '';
+                        return res.json();
+                    })
+                    .then(function (payload) {
+                        var sampled = payload && payload.hex ? payload.hex : '';
+                        return cacheSampledHex(imageUrl, sampled);
+                    })
+                    .catch(function () { return ''; });
+            });
+        });
+
+        return chain;
+    }
+
+    /** Eyedropper RGB from thumbnail — canvas first, then /api/sample-color (CORS bypass). */
+    function sampleFromImage(imageUrl) {
+        var url = String(imageUrl || '').trim();
+        if (!url) return Promise.resolve('');
+        if (byImage[url]) return Promise.resolve(byImage[url]);
+        if (samplePending[url]) return samplePending[url];
+
+        samplePending[url] = sampleFromImageViaCanvas(url)
+            .then(function (hex) {
+                if (isUsableHex(hex)) return hex;
+                return sampleFromImageViaProxy(url);
+            })
+            .finally(function () {
+                delete samplePending[url];
+            });
+
+        return samplePending[url];
+    }
+
+    function resolveGarmentHexAsync(colorName, productCode, imageUrl, apiHex) {
+        var url = String(imageUrl || '').trim();
+        var direct = parseHex(apiHex);
+        // Ensure the static sampled database (byImage) is loaded first — gives the
+        // exact eyedropper colour instantly with no live sampling / CORS / server.
+        return loadExternalDatabase().then(function () {
+            return resolveGarmentHexAfterDb(url, direct, colorName, productCode);
+        });
+    }
+
+    function resolveGarmentHexAfterDb(url, direct, colorName, productCode) {
+        var cached = getImageHexSync(url);
+        if (isUsableHex(cached)) return Promise.resolve(cached);
+        if (!url) {
+            return Promise.resolve(isUsableHex(direct) ? direct : '');
+        }
+        return sampleFromImage(url).then(function (sampled) {
+            if (isUsableHex(sampled)) {
+                register(colorName, sampled, productCode);
+                try { console.log('[eyedropper]', colorName, '→', sampled, url); } catch (e) {}
+                return sampled;
+            }
+            try { console.warn('[eyedropper] sampling failed for', colorName, url, '(is the API server running? npm run eyedropper-api)'); } catch (e) {}
+            if (isUsableHex(direct)) return direct;
+            return '';
         });
     }
 
@@ -384,6 +694,14 @@
     window.BrandedColorHex = {
         parseHex: parseHex,
         isUsableHex: isUsableHex,
+        isPlaceholderSwatchHex: isPlaceholderSwatchHex,
+        inferFromName: inferHexFromColourName,
+        resolveForName: resolveForName,
+        resolveForEntry: resolveForEntry,
+        resolveGarmentTint: resolveGarmentTint,
+        fillColourPairs: fillColourPairs,
+        applySwatchAppearance: applySwatchAppearance,
+        variantImageUrl: variantImageUrl,
         register: register,
         registerProductColors: registerProductColors,
         lookup: lookup,
@@ -394,6 +712,9 @@
         hydrateBasketItems: hydrateBasketItems,
         loadExternalDatabase: loadExternalDatabase,
         sampleFromImage: sampleFromImage,
-        PLACEHOLDER_HEX: PLACEHOLDER_HEX
+        getImageHexSync: getImageHexSync,
+        resolveGarmentHexAsync: resolveGarmentHexAsync,
+        PLACEHOLDER_HEX: PLACEHOLDER_HEX,
+        PLACEHOLDER_SWATCH: PLACEHOLDER_SWATCH
     };
 })(window);

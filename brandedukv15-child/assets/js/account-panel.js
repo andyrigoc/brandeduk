@@ -43,6 +43,21 @@ window.BrandedAccountPanel = (function () {
         return initials.slice(0, 2).join('').toUpperCase();
     }
 
+    function avatarUrlFromUser(user) {
+        if (!user) return '';
+        var url = user.picture || user.avatar || user.avatarUrl || user.photo ||
+            user.photoURL || user.image || user.imageUrl || user.profileImage || '';
+        return typeof url === 'string' ? url.trim() : '';
+    }
+
+    function escapeAttr(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
     function currentReturnUrl() {
         var url = new URL(window.location.href);
         url.searchParams.delete('token');
@@ -130,11 +145,38 @@ window.BrandedAccountPanel = (function () {
             '.account-trigger-avatar{width:24px;height:24px;border-radius:999px;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;overflow:hidden;}' +
             '.account-trigger-avatar img{width:100%;height:100%;object-fit:cover;}' +
             '.account-trigger-name{max-width:92px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+            '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}' +
+            '.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}' +
             '.searchbar-header__account.is-signed-in .searchbar-header__action-ring{border-color:transparent;background:#C952DE;}' +
             '.searchbar-header__account.is-signed-in .searchbar-header__action-icon{stroke:#fff;fill:none;}' +
             '.nav-item.is-signed-in{color:#273469;font-weight:800;}' +
             '@media(max-width:767px){.account-trigger-profile{display:none;}}';
         document.head.appendChild(style);
+    }
+
+    // On the mobile bottom-nav (.nav-item), swap the person icon for the Google
+    // profile photo so it's obvious the user is signed in. On the desktop header
+    // the existing profile pill already shows the avatar, so we leave its icon.
+    function setNavIconAvatar(trigger, photoUrl, initials) {
+        if (!trigger || !trigger.classList.contains('nav-item')) return;
+        var svg = trigger.querySelector('svg');
+        var navAvatar = trigger.querySelector('.account-nav-avatar');
+        if (photoUrl) {
+            if (svg) svg.style.display = 'none';
+            if (!navAvatar) {
+                navAvatar = document.createElement('span');
+                navAvatar.className = 'account-nav-avatar';
+                var label = trigger.querySelector('.nav-item-label');
+                if (label) trigger.insertBefore(navAvatar, label);
+                else trigger.insertBefore(navAvatar, trigger.firstChild);
+            }
+            navAvatar.innerHTML = '<img src="' + escapeAttr(photoUrl) + '" alt="" ' +
+                'referrerpolicy="no-referrer" ' +
+                'onerror="this.remove();this.parentNode.textContent=\'' + escapeAttr(initials) + '\';">';
+        } else {
+            if (navAvatar) navAvatar.remove();
+            if (svg) svg.style.display = '';
+        }
     }
 
     function decorateAccountTrigger(refs, user) {
@@ -143,6 +185,7 @@ window.BrandedAccountPanel = (function () {
         refs.trigger.classList.toggle('is-signed-in', !!user);
         if (!user) {
             if (existing) existing.remove();
+            setNavIconAvatar(refs.trigger, '', '');
             var label = refs.trigger.querySelector('.nav-item-label');
             if (label) label.textContent = 'Account';
             refs.trigger.setAttribute('aria-label', 'My Account');
@@ -160,7 +203,14 @@ window.BrandedAccountPanel = (function () {
             refs.trigger.appendChild(existing);
         }
 
-        var avatar = '<span class="account-trigger-avatar">' + initialsFromUser(user) + '</span>';
+        var photoUrl = avatarUrlFromUser(user);
+        var initials = initialsFromUser(user);
+        setNavIconAvatar(refs.trigger, photoUrl, initials);
+        var avatarInner = photoUrl
+            ? '<img src="' + escapeAttr(photoUrl) + '" alt="" referrerpolicy="no-referrer" ' +
+              'onerror="this.remove();this.parentNode.textContent=\'' + escapeAttr(initials) + '\';">'
+            : initials;
+        var avatar = '<span class="account-trigger-avatar">' + avatarInner + '</span>';
         existing.innerHTML = avatar + '<span class="account-trigger-name">' + firstName + '</span>';
     }
 

@@ -50,6 +50,7 @@
                 <p id="detailStatus" class="status">Loading...</p>
             </div>
             <div class="actions">
+                <button type="button" class="btn" id="detailBackBtn">&larr; Back</button>
                 <a class="btn" id="detailOrdersLink" href="/orders">Orders</a>
                 <button type="button" class="btn-primary" id="orderAgainBtn">Order again</button>
             </div>
@@ -80,6 +81,15 @@
             var loadedOrder = null;
 
             document.getElementById('detailOrdersLink').href = Account.pageHref('orders');
+            document.getElementById('detailBackBtn').addEventListener('click', function () {
+                var sameOriginReferrer = document.referrer &&
+                    document.referrer.indexOf(window.location.origin) === 0;
+                if (sameOriginReferrer && window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = Account.pageHref('orders');
+                }
+            });
             document.getElementById('orderAgainBtn').addEventListener('click', function () {
                 if (!loadedOrder) return;
                 try {

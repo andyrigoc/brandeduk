@@ -1297,6 +1297,80 @@ function initAccountPanel() {
     
     // Storage key for user session
     const USER_SESSION_KEY = 'brandeduk-user-session';
+
+    if (!document.getElementById('accountNavAvatarStyle')) {
+        const navAvatarStyle = document.createElement('style');
+        navAvatarStyle.id = 'accountNavAvatarStyle';
+        navAvatarStyle.textContent = '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}';
+        document.head.appendChild(navAvatarStyle);
+    }
+
+    // Resolve the signed-in user from the mobile session OR the shared
+    // Google/OAuth keys, so the nav reflects any sign-in method.
+    function getCurrentUser() {
+        const sources = [USER_SESSION_KEY, 'authUser', 'coUser'];
+        for (const key of sources) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && typeof parsed === 'object') return parsed;
+                }
+            } catch (e) {}
+        }
+        return null;
+    }
+
+    function userFirstName(user) {
+        if (!user) return '';
+        if (user.firstName) return String(user.firstName).trim();
+        if (user.name) return String(user.name).trim().split(/\s+/)[0];
+        if (user.email) return String(user.email).split('@')[0];
+        return 'there';
+    }
+
+    function userInitials(user) {
+        const src = (user && (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email)) || 'BU';
+        const m = String(src).match(/\b\w/g) || ['B', 'U'];
+        return m.slice(0, 2).join('').toUpperCase();
+    }
+
+    function userPhoto(user) {
+        if (!user) return '';
+        const url = user.picture || user.avatar || user.avatarUrl || user.photo ||
+            user.photoURL || user.image || user.imageUrl || user.profileImage || '';
+        return typeof url === 'string' ? url.trim() : '';
+    }
+
+    // Swap the bottom-nav person icon for the Google profile photo (or initials)
+    // when signed in, so it's obvious the user is logged in.
+    function updateAccountNavIcon(user) {
+        const svg = accountBtn.querySelector('svg');
+        const label = accountBtn.querySelector('.nav-item-label');
+        let avatar = accountBtn.querySelector('.account-nav-avatar');
+        if (user) {
+            if (svg) svg.style.display = 'none';
+            if (!avatar) {
+                avatar = document.createElement('span');
+                avatar.className = 'account-nav-avatar';
+                if (label) accountBtn.insertBefore(avatar, label);
+                else accountBtn.appendChild(avatar);
+            }
+            const photo = userPhoto(user);
+            const initials = userInitials(user);
+            avatar.innerHTML = photo
+                ? '<img src="' + photo + '" alt="" referrerpolicy="no-referrer" onerror="this.remove();this.parentNode.textContent=\'' + initials + '\';">'
+                : initials;
+            if (label) label.textContent = 'Hi, ' + userFirstName(user);
+        } else {
+            if (avatar) avatar.remove();
+            if (svg) svg.style.display = '';
+            if (label) label.textContent = 'Account';
+        }
+    }
+
+    // Reflect any existing session in the nav as soon as the page loads.
+    updateAccountNavIcon(getCurrentUser());
     
     // Check if user is logged in
     function checkLoggedIn() {
@@ -1313,6 +1387,7 @@ function initAccountPanel() {
     function showLoggedInView(user) {
         document.querySelector('.account-forms-container').style.display = 'none';
         accountLoggedIn.style.display = 'block';
+        updateAccountNavIcon(user);
         
         document.getElementById('accountUserName').textContent = `Welcome, ${user.firstName}!`;
         document.getElementById('accountUserEmail').textContent = user.email;
@@ -1499,6 +1574,7 @@ function initAccountPanel() {
         localStorage.removeItem(USER_SESSION_KEY);
         showFormsView();
         resetForms();
+        updateAccountNavIcon(null);
         showToast('You have been signed out');
         
         if (navigator.vibrate) navigator.vibrate(10);

@@ -30,6 +30,11 @@ const state = {
 // Calibration: print area width = 30cm. Computed dynamically from actual rendered customArea.
 const PRINT_AREA_WIDTH_CM = 30;
 const INITIAL_LOGO_WIDTH_CM = 30;
+// Beanie embroidery is physically much smaller than the printable reference used
+// for garments, so its cm readout is calibrated separately: the visual size that
+// fills the cuff area must read ~6cm tall (≈ 10.40cm at the default scale → 6cm).
+const BEANIE_CM_SCALE = 10.4 / 6;
+const BEANIE_INITIAL_HEIGHT_CM = 6;
 
 function getPrintableAreaRatioByView(area) {
   const key = String(area || "").toLowerCase();
@@ -76,6 +81,13 @@ function getPxPerCm() {
   return refWidth / PRINT_AREA_WIDTH_CM;
 }
 
+// Effective px-per-cm used for size labels and the initial fit. Beanies use a
+// dedicated calibration so the embroidery reads at realistic cm values.
+function getEffectivePxPerCm() {
+  const base = getPxPerCm();
+  return state.product === "beanie" ? base * BEANIE_CM_SCALE : base;
+}
+
 const screens = document.querySelectorAll(".screen");
 const productPreview = document.getElementById("productPreview");
 const customArea = document.getElementById("customArea");
@@ -98,6 +110,10 @@ const confirmQualityBtn = document.getElementById("confirmQualityBtn");
 const colourLayer = document.getElementById("colourLayer");
 const designLayer = document.getElementById("designLayer");
 const uploadedLogo = document.getElementById("uploadedLogo");
+
+function getLogoFrameEl() {
+  return designLayer?.querySelector(".logo-frame") || designLayer;
+}
 const logoSettingsBtn = document.getElementById("logoSettingsBtn");
 const deleteLogoBtn = document.getElementById("deleteLogoBtn");
 const logoSizeLabel = document.getElementById("logoSizeLabel");
@@ -186,8 +202,162 @@ function updateAvailableColoursLabel() {
   sheetColourLabel.textContent = count > 0 ? `Colour (${count})` : "Colour";
 }
 
+/** PNG neutro per area (sidebar / mockup) — mai il thumbnail API. */
+function resolveNeutralGarmentPngForArea(area) {
+  const normalizedArea = String(area || "front").trim() || "front";
+  if (state.product === "beanie") {
+    return beanieFrontImage;
+  }
+
+  const tabThumb = document.querySelector(
+    `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
+  );
+  const tabSrc = tabThumb?.getAttribute("src") || tabThumb?.currentSrc || "";
+  if (tabSrc) return tabSrc;
+
+  if (state.product === "tshirt" && normalizedArea === "front") {
+    return tshirtFrontCustomImage;
+  }
+  return tshirtImages[normalizedArea] || tshirtImages.front;
+}
+
+function isWhiteColourName(name) {
+  return /\b(white|off[\s-]?white|arctic white|natural)\b/i.test(String(name || ""));
+}
+
+function applyGarmentTintHex(hex) {
+  const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
+  const BCH = brandedColour();
+  let tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
+
+  if (!tintHex) {
+    tintHex = resolveGarmentDisplayHex(hex, state.colourName, state.productCode, thumbUrl);
+  }
+  if (!tintHex && state.colourHex && !isPlaceholderSwatchHex(state.colourHex)) {
+    tintHex = state.colourHex;
+  }
+  if (!tintHex && isWhiteColourName(state.colourName)) {
+    tintHex = "#ffffff";
+  }
+  if (!tintHex || (tintHex === "#ffffff" && !isWhiteColourName(state.colourName))) {
+    return;
+  }
+
+  state.colourHex = tintHex;
+  if (colourLayer) colourLayer.style.backgroundColor = tintHex;
+  syncViewThumbTint();
+}
+
+/** Eyedropper RGB dal thumbnail API — mai dal nome colore. */
+async function refreshColourHexFromProductThumb(options) {
+  const opts = options || {};
+  const thumbUrl = String(
+    opts.thumbUrl ||
+    state.selectedColorImage ||
+    getColourImageForName(state.colourName) ||
+    ""
+  ).trim();
+  if (!thumbUrl) return state.colourHex || "#ffffff";
+
+  const apiHexOnly = normalizeHex(opts.apiHex || "");
+
+  let sampled = "";
+  const BCH = brandedColour();
+  if (BCH && typeof BCH.resolveGarmentHexAsync === "function") {
+    sampled = await BCH.resolveGarmentHexAsync(
+      state.colourName,
+      state.productCode,
+      thumbUrl,
+      apiHexOnly
+    );
+  } else {
+    const G = window.GarmentColorBehindScenes;
+    if (G && typeof G.resolveGarmentLogoBackgroundHex === "function") {
+      G.ensureHiddenSamplerImage(thumbUrl);
+      const resolved = await G.resolveGarmentLogoBackgroundHex({
+        colorImageUrl: thumbUrl,
+        apiHex: apiHexOnly
+      });
+      sampled = resolved?.hex || "";
+    }
+  }
+
+  if (!sampled || isPlaceholderSwatchHex(sampled)) {
+    return state.colourHex || "";
+  }
+
+  state.colourHex = sampled;
+  const colourIdx = colours.findIndex(
+    ([name]) => normalizeColorKey(name) === normalizeColorKey(state.colourName)
+  );
+  if (colourIdx >= 0) colours[colourIdx][1] = sampled;
+  if (BCH && typeof BCH.register === "function") {
+    BCH.register(state.colourName, sampled, state.productCode);
+  }
+  applyGarmentTintHex(sampled);
+  renderColours();
+  renderMiniColours();
+  return sampled;
+}
+
+async function hydrateGarmentColoursFromThumbs(productCode) {
+  const BCH = brandedColour();
+  if (!BCH || typeof BCH.sampleFromImage !== "function" || !Array.isArray(colours) || colours.length === 0) {
+    return false;
+  }
+
+  let changed = false;
+  await Promise.allSettled(
+    colours.map(async ([name, currentHex], index) => {
+      const imageUrl = getColourImageForName(name);
+      if (!imageUrl) return;
+      if (BCH.getImageHexSync && BCH.getImageHexSync(imageUrl)) return;
+
+      const sampled = await BCH.sampleFromImage(imageUrl);
+      if (!sampled || isPlaceholderSwatchHex(sampled)) return;
+
+      colours[index][1] = sampled;
+      BCH.register(name, sampled, productCode);
+      changed = true;
+    })
+  );
+
+  return changed;
+}
+
+function applySelectedProductColour(name, hex) {
+  state.colourName = name;
+  state.selectedColorImage = getColourImageForName(name) || "";
+  updateSelectedColourLabels(name);
+  applyGarmentTintHex(hex || "");
+
+  refreshColourHexFromProductThumb({
+    apiHex: normalizeHex(hex || ""),
+    thumbUrl: state.selectedColorImage
+  }).then(() => {
+    applyArea();
+  });
+
+  document.querySelectorAll(".colour-swatch, .mini-swatch").forEach((item) => {
+    item.classList.toggle("selected", item.title === name);
+  });
+}
+
 function syncViewThumbTint() {
-  const safeHex = normalizeHex(state.colourHex) || "#ffffff";
+  const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
+  const BCH = brandedColour();
+  let safeHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
+  if (!safeHex) {
+    safeHex = resolveGarmentDisplayHex(
+      state.colourHex,
+      state.colourName,
+      state.productCode,
+      thumbUrl
+    );
+  }
+  if (!safeHex || (safeHex === "#ffffff" && !isWhiteColourName(state.colourName))) {
+    safeHex = "";
+  }
 
   document.querySelectorAll(".view-tabs-side .view-tab").forEach((tabBtn) => {
     const thumbImg = tabBtn.querySelector(".view-thumb");
@@ -211,35 +381,17 @@ function syncViewThumbTint() {
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
     if (!thumbSrc) return;
 
+    if (!safeHex) {
+      colourLayer.style.opacity = "0";
+      return;
+    }
+
+    colourLayer.style.opacity = "1";
     colourLayer.style.backgroundColor = safeHex;
     colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
     colourLayer.style.maskImage = `url("${thumbSrc}")`;
   });
 }
-
-function enforceDeleteButtonStyle() {
-  [deleteLogoBtn, deleteTextBtn].forEach(btn => {
-    if (!btn) return;
-    btn.textContent = "×";
-    btn.style.setProperty("background", "transparent", "important");
-    btn.style.setProperty("color", "#dc2626", "important");
-    btn.style.setProperty("border", "1.5px dashed #dc2626", "important");
-    btn.style.setProperty("box-shadow", "none", "important");
-    btn.style.setProperty("border-radius", "50%", "important");
-    btn.style.setProperty("width", "16px", "important");
-    btn.style.setProperty("height", "16px", "important");
-    btn.style.setProperty("right", "-14px", "important");
-    btn.style.setProperty("top", "-14px", "important");
-    btn.style.setProperty("align-items", "center", "important");
-    btn.style.setProperty("justify-content", "center", "important");
-    btn.style.setProperty("font-weight", "700", "important");
-    btn.style.setProperty("font-size", "11px", "important");
-    btn.style.setProperty("line-height", "1", "important");
-    btn.style.setProperty("z-index", "220", "important");
-  });
-}
-
-enforceDeleteButtonStyle();
 
 const removeBackgroundCheck = document.getElementById("removeBackgroundCheck");
 const resizeProportionallyCheck = document.getElementById("resizeProportionallyCheck");
@@ -440,52 +592,64 @@ function normalizeColorKey(value) {
     .trim();
 }
 
-const COLOR_NAME_HEX_HINTS = {
-  "model": "#d9dde3",
-  "ash": "#c5c8cd",
-  "black": "#111111",
-  "blue dusk": "#4f6586",
-  "cardinal red": "#a02134",
-  "carolina blue": "#7aa4d8",
-  "charcoal": "#44474c",
-  "cherry red": "#b32636",
-  "daisy": "#f2d338",
-  "dark chocolate": "#4a3128",
-  "dark heather": "#575b63",
-  "forest": "#1f5c37",
-  "gold": "#e3b12e",
-  "heather navy": "#2d3c56",
-  "heliconia": "#cf3f82",
-  "ice grey": "#d5d8dd",
-  "indigo blue": "#365f8e",
-  "jade dome": "#0f8a71",
-  "light blue": "#9dc0e8",
-  "light pink": "#efbfd0",
-  "lime": "#8ecf4c",
-  "mint green": "#98d8b3",
-  "maroon": "#6b1f30",
-  "military green": "#4d5a43",
-  "natural": "#f1ead8",
-  "navy": "#1f2f4f",
-  "olive": "#5f6741",
-  "orange": "#de6a24",
-  "orchid": "#ae78b7",
-  "prairie dust": "#d6c5a7",
-  "purple": "#4a3f8e",
-  "radiant purple": "#7c3aed",
-  "red": "#c02b33",
-  "royal": "#1f4fa8",
-  "safety green": "#b7d43a",
-  "safety orange": "#ef7f28",
-  "sand": "#d8c5a3",
-  "sapphire": "#1360a8",
-  "sky": "#8fb8d8",
-  "sport grey": "#b5b8be",
-  "stone blue": "#70879e",
-  "tan": "#c8ad83",
-  "texas orange": "#c45b23",
-  "white": "#ffffff"
-};
+function brandedColour() {
+  return window.BrandedColorHex || null;
+}
+
+function isPlaceholderSwatchHex(hex) {
+  const BCH = brandedColour();
+  if (BCH && typeof BCH.isPlaceholderSwatchHex === "function") {
+    return BCH.isPlaceholderSwatchHex(hex);
+  }
+  const normalized = normalizeHex(hex);
+  return !normalized || normalized === "#d1d5db" || normalized === "#cccccc" || normalized === "#ccc";
+}
+
+function resolveColourHexForName(name, productCode, imageUrl, directHex) {
+  const BCH = brandedColour();
+  if (BCH && typeof BCH.resolveForName === "function") {
+    return BCH.resolveForName(name, productCode || "", imageUrl || "", directHex || "");
+  }
+  return "";
+}
+
+function resolveColourHexForEntry(entry, productCode) {
+  const BCH = brandedColour();
+  if (BCH && typeof BCH.resolveForEntry === "function") {
+    return BCH.resolveForEntry(entry, productCode || "");
+  }
+  return "";
+}
+
+function resolveGarmentDisplayHex(hex, colourName, productCode, imageUrl) {
+  const BCH = brandedColour();
+  const thumb = String(imageUrl || "").trim();
+  if (BCH && typeof BCH.getImageHexSync === "function" && thumb) {
+    const cached = BCH.getImageHexSync(thumb);
+    if (cached) return cached;
+  }
+  if (BCH && typeof BCH.resolveGarmentTint === "function") {
+    return BCH.resolveGarmentTint(hex, colourName, productCode, thumb);
+  }
+  const normalized = normalizeHex(hex);
+  if (normalized && !isPlaceholderSwatchHex(normalized)) return normalized;
+  return "#ffffff";
+}
+
+function fillMissingCatalogueColourHexes(productCode) {
+  const BCH = brandedColour();
+  if (!BCH || typeof BCH.fillColourPairs !== "function") return false;
+  return BCH.fillColourPairs(colours, productCode, getColourImageForName);
+}
+
+function applySwatchAppearance(el, name, hex) {
+  const BCH = brandedColour();
+  if (BCH && typeof BCH.applySwatchAppearance === "function") {
+    BCH.applySwatchAppearance(el, name, hex, getColourImageForName(name));
+    return;
+  }
+  if (el) el.style.backgroundColor = hex || "#f3f4f6";
+}
 
 function resolveBrandLogoUrl(brandName, productData) {
   const explicitLogo = productData?.brandLogo || productData?.brand_logo || productData?.logo || "";
@@ -496,28 +660,6 @@ function resolveBrandLogoUrl(brandName, productData) {
 
   const fileName = BRAND_LOGO_MAP[normalized] || BRAND_LOGO_MAP[normalized.replace(/&/g, "and")];
   return fileName ? `../brandedukv15-child/assets/images/brands/${fileName}` : "";
-}
-
-function findFallbackHexByName(name) {
-  const key = normalizeColorKey(name);
-  if (COLOR_NAME_HEX_HINTS[key]) return COLOR_NAME_HEX_HINTS[key];
-
-  const lower = String(name || "").toLowerCase();
-  const match = FALLBACK_COLOURS.find(([fallbackName]) => normalizeColorKey(fallbackName) === key || fallbackName.toLowerCase() === lower);
-  return match ? match[1] : "";
-}
-
-function inferHexFromColourName(name) {
-  const normalized = normalizeColorKey(name);
-  if (!normalized) return "";
-
-  if (normalized.includes("lilac") || normalized.includes("lavender")) return "#b7a3d2";
-  if (normalized.includes("violet") || normalized.includes("plum")) return "#7b5ca7";
-  if (normalized.includes("purple")) return "#6f53a6";
-  if (normalized.includes("charcoal") || normalized.includes("graphite") || normalized.includes("anthracite")) return "#4b515a";
-  if (normalized.includes("heather") && normalized.includes("grey")) return "#9aa0a9";
-
-  return "";
 }
 
 const sampledColourHexCache = new Map();
@@ -646,13 +788,8 @@ async function refineSwatchesFromVariantImages(productData, productCode) {
     const imageUrl = getVariantImageUrl(entry);
     const sampledHex = imageUrl ? await sampleHexFromImage(imageUrl) : "";
     const directHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
-    const lookupHex = window.BrandedColorHex && typeof window.BrandedColorHex.lookup === "function"
-      ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, imageUrl))
-      : "";
-    const fallbackHex = findFallbackHexByName(name);
-    const inferredHex = inferHexFromColourName(name);
-
-    const nextHex = sampledHex || directHex || lookupHex || fallbackHex || inferredHex || normalizeHex(currentHex) || "#d1d5db";
+    const resolvedHex = sampledHex || directHex || normalizeHex(currentHex);
+    const nextHex = resolvedHex && !isPlaceholderSwatchHex(resolvedHex) ? resolvedHex : "";
     if (normalizeHex(nextHex) !== normalizeHex(currentHex)) changed = true;
     nextColours.push([name, nextHex]);
   }
@@ -671,18 +808,8 @@ function normalizeProductColours(productData, productCode) {
     const name = String(entry?.name || entry?.displayName || entry?.label || entry?.id || "").trim();
     if (!name) return null;
 
-    const directHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
-    const nameHintHex = findFallbackHexByName(name);
-    const inferredHex = inferHexFromColourName(name);
-    const resolvedHex = directHex
-      || nameHintHex
-      || (window.BrandedColorHex && typeof window.BrandedColorHex.lookup === "function"
-        ? normalizeHex(window.BrandedColorHex.lookup(name, productCode, getVariantImageUrl(entry)))
-        : "")
-      || inferredHex
-      || "#d1d5db";
-
-    return [name, resolvedHex];
+    const apiHex = normalizeHex(entry?.hex || entry?.colourHex || entry?.colorHex || "");
+    return [name, isPlaceholderSwatchHex(apiHex) ? "" : apiHex];
   }).filter(Boolean);
 }
 
@@ -726,7 +853,12 @@ function syncCurrentColourHexFromPalette() {
   const match = colours.find(([name]) => normalizeColorKey(name) === currentName);
   if (!match) return;
 
-  const nextHex = normalizeHex(match[1]);
+  const nextHex = resolveGarmentDisplayHex(
+    match[1],
+    state.colourName,
+    state.productCode,
+    state.selectedColorImage || getColourImageForName(state.colourName)
+  );
   if (!nextHex) return;
 
   state.colourHex = nextHex;
@@ -772,6 +904,17 @@ function setupCustomizerBreadcrumb() {
   const closeBtn = document.getElementById("closeCustomiserBtn");
   if (closeBtn) {
     closeBtn.addEventListener("click", goBack);
+  }
+
+  // When leaving to sign in, remember this exact page so the post-login
+  // redirect brings the user back here (basket is never cleared by login).
+  const signInLink = document.querySelector('.tool-bottom-nav a[href$="profile.html"]');
+  if (signInLink) {
+    signInLink.addEventListener("click", () => {
+      try {
+        localStorage.setItem("authReturnTo", window.location.href);
+      } catch (error) {}
+    });
   }
 }
 
@@ -848,6 +991,16 @@ function applySelectedProductContext() {
 
   state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
+  const contextProductType = inferProductTypeFromCatalog(
+    state.productName,
+    selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type
+  );
+  if (contextProductType) {
+    state.product = contextProductType;
+    if (productSelect) productSelect.value = contextProductType;
+    if (mainProductSelect) mainProductSelect.value = contextProductType;
+    configureViewTabsForProduct();
+  }
   state.brandName = selectedProductData?.brand || selectedProductData?.brand_name || state.brandName;
   state.brandLogo = resolveBrandLogoUrl(state.brandName, selectedProductData);
   state.selectedColorImage = selectedProductData?.colorImage || selectedProductData?.selectedColorImage || selectedProductData?.image || state.selectedColorImage || "";
@@ -856,6 +1009,7 @@ function applySelectedProductContext() {
 
   const productColours = normalizeProductColours(selectedProductData, state.productCode);
   colours = productColours.length > 0 ? productColours : [...FALLBACK_COLOURS];
+  fillMissingCatalogueColourHexes(state.productCode);
   updateAvailableColoursLabel();
 
   const selectedFromSession = String(
@@ -870,20 +1024,18 @@ function applySelectedProductContext() {
   const activeColour = colorMatch || (selectedFromSession ? [selectedFromSession, ""] : firstColour);
 
   state.colourName = activeColour[0];
-  state.colourHex = normalizeHex(
-    selectedProductData?.colorHex
-    || selectedProductData?.selectedColorHex
-    || sessionStorage.getItem("selectedColorHex")
-    || ""
-  ) || activeColour[1] || firstColour[1];
   const mappedColourImage = getColourImageForName(state.colourName);
   if (mappedColourImage) {
     state.selectedColorImage = mappedColourImage;
   }
-  colourLayer.style.backgroundColor = state.colourHex;
-  syncCurrentColourHexFromPalette();
+  applyGarmentTintHex(activeColour[1] || "");
   updateSelectedColourLabels(state.colourName);
-  syncViewThumbTint();
+
+  refreshColourHexFromProductThumb({
+    apiHex: normalizeHex(activeColour[1] || "")
+  }).then(() => {
+    applyArea();
+  });
 
   applyProductHeaderUI();
 }
@@ -904,20 +1056,37 @@ async function hydrateSelectedProductFromApi() {
     state.brandName = productData.brand || productData.brand_name || state.brandName;
     state.brandLogo = resolveBrandLogoUrl(state.brandName, productData);
 
+    const inferredType = inferProductTypeFromCatalog(
+      state.productName,
+      productData.productType || productData.category || productData.type
+    );
+    if (inferredType) {
+      state.product = inferredType;
+      if (productSelect) productSelect.value = inferredType;
+      if (mainProductSelect) mainProductSelect.value = inferredType;
+      configureViewTabsForProduct();
+    }
+
     colourImageByName = buildColourImageMap(productData);
     const dynamicColours = normalizeProductColours(productData, productCode);
     if (dynamicColours.length > 0) {
       colours = dynamicColours;
+      fillMissingCatalogueColourHexes(productCode);
       updateAvailableColoursLabel();
       const incomingName = String(state.colourName || sessionStorage.getItem("selectedColorName") || "").trim();
       const currentMatch = colours.find(([name]) => normalizeColorKey(name) === normalizeColorKey(incomingName));
       const activeColour = currentMatch || (incomingName ? [incomingName, ""] : colours[0]);
       state.colourName = activeColour[0];
-      state.colourHex = normalizeHex(state.colourHex) || activeColour[1];
       const mappedColourImage = getColourImageForName(state.colourName);
       if (mappedColourImage) {
         state.selectedColorImage = mappedColourImage;
       }
+      state.colourHex = resolveGarmentDisplayHex(
+        state.colourHex || activeColour[1],
+        state.colourName,
+        productCode,
+        state.selectedColorImage
+      ) || "#ffffff";
       colourLayer.style.backgroundColor = state.colourHex;
       syncCurrentColourHexFromPalette();
       updateSelectedColourLabels(state.colourName);
@@ -930,11 +1099,24 @@ async function hydrateSelectedProductFromApi() {
     renderMiniColours();
 
     const refined = await refineSwatchesFromVariantImages(productData, productCode);
-    if (refined) {
+    const filled = fillMissingCatalogueColourHexes(productCode);
+    const sampledAll = await hydrateGarmentColoursFromThumbs(productCode);
+    if (refined || filled || sampledAll) {
       syncCurrentColourHexFromPalette();
       renderColours();
       renderMiniColours();
     }
+
+    await refreshColourHexFromProductThumb();
+    const tintHex = resolveGarmentDisplayHex(
+      state.colourHex,
+      state.colourName,
+      productCode,
+      state.selectedColorImage
+    ) || "#ffffff";
+    if (colourLayer) colourLayer.style.backgroundColor = tintHex;
+    syncViewThumbTint();
+    applyArea();
   } catch (error) {
     // keep session/fallback product data when API is unavailable
   } finally {
@@ -1120,22 +1302,13 @@ function renderColours() {
   colours.forEach(([name, hex]) => {
     const swatch = document.createElement("button");
     swatch.className = "colour-swatch";
-    swatch.style.background = hex;
+    applySwatchAppearance(swatch, name, hex);
     swatch.title = name;
 
     if (name === state.colourName) swatch.classList.add("selected");
 
     swatch.addEventListener("click", () => {
-      state.colourName = name;
-      state.colourHex = hex;
-      state.selectedColorImage = getColourImageForName(name) || "";
-      updateSelectedColourLabels(name);
-      colourLayer.style.backgroundColor = hex;
-      syncViewThumbTint();
-      applyArea();
-
-      document.querySelectorAll(".colour-swatch").forEach(item => item.classList.remove("selected"));
-      swatch.classList.add("selected");
+      applySelectedProductColour(name, hex);
     });
 
     colourGrid.appendChild(swatch);
@@ -1152,9 +1325,13 @@ const tshirtImages = {
 };
 
 const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png";
+const beanieFrontImage = "https://i.postimg.cc/xdX8y8Mr/beanie-folding.png";
 
 const garmentImageLoadCache = new Map();
 let areaRenderRequestId = 0;
+// Tracks the last print area we re-centred for, so a colour-only refresh
+// (which also calls applyArea) does NOT yank the logo back to centre.
+let lastCenteredArea = null;
 
 function ensureGarmentImageLoaded(url) {
   if (!url) return Promise.resolve(false);
@@ -1185,15 +1362,102 @@ function ensureGarmentImageLoaded(url) {
 
 // Preload active garment images so area switches do not flash old assets.
 (function preloadTshirtImages() {
-  const urls = new Set([...Object.values(tshirtImages), tshirtFrontCustomImage]);
+  const urls = new Set([...Object.values(tshirtImages), tshirtFrontCustomImage, beanieFrontImage]);
   urls.forEach((url) => {
     ensureGarmentImageLoaded(url);
   });
 })();
 
 function getFrontThumbImageSrc() {
+  if (state.product === "beanie") return beanieFrontImage;
   if (state.product === "tshirt") return tshirtFrontCustomImage;
   return tshirtImages.front;
+}
+
+function inferProductTypeFromCatalog(name, productType) {
+  const label = String(name || "").toLowerCase();
+  const type = String(productType || "").toLowerCase();
+  if (/beanie|bobble hat|knit hat|wool hat/.test(label) || /beanie|headwear/.test(type)) return "beanie";
+  if (/t\s*-?shirt|tee/.test(label) || /t-?shirt/.test(type)) return "tshirt";
+  if (/hoodie|sweatshirt/.test(label) || /hoodie|sweatshirt/.test(type)) return "hoodie";
+  if (/\bcap\b|baseball cap/.test(label) || /\bcap\b/.test(type)) return "cap";
+  if (/polo/.test(label) || /polo/.test(type)) return "polo";
+  return "";
+}
+
+function restoreDefaultViewTabThumbs() {
+  const thumbMap = {
+    front: tshirtImages.front,
+    back: tshirtImages.back,
+    left: tshirtImages.left,
+    right: tshirtImages.right
+  };
+  Object.entries(thumbMap).forEach(([area, src]) => {
+    const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
+    if (thumb) thumb.src = src;
+  });
+}
+
+function configureViewTabsForProduct() {
+  const isBeanie = state.product === "beanie";
+  const appRoot = document.querySelector(".customiser-app");
+  if (appRoot) {
+    appRoot.classList.toggle("product-beanie", isBeanie);
+    appRoot.classList.toggle("product-tshirt", state.product === "tshirt");
+  }
+  if (productPreview) {
+    productPreview.classList.toggle("product-beanie", isBeanie);
+  }
+
+  document.querySelectorAll('.view-tab[data-area="back"], .view-tab[data-area="left"], .view-tab[data-area="right"], .view-tab[data-area="left-sleeve"], .view-tab[data-area="right-sleeve"]').forEach((tab) => {
+    tab.hidden = isBeanie;
+  });
+
+  const frontTab = document.querySelector('.view-tab[data-area="front"]');
+  if (frontTab) frontTab.hidden = false;
+
+  if (isBeanie) {
+    const frontThumb = frontTab?.querySelector(".view-thumb");
+    if (frontThumb) frontThumb.src = beanieFrontImage;
+    state.selectedArea = "front";
+    document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
+    frontTab?.classList.add("active-view");
+  } else {
+    restoreDefaultViewTabThumbs();
+  }
+
+  configureDesignTypesForProduct(isBeanie);
+}
+
+/**
+ * Beanies are embroidery-only: grey out DTF & Screen Printing logo options and
+ * show a folding-area height warning. Other products keep all methods enabled.
+ */
+function configureDesignTypesForProduct(isBeanie) {
+  document.querySelectorAll("#designTypePage [data-design-type]").forEach((card) => {
+    const type = card.dataset.designType;
+    const disabled = isBeanie && type !== "embroidery";
+    card.classList.toggle("is-disabled", disabled);
+    card.setAttribute("aria-disabled", disabled ? "true" : "false");
+  });
+
+  const list = document.querySelector("#designTypePage .print-type-list");
+  if (!list) return;
+  let warning = document.getElementById("beanieEmbroideryWarning");
+  if (isBeanie) {
+    if (!warning) {
+      warning = document.createElement("div");
+      warning.id = "beanieEmbroideryWarning";
+      warning.className = "embroidery-warning";
+      warning.innerHTML =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>' +
+        '<span>Embroidery on folding area &mdash; max height 5.5cm</span>';
+      list.insertBefore(warning, list.firstChild);
+    }
+    warning.hidden = false;
+  } else if (warning) {
+    warning.hidden = true;
+  }
 }
 
 function preloadCurrentColourSet() {
@@ -1223,19 +1487,17 @@ async function applyArea() {
   productPreview.className = "product-preview";
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
-  productPreview.classList.toggle("mirror-right", state.selectedArea === "right");
+  document.querySelector(".customiser-app")?.classList.toggle("product-beanie", state.product === "beanie");
+  productPreview.classList.toggle("product-beanie", state.product === "beanie");
+  productPreview.classList.toggle("mirror-right", state.selectedArea === "right" && state.product !== "beanie");
 
-  const isFrontArea = state.selectedArea === "front";
-  const hasRealColourImage = isFrontArea && !!String(state.selectedColorImage || "").trim();
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
   if (isTshirtFront) {
     productPreview.classList.add("custom-tshirt-front");
   }
-  const imgSrc = hasRealColourImage
-    ? String(state.selectedColorImage).trim()
-    : (isTshirtFront
-      ? tshirtFrontCustomImage
-      : (tshirtImages[state.selectedArea] || tshirtImages.front));
+
+  // Vista utente: sempre PNG neutro (box laterale). Il thumb API serve solo al campionamento colore.
+  const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -1244,15 +1506,24 @@ async function applyArea() {
     wrapEl.classList.add("is-switching-area");
   }
 
-  await ensureGarmentImageLoaded(imgSrc);
+  await ensureGarmentImageLoaded(neutralPngSrc);
   if (requestId !== areaRenderRequestId) return;
 
-  productShapeEl.src = imgSrc;
-  colourLayerEl.style.opacity = hasRealColourImage ? "0" : "1";
+  productShapeEl.src = neutralPngSrc;
+  colourLayerEl.style.opacity = "1";
+  const areaTintHex = (() => {
+    const thumb = state.selectedColorImage || getColourImageForName(state.colourName);
+    const BCH = brandedColour();
+    const cached = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumb) : "";
+    if (cached) return cached;
+    if (state.colourHex && !isPlaceholderSwatchHex(state.colourHex)) return state.colourHex;
+    return isWhiteColourName(state.colourName) ? "#ffffff" : "#ffffff";
+  })();
+  colourLayerEl.style.backgroundColor = areaTintHex;
 
-  // Keep the colour tint mask aligned with the active garment PNG for every view.
-  colourLayerEl.style.webkitMaskImage = `url("${imgSrc}")`;
-  colourLayerEl.style.maskImage = `url("${imgSrc}")`;
+  // Maschera tint sul PNG neutro, non sulla foto catalogo.
+  colourLayerEl.style.webkitMaskImage = `url("${neutralPngSrc}")`;
+  colourLayerEl.style.maskImage = `url("${neutralPngSrc}")`;
   colourLayerEl.style.webkitMaskSize = "contain";
   colourLayerEl.style.maskSize = "contain";
   colourLayerEl.style.webkitMaskRepeat = "no-repeat";
@@ -1263,19 +1534,31 @@ async function applyArea() {
 
   // Size T-shirt views via layout width so the canvas collapses to the visible garment height.
   const tshirtWidth = (state.selectedArea === "left" || state.selectedArea === "right") ? "56%" : "86%";
-  wrapEl.style.setProperty("--wrap-width", state.product === "tshirt" ? tshirtWidth : "100%");
-  wrapEl.style.setProperty("--wrap-mirror", state.selectedArea === "right" ? "-1" : "1");
+  // Beanie is enlarged via width (centred by flex on .product-beanie) — NOT a CSS
+  // transform scale, which would distort pointer coordinates and break logo dragging.
+  const beanieWidth = "117%";
+  let wrapWidth = "100%";
+  if (state.product === "tshirt") wrapWidth = tshirtWidth;
+  else if (state.product === "beanie") wrapWidth = beanieWidth;
+  wrapEl.style.setProperty("--wrap-width", wrapWidth);
+  wrapEl.style.setProperty("--wrap-mirror", state.selectedArea === "right" && state.product !== "beanie" ? "-1" : "1");
 
   requestAnimationFrame(() => {
     if (requestId !== areaRenderRequestId) return;
     wrapEl?.classList.remove("is-switching-area");
   });
 
-  setTimeout(() => {
-    if (requestId !== areaRenderRequestId) return;
-    if (state.uploadedLogo) centerLogo();
-    if (state.text) centerText();
-  }, 0);
+  // Only re-centre when the print AREA actually changed. A colour change keeps
+  // the logo exactly where the user left it.
+  const areaChanged = lastCenteredArea !== state.selectedArea;
+  lastCenteredArea = state.selectedArea;
+  if (areaChanged) {
+    setTimeout(() => {
+      if (requestId !== areaRenderRequestId) return;
+      if (state.uploadedLogo) centerLogo();
+      if (state.text) centerText();
+    }, 0);
+  }
 }
 
 function collectSizes() {
@@ -1502,7 +1785,9 @@ function isNeutralToolMockupImage(url) {
   const source = String(url || "").trim();
   if (!source) return true;
 
-  return Object.values(tshirtImages).some((imgUrl) => source.includes(imgUrl)) || source.includes(tshirtFrontCustomImage);
+  return Object.values(tshirtImages).some((imgUrl) => source.includes(imgUrl))
+    || source.includes(tshirtFrontCustomImage)
+    || source.includes(beanieFrontImage);
 }
 
 function upsertBasketItemFromState() {
@@ -1581,7 +1866,9 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 productSelect.addEventListener("change", () => {
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
+  configureViewTabsForProduct();
   applyProductHeaderUI();
+  applyArea();
 });
 
 document.getElementById("addSizeBtn").addEventListener("click", () => {
@@ -1879,7 +2166,7 @@ function updateTextSizeLabels() {
   const textRect = textContent.getBoundingClientRect();
   const widthPx = Math.max(1, Math.ceil(textRect.width));
   const heightPx = Math.max(1, Math.ceil(textRect.height));
-  const pxPerCm = getPxPerCm();
+  const pxPerCm = getEffectivePxPerCm();
   const widthCm = (widthPx / pxPerCm).toFixed(2);
   const heightCm = (heightPx / pxPerCm).toFixed(2);
   const label = `${widthCm}cm x ${heightCm}cm`;
@@ -1985,10 +2272,95 @@ deleteTextBtn.addEventListener("click", e => {
 
 document.querySelectorAll("[data-design-type]").forEach(card => {
   card.addEventListener("click", () => {
+    if (card.classList.contains("is-disabled")) return;
     state.decorationType = card.dataset.designType;
-    document.getElementById("logoFileInput").click();
+    const library = getSessionLogoLibrary();
+    if (library.length > 0) {
+      showLogoLibraryPicker(library);
+    } else {
+      document.getElementById("logoFileInput").click();
+    }
   });
 });
+
+// In-session logos the user already uploaded (kept so we don't re-open the gallery).
+const sessionLogoLibrary = [];
+
+function getSessionLogoLibrary() {
+  const seen = new Set();
+  const out = [];
+  const add = (src, method) => {
+    const key = String(src || "").trim();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    out.push({ logo: key, method: method || "logo" });
+  };
+  sessionLogoLibrary.forEach((entry) => add(entry.logo, entry.method));
+  try {
+    const parsed = JSON.parse(sessionStorage.getItem("toolReusableLogos") || "[]");
+    if (Array.isArray(parsed)) parsed.forEach((entry) => entry && add(entry.logo, entry.method));
+  } catch (e) { /* ignore */ }
+  return out;
+}
+
+function rememberUploadedLogo(src, method) {
+  const key = String(src || "").trim();
+  if (!key) return;
+  if (sessionLogoLibrary.some((entry) => entry.logo === key)) return;
+  sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
+}
+
+function reuseLibraryLogo(src) {
+  state.copyrightConfirmed = true;
+  openScreen("mainEditor");
+  showLogoOnCanvas(src);
+  calculatePrice();
+  updateConfirmButtonState();
+}
+
+function showLogoLibraryPicker(library) {
+  const existing = document.getElementById("toolLogoLibraryOverlay");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "toolLogoLibraryOverlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+  const panel = document.createElement("div");
+  panel.style.cssText = "width:min(94vw,520px);background:#fff;border-radius:16px;box-shadow:0 16px 36px rgba(2,8,23,.22);padding:18px 16px;";
+  panel.innerHTML = `
+    <h3 style="margin:0 0 4px;font-size:18px;line-height:1.2;color:#0f172a;">Your logos</h3>
+    <p style="margin:0 0 12px;font-size:13px;line-height:1.4;color:#475569;">Tap a logo to reuse it, or upload a new one.</p>
+    <div id="toolLogoLibraryGrid" style="display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px;"></div>
+    <button id="toolLogoLibraryUpload" type="button" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border-radius:10px;border:1px solid #0f172a;background:#0f172a;color:#fff;font-weight:700;cursor:pointer;">Upload new logo</button>
+    <button id="toolLogoLibraryCancel" type="button" style="display:block;width:100%;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-weight:600;cursor:pointer;">Cancel</button>
+  `;
+
+  const grid = panel.querySelector("#toolLogoLibraryGrid");
+  library.forEach((entry) => {
+    const cell = document.createElement("button");
+    cell.type = "button";
+    cell.style.cssText = "flex:0 0 auto;width:90px;height:90px;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc center/contain no-repeat;cursor:pointer;padding:0;";
+    cell.style.backgroundImage = `url("${entry.logo}")`;
+    cell.title = "Reuse this logo";
+    cell.addEventListener("click", () => {
+      overlay.remove();
+      state.decorationType = entry.method || state.decorationType || "logo";
+      reuseLibraryLogo(entry.logo);
+    });
+    grid.appendChild(cell);
+  });
+
+  panel.querySelector("#toolLogoLibraryUpload").addEventListener("click", () => {
+    overlay.remove();
+    document.getElementById("logoFileInput").click();
+  });
+  panel.querySelector("#toolLogoLibraryCancel").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (event) => { if (event.target === overlay) overlay.remove(); });
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
 
 function maybeHandleBasketLogoChoice() {
   const params = new URLSearchParams(window.location.search);
@@ -2119,8 +2491,11 @@ function areaLabelForPicker(area) {
 }
 
 function getPickerAreas() {
+  // Beanies are front-only — never offer Back/Left/Right.
+  if (state.product === "beanie") return ["front"];
   const areas = [];
   document.querySelectorAll(".view-tab[data-area]").forEach((btn) => {
+    if (btn.hidden) return;
     const normalized = normalizeAreaForPicker(btn.dataset.area);
     if (normalized && !areas.includes(normalized)) {
       areas.push(normalized);
@@ -2243,6 +2618,7 @@ document.getElementById("logoFileInput").addEventListener("change", event => {
   reader.onload = e => {
     state.uploadedLogo = e.target.result;
     state.originalUploadedLogo = e.target.result;
+    rememberUploadedLogo(e.target.result, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -2326,7 +2702,7 @@ function showLogoOnCanvas(imageSrc) {
   uploadedLogo.src = imageSrc;
   uploadedLogo.style.display = "block";
 
-  designLayer.style.display = "flex";
+  designLayer.style.display = "block";
   designLayer.style.rotate = "0deg";
   designLayer.style.transform = "none";
 
@@ -2359,9 +2735,20 @@ function showLogoOnCanvas(imageSrc) {
 
 function fitLogoToPrintArea() {
   const imageRatio = getLogoAspectRatio();
+  const pxPerCm = getPxPerCm();
+
+  // Beanie: embroidery on the folding area — start at 6cm HEIGHT (calibrated to
+  // the cuff area, see BEANIE_CM_SCALE), width follows the logo ratio, centred.
+  if (state.product === "beanie") {
+    const logoFrameEl = getLogoFrameEl();
+    const beanieHeight = BEANIE_INITIAL_HEIGHT_CM * getEffectivePxPerCm();
+    const beanieWidth = beanieHeight * imageRatio;
+    logoFrameEl.style.width = `${Math.round(beanieWidth)}px`;
+    logoFrameEl.style.height = `${Math.round(beanieHeight)}px`;
+    return;
+  }
 
   // Start each newly loaded logo at ~30cm relative to garment printable area.
-  const pxPerCm = getPxPerCm();
   const targetWidth = Math.max(30, INITIAL_LOGO_WIDTH_CM * pxPerCm);
   const maxWidth = Math.max(60, getPrintableReferenceWidthPx() * 1.04);
   const maxHeight = Math.max(60, getPrintableReferenceHeightPx() * 0.98);
@@ -2379,8 +2766,9 @@ function fitLogoToPrintArea() {
     height = width / imageRatio;
   }
 
-  designLayer.style.width = `${Math.round(width)}px`;
-  designLayer.style.height = `${Math.round(height)}px`;
+  const logoFrame = getLogoFrameEl();
+  logoFrame.style.width = `${Math.round(width)}px`;
+  logoFrame.style.height = `${Math.round(height)}px`;
 }
 
 function getLogoAspectRatio() {
@@ -2391,14 +2779,16 @@ function getLogoAspectRatio() {
     return naturalWidth / naturalHeight;
   }
 
-  const fallbackHeight = Math.max(1, designLayer.offsetHeight || 1);
-  const fallbackWidth = Math.max(1, designLayer.offsetWidth || 1);
+  const logoFrame = getLogoFrameEl();
+  const fallbackHeight = Math.max(1, logoFrame.offsetHeight || 1);
+  const fallbackWidth = Math.max(1, logoFrame.offsetWidth || 1);
   return fallbackWidth / fallbackHeight;
 }
 
 function getRenderedLogoSizePx() {
-  const containerWidth = Math.max(1, designLayer.offsetWidth);
-  const containerHeight = Math.max(1, designLayer.offsetHeight);
+  const logoFrame = getLogoFrameEl();
+  const containerWidth = Math.max(1, logoFrame.offsetWidth);
+  const containerHeight = Math.max(1, logoFrame.offsetHeight);
   const logoRatio = getLogoAspectRatio();
   const containerRatio = containerWidth / containerHeight;
 
@@ -2414,8 +2804,9 @@ function getRenderedLogoSizePx() {
 }
 
 function centerLogo() {
-  designLayer.style.left = `${customArea.offsetWidth / 2 - designLayer.offsetWidth / 2}px`;
-  designLayer.style.top = `${customArea.offsetHeight / 2 - designLayer.offsetHeight / 2}px`;
+  const logoFrame = getLogoFrameEl();
+  designLayer.style.left = `${customArea.offsetWidth / 2 - logoFrame.offsetWidth / 2}px`;
+  designLayer.style.top = `${customArea.offsetHeight / 2 - logoFrame.offsetHeight / 2}px`;
   updateVisibilityByPrintArea(designLayer);
 }
 
@@ -2428,7 +2819,7 @@ function activateLogo() {
 
 function updateLogoSizeLabels() {
   const renderedSize = getRenderedLogoSizePx();
-  const pxPerCm = getPxPerCm();
+  const pxPerCm = getEffectivePxPerCm();
   const widthCm = (renderedSize.width / pxPerCm).toFixed(2);
   const heightCm = (renderedSize.height / pxPerCm).toFixed(2);
   const label = `${widthCm}cm x ${heightCm}cm`;
@@ -2593,6 +2984,8 @@ designLayer.addEventListener("pointerdown", e => {
   if (!state.uploadedLogo) return;
 
   if (
+    e.target.closest(".logo-toolbar") ||
+    e.target.closest(".logo-size-label") ||
     e.target.classList.contains("resize-dot") ||
     e.target.id === "rotateHandle" ||
     e.target.tagName === "BUTTON"
@@ -2602,7 +2995,8 @@ designLayer.addEventListener("pointerdown", e => {
 
   logoAction = "move";
 
-  const rect = designLayer.getBoundingClientRect();
+  const logoFrame = getLogoFrameEl();
+  const rect = logoFrame.getBoundingClientRect();
   const parentRect = customArea.getBoundingClientRect();
 
   logoStartX = e.clientX;
@@ -2630,8 +3024,9 @@ document.querySelectorAll(".resize-dot").forEach(handle => {
     logoStartY = e.clientY;
     logoStartLeft = rect.left - parentRect.left;
     logoStartTop = rect.top - parentRect.top;
-    logoStartWidth = designLayer.offsetWidth;
-    logoStartHeight = designLayer.offsetHeight;
+    const logoFrame = getLogoFrameEl();
+    logoStartWidth = logoFrame.offsetWidth;
+    logoStartHeight = logoFrame.offsetHeight;
 
     activateLogo();
     handle.setPointerCapture(e.pointerId);
@@ -2852,9 +3247,11 @@ function handleObjectTransform(e, type) {
 
   layer.style.left = `${newLeft}px`;
   layer.style.top = `${newTop}px`;
-  layer.style.width = `${newWidth}px`;
-  layer.style.height = `${newHeight}px`;
   layer.style.transform = "none";
+
+  const sizeTarget = isLogo ? getLogoFrameEl() : layer;
+  sizeTarget.style.width = `${newWidth}px`;
+  sizeTarget.style.height = `${newHeight}px`;
 
   if (!isLogo) {
     fitTextFontToLayerBounds();
@@ -2883,7 +3280,8 @@ document.addEventListener("click", e => {
 
 function resizeLogoBy(amount) {
   const aspectRatio = 1 / getLogoAspectRatio();
-  let newWidth = designLayer.offsetWidth + amount;
+  const logoFrame = getLogoFrameEl();
+  let newWidth = logoFrame.offsetWidth + amount;
   let newHeight = newWidth * aspectRatio;
 
   if (newWidth < 25) newWidth = 25;
@@ -2892,8 +3290,8 @@ function resizeLogoBy(amount) {
     newWidth = newHeight / aspectRatio;
   }
 
-  designLayer.style.width = `${newWidth}px`;
-  designLayer.style.height = `${newHeight}px`;
+  logoFrame.style.width = `${newWidth}px`;
+  logoFrame.style.height = `${newHeight}px`;
 
   activateLogo();
   updateLogoSizeLabels();
@@ -2947,10 +3345,11 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
   }
 
   if (removeBackgroundCheck.checked) {
+    const logoFrame = getLogoFrameEl();
     const oldLeft = designLayer.style.left;
     const oldTop = designLayer.style.top;
-    const oldWidth = designLayer.style.width;
-    const oldHeight = designLayer.style.height;
+    const oldWidth = logoFrame.style.width;
+    const oldHeight = logoFrame.style.height;
     const oldRotate = designLayer.style.rotate;
 
     const cleanedLogo = await removeImageBackground(state.uploadedLogo, 55);
@@ -2959,11 +3358,11 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     uploadedLogo.src = cleanedLogo;
     uploadedLogo.style.display = "block";
 
-    designLayer.style.display = "flex";
+    designLayer.style.display = "block";
     designLayer.style.left = oldLeft;
     designLayer.style.top = oldTop;
-    designLayer.style.width = oldWidth;
-    designLayer.style.height = oldHeight;
+    logoFrame.style.width = oldWidth;
+    logoFrame.style.height = oldHeight;
     designLayer.style.rotate = oldRotate;
     designLayer.style.transform = "none";
   }
@@ -3058,8 +3457,9 @@ document.querySelectorAll("[data-move]").forEach(button => {
     if (move.includes("down")) top += step;
 
     if (move === "center") {
-      left = customArea.offsetWidth / 2 - designLayer.offsetWidth / 2;
-      top = customArea.offsetHeight / 2 - designLayer.offsetHeight / 2;
+      const logoFrame = getLogoFrameEl();
+      left = customArea.offsetWidth / 2 - logoFrame.offsetWidth / 2;
+      top = customArea.offsetHeight / 2 - logoFrame.offsetHeight / 2;
     }
 
     designLayer.style.left = `${left}px`;
@@ -3363,80 +3763,139 @@ document.querySelectorAll(".location-item").forEach(item => {
 });
 
 document.getElementById("colourShortcut").addEventListener("click", () => openScreen("productPage"));
-document.getElementById("previewBtn").addEventListener("click", () => {
-  const origPreview = document.getElementById("productPreview");
-  const slot = document.getElementById("previewPoloSlot");
-  if (!origPreview || !slot) return;
 
-  const poloClone = origPreview.querySelector(".polo-colour-wrap")?.cloneNode(true);
-  const customAreaClone = origPreview.querySelector(".custom-area")?.cloneNode(true);
-  if (!poloClone || !customAreaClone) return;
+function copyInlineStyles(source, target, props) {
+  if (!source || !target) return;
+  props.forEach((prop) => {
+    target.style[prop] = source.style[prop] || "";
+  });
+}
 
-  // Build a clean preview scene: polo + print area with logo only
-  const scene = document.createElement("div");
-  scene.className = "product-preview " + origPreview.className.replace("product-preview", "").trim();
-  scene.style.transform = "none";
+function syncPreviewGarmentClone(poloClone) {
+  const origWrap = document.querySelector(".polo-colour-wrap");
+  poloClone.classList.remove("is-switching-area");
 
-  const textLayerClone = customAreaClone.querySelector(".text-layer");
-  if (textLayerClone) textLayerClone.remove();
-
-  customAreaClone.querySelectorAll(
-    "button, .resize-dot, .rotate-handle, .text-dot-br, .text-rotate-handle, .logo-size-label, .text-size-label"
-  ).forEach((el) => el.remove());
+  if (origWrap) {
+    poloClone.style.setProperty("--wrap-width", origWrap.style.getPropertyValue("--wrap-width") || "100%");
+    poloClone.style.setProperty("--wrap-mirror", origWrap.style.getPropertyValue("--wrap-mirror") || "1");
+  }
 
   const cloneCL = poloClone.querySelector(".colour-layer");
   if (cloneCL && colourLayer) {
-    cloneCL.style.backgroundColor = colourLayer.style.backgroundColor || "#ffffff";
+    copyInlineStyles(colourLayer, cloneCL, [
+      "backgroundColor",
+      "opacity",
+      "mixBlendMode",
+      "webkitMaskImage",
+      "maskImage",
+      "webkitMaskSize",
+      "maskSize",
+      "webkitMaskRepeat",
+      "maskRepeat",
+      "webkitMaskPosition",
+      "maskPosition"
+    ]);
+    if (!cloneCL.style.backgroundColor) {
+      cloneCL.style.backgroundColor = colourLayer.style.backgroundColor || "#ffffff";
+    }
+    if (!cloneCL.style.maskImage && !cloneCL.style.webkitMaskImage && productShape) {
+      const maskSrc = productShape.currentSrc || productShape.src || "";
+      if (maskSrc) {
+        cloneCL.style.webkitMaskImage = `url("${maskSrc}")`;
+        cloneCL.style.maskImage = `url("${maskSrc}")`;
+        cloneCL.style.webkitMaskSize = "contain";
+        cloneCL.style.maskSize = "contain";
+        cloneCL.style.webkitMaskRepeat = "no-repeat";
+        cloneCL.style.maskRepeat = "no-repeat";
+        cloneCL.style.webkitMaskPosition = "center center";
+        cloneCL.style.maskPosition = "center center";
+      }
+    }
+    cloneCL.style.opacity = "1";
   }
 
   const clonedProductImage = poloClone.querySelector(".product-image");
   if (clonedProductImage && productShape) {
     clonedProductImage.src = productShape.currentSrc || productShape.src;
+    clonedProductImage.style.opacity = "1";
   }
 
-  const clonedLogo = customAreaClone.querySelector("#uploadedLogo");
-  if (clonedLogo && uploadedLogo) {
-    clonedLogo.src = uploadedLogo.currentSrc || uploadedLogo.src;
-    if (!clonedLogo.src) clonedLogo.remove();
+  const customAreaInClone = poloClone.querySelector(".custom-area");
+  if (customAreaInClone) {
+    const textLayerClone = customAreaInClone.querySelector(".text-layer");
+    if (textLayerClone) textLayerClone.remove();
+
+    customAreaInClone.querySelectorAll(
+      ".logo-toolbar, .logo-size-label, .text-size-label, button, .resize-dot, .rotate-handle, .text-dot-br, .text-rotate-handle"
+    ).forEach((el) => el.remove());
+
+    const designLayerClone = customAreaInClone.querySelector(".design-layer");
+    if (designLayerClone) {
+      designLayerClone.classList.remove("active-logo");
+      if (designLayer) {
+        copyInlineStyles(designLayer, designLayerClone, [
+          "display",
+          "left",
+          "top",
+          "width",
+          "height",
+          "rotate",
+          "transform"
+        ]);
+      }
+
+      const clonedLogo = designLayerClone.querySelector("img");
+      if (clonedLogo && uploadedLogo) {
+        clonedLogo.src = uploadedLogo.currentSrc || uploadedLogo.src;
+        if (!clonedLogo.src) designLayerClone.remove();
+      }
+    }
   }
 
+  poloClone.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+}
+
+document.getElementById("previewBtn").addEventListener("click", () => {
+  const origPreview = document.getElementById("productPreview");
+  const slot = document.getElementById("previewPoloSlot");
+  if (!origPreview || !slot) return;
+
+  const origWrap = origPreview.querySelector(".polo-colour-wrap");
+  if (!origWrap) return;
+  // Capture the exact rendered pixel size of the garment in the tool so the
+  // cloned preview keeps the identical internal coordinate system (logo px
+  // positions match 1:1). The whole scene is then uniformly scaled to fit.
+  const wrapRect = origWrap.getBoundingClientRect();
+
+  const poloClone = origWrap.cloneNode(true);
+  if (!poloClone) return;
+
+  syncPreviewGarmentClone(poloClone);
+  poloClone.style.width = `${Math.round(wrapRect.width)}px`;
+  poloClone.style.height = `${Math.round(wrapRect.height)}px`;
+  poloClone.style.maxWidth = "none";
+  poloClone.style.margin = "0";
+
+  const scene = document.createElement("div");
+  scene.className = origPreview.className;
+  scene.style.transition = "none";
+  scene.style.transformOrigin = "center center";
+  scene.style.display = "flex";
+  scene.style.justifyContent = "center";
+  scene.style.alignItems = "center";
   scene.appendChild(poloClone);
-  scene.appendChild(customAreaClone);
 
-  // Avoid duplicate IDs in modal clone
-  scene.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
-
-  const origW = origPreview.offsetWidth || 270;
-  const origH = Math.max(origPreview.offsetHeight || 320, origW);
-  const maxW = Math.min(window.innerWidth * 0.9, 470);
-  const maxH = window.innerHeight * 0.68;
-  const fitScale = Math.min(maxW / origW, maxH / origH);
-  const scale = Math.max(fitScale, 1);
-  const previewOffsetX = Math.round(origW * 0.045);
-
-  const wrapper = document.createElement("div");
-  wrapper.style.cssText = `
-    width:${origW * scale}px;
-    height:${origH * scale}px;
-    position:relative;
-    overflow:hidden;
-    border-radius:12px;
-  `;
-
-  scene.style.cssText = `
-    position:absolute;
-    top:0; left:-${previewOffsetX}px;
-    width:${origW}px;
-    height:${origH}px;
-    transform:scale(${scale});
-    transform-origin:top left;
-  `;
-
-  wrapper.appendChild(scene);
   slot.innerHTML = "";
-  slot.appendChild(wrapper);
+  slot.appendChild(scene);
 
   document.getElementById("previewModal").classList.add("open");
+
+  requestAnimationFrame(() => {
+    const slotW = slot.clientWidth || wrapRect.width;
+    const slotH = slot.clientHeight || wrapRect.height;
+    const scale = Math.min(1, slotW / wrapRect.width, slotH / wrapRect.height);
+    scene.style.transform = scale < 1 ? `scale(${scale})` : "none";
+  });
 });
 
 document.getElementById("previewCloseBtn").addEventListener("click", () => {
@@ -3592,29 +4051,15 @@ function renderMiniColours() {
   row.innerHTML = "";
   if (dropdown) dropdown.innerHTML = "";
 
-  // Helper: select a colour and update all state/UI
   function selectColour(name, hex) {
-    state.colourName = name;
-    state.colourHex = hex;
-    state.selectedColorImage = getColourImageForName(name) || "";
-    colourLayer.style.backgroundColor = hex;
-    updateSelectedColourLabels(name);
-    syncViewThumbTint();
-    applyArea();
-    document.querySelectorAll(".mini-swatch").forEach(s => s.classList.remove("selected"));
-    document.querySelectorAll(".mini-swatch").forEach(s => {
-      if (s.title === name) s.classList.add("selected");
-    });
-    document.querySelectorAll(".colour-swatch").forEach(s => {
-      s.classList.toggle("selected", s.title === name);
-    });
+    applySelectedProductColour(name, hex);
   }
 
   // All colours visible in the row (2 rows with wrap)
   colours.forEach(([name, hex]) => {
     const btn = document.createElement("button");
     btn.className = "mini-swatch" + (name === state.colourName ? " selected" : "");
-    btn.style.background = hex;
+    applySwatchAppearance(btn, name, hex);
     btn.title = name;
     btn.addEventListener("click", () => selectColour(name, hex));
     row.appendChild(btn);
@@ -3636,7 +4081,7 @@ function renderMiniColours() {
     colours.forEach(([name, hex]) => {
       const btn = document.createElement("button");
       btn.className = "mini-swatch" + (name === state.colourName ? " selected" : "");
-      btn.style.background = hex;
+      applySwatchAppearance(btn, name, hex);
       btn.title = name;
       btn.addEventListener("click", () => selectColour(name, hex));
       dropdown.appendChild(btn);
@@ -3668,10 +4113,7 @@ document.querySelectorAll(".view-tab").forEach(btn => {
 });
 
 function syncProductSpecificTabs() {
-  const appRoot = document.querySelector(".customiser-app");
-  if (appRoot) {
-    appRoot.classList.toggle("product-tshirt", state.product === "tshirt");
-  }
+  configureViewTabsForProduct();
 
   const leftSleeveTab = document.querySelector('.view-tab[data-area="left-sleeve"]');
   if (leftSleeveTab) {
