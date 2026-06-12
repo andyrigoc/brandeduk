@@ -27,65 +27,89 @@ const state = {
   logoZIndex: 40
 };
 
-// Calibration: print area width = 30cm. Computed dynamically from actual rendered customArea.
-const PRINT_AREA_WIDTH_CM = 30;
-const INITIAL_LOGO_WIDTH_CM = 30;
-// Beanie embroidery is physically much smaller than the printable reference used
-// for garments, so its cm readout is calibrated separately: the visual size that
-// fills the cuff area must read ~6cm tall (≈ 10.40cm at the default scale → 6cm).
-const BEANIE_CM_SCALE = 10.4 / 6;
-const BEANIE_INITIAL_HEIGHT_CM = 6;
+// ---------------------------------------------------------------------------
+// Print-area calibration — single source of truth for logo sizing.
+//
+// Each product/view declares:
+//   areaCm      : real-world max print/embroidery size in centimetres
+//   box         : the print rectangle ON THE MOCKUP image, as a 0–1 fraction of
+//                 the rendered garment image (used for clamping + the cm scale)
+//   defaultLogo : how a freshly loaded logo is sized, in centimetres
+//                 ({ w } = width-driven, { h } = height-driven)
+//
+// px-per-cm = (mockupWidthPx * box.w) / areaCm.w  → a logo defined in cm looks
+// proportional on every garment because each mockup is calibrated to its own
+// real print area. Add a product = add ONE entry here; no magic constants.
+// ---------------------------------------------------------------------------
+const PRODUCT_PRINT_AREAS = {
+  tshirt: {
+    front: { areaCm: { w: 30, h: 38 }, box: { w: 0.42, h: 0.52 }, defaultLogo: { w: 30 } },
+    back:  { areaCm: { w: 30, h: 38 }, box: { w: 0.42, h: 0.52 }, defaultLogo: { w: 30 } },
+    left:  { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } },
+    right: { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } }
+  },
+  polo: {
+    front: { areaCm: { w: 30, h: 38 }, box: { w: 0.42, h: 0.52 }, defaultLogo: { w: 30 } },
+    back:  { areaCm: { w: 30, h: 38 }, box: { w: 0.42, h: 0.52 }, defaultLogo: { w: 30 } },
+    left:  { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } },
+    right: { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } }
+  },
+  beanie: {
+    // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
+    // logo fills the cuff (the agreed visual) while reading a true 6cm.
+    front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } }
+  }
+};
 
-function getPrintableAreaRatioByView(area) {
-  const key = String(area || "").toLowerCase();
-  if (key === "left" || key === "right") return { w: 0.26, h: 0.46 };
-  if (key === "left-sleeve" || key === "right-sleeve") return { w: 0.2, h: 0.36 };
-  if (key === "left-chest" || key === "right-chest") return { w: 0.24, h: 0.3 };
-  return { w: 0.42, h: 0.52 }; // front/back default
+// Optional per-SKU overrides. Keyed by product code (UPPERCASE); same shape as a
+// product entry. Lets specific catalogue items declare their exact print area
+// without changing any logic — just add a row here.
+//   e.g. "BC045": { front: { areaCm:{w:13,h:6}, box:{w:0.315,h:0.18}, defaultLogo:{h:6} } }
+const PRODUCT_CODE_PRINT_AREAS = {};
+
+// Resolve the set of areas for the current item: per-code override first, then
+// the per-type calibration, finally a safe default.
+function getProductAreaSet() {
+  const code = String(state.productCode || "").trim().toUpperCase();
+  if (code && PRODUCT_CODE_PRINT_AREAS[code]) return PRODUCT_CODE_PRINT_AREAS[code];
+  return PRODUCT_PRINT_AREAS[state.product] || PRODUCT_PRINT_AREAS.tshirt;
 }
 
+function getPrintAreaConfig() {
+  const set = getProductAreaSet();
+  return set[state.selectedArea] || set.front || Object.values(set)[0];
+}
+
+function getMockupSizePx() {
+  const rectW = Math.round(productShape?.getBoundingClientRect?.().width || 0);
+  const rectH = Math.round(productShape?.getBoundingClientRect?.().height || 0);
+  const w = Math.max(0, productShape?.clientWidth || 0, rectW);
+  const h = Math.max(0, productShape?.clientHeight || 0, rectH);
+  return {
+    w: w > 20 ? w : (customArea ? customArea.clientWidth : 360),
+    h: h > 20 ? h : (customArea ? customArea.clientHeight : 480)
+  };
+}
+
+// On-screen print rectangle (px) used to clamp the logo to the printable area.
 function getPrintableReferenceWidthPx() {
-  const ratio = getPrintableAreaRatioByView(state.selectedArea);
-  const garmentWidth = Math.max(
-    0,
-    productShape?.clientWidth || 0,
-    Math.round(productShape?.getBoundingClientRect?.().width || 0)
-  );
-
-  if (garmentWidth > 20) {
-    return Math.max(96, garmentWidth * ratio.w);
-  }
-
-  const fallback = customArea ? customArea.clientWidth * ratio.w : 120;
-  return Math.max(96, fallback || 120);
+  return Math.max(96, getMockupSizePx().w * getPrintAreaConfig().box.w);
 }
 
 function getPrintableReferenceHeightPx() {
-  const ratio = getPrintableAreaRatioByView(state.selectedArea);
-  const garmentHeight = Math.max(
-    0,
-    productShape?.clientHeight || 0,
-    Math.round(productShape?.getBoundingClientRect?.().height || 0)
-  );
-
-  if (garmentHeight > 20) {
-    return Math.max(120, garmentHeight * ratio.h);
-  }
-
-  const fallback = customArea ? customArea.clientHeight * ratio.h : 180;
-  return Math.max(120, fallback || 180);
+  return Math.max(120, getMockupSizePx().h * getPrintAreaConfig().box.h);
 }
 
+// Real centimetres → pixels, calibrated per product/view.
 function getPxPerCm() {
-  const refWidth = getPrintableReferenceWidthPx();
-  return refWidth / PRINT_AREA_WIDTH_CM;
+  const cfg = getPrintAreaConfig();
+  return (getMockupSizePx().w * cfg.box.w) / cfg.areaCm.w;
 }
 
-// Effective px-per-cm used for size labels and the initial fit. Beanies use a
-// dedicated calibration so the embroidery reads at realistic cm values.
+// Kept for call-site compatibility; calibration is now per-product, so there is
+// no extra scaling factor.
 function getEffectivePxPerCm() {
-  const base = getPxPerCm();
-  return state.product === "beanie" ? base * BEANIE_CM_SCALE : base;
+  return getPxPerCm();
 }
 
 const screens = document.querySelectorAll(".screen");
@@ -1654,7 +1678,41 @@ function readQuoteBasket() {
 }
 
 function writeQuoteBasket(basket) {
-  localStorage.setItem("quoteBasket", JSON.stringify(basket));
+  try {
+    localStorage.setItem("quoteBasket", JSON.stringify(basket));
+    return true;
+  } catch (error) {
+    // Most likely QuotaExceededError: base64 logos make the basket too large.
+    // Prune duplicate logo data across the basket and retry once.
+    try {
+      const pruned = pruneBasketLogoDuplicates(basket);
+      localStorage.setItem("quoteBasket", JSON.stringify(pruned));
+      return true;
+    } catch (retryError) {
+      console.error("Unable to save basket (storage full)", retryError);
+      return false;
+    }
+  }
+}
+
+// Remove duplicate logo entries (same area + same image data) within each item
+// so repeated confirms don't multiply heavy base64 strings.
+function dedupeLogos(logos) {
+  if (!Array.isArray(logos)) return logos;
+  const seen = new Set();
+  return logos.filter((logo) => {
+    const key = `${logo?.area || logo?.position || ""}::${logo?.dataUrl || logo?.url || logo?.logo || logo?.image || ""}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function pruneBasketLogoDuplicates(basket) {
+  return (Array.isArray(basket) ? basket : []).map((item) => {
+    if (!item || typeof item !== "object") return item;
+    return { ...item, logos: dedupeLogos(item.logos) };
+  });
 }
 
 function getItemQty(item) {
@@ -1818,9 +1876,11 @@ function upsertBasketItemFromState() {
     const prevItem = basket[matchIndex] || {};
     const previousPreview = prevItem.colorImage || prevItem.image || "";
     const nextLooksNeutral = isNeutralToolMockupImage(nextItem.colorImage || nextItem.image || "");
-    const mergedLogos = isBasketContext && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
-      ? [...(Array.isArray(prevItem.logos) ? prevItem.logos : []), ...nextItem.logos]
-      : nextItem.logos;
+    const mergedLogos = dedupeLogos(
+      isBasketContext && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
+        ? [...(Array.isArray(prevItem.logos) ? prevItem.logos : []), ...nextItem.logos]
+        : nextItem.logos
+    );
     const nextColorHex = normalizeHex(nextItem.colorHex || "");
     const prevColorHex = normalizeHex(prevItem.colorHex || "");
 
@@ -1852,10 +1912,10 @@ function upsertBasketItemFromState() {
     basket.push(nextItem);
   }
 
-  writeQuoteBasket(basket);
+  const saved = writeQuoteBasket(basket);
   updateBasketUIFromStorage();
 
-  return nextItem;
+  return { item: nextItem, saved };
 }
 
 document.getElementById("changeProductBtn").addEventListener("click", () => {
@@ -2736,34 +2796,31 @@ function showLogoOnCanvas(imageSrc) {
 function fitLogoToPrintArea() {
   const imageRatio = getLogoAspectRatio();
   const pxPerCm = getPxPerCm();
+  const cfg = getPrintAreaConfig();
+  const def = cfg.defaultLogo || {};
 
-  // Beanie: embroidery on the folding area — start at 6cm HEIGHT (calibrated to
-  // the cuff area, see BEANIE_CM_SCALE), width follows the logo ratio, centred.
-  if (state.product === "beanie") {
-    const logoFrameEl = getLogoFrameEl();
-    const beanieHeight = BEANIE_INITIAL_HEIGHT_CM * getEffectivePxPerCm();
-    const beanieWidth = beanieHeight * imageRatio;
-    logoFrameEl.style.width = `${Math.round(beanieWidth)}px`;
-    logoFrameEl.style.height = `${Math.round(beanieHeight)}px`;
-    return;
+  // Size the freshly loaded logo from the product's default (in cm). A logo is
+  // either height-driven (e.g. beanie cuff) or width-driven (garments).
+  let width, height;
+  if (def.h && !def.w) {
+    height = def.h * pxPerCm;
+    width = height * imageRatio;
+  } else {
+    const targetWidth = (def.w || cfg.areaCm.w) * pxPerCm;
+    width = targetWidth;
+    height = width / imageRatio;
   }
 
-  // Start each newly loaded logo at ~30cm relative to garment printable area.
-  const targetWidth = Math.max(30, INITIAL_LOGO_WIDTH_CM * pxPerCm);
+  // Clamp to the printable rectangle on the mockup.
   const maxWidth = Math.max(60, getPrintableReferenceWidthPx() * 1.04);
   const maxHeight = Math.max(60, getPrintableReferenceHeightPx() * 0.98);
-
-  let width = Math.min(targetWidth, maxWidth);
-  let height = width / imageRatio;
-
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = height * imageRatio;
-  }
-
   if (width > maxWidth) {
     width = maxWidth;
     height = width / imageRatio;
+  }
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * imageRatio;
   }
 
   const logoFrame = getLogoFrameEl();
@@ -2836,9 +2893,10 @@ function updateQualityBar(widthCm) {
   const mainMask = document.getElementById('mainQualityMask');
   const mainPct = document.getElementById('mainQualityPct');
 
-  // quality: 20% at full print area (30cm), 100% at 12cm or smaller
-  const maxCm = PRINT_AREA_WIDTH_CM;
-  const minCm = 12;
+  // quality: 20% when the logo fills the product's print area, 100% when it's
+  // at ~40% of it or smaller — relative to each product, not a fixed 30cm.
+  const maxCm = getPrintAreaConfig().areaCm.w;
+  const minCm = Math.max(2, maxCm * 0.4);
   const quality = Math.max(20, Math.min(100, Math.round(20 + (maxCm - widthCm) / (maxCm - minCm) * 80)));
   const maskWidth = 100 - quality;
 
@@ -2911,7 +2969,20 @@ if (confirmQualityBtn) {
       return;
     }
 
-    upsertBasketItemFromState();
+    let result;
+    try {
+      result = upsertBasketItemFromState();
+    } catch (error) {
+      console.error("Confirm failed", error);
+      alert("Something went wrong saving your design. Please try again.");
+      return;
+    }
+
+    if (result && result.saved === false) {
+      alert("Your basket is full and couldn't be saved. Please remove an item from the basket and try again.");
+      return;
+    }
+
     const previousText = confirmQualityBtn.textContent;
     confirmQualityBtn.classList.add("is-confirmed");
     confirmQualityBtn.textContent = "CONFIRMED";
