@@ -227,7 +227,7 @@
         
         // Success - show feedback
         if (submitBtn) {
-          submitBtn.textContent = 'Submitted ✓';
+          submitBtn.textContent = 'Submitted \u2713';
           submitBtn.style.backgroundColor = '#22c55e';
           submitBtn.style.opacity = '1';
         }

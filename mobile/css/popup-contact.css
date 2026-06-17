@@ -84,6 +84,17 @@
   background: #e5e7eb;
 }
 
+.popup-contact__close-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  fill: none;
+  pointer-events: none;
+}
+
 /* Popup Body */
 .popup-contact__body {
   padding: 0 20px 24px;
@@ -177,16 +188,88 @@
   padding-top: 16px;
 }
 
+.popup-contact__map-frame {
+  position: relative;
+  min-height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
 .popup-contact__map iframe {
+  position: relative;
+  z-index: 1;
+  display: block;
   width: 100%;
   height: 200px;
   border: none;
-  border-radius: 12px;
-  filter: grayscale(100%) contrast(1.1) brightness(0.95);
+  filter: none;
+  pointer-events: auto;
+  touch-action: auto;
 }
 
 .popup-contact__map iframe:hover {
-  filter: grayscale(100%) contrast(1.1) brightness(0.95);
+  filter: none;
+}
+
+.popup-contact__map-open {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+
+.popup-contact__map-open:hover {
+  text-decoration: none;
+  background: #f9fafb;
+}
+
+.popup-contact__map-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.popup-contact__map-link {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.popup-contact__map-link--primary {
+  border-color: #273469;
+  background: #273469;
+  color: #fff;
+}
+
+.popup-contact__map-link:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
 }
 
 /* Make hero3 clickable */

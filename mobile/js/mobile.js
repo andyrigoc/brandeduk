@@ -16,6 +16,12 @@ function getMobileBaseUrl() {
     return window.location.pathname.indexOf('/mobile/') !== -1 ? '' : 'mobile/';
 }
 
+function getCanonicalShopUrl(queryString = '') {
+    const prefix = window.location.pathname.indexOf('/mobile/') !== -1 ? '' : 'mobile/';
+    const query = queryString ? (queryString.charAt(0) === '?' ? queryString : `?${queryString}`) : '';
+    return `${prefix}shop-mobile.html${query}`;
+}
+
 function initBrandsMarqueeLogos() {
     const brandCards = document.querySelectorAll('.brands-section .brand-card');
     if (!brandCards.length) return;
@@ -338,7 +344,7 @@ function initSearch() {
                         </div>
                     </a>`;
             });
-            html += `<a href="${baseUrl}shop-mobile.html?q=${encodeURIComponent(query)}" class="view-all-results">View all results for "${query}" →</a>`;
+            html += `<a href="${getCanonicalShopUrl(`q=${encodeURIComponent(query)}`)}" class="view-all-results">View all results for "${query}" →</a>`;
             suggestionBox.innerHTML = html;
             suggestionBox.classList.add('active');
         };
@@ -371,7 +377,7 @@ function initSearch() {
                 const query = e.target.value.trim();
                 if (query) {
                     suggestionBox.classList.remove('active');
-                    window.location.href = `${getMobileBaseUrl()}shop-mobile.html?q=${encodeURIComponent(query)}`;
+                    window.location.href = getCanonicalShopUrl(`q=${encodeURIComponent(query)}`);
                 }
             }
         });
@@ -399,7 +405,7 @@ function initSearch() {
         const performSearch = () => {
             const query = input.value.trim();
             if (query) {
-                window.location.href = `${getMobileBaseUrl()}shop-mobile.html?q=${encodeURIComponent(query)}`;
+                window.location.href = getCanonicalShopUrl(`q=${encodeURIComponent(query)}`);
             }
         };
 
@@ -449,7 +455,7 @@ function initCategories() {
         item.addEventListener('click', () => {
             const category = item.dataset.category;
             if (category) {
-                window.location.href = `${getMobileBaseUrl()}shop-mobile.html?category=${category}`;
+                window.location.href = getCanonicalShopUrl(`category=${encodeURIComponent(category)}`);
             }
         });
     });
@@ -1272,7 +1278,7 @@ function initFiltersDropup() {
         
         // If on home page, redirect to shop with filters
         if (window.location.pathname.includes('home-mobile')) {
-            window.location.href = 'shop-mobile.html?filtered=true';
+            window.location.href = getCanonicalShopUrl('filtered=true');
         }
     }
 }

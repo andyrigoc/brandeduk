@@ -2553,7 +2553,11 @@
     <div class="popup-contact" id="popupContact">
         <div class="popup-contact__header">
             <h2 class="popup-contact__title">Get in touch</h2>
-            <button class="popup-contact__close" id="popupContactClose" aria-label="Close">Ã—</button>
+            <button class="popup-contact__close" id="popupContactClose" aria-label="Close contact form" type="button">
+                <svg class="popup-contact__close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+            </button>
         </div>
         <div class="popup-contact__body">
             <form class="popup-contact__form" id="contactQuickForm">
@@ -2589,12 +2593,20 @@
 
             <!-- Google Map -->
             <div class="popup-contact__map">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                <div class="popup-contact__map-frame">
+                    <a class="popup-contact__map-open" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Open in Maps</a>
+                    <iframe 
+                        title="Branded Europe Ltd location map"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="popup-contact__map-actions">
+                    <a class="popup-contact__map-link" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Open map</a>
+                    <a class="popup-contact__map-link popup-contact__map-link--primary" href="https://www.google.com/maps/dir/?api=1&destination=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Get directions</a>
+                </div>
             </div>
         </div>
     </div>
@@ -2792,26 +2804,14 @@
     })();
     </script>
     
-    <!-- Social Icons Click Handler: Single click = activate color, Double click = open link -->
+    <!-- Social Icons Click Handler: single click opens the social link; active class is visual feedback only -->
     <script>
     (function() {
         const mobileSocials = document.querySelectorAll('.social-icons-mobile .social-icon');
         
         mobileSocials.forEach(function(icon) {
-            // Prevent default click navigation
-            icon.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Toggle active class (color on/off)
+            icon.addEventListener('click', function() {
                 this.classList.toggle('active');
-            });
-            
-            // Double click opens the link
-            icon.addEventListener('dblclick', function(e) {
-                e.preventDefault();
-                const href = this.getAttribute('href');
-                if (href && href !== '#') {
-                    window.open(href, '_blank', 'noopener,noreferrer');
-                }
             });
         });
     })();
@@ -3057,46 +3057,15 @@
             });
         })();
         
-        // Social Icons 3D - Touch/Click: 1 tap toggle, double tap open link, tap outside deactivates
+        // Social Icons 3D - click/tap opens the link; active class is visual feedback only.
         (function() {
             const socialIcons = document.querySelectorAll('.social-icon-3d');
             const socialContainer = document.querySelector('.footer-social-icons');
             
             socialIcons.forEach(icon => {
-                let lastTap = 0;
-                
-                // Handle both touch and click
-                function handleTap(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const now = Date.now();
-                    const timeDiff = now - lastTap;
-                    
-                    if (timeDiff < 300 && timeDiff > 0) {
-                        // Double tap - open link
-                        lastTap = 0;
-                        const href = icon.getAttribute('href');
-                        if (href) {
-                            window.open(href, '_blank', 'noopener,noreferrer');
-                        }
-                        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-                    } else {
-                        // Single tap - toggle
-                        lastTap = now;
-                        icon.classList.toggle('active');
-                        if (navigator.vibrate) navigator.vibrate(10);
-                    }
-                }
-                
-                icon.addEventListener('touchend', handleTap, { passive: false });
-                icon.addEventListener('click', function(e) {
-                    // Only handle click if not a touch device (fallback for desktop)
-                    if (!('ontouchend' in window)) {
-                        handleTap(e);
-                    } else {
-                        e.preventDefault();
-                    }
+                icon.addEventListener('click', function() {
+                    socialIcons.forEach(item => item.classList.remove('active'));
+                    icon.classList.add('active');
                 });
             });
             
@@ -3111,7 +3080,7 @@
             document.addEventListener('click', deactivateAll);
         })();
 
-        // Isometric 3D Footer Social Icons - Touch: 1st tap = color/lift, 2nd tap = open link
+        // Isometric 3D Footer Social Icons - first click opens the link; class is visual feedback only.
         (function() {
             function initIsoSocial() {
                 if (window.__isoSocialInit) return;
@@ -3120,15 +3089,9 @@
                 window.__isoSocialInit = true;
 
                 isoLinks.forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        if (!link.classList.contains('iso-active')) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            // Deactivate siblings
-                            isoLinks.forEach(l => l.classList.remove('iso-active'));
-                            link.classList.add('iso-active');
-                        }
-                        // 2nd tap/click: iso-active already set, default action opens link
+                    link.addEventListener('click', function() {
+                        isoLinks.forEach(l => l.classList.remove('iso-active'));
+                        link.classList.add('iso-active');
                     });
                 });
 
@@ -3173,7 +3136,7 @@
             initIsoSocial();
         })();
         
-        // Tablet Social Icons - Single/Double Click
+        // Tablet Social Icons - first click opens the link; active class is visual feedback only.
         // Responsive routing helper (for DevTools/device emulation)
         (function() {
             var BREAKPOINT = 1024;
@@ -3217,25 +3180,11 @@
             let clickCount = 0;
             
             tabletSocialIcons.forEach(icon => {
-                icon.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    clickCount++;
-                    
-                    if (clickCount === 1) {
-                        // Single click - toggle active
-                        clickTimer = setTimeout(() => {
-                            icon.classList.toggle('active');
-                            clickCount = 0;
-                        }, 300);
-                    } else if (clickCount === 2) {
-                        // Double click - open link
-                        clearTimeout(clickTimer);
-                        clickCount = 0;
-                        const href = icon.getAttribute('href');
-                        if (href) {
-                            window.open(href, '_blank', 'noopener,noreferrer');
-                        }
-                    }
+                icon.addEventListener('click', function() {
+                    clearTimeout(clickTimer);
+                    clickCount = 0;
+                    tabletSocialIcons.forEach(item => item.classList.remove('active'));
+                    icon.classList.add('active');
                 });
             });
             

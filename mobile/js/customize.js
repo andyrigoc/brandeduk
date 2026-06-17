@@ -3632,10 +3632,10 @@
             if (state.quantity > 0) {
                 showToast('Added to basket! Redirecting to shop…');
                 setTimeout(() => {
-                    window.location.href = 'shop-mobile.html?bestsellers=1';
+                    window.location.href = '../shop.html?bestsellers=1';
                 }, 1200);
             } else {
-                window.location.href = 'shop-mobile.html?bestsellers=1';
+                window.location.href = '../shop.html?bestsellers=1';
             }
         });
     }

@@ -3071,7 +3071,11 @@
 <div class="popup-contact" id="popupContact">
     <div class="popup-contact__header">
         <h2 class="popup-contact__title">Get in touch</h2>
-        <button class="popup-contact__close" id="popupContactClose" aria-label="Close">Ã&mdash;</button>
+        <button class="popup-contact__close" id="popupContactClose" aria-label="Close contact form" type="button">
+            <svg class="popup-contact__close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6 6l12 12M18 6L6 18"></path>
+            </svg>
+        </button>
     </div>
     <div class="popup-contact__body">
         <form class="popup-contact__form" id="contactQuickForm">
@@ -3111,12 +3115,20 @@
 
         <!-- Google Map -->
         <div class="popup-contact__map">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
+            <div class="popup-contact__map-frame">
+                <a class="popup-contact__map-open" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Open in Maps</a>
+                <iframe 
+                    title="Branded Europe Ltd location map"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <div class="popup-contact__map-actions">
+                <a class="popup-contact__map-link" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Open map</a>
+                <a class="popup-contact__map-link popup-contact__map-link--primary" href="https://www.google.com/maps/dir/?api=1&destination=Branded%20Europe%20Ltd%2C%2051.37503081265773%2C-0.2944082213978167" target="_blank" rel="noopener">Get directions</a>
+            </div>
         </div>
     </div>
 </div>

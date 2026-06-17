@@ -897,7 +897,7 @@ function setupCustomizerBreadcrumb() {
   const from = String(params.get("from") || "").toLowerCase();
   const code = String(params.get("code") || "").trim();
 
-  let fallbackTarget = "../shop.html";
+  let fallbackTarget = "../mobile/shop-mobile.html";
   let label = "Home > Logo Tool";
 
   if (from === "basket" || sessionStorage.getItem("returnAfterCustomize") === "basket") {
@@ -3006,7 +3006,7 @@ if (postConfirmAddAnotherLogoBtn) {
 const postConfirmContinueShoppingBtn = document.getElementById("postConfirmContinueShopping");
 if (postConfirmContinueShoppingBtn) {
   postConfirmContinueShoppingBtn.addEventListener("click", () => {
-    window.location.href = "../shop.html";
+    window.location.href = "../mobile/shop-mobile.html";
   });
 }
 

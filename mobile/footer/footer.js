@@ -61,13 +61,9 @@
     window.__isoSocialInit = true;
 
     isoLinks.forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        if (!link.classList.contains('iso-active')) {
-          e.preventDefault();
-          e.stopPropagation();
-          isoLinks.forEach(function (l) { l.classList.remove('iso-active'); });
-          link.classList.add('iso-active');
-        }
+      link.addEventListener('click', function () {
+        isoLinks.forEach(function (l) { l.classList.remove('iso-active'); });
+        link.classList.add('iso-active');
       });
     });
 
