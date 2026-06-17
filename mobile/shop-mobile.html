@@ -58,6 +58,52 @@
         }
         .ac-view-all:hover { background: #e07f00; }
         .ac-loading, .ac-no-results { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
+        /* â• â• â•  MOBILE ONLY (max 767px) â• â• â•  */
+        @media (max-width: 767px) {
+            /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
+            .mobile-header .social-icons-mobile {
+                gap: 3px !important;
+                margin-left: 8px !important;
+                padding-left: 0 !important;
+            }
+
+            .mobile-header .social-icons-mobile .social-icon {
+                width: 27px !important;
+                height: 27px !important;
+                min-width: 27px !important;
+                min-height: 27px !important;
+                max-width: 27px !important;
+                max-height: 27px !important;
+                border-radius: 7px !important;
+            }
+
+            .mobile-header .social-icons-mobile .social-icon i {
+                font-size: 12px !important;
+            }
+
+            /* Logo row spacing */
+            .header-logo-row {
+                padding-top: 5px !important;
+                margin-top: 0;
+            }
+
+            /* Bigger logo */
+            .mobile-logo-center .logo-badge-img {
+                height: 75px !important;
+                width: auto !important;
+            }
+
+            /* Narrower search bar */
+            .header-logo-row .search-wrapper-expand {
+                max-width: 60% !important;
+            }
+
+            /* Extend header to top edge, 15px white padding to cover gap */
+            .mobile-header {
+                top: 0 !important;
+                padding-top: 15px !important;
+            }
+        }
     </style>
 </head>
 
@@ -171,6 +217,22 @@
         </div>
     </header>
 
+    <!-- Top Promotional Bar -->
+    <div class="top-promo-bar">
+        <div class="promo-scroll">
+            <span>Custom Workwear &amp; Uniforms UK - Embroidery - DTF Printing - Screen Printing - Vinyl Heat Transfer - Trades &amp; Construction - Schools &amp; Leavers - Hospitality &amp; Restaurants - Corporate &amp; Office Teams - Warehouses &amp; Delivery Companies - Sports Clubs - Events &amp; Promotions - T-Shirts - Polo Shirts - Hoodies - Hi-Vis - Jackets - Fleeces - Aprons - Caps - Bags - Fast Turnaround - Bulk Pricing Available</span>
+            <span>Custom Workwear &amp; Uniforms UK - Embroidery - DTF Printing - Screen Printing - Vinyl Heat Transfer - Trades &amp; Construction - Schools &amp; Leavers - Hospitality &amp; Restaurants - Corporate &amp; Office Teams - Warehouses &amp; Delivery Companies - Sports Clubs - Events &amp; Promotions - T-Shirts - Polo Shirts - Hoodies - Hi-Vis - Jackets - Fleeces - Aprons - Caps - Bags - Fast Turnaround - Bulk Pricing Available</span>
+        </div>
+    </div>
+
+    <!-- Category Heading (same structure as shop.html) -->
+    <div class="shop-category-heading" id="shopCategoryHeading">
+        <h1 class="shop-category-title" id="shopCategoryTitle">All Products</h1>
+        <p class="shop-category-desc" id="shopCategoryDesc">Browse our full range of customisable workwear and uniforms.</p>
+        <span class="results-count" id="resultsCount"></span>
+        <span id="categoryTitle" hidden>All Products</span>
+    </div>
+
     <!-- Breadcrumbs -->
     <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
         <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
@@ -181,10 +243,65 @@
         <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
     </nav>
 
-    <!-- Category Title -->
-    <div class="shop-title-bar">
-        <h1 class="shop-title" id="categoryTitle">Loading...</h1>
-        <span class="results-count" id="resultsCount"></span>
+    <!-- Category Filters (Hamburger Dropdown) -->
+    <div class="categories-filter-scroll">
+        <button class="category-hamburger-btn" id="categoryHamburgerBtn" aria-expanded="false" aria-controls="categoriesDropdown">
+            <span class="hamburger-lines"><span></span><span></span><span></span></span>
+            <span class="active-cat-label" id="activeCatLabel">All</span>
+            <span class="cat-product-count" id="catProductCount"></span>
+        </button>
+        <div class="categories-dropdown" id="categoriesDropdown">
+            <button class="category-filter-card active" data-category="all">
+                <div class="category-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                </div>
+                <span>All</span>
+            </button>
+            <button class="category-filter-card" data-category="tshirts"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""></div><span>T-Shirts</span></button>
+            <button class="category-filter-card" data-category="polo"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""></div><span>Polo Shirts</span></button>
+            <button class="category-filter-card" data-category="hoodies"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""></div><span>Hoodies &amp; Sweatshirts</span></button>
+            <button class="category-filter-card" data-category="jackets"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""></div><span>Jackets &amp; Softshell</span></button>
+            <button class="category-filter-card" data-category="hivis"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""></div><span>Hi-Viz Clothing</span></button>
+            <button class="category-filter-card" data-category="trousers"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Trousers.png" alt=""></div><span>Work Trousers</span></button>
+            <button class="category-filter-card" data-category="fleeces"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""></div><span>Fleeces</span></button>
+            <button class="category-filter-card" data-category="bags"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt=""></div><span>Bags</span></button>
+            <button class="category-filter-card" data-category="caps"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></div><span>Caps</span></button>
+            <button class="category-filter-card" data-category="beanies"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""></div><span>Headwear / Accessories</span></button>
+            <button class="category-filter-card" data-category="aprons"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Apron.png" alt=""></div><span>Work &amp; Uniforms</span></button>
+            <button class="category-filter-card" data-category="sustainable"><div class="category-icon"><img src="../brandedukv15-child/assets/images/ui/icons/categories/Recycle.png" alt=""></div><span>Sustainable / Recycled &amp; Organic</span></button>
+        </div>
+    </div>
+
+    <!-- Mobile Product Controls -->
+    <div class="shop-products-controls">
+        <div class="shop-controls-row">
+            <div class="shop-control-group">
+                <label for="mobileSortSelect">Sort:</label>
+                <select id="mobileSortSelect" class="shop-control-select">
+                    <option value="newest">Newest Arrivals</option>
+                    <option value="best" selected>Best Sellers</option>
+                    <option value="recommended">Highly Recommended</option>
+                    <option value="brand-az">Brand A-Z</option>
+                    <option value="brand-za">Brand Z-A</option>
+                    <option value="price-lh">Price: Low to High</option>
+                    <option value="price-hl">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="shop-control-group">
+                <label for="mobileViewSelect">View:</label>
+                <select id="mobileViewSelect" class="shop-control-select">
+                    <option value="12">12 per page</option>
+                    <option value="24" selected>24 per page</option>
+                    <option value="36">36 per page</option>
+                    <option value="48">48 per page</option>
+                </select>
+            </div>
+        </div>
     </div>
     <script>
     // Set correct title immediately from URL to avoid "All Products" flash
@@ -194,12 +311,36 @@
         var p = new URLSearchParams(window.location.search);
         var cat = p.get('category') || 'all';
         var q = p.get('q') || p.get('search') || '';
-        var bs = p.get('bestsellers') === '1';
-        var el = document.getElementById('categoryTitle');
-        if (el) {
-            if (q) el.textContent = 'Search: "' + q + '"';
-            else if (bs) el.textContent = 'Recommended For You';
-            else el.textContent = titles[cat] || titles[cat.toLowerCase()] || 'All Products';
+        var bs = p.get('bestsellers') === '1' || p.get('sort') === 'bestsellers';
+        var title = 'All Products';
+        var desc = 'Browse our full range of customisable workwear and uniforms.';
+        if (q) {
+            title = 'Search: "' + q + '"';
+            desc = 'Finding matches for "' + q + '" across custom clothing, workwear and accessories.';
+        } else if (bs) {
+            title = 'Recommended For You';
+            desc = 'A quick mix of popular branded workwear and custom clothing picked for faster browsing.';
+        } else if (cfg && typeof cfg.getCategoryInfo === 'function') {
+            var info = cfg.getCategoryInfo(cat) || {};
+            title = info.title || title;
+            desc = info.desc || desc;
+        } else {
+            title = titles[cat] || titles[cat.toLowerCase()] || title;
+        }
+        var legacyTitle = document.getElementById('categoryTitle');
+        var heading = document.getElementById('shopCategoryTitle');
+        var description = document.getElementById('shopCategoryDesc');
+        if (legacyTitle) legacyTitle.textContent = title;
+        if (heading) heading.textContent = title;
+        if (description) description.textContent = desc;
+        if (!q) {
+            var active = document.querySelector('.category-filter-card[data-category="' + cat + '"]');
+            var label = document.getElementById('activeCatLabel');
+            if (active && label) {
+                document.querySelectorAll('.category-filter-card').forEach(function(btn) { btn.classList.remove('active'); });
+                active.classList.add('active');
+                label.textContent = active.querySelector('span:last-child').textContent;
+            }
         }
     })();
     </script>
@@ -288,7 +429,8 @@
         let currentFlagFilters = [];
         let totalProducts = 0;
         let isBestsellerMode = false;
-        const LIMIT = 24;
+        let currentSort = 'best';
+        let currentLimit = 24;
 
         const TOGGLE_FLAG_MAP = {
             newIn: 'new-in',
@@ -433,7 +575,7 @@
         function buildProductsOptions(overrides = {}) {
             const options = {
                 page: currentPage,
-                limit: LIMIT,
+                limit: currentLimit,
                 ...overrides
             };
 
@@ -483,22 +625,22 @@
 
         function getBrandLogo(b) {
             var m = {
-                'gildan':'brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
-                'russell':'brandedukv15-child/assets/images/brands/russell.webp','awdis':'brandedukv15-child/assets/images/brands/awdis.webp',
-                'anthem':'brandedukv15-child/assets/images/brands/anthem.jpg','result':'brandedukv15-child/assets/images/brands/result2020.webp',
-                'regatta':'brandedukv15-child/assets/images/brands/regatta.webp','portwest':'brandedukv15-child/assets/images/brands/portwest.webp',
-                'nike':'brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'brandedukv15-child/assets/images/brands/adidas.jpg',
-                'under armour':'brandedukv15-child/assets/images/brands/under-armour.webp','premier':'brandedukv15-child/assets/images/brands/premier2020.webp',
-                'henbury':'brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'brandedukv15-child/assets/images/brands/beechfield.jpeg',
-                'kustom kit':'brandedukv15-child/assets/images/brands/kustom-kit2020.webp','tombo':'brandedukv15-child/assets/images/brands/tombo2020.webp',
-                'spiro':'brandedukv15-child/assets/images/brands/spiro.webp','tee jays':'brandedukv15-child/assets/images/brands/tee-jays.jpg',
-                'front row':'brandedukv15-child/assets/images/brands/front-row.jpg','kariban':'brandedukv15-child/assets/images/brands/kariban2020.webp',
-                'westford mill':'brandedukv15-child/assets/images/brands/westford-mill-2020.webp','quadra':'brandedukv15-child/assets/images/brands/quadra-2020.webp',
-                'bagbase':'brandedukv15-child/assets/images/brands/bagbase.jpeg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
-                'scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg','yoko':'brandedukv15-child/assets/images/brands/yoko.webp',
-                'tridri':'brandedukv15-child/assets/images/brands/tridri.webp','pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg',
-                'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp',
-                'russell athletic':'brandedukv15-child/assets/images/brands/russel-athletic-2026.webp'
+                'gildan':'../brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'../brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
+                'russell':'../brandedukv15-child/assets/images/brands/russell.webp','awdis':'../brandedukv15-child/assets/images/brands/awdis.webp',
+                'anthem':'../brandedukv15-child/assets/images/brands/anthem.jpg','result':'../brandedukv15-child/assets/images/brands/result2020.webp',
+                'regatta':'../brandedukv15-child/assets/images/brands/regatta.webp','portwest':'../brandedukv15-child/assets/images/brands/portwest.webp',
+                'nike':'../brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'../brandedukv15-child/assets/images/brands/adidas.jpg',
+                'under armour':'../brandedukv15-child/assets/images/brands/under-armour.webp','premier':'../brandedukv15-child/assets/images/brands/premier2020.webp',
+                'henbury':'../brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'../brandedukv15-child/assets/images/brands/beechfield.jpeg',
+                'kustom kit':'../brandedukv15-child/assets/images/brands/kustom-kit2020.webp','tombo':'../brandedukv15-child/assets/images/brands/tombo2020.webp',
+                'spiro':'../brandedukv15-child/assets/images/brands/spiro.webp','tee jays':'../brandedukv15-child/assets/images/brands/tee-jays.jpg',
+                'front row':'../brandedukv15-child/assets/images/brands/front-row.jpg','kariban':'../brandedukv15-child/assets/images/brands/kariban2020.webp',
+                'westford mill':'../brandedukv15-child/assets/images/brands/westford-mill-2020.webp','quadra':'../brandedukv15-child/assets/images/brands/quadra-2020.webp',
+                'bagbase':'../brandedukv15-child/assets/images/brands/bagbase.jpeg','b&c':'../brandedukv15-child/assets/images/brands/bc20202.webp',
+                'scruffs':'../brandedukv15-child/assets/images/brands/scruffs.jpg','yoko':'../brandedukv15-child/assets/images/brands/yoko.webp',
+                'tridri':'../brandedukv15-child/assets/images/brands/tridri.webp','pro rtx':'../brandedukv15-child/assets/images/brands/pro-rtx2020.jpg',
+                'regatta professional':'../brandedukv15-child/assets/images/brands/regatta-professional2020.webp',
+                'russell athletic':'../brandedukv15-child/assets/images/brands/russel-athletic-2026.webp'
             };
             return m[(b||'').toLowerCase().trim()] || null;
         }
@@ -552,6 +694,109 @@
 
         // Category title mappings (from shared config)
         const CATEGORY_TITLES = window.BrandedConfig ? window.BrandedConfig.CATEGORY_TITLES : {};
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getCategoryDescription(category, title) {
+            if (isBestsellerMode) {
+                return 'A quick mix of popular branded workwear and custom clothing picked for faster browsing.';
+            }
+
+            const normalized = String(category || 'all').toLowerCase();
+            const descriptions = {
+                all: 'Browse custom clothing, workwear, uniforms and accessories ready for embroidery or print.',
+                tshirts: 'Explore custom T-shirts for teams, events, staff uniforms and everyday branded clothing.',
+                polo: 'Find smart embroidered polos for staff uniforms, trade teams, hospitality and retail.',
+                hoodies: 'Shop custom hoodies and sweatshirts for clubs, crews, teams and branded workwear.',
+                jackets: 'Browse jackets, softshells and outerwear built for printed or embroidered branding.',
+                hivis: 'Find hi-vis clothing and safety workwear for teams that need visibility on site.',
+                fleeces: 'Shop warm custom fleeces and mid-layers for practical branded uniforms.',
+                bags: 'Browse branded bags for events, work, retail, gifting and staff kit.',
+                caps: 'Find custom caps and headwear for teams, promotions and everyday branded wear.',
+                aprons: 'Shop branded aprons for hospitality, kitchens, salons, retail and events.'
+            };
+
+            return descriptions[normalized] || `Browse ${title || 'products'} ready for embroidery, print and bulk customisation.`;
+        }
+
+        function updateShopResultMeta({ mode, title, query, total, visible }) {
+            const headingEl = document.getElementById('shopCategoryTitle');
+            const descEl = document.getElementById('shopCategoryDesc');
+            const countEl = document.getElementById('catProductCount');
+            const safeTitle = title || 'Products';
+            const countLabel = `${Number(total || 0).toLocaleString()} item${Number(total || 0) === 1 ? '' : 's'}`;
+
+            if (headingEl) {
+                headingEl.textContent = mode === 'search' ? `Search: "${query}"` : safeTitle;
+            }
+
+            if (descEl) {
+                if (mode === 'search') {
+                    descEl.textContent = `Showing matches for "${query}" across custom clothing, workwear and accessories.`;
+                } else {
+                    descEl.textContent = getCategoryDescription(currentCategory, safeTitle);
+                }
+            }
+
+            if (countEl) {
+                countEl.textContent = `(${Number(total || 0).toLocaleString()})`;
+            }
+        }
+
+        function updateShopLoadingMeta({ mode, title, query }) {
+            const headingEl = document.getElementById('shopCategoryTitle');
+            const descEl = document.getElementById('shopCategoryDesc');
+            const countEl = document.getElementById('catProductCount');
+
+            if (headingEl) {
+                headingEl.textContent = mode === 'search' ? `Search: "${query}"` : (title || 'Products');
+            }
+
+            if (descEl) {
+                if (mode === 'search') {
+                    descEl.textContent = `Finding matches for "${query}" across custom clothing, workwear and accessories.`;
+                } else {
+                    descEl.textContent = getCategoryDescription(currentCategory, title || 'Products');
+                }
+            }
+
+            if (countEl) {
+                countEl.textContent = '';
+            }
+        }
+
+        function applyClientSort(items) {
+            const list = Array.isArray(items) ? [...items] : [];
+            if (currentSort === 'price-lh' || currentSort === 'price-hl') {
+                list.sort((a, b) => {
+                    const aPrice = getProductPriceRange(a).min || 0;
+                    const bPrice = getProductPriceRange(b).min || 0;
+                    return currentSort === 'price-lh' ? aPrice - bPrice : bPrice - aPrice;
+                });
+            } else if (currentSort === 'brand-az' || currentSort === 'brand-za') {
+                list.sort((a, b) => {
+                    const result = String(a.brand || '').localeCompare(String(b.brand || ''));
+                    return currentSort === 'brand-az' ? result : -result;
+                });
+            } else if (currentSort === 'newest') {
+                list.reverse();
+            } else if (currentSort === 'best' || currentSort === 'recommended') {
+                list.sort((a, b) => {
+                    const score = (p) =>
+                        (p.is_best_seller === true || p.is_best_seller === 'true' || p.is_best_seller === 1 ? 2 : 0) +
+                        (p.is_recommended === true || p.is_recommended === 'true' || p.is_recommended === 1 ? 1 : 0);
+                    return score(b) - score(a);
+                });
+            }
+            return list;
+        }
 
         // Create product card
         function createProductCard(product, index) {
@@ -730,6 +975,7 @@
                     </section>
                 </div>
             `;
+            updateShopLoadingMeta({ mode: 'search', title: `Search: "${query}"`, query });
 
             try {
                 const result = await BrandedAPI.getProducts(buildProductsOptions({ search: query }));
@@ -738,27 +984,36 @@
 
                 // Update title
                 const suffix = currentColorFilter ? ` (${currentColorFilter.toUpperCase()})` : '';
-                if (categoryTitle) categoryTitle.textContent = `Search: ${query}${suffix}`;
+                if (categoryTitle) categoryTitle.textContent = `Search: "${query}"${suffix}`;
                 if (typeof updateBreadcrumbCategory === 'function') updateBreadcrumbCategory('search');
                 if (resultsCount) resultsCount.textContent = `${totalProducts.toLocaleString()} items`;
 
                 // Clear and render
                 grid.innerHTML = '';
 
-                if (result.items.length === 0) {
+                let items = applyClientSort(result.items);
+                updateShopResultMeta({
+                    mode: 'search',
+                    title: `Search: ${query}`,
+                    query,
+                    total: totalProducts,
+                    visible: items.length
+                });
+
+                if (items.length === 0) {
                     grid.innerHTML = `
                         <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="margin-bottom: 12px;">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <p style="color: #6b7280;">No products found for "${query}"</p>
+                            <p style="color: #6b7280;">No products found for "${escapeHtml(query)}"</p>
                         </div>
                     `;
                     return;
                 }
 
-                result.items.forEach((product, index) => {
+                items.forEach((product, index) => {
                     const card = createProductCard(product, index);
                     card.style.opacity = '0';
                     card.style.transform = 'translateY(15px)';
@@ -776,6 +1031,8 @@
 
             } catch (error) {
                 console.error('[MobileShop] Error loading products:', error);
+                const countEl = document.getElementById('catProductCount');
+                if (countEl) countEl.textContent = '';
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
@@ -803,6 +1060,8 @@
                     </section>
                 </div>
             `;
+            const loadingBaseTitle = isBestsellerMode ? 'Recommended For You' : (CATEGORY_TITLES[currentCategory] || 'Products');
+            updateShopLoadingMeta({ mode: 'category', title: loadingBaseTitle });
 
             try {
                 // In bestseller mode, fetch a larger batch so we can sort client-side
@@ -825,7 +1084,15 @@
                 // Clear and render
                 grid.innerHTML = '';
 
-                if (result.items.length === 0) {
+                let items = applyClientSort(result.items);
+
+                if (items.length === 0) {
+                    updateShopResultMeta({
+                        mode: 'category',
+                        title,
+                        total: totalProducts,
+                        visible: 0
+                    });
                     grid.innerHTML = `
                         <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="margin-bottom: 12px;">
@@ -839,7 +1106,6 @@
                 }
 
                 // In bestseller mode: sort best sellers & recommended first, then shuffle the rest
-                let items = result.items;
                 if (isBestsellerMode) {
                     const isFlagged = (p) =>
                         p.is_best_seller === true || p.is_best_seller === 'true' || p.is_best_seller === 1 ||
@@ -857,6 +1123,13 @@
                     items = [...bestSellers, ...others];
                     console.log('[MobileShop] Bestseller mode: ' + bestSellers.length + ' featured + ' + others.length + ' others');
                 }
+
+                updateShopResultMeta({
+                    mode: 'category',
+                    title,
+                    total: totalProducts,
+                    visible: items.length
+                });
 
                 items.forEach((product, index) => {
                     const card = createProductCard(product, index);
@@ -876,6 +1149,8 @@
 
             } catch (error) {
                 console.error('[MobileShop] Error loading products:', error);
+                const countEl = document.getElementById('catProductCount');
+                if (countEl) countEl.textContent = '';
                 grid.innerHTML = `
                     <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <p style="color: #ef4444;">Failed to load products</p>
@@ -937,11 +1212,64 @@
             currentCategory = urlParams.get('category') || 'all';
             currentSearchQuery = urlParams.get('search') || urlParams.get('q') || '';
             currentColorFilter = urlParams.get('color') || '';
-            isBestsellerMode = urlParams.get('bestsellers') === '1';
+            isBestsellerMode = urlParams.get('bestsellers') === '1' || urlParams.get('sort') === 'bestsellers';
+            const sortParam = urlParams.get('sort') || 'best';
+            currentSort = ['newest', 'best', 'recommended', 'brand-az', 'brand-za', 'price-lh', 'price-hl'].includes(sortParam) ? sortParam : 'best';
+            const limitParam = Number(urlParams.get('limit') || urlParams.get('view') || 24);
+            currentLimit = [12, 24, 36, 48].includes(limitParam) ? limitParam : 24;
 
             applyStoredFiltersIfRequested(urlParams);
 
             const searchQuery = currentSearchQuery;
+            const sortSelect = document.getElementById('mobileSortSelect');
+            if (sortSelect) {
+                sortSelect.value = currentSort;
+                sortSelect.addEventListener('change', (e) => {
+                    currentSort = e.target.value || 'best';
+                    currentPage = 1;
+                    if (currentSearchQuery) {
+                        loadProductsWithSearch(currentSearchQuery);
+                    } else {
+                        loadProducts();
+                    }
+                });
+            }
+            const viewSelect = document.getElementById('mobileViewSelect');
+            if (viewSelect) {
+                viewSelect.value = String(currentLimit);
+                viewSelect.addEventListener('change', (e) => {
+                    currentLimit = Number(e.target.value) || 24;
+                    currentPage = 1;
+                    if (currentSearchQuery) {
+                        loadProductsWithSearch(currentSearchQuery);
+                    } else {
+                        loadProducts();
+                    }
+                });
+            }
+
+            const hamBtn = document.getElementById('categoryHamburgerBtn');
+            const dropdown = document.getElementById('categoriesDropdown');
+            if (hamBtn && dropdown) {
+                hamBtn.addEventListener('click', () => {
+                    const isOpen = dropdown.classList.toggle('open');
+                    hamBtn.classList.toggle('open', isOpen);
+                    hamBtn.setAttribute('aria-expanded', String(isOpen));
+                });
+            }
+            document.querySelectorAll('.category-filter-card').forEach(btn => {
+                const cat = btn.dataset.category;
+                if (cat === currentCategory && !currentSearchQuery) {
+                    document.querySelectorAll('.category-filter-card').forEach(card => card.classList.remove('active'));
+                    btn.classList.add('active');
+                    const label = document.getElementById('activeCatLabel');
+                    if (label) label.textContent = btn.querySelector('span:last-child')?.textContent || 'All';
+                }
+                btn.addEventListener('click', () => {
+                    if (!cat) return;
+                    window.location.href = 'shop-mobile.html?category=' + encodeURIComponent(cat);
+                });
+            });
 
             // If search query exists, use it
             if (searchQuery) {
