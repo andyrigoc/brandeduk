@@ -637,6 +637,59 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .replace(/\s+/g, ' ')
                 .trim();
             document.title = `${safeProductName} - Branded UK`;
+
+            // Dynamic SEO updates
+            if (PRODUCT_DATA) {
+                const safeUrl = `https://www.brandeduk.com/product/${(PRODUCT_CODE || '').toLowerCase()}`;
+                
+                // 1. Canonical tag
+                const canonicalLink = document.getElementById('canonicalLink');
+                if (canonicalLink) canonicalLink.setAttribute('href', safeUrl);
+                
+                // 2. Open Graph & Twitter URL tags
+                const ogUrl = document.getElementById('ogUrl');
+                if (ogUrl) ogUrl.setAttribute('content', safeUrl);
+                const twitterUrl = document.getElementById('twitterUrl');
+                if (twitterUrl) twitterUrl.setAttribute('content', safeUrl);
+
+                // 3. Page Title for OG and Twitter
+                const ogTitle = document.getElementById('ogTitle');
+                if (ogTitle) ogTitle.setAttribute('content', `${safeProductName} - Branded UK`);
+                const twitterTitle = document.getElementById('twitterTitle');
+                if (twitterTitle) twitterTitle.setAttribute('content', `${safeProductName} - Branded UK`);
+
+                // 4. Description Meta and Social Tags
+                let plainDesc = '';
+                if (PRODUCT_DATA.description) {
+                    let rawDesc = String(PRODUCT_DATA.description).replace(/<[^>]*>/g, ' ');
+                    const tempElement = document.createElement('div');
+                    tempElement.innerHTML = rawDesc;
+                    plainDesc = (tempElement.textContent || tempElement.innerText || '').replace(/\s+/g, ' ').trim();
+                }
+                if (!plainDesc) {
+                    plainDesc = `Custom ${safeProductName} at BrandedUK. Embroidery & print options available.`;
+                }
+                const shortDesc = plainDesc.length > 155 ? plainDesc.substring(0, 152) + '...' : plainDesc;
+
+                const metaDesc = document.getElementById('metaDescription');
+                if (metaDesc) metaDesc.setAttribute('content', shortDesc);
+                const ogDesc = document.getElementById('ogDescription');
+                if (ogDesc) ogDesc.setAttribute('content', shortDesc);
+                const twitterDesc = document.getElementById('twitterDescription');
+                if (twitterDesc) twitterDesc.setAttribute('content', shortDesc);
+
+                // 5. Image for OG and Twitter
+                let prodImg = 'https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png';
+                if (PRODUCT_DATA.images && PRODUCT_DATA.images.length > 0) {
+                    prodImg = PRODUCT_DATA.images[0];
+                } else if (PRODUCT_DATA.image) {
+                    prodImg = PRODUCT_DATA.image;
+                }
+                const ogImage = document.getElementById('ogImage');
+                if (ogImage) ogImage.setAttribute('content', prodImg);
+                const twitterImage = document.getElementById('twitterImage');
+                if (twitterImage) twitterImage.setAttribute('content', prodImg);
+            }
         }
 
         // Update product name and code in the page (if elements exist)

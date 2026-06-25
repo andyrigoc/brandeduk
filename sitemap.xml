@@ -1,220 +1,201 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  
-  <!-- Homepage -->
+
   <url>
     <loc>https://www.brandeduk.com/</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Main Pages -->
+
   <url>
-    <loc>https://www.brandeduk.com/shop.html</loc>
+    <loc>https://www.brandeduk.com/shop</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/services.html</loc>
+    <loc>https://www.brandeduk.com/services</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/quote-form.html</loc>
+    <loc>https://www.brandeduk.com/quote</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/basket.html</loc>
-    <lastmod>2026-04-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.brandeduk.com/checkout.html</loc>
-    <lastmod>2026-04-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <!-- Category Pages (NEW) -->
-  <url>
-    <loc>https://www.brandeduk.com/polos.html</loc>
+    <loc>https://www.brandeduk.com/polos</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/hoodies.html</loc>
+    <loc>https://www.brandeduk.com/hoodies</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/tshirts.html</loc>
+    <loc>https://www.brandeduk.com/tshirts</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/hivis.html</loc>
+    <loc>https://www.brandeduk.com/hivis</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/workwear.html</loc>
+    <loc>https://www.brandeduk.com/workwear</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/jackets.html</loc>
+    <loc>https://www.brandeduk.com/jackets</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
-  <!-- Special Pages (NEW) -->
+
   <url>
-    <loc>https://www.brandeduk.com/bundles.html</loc>
+    <loc>https://www.brandeduk.com/bundles</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/bulk-orders.html</loc>
+    <loc>https://www.brandeduk.com/bulk-orders</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  
-  <!-- Blog Posts -->
+
   <url>
     <loc>https://www.brandeduk.com/blog/</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/best-logo-size-workwear.html</loc>
+    <loc>https://www.brandeduk.com/blog/best-logo-size-workwear</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/best-workwear-trades-south-west-london.html</loc>
+    <loc>https://www.brandeduk.com/blog/best-workwear-trades-south-west-london</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/case-study-500-tshirts-london-event.html</loc>
+    <loc>https://www.brandeduk.com/blog/case-study-500-tshirts-london-event</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/cost-print-tshirts-london.html</loc>
+    <loc>https://www.brandeduk.com/blog/cost-print-tshirts-london</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/custom-workwear-restaurants-hospitality.html</loc>
+    <loc>https://www.brandeduk.com/blog/custom-workwear-restaurants-hospitality</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/dtf-vs-screen-printing.html</loc>
+    <loc>https://www.brandeduk.com/blog/dtf-vs-screen-printing</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/embroidery-corporate-uniforms.html</loc>
+    <loc>https://www.brandeduk.com/blog/embroidery-corporate-uniforms</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/embroidery-vs-printing-kingston.html</loc>
+    <loc>https://www.brandeduk.com/blog/embroidery-vs-printing-kingston</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/event-workwear-south-west-london.html</loc>
+    <loc>https://www.brandeduk.com/blog/event-workwear-south-west-london</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/hivis-workwear-south-west-london.html</loc>
+    <loc>https://www.brandeduk.com/blog/hivis-workwear-south-west-london</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/hospitality-restaurant-uniforms-kingston.html</loc>
+    <loc>https://www.brandeduk.com/blog/hospitality-restaurant-uniforms-kingston</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/mistakes-ordering-branded-clothing.html</loc>
+    <loc>https://www.brandeduk.com/blog/mistakes-ordering-branded-clothing</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/prepare-logo-printing-embroidery.html</loc>
+    <loc>https://www.brandeduk.com/blog/prepare-logo-printing-embroidery</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/uniform-contracts-save-money.html</loc>
+    <loc>https://www.brandeduk.com/blog/uniform-contracts-save-money</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <url>
-    <loc>https://www.brandeduk.com/blog/workwear-contractors-kingston.html</loc>
+    <loc>https://www.brandeduk.com/blog/workwear-contractors-kingston</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
 </urlset>

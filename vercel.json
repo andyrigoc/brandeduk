@@ -5,6 +5,7 @@
   "outputDirectory": ".",
   "installCommand": "npm install",
   "framework": null,
+  "cleanUrls": true,
 
   "functions": {
     "api/upload-logo.js": {
@@ -60,6 +61,51 @@
     {
       "source": "/mobile",
       "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/shop.html",
+      "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/polos.html",
+      "destination": "/polos",
+      "permanent": true
+    },
+    {
+      "source": "/hoodies.html",
+      "destination": "/hoodies",
+      "permanent": true
+    },
+    {
+      "source": "/tshirts.html",
+      "destination": "/tshirts",
+      "permanent": true
+    },
+    {
+      "source": "/hivis.html",
+      "destination": "/hivis",
+      "permanent": true
+    },
+    {
+      "source": "/workwear.html",
+      "destination": "/workwear",
+      "permanent": true
+    },
+    {
+      "source": "/jackets.html",
+      "destination": "/jackets",
+      "permanent": true
+    },
+    {
+      "source": "/bundles.html",
+      "destination": "/bundles",
+      "permanent": true
+    },
+    {
+      "source": "/bulk-orders.html",
+      "destination": "/bulk-orders",
       "permanent": true
     },
     {

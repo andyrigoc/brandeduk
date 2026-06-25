@@ -25,6 +25,11 @@ Disallow: /.history/
 Disallow: /tools/
 Disallow: /dist/
 Disallow: /design-assets/
+Disallow: /customization-tool_backup_20260605-060018/
+Disallow: /test-order-popup/
+Disallow: /tests/
+Disallow: /.github/
+Disallow: /.cursor/
 
 # Sitemap location
 Sitemap: https://www.brandeduk.com/sitemap.xml
