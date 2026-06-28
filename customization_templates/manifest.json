@@ -1,0 +1,152 @@
+{
+  "templates": [
+    {
+      "category": "tshirts",
+      "views": {
+        "front": "customization_templates/tshirts/tshirt-front.png",
+        "back": "customization_templates/tshirts/tshirt-back.png",
+        "sleeve": "customization_templates/tshirts/tshirt-sleeve.png"
+      }
+    },
+    {
+      "category": "caps",
+      "views": {
+        "front": "customization_templates/caps/cap-front.png",
+        "back": "customization_templates/caps/cap-back.png",
+        "left": "customization_templates/caps/cap-left.png",
+        "right": "customization_templates/caps/cap-right.png"
+      }
+    },
+    {
+      "category": "bags",
+      "views": {
+        "front": "customization_templates/bags/bag-front.png",
+        "back": "customization_templates/bags/bag-back.png"
+      }
+    },
+    {
+      "category": "jackets",
+      "views": {
+        "front": "customization_templates/jackets/jacket-front.png",
+        "back": "customization_templates/jackets/jacket-back.png",
+        "sleeve": "customization_templates/jackets/jacket-sleeve.png"
+      }
+    },
+    {
+      "category": "polos",
+      "views": {
+        "front": "customization_templates/polos/polo-front.png",
+        "back": "customization_templates/polos/polo-back.png",
+        "sleeve": "customization_templates/polos/polo-sleeve.png"
+      }
+    },
+    {
+      "category": "hoodies",
+      "views": {
+        "front": "customization_templates/hoodies/hoodie-front.png",
+        "back": "customization_templates/hoodies/hoodie-back.png",
+        "sleeve": "customization_templates/hoodies/hoodie-sleeve.png"
+      }
+    },
+    {
+      "category": "sweatshirts",
+      "views": {
+        "front": "customization_templates/sweatshirts/sweatshirt-front.png",
+        "back": "customization_templates/sweatshirts/sweatshirt-back.png",
+        "sleeve": "customization_templates/sweatshirts/sweatshirt-sleeve.png"
+      }
+    },
+    {
+      "category": "shirts",
+      "views": {
+        "front": "customization_templates/shirts/shirt-front.png",
+        "back": "customization_templates/shirts/shirt-back.png",
+        "sleeve": "customization_templates/shirts/shirt-sleeve.png"
+      }
+    },
+    {
+      "category": "gilets_body_warmers",
+      "views": {
+        "front": "customization_templates/gilets_body_warmers/gilet-front.png",
+        "back": "customization_templates/gilets_body_warmers/gilet-back.png"
+      }
+    },
+    {
+      "category": "softshells",
+      "views": {
+        "front": "customization_templates/softshells/softshell-front.png",
+        "back": "customization_templates/softshells/softshell-back.png",
+        "sleeve": "customization_templates/softshells/softshell-sleeve.png"
+      }
+    },
+    {
+      "category": "fleece",
+      "views": {
+        "front": "customization_templates/fleece/fleece-front.png",
+        "back": "customization_templates/fleece/fleece-back.png",
+        "sleeve": "customization_templates/fleece/fleece-sleeve.png"
+      }
+    },
+    {
+      "category": "trousers",
+      "views": {
+        "front": "customization_templates/trousers/trouser-front.png",
+        "back": "customization_templates/trousers/trouser-back.png"
+      }
+    },
+    {
+      "category": "beanies",
+      "views": {
+        "front": "customization_templates/beanies/beanie-front.png",
+        "side": "customization_templates/beanies/beanie-side.png"
+      }
+    },
+    {
+      "category": "shorts",
+      "views": {
+        "front": "customization_templates/shorts/shorts-front.png",
+        "back": "customization_templates/shorts/shorts-back.png"
+      }
+    },
+    {
+      "category": "sweatpants",
+      "views": {
+        "front": "customization_templates/sweatpants/sweatpants-front.png",
+        "back": "customization_templates/sweatpants/sweatpants-back.png"
+      }
+    },
+    {
+      "category": "vests_tshirt",
+      "views": {
+        "front": "customization_templates/vests_tshirt/vest-front.png",
+        "back": "customization_templates/vests_tshirt/vest-back.png"
+      }
+    },
+    {
+      "category": "aprons",
+      "views": {
+        "front": "customization_templates/aprons/apron-front.png"
+      }
+    },
+    {
+      "category": "hats",
+      "views": {
+        "front": "customization_templates/hats/hat-front.png",
+        "side": "customization_templates/hats/hat-side.png"
+      }
+    },
+    {
+      "category": "towels",
+      "views": {
+        "front": "customization_templates/towels/towel-front.png"
+      }
+    },
+    {
+      "category": "hi_vis",
+      "views": {
+        "front": "customization_templates/hi_vis/hivis-front.png",
+        "back": "customization_templates/hi_vis/hivis-back.png"
+      }
+    }
+  ]
+}

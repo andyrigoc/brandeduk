@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#273469">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Customize Product - BrandedUK</title>
+    <link rel="stylesheet" href="css/mobile.css?v=20260530">
+    <link rel="stylesheet" href="css/rainbow-atc-bar.css?v=20260628b">
+    <link rel="stylesheet" href="css/breadcrumbs.css?v=20260407a">
+    <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260407a">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/header.css?v=20260116b">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/product-recommendations.css?v=20260526b">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="footer/footer.css?v=FTR10APR2026">
+    <style>
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only) */
+        .mobile-header .social-icons-mobile {
+            gap: 3px !important;
+            margin-left: 8px !important;
+            padding-left: 0 !important;
+        }
+        .mobile-header .social-icons-mobile .social-icon {
+            width: 27px !important;
+            height: 27px !important;
+            min-width: 27px !important;
+            min-height: 27px !important;
+            max-width: 27px !important;
+            max-height: 27px !important;
+            border-radius: 7px !important;
+        }
+        .mobile-header .social-icons-mobile .social-icon i {
+            font-size: 12px !important;
+        }
+
+        /* FIX: header.css sets body { padding-top: 220px } — override for mobile */
+        @media (max-width: 767px) {
+            body.customize-page {
+                padding-top: 0 !important;
+            }
+            .customize-main {
+                padding-top: 8px !important;
+                margin-top: 0 !important;
+            }
+            .gallery-main {
+                aspect-ratio: auto !important;
+                min-height: 0 !important;
+            }
+            .product-img-placeholder.large {
+                min-height: 0 !important;
+            }
+        }
+
+        /* FIX: --header-height changed globally from 82→102, restore tablet customize spacing */
+        @media (min-width: 768px) {
+            .customize-main {
+                padding: calc(82px + 36px + 24px) 24px 24px !important;
+            }
+            .product-gallery {
+                top: calc(82px + 20px) !important;
+            }
+        }
+
+        /* Apron-specific logo positioning for low-left and low-right */
+        .logo-overlay-box.apron-low-left {
+            top: 70%;
+            left: 28%;
+            width: 28px;
+            height: 28px;
+        }
+        
+        .logo-overlay-box.apron-low-right {
+            top: 70%;
+            left: 72%;
+            width: 28px;
+            height: 28px;
+        }
+    </style>
+</head>
+<body class="customize-page">
+
+    <!-- Tablet Top Bar (768px+) -->
+    <div class="tablet-top-bar">
+        <div class="tablet-top-bar__left">
+            <div class="social-icons-container">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                    <i class="fab fa-pinterest-p"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="tablet-top-bar__center">
+            <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m2 7 10 7 10-7"/>
+                </svg>
+                info@brandeduk.com
+            </a>
+            <a href="tel:02089742722" class="tablet-top-bar__phone">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                0208 974 2722
+            </a>
+        </div>
+        
+        <div class="tablet-top-bar__right">
+            <div class="vat-toggle-tablet">
+                <span class="vat-label vat-label--exc">EXC VAT</span>
+                <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
+                <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <!-- Top Row: Social + VAT Toggle -->
+        <div class="header-top-row">
+            <!-- Social Buttons Left -->
+            <div class="social-icons-container social-icons-mobile">
+                <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                    <i class="fab fa-pinterest-p"></i>
+                </a>
+            </div>
+
+            <!-- VAT Toggle Right -->
+            <div class="vat-toggle-mobile" id="vatToggleContainer">
+                <span class="vat-label vat-label--exc">EX VAT</span>
+                <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
+                <label for="vatToggleCheckbox" class="vat-toggle-label">Toggle VAT</label>
+                <span class="vat-label vat-label--inc">INC VAT</span>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Logo Left + Search Right -->
+        <div class="header-logo-row">
+            <a href="../index.html" class="mobile-logo-center">
+                <img src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-badge-img">
+            </a>
+            <!-- Search Bar inline -->
+            <div class="search-wrapper-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
+        <button type="button" class="breadcrumb-back-btn" id="breadcrumbBackBtn" aria-label="Go back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+        </button>
+        <div class="breadcrumb-trail" id="breadcrumbTrail"></div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="customize-main">
+        
+        <!-- Product Gallery -->
+        <section class="product-gallery">
+            <div class="product-hero-head">
+                <div class="product-hero-text">
+                    <div class="product-sku" id="productSku">Loading...</div>
+                    <h1 class="product-title" id="productTitle">Loading...</h1>
+                </div>
+                <div class="product-brand-box" id="productBrandBox" hidden>
+                    <img id="brandLogoHero" class="product-brand-logo" src="" alt="" loading="lazy">
+                </div>
+            </div>
+            <div class="gallery-main">
+                <div class="gallery-badge bestseller" id="bestsellerBadge" style="display: none;">BESTSELLER</div>
+                <div class="product-img-placeholder large" id="productPreviewContainer">
+                    <img src="" alt="Product" id="mainImage" style="max-width: 100%; height: auto; object-fit: contain;">
+                    <!-- Instant image: show product from sessionStorage before JS loads -->
+                    <script>
+                    (function(){
+                        try {
+                            var d = sessionStorage.getItem('selectedProductData');
+                            if(d){var p=JSON.parse(d); var s=p.image||p.photo||(p.colors&&p.colors[0]&&p.colors[0].image)||'';
+                            if(s){document.getElementById('mainImage').src=s;}}
+                        } catch(e){}
+                    })();
+                    </script>
+                    <!-- Logo Overlay Box - posizioni predefinite -->
+                    <div class="logo-overlay-box" id="logoOverlayBox" hidden>
+                        <img src="" alt="Your Logo" id="logoOverlayImg" class="logo-overlay-img">
+                    </div>
+
+                    <!-- Related products slot (inside gallery, right side) -->
+                    <aside id="galleryRelatedProducts" class="product-gallery-related" aria-label="Related products"></aside>
+                </div>
+                <div class="gallery-zoom">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                        <path d="M11 8v6M8 11h6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="gallery-thumbs">
+                <button class="thumb active" data-view="front">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Front">
+                    </div>
+                </button>
+                <button class="thumb" data-view="back">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Back">
+                    </div>
+                </button>
+                <button class="thumb" data-view="side">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Side">
+                    </div>
+                </button>
+                <button class="thumb" data-view="detail">
+                    <div class="thumb-placeholder">
+                        <img src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt="Detail">
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Product Info -->
+        <section class="product-info">
+            <!-- Price + Brand Logo row -->
+            <div class="price-brand-row">
+                <div class="product-main-price" id="productMainPrice">
+                    <span class="start-from-label">From </span>
+                    <span class="start-from-price">£0.00</span>
+                </div>
+                <img id="brandLogoCustomize" class="brand-logo-customize" src="" alt="" style="display:none;">
+            </div>
+            <!-- CTA Buttons — tablet only -->
+            <div class="rala-cta-row-cust" style="display:none;">
+                <button class="rala-btn-primary-cust" id="ctaSelectOptions">Select Your Options</button>
+            </div>
+            <!-- Manufacturer Code — tablet only -->
+            <div class="rala-mfr-line" style="display:none;">
+                <span class="rala-mfr-label">Manufacturer Code: </span><span id="mfrCode"></span>
+            </div>
+            <!-- Specs table (Fabric, Weight, Size) - tablet/desktop -->
+            <div id="productSpecsTableCustomize" class="product-specs-table-customize" style="display:none;">
+            </div>
+            <!-- Key Info — tablet only (Read More) -->
+            <div class="rala-key-info-cust" style="display:none;" id="ralaKeyInfoCust">
+                <p class="rala-key-info-cust__title">Key Information</p>
+                <div class="rala-key-info-cust__text rala-key-info-cust__text--clamped" id="ralaKeyInfoText"></div>
+                <button class="rala-read-more-cust" id="ralaReadMoreCust">Read more</button>
+            </div>
+            <!-- Mobile specs pills -->
+            <div class="product-specs" id="productSpecs">
+                <span class="spec">Loading...</span>
+            </div>
+        </section>
+
+        <!-- Color Selection -->
+        <section class="customize-section">
+            <h2 class="section-title">
+                <span>Color</span>
+                <span class="color-count">37 colors</span>
+            </h2>
+            <div class="selected-color-name">Selected: <span id="selectedColor">Aquatic</span></div>
+            <div class="color-options" id="colorOptions">
+                <!-- Colors rendered dynamically by JS -->
+            </div>
+        </section>
+
+        <!-- Unit Pricing with Discounts -->
+        <section class="customize-section pricing-section">
+            <h2 class="section-title">Unit Price <span class="vat-suffix">ex VAT</span></h2>
+            <div class="basket-qty-notice" id="basketQtyNotice" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                <span>You have <strong id="basketQtyCount">0</strong> of this product in your basket - discount applies to total!</span>
+            </div>
+            <div class="pricing-tiers-grid" id="pricingTiers">
+                <div class="tier-card" data-min="1">
+                    <div class="tier-qty">1-9</div>
+                    <div class="tier-price">�17.58</div>
+                    <div class="tier-suffix">ex VAT</div>
+                </div>
+                <div class="tier-card" data-min="10">
+                    <div class="tier-qty">10-24</div>
+                    <div class="tier-price">�16.54</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 6%</div>
+                </div>
+                <div class="tier-card" data-min="25">
+                    <div class="tier-qty">25-49</div>
+                    <div class="tier-price">�16.18</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 8%</div>
+                </div>
+                <div class="tier-card" data-min="50">
+                    <div class="tier-qty">50-99</div>
+                    <div class="tier-price">�14.94</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 15%</div>
+                </div>
+                <div class="tier-card" data-min="100">
+                    <div class="tier-qty">100-249</div>
+                    <div class="tier-price">�13.49</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 23%</div>
+                </div>
+                <div class="tier-card" data-min="250">
+                    <div class="tier-qty">250+</div>
+                    <div class="tier-price">�12.59</div>
+                    <div class="tier-suffix">ex VAT</div>
+                    <div class="tier-save">SAVE 28%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Size & Quantity Selection -->
+        <section class="customize-section" id="sizeQtySection">
+            <h2 class="section-title">
+                <span>Size & Quantity</span>
+                <a href="#" class="size-guide-link" id="sizeGuideBtn">Size Guide</a>
+            </h2>
+            
+            <!-- Compact Size+Qty Selector -->
+            <div class="size-qty-compact" id="sizeQtyCompact" autocomplete="off">
+                <!-- Selected Sizes List -->
+                <div class="selected-sizes" id="selectedSizes">
+                    <!-- Size rows will be added dynamically -->
+                </div>
+                
+                <!-- Add Size Button -->
+                <button class="add-size-btn" id="addSizeBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Size
+                </button>
+                
+
+                
+                <!-- Total Summary -->
+                <div class="qty-total-bar">
+                    <span class="total-label">Total Pieces:</span>
+                    <span class="total-value"><span id="totalQty">0</span> pcs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Summary Section removed -->
+
+        <!-- Customize: Logo Positions (hidden by default, shown only in popup) -->
+        <h2 class="section-title" id="positionsSectionTitle" style="display:none;">Customize: Logo Positions</h2>
+
+        <!-- Customization Options - Simplified -->
+        <section class="customize-section customization-options" id="positionsSection" style="display:none;">
+            <!-- Position Selection - Full Cards -->
+            <div class="position-group">
+                <h3 class="subsection-title">Position(s)</h3>
+                <div class="key">
+                    <span class="key-label">Key:</span>
+                    <span class="key-badge embroidery">Embroidery</span>
+                    <span class="key-badge print">Print</span>
+                </div>
+                <div class="positions-grid" id="positionOptions">
+                    <!-- Left Chest -->
+                    <div class="position-card" data-position="left-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-breast">
+                                <span>Left Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">�5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Left Chest">
+                            <div class="logo-overlay-box left-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Chest -->
+                    <div class="position-card" data-position="right-breast" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-breast">
+                                <span>Right Chest</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">�5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Right Chest">
+                            <div class="logo-overlay-box right-chest" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left Sleeve -->
+                    <div class="position-card" data-position="left-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="left-arm">
+                                <span>Left Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">�5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png" alt="Left Arm">
+                            <div class="logo-overlay-box left-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sleeve -->
+                    <div class="position-card" data-position="right-arm" data-embroidery="5.00" data-print="3.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="right-arm">
+                                <span>Right Sleeve</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">�5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�3.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�3.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png" alt="Right Arm">
+                            <div class="logo-overlay-box right-sleeve" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back Large -->
+                    <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="8.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-back">
+                                <span>Back Large</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�8.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�8.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png" alt="Large Back">
+                            <div class="logo-overlay-box large-back" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Front Center -->
+                    <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="6.50">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="small-centre-front">
+                                <span>Front Center</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">�5.00</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�6.50">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�6.50</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Front Center">
+                            <div class="logo-overlay-box front-center" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Large Front -->
+                    <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="8.00">
+                        <div class="position-card-header">
+                            <label class="position-checkbox">
+                                <input type="checkbox" name="position" value="large-front-center">
+                                <span>Large Front</span>
+                            </label>
+                            <div class="position-prices">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="POA">
+                                    <span class="price-label">EMBROIDERY</span>
+                                    <span class="price-value">POA</span>
+                                </button>
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�8.00">
+                                    <span class="price-label">PRINT</span>
+                                    <span class="price-value">�8.00</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-preview">
+                            <img class="position-placeholder" src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png" alt="Large Front">
+                            <div class="logo-overlay-box large-front" hidden>
+                                <img class="logo-overlay-img" src="" alt="">
+                            </div>
+                            <div class="position-preview-content" hidden>
+                                <button type="button" class="preview-delete-btn" title="Remove customization">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                                <img class="preview-image" alt="Customization preview" hidden>
+                                <div class="preview-text" hidden></div>
+                            </div>
+                        </div>
+                        <div class="customization-pill" hidden>Customization ready</div>
+                        <!-- Logo preview container -->
+                        <div class="uploaded-logo-container" hidden>
+                            <div class="uploaded-logo-box">
+                                <img class="uploaded-logo-thumb" src="" alt="Logo preview">
+                                <button type="button" class="delete-logo-btn" title="Remove logo">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Delivery Estimate -->
+        <section class="customize-section delivery-section">
+            <h2 class="section-title">Estimated Delivery</h2>
+            <div class="delivery-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Production</span>
+                        <span class="timeline-value">3-5 days</span>
+                    </div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Shipping</span>
+                        <span class="timeline-value">2-3 days</span>
+                    </div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-item highlight">
+                    <div class="timeline-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-label">Delivered by</span>
+                        <span class="timeline-value" id="deliveryDate">Jan 2 - Jan 5</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products — bottom of page (alternatives appear in the top-right sidebar) -->
+        <section class="customize-section" id="custRecommendationsSection" style="display:none;">
+            <div class="product-recommendations" id="custProductRecommendations" aria-labelledby="custRecommendationsTitle" data-expanded="false">
+                <div class="product-recommendations__topline">
+                    <h2 class="product-recommendations__title" id="custRecommendationsTitle">Related Products</h2>
+                    <span class="product-recommendations__rule" aria-hidden="true"></span>
+                </div>
+                <div class="product-recommendations__tabs" aria-label="Similar product suggestions">
+                    <button type="button" class="product-recommendations__tab" id="custRecTabRelated" data-tab="related" aria-pressed="false" aria-controls="custRecPanelRelated">
+                        <span>Related</span>
+                        <span class="product-recommendations__tab-count" data-count-for="related">0</span>
+                    </button>
+                    <button type="button" class="product-recommendations__tab" id="custRecTabAlternatives" data-tab="alternatives" aria-pressed="false" aria-controls="custRecPanelAlternatives">
+                        <span>Alternative</span>
+                        <span class="product-recommendations__tab-count" data-count-for="alternatives">0</span>
+                    </button>
+                </div>
+                <div class="product-recommendations__body" id="custRecBody" data-recommendation-body hidden>
+                    <div class="product-recommendations__status" aria-live="polite">Finding similar styles…</div>
+                    <div class="product-recommendations__panel" id="custRecPanelRelated" data-panel="related" aria-labelledby="custRecTabRelated"></div>
+                    <div class="product-recommendations__panel" id="custRecPanelAlternatives" data-panel="alternatives" aria-labelledby="custRecTabAlternatives" hidden></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div data-mobile-footer></div>
+    </main>
+
+    <!-- Fixed Action Bar -->
+    <div class="action-bar action-bar--atc">
+        <div class="action-price">
+            <span class="price-value total-green" id="actionBarTotal">£0.00</span>
+            <span class="price-suffix vat-suffix">ex VAT</span>
+        </div>
+        <button type="button" class="button rainbow-atc" id="addToBasketBtn">
+            <span class="button__clip">
+                <span class="button__text">Add to basket</span>
+                <div class="cart" aria-hidden="true">
+                    <svg viewBox="0 0 36 26">
+                        <polyline points="1 2.5 6 2.5 10 18.5 25.5 18.5 28.5 7.5 7.5 7.5"></polyline>
+                        <polyline points="15 13.5 17 15.5 22 10.5"></polyline>
+                    </svg>
+                </div>
+            </span>
+            <span class="atc__border atc__border--animated" aria-hidden="true"></span>
+            <span class="atc__border atc__border--static" aria-hidden="true"></span>
+            <span class="atc__border atc__border--complete" aria-hidden="true"></span>
+        </button>
+        <div class="action-price">
+            <span class="price-value total-green" id="actionBarTotal">£0.00</span>
+            <span class="price-suffix vat-suffix">ex VAT</span>
+        </div>
+    </div>
+
+    <!-- Design Customization Modal -->
+    <div class="design-modal-overlay" id="designModal">
+        <div class="design-modal">
+            <div class="design-modal-header">
+                <h3 id="designModalTitle">Customise Left Chest</h3>
+                <button class="design-modal-close" id="closeDesignModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="design-modal-body">
+                <!-- Upload Logo Section -->
+                <div class="design-section" id="uploadLogoSection">
+                    <h4 class="design-section-title" id="uploadLogoTitle">Upload Logo</h4>
+                    <div class="upload-preview-container" id="designUploadPreview" hidden>
+                        <img src="" alt="" class="upload-preview-img" id="designPreviewImg">
+                        <button type="button" class="upload-remove-btn" id="removeUploadedLogo" title="Remove logo">REMOVE</button>
+                        <button type="button" class="toggle-bg-btn" id="removeBgBtn" title="Keep background">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+                            </svg>
+                            <span>KEEP BG</span>
+                        </button>
+                        <button type="button" class="undo-bg-btn" id="undoBgBtn" title="Restore background" hidden style="display:none;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 7v6h6"/>
+                                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                            </svg>
+                            <span>Undo</span>
+                        </button>
+                    </div>
+                    <div id="logoGalleryContainer"></div>
+                    <div class="upload-dropzone" id="designUploadZone">
+                        <input type="file" id="designLogoUpload" accept="image/*,.pdf,.ai,.svg,.eps" hidden>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#273469" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        <p class="dropzone-text">Drag & drop or <span class="browse-link">Browse image</span></p>
+                    </div>
+                    <canvas id="bgRemovalCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+
+            <!-- Apply Button -->
+            <div class="design-modal-footer">
+                <button class="apply-design-btn" id="applyDesignBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Add to Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Size Guide Modal -->
+    <div class="modal-overlay" id="sizeGuideModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Size Guide</h3>
+                <button class="modal-close" id="closeSizeGuide">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="size-chart">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                <th>Chest (cm)</th>
+                                <th>Length (cm)</th>
+                                <th>Sleeve (cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>S</td><td>96-101</td><td>68</td><td>62</td></tr>
+                            <tr><td>M</td><td>101-106</td><td>71</td><td>64</td></tr>
+                            <tr><td>L</td><td>106-111</td><td>74</td><td>66</td></tr>
+                            <tr><td>XL</td><td>111-116</td><td>76</td><td>68</td></tr>
+                            <tr><td>2XL</td><td>116-122</td><td>78</td><td>70</td></tr>
+                            <tr><td>3XL</td><td>122-127</td><td>80</td><td>72</td></tr>
+                            <tr><td>4XL</td><td>127-132</td><td>82</td><td>74</td></tr>
+                            <tr><td>5XL</td><td>132-137</td><td>84</td><td>76</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item" id="accountNavBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+        <a href="shop-mobile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <button type="button" class="nav-item-center" id="filtersNavBtn" aria-label="Filters">
+            <svg class="filter-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="6" y1="21" x2="6" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="3"></line>
+                <line x1="18" y1="21" x2="18" y2="3"></line>
+                <circle cx="6" cy="8" r="2"></circle>
+                <circle cx="12" cy="14" r="2"></circle>
+                <circle cx="18" cy="10" r="2"></circle>
+            </svg>
+            <span class="nav-item-label">Filter</span>
+        </button>
+        <a href="../basket.html#orderSummary" class="nav-item nav-item--basket" id="basketNavLink">
+            <span class="nav-basket-icon-slot">
+                <svg class="nav-basket-icon-static" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="nav-basket-atc-cart" aria-hidden="true">
+                    <svg viewBox="0 0 36 26">
+                        <polyline points="1 2.5 6 2.5 10 18.5 25.5 18.5 28.5 7.5 7.5 7.5"></polyline>
+                        <polyline points="15 13.5 17 15.5 22 10.5"></polyline>
+                    </svg>
+                </span>
+            </span>
+            <span class="nav-badge" id="navCartBadge">0</span>
+            <span class="nav-item-label">Basket</span>
+        </a>
+        <a href="#" class="nav-item" id="chatNavBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
+                <g fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
+                    <path d="M66,22L48,22L48,14.405C48,11.977,46.024,10,43.595,10L18.405,10C15.976,10,14,11.977,14,14.405L14,65.594C14,68.023,15.976,70,18.405,70L43.594,70C46.024,70,48,68.023,48,65.595L48,43L66,43L66,22ZM18.405,12L43.594,12C44.921,12,46,13.079,46,14.405L46,16L16,16L16,14.405C16,13.079,17.079,12,18.405,12zM43.595,68L18.405,68C17.079,68,16,66.921,16,65.595L16,58L46,58L46,65.595C46,66.921,44.921,68,43.595,68zM46,56L16,56L16,18L46,18L46,22L28,22L28,43L32,43L32,50L41.333,43L46,43L46,56ZM64,41L48,41L40.667,41L34,46L34,41L30,41L30,24L48,24L64,24L64,41Z" fill="currentColor"/>
+                    <path fill="currentColor" d="M34,35C34,35.553,34.448,36,35,36L59,36C59.552,36,60,35.553,60,35C60,34.447,59.552,34,59,34L35,34C34.448,34,34,34.447,34,35z"/>
+                    <path fill="currentColor" d="M35,31L45,31C45.552,31,46,30.553,46,30C46,29.447,45.552,29,45,29L35,29C34.448,29,34,29.447,34,30C34,30.553,34.448,31,35,31z"/>
+                </g>
+            </svg>
+            <span class="nav-item-label">Chat</span>
+        </a>
+    </nav>
+
+    <!-- Quote Request Popup -->
+    <div class="quote-popup-overlay" id="quotePopupOverlay">
+        <div class="quote-popup">
+            <button class="quote-popup-close" id="closeQuotePopup">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <h2 class="quote-popup-title">Request Your Quote</h2>
+            <p class="quote-popup-subtitle">Enter your details and we'll send you a personalised quote</p>
+            
+            <form id="quoteRequestForm" class="quote-popup-form">
+                <div class="form-group">
+                    <label for="quoteName">Full Name</label>
+                    <input type="text" id="quoteName" name="name" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="quotePhone">Phone Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+44</span>
+                        <input type="tel" id="quotePhone" name="phone" placeholder="7700 900000" pattern="[0-9\s]{10,11}" inputmode="numeric" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="quoteEmail">E-mail</label>
+                    <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
+                </div>
+                <button type="submit" class="quote-popup-submit" id="quotePopupSubmitBtn">
+                    Submit Quote Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/mobile.js?v=20260610m"></script>
+    <script src="js/breadcrumbs.js?v=20260403a"></script>
+    <script src="../brandedukv15-child/assets/js/upload/logo-upload.js?v=20260518n"></script>
+    <script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
+    <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
+    <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
+    <script src="js/basket-logos.js?v=20260519"></script>
+    <script src="js/customize.js?v=20260610n"></script>
+    <script src="js/marker-editor.js?v=20260531a"></script>
+    <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20260530"></script>
+    <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260526d"></script>
+    <script>
+    // Initialize Related & Alternative Recommendations on Customize page
+    (function () {
+        'use strict';
+
+        function getProductCode() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var code = params.get('code');
+                if (code) return code;
+            } catch (e) {}
+            return sessionStorage.getItem('selectedProduct') || '';
+        }
+
+        function formatPrice(basePrice) {
+            var vatOn = localStorage.getItem('brandeduk-vat-mode') === 'on';
+            var price = vatOn ? (Number(basePrice) || 0) * 1.20 : (Number(basePrice) || 0);
+            return 'From \u00A3' + price.toFixed(2);
+        }
+
+        function vatNote() {
+            return localStorage.getItem('brandeduk-vat-mode') === 'on' ? 'inc VAT' : 'ex VAT';
+        }
+
+        var controller = null;
+
+        function initCustRecommendations() {
+            var productCode = getProductCode();
+            if (!productCode || !window.BrandedProductRecommendations) return;
+
+            // Show the section wrapper
+            var section = document.getElementById('custRecommendationsSection');
+            if (section) section.style.display = '';
+
+            controller = window.BrandedProductRecommendations.init('#custProductRecommendations', {
+                productCode: productCode,
+                pageType: 'mobile',
+                layout: 'split',
+                relatedSidebarSelector: '#galleryRelatedProducts',
+                priceFormatter: formatPrice,
+                priceNoteFormatter: vatNote,
+                onSelect: function (product) {
+                    try {
+                        sessionStorage.setItem('selectedProduct', product.code || '');
+                        sessionStorage.setItem('selectedProductData', JSON.stringify({
+                            code: product.code || '',
+                            name: product.name || '',
+                            price: product.price || 0,
+                            image: product.image || '',
+                            brand: product.brand || '',
+                            productType: product.productType || ''
+                        }));
+                    } catch (err) {}
+                }
+            });
+        }
+
+        // Wait for DOM + product-recommendations.js to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(initCustRecommendations, 100);
+            });
+        } else {
+            setTimeout(initCustRecommendations, 100);
+        }
+
+        // Refresh pricing when VAT is toggled
+        window.addEventListener('vatToggleChanged', function () {
+            if (controller && controller.refreshPricing) controller.refreshPricing();
+        });
+    })();
+    </script>
+    <script>
+        // Basket link now navigates to basket.html directly
+    </script>
+
+    <!-- Dynamic Position Image Loading (same as product-detail.html) -->
+    <script>
+    (function() {
+        'use strict';
+
+        function isZipProduct(productData) {
+            if (!productData) return false;
+            const name = (productData.name ? String(productData.name) : '').toLowerCase();
+            const code = (productData.code ? String(productData.code) : '').toLowerCase();
+            const haystack = (name + ' ' + code).trim();
+            if (!haystack) return false;
+            return /(\bzip\b|\bzipped\b|\bfull\s*zip\b)/i.test(haystack);
+        }
+        
+        // ===== DYNAMIC POSITION MAPPING SYSTEM =====
+        
+        // Default fallback images
+        const DEFAULT_POSITION_IMAGES = {
+            'left-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+            'right-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+            'small-centre-front': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+            'large-front-center': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+            'large-centre-front': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+            'large-back': 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
+            'left-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
+            'right-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
+        };
+        
+        // Default prices per position type
+        const DEFAULT_POSITION_PRICES = {
+            'left-breast': { embroidery: '5.00', print: '3.50' },
+            'right-breast': { embroidery: '5.00', print: '3.50' },
+            'small-centre-front': { embroidery: '5.00', print: '3.50' },
+            'large-front-center': { embroidery: 'POA', print: '6.00' },
+            'large-centre-front': { embroidery: 'POA', print: '6.00' },
+            'large-back': { embroidery: 'POA', print: '5.00' },
+            'left-arm': { embroidery: '5.00', print: '3.50' },
+            'right-arm': { embroidery: '5.00', print: '3.50' }
+        };
+        
+        // Position code to CSS class mapping (for logo overlay positioning)
+        const POSITION_TO_CSS_CLASS = {
+            'left-breast': 'left-chest',
+            'right-breast': 'right-chest',
+            'small-centre-front': 'front-center',
+            'large-front-center': 'large-front',
+            'large-centre-front': 'large-front',
+            'large-back': 'large-back',
+            'left-arm': 'left-sleeve',
+            'right-arm': 'right-sleeve'
+        };
+        
+        // ProductType → Folder Path Mapping
+        const PRODUCT_TYPE_TO_FOLDER = {
+            'Aprons': 'aprons/bib-apron',
+            'Safety Vests': 'adult-tops/hivis-jacket',
+            'Hoodies': 'adult-tops/hoodies',
+            'Sweatshirts': 'adult-tops/hoodies',
+            'Polos': 'adult-tops/long-sleeve-polo',
+            'T-shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Jackets': 'adult-tops/soft-shell-jacket',
+            'Softshells': 'adult-tops/soft-shell-jacket',
+            'Caps': 'headwear/baseball-cap',
+            'Beanies': 'headwear/beanie',
+            'Trousers': 'pants/workwear-long-trousers',
+            'Shorts': 'pants/workwear-shorts',
+            'Bags': 'bags/gym-bag',
+            'Fleece': 'adult-tops/hoodies',
+            'Gilets & Body Warmers': 'adult-tops/soft-shell-jacket',
+            'Knitted Jumpers': 'adult-tops/hoodies',
+            'Cardigans': 'adult-tops/hoodies',
+            'Blouses': 'adult-tops/short-sleeve-crew-neck',
+            'Rugby Shirts': 'adult-tops/short-sleeve-crew-neck',
+            'Chinos': 'pants/workwear-long-trousers',
+            'Sweatpants': 'pants/workwear-shorts',
+            'Trackwear': 'adult-tops/short-sleeve-crew-neck'
+        };
+        
+        // Filename → Position Code Mapping
+        const FILENAME_TO_POSITION = {
+            // Aprons
+            'center-front.png': { code: 'small-centre-front', label: 'Center Front', cssClass: 'front-center' },
+            'low-left.png': { code: 'left-breast', label: 'Low Left', cssClass: 'apron-low-left' },
+            'low-right.png': { code: 'right-breast', label: 'Low Right', cssClass: 'apron-low-right' },
+            
+            // Adult Tops
+            'front.png': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+            'front.jpg': { code: 'small-centre-front', label: 'Front Center', cssClass: 'front-center' },
+            'front-right.png': { code: 'right-breast', label: 'Front Right', cssClass: 'right-chest' },
+            'back.png': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+            'back.jpg': { code: 'large-back', label: 'Back Large', cssClass: 'large-back' },
+            'left-chest.png': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+            'left-chest.jpg': { code: 'left-breast', label: 'Left Chest', cssClass: 'left-chest' },
+            'right-chest.png': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+            'right-chest.jpg': { code: 'right-breast', label: 'Right Chest', cssClass: 'right-chest' },
+            'left-sleeve.png': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+            'left-sleeve.jpg': { code: 'left-arm', label: 'Left Sleeve', cssClass: 'left-sleeve' },
+            'right-sleeve.png': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+            'right-sleeve.jpg': { code: 'right-arm', label: 'Right Sleeve', cssClass: 'right-sleeve' },
+            
+            // Headwear
+            'front-logo.png': { code: 'small-centre-front', label: 'Front Centre', cssClass: 'front-center' },
+            'left-side.jpg': { code: 'left-breast', label: 'Left Side', cssClass: 'left-chest' },
+            'right-side.jpg': { code: 'right-breast', label: 'Right Side', cssClass: 'right-chest' },
+            
+            // Bags
+            'Gym Bag Centered.png': { code: 'small-centre-front', label: 'Centered', cssClass: 'front-center' },
+            'Gym Bag Left.png': { code: 'left-breast', label: 'Left', cssClass: 'left-chest' },
+            'Gym Bag Right.png': { code: 'right-breast', label: 'Right', cssClass: 'right-chest' },
+            'Gym Bag Side.png': { code: 'large-back', label: 'Side', cssClass: 'large-back' },
+            
+            // Pants
+            'Blank Work Trouser.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' },
+            'Blank Work short.png': { code: 'small-centre-front', label: 'Front', cssClass: 'front-center' }
+        };
+        
+        // Folder Image Inventory
+        const FOLDER_IMAGE_MAP = {
+            'aprons/bib-apron': ['center-front.png', 'low-left.png', 'low-right.png'],
+            'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
+            'adult-tops/hoodies': ['back.png', 'front.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+            'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+            'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+            'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
+            'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
+            'headwear/beanie': ['front-logo.png'],
+            'pants/workwear-long-trousers': ['Blank Work Trouser.png'],
+            'pants/workwear-shorts': ['Blank Work short.png'],
+            'bags/gym-bag': ['Gym Bag Centered.png', 'Gym Bag Left.png', 'Gym Bag Right.png', 'Gym Bag Side.png']
+        };
+
+        function normalizeProductTypeForFolder(productType) {
+            const raw = String(productType || '').trim();
+            if (!raw) return '';
+            const lower = raw.toLowerCase();
+            if (lower.includes('apron')) return 'Aprons';
+            if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+            if (lower.includes('cap') || lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+            if (lower.includes('hoodie') || lower.includes('hooded')) return 'Hoodies';
+            if (lower.includes('sweatshirt') || lower.includes('crew neck sweat')) return 'Sweatshirts';
+            if (lower.includes('fleece')) return 'Fleece';
+            if (lower.includes('polo')) return 'Polos';
+            if (lower.includes('t-shirt') || lower.includes('tshirt') || lower.includes('tee ') || lower === 'tee') return 'T-shirts';
+            if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat')) return 'Jackets';
+            if (lower.includes('softshell') || lower.includes('soft shell')) return 'Softshells';
+            if (lower.includes('gilet') || lower.includes('body warmer')) return 'Gilets & Body Warmers';
+            if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('hi vis') || lower.includes('safety vest')) return 'Safety Vests';
+            if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+            if (lower.includes('short') && !lower.includes('shirt')) return 'Shorts';
+            if (lower.includes('sweatpant') || lower.includes('jogger')) return 'Sweatpants';
+            if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote')) return 'Bags';
+            if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+            if (lower.includes('rugby')) return 'Rugby Shirts';
+            if (lower.includes('cardigan')) return 'Cardigans';
+            if (lower.includes('jumper')) return 'Knitted Jumpers';
+            return raw;
+        }
+
+        // Infer product type from product name when API doesn't provide productType
+        function inferProductTypeFromName(text) {
+            if (!text) return '';
+            const lower = String(text).toLowerCase();
+            if (lower.includes('apron')) return 'Aprons';
+            if (lower.includes('beanie') || lower.includes('bobble hat') || lower.includes('knit hat')) return 'Beanies';
+            if (lower.includes('baseball') || lower.includes('snapback') || lower.includes('trucker') || lower.includes('visor') || lower.includes('bucket hat')) return 'Caps';
+            if (lower.includes('cap') && !lower.includes('capsule')) return 'Caps';
+            if (lower.includes('hoodie') || lower.includes('hooded sweat') || lower.includes('zip hood')) return 'Hoodies';
+            if (lower.includes('sweatshirt') || lower.includes('crew neck sweat')) return 'Sweatshirts';
+            if (lower.includes('fleece')) return 'Fleece';
+            if (lower.includes('polo')) return 'Polos';
+            if (lower.includes('t-shirt') || lower.includes('tshirt') || (lower.includes('tee') && !lower.includes('steel'))) return 'T-shirts';
+            if (lower.includes('softshell') || lower.includes('soft shell')) return 'Softshells';
+            if (lower.includes('jacket') || lower.includes('parka') || lower.includes('coat')) return 'Jackets';
+            if (lower.includes('gilet') || lower.includes('body warmer')) return 'Gilets & Body Warmers';
+            if (lower.includes('hi-vis') || lower.includes('hivis') || lower.includes('safety vest')) return 'Safety Vests';
+            if (lower.includes('trouser') || lower.includes('chino')) return 'Trousers';
+            if (lower.includes('short') && !lower.includes('shirt') && !lower.includes('sleeve')) return 'Shorts';
+            if (lower.includes('sweatpant') || lower.includes('jogger')) return 'Sweatpants';
+            if (lower.includes('bag') || lower.includes('rucksack') || lower.includes('backpack') || lower.includes('tote')) return 'Bags';
+            if (lower.includes('shirt') || lower.includes('blouse')) return 'Shirts';
+            if (lower.includes('rugby')) return 'Rugby Shirts';
+            if (lower.includes('cardigan')) return 'Cardigans';
+            if (lower.includes('jumper')) return 'Knitted Jumpers';
+            return '';
+        }
+        
+        // Build positions dynamically from productType
+        function buildPositionsFromProductType(productType) {
+            if (!productType) {
+                console.warn('⚠️ No productType provided, using default');
+                return null;
+            }
+            
+            const productTypeStr = String(productType).trim();
+            const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
+            const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
+            if (!folderPath) {
+                console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
+                return null;
+            }
+            
+            const imageFiles = FOLDER_IMAGE_MAP[folderPath];
+            if (!imageFiles || imageFiles.length === 0) {
+                console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+                return null;
+            }
+            
+            const basePath = `../brandedukv15-child/assets/images/customization/positions/${folderPath}`;
+            const positions = {};
+            
+            // Embroidery-only product types (no print option)
+            const EMBROIDERY_ONLY_TYPES = ['Beanies'];
+            const isEmbroideryOnly = EMBROIDERY_ONLY_TYPES.includes(normalizedProductType);
+
+            imageFiles.forEach(filename => {
+                const positionInfo = FILENAME_TO_POSITION[filename];
+                if (positionInfo) {
+                    const positionCode = positionInfo.code;
+                    const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                    
+                    positions[positionCode] = {
+                        label: positionInfo.label,
+                        image: `${basePath}/${filename}`,
+                        embroidery: prices.embroidery,
+                        print: isEmbroideryOnly ? null : prices.print,
+                        cssClass: positionInfo.cssClass
+                    };
+                } else {
+                    console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+                }
+            });
+            
+            if (Object.keys(positions).length === 0) {
+                console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+                return null;
+            }
+            
+            const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
+            const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
+            
+            return {
+                imagePath: basePath,
+                positions: positions,
+                hidePositions: hidePositions
+            };
+        }
+        
+        // Map API productType OR category to category key
+        // Handles both 'productType' (desktop API) and 'category' (mobile API)
+        function productTypeToCategory(productTypeOrCategory) {
+            if (!productTypeOrCategory) return null;
+            const typeStr = String(productTypeOrCategory).trim();
+
+            // Handle product names/types like "Colours Bib Apron" reliably
+            if (typeStr.toLowerCase().includes('apron')) {
+                return 'aprons';
+            }
+
+            const typeToCategory = {
+                // Product types (from desktop API)
+                'T-shirts': 'tshirts',
+                'T-Shirts': 'tshirts',
+                'Tshirts': 'tshirts',
+                'Polos': 'polo',
+                'Polo Shirts': 'polo',
+                'Polo': 'polo',
+                'Hoodies': 'hoodies',
+                'Hoodies & Sweatshirts': 'hoodies',
+                'Sweatshirts': 'hoodies',
+                'Jackets': 'jackets',
+                'Jackets & Softshell': 'jackets',
+                'Softshells': 'jackets',
+                'Hi-Vis': 'hivis',
+                'Hi-Vis Clothing': 'hivis',
+                'Safety Vests': 'hivis',
+                'Trousers': 'trousers',
+                'Work Trousers': 'trousers',
+                'Aprons': 'aprons',
+                'Fleeces': 'fleeces',
+                'Fleece': 'fleeces',
+                'Caps': 'caps',
+                'Headwear / Accessories': 'caps',
+                'Beanies': 'beanies',
+                'Bags': 'bags',
+                'Shorts': 'trousers',
+                // Category slugs (from mobile API - lowercase, hyphenated)
+                'aprons': 'aprons',
+                'tshirts': 'tshirts',
+                'polos': 'polo',
+                'hoodies': 'hoodies',
+                'jackets': 'jackets',
+                'safety-vests': 'hivis',
+                'trousers': 'trousers',
+                'caps': 'caps',
+                'beanies': 'beanies',
+                'bags': 'bags'
+            };
+            
+            if (typeToCategory[typeStr]) {
+                return typeToCategory[typeStr];
+            }
+            
+            const lowerType = typeStr.toLowerCase();
+            for (const [key, value] of Object.entries(typeToCategory)) {
+                if (key.toLowerCase() === lowerType) {
+                    return value;
+                }
+            }
+            
+            return lowerType.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || null;
+        }
+        
+        // Category Position Configuration (Fallback)
+        const CATEGORY_POSITION_CONFIG = {
+            'polo': {
+                useExternalImages: true,
+                images: {
+                    front: 'https://i.postimg.cc/prXBRhc0/Chat-GPT-Image-Jan-12-2026-07-13-29-PM.png',
+                    leftSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                    rightSleeve: 'https://i.postimg.cc/2y8xrb9T/Chat-GPT-Image-Jan-12-2026-07-13-55-PM.png',
+                    back: 'https://i.postimg.cc/D0ycnJpB/Chat-GPT-Image-Jan-12-2026-07-13-36-PM.png'
+                },
+                positions: {
+                    'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                    'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
+                    'large-back': { label: 'Center Back', imageKey: 'back', embroidery: '5.00', print: '5.00' },
+                    'large-centre-front': { label: 'Nape of Neck', imageKey: 'back', embroidery: '5.00', print: '3.50' }
+                },
+                hidePositions: ['small-centre-front', 'large-front-center']
+            },
+            'tshirts': {
+                useExternalImages: true,
+                images: {
+                    front: 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
+                    back: 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
+                    leftSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
+                    rightSleeve: 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
+                },
+                positions: {
+                    'left-breast': { label: 'Left Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'right-breast': { label: 'Right Breast', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'small-centre-front': { label: 'Centre of Chest', imageKey: 'front', embroidery: '5.00', print: '3.50' },
+                    'left-arm': { label: 'Left Sleeve', imageKey: 'leftSleeve', embroidery: '5.00', print: '3.50' },
+                    'right-arm': { label: 'Right Sleeve', imageKey: 'rightSleeve', embroidery: '5.00', print: '3.50' },
+                    'large-front-center': { label: 'Big Front (Print Only)', imageKey: 'front', embroidery: null, print: '6.00' },
+                    'large-back': { label: 'Big Back (Print Only)', imageKey: 'back', embroidery: null, print: '5.00' }
+                },
+                hidePositions: ['large-centre-front']
+            },
+            'aprons': {
+                imagePath: '../brandedukv15-child/assets/images/customization/positions/aprons/bib-apron',
+                positions: {
+                    'small-centre-front': { label: 'Center Front', image: 'center-front.png', embroidery: '5.00', print: '3.50' },
+                    'left-breast': { label: 'Low Left', image: 'low-left.png', embroidery: '5.00', print: '3.50' },
+                    'right-breast': { label: 'Low Right', image: 'low-right.png', embroidery: '5.00', print: '3.50' }
+                },
+                hidePositions: ['large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm']
+            },
+            'default': {
+                imagePath: '../brandedukv15-child/assets/images/customization/positions/adult-tops/hoodies',
+                positions: {
+                    'left-breast': { label: 'Left Chest', image: 'left-chest.jpg' },
+                    'right-breast': { label: 'Right Chest', image: 'right-chest.jpg' },
+                    'small-centre-front': { label: 'Front Center', image: 'front.jpg' },
+                    'large-front-center': { label: 'Large Front', image: 'front.jpg' },
+                    'large-centre-front': { label: 'Large Front', image: 'front.jpg' },
+                    'large-back': { label: 'Back Large', image: 'back.jpg' },
+                    'left-arm': { label: 'Left Sleeve', image: 'left-sleeve.jpg' },
+                    'right-arm': { label: 'Right Sleeve', image: 'right-sleeve.jpg' }
+                },
+                hidePositions: []
+            }
+        };
+        
+        function updatePositionCardsForCategory(category, productData) {
+            // Try to build positions dynamically from productType first
+            let config = null;
+            if (productData && productData.productType) {
+                const dynamicConfig = buildPositionsFromProductType(productData.productType);
+                if (dynamicConfig) {
+                    config = dynamicConfig;
+                }
+            }
+            
+            // Fallback to hardcoded config if dynamic failed
+            if (!config) {
+                config = CATEGORY_POSITION_CONFIG[category] || CATEGORY_POSITION_CONFIG['default'];
+            }
+            
+            const isZip = isZipProduct(productData);
+            const normalizedCategory = (category || '').toString().trim().toLowerCase();
+            const extraHide = new Set();
+            
+            if (normalizedCategory === 'jackets') {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            if (normalizedCategory === 'fleeces' && isZip) {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            if (normalizedCategory === 'hoodies' && isZip) {
+                extraHide.add('large-front-center');
+                extraHide.add('large-centre-front');
+            }
+            
+            const positionGrids = document.querySelectorAll('#positionOptions, .positions-grid');
+            
+            function updatePriceButtons(card, positionConfig) {
+                const pricesWrap = card.querySelector('.position-prices');
+                if (!pricesWrap || !positionConfig) return;
+                
+                const embBtn = pricesWrap.querySelector('.price-badge[data-method="embroidery"], .price-badge.price-emb');
+                const printBtn = pricesWrap.querySelector('.price-badge[data-method="print"], .price-badge.price-print');
+                
+                const embroidery = Object.prototype.hasOwnProperty.call(positionConfig, 'embroidery')
+                    ? positionConfig.embroidery
+                    : card.dataset.embroidery;
+                const print = Object.prototype.hasOwnProperty.call(positionConfig, 'print')
+                    ? positionConfig.print
+                    : card.dataset.print;
+                
+                if (embroidery === null) {
+                    card.dataset.embroidery = '';
+                } else if (typeof embroidery !== 'undefined') {
+                    card.dataset.embroidery = String(embroidery);
+                }
+                
+                if (print === null) {
+                    card.dataset.print = '';
+                } else if (typeof print !== 'undefined') {
+                    card.dataset.print = String(print);
+                }
+                
+                if (embBtn) {
+                    if (embroidery === null) {
+                        embBtn.style.display = 'none';
+                    } else {
+                        embBtn.style.display = '';
+                        const isPOA = String(embroidery).toUpperCase() === 'POA';
+                        embBtn.classList.toggle('poa-badge', isPOA);
+                        const value = isPOA ? 'POA' : ('£' + String(embroidery));
+                        embBtn.setAttribute('data-default-price', value);
+                        const valueEl = embBtn.querySelector('.price-value');
+                        if (valueEl) valueEl.textContent = value;
+                    }
+                }
+                
+                if (printBtn) {
+                    if (print === null) {
+                        printBtn.style.display = 'none';
+                    } else {
+                        printBtn.style.display = '';
+                        const value = '£' + String(print);
+                        printBtn.setAttribute('data-default-price', value);
+                        const valueEl = printBtn.querySelector('.price-value');
+                        if (valueEl) valueEl.textContent = value;
+                    }
+                }
+            }
+            
+            positionGrids.forEach(grid => {
+                const allCards = grid.querySelectorAll('.position-card');
+                
+                allCards.forEach(card => {
+                    const position = card.dataset.position;
+                    
+                    if ((config.hidePositions && config.hidePositions.includes(position)) || extraHide.has(position)) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    
+                    const positionConfig = config.positions[position];
+                    if (positionConfig) {
+                        card.style.display = '';
+                        
+                        // Update the image
+                        const img = card.querySelector('.position-placeholder, .position-image, img');
+                        if (img) {
+                            let newSrc = null;
+                            
+                            if (config.useExternalImages && positionConfig.imageKey && config.images) {
+                                newSrc = config.images[positionConfig.imageKey];
+                            } else if (positionConfig.image) {
+                                if (positionConfig.image.startsWith('../brandedukv15-child/') || positionConfig.image.startsWith('/') || positionConfig.image.startsWith('http')) {
+                                    newSrc = positionConfig.image;
+                                } else if (config.imagePath) {
+                                    newSrc = config.imagePath + '/' + positionConfig.image;
+                                } else {
+                                    newSrc = positionConfig.image;
+                                }
+                            }
+                            
+                            if (newSrc) {
+                                img.src = newSrc;
+                                img.alt = positionConfig.label;
+                                
+                                const testImg = new Image();
+                                testImg.onload = function() {
+                                    // Image loaded successfully
+                                };
+                                testImg.onerror = function() {
+                                    const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                    if (defaultImg) {
+                                        img.src = defaultImg;
+                                        img.alt = positionConfig.label || position;
+                                    }
+                                };
+                                testImg.src = newSrc;
+                            } else {
+                                const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                if (defaultImg) {
+                                    img.src = defaultImg;
+                                    img.alt = positionConfig.label || position;
+                                }
+                            }
+                        }
+                        
+                        // Update logo overlay CSS class
+                        const logoOverlay = card.querySelector('.logo-overlay-box');
+                        if (logoOverlay) {
+                            let cssClass = null;
+                            if (positionConfig.cssClass) {
+                                cssClass = positionConfig.cssClass;
+                            } else if (POSITION_TO_CSS_CLASS[position]) {
+                                cssClass = POSITION_TO_CSS_CLASS[position];
+                            }
+                            
+                            if (cssClass) {
+                                const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                                allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                                logoOverlay.classList.add(cssClass);
+                            }
+                        }
+                        
+                        // Update prices and labels
+                        updatePriceButtons(card, positionConfig);
+                        
+                        if (positionConfig.label) {
+                            const labelSpan = card.querySelector('.position-checkbox span, .position-title, .position-name');
+                            if (labelSpan) {
+                                labelSpan.textContent = positionConfig.label;
+                            }
+                        }
+                    } else {
+                        if (config.hidePositions && config.hidePositions.includes(position)) {
+                            card.style.display = 'none';
+                        } else {
+                            card.style.display = '';
+                            const img = card.querySelector('.position-placeholder, .position-image, img');
+                            if (img) {
+                                const defaultImg = DEFAULT_POSITION_IMAGES[position];
+                                if (defaultImg) {
+                                    img.src = defaultImg;
+                                }
+                            }
+                            
+                            const logoOverlay = card.querySelector('.logo-overlay-box');
+                            if (logoOverlay && POSITION_TO_CSS_CLASS[position]) {
+                                const cssClass = POSITION_TO_CSS_CLASS[position];
+                                const allPositionClasses = ['left-chest', 'right-chest', 'front-center', 'large-front', 'large-back', 'left-sleeve', 'right-sleeve', 'apron-low-left', 'apron-low-right'];
+                                allPositionClasses.forEach(cls => logoOverlay.classList.remove(cls));
+                                logoOverlay.classList.add(cssClass);
+                            }
+                            
+                            const defaultPrices = DEFAULT_POSITION_PRICES[position] || { embroidery: '5.00', print: '3.50' };
+                            updatePriceButtons(card, defaultPrices);
+                        }
+                    }
+                });
+
+                // Reorder cards for Aprons (Center Front must be first)
+                const catLower = String(category || productData.productType || productData.name || '').toLowerCase();
+                if (catLower.includes('apron')) {
+                    const preferredOrder = [
+                        'small-centre-front',   // Center Front
+                        'left-breast',          // Low Left
+                        'right-breast'          // Low Right
+                    ];
+
+                    const cardsArray = Array.from(allCards);
+                    cardsArray.sort((a, b) => {
+                        const aPos = a.dataset.position;
+                        const bPos = b.dataset.position;
+                        const aIdx = preferredOrder.indexOf(aPos);
+                        const bIdx = preferredOrder.indexOf(bPos);
+                        const aRank = aIdx === -1 ? 999 : aIdx;
+                        const bRank = bIdx === -1 ? 999 : bIdx;
+                        return aRank - bRank;
+                    });
+
+                    cardsArray.forEach(card => grid.appendChild(card));
+                }
+            });
+
+            // Hide/show PRINT key-badge for embroidery-only products
+            const normalizedType = productData && productData.productType
+                ? normalizeProductTypeForFolder(String(productData.productType).trim())
+                : '';
+            // Also check product name for 'beanie'
+            const productName = (productData && productData.name || '').toLowerCase();
+            const isBeanieProduct = normalizedType === 'Beanies' || productName.includes('beanie');
+            const printKeyBadge = document.querySelector('.key-badge.print');
+            if (printKeyBadge) {
+                printKeyBadge.style.display = isBeanieProduct ? 'none' : '';
+            }
+        }
+        
+        // Fetch product data DIRECTLY from API (same as product-detail.html)
+        const API_BASE_URL = 'https://api.brandeduk.com/api';
+        let cachedProductData = null; // Cache to avoid multiple API calls
+        
+        async function fetchProductFromAPI(productCode) {
+            if (!productCode) return null;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
+                if (response.ok) {
+                    const productData = await response.json();
+                    cachedProductData = productData; // Cache it
+                    return productData;
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        // SIMPLIFIED: Initialize position cards using productType directly from API
+        async function updatePositionCardsFromAPI() {
+            // Get product code from sessionStorage (same as product.js)
+            const productCode = sessionStorage.getItem('selectedProduct');
+            
+            if (!productCode) {
+                return false;
+            }
+            
+            // Fetch directly from API (same as product-detail.html)
+            let productData = cachedProductData;
+            if (!productData) {
+                productData = await fetchProductFromAPI(productCode);
+            }
+            
+            if (!productData) {
+                return false;
+            }
+            
+            // Use productType directly from API, or infer from product name
+            let productType = productData.productType;
+            
+            // If API doesn't provide productType, infer from product name
+            if (!productType || String(productType).trim() === '') {
+                productType = inferProductTypeFromName(productData.name);
+                if (productType) {
+                    console.log('🔍 Inferred productType from name:', productType);
+                    productData.productType = productType; // Set it so downstream code can use it
+                }
+            }
+            // If still empty, try from description
+            if (!productType || String(productType).trim() === '') {
+                productType = inferProductTypeFromName(productData.description);
+                if (productType) {
+                    console.log('🔍 Inferred productType from description:', productType);
+                    productData.productType = productType;
+                }
+            }
+            
+            if (productType) {
+                const mappedCategory = productTypeToCategory(productType) || 'default';
+                updatePositionCardsForCategory(mappedCategory, productData);
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Try multiple times with increasing delays (same as product-detail.html)
+        let attempts = 0;
+        const maxAttempts = 5;
+        const delays = [0, 200, 500, 1000, 2000];
+        
+        async function tryUpdateWithDelay() {
+            attempts++;
+            const success = await updatePositionCardsFromAPI();
+            if (success) {
+                return; // Success
+            }
+            
+            if (attempts < maxAttempts) {
+                const delay = delays[attempts] || 2000;
+                setTimeout(tryUpdateWithDelay, delay);
+            } else {
+                // All attempts failed, use fallback
+                updatePositionCardsForCategory('default', null);
+            }
+        }
+        
+        // Detect positionsOnly mode (iframe from basket)
+        const _isPositionsOnlyInline = new URLSearchParams(window.location.search).get('positionsOnly') === '1';
+
+        if (_isPositionsOnlyInline) {
+            // POSITIONS-ONLY MODE: All card visibility and image updates are handled by
+            // applyPositionsOnlyMode() in customize.js using CSS !important rules.
+            console.log('[positionsOnly] Inline script skipped — customize.js handles everything');
+        } else {
+            // NORMAL MODE: Also handled by customize.js updatePositionCardsForProductType().
+            // Inline retry logic was causing race conditions (overriding correct images with hoodie default).
+            // All position card updates are now single-authority in customize.js.
+            console.log('[normal] Inline script skipped — customize.js handles everything');
+        }
+    })();
+    </script>
+
+<!-- Image Lightbox -->
+<div class="lightbox-overlay" id="imageLightbox">
+    <div class="lightbox-content">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <img src="" alt="Product zoom" id="lightboxImg">
+    </div>
+</div>
+
+<style>
+/* Gallery main — full width with right-side related column */
+.product-hero-head {
+    padding: 8px 10px 6px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 98px;
+    gap: 8px;
+    align-items: start;
+}
+
+.product-hero-text {
+    min-width: 0;
+}
+
+.product-hero-head .product-sku {
+    margin: 0 0 4px;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.product-hero-head .product-title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.product-brand-box {
+    min-height: 46px;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+}
+
+.product-brand-logo {
+    max-width: 100%;
+    max-height: 34px;
+    object-fit: contain;
+}
+
+.gallery-main {
+    max-width: 100% !important;
+    margin: 0 auto;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    align-items: flex-start !important;
+}
+
+.product-img-placeholder {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.product-img-placeholder.large {
+    min-height: 0 !important;
+    height: auto !important;
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 6px;
+    align-items: stretch;
+}
+
+.product-img-placeholder.large img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.product-gallery-related {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 3;
+    display: none;
+}
+
+.product-gallery-related[data-has-related="true"] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 4px;
+}
+
+.product-gallery-related .product-recommendations__split-heading {
+    margin: 0;
+    font-size: 0.54rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1.15;
+}
+
+.product-gallery-related .product-recommendations__side-list {
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    height: auto;
+    gap: 6px;
+}
+
+.product-gallery-related .product-recommendations__side-card {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+}
+
+.product-gallery-related .product-recommendations__side-image-wrap {
+    background: #ffffff;
+    box-shadow: none;
+    border: 1px solid #9ca3af;
+    padding: 2px;
+    border-radius: 6px;
+    aspect-ratio: auto;
+    height: 100%;
+    position: relative;
+}
+
+.product-gallery-related .product-recommendations__side-image {
+    width: 100%;
+    height: 100%;
+}
+
+.product-gallery-related .product-recommendations__side-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+}
+
+.product-gallery-related .product-recommendations__side-code {
+    font-size: 0.66rem;
+    font-weight: 500;
+}
+
+.product-gallery-related .product-recommendations__side-size {
+    font-size: 0.62rem;
+    color: #2b2d33;
+    white-space: nowrap;
+}
+
+.product-gallery-related .product-recommendations__side-desc {
+    margin: 0;
+    font-size: 0.56rem;
+    line-height: 1.2;
+    color: #79818c;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.product-gallery-related .product-recommendations__side-cta {
+    min-height: 21px;
+    font-size: 0.62rem;
+    border-radius: 3px;
+}
+
+.product-gallery-related .product-recommendations__side-image-wrap button,
+.product-gallery-related .product-recommendations__side-image-wrap [class*="remove"],
+.product-gallery-related .product-recommendations__side-image-wrap [class*="close"] {
+    display: none !important;
+}
+
+/* Remove zoom-plus from this hero layout to avoid overlap with right cards */
+.gallery-main .gallery-zoom {
+    display: none !important;
+}
+
+@media (max-width: 400px) {
+    .product-img-placeholder.large {
+        grid-template-columns: minmax(0, 1fr) 78px;
+    }
+}
+
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.lightbox-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+.lightbox-content {
+    position: relative;
+    max-width: 65vw;
+    max-height: 92vh;
+    width: 65vw;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 60px rgba(0,0,0,0.5);
+    animation: lightboxZoomIn 0.3s ease-out;
+    padding: 12px;
+}
+.lightbox-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(107,114,128,0.75);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    z-index: 2;
+    transition: background 0.2s;
+}
+.lightbox-close:hover {
+    background: rgba(107,114,128,0.95);
+}
+.lightbox-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 10px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: contrast(1.03) saturate(1.05);
+}
+@keyframes lightboxZoomIn {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Action bar layout: see css/rainbow-atc-bar.css */
+</style>
+
+<script>
+(function() {
+    var zoomBtn = document.querySelector('.gallery-zoom');
+    var overlay = document.getElementById('imageLightbox');
+    var closeBtn = document.getElementById('lightboxClose');
+    var lbImg = document.getElementById('lightboxImg');
+    if (!zoomBtn || !overlay) return;
+
+    function openLightbox() {
+        var mainImg = document.getElementById('mainImage');
+        if (!mainImg || !mainImg.src) return;
+        lbImg.src = mainImg.src;
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() {
+            overlay.classList.add('active');
+        });
+    }
+    function closeLightbox() {
+        overlay.classList.remove('active');
+        setTimeout(function() { overlay.style.display = 'none'; }, 250);
+    }
+
+    zoomBtn.addEventListener('click', openLightbox);
+    closeBtn.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) closeLightbox();
+    });
+})();
+
+</script>
+
+    <!-- Tawk.to mini-chat iframe overlay -->
+    <script type="text/javascript">
+        (function() {
+            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
+            var isOpen = false;
+
+            var overlay = document.createElement('div');
+            overlay.id = 'tawkOverlay';
+            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
+
+            var chatBox = document.createElement('div');
+            chatBox.id = 'tawkMiniChat';
+            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
+
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
+            chatBox.appendChild(closeBtn);
+
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
+            chatBox.appendChild(iframe);
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(chatBox);
+
+            function openChat() {
+                if (!iframe.src) iframe.src = TAWK_DIRECT;
+                overlay.style.display = 'block';
+                chatBox.style.display = 'block';
+                isOpen = true;
+            }
+            function closeChat() {
+                overlay.style.display = 'none';
+                chatBox.style.display = 'none';
+                isOpen = false;
+            }
+
+            overlay.addEventListener('click', closeChat);
+            closeBtn.addEventListener('click', closeChat);
+
+            var chatNavBtn = document.getElementById('chatNavBtn');
+            if (chatNavBtn) {
+                chatNavBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openChat();
+                });
+            }
+
+            // Update basket badge
+            function _refreshBasketBadge() {
+                try {
+                    var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+                    var badge = document.getElementById('navCartBadge');
+                    if (!badge) return;
+                    var total = 0;
+                    basket.forEach(function(item) {
+                        total += parseInt(item.qty) || parseInt(item.totalQty) || 1;
+                    });
+                    if (total > 0) {
+                        badge.textContent = total;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                } catch(e) {}
+            }
+            _refreshBasketBadge();
+            window.addEventListener('pageshow', function(e) { if (e.persisted) _refreshBasketBadge(); });
+        })();
+    </script>
+
+    <script src="footer/footer.js?v=FTR10APR2026"></script>
+</body>
+</html>

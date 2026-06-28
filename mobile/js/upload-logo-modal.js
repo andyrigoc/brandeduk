@@ -127,33 +127,8 @@
         submitBtn.innerHTML = '<span class="upload-spinner"></span> Sending...';
 
         try {
-            // Prepare form data
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('surname', surname);
-            formData.append('phone', phone);
-            formData.append('email', email);
-            formData.append('notes', notes);
-            formData.append('source', 'Upload Logo Modal - Homepage');
-            
-            if (selectedFile) {
-                formData.append('logo', selectedFile);
-            }
-
-            // Try to send to backend
-            const apiUrl = window.BACKEND_URL || 'https://backend-brandeduk.onrender.com';
-            
-            const response = await fetch(`${apiUrl}/api/contact/upload-enquiry`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                showSuccess();
-            } else {
-                // Fallback: Try mailto
-                fallbackMailto(name, surname, phone, email, notes);
-            }
+            await submitLogoQuoteEnquiry(name, surname, phone, email, notes);
+            showSuccess();
         } catch (error) {
             console.error('Upload modal error:', error);
             // Fallback: Use mailto
@@ -164,6 +139,118 @@
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnContent;
     });
+
+    async function submitLogoQuoteEnquiry(name, surname, phone, email, notes) {
+        const quoteData = buildLogoQuoteData(name, surname, phone, email, notes);
+
+        if (selectedFile) {
+            quoteData.logoFiles = {
+                'left-breast': selectedFile
+            };
+        }
+
+        if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
+            return window.BrandedAPI.submitQuote(quoteData);
+        }
+
+        const apiBase = (typeof window.resolveBrandedApiBase === 'function')
+            ? window.resolveBrandedApiBase()
+            : ((window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, ''));
+
+        if (selectedFile) {
+            const formData = new FormData();
+            const dataWithoutFiles = Object.assign({}, quoteData);
+            delete dataWithoutFiles.logoFiles;
+            formData.append('quoteData', JSON.stringify(dataWithoutFiles));
+            formData.append('logo_left-breast', selectedFile, selectedFile.name || 'homepage-logo-upload');
+
+            const response = await fetch(`${apiBase}/api/quotes`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Quote API error: ${response.status} ${response.statusText}`);
+            }
+
+            return response.json();
+        }
+
+        const response = await fetch(`${apiBase}/api/quotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quoteData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Quote API error: ${response.status} ${response.statusText}`);
+        }
+
+        return response.json();
+    }
+
+    function buildLogoQuoteData(name, surname, phone, email, notes) {
+        const fullName = `${name} ${surname}`.trim();
+        const message = notes || 'Customer uploaded a logo from the homepage quick action and requested pricing.';
+
+        return {
+            customer: {
+                fullName: fullName,
+                firstName: name,
+                surname: surname,
+                phone: phone,
+                email: email,
+                company: '',
+                address: '',
+                message: message
+            },
+            summary: {
+                totalQuantity: 0,
+                totalItems: 1,
+                garmentCost: 0,
+                customizationCost: 0,
+                digitizingFee: 0,
+                subtotal: 0,
+                vatRate: 0.2,
+                vatAmount: 0,
+                totalExVat: 0,
+                totalIncVat: 0,
+                vatMode: 'ex',
+                displayTotal: 0,
+                hasPoa: true
+            },
+            basket: [
+                {
+                    name: 'Homepage Logo Upload Enquiry',
+                    code: 'LOGO-UPLOAD',
+                    color: '',
+                    quantity: 1,
+                    sizes: {},
+                    sizesSummary: '',
+                    unitPrice: 0,
+                    itemTotal: 0,
+                    image: ''
+                }
+            ],
+            customizations: [
+                {
+                    position: 'Left Breast',
+                    method: 'TBC',
+                    type: 'logo',
+                    hasLogo: !!selectedFile,
+                    text: message,
+                    unitPrice: 0,
+                    lineTotal: 0,
+                    quantity: 1
+                }
+            ],
+            notes: message,
+            source: 'Upload Logo Modal - Homepage',
+            timestamp: new Date().toISOString()
+        };
+    }
 
     function fallbackMailto(name, surname, phone, email, notes) {
         const subject = encodeURIComponent('Logo Enquiry from ' + name + ' ' + surname);
