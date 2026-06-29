@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="robots" content="noindex, follow">
@@ -344,6 +345,39 @@
             justify-content: center;
         }
         .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
+        .item-row-image.has-design-preview {
+            width: 64px;
+            height: 76px;
+            background: #f8fafc;
+        }
+        .item-design-preview {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #fff;
+        }
+        .item-design-preview__garment,
+        .item-design-preview__logo {
+            position: absolute;
+            display: block;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .item-design-preview__garment {
+            z-index: 1;
+        }
+        .item-design-preview__tint {
+            position: absolute;
+            z-index: 2;
+            mix-blend-mode: multiply;
+            opacity: 0.42;
+            pointer-events: none;
+        }
+        .item-design-preview__logo {
+            z-index: 3;
+            transform-origin: center center;
+        }
         .item-row-head-text {
             flex: 1;
             min-width: 0;
@@ -1448,6 +1482,9 @@
     // BASKET V2 â€” Per-size rows, Workwear Express style
     // =============================================
 
+    const BASKET_DEBUG = window.BRANDED_DEBUG === true;
+    const basketDebug = (...args) => { if (BASKET_DEBUG) console.debug(...args); };
+
     // --- State ---
     function readVatPreference() {
         const mode = localStorage.getItem('brandeduk-vat-mode');
@@ -1626,7 +1663,7 @@
 
     // Single-pass normalization: handles ALL legacy formats &larr;’ V2 per-size rows with logos[]
     function normalizeBasket() {
-        console.log('🔄 [normalizeBasket] Called - extracting logos from positions/positionDesigns');
+        basketDebug('[normalizeBasket] Called - extracting logos from positions/positionDesigns');
         const basket = getBasket();
         if (basket.length === 0) return;
 
@@ -2082,6 +2119,47 @@
         const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         return lum > 0.72;
     }
+    function escapeAttr(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function safePct(value) {
+        const n = parseFloat(value);
+        if (!Number.isFinite(n)) return 0;
+        return Math.max(-100, Math.min(200, n));
+    }
+
+    function previewBoxStyle(box) {
+        return `left:${safePct(box && box.left)}%;top:${safePct(box && box.top)}%;width:${safePct(box && box.width)}%;height:${safePct(box && box.height)}%;`;
+    }
+
+    function renderItemPreview(item, fallbackImg, altText) {
+        const preview = item && item.designPreview;
+        const garmentImage = preview && preview.garmentImage;
+        const logoImage = preview && preview.logoImage;
+        if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
+            return `<div class="item-row-image" title="${escapeAttr(item && item.color)}"><img src="${escapeAttr(fallbackImg)}" alt="${escapeAttr(altText)}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'"></div>`;
+        }
+
+        const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+        const tintHtml = tintHex && !isLightColorHex(tintHex)
+            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
+            : '';
+        const rotation = parseFloat(preview.logoRotation || 0) || 0;
+
+        return `
+            <div class="item-row-image has-design-preview" title="Logo placement preview">
+                <div class="item-design-preview" aria-label="Logo placement preview">
+                    <img class="item-design-preview__garment" src="${escapeAttr(garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(preview.garmentBox)}" onerror="this.style.display='none'">
+                    ${tintHtml}
+                    <img class="item-design-preview__logo" src="${escapeAttr(logoImage)}" alt="Logo placement" style="${previewBoxStyle(preview.logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">
+                </div>
+            </div>`;
+    }
 
     // ========================
     // RENDER ITEM ROWS
@@ -2148,9 +2226,8 @@
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
                         <div class="item-row-top">
-                            <div class="item-row-image" title="${(item.color || '').replace(/"/g, '&quot;')}">
-                                <img src="${img}" alt="${item.name}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'">
-                            </div>
+
+                            ${renderItemPreview(item, img, item.name || 'Product')}
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
                                     <h4 class="item-row-title">${item.name || 'Product'}</h4>
@@ -2718,7 +2795,7 @@
 
     window.closeCustomizePopup = closeCustomizePopup;
     function closeCustomizePopup() {
-        console.log('🔄 [closeCustomizePopup] Called - syncing logos and re-rendering basket');
+        basketDebug('[closeCustomizePopup] Called - syncing logos and re-rendering basket');
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
         try {
@@ -2744,7 +2821,7 @@
     // Convert positions/positionDesigns written by customize.js back to logos[] (V2)
     // Called on popup close AND on page load via normalizeBasket
     function syncLogosFromOldFormat() {
-        console.log('🔄 [syncLogosFromOldFormat] Called - delegating to normalizeBasket()');
+        basketDebug('[syncLogosFromOldFormat] Called - delegating to normalizeBasket()');
         normalizeBasket();
     }
 
@@ -3274,3 +3351,4 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
 </body>
 </html>
+

@@ -6,46 +6,9 @@
 (function() {
     'use strict';
 
-    // ------------------------------------------------------------------
-    // DEBUG INGEST (local dev only)
-    // ------------------------------------------------------------------
-    // The codebase contains debug telemetry POSTs to a local collector at
-    // http://127.0.0.1:7244/ingest/... which causes noisy net::ERR_CONNECTION_REFUSED
-    // in normal runs. We block only those requests unless explicitly enabled.
-    (function blockLocalDebugIngest() {
-        if (window.__brandeduk_blocked_local_ingest__) return;
-        window.__brandeduk_blocked_local_ingest__ = true;
-
-        let ingestEnabled = false;
-        try {
-            ingestEnabled = window.localStorage && window.localStorage.getItem('brandeduk-debug-ingest') === 'on';
-        } catch (e) {
-            ingestEnabled = false;
-        }
-
-        if (ingestEnabled) return;
-        if (typeof window.fetch !== 'function') return;
-
-        const INGEST_PREFIX = 'http://127.0.0.1:7244/ingest/';
-        const originalFetch = window.fetch.bind(window);
-
-        window.fetch = function(input, init) {
-            try {
-                const url = typeof input === 'string' ? input : (input && input.url);
-                if (url && url.indexOf(INGEST_PREFIX) === 0) {
-                    // Return a resolved fetch-like response without touching the network.
-                    if (typeof Response === 'function') {
-                        return Promise.resolve(new Response(null, { status: 204, statusText: 'No Content' }));
-                    }
-                    return Promise.resolve({ ok: true, status: 204, statusText: 'No Content' });
-                }
-            } catch (e) {
-                // fall through
-            }
-
-            return originalFetch(input, init);
-        };
-    })();
+    const DEBUG = window.BRANDED_DEBUG === true;
+    const debugLog = (...args) => { if (DEBUG) console.debug(...args); };
+    const debugWarn = (...args) => { if (DEBUG) console.warn(...args); };
 
     // === VAT Constants ===
     const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
@@ -147,7 +110,7 @@
     async function compressImageFile(file, maxSizeKB = 800, maxDimension = 1200) {
         // If file is already small enough, return as-is
         if (file.size <= maxSizeKB * 1024) {
-            console.log(`📷 Image already small enough: ${(file.size/1024).toFixed(1)}KB`);
+            debugLog(`📷 Image already small enough: ${(file.size/1024).toFixed(1)}KB`);
             return file;
         }
         
@@ -187,7 +150,7 @@
                                 type: 'image/jpeg',
                                 lastModified: Date.now()
                             });
-                            console.log(`📷 Compressed image: ${(file.size/1024).toFixed(1)}KB → ${(compressedFile.size/1024).toFixed(1)}KB (quality: ${quality.toFixed(2)})`);
+                            debugLog(`📷 Compressed image: ${(file.size/1024).toFixed(1)}KB → ${(compressedFile.size/1024).toFixed(1)}KB (quality: ${quality.toFixed(2)})`);
                             resolve(compressedFile);
                         }
                     }, 'image/jpeg', quality);
@@ -197,7 +160,7 @@
             };
             
             img.onerror = () => {
-                console.warn('📷 Could not load image for compression, using original');
+                debugWarn('📷 Could not load image for compression, using original');
                 resolve(file);
             };
             
@@ -314,7 +277,7 @@
             ctx.putImageData(imageData, 0, 0);
             return canvas.toDataURL('image/png');
         } catch (e) {
-            console.warn('Garment mask build failed, using source image mask', e);
+            debugWarn('Garment mask build failed, using source image mask', e);
             return null;
         }
     }
@@ -752,7 +715,7 @@
     // Build positions dynamically from productType
     function buildPositionsFromProductType(productType) {
         if (!productType) {
-            console.warn('⚠️ No productType provided, using default');
+            debugWarn('⚠️ No productType provided, using default');
             return null;
         }
         
@@ -760,13 +723,13 @@
         const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
         const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
         if (!folderPath) {
-            console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
+            debugWarn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
             return null;
         }
         
         const imageFiles = FOLDER_IMAGE_MAP[folderPath];
         if (!imageFiles || imageFiles.length === 0) {
-            console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+            debugWarn(`⚠️ No images found for folder: ${folderPath}, using default`);
             return null;
         }
         
@@ -796,20 +759,20 @@
                     cssClass: positionInfo.cssClass
                 };
             } else {
-                console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+                debugWarn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
             }
         });
         
         if (Object.keys(positions).length === 0) {
-            console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+            debugWarn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
             return null;
         }
         
         const allStandardPositions = ['left-breast', 'right-breast', 'small-centre-front', 'large-front-center', 'large-centre-front', 'large-back', 'left-arm', 'right-arm'];
         const hidePositions = allStandardPositions.filter(pos => !positions[pos]);
         
-        console.log(`✅ Built positions from productType "${productTypeStr}" (normalized: "${normalizedProductType}") :`, Object.keys(positions));
-        console.log(`🙈 Will hide positions:`, hidePositions);
+        debugLog(`✅ Built positions from productType "${productTypeStr}" (normalized: "${normalizedProductType}") :`, Object.keys(positions));
+        debugLog(`🙈 Will hide positions:`, hidePositions);
         
         return {
             imagePath: basePath,
@@ -844,13 +807,13 @@
             });
             cards.forEach(card => grid.appendChild(card));
         });
-        console.log('🔀 Position cards reordered for:', normalizedForOrder, positionOrder);
+        debugLog('🔀 Position cards reordered for:', normalizedForOrder, positionOrder);
     }
 
     // Update position cards based on product type
     function updatePositionCardsForProductType(productData) {
         if (!productData) {
-            console.warn('⚠️ No product data for position update');
+            debugWarn('⚠️ No product data for position update');
             return;
         }
 
@@ -902,7 +865,7 @@
                     const img = card.querySelector('.position-placeholder');
                     if (img && positionConfig.image) {
                         const newSrc = positionConfig.image;
-                        console.log('🖼️ Setting position card image:', position, '→', newSrc);
+                        debugLog('🖼️ Setting position card image:', position, '→', newSrc);
                         setPositionCardGarmentImage(img, newSrc, productType);
                         img.alt = positionConfig.label;
                         if (position === 'right-arm') {
@@ -911,7 +874,7 @@
                         }
                         
                         img.onload = function() {
-                            console.log('✅ Image loaded OK:', newSrc);
+                            debugLog('✅ Image loaded OK:', newSrc);
                             if (isHoodieGarmentTintContext(productType)) {
                                 syncHoodieGarmentTintMaskFromImage(img);
                             }
@@ -980,7 +943,7 @@
             });
         });
         
-        console.log('✅ Position cards updated for productType:', productType);
+        debugLog('✅ Position cards updated for productType:', productType);
         reorderPositionCardsInGrids(positionGrids, productType);
 
         if (isApronProductContext(productType)) {
@@ -1061,9 +1024,9 @@
                 technique: state.technique
             };
             sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(stateToSave));
-            console.log('?? Saved customization state to sessionStorage:', stateToSave);
+            debugLog('?? Saved customization state to sessionStorage:', stateToSave);
         } catch (e) {
-            console.warn('Unable to save customization state:', e);
+            debugWarn('Unable to save customization state:', e);
         }
     }
 
@@ -1072,12 +1035,12 @@
         try {
             const saved = sessionStorage.getItem(STATE_STORAGE_KEY);
             if (!saved) {
-                console.log('?? No saved customization state found');
+                debugLog('?? No saved customization state found');
                 return false;
             }
             
             const savedState = JSON.parse(saved);
-            console.log('?? Restoring customization state:', savedState);
+            debugLog('?? Restoring customization state:', savedState);
             
             // CRITICAL: When editing a specific basket item, do NOT restore position designs
             // from shared session state — the basket item's own data is loaded in Phase 2.1
@@ -1100,7 +1063,7 @@
                 state.positionCustomizations = {};
                 state.positionDesigns = {};
                 state.positions = [];
-                console.log('?? Editing basket item — positions will load from basket row');
+                debugLog('?? Editing basket item — positions will load from basket row');
             }
             
             // CRITICAL FIX: Don't restore selectedColorImage from sessionStorage
@@ -1113,9 +1076,9 @@
                     state.selectedColor = matchingColor.id;
                     state.selectedColorName = matchingColor.name;
                     state.selectedColorImage = matchingColor.image;
-                    console.log('? Restored color from saved state:', matchingColor.name);
+                    debugLog('? Restored color from saved state:', matchingColor.name);
                 } else {
-                    console.log('?? Saved color not found in current product, will use first color');
+                    debugLog('?? Saved color not found in current product, will use first color');
                 }
             }
             // Note: selectedColorImage is NOT restored here - it's set from new product data
@@ -1132,20 +1095,20 @@
             
             return true;
         } catch (e) {
-            console.warn('Unable to restore customization state:', e);
+            debugWarn('Unable to restore customization state:', e);
             return false;
         }
     }
 
     // === Restore UI from State (call after DOM is ready) ===
     function restoreUIFromState() {
-        console.log('?? Restoring UI from state...');
-        console.log('?? state.positionMethods:', JSON.stringify(state.positionMethods));
-        console.log('?? state.positionDesigns:', JSON.stringify(state.positionDesigns));
+        debugLog('?? Restoring UI from state...');
+        debugLog('?? state.positionMethods:', JSON.stringify(state.positionMethods));
+        debugLog('?? state.positionDesigns:', JSON.stringify(state.positionDesigns));
         
         // Restore position methods UI
         if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
-            console.log('?? Found', Object.keys(state.positionMethods).length, 'positions to restore');
+            debugLog('?? Found', Object.keys(state.positionMethods).length, 'positions to restore');
             Object.entries(state.positionMethods).forEach(([position, method]) => {
                 const card = document.querySelector(`.position-card[data-position="${position}"], .position-card input[value="${position}"]`)?.closest('.position-card');
                 if (card) {
@@ -1158,7 +1121,7 @@
                     // Apply method UI
                     applyMethodUI(card, method);
                     
-                    console.log('? Restored position:', position, 'with method:', method);
+                    debugLog('? Restored position:', position, 'with method:', method);
                 }
             });
         }
@@ -1198,7 +1161,7 @@
                         }
                     }
                     
-                    console.log('? Restored design for position:', position);
+                    debugLog('? Restored design for position:', position);
                 }
             });
             applyGarmentColorToPositionPreviews();
@@ -1221,7 +1184,7 @@
         updatePricingTiers();
         updatePricingSummary();
         
-        console.log('? UI restoration complete');
+        debugLog('? UI restoration complete');
     }
 
     // === HELPERS: load product from sessionStorage or API ===
@@ -1288,14 +1251,14 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     productCode = urlParams.get('code') || null;
                     if (productCode) {
-                        console.log('🔗 Product code from URL parameter:', productCode);
+                        debugLog('🔗 Product code from URL parameter:', productCode);
                     }
                 } catch (e) { /* ignore */ }
             }
             
             if (productCode) {
                 try {
-                    console.log('📦 Fetching fresh product detail from API for:', productCode);
+                    debugLog('📦 Fetching fresh product detail from API for:', productCode);
                     // Fetch detail (full data) and listing (accurate prices) in parallel
                     const [detailRes, listingRes] = await Promise.allSettled([
                         fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`),
@@ -1308,11 +1271,11 @@
                         // Preserve it from the cached shop data if available
                         if (!productData.image && cachedData && cachedData.image) {
                             productData.image = cachedData.image;
-                            console.log('🖼️ Preserved model image from shop data:', productData.image);
+                            debugLog('🖼️ Preserved model image from shop data:', productData.image);
                         }
-                        console.log('✅ Fetched product from API:', productData.code);
-                        console.log('📐 Product sizes from API:', productData.sizes);
-                        console.log('🎨 Product colors count:', (productData.colors || []).length);
+                        debugLog('✅ Fetched product from API:', productData.code);
+                        debugLog('📐 Product sizes from API:', productData.sizes);
+                        debugLog('🎨 Product colors count:', (productData.colors || []).length);
                     }
 
                     // Merge listing prices (more up-to-date than detail endpoint)
@@ -1327,7 +1290,7 @@
                         const detailPrice = Number(productData.price) || 0;
                         const listingPrice = Number(listingProduct.price) || 0;
                         if (listingPrice > 0 && listingPrice !== detailPrice) {
-                            console.log(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
+                            debugLog(`💰 Price correction: detail £${detailPrice} → listing £${listingPrice}`);
                             productData.price = listingProduct.price;
                             productData.basePrice = listingProduct.price;
                         }
@@ -1347,7 +1310,7 @@
                         if (!productData.image && listingProduct.image) {
                             productData.image = listingProduct.image;
                         }
-                        console.warn('⚠️ Using listing data (detail endpoint failed)');
+                        debugWarn('⚠️ Using listing data (detail endpoint failed)');
                     }
 
                     if (productData) {
@@ -1359,22 +1322,22 @@
                         // Update cache with complete data
                         sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
                     } else {
-                        console.warn('Product API returned error - falling back to cached data');
+                        debugWarn('Product API returned error - falling back to cached data');
                     }
                 } catch (e) {
-                    console.warn('Failed to fetch product from API, using cached data if available', e);
+                    debugWarn('Failed to fetch product from API, using cached data if available', e);
                 }
             }
 
             // Fallback to cached data only if API fetch failed
             if (!productData && cachedData) {
                 productData = cachedData;
-                console.log('⚠️ Using cached product data (API unavailable):', productData.code);
+                debugLog('⚠️ Using cached product data (API unavailable):', productData.code);
             }
 
             if (!productData) {
                 // No product data available — leave default state (fallback product)
-                console.warn('?? No product data available, using fallback');
+                debugWarn('?? No product data available, using fallback');
                 return false;
             }
 
@@ -1387,7 +1350,7 @@
             state.selectedColor = null;
             state.selectedColorName = null;
             state.selectedColorImage = null;
-            console.log('?? Cleared old color selection to prevent showing previous product image');
+            debugLog('?? Cleared old color selection to prevent showing previous product image');
 
             // Map productData into our state
             // Update URL with product code so the link is shareable
@@ -1405,7 +1368,7 @@
             state.product.code = finalCode || state.product.code;
             if (prevProductCode && finalCode && prevProductCode !== finalCode) {
                 clearPositionState();
-                console.log('🧹 Cleared position state — switched product', prevProductCode, '→', finalCode);
+                debugLog('🧹 Cleared position state — switched product', prevProductCode, '→', finalCode);
             }
             state.product.sku = productData.sku || productData.code || productData.productCode || productData.id || state.product.sku;
             state.product.name = productData.name || productData.title || productData.productName || productData.displayName || state.product.name;
@@ -1420,12 +1383,12 @@
                 const modelEntryImage = findModelEntryImage(productData);
                 if (modelEntryImage) {
                     productData.image = modelEntryImage;
-                    console.log('🖼️ Using model entry image as product hero:', modelEntryImage);
+                    debugLog('🖼️ Using model entry image as product hero:', modelEntryImage);
                 }
             }
             state.product.image = productData.image || ''; // Top-level product image (model/hero shot)
             state.product.rawData = productData; // Store full product data for reference
-            console.log('🔍 PRODUCT IMAGE DEBUG:', { topLevelImage: productData.image, firstColorMain: (productData.colors && productData.colors[0]) ? productData.colors[0].main : 'no colors', sameImage: productData.image === ((productData.colors && productData.colors[0]) ? productData.colors[0].main : null) });
+            debugLog('🔍 PRODUCT IMAGE DEBUG:', { topLevelImage: productData.image, firstColorMain: (productData.colors && productData.colors[0]) ? productData.colors[0].main : 'no colors', sameImage: productData.image === ((productData.colors && productData.colors[0]) ? productData.colors[0].main : null) });
 
             // Map colors (if present) into PRODUCT_COLORS format
             const colorsSource = productData.colors || productData.colorOptions || productData.variants || [];
@@ -1434,11 +1397,11 @@
                 : [];
             const removedModelEntries = Array.isArray(colorsSource) ? colorsSource.length - colorEntries.length : 0;
             if (removedModelEntries > 0) {
-                console.log('🧹 Removed non-color model entries from color options:', removedModelEntries);
+                debugLog('🧹 Removed non-color model entries from color options:', removedModelEntries);
             }
 
             if (colorEntries.length > 0) {
-                console.log('?? Mapping', colorEntries.length, 'colors from product data...');
+                debugLog('?? Mapping', colorEntries.length, 'colors from product data...');
                 PRODUCT_COLORS = colorEntries.map((c, index) => {
                     const name = c.name || c.displayName || c.label || c.id || `Color ${index + 1}`;
                     // Color swatches must use variant imagery only. The model/hero image is
@@ -1446,7 +1409,7 @@
                     const colorImage = c.main || c.image || c.thumb || c.imageUrl || c.url || '';
                     const colorThumb = c.thumb || c.thumbnail || c.main || c.image || colorImage;
                     
-                    console.log(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '?' : '?'}`);
+                    debugLog(`  Color ${index + 1}: ${name} - Image: ${colorImage ? '?' : '?'}`);
                     
                     const code = state.product && state.product.code ? state.product.code : '';
                     const resolvedHex = window.BrandedColorHex && typeof BrandedColorHex.resolveForEntry === 'function'
@@ -1468,7 +1431,7 @@
                         thumb: colorThumb // Store thumb separately for thumbnails
                     };
                 });
-                console.log('? PRODUCT_COLORS updated with', PRODUCT_COLORS.length, 'colors');
+                debugLog('? PRODUCT_COLORS updated with', PRODUCT_COLORS.length, 'colors');
                 if (window.BrandedColorHex && state.product && state.product.code) {
                     window.BrandedColorHex.registerProductColors(state.product.code, PRODUCT_COLORS);
                 }
@@ -1480,10 +1443,10 @@
                     state.selectedColor = PRODUCT_COLORS[0].id;
                     state.selectedColorName = PRODUCT_COLORS[0].name;
                     state.selectedColorImage = PRODUCT_COLORS[0].image;
-                    console.log('? Set default color to first available:', PRODUCT_COLORS[0].name, 'Image:', PRODUCT_COLORS[0].image);
+                    debugLog('? Set default color to first available:', PRODUCT_COLORS[0].name, 'Image:', PRODUCT_COLORS[0].image);
                 }
             } else {
-                console.warn('?? No colors found in product data, using fallback');
+                debugWarn('?? No colors found in product data, using fallback');
                 // If no colors, create a single color from the main product image
                 if (productData.image) {
                     PRODUCT_COLORS = [{
@@ -1497,7 +1460,7 @@
                     state.selectedColor = 'default';
                     state.selectedColorName = 'Default';
                     state.selectedColorImage = productData.image;
-                    console.log('? Set default color from product image:', productData.image);
+                    debugLog('? Set default color from product image:', productData.image);
                 }
             }
 
@@ -1512,14 +1475,11 @@
                     basePrice: state.product.basePrice,
                     tiers: breaks.slice().sort((a,b) => (b.min || 0) - (a.min || 0)).map(pb => ({ min: pb.min || pb.from || 0, price: pb.price || pb.unitPrice || pb.rate || 0 }))
                 };
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'mobile/js/customize.js:407',message:'PRICING_RULES populated from API',data:{productCode:state.product.code,basePrice:state.product.basePrice,priceBreaksFromAPI:breaks,tiersMapped:PRICING_RULES[state.product.code].tiers},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-                // #endregion
             }
 
             return true;
         } catch (e) {
-            console.warn('Unexpected error loading product:', e);
+            debugWarn('Unexpected error loading product:', e);
             return false;
         }
     }
@@ -1552,7 +1512,7 @@
                 const modelImage = state.product?.image || state.product?.rawData?.image || '';
                 const flatImage = state.selectedColorImage || (PRODUCT_COLORS && PRODUCT_COLORS[0] && PRODUCT_COLORS[0].image) || '';
                 const imgSrc = modelImage || flatImage || state.product?.photo || '';
-                console.log('🖼️ refreshProductDOM image selection:', { modelImage, flatImage, chosen: imgSrc });
+                debugLog('🖼️ refreshProductDOM image selection:', { modelImage, flatImage, chosen: imgSrc });
                 if (imgSrc) {
                     // Force reload by clearing src first, then setting new src with cache buster
                     mainImg.src = '';
@@ -1859,7 +1819,7 @@
                 }
             }
         } catch (e) {
-            console.warn('Failed to refresh product DOM', e);
+            debugWarn('Failed to refresh product DOM', e);
         }
     }
 
@@ -1875,7 +1835,7 @@
         });
         
         // Also save periodically when state changes (debounced)
-        console.log('?? State persistence setup complete');
+        debugLog('?? State persistence setup complete');
     }
 
     // === VAT Helper Functions ===
@@ -1891,7 +1851,7 @@
         try {
             localStorage.setItem(VAT_STORAGE_KEY, isOn ? 'on' : 'off');
         } catch (e) {
-            console.warn('Unable to persist VAT state');
+            debugWarn('Unable to persist VAT state');
         }
         state.vatIncluded = isOn;
         updateVatToggleUI();
@@ -2121,7 +2081,7 @@
             try {
                 item.colorImage = await compressBase64Image(item.colorImage);
             } catch (e) {
-                console.warn('Failed to compress colorImage:', e);
+                debugWarn('Failed to compress colorImage:', e);
             }
         }
         
@@ -2132,7 +2092,7 @@
                     try {
                         custom.content = await compressBase64Image(custom.content);
                     } catch (e) {
-                        console.warn('Failed to compress customization image:', e);
+                        debugWarn('Failed to compress customization image:', e);
                     }
                 }
             }
@@ -2145,7 +2105,7 @@
                     try {
                         design.logo = await compressBase64Image(design.logo);
                     } catch (e) {
-                        console.warn('Failed to compress position design:', e);
+                        debugWarn('Failed to compress position design:', e);
                     }
                 }
             }
@@ -2168,18 +2128,18 @@
         const sizeBytes = getLocalStorageSize();
         const sizeMB = sizeBytes / 1024 / 1024;
         
-        console.log(`?? LocalStorage size: ${sizeMB.toFixed(2)} MB`);
+        debugLog(`?? LocalStorage size: ${sizeMB.toFixed(2)} MB`);
         
         // If over 1MB, compress basket images
         if (sizeMB > 1) {
-            console.log('?? LocalStorage over 1MB, compressing basket images...');
+            debugLog('?? LocalStorage over 1MB, compressing basket images...');
             try {
                 let basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
                 for (let i = 0; i < basket.length; i++) {
                     basket[i] = await compressItemImages(basket[i]);
                 }
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                console.log('? Basket images compressed');
+                debugLog('? Basket images compressed');
             } catch (e) {
                 console.error('Failed to compress basket:', e);
             }
@@ -2194,7 +2154,7 @@
     // === Positions-Only Popup Mode ===
     // When opened from basket "Add Logo" button, hide everything except position cards
     function applyPositionsOnlyMode() {
-        console.log('🎯 Positions-Only mode activated');
+        debugLog('🎯 Positions-Only mode activated');
 
         // Show the positions section (hidden by default in HTML)
         const posSection = document.getElementById('positionsSection');
@@ -2238,7 +2198,7 @@
                 ).join(',\n') + ' { display: none !important; }';
             }
 
-            console.log('🎯 Product type:', _normalizedType, '| Available positions:', [..._availablePositions], '| Hiding:', _hidePositions.length, 'cards');
+            debugLog('🎯 Product type:', _normalizedType, '| Available positions:', [..._availablePositions], '| Hiding:', _hidePositions.length, 'cards');
 
             // === Reorder position cards based on product type ===
             const HEADWEAR_TYPES = ['Caps', 'Beanies'];
@@ -2263,7 +2223,7 @@
                 });
                 cards.forEach(card => grid.appendChild(card));
             });
-            console.log('🔀 [positionsOnly] Reordered position cards for:', _normalizedType);
+            debugLog('🔀 [positionsOnly] Reordered position cards for:', _normalizedType);
 
             // Also update images immediately for available positions
             const _basePath = `/brandedukv15-child/assets/images/customization/positions/${_folderPath}`;
@@ -2279,11 +2239,11 @@
                         img.alt = pi.label;
                     } else {
                         const imgUrl = `${_basePath}/${fn}`;
-                        console.log('🎯 [positionsOnly] Setting card image:', pi.code, '→', imgUrl);
+                        debugLog('🎯 [positionsOnly] Setting card image:', pi.code, '→', imgUrl);
                         img.src = imgUrl;
                         img.alt = pi.label;
                         img.onload = function() {
-                            console.log('✅ [positionsOnly] Image loaded OK:', imgUrl);
+                            debugLog('✅ [positionsOnly] Image loaded OK:', imgUrl);
                         };
                         img.onerror = function() {
                             console.error('❌ [positionsOnly] Image FAILED:', imgUrl);
@@ -2382,12 +2342,12 @@
         // ── AUTO-OPEN logo editor when editing a specific position from basket ──
         const _editingPosition = sessionStorage.getItem('editingPosition');
         if (_editingPosition) {
-            console.log('🎯 [positionsOnly] Auto-opening logo editor for position:', _editingPosition);
+            debugLog('🎯 [positionsOnly] Auto-opening logo editor for position:', _editingPosition);
             // Wait for restoreUIFromState (300ms) + DOM settle
             setTimeout(() => {
                 const card = document.querySelector(`.position-card[data-position="${_editingPosition}"]`);
                 if (!card) {
-                    console.warn('⚠️ [positionsOnly] Position card not found:', _editingPosition);
+                    debugWarn('⚠️ [positionsOnly] Position card not found:', _editingPosition);
                     return;
                 }
                 // Ensure the checkbox is checked
@@ -2416,7 +2376,7 @@
                                 document.body.classList.contains('page-customize');
         
         if (!isCustomizePage) {
-            console.log('?? Customize.js: Not on customize page, skipping init');
+            debugLog('?? Customize.js: Not on customize page, skipping init');
             return;
         }
 
@@ -2430,22 +2390,22 @@
         }
         normalizePositionBadgeTexts();
         
-        console.log('?? INIT STARTED');
-        console.log('DOM Ready State:', document.readyState);
+        debugLog('?? INIT STARTED');
+        debugLog('DOM Ready State:', document.readyState);
         
         // CRITICAL FIX: Clear selectedColorImage first to prevent showing old product's image
         // This ensures we don't show the previous product's image while loading new product
         state.selectedColorImage = null;
         state.selectedColor = null;
         state.selectedColorName = null;
-        console.log('?? Cleared color selection state before loading new product');
+        debugLog('?? Cleared color selection state before loading new product');
 
         // CRITICAL FIX: Load product data FIRST, then restore customization state
         // This ensures PRODUCT_COLORS is populated before we try to match saved colors
         try {
             const loadedEarly = await loadProductFromSessionOrApi();
             if (loadedEarly) {
-                console.log('? Product loaded early during init:', state.product.code, state.product.name);
+                debugLog('? Product loaded early during init:', state.product.code, state.product.name);
                 
                 // Now restore customization state (colors will be matched against new product's colors)
                 applyFreshItemSessionIfNeeded();
@@ -2464,7 +2424,7 @@
                 restoreCustomizationState();
             }
         } catch (e) {
-            console.warn('Early product load failed, continuing with fallback', e);
+            debugWarn('Early product load failed, continuing with fallback', e);
             applyFreshItemSessionIfNeeded();
             restoreCustomizationState();
         }
@@ -2473,7 +2433,7 @@
         const shopSelectedColorName = sessionStorage.getItem('selectedColorName');
         const shopSelectedColorUrl = sessionStorage.getItem('selectedColorUrl');
         if (shopSelectedColorName && shopSelectedColorUrl) {
-            console.log('?? Found color from shop:', shopSelectedColorName);
+            debugLog('?? Found color from shop:', shopSelectedColorName);
             // Find matching color in PRODUCT_COLORS
             const matchingColor = PRODUCT_COLORS.find(c => 
                 c.name.toLowerCase() === shopSelectedColorName.toLowerCase() ||
@@ -2483,7 +2443,7 @@
                 state.selectedColor = matchingColor.id;
                 state.selectedColorName = matchingColor.name;
                 state.selectedColorImage = matchingColor.image;
-                console.log('? Applied shop color:', matchingColor.name);
+                debugLog('? Applied shop color:', matchingColor.name);
                 
                 // Update color label and active button, but keep model image as main
                 setTimeout(() => {
@@ -2515,10 +2475,10 @@
                 const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
                 const basketItem = basket[parseInt(basketIdx, 10)];
                 if (basketItem) {
-                    console.log('🛒 Loading basket item for customization:', basketItem.productName, basketItem.color);
+                    debugLog('🛒 Loading basket item for customization:', basketItem.productName, basketItem.color);
                 } else {
                     // Stale index — basket was cleared or item removed
-                    console.warn('⚠️ Basket item at index', basketIdx, 'no longer exists. Clearing stale sessionStorage keys.');
+                    debugWarn('⚠️ Basket item at index', basketIdx, 'no longer exists. Clearing stale sessionStorage keys.');
                     sessionStorage.removeItem('customizingBasketIndex');
                     sessionStorage.removeItem('returnAfterCustomize');
                 }
@@ -2539,7 +2499,7 @@
                         state.selectedColor = matchColor.id;
                         state.selectedColorName = matchColor.name;
                         state.selectedColorImage = matchColor.image;
-                        console.log('🎨 Set color from basket item:', matchColor.name);
+                        debugLog('🎨 Set color from basket item:', matchColor.name);
                     } else if (itemColorName) {
                         state.selectedColorName = itemColorName;
                         state.selectedColor = slugify(itemColorName);
@@ -2618,10 +2578,10 @@
                     }
 
                     _logoConfiguredForCurrentItem = basketItemHasLogo(basketItem);
-                    console.log('✅ Basket item loaded into customize state');
+                    debugLog('✅ Basket item loaded into customize state');
                 }
             } catch (e) {
-                console.warn('Failed to load basket item for customization:', e);
+                debugWarn('Failed to load basket item for customization:', e);
             }
             // Don't clear customizingBasketIndex yet — needed by addToQuote for return navigation
         }
@@ -2633,9 +2593,9 @@
         cleanupLocalStorageIfNeeded();
         
         // Force render colors first (PRODUCT_COLORS may have been updated)
-        console.log('About to call renderColorButtons...');
+        debugLog('About to call renderColorButtons...');
         renderColorButtons();
-        console.log('renderColorButtons called');
+        debugLog('renderColorButtons called');
         applySessionColorFromBasket();
         if (isPositionsOnly) {
             if (isApronProductContext()) {
@@ -2691,11 +2651,11 @@
         
         // Restore UI from state if we had saved state (after all UI is rendered)
         setTimeout(() => {
-            console.log('🔄 Running restoreUIFromState after timeout...');
+            debugLog('🔄 Running restoreUIFromState after timeout...');
             restoreUIFromState();
         }, 300);
         
-        console.log('✅ INIT COMPLETE');
+        debugLog('✅ INIT COMPLETE');
         
         // REMOVED: Force clear was causing the size rows to disappear after being added
         // The size selection UI is now handled properly by setupSizeSelection()
@@ -2758,12 +2718,12 @@
         
         // DEBUG: Check if positionMethods exists and has data
         let methodsCount = state.positionMethods ? Object.keys(state.positionMethods).length : 0;
-        console.log('DEBUG - Initial positionMethods count:', methodsCount);
-        console.log('DEBUG - state.positionMethods:', JSON.stringify(state.positionMethods));
+        debugLog('DEBUG - Initial positionMethods count:', methodsCount);
+        debugLog('DEBUG - state.positionMethods:', JSON.stringify(state.positionMethods));
         
         // If positionMethods is empty, rebuild from UI (fallback)
         if (methodsCount === 0) {
-            console.log('WARNING: positionMethods is empty! Rebuilding from UI...');
+            debugLog('WARNING: positionMethods is empty! Rebuilding from UI...');
             
             if (!state.positionMethods) state.positionMethods = {};
             
@@ -2778,17 +2738,17 @@
                     const method = activeBadge.dataset.method;
                     if (method) {
                         state.positionMethods[position] = method;
-                        console.log('REBUILT position:', position, '=', method);
+                        debugLog('REBUILT position:', position, '=', method);
                     }
                 }
             });
             
             methodsCount = Object.keys(state.positionMethods).length;
-            console.log('After rebuild - positionMethods count:', methodsCount);
+            debugLog('After rebuild - positionMethods count:', methodsCount);
         }
         
-        console.log('FINAL positionMethods:', JSON.stringify(state.positionMethods));
-        console.log('quantity:', state.quantity);
+        debugLog('FINAL positionMethods:', JSON.stringify(state.positionMethods));
+        debugLog('quantity:', state.quantity);
         
         if (state.positionMethods && Object.keys(state.positionMethods).length > 0) {
             Object.entries(state.positionMethods).forEach(([pos, method]) => {
@@ -2873,7 +2833,7 @@
                 addedAt: now
             };
 
-            console.log('🛒 New Item (size ' + size + '):', JSON.stringify(newItem, null, 2));
+            debugLog('🛒 New Item (size ' + size + '):', JSON.stringify(newItem, null, 2));
 
             // No merge — each size is always a separate line
             basket.push(newItem);
@@ -2882,9 +2842,9 @@
         // Save to localStorage SYNCHRONOUSLY first, then compress in background
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
-            console.log('✅ Basket saved! Total items:', basket.length);
+            debugLog('✅ Basket saved! Total items:', basket.length);
         } catch (e) {
-            console.warn('⚠️ localStorage full, trying to compress...', e);
+            debugWarn('⚠️ localStorage full, trying to compress...', e);
             // Synchronous fallback: strip base64 logos to thumbnail size inline
             basket.forEach(item => {
                 if (item.positionDesigns) {
@@ -2898,7 +2858,7 @@
             });
             try {
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                console.log('✅ Basket saved after trimming!');
+                debugLog('✅ Basket saved after trimming!');
             } catch (e2) {
                 console.error('❌ Cannot save basket:', e2);
                 showToast('Storage full — please submit your quote', true);
@@ -2917,10 +2877,10 @@
                 }
                 if (changed) {
                     localStorage.setItem('quoteBasket', JSON.stringify(bsk));
-                    console.log('✅ Basket images compressed in background');
+                    debugLog('✅ Basket images compressed in background');
                 }
             } catch (err) {
-                console.warn('Background compression failed:', err);
+                debugWarn('Background compression failed:', err);
             }
         }, 100);
         
@@ -2936,7 +2896,7 @@
         
         updatePricingSummary();
         
-        console.log('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
+        debugLog('✅ Added to basket:', newItem.totalQty, 'items, customizations:', customizations.length);
     }
     
     // Reset size selection form (but keep color)
@@ -3281,9 +3241,6 @@
                     const vatAmount = totalCostExVat * vatRate;
                     const totalCostIncVat = totalCostExVat + vatAmount;
 
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:quoteSubmit:before',message:'positionCustomizations before collecting logos',data:{positionCustomizationsKeys:Object.keys(positionCustomizations),statePositionDesignsKeys:Object.keys(state.positionDesigns||{}),positionCustomizationsSnapshot:JSON.stringify(positionCustomizations).substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-                    // #endregion
                     
                     // Collect logo files for FormData upload
                     const logoFiles = {};
@@ -3294,7 +3251,7 @@
                         const designData = state.positionDesigns?.[position];
                         const logoDataSource = customization.logo || customization.logoData || customization.logoUrl || designData?.logo || designData?.logoData;
                         
-                        console.log(`🔍 Checking position "${position}" for logo:`, {
+                        debugLog(`🔍 Checking position "${position}" for logo:`, {
                             hasCustomizationLogo: !!customization.logo,
                             hasCustomizationLogoData: !!customization.logoData,
                             hasCustomizationLogoUrl: !!customization.logoUrl,
@@ -3303,15 +3260,12 @@
                             isBase64: logoDataSource?.startsWith?.('data:')
                         });
                         
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:logoCollection',message:'Checking position for logo',data:{position:position,hasCustomizationLogo:!!customization.logo,hasCustomizationLogoData:!!customization.logoData,hasDesignLogo:!!designData?.logo,logoDataSourcePrefix:logoDataSource?.substring?.(0,80),isBase64:logoDataSource?.startsWith?.('data:'),customizationKeys:Object.keys(customization||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-                        // #endregion
                         
                         if (logoDataSource && typeof logoDataSource === 'string' && logoDataSource.startsWith('data:')) {
                             try {
                                 const matches = logoDataSource.match(/^data:image\/(\w+);base64,(.+)$/);
                                 if (matches) {
-                                    console.log(`✅ Converting base64 to File for position "${position}"`);
+                                    debugLog(`✅ Converting base64 to File for position "${position}"`);
                                     const mimeType = matches[1] === 'jpeg' ? 'image/jpeg' : `image/${matches[1]}`;
                                     const base64Data = matches[2];
                                     const byteCharacters = atob(base64Data);
@@ -3327,15 +3281,15 @@
                                     const file = new File([blob], filename, { type: mimeType });
                                     
                                     logoFiles[position] = file;
-                                    console.log(`📎 Collected logo file for position "${position}":`, filename, 'Size:', file.size, 'bytes');
+                                    debugLog(`📎 Collected logo file for position "${position}":`, filename, 'Size:', file.size, 'bytes');
                                 }
                             } catch (err) {
-                                console.warn(`Could not convert logo for position "${position}":`, err);
+                                debugWarn(`Could not convert logo for position "${position}":`, err);
                             }
                         }
                     });
                     
-                    console.log('📦 Logo files collected:', Object.keys(logoFiles).length, Object.keys(logoFiles));
+                    debugLog('📦 Logo files collected:', Object.keys(logoFiles).length, Object.keys(logoFiles));
                     
                     // Compress large images before upload to avoid 413 errors
                     const compressedLogoFiles = {};
@@ -3344,12 +3298,12 @@
                             const compressed = await compressImageFile(file, 800, 1200);
                             compressedLogoFiles[position] = compressed;
                         } catch (err) {
-                            console.warn(`Could not compress logo for ${position}, using original:`, err);
+                            debugWarn(`Could not compress logo for ${position}, using original:`, err);
                             compressedLogoFiles[position] = file;
                         }
                     }
                     
-                    console.log('📦 Compressed logo files:', Object.entries(compressedLogoFiles).map(([k,v]) => `${k}: ${(v.size/1024).toFixed(1)}KB`));
+                    debugLog('📦 Compressed logo files:', Object.entries(compressedLogoFiles).map(([k,v]) => `${k}: ${(v.size/1024).toFixed(1)}KB`));
 
                     const quoteData = {
                         customer: {
@@ -3449,7 +3403,7 @@
                                         const positionSlug = mapPositionToBackendSlug(position);
                                         const formDataKey = `logo_${positionSlug}`;
                                         formData.append(formDataKey, file, file.name || `logo-${positionSlug}.png`);
-                                        console.log(`📎 [Mobile Fallback] Added logo file: ${formDataKey} (${(file.size/1024).toFixed(2)}KB)`);
+                                        debugLog(`📎 [Mobile Fallback] Added logo file: ${formDataKey} (${(file.size/1024).toFixed(2)}KB)`);
                                     }
                                 });
                                 
@@ -3535,7 +3489,7 @@
                     }
 
                     if (result.success) {
-                        console.log('? Quote submitted successfully');
+                        debugLog('? Quote submitted successfully');
                         
                         // Update button to submitted state
                         if (popupSubmitBtn) {
@@ -4033,7 +3987,7 @@
                 // Save back to localStorage
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
                 
-                console.log('?? Basket updated, recalculating totals...');
+                debugLog('?? Basket updated, recalculating totals...');
                 
                 // Update UI - DON'T recreate entire list, just update the specific row
                 const row = btn.closest('.order-item-card');
@@ -4058,7 +4012,7 @@
                 updateLiveBadge();
                 updateCartBadge();
                 
-                console.log('? All updates complete');
+                debugLog('? All updates complete');
                 
                 if (navigator.vibrate) navigator.vibrate(5);
             });
@@ -4550,11 +4504,11 @@
             return;
         }
         
-        console.log('?? Rendering', PRODUCT_COLORS.length, 'colors...');
-        console.log('?? First color image:', PRODUCT_COLORS[0]?.image);
+        debugLog('?? Rendering', PRODUCT_COLORS.length, 'colors...');
+        debugLog('?? First color image:', PRODUCT_COLORS[0]?.image);
         
         if (PRODUCT_COLORS.length === 0) {
-            console.warn('?? No colors to render!');
+            debugWarn('?? No colors to render!');
             colorOptions.innerHTML = '<p style="color: #6b7280; padding: 16px;">No colors available</p>';
             return;
         }
@@ -4590,23 +4544,23 @@
             syncColorSelectionUI(state.selectedColor);
         }
         
-        console.log('? Colors rendered successfully!');
+        debugLog('? Colors rendered successfully!');
     }
 
     // Render color thumbnails in gallery (showing different color variants)
     function renderColorThumbnails() {
         const galleryThumbsContainer = document.getElementById('galleryThumbsContainer') || document.querySelector('.gallery-thumbs');
         if (!galleryThumbsContainer) {
-            console.warn('?? Gallery thumbs container not found');
+            debugWarn('?? Gallery thumbs container not found');
             return;
         }
 
         if (!PRODUCT_COLORS || PRODUCT_COLORS.length === 0) {
-            console.warn('?? No colors available for thumbnails');
+            debugWarn('?? No colors available for thumbnails');
             return;
         }
 
-        console.log('?? Rendering', PRODUCT_COLORS.length, 'color thumbnails in gallery...');
+        debugLog('?? Rendering', PRODUCT_COLORS.length, 'color thumbnails in gallery...');
 
         // Clear existing thumbnails
         galleryThumbsContainer.innerHTML = '';
@@ -4661,7 +4615,7 @@
             galleryThumbsContainer.appendChild(thumbButton);
         });
 
-        console.log('? Color thumbnails rendered:', PRODUCT_COLORS.length);
+        debugLog('? Color thumbnails rendered:', PRODUCT_COLORS.length);
     }
 
     // === Get product sizes from API or fallback ===
@@ -4734,7 +4688,7 @@
         // Get sizes from product data
         let sizes = state.product?.sizes || [];
         
-        console.log('📐 getProductSizes() called - raw state.product.sizes:', state.product?.sizes);
+        debugLog('📐 getProductSizes() called - raw state.product.sizes:', state.product?.sizes);
         
         // Normalize: if it's a string, convert to array
         if (typeof sizes === 'string') {
@@ -4748,16 +4702,16 @@
             sizes = isOneSizeType
                 ? ['ONESIZE']
                 : ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
-            console.log('📐 getProductSizes() - no sizes from API, using fallback:', sizes);
+            debugLog('📐 getProductSizes() - no sizes from API, using fallback:', sizes);
         }
         
-        console.log('📐 getProductSizes() returning:', sizes);
+        debugLog('📐 getProductSizes() returning:', sizes);
         return sizes;
     }
 
     // === Add "One size" row with plus/minus quantity selector ===
     function addOneSizeRow(container) {
-        console.log('📐 addOneSizeRow CALLED');
+        debugLog('📐 addOneSizeRow CALLED');
         const selectedSizes = container.querySelector('.selected-sizes');
         if (!selectedSizes) {
             console.error('❌ addOneSizeRow: .selected-sizes NOT FOUND in container!');
@@ -4768,7 +4722,7 @@
         const productSizes = getProductSizes();
         const sizeKey = (productSizes && productSizes[0]) ? String(productSizes[0]) : 'ONESIZE';
         const displayLabel = 'One Size';
-        console.log('📐 addOneSizeRow: Creating row with sizeKey=', sizeKey);
+        debugLog('📐 addOneSizeRow: Creating row with sizeKey=', sizeKey);
         
         const newRow = document.createElement('div');
         newRow.className = 'size-qty-item one-size-item';
@@ -4785,19 +4739,19 @@
         newRow.dataset.size = sizeKey;
         
         selectedSizes.appendChild(newRow);
-        console.log('📐 addOneSizeRow: Row appended! Children count:', selectedSizes.children.length);
+        debugLog('📐 addOneSizeRow: Row appended! Children count:', selectedSizes.children.length);
         updateSizeQuantities();
     }
 
     // === Size/Qty Compact Selection ===
     function setupSizeSelection() {
-        console.log('📐 setupSizeSelection CALLED');
+        debugLog('📐 setupSizeSelection CALLED');
         const container = document.querySelector('.size-qty-compact');
         if (!container) {
             console.error('❌ setupSizeSelection: .size-qty-compact container NOT FOUND!');
             return;
         }
-        console.log('📐 setupSizeSelection: container found');
+        debugLog('📐 setupSizeSelection: container found');
 
         // Initialize state for size quantities
         state.sizeQuantities = {};
@@ -4806,12 +4760,12 @@
         const selectedSizes = container.querySelector('.selected-sizes');
         if (selectedSizes) {
             selectedSizes.innerHTML = '';
-            console.log('📐 setupSizeSelection: cleared existing rows');
+            debugLog('📐 setupSizeSelection: cleared existing rows');
         }
 
         // Get product sizes from API - fallback to default if not available
         const productSizes = getProductSizes();
-        console.log('📐 setupSizeSelection: productSizes =', productSizes);
+        debugLog('📐 setupSizeSelection: productSizes =', productSizes);
         const isOneSize = productSizes.length === 1 && 
             (productSizes[0].toLowerCase() === 'one size' || 
              productSizes[0].toLowerCase() === 'onesize' ||
@@ -4820,7 +4774,7 @@
         // Add size button
         const addBtn = container.querySelector('.add-size-btn');
         
-        console.log('📐 setupSizeSelection - productSizes:', productSizes, 'isOneSize:', isOneSize, 'addBtn found:', !!addBtn);
+        debugLog('📐 setupSizeSelection - productSizes:', productSizes, 'isOneSize:', isOneSize, 'addBtn found:', !!addBtn);
         
         if (isOneSize) {
             // For "One size" products: hide "Add Size" button and auto-create a row
@@ -4830,11 +4784,11 @@
             // Auto-add a "One size" row - use setTimeout to ensure it stays after all other init code
             setTimeout(() => {
                 addOneSizeRow(container);
-                console.log('📐 Product is "One size" - auto-added row with quantity selector (delayed)');
+                debugLog('📐 Product is "One size" - auto-added row with quantity selector (delayed)');
             }, 500);
         } else {
             // For multi-size products: show "Add Size" button AND add first row automatically
-            console.log('📐 Multi-size product - showing Add Size button and adding first row');
+            debugLog('📐 Multi-size product - showing Add Size button and adding first row');
             if (addBtn) {
                 addBtn.style.display = 'flex';
                 // Remove any existing listener to prevent duplicates
@@ -4849,7 +4803,7 @@
             // Auto-add first size row so user can immediately select size & qty - delayed to ensure it stays
             setTimeout(() => {
                 addSizeRow(container);
-                console.log('📐 First size row auto-added for multi-size product (delayed)');
+                debugLog('📐 First size row auto-added for multi-size product (delayed)');
             }, 500);
         }
 
@@ -5003,8 +4957,8 @@
         const container = document.querySelector('.size-qty-compact');
         if (!container) return;
 
-        console.log('DEBUG: updateSizeQuantities called');
-        try { console.log('DEBUG: container exists?', !!container, 'selected sizes count=', container.querySelectorAll('.size-qty-item').length); } catch(e){}
+        debugLog('DEBUG: updateSizeQuantities called');
+        try { debugLog('DEBUG: container exists?', !!container, 'selected sizes count=', container.querySelectorAll('.size-qty-item').length); } catch(e){}
 
         let total = 0;
         state.sizeQuantities = {};
@@ -5062,7 +5016,7 @@
             let sizeKey = size;
             if ((!sizeKey || sizeKey === '') && qty > 0) {
                 sizeKey = 'unspecified';
-                console.log('DEBUG: size not selected for a row but quantity present - counting under "unspecified"');
+                debugLog('DEBUG: size not selected for a row but quantity present - counting under "unspecified"');
             }
 
             if (sizeKey && qty > 0) {
@@ -5167,7 +5121,7 @@
                 const uiPrice = parseFloat(match[0]);
                 // Use UI price if calculated seems wrong (equals base price but tier is active)
                 if (uiPrice > 0 && uiPrice < calculated) {
-                    console.log('?? Using UI tier price:', uiPrice, 'instead of calculated:', calculated);
+                    debugLog('?? Using UI tier price:', uiPrice, 'instead of calculated:', calculated);
                     return uiPrice;
                 }
             }
@@ -5338,18 +5292,18 @@
     // === Position Selection ===
     function setupPositionSelection() {
         const cards = document.querySelectorAll('.position-card');
-        console.log('?? setupPositionSelection called. Found', cards.length, 'position cards');
+        debugLog('?? setupPositionSelection called. Found', cards.length, 'position cards');
         
         cards.forEach(card => {
             const checkbox = card.querySelector('input[type="checkbox"]');
             const position = checkbox ? checkbox.value : null;
             
             if (!position) {
-                console.warn('?? Card missing checkbox or position value:', card);
+                debugWarn('?? Card missing checkbox or position value:', card);
                 return;
             }
             
-            console.log('? Setting up position:', position);
+            debugLog('? Setting up position:', position);
             
             // Initialize position method storage
             if (!state.positionMethods) {
@@ -5358,9 +5312,9 @@
             
             // Click handler for price badges (EMBROIDERY/PRINT buttons)
             card.querySelectorAll('.price-badge').forEach(badge => {
-                console.log('?? Attaching click handler to badge:', badge.dataset.method, 'for position:', position);
+                debugLog('?? Attaching click handler to badge:', badge.dataset.method, 'for position:', position);
                 badge.addEventListener('click', (e) => {
-                    console.log('??? BADGE CLICKED!', badge.dataset.method, 'for position:', position);
+                    debugLog('??? BADGE CLICKED!', badge.dataset.method, 'for position:', position);
                     e.stopPropagation();
                     
                     const role = badge.dataset.role || 'method';
@@ -5462,8 +5416,8 @@
                     
                     // Store selected method for this position
                     state.positionMethods[position] = method;
-                    console.log('?? METHOD SELECTED!', position, '=', method);
-                    console.log('?? Current positionMethods:', JSON.stringify(state.positionMethods));
+                    debugLog('?? METHOD SELECTED!', position, '=', method);
+                    debugLog('?? Current positionMethods:', JSON.stringify(state.positionMethods));
                     
                     // Save state immediately for persistence
                     saveCustomizationState();
@@ -6099,7 +6053,7 @@
             }
         });
         
-        console.log('? POA badges initialized');
+        debugLog('? POA badges initialized');
     }
 
     // === Quantity Adjusters in Order Summary ===
@@ -6283,7 +6237,7 @@
             try {
                 url = await compressBase64Image(url, 600, 0.65);
             } catch (e) {
-                console.warn('Logo compress failed:', e);
+                debugWarn('Logo compress failed:', e);
             }
         }
         if (typeof window.BrandedLogoLibrary !== 'undefined' && url) {
@@ -6922,7 +6876,7 @@
                             window.BrandedLogoLibrary.uploadToServer(ev.target.result, modal?.dataset?.position, file.name)
                                 .then(result => {
                                     if (result && result.url && !result.url.startsWith('data:')) {
-                                        console.log('✅ Logo uploaded to server:', result.url);
+                                        debugLog('✅ Logo uploaded to server:', result.url);
                                         // Update preview to use permanent URL
                                         // (only if user hasn't changed it since)
                                         if (previewImg && previewImg.src === ev.target.result) {
@@ -6930,7 +6884,7 @@
                                         }
                                     }
                                 })
-                                .catch(err => console.warn('Logo upload bg failed:', err));
+                                .catch(err => debugWarn('Logo upload bg failed:', err));
                         }
                     };
                     reader.readAsDataURL(file);
@@ -7152,7 +7106,7 @@
         try {
             processedUrl = await processLogoBackgroundRemovalFromDataUrl(dataUrl);
         } catch (e) {
-            console.warn('Background removal failed, using original:', e);
+            debugWarn('Background removal failed, using original:', e);
         }
         if (typeof window.BrandedLogoLibrary !== 'undefined') {
             window.BrandedLogoLibrary.uploadToServer(processedUrl, position, filename || 'logo.png').catch(function () {});
@@ -7328,9 +7282,9 @@
         if (logoSrc && logoSrc.startsWith('data:')) {
             try {
                 logoSrc = await compressBase64Image(logoSrc, 600, 0.65);
-                console.log('📷 Logo compressed for storage, length:', logoSrc.length);
+                debugLog('📷 Logo compressed for storage, length:', logoSrc.length);
             } catch (e) {
-                console.warn('Logo compression failed, using original:', e);
+                debugWarn('Logo compression failed, using original:', e);
             }
         }
 
@@ -7344,14 +7298,11 @@
             clipart: modal.querySelector('.clipart-item.selected')?.textContent || null
         };
         
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize.js:applyDesignToPosition',message:'Logo data gathered',data:{position:position,method:method,hasLogo:!!designData.logo,logoPrefix:designData.logo?.substring?.(0,50),isBase64:designData.logo?.startsWith?.('data:')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         
         // CRITICAL: Ensure positionMethods is updated for basket saving
         if (!state.positionMethods) state.positionMethods = {};
         state.positionMethods[position] = method;
-        console.log('?? applyDesignToPosition - Updated positionMethods:', state.positionMethods);
+        debugLog('?? applyDesignToPosition - Updated positionMethods:', state.positionMethods);
         
         // Store in state (both positionDesigns and positionCustomizations for compatibility)
         if (!state.positionDesigns) state.positionDesigns = {};
@@ -7591,7 +7542,7 @@
         const currentQty = state.quantity || 0;
         const totalQty = basketQty + currentQty;
         
-        console.log('?? PRICING SUMMARY:', { currentQty, basketQty, totalQty, basketLength: basket.length });
+        debugLog('?? PRICING SUMMARY:', { currentQty, basketQty, totalQty, basketLength: basket.length });
         
         // Get unit price based on TOTAL quantity (cumulative tier)
         const basePrice = PRICING_RULES[state.product.code]?.basePrice || state.product.basePrice;
@@ -7608,7 +7559,7 @@
             }
         }
         
-        console.log('?? UNIT PRICE:', unitPrice, 'for', totalQty, 'items, tiers:', JSON.stringify(tiers));
+        debugLog('?? UNIT PRICE:', unitPrice, 'for', totalQty, 'items, tiers:', JSON.stringify(tiers));
         
         const currentTier = getCurrentTier();
         
@@ -7654,7 +7605,7 @@
                 itemUnitPrice = savedUnitPrice;
             }
             
-            console.log('?? BASKET ITEM:', itemCode, 'qty:', itemQty, 'unitPrice:', itemUnitPrice, 'total:', itemUnitPrice * itemQty);
+            debugLog('?? BASKET ITEM:', itemCode, 'qty:', itemQty, 'unitPrice:', itemUnitPrice, 'total:', itemUnitPrice * itemQty);
             
             totalBasketGarmentCost += itemUnitPrice * itemQty;
             
@@ -7768,7 +7719,7 @@
         
         // Get all checked position cards
         const checkedCards = document.querySelectorAll('.position-card input[type="checkbox"]:checked');
-        console.log('?? Checked position cards:', checkedCards.length);
+        debugLog('?? Checked position cards:', checkedCards.length);
         
         checkedCards.forEach(checkbox => {
             const card = checkbox.closest('.position-card');
@@ -7779,16 +7730,16 @@
             // Skip if this position is already accounted for in basket customizations
             // Check BOTH by slug key AND by canonical display name (handles inconsistent formats)
             if (basketPositionKeys.has(position) || basketPositionNames.has(positionName)) {
-                console.log('?? Skipping position (already in basket):', position);
+                debugLog('?? Skipping position (already in basket):', position);
                 return;
             }
             
-            console.log('?? Analyzing position:', { position, positionName, method, totalQtyForCustomizations });
+            debugLog('?? Analyzing position:', { position, positionName, method, totalQtyForCustomizations });
             
             if (method && totalQtyForCustomizations > 0) {
                 // Get price from active badge
                 const activeBadge = card.querySelector(`.price-badge.price-${method === 'embroidery' ? 'emb' : 'print'}.active`);
-                console.log('?? Active badge found:', activeBadge, 'for method:', method);
+                debugLog('?? Active badge found:', activeBadge, 'for method:', method);
                 
                 if (activeBadge) {
                     const priceText = activeBadge.querySelector('.price-value')?.textContent || '';
@@ -7799,7 +7750,7 @@
                         const totalForPosition = pricePerItem * totalQtyForCustomizations;
                         currentCustomTotal += totalForPosition;
                         
-                        console.log('?? Adding customization cost:', { position, method, pricePerItem, totalQtyForCustomizations, totalForPosition });
+                        debugLog('?? Adding customization cost:', { position, method, pricePerItem, totalQtyForCustomizations, totalForPosition });
                         
                         if (method === 'embroidery') hasEmbroidery = true;
                         
@@ -7839,7 +7790,7 @@
         // GRAND TOTAL (ex VAT)
         const grandTotal = grandGarmentTotal + grandCustomTotal + setupFeeBase;
         
-        console.log('?? GRAND TOTALS:', {
+        debugLog('?? GRAND TOTALS:', {
             basketGarment: totalBasketGarmentCost,
             currentGarment: currentGarmentTotal,
             grandGarment: grandGarmentTotal,
@@ -7892,7 +7843,7 @@
         });
         const displayQty = totalItemsInBasket + currentQty;
         
-        console.log('?? DISPLAY QTY:', { totalItemsInBasket, currentQty, displayQty, basketLength: basket.length });
+        debugLog('?? DISPLAY QTY:', { totalItemsInBasket, currentQty, displayQty, basketLength: basket.length });
 
         // Update quantity and prices
         const summaryQty = document.getElementById('summaryQty');
@@ -9309,7 +9260,7 @@
         // Gallery thumbnails are now dynamically rendered by renderColorThumbnails()
         // This function is kept for backward compatibility
         // Thumbnails will be rendered when colors are loaded via refreshProductDOM()
-        console.log('? Gallery setup complete (thumbnails rendered dynamically)');
+        debugLog('? Gallery setup complete (thumbnails rendered dynamically)');
     }
 
     // Keep in sync with mobile/css/rainbow-atc-bar.css (--fill-d + cart::after transition)
@@ -9416,7 +9367,7 @@
         const addToBasketBtn = document.getElementById('addToBasketBtn');
         if (addToBasketBtn) {
             addToBasketBtn.addEventListener('click', () => {
-                console.log('🔘 Add to basket button clicked! state.quantity:', state.quantity);
+                debugLog('🔘 Add to basket button clicked! state.quantity:', state.quantity);
                 if (state.quantity === 0 && !isBasketSingleItemEdit()) {
                     showToast('Please add at least one item', true);
                     return;
@@ -9811,7 +9762,7 @@
             }
         }
         if (!existing) {
-            console.warn('persistEditedBasketItemLogos: basket row not found');
+            debugWarn('persistEditedBasketItemLogos: basket row not found');
             return false;
         }
 
@@ -9838,7 +9789,7 @@
         try {
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
             _logoConfiguredForCurrentItem = true;
-            console.log('💾 persistEditedBasketItemLogos: saved', existing.productName || existing.name, existing.color);
+            debugLog('💾 persistEditedBasketItemLogos: saved', existing.productName || existing.name, existing.color);
             return true;
         } catch (e) {
             console.error('persistEditedBasketItemLogos failed:', e);
@@ -9970,7 +9921,7 @@
                 }
                 updateCartBadge();
                 showAutoSaveIndicator();
-                console.log('💾 Auto-saved logo to basket item:', existing.productName, existing.color);
+                debugLog('💾 Auto-saved logo to basket item:', existing.productName, existing.color);
                 return;
             }
         }
@@ -10055,7 +10006,7 @@
         // Show subtle feedback
         showAutoSaveIndicator();
 
-        console.log('💾 Auto-saved to basket:', lastAutoItem?.productName, lastAutoItem?.color, 'qty:', lastAutoItem?.totalQty);
+        debugLog('💾 Auto-saved to basket:', lastAutoItem?.productName, lastAutoItem?.color, 'qty:', lastAutoItem?.totalQty);
     }
 
     /**
@@ -10106,7 +10057,7 @@
         basket.forEach(item => {
             if ((item.productCode || item.code) === productCode) {
                 if (item.unitPrice !== tierPrice) {
-                    console.log('💰 Price updated:', item.color, item.unitPrice, '→', tierPrice, '(total qty:', totalQty, ')');
+                    debugLog('💰 Price updated:', item.color, item.unitPrice, '→', tierPrice, '(total qty:', totalQty, ')');
                     item.unitPrice = tierPrice;
                 }
             }
@@ -10182,7 +10133,7 @@
             state.sizeQuantities = {};
             state.quantity = 0;
             persistCleanCustomizeSession(currentCode);
-            console.log('🆕 Fresh customize item:', currentCode, fresh ? '(from shop)' : '(product changed)');
+            debugLog('🆕 Fresh customize item:', currentCode, fresh ? '(from shop)' : '(product changed)');
         }
 
         if (fresh) sessionStorage.removeItem(CUSTOMIZE_FRESH_KEY);
@@ -10295,7 +10246,7 @@
                 _autoSavedItemId = item.id;
             }
         } catch (e) {
-            console.warn('beginLogoFlowForNewBasketItem:', e);
+            debugWarn('beginLogoFlowForNewBasketItem:', e);
         }
         clearPositionState(true);
         saveCustomizationState();
@@ -10336,7 +10287,7 @@
             stripLogosFromBasketItem(basket[idx]);
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
         } catch (e) {
-            console.warn('markItemForLogoPrompt failed:', e);
+            debugWarn('markItemForLogoPrompt failed:', e);
         }
     }
 
@@ -10589,7 +10540,7 @@
 
     function addToQuote(options = {}) {
         const { silent = false } = options; // silent = true skips the success modal
-        console.log('🛒 addToQuote called, silent:', silent, 'state.quantity:', state.quantity, 'sizeQuantities:', JSON.stringify(state.sizeQuantities));
+        debugLog('🛒 addToQuote called, silent:', silent, 'state.quantity:', state.quantity, 'sizeQuantities:', JSON.stringify(state.sizeQuantities));
 
         // Cancel any pending auto-save to prevent race-condition duplicates
         if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
@@ -10662,7 +10613,7 @@
                 lastNewItem = existing;
                 sessionStorage.setItem('basketEditItemId', existing.id);
                 sessionStorage.setItem('customizingBasketIndex', String(basketIdx));
-                console.log('🔄 [basketEdit] Updated item:', existing.color, existing.size, 'qty', existing.qty);
+                debugLog('🔄 [basketEdit] Updated item:', existing.color, existing.size, 'qty', existing.qty);
             }
         } else if (isFromBasket && _autoSavedItemId) {
             const existingIdx = basket.findIndex(i => i.id === _autoSavedItemId);
@@ -10682,7 +10633,7 @@
                 existing.colorImage = baseColorImage || existing.colorImage;
                 if (baseColorHex) existing.colorHex = baseColorHex;
                 const quantityKeys = Object.keys(existing.quantities || {});
-                console.log('🔄 Updated basket item in-place:', existing.productName, existing.color, quantityKeys.join(','));
+                debugLog('🔄 Updated basket item in-place:', existing.productName, existing.color, quantityKeys.join(','));
             }
         } else if (isFromBasket && !_autoSavedItemId) {
             // iframe positionsOnly mode: _autoSavedItemId is null (fresh JS instance).
@@ -10711,11 +10662,11 @@
                         if (baseColorHex) item.colorHex = baseColorHex;
                     }
                 });
-                console.log('🔄 [iframe] Updated basket item via customizingBasketIndex:', basketIdx, existing.productName || existing.name);
-                console.log('💾 [iframe] Saved positions:', existing.positions);
-                console.log('💾 [iframe] Saved positionDesigns:', existing.positionDesigns);
+                debugLog('🔄 [iframe] Updated basket item via customizingBasketIndex:', basketIdx, existing.productName || existing.name);
+                debugLog('💾 [iframe] Saved positions:', existing.positions);
+                debugLog('💾 [iframe] Saved positionDesigns:', existing.positionDesigns);
             } else {
-                console.warn('⚠️ [iframe] isFromBasket but no valid customizingBasketIndex');
+                debugWarn('⚠️ [iframe] isFromBasket but no valid customizingBasketIndex');
             }
         } else {
             // Normal flow: create separate items per size
@@ -10768,7 +10719,7 @@
 
                 _sessionSavedIds.add(itemId);
                 basket.push(lastNewItem);
-                console.log('🛒 Added basket item (size ' + size + '), totalQty:', qty);
+                debugLog('🛒 Added basket item (size ' + size + '), totalQty:', qty);
             });
 
             if (sizesToAdd.length > 0) {
@@ -10776,7 +10727,7 @@
             }
         }
         
-        console.log('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
+        debugLog('✅ Basket after save:', basket.length, 'items, total quantities:', basket.map(i => i.totalQty));
         
         // ── RECALCULATE prices for ALL items with the same productCode ──
         // Total quantity across all colours determines the tier discount
@@ -10786,11 +10737,11 @@
         try {
             syncAllBasketLogos(basket);
             localStorage.setItem('quoteBasket', JSON.stringify(basket));
-            console.log('💾 [addToQuote] Saved basket to localStorage, total items:', basket.length);
+            debugLog('💾 [addToQuote] Saved basket to localStorage, total items:', basket.length);
             if (isFromBasket) {
                 const basketIdx = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
                 if (!isNaN(basketIdx) && basketIdx >= 0 && basketIdx < basket.length) {
-                    console.log('💾 [addToQuote] Item at basketIdx', basketIdx, ':', {
+                    debugLog('💾 [addToQuote] Item at basketIdx', basketIdx, ':', {
                         code: basket[basketIdx].code || basket[basketIdx].productCode,
                         color: basket[basketIdx].color,
                         hasPositions: !!basket[basketIdx].positions,
@@ -10918,10 +10869,10 @@
 
             if (changed) {
                 localStorage.setItem('quoteBasket', JSON.stringify(basket));
-                console.log('✅ Basket logos upgraded to server URLs');
+                debugLog('✅ Basket logos upgraded to server URLs');
             }
         } catch (err) {
-            console.warn('[LogoUpgrade] Background upgrade failed:', err.message);
+            debugWarn('[LogoUpgrade] Background upgrade failed:', err.message);
         }
     }
 

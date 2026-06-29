@@ -7,6 +7,9 @@
 const ShopManager = (function () {
     'use strict';
 
+    const DEBUG = typeof window !== 'undefined' && window.BRANDED_DEBUG === true;
+    const debugLog = (...args) => { if (DEBUG) console.debug(...args); };
+
     // ==========================================================================
     // STATE
     // ==========================================================================
@@ -376,7 +379,7 @@ const ShopManager = (function () {
 
         // Card click - navigate to customize
         card.addEventListener('click', () => {
-            console.log('[ShopManager] Card clicked:', product.code);
+            debugLog('[ShopManager] Card clicked:', product.code);
             sessionStorage.setItem('selectedProduct', product.code);
             sessionStorage.setItem('selectedProductData', JSON.stringify(product));
 
@@ -575,7 +578,7 @@ const ShopManager = (function () {
                 }
             });
 
-            console.log('[ShopManager] Fetching products with params:', apiParams);
+            debugLog('[ShopManager] Fetching products with params:', apiParams);
 
             // Fetch from API
             const result = await BrandedAPI.getProducts({ ...apiParams, signal });
@@ -968,7 +971,7 @@ const ShopManager = (function () {
     }
 
     async function init() {
-        console.log('[ShopManager] Initializing...');
+        debugLog('[ShopManager] Initializing...');
 
         // Get grid element
         productsGrid = document.getElementById('productsGrid');
@@ -1010,7 +1013,7 @@ const ShopManager = (function () {
         // Set up event listeners
         setupEventListeners();
 
-        console.log('[ShopManager] Initialization complete');
+        debugLog('[ShopManager] Initialization complete');
     }
 
     function setupEventListeners() {
@@ -1116,7 +1119,7 @@ const ShopManager = (function () {
 
                 if (filterValue === 'in-stock') {
                     // Handle stock filter - may need special API param
-                    console.log('[ShopManager] In-stock filter:', this.checked);
+                    debugLog('[ShopManager] In-stock filter:', this.checked);
                 } else if (filterValue === 'recycled') {
                     if (this.checked) {
                         setFilter('accreditations', ['recycled', 'organic']);
@@ -1179,12 +1182,15 @@ const ShopManager = (function () {
     };
 })();
 
-// Auto-initialize when DOM is ready
-if (document.readyState === 'loading') {
+// Auto-initialize when DOM is ready. shop.html owns its inline mobile renderer,
+// so this shared manager stays available for helpers without making a second
+// products API request on that page.
+const shouldAutoInitShopManager = !(document.body && document.body.dataset.shopRenderer === 'inline');
+if (shouldAutoInitShopManager && document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         ShopManager.init();
     });
-} else {
+} else if (shouldAutoInitShopManager) {
     // DOM already ready
     setTimeout(() => ShopManager.init(), 0);
 }

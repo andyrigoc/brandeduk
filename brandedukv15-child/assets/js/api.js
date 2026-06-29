@@ -16,6 +16,9 @@ const BrandedAPI = (function () {
         : 'https://api.brandeduk.com';
     const DEFAULT_LIMIT = 24;
     const MAX_LIMIT = 200;
+    const DEBUG = typeof window !== 'undefined' && window.BRANDED_DEBUG === true;
+    const debugLog = (...args) => { if (DEBUG) console.debug(...args); };
+    const debugWarn = (...args) => { if (DEBUG) console.warn(...args); };
 
     // Cache for filter options (loaded once)
     let filterOptionsCache = null;
@@ -76,7 +79,7 @@ const BrandedAPI = (function () {
         const queryString = buildQueryString(params);
         const url = `${BASE_URL}${endpoint}${queryString ? '?' + queryString : ''}`;
 
-        console.log('🌐 [BrandedAPI] Making API Request:', {
+        debugLog('[BrandedAPI] Making API Request:', {
             method: 'GET',
             endpoint: endpoint,
             fullUrl: url,
@@ -87,7 +90,7 @@ const BrandedAPI = (function () {
         try {
             const response = await fetch(url, fetchOptions);
 
-            console.log('📡 [BrandedAPI] Response received:', {
+            debugLog('[BrandedAPI] Response received:', {
                 status: response.status,
                 statusText: response.statusText,
                 ok: response.ok,
@@ -99,7 +102,7 @@ const BrandedAPI = (function () {
             }
 
             const data = await response.json();
-            console.log('✅ [BrandedAPI] Response data:', {
+            debugLog('[BrandedAPI] Response data:', {
                 endpoint,
                 total: data.total || data.items?.length || 'N/A',
                 itemsCount: data.items?.length || 0,
@@ -425,11 +428,11 @@ const BrandedAPI = (function () {
             }
         });
 
-        console.log('🔍 [BrandedAPI] Fetching filter counts from /api/products with params:', params);
+        debugLog('[BrandedAPI] Fetching filter counts from /api/products with params:', params);
 
         const response = await apiRequest('/api/products', params);
 
-        console.log('📊 [BrandedAPI] Filter counts response:', {
+        debugLog('[BrandedAPI] Filter counts response:', {
             hasFilters: !!response.filters,
             hasAggregations: !!response.aggregations,
             responseKeys: Object.keys(response)
@@ -707,9 +710,9 @@ const BrandedAPI = (function () {
         const url = `${BASE_URL}/api/quotes`;
 
         // Log the current origin for CORS debugging
-        console.log('🌐 [BrandedAPI] Current origin:', window.location.origin, 'Target URL:', url);
+        debugLog('🌐 [BrandedAPI] Current origin:', window.location.origin, 'Target URL:', url);
 
-        console.log('📧 [BrandedAPI] Submitting quote:', {
+        debugLog('📧 [BrandedAPI] Submitting quote:', {
             endpoint: '/api/quotes',
             fullUrl: url,
             customer: quoteData.customer?.fullName || 'N/A',
@@ -721,7 +724,7 @@ const BrandedAPI = (function () {
         // DEBUG: Log logo files details
         if (quoteData.logoFiles) {
             Object.entries(quoteData.logoFiles).forEach(([position, file]) => {
-                console.log(`🖼️ [BrandedAPI] Logo file for "${position}":`, {
+                debugLog(`🖼️ [BrandedAPI] Logo file for "${position}":`, {
                     isFile: file instanceof File,
                     isBlob: file instanceof Blob,
                     name: file?.name,
@@ -753,11 +756,11 @@ const BrandedAPI = (function () {
 
                 const quoteDataJson = JSON.stringify(dataWithoutFiles);
                 const quoteDataSize = new Blob([quoteDataJson]).size;
-                console.log(`📋 [BrandedAPI] quoteData JSON size: ${(quoteDataSize / 1024).toFixed(2)}KB`);
+                debugLog(`📋 [BrandedAPI] quoteData JSON size: ${(quoteDataSize / 1024).toFixed(2)}KB`);
 
                 // Warn if quoteData is unusually large (might indicate logo data is included)
                 if (quoteDataSize > 100 * 1024) { // >100KB
-                    console.warn(`⚠️ [BrandedAPI] quoteData JSON is large (${(quoteDataSize / 1024).toFixed(2)}KB). Checking for logo data...`);
+                    debugWarn(`⚠️ [BrandedAPI] quoteData JSON is large (${(quoteDataSize / 1024).toFixed(2)}KB). Checking for logo data...`);
                     if (quoteDataJson.includes('data:image')) {
                         console.error('❌ [BrandedAPI] ERROR: quoteData JSON contains base64 image data! This should not happen.');
                     }
@@ -766,7 +769,7 @@ const BrandedAPI = (function () {
                 formData.append('quoteData', quoteDataJson);
 
                 // Add logo files with position names (no compression - try original files first)
-                console.log(`🔍 [BrandedAPI] Processing ${Object.keys(logoFiles).length} logo files for FormData`);
+                debugLog(`🔍 [BrandedAPI] Processing ${Object.keys(logoFiles).length} logo files for FormData`);
 
                 // Track total file size and individual file sizes for error detection
                 let totalFileSize = 0;
@@ -784,12 +787,12 @@ const BrandedAPI = (function () {
                         // Compress if file is >1.5MB (likely to hit 2MB proxy limit with multipart overhead)
                         if (file.size > 1.5 * 1024 * 1024) {
                             try {
-                                console.log(`🗜️ [BrandedAPI] File "${formDataKey}" is ${(file.size / 1024 / 1024).toFixed(2)}MB - compressing to avoid proxy limit...`);
+                                debugLog(`🗜️ [BrandedAPI] File "${formDataKey}" is ${(file.size / 1024 / 1024).toFixed(2)}MB - compressing to avoid proxy limit...`);
                                 fileToUpload = await compressImageFile(file, 0.7, 1200);
                                 const reductionPercent = ((1 - fileToUpload.size / file.size) * 100).toFixed(1);
-                                console.log(`✅ [BrandedAPI] Compressed to ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB (${reductionPercent}% reduction)`);
+                                debugLog(`✅ [BrandedAPI] Compressed to ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB (${reductionPercent}% reduction)`);
                             } catch (compressErr) {
-                                console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
+                                debugWarn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = file;
                             }
                         }
@@ -801,7 +804,7 @@ const BrandedAPI = (function () {
                         );
                         fileSizes[position] = fileToUpload.size;
                         totalFileSize += fileToUpload.size;
-                        console.log(`📎 [BrandedAPI] Added file to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
+                        debugLog(`📎 [BrandedAPI] Added file to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
                     } else if (typeof file === 'string' && file.startsWith('data:')) {
                         // Convert base64 data URL to Blob
                         const blob = base64ToBlob(file, `logo-${positionSlug}.png`);
@@ -809,12 +812,12 @@ const BrandedAPI = (function () {
                         // Compress if blob is >1.5MB
                         if (blob.size > 1.5 * 1024 * 1024) {
                             try {
-                                console.log(`🗜️ [BrandedAPI] Base64 image "${formDataKey}" is ${(blob.size / 1024 / 1024).toFixed(2)}MB - compressing...`);
+                                debugLog(`🗜️ [BrandedAPI] Base64 image "${formDataKey}" is ${(blob.size / 1024 / 1024).toFixed(2)}MB - compressing...`);
                                 fileToUpload = await compressImageFile(blob, 0.7, 1200);
                                 const reductionPercent = ((1 - fileToUpload.size / blob.size) * 100).toFixed(1);
-                                console.log(`✅ [BrandedAPI] Compressed to ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB (${reductionPercent}% reduction)`);
+                                debugLog(`✅ [BrandedAPI] Compressed to ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB (${reductionPercent}% reduction)`);
                             } catch (compressErr) {
-                                console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
+                                debugWarn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = blob;
                             }
                         } else {
@@ -828,24 +831,12 @@ const BrandedAPI = (function () {
                         );
                         fileSizes[position] = fileToUpload.size;
                         totalFileSize += fileToUpload.size;
-                        console.log(`📎 [BrandedAPI] Converted base64 to Blob and added to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
+                        debugLog(`📎 [BrandedAPI] Converted base64 to Blob and added to FormData: "${formDataKey}" (${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB)`);
                     }
                 }
 
-                console.log(`📊 [BrandedAPI] Total file size: ${(totalFileSize / 1024 / 1024).toFixed(2)}MB`);
+                debugLog(`📊 [BrandedAPI] Total file size: ${(totalFileSize / 1024 / 1024).toFixed(2)}MB`);
 
-                // #region agent log
-                const formDataEntries = [];
-                for (const [key, value] of formData.entries()) {
-                    formDataEntries.push({
-                        key: key,
-                        isFile: value instanceof File,
-                        fileName: value instanceof File ? value.name : undefined,
-                        fileSize: value instanceof File ? value.size : undefined
-                    });
-                }
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:BEFORE_FETCH_FORMDATA', message: 'About to call fetch with FormData', data: { url: url, formDataEntries: formDataEntries }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                // #endregion
 
                 // Try request first without compression
                 let response;
@@ -853,27 +844,18 @@ const BrandedAPI = (function () {
                 const fetchStartTime = Date.now(); // Move outside try block so it's accessible in catch
 
                 try {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:ABOUT_TO_FETCH', message: 'About to execute fetch call (original files, no compression)', data: { url: url, method: 'POST', hasFormData: true, formDataSize: formData instanceof FormData ? 'FormData object' : 'not FormData' }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H' }) }).catch(() => { });
-                    // #endregion
 
                     // Log exact FormData contents for debugging
-                    console.log('📤 [BrandedAPI] FormData contents:');
+                    debugLog('📤 [BrandedAPI] FormData contents:');
                     for (const [key, value] of formData.entries()) {
                         if (value instanceof File || value instanceof Blob) {
-                            console.log(`  - ${key}: File (${(value.size / 1024 / 1024).toFixed(2)}MB, ${value.type || 'no type'})`);
+                            debugLog(`  - ${key}: File (${(value.size / 1024 / 1024).toFixed(2)}MB, ${value.type || 'no type'})`);
                         } else {
                             const strValue = String(value);
-                            console.log(`  - ${key}: ${strValue.length > 200 ? strValue.substring(0, 200) + '...' : strValue}`);
+                            debugLog(`  - ${key}: ${strValue.length > 200 ? strValue.substring(0, 200) + '...' : strValue}`);
                         }
                     }
 
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:FETCH_CONFIG', message: 'Fetch configuration', data: { url: url, method: 'POST', mode: 'cors', credentials: 'omit', hasFormData: true, totalFileSizeMB: (totalFileSize / 1024 / 1024).toFixed(2), fileCount: Object.keys(logoFiles).length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'I' }) }).catch(() => { });
-                    // #endregion
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:FETCH_START', message: 'Starting fetch call', data: { url: url, method: 'POST', hasFormData: true, totalFileSizeMB: (totalFileSize / 1024 / 1024).toFixed(2), timestamp: fetchStartTime }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                    // #endregion
 
                     response = await fetch(url, {
                         method: 'POST',
@@ -885,16 +867,10 @@ const BrandedAPI = (function () {
                     const fetchEndTime = Date.now();
                     const fetchDuration = fetchEndTime - fetchStartTime;
 
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:FETCH_SUCCESS', message: 'Fetch call succeeded (got response)', data: { status: response.status, statusText: response.statusText, ok: response.ok, durationMs: fetchDuration, headers: Object.fromEntries(response.headers.entries()) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                    // #endregion
 
                     // Check if we got a 413 error (Request Entity Too Large)
                     if (response.status === 413) {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:413_DETECTED', message: '413 error detected in response status', data: { status: response.status, statusText: response.statusText }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                        // #endregion
-                        console.warn('⚠️ [BrandedAPI] Received 413 error - file too large. Retrying with compression...');
+                        debugWarn('⚠️ [BrandedAPI] Received 413 error - file too large. Retrying with compression...');
                         needsCompression = true;
                     }
                 } catch (fetchErr) {
@@ -916,9 +892,6 @@ const BrandedAPI = (function () {
                     const fetchDuration = Date.now() - fetchStartTime;
                     const isQuickFailure = fetchDuration < 100; // Less than 100ms suggests preflight failure
 
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:FETCH_ERROR_DETAILS', message: 'Fetch error occurred', data: { errorMessage: fetchErr.message, errorName: fetchErr.name, fetchDurationMs: fetchDuration, isQuickFailure: isQuickFailure, errorStack: fetchErr.stack?.substring(0, 500) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                    // #endregion
 
                     // Check if error message indicates 413 (browser might show it in error message or stack)
                     const errorStr = JSON.stringify(errorDetails) + ' ' + (fetchErr.message || '') + ' ' + (fetchErr.stack || '');
@@ -932,22 +905,16 @@ const BrandedAPI = (function () {
                     const estimatedRequestSize = (totalFileSize + quoteDataSize) * 1.1;
 
                     if (is413Error || (isLargeFile && fetchErr.message === 'Failed to fetch')) {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:413_DETECTED_OR_LARGE_FILE', message: '413 error detected or large file with Failed to fetch', data: { errorMessage: fetchErr.message, errorName: fetchErr.name, is413InError: is413Error, isLargeFile: isLargeFile, totalFileSizeMB: (totalFileSize / 1024 / 1024).toFixed(2), quoteDataSizeKB: (quoteDataSize / 1024).toFixed(2), estimatedRequestSizeMB: (estimatedRequestSize / 1024 / 1024).toFixed(2), fileSizes: fileSizes, errorDetails: errorDetails }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                        // #endregion
-                        console.warn(`⚠️ [BrandedAPI] ${is413Error ? '413 error' : 'Large file'} detected. Estimated request size: ${(estimatedRequestSize / 1024 / 1024).toFixed(2)}MB. Retrying with compression...`);
+                        debugWarn(`⚠️ [BrandedAPI] ${is413Error ? '413 error' : 'Large file'} detected. Estimated request size: ${(estimatedRequestSize / 1024 / 1024).toFixed(2)}MB. Retrying with compression...`);
                         needsCompression = true;
                     } else {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:FETCH_FORMDATA_FAILED', message: 'FormData fetch FAILED (non-413 error)', data: { errorMessage: fetchErr.message, errorName: fetchErr.name, errorStack: fetchErr.stack, url: url, formDataType: typeof formData, isFormData: formData instanceof FormData, totalFileSizeMB: (totalFileSize / 1024 / 1024).toFixed(2), quoteDataSizeKB: (quoteDataSize / 1024).toFixed(2), estimatedRequestSizeMB: (estimatedRequestSize / 1024 / 1024).toFixed(2), errorDetails: errorDetails }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                        // #endregion
                         throw fetchErr;
                     }
                 }
 
                 // If we got 413, retry with compression
                 if (needsCompression) {
-                    console.log('🗜️ [BrandedAPI] Retrying with compressed files...');
+                    debugLog('🗜️ [BrandedAPI] Retrying with compressed files...');
                     const compressedFormData = new FormData();
                     compressedFormData.append('quoteData', JSON.stringify(dataWithoutFiles));
 
@@ -960,18 +927,15 @@ const BrandedAPI = (function () {
 
                         if (file instanceof File || file instanceof Blob) {
                             try {
-                                console.log(`🗜️ [BrandedAPI] Compressing file "${formDataKey}" (${(file.size / 1024).toFixed(2)}KB)`);
+                                debugLog(`🗜️ [BrandedAPI] Compressing file "${formDataKey}" (${(file.size / 1024).toFixed(2)}KB)`);
                                 const originalSize = file.size;
                                 // Use aggressive compression: 0.7 quality, 1200px max width, convert to JPEG
                                 fileToUpload = await compressImageFile(file, 0.7, 1200);
                                 const compressedSize = fileToUpload.size;
                                 const reductionPercent = ((1 - compressedSize / originalSize) * 100).toFixed(1);
-                                console.log(`✅ [BrandedAPI] Compressed to ${(compressedSize / 1024).toFixed(2)}KB (${reductionPercent}% reduction)`);
-                                // #region agent log
-                                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:COMPRESSION_RESULT', message: 'File compression result', data: { position: position, originalSizeKB: (originalSize / 1024).toFixed(2), compressedSizeKB: (compressedSize / 1024).toFixed(2), reductionPercent: reductionPercent }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H4' }) }).catch(() => { });
-                                // #endregion
+                                debugLog(`✅ [BrandedAPI] Compressed to ${(compressedSize / 1024).toFixed(2)}KB (${reductionPercent}% reduction)`);
                             } catch (compressErr) {
-                                console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
+                                debugWarn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = file;
                             }
                             compressedFormData.append(
@@ -982,18 +946,15 @@ const BrandedAPI = (function () {
                         } else if (typeof file === 'string' && file.startsWith('data:')) {
                             const blob = base64ToBlob(file, `logo-${positionSlug}.png`);
                             try {
-                                console.log(`🗜️ [BrandedAPI] Compressing base64 image "${formDataKey}" (${(blob.size / 1024).toFixed(2)}KB)`);
+                                debugLog(`🗜️ [BrandedAPI] Compressing base64 image "${formDataKey}" (${(blob.size / 1024).toFixed(2)}KB)`);
                                 const originalSize = blob.size;
                                 // Use aggressive compression: 0.7 quality, 1200px max width, convert to JPEG
                                 fileToUpload = await compressImageFile(blob, 0.7, 1200);
                                 const compressedSize = fileToUpload.size;
                                 const reductionPercent = ((1 - compressedSize / originalSize) * 100).toFixed(1);
-                                console.log(`✅ [BrandedAPI] Compressed to ${(compressedSize / 1024).toFixed(2)}KB (${reductionPercent}% reduction)`);
-                                // #region agent log
-                                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:COMPRESSION_RESULT', message: 'Base64 file compression result', data: { position: position, originalSizeKB: (originalSize / 1024).toFixed(2), compressedSizeKB: (compressedSize / 1024).toFixed(2), reductionPercent: reductionPercent }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H4' }) }).catch(() => { });
-                                // #endregion
+                                debugLog(`✅ [BrandedAPI] Compressed to ${(compressedSize / 1024).toFixed(2)}KB (${reductionPercent}% reduction)`);
                             } catch (compressErr) {
-                                console.warn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
+                                debugWarn(`⚠️ [BrandedAPI] Compression failed, using original:`, compressErr);
                                 fileToUpload = blob;
                             }
                             compressedFormData.append(
@@ -1013,16 +974,10 @@ const BrandedAPI = (function () {
                     }
 
                     // Retry with compressed files
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:RETRY_WITH_COMPRESSION', message: 'Retrying fetch with compressed files', data: { url: url, compressedTotalSizeMB: (compressedTotalSize / 1024 / 1024).toFixed(2), originalSizeMB: (totalFileSize / 1024 / 1024).toFixed(2) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                    // #endregion
 
-                    console.log(`🔄 [BrandedAPI] Retrying with compressed files. Original: ${(totalFileSize / 1024 / 1024).toFixed(2)}MB, Compressed: ${(compressedTotalSize / 1024 / 1024).toFixed(2)}MB`);
+                    debugLog(`🔄 [BrandedAPI] Retrying with compressed files. Original: ${(totalFileSize / 1024 / 1024).toFixed(2)}MB, Compressed: ${(compressedTotalSize / 1024 / 1024).toFixed(2)}MB`);
 
                     const retryStartTime = Date.now();
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:RETRY_FETCH_START', message: 'Starting compressed retry fetch', data: { url: url, compressedSizeMB: (compressedTotalSize / 1024 / 1024).toFixed(2), timestamp: retryStartTime }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                    // #endregion
 
                     try {
                         response = await fetch(url, {
@@ -1034,25 +989,16 @@ const BrandedAPI = (function () {
                         const retryEndTime = Date.now();
                         const retryDuration = retryEndTime - retryStartTime;
 
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:RETRY_RESPONSE', message: 'Compressed retry response received', data: { status: response.status, ok: response.ok, statusText: response.statusText, durationMs: retryDuration, headers: Object.fromEntries(response.headers.entries()) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                        // #endregion
                     } catch (retryErr) {
                         const retryEndTime = Date.now();
                         const retryDuration = retryEndTime - retryStartTime;
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:RETRY_FAILED', message: 'Compressed retry also FAILED', data: { errorMessage: retryErr.message, errorName: retryErr.name, compressedSizeMB: (compressedTotalSize / 1024 / 1024).toFixed(2), durationMs: retryDuration, errorStack: retryErr.stack }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H1' }) }).catch(() => { });
-                        // #endregion
                         console.error('❌ [BrandedAPI] Compressed retry also failed:', retryErr);
                         throw retryErr;
                     }
                 }
 
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:RESPONSE_FORMDATA', message: 'FormData fetch response received', data: { status: response.status, ok: response.ok, statusText: response.statusText }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'F' }) }).catch(() => { });
-                // #endregion
 
-                console.log('📡 [BrandedAPI] Quote response (with files):', {
+                debugLog('📡 [BrandedAPI] Quote response (with files):', {
                     status: response.status,
                     statusText: response.statusText,
                     ok: response.ok,
@@ -1065,10 +1011,7 @@ const BrandedAPI = (function () {
                 }
 
                 const data = await response.json();
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:SUCCESS_FORMDATA', message: 'Quote submitted successfully (FormData path)', data: { success: data.success, message: data.message }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-                // #endregion
-                console.log('✅ [BrandedAPI] Quote submitted successfully (with files):', {
+                debugLog('✅ [BrandedAPI] Quote submitted successfully (with files):', {
                     success: data.success,
                     message: data.message,
                     timestamp: new Date().toISOString()
@@ -1085,7 +1028,7 @@ const BrandedAPI = (function () {
                     body: JSON.stringify(quoteData)
                 });
 
-                console.log('📡 [BrandedAPI] Quote response (JSON):', {
+                debugLog('📡 [BrandedAPI] Quote response (JSON):', {
                     status: response.status,
                     statusText: response.statusText,
                     ok: response.ok,
@@ -1098,10 +1041,7 @@ const BrandedAPI = (function () {
                 }
 
                 const data = await response.json();
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:SUCCESS_JSON', message: 'Quote submitted successfully (JSON path)', data: { success: data.success, message: data.message }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-                // #endregion
-                console.log('✅ [BrandedAPI] Quote submitted successfully (JSON):', {
+                debugLog('✅ [BrandedAPI] Quote submitted successfully (JSON):', {
                     success: data.success,
                     message: data.message,
                     timestamp: new Date().toISOString()
@@ -1110,9 +1050,6 @@ const BrandedAPI = (function () {
                 return data;
             }
         } catch (error) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:submitQuote:ERROR', message: 'submitQuote THREW ERROR', data: { errorMessage: error.message, errorName: error.name, url: url }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-            // #endregion
             console.error('❌ [BrandedAPI] Quote submission error:', {
                 message: error.message,
                 url: url,
@@ -1137,7 +1074,7 @@ const BrandedAPI = (function () {
     async function submitContactForm(contactData) {
         const url = `${BASE_URL}/api/contact`;
 
-        console.log('📧 [BrandedAPI] Submitting contact form:', {
+        debugLog('📧 [BrandedAPI] Submitting contact form:', {
             endpoint: '/api/contact',
             fullUrl: url,
             name: contactData.name || 'N/A',
@@ -1147,11 +1084,8 @@ const BrandedAPI = (function () {
         });
 
         // Log the full payload being sent
-        console.log('📦 [BrandedAPI] Contact form payload:', JSON.stringify(contactData, null, 2));
+        debugLog('📦 [BrandedAPI] Contact form payload:', JSON.stringify(contactData, null, 2));
 
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:760', message: 'BrandedAPI submitContactForm called', data: { url: url, contactData: contactData, jsonPayload: JSON.stringify(contactData) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-        // #endregion
 
         try {
             const response = await fetch(url, {
@@ -1163,11 +1097,8 @@ const BrandedAPI = (function () {
                 body: JSON.stringify(contactData)
             });
 
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:771', message: 'BrandedAPI fetch response received', data: { status: response.status, statusText: response.statusText, ok: response.ok, headers: Object.fromEntries(response.headers.entries()) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
-            // #endregion
 
-            console.log('📡 [BrandedAPI] Contact form response:', {
+            debugLog('📡 [BrandedAPI] Contact form response:', {
                 status: response.status,
                 statusText: response.statusText,
                 ok: response.ok,
@@ -1182,9 +1113,6 @@ const BrandedAPI = (function () {
                     try {
                         const errorData = await response.json();
                         errorDetails = errorData.error || errorData.message || JSON.stringify(errorData);
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:777', message: 'BrandedAPI error response (JSON)', data: { status: response.status, errorData: errorData, errorDetails: errorDetails, contactData: contactData }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
-                        // #endregion
                         console.error('❌ [BrandedAPI] Contact form error response:', errorData);
 
                         // Extract specific validation errors if available
@@ -1195,9 +1123,6 @@ const BrandedAPI = (function () {
                             errorDetails = validationErrors || errorDetails;
                         }
                     } catch (e) {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:784', message: 'BrandedAPI failed to parse error as JSON', data: { error: e.message, status: response.status }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
-                        // #endregion
                         console.error('❌ [BrandedAPI] Failed to parse error as JSON:', e);
                         errorDetails = 'Invalid JSON response';
                     }
@@ -1205,9 +1130,6 @@ const BrandedAPI = (function () {
                     try {
                         const errorText = await response.text();
                         errorDetails = errorText;
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:791', message: 'BrandedAPI error response (text)', data: { status: response.status, errorText: errorText }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'D' }) }).catch(() => { });
-                        // #endregion
                         console.error('❌ [BrandedAPI] Contact form error text:', errorText);
                     } catch (textError) {
                         errorDetails = 'Unknown error';
@@ -1218,10 +1140,7 @@ const BrandedAPI = (function () {
             }
 
             const data = await response.json();
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'api.js:803', message: 'BrandedAPI success response', data: { response: data }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-            // #endregion
-            console.log('✅ [BrandedAPI] Contact form submitted successfully:', {
+            debugLog('✅ [BrandedAPI] Contact form submitted successfully:', {
                 success: data.success,
                 message: data.message,
                 timestamp: new Date().toISOString()
@@ -1282,6 +1201,6 @@ if (typeof module !== 'undefined' && module.exports) {
 // Explicitly expose to window for browser access
 if (typeof window !== 'undefined') {
     window.BrandedAPI = BrandedAPI;
-    console.log('✅ [BrandedAPI] Module loaded successfully. submitQuote available:', typeof BrandedAPI.submitQuote === 'function');
+    if (window.BRANDED_DEBUG === true) { console.debug('[BrandedAPI] Module loaded successfully. submitQuote available:', typeof BrandedAPI.submitQuote === 'function'); }
 }
 

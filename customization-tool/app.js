@@ -725,6 +725,18 @@ async function sampleHexFromImage(url) {
   if (!source) return "";
   if (sampledColourHexCache.has(source)) return sampledColourHexCache.get(source);
 
+  try {
+    const parsedUrl = new URL(source, window.location.href);
+    const isReadableImage = parsedUrl.origin === window.location.origin || ["data:", "blob:"].includes(parsedUrl.protocol);
+    if (!isReadableImage) {
+      sampledColourHexCache.set(source, Promise.resolve(""));
+      return "";
+    }
+  } catch (error) {
+    sampledColourHexCache.set(source, Promise.resolve(""));
+    return "";
+  }
+
   const task = new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -1164,7 +1176,8 @@ const BASE_FONT_OPTIONS = [
   { name: "Arial Black", cssFamily: "'Arial Black', Arial, sans-serif" }
 ];
 
-const CUSTOM_FONT_FILES = [
+const CUSTOM_FONT_FILES = [];
+const OPTIONAL_CUSTOM_FONT_FILES = [
   { name: "Bebas Neue", file: "BebasNeue-Regular.ttf", format: "truetype" },
   { name: "Montserrat", file: "Montserrat-Regular.ttf", format: "truetype" },
   { name: "Montserrat Black", file: "Montserrat-Black.ttf", format: "truetype" },
@@ -1185,6 +1198,7 @@ let FONT_OPTIONS = [...BASE_FONT_OPTIONS];
 
 async function loadCustomFontsFromFolder() {
   if (!("FontFace" in window)) return;
+  if (!Array.isArray(CUSTOM_FONT_FILES) || CUSTOM_FONT_FILES.length === 0) return;
 
   const loadedFonts = await Promise.all(CUSTOM_FONT_FILES.map(async ({ name, file, format }) => {
     try {
@@ -1678,34 +1692,119 @@ function readQuoteBasket() {
 }
 
 function writeQuoteBasket(basket) {
-  try {
-    localStorage.setItem("quoteBasket", JSON.stringify(basket));
-    return true;
-  } catch (error) {
-    // Most likely QuotaExceededError: base64 logos make the basket too large.
-    // Prune duplicate logo data across the basket and retry once.
+  const attempts = [basket, pruneBasketLogoDuplicates(basket), compactBasketForStorage(basket)];
+  let lastError = null;
+
+  for (const attempt of attempts) {
     try {
-      const pruned = pruneBasketLogoDuplicates(basket);
-      localStorage.setItem("quoteBasket", JSON.stringify(pruned));
+      localStorage.setItem("quoteBasket", JSON.stringify(attempt));
       return true;
-    } catch (retryError) {
-      console.error("Unable to save basket (storage full)", retryError);
-      return false;
+    } catch (error) {
+      lastError = error;
     }
   }
+
+  console.error("Unable to save basket (storage full)", lastError);
+  return false;
+}
+
+function getLogoSource(logo) {
+  return logo?.logo || logo?.url || logo?.dataUrl || logo?.image || logo?.fileData || logo?.previewData || logo?.logoData || "";
 }
 
 // Remove duplicate logo entries (same area + same image data) within each item
 // so repeated confirms don't multiply heavy base64 strings.
 function dedupeLogos(logos) {
-  if (!Array.isArray(logos)) return logos;
+  if (!Array.isArray(logos)) return [];
   const seen = new Set();
   return logos.filter((logo) => {
-    const key = `${logo?.area || logo?.position || ""}::${logo?.dataUrl || logo?.url || logo?.logo || logo?.image || ""}`;
+    const key = `${logo?.area || logo?.position || ""}::${getLogoSource(logo)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+}
+
+function compactLogoForStorage(logo) {
+  if (!logo || typeof logo !== "object") return logo;
+  const source = getLogoSource(logo);
+  const compactLogo = {
+    type: logo.type || "logo",
+    method: normalizeDecorationMethod(logo.method),
+    area: logo.area || logo.position || "",
+    position: logo.position || logo.area || "",
+    positionLabel: logo.positionLabel || "",
+    logo: source,
+    unitPrice: parseFloat(logo.unitPrice || 0) || 0,
+    qualityPct: parseInt(logo.qualityPct || 0, 10) || 0
+  };
+
+  Object.keys(compactLogo).forEach((key) => {
+    if (compactLogo[key] === "" || compactLogo[key] === null || compactLogo[key] === undefined) delete compactLogo[key];
+  });
+  return compactLogo;
+}
+
+function compactBasketItemForStorage(item) {
+  if (!item || typeof item !== "object") return item;
+  const compactItem = { ...item };
+  const logoCandidates = [];
+
+  if (Array.isArray(compactItem.logos)) {
+    logoCandidates.push(...compactItem.logos);
+  }
+
+  if (Array.isArray(compactItem.positions)) {
+    compactItem.positions.forEach((position) => {
+      if (position && position.logo) logoCandidates.push(position);
+    });
+  }
+
+  if (compactItem.positionDesigns && typeof compactItem.positionDesigns === "object") {
+    Object.entries(compactItem.positionDesigns).forEach(([position, design]) => {
+      if (!design || !design.logo) return;
+      logoCandidates.push({ ...design, position: design.position || position, area: design.area || position });
+    });
+  }
+
+  const compactLogos = dedupeLogos(logoCandidates).map(compactLogoForStorage).filter((logo) => !!(logo && logo.logo));
+
+  if (compactLogos.length > 0) {
+    compactItem.logos = compactLogos;
+  } else {
+    compactItem.logos = [];
+  }
+
+  delete compactItem.positions;
+  delete compactItem.positionDesigns;
+  delete compactItem.logoData;
+  delete compactItem.fileData;
+  delete compactItem.previewData;
+  delete compactItem.previewDataUrl;
+  delete compactItem.mockupDataUrl;
+  delete compactItem.canvasPreview;
+
+  if (compactItem.designPreview && typeof compactItem.designPreview === "object") {
+    const preview = compactItem.designPreview;
+    compactItem.designPreview = {
+      type: preview.type || "garment-logo-preview",
+      version: preview.version || 1,
+      area: preview.area || "front",
+      garmentImage: preview.garmentImage || "",
+      garmentBox: cleanPctBox(preview.garmentBox),
+      logoImage: preview.logoImage || "",
+      logoBox: cleanPctBox(preview.logoBox),
+      logoRotation: parseFloat(preview.logoRotation || 0) || 0,
+      garmentHex: normalizeHex(preview.garmentHex || "") || "",
+      colorName: preview.colorName || "",
+      wrapAspect: Math.max(0.6, Math.min(1.8, parseFloat(preview.wrapAspect || 1.15) || 1.15))
+    };
+    if (!compactItem.designPreview.garmentImage || !compactItem.designPreview.logoImage) {
+      delete compactItem.designPreview;
+    }
+  }
+
+  return compactItem;
 }
 
 function pruneBasketLogoDuplicates(basket) {
@@ -1715,6 +1814,74 @@ function pruneBasketLogoDuplicates(basket) {
   });
 }
 
+function compactBasketForStorage(basket) {
+  return (Array.isArray(basket) ? basket : []).map(compactBasketItemForStorage);
+}
+
+function rectToPct(rect, baseRect) {
+  const baseWidth = Math.max(1, baseRect?.width || 1);
+  const baseHeight = Math.max(1, baseRect?.height || 1);
+  return {
+    left: ((rect.left - baseRect.left) / baseWidth) * 100,
+    top: ((rect.top - baseRect.top) / baseHeight) * 100,
+    width: (rect.width / baseWidth) * 100,
+    height: (rect.height / baseHeight) * 100
+  };
+}
+
+function clampPct(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(-100, Math.min(200, n));
+}
+
+function cleanPctBox(box) {
+  return {
+    left: clampPct(box?.left),
+    top: clampPct(box?.top),
+    width: clampPct(box?.width),
+    height: clampPct(box?.height)
+  };
+}
+
+function getLayerRotationDegrees(layer) {
+  if (!layer) return 0;
+  const rotateStyle = layer.style.rotate || "";
+  const rotateMatch = rotateStyle.match(/-?[0-9.]+/);
+  if (rotateMatch) return parseFloat(rotateMatch[0]) || 0;
+
+  const transformStyle = layer.style.transform || "";
+  const transformMatch = transformStyle.match(/rotate\((-?[0-9.]+)deg\)/i);
+  return transformMatch ? (parseFloat(transformMatch[1]) || 0) : 0;
+}
+
+function buildDesignPreviewFromState() {
+  const wrap = document.querySelector(".polo-colour-wrap");
+  const logoFrame = getLogoFrameEl();
+  const logoSource = uploadedLogo?.currentSrc || uploadedLogo?.src || state.uploadedLogo || "";
+  const garmentSource = productShape?.currentSrc || productShape?.src || state.selectedColorImage || "";
+
+  if (!wrap || !productShape || !designLayer || !logoSource || !garmentSource) return null;
+
+  const wrapRect = wrap.getBoundingClientRect();
+  const garmentRect = productShape.getBoundingClientRect();
+  const logoRect = (logoFrame || designLayer).getBoundingClientRect();
+  if (wrapRect.width < 10 || wrapRect.height < 10 || logoRect.width < 1 || logoRect.height < 1) return null;
+
+  return {
+    type: "garment-logo-preview",
+    version: 1,
+    area: state.selectedArea || "front",
+    garmentImage: garmentSource,
+    garmentBox: cleanPctBox(rectToPct(garmentRect, wrapRect)),
+    logoImage: logoSource,
+    logoBox: cleanPctBox(rectToPct(logoRect, wrapRect)),
+    logoRotation: getLayerRotationDegrees(designLayer),
+    garmentHex: normalizeHex(state.colourHex || "") || "",
+    colorName: state.colourName || "",
+    wrapAspect: wrapRect.width > 0 ? Number((wrapRect.height / wrapRect.width).toFixed(4)) : 1.15
+  };
+}
 function getItemQty(item) {
   if (!item || typeof item !== "object") return 0;
   if (Number.isFinite(item.qty)) return item.qty;
@@ -1791,9 +1958,6 @@ function buildBasketItemFromState() {
     area: state.selectedArea,
     position: state.selectedArea,
     logo: state.uploadedLogo,
-    dataUrl: state.uploadedLogo,
-    url: state.uploadedLogo,
-    image: state.uploadedLogo,
     unitPrice: logoUnitPrice,
     qualityPct: logoQualityPct
   }] : [];
@@ -1809,13 +1973,12 @@ function buildBasketItemFromState() {
       position: state.selectedArea,
       method: logoMethod,
       logo: state.uploadedLogo,
-      dataUrl: state.uploadedLogo,
-      url: state.uploadedLogo,
       unitPrice: logoUnitPrice
     }
   } : {};
 
   const basketColorImage = state.selectedColorImage || productShape.currentSrc || productShape.src || "";
+  const designPreview = buildDesignPreviewFromState();
 
   return {
     id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -1835,7 +1998,8 @@ function buildBasketItemFromState() {
     unitPrice: parseFloat(unitPrice.toFixed(2)),
     positions: legacyPositions,
     positionDesigns: legacyPositionDesigns,
-    logos
+    logos,
+    designPreview
   };
 }
 
@@ -1861,7 +2025,7 @@ function upsertBasketItemFromState() {
   const isBasketContext = isBasketLogoFlow || hasSessionBasketIndex || sessionStorage.getItem("returnAfterCustomize") === "basket";
 
   const basket = readQuoteBasket();
-  const nextItem = buildBasketItemFromState();
+  const nextItem = compactBasketItemForStorage(buildBasketItemFromState());
 
   const inferredIndex = hasSessionBasketIndex && basket[sessionBasketIndex] ? sessionBasketIndex : -1;
   const fallbackIndex = basket.findIndex((item) => {
@@ -1892,7 +2056,7 @@ function upsertBasketItemFromState() {
       ? { ...(prevItem.positionDesigns || {}), ...(nextItem.positionDesigns || {}) }
       : nextItem.positionDesigns;
 
-    basket[matchIndex] = {
+    basket[matchIndex] = compactBasketItemForStorage({
       ...prevItem,
       ...nextItem,
       positions: mergedPositions,
@@ -1907,9 +2071,9 @@ function upsertBasketItemFromState() {
       totalQty: isBasketContext ? (prevItem.totalQty || nextItem.totalQty) : nextItem.totalQty,
       unitPrice: isBasketContext ? (prevItem.unitPrice || nextItem.unitPrice) : nextItem.unitPrice,
       id: previousId
-    };
+    });
   } else {
-    basket.push(nextItem);
+    basket.push(compactBasketItemForStorage(nextItem));
   }
 
   const saved = writeQuoteBasket(basket);

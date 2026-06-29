@@ -6,6 +6,13 @@
 (function () {
     'use strict';
 
+    var DEBUG = typeof window !== 'undefined' && window.BRANDED_DEBUG === true;
+    function debugLog() {
+        if (DEBUG && window.console && console.debug) {
+            console.debug.apply(console, arguments);
+        }
+    }
+
     /* ── Category slug mapping (pretty API name → shop URL slug) ── */
     var CATEGORY_SLUG_MAP = {
         'hoodies': 'hoodies',
@@ -264,7 +271,7 @@
         if (!nav) return; // no breadcrumb container on this page
 
         var page = detectPage();
-        console.log('[breadcrumbs] page=' + page, 'readyState=' + document.readyState);
+        debugLog('[breadcrumbs] page=' + page, 'readyState=' + document.readyState);
         if (page === 'home') {
             nav.style.display = 'none';
             return;
@@ -301,7 +308,7 @@
         });
         trailEl.innerHTML = html;
         nav.style.display = '';  // ensure visible
-        console.log('[breadcrumbs] rendered:', trail.map(function(c){ return c.label; }).join(' › '));
+        debugLog('[breadcrumbs] rendered:', trail.map(function(c){ return c.label; }).join(' > '));
     }
 
     /* ── Public API for pages that need to update breadcrumbs ── */

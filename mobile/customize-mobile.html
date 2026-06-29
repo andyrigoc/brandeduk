@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Customize Product - BrandedUK</title>
     <link rel="stylesheet" href="css/mobile.css?v=20260530">
-    <link rel="stylesheet" href="css/rainbow-atc-bar.css?v=20260628b">
+    <link rel="stylesheet" href="css/rainbow-atc-bar.css?v=20260629a">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260407a">
     <link rel="stylesheet" href="css/social-buttons.css?v=20260116b">
     <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260407a">
@@ -1025,10 +1025,10 @@
     <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
     <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
-    <script src="js/customize.js?v=20260610n"></script>
+    <script src="js/customize.js?v=20260629a"></script>
     <script src="js/marker-editor.js?v=20260531a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
-    <script src="../brandedukv15-child/assets/js/api.js?v=20260530"></script>
+    <script src="../brandedukv15-child/assets/js/api.js?v=20260629a"></script>
     <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260526d"></script>
     <script>
     // Initialize Related & Alternative Recommendations on Customize page
@@ -1110,6 +1110,9 @@
     <script>
     (function() {
         'use strict';
+        const INLINE_DEBUG = window.BRANDED_DEBUG === true;
+        const inlineDebug = (...args) => { if (INLINE_DEBUG) console.debug(...args); };
+        const inlineWarn = (...args) => { if (INLINE_DEBUG) console.warn(...args); };
 
         function isZipProduct(productData) {
             if (!productData) return false;
@@ -1296,7 +1299,7 @@
         // Build positions dynamically from productType
         function buildPositionsFromProductType(productType) {
             if (!productType) {
-                console.warn('⚠️ No productType provided, using default');
+                inlineWarn('No productType provided, using default');
                 return null;
             }
             
@@ -1304,13 +1307,13 @@
             const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
             const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
             if (!folderPath) {
-                console.warn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
+                inlineWarn(`No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
                 return null;
             }
             
             const imageFiles = FOLDER_IMAGE_MAP[folderPath];
             if (!imageFiles || imageFiles.length === 0) {
-                console.warn(`⚠️ No images found for folder: ${folderPath}, using default`);
+                inlineWarn(`No images found for folder: ${folderPath}, using default`);
                 return null;
             }
             
@@ -1335,12 +1338,12 @@
                         cssClass: positionInfo.cssClass
                     };
                 } else {
-                    console.warn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
+                    inlineWarn(`No position mapping for filename: ${filename} in folder ${folderPath}`);
                 }
             });
             
             if (Object.keys(positions).length === 0) {
-                console.warn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
+                inlineWarn(`No valid positions found for productType: "${productTypeStr}", using default`);
                 return null;
             }
             
@@ -1764,7 +1767,7 @@
             if (!productType || String(productType).trim() === '') {
                 productType = inferProductTypeFromName(productData.name);
                 if (productType) {
-                    console.log('🔍 Inferred productType from name:', productType);
+                    inlineDebug('Inferred productType from name:', productType);
                     productData.productType = productType; // Set it so downstream code can use it
                 }
             }
@@ -1772,7 +1775,7 @@
             if (!productType || String(productType).trim() === '') {
                 productType = inferProductTypeFromName(productData.description);
                 if (productType) {
-                    console.log('🔍 Inferred productType from description:', productType);
+                    inlineDebug('Inferred productType from description:', productType);
                     productData.productType = productType;
                 }
             }
@@ -1813,12 +1816,16 @@
         if (_isPositionsOnlyInline) {
             // POSITIONS-ONLY MODE: All card visibility and image updates are handled by
             // applyPositionsOnlyMode() in customize.js using CSS !important rules.
-            console.log('[positionsOnly] Inline script skipped — customize.js handles everything');
+            if (window.BRANDED_DEBUG === true) {
+                console.debug('[positionsOnly] Inline script skipped - customize.js handles everything');
+            }
         } else {
             // NORMAL MODE: Also handled by customize.js updatePositionCardsForProductType().
             // Inline retry logic was causing race conditions (overriding correct images with hoodie default).
             // All position card updates are now single-authority in customize.js.
-            console.log('[normal] Inline script skipped — customize.js handles everything');
+            if (window.BRANDED_DEBUG === true) {
+                console.debug('[normal] Inline script skipped - customize.js handles everything');
+            }
         }
     })();
     </script>
@@ -2143,7 +2150,6 @@
             chatBox.appendChild(closeBtn);
 
             var iframe = document.createElement('iframe');
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
             iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
             chatBox.appendChild(iframe);
 

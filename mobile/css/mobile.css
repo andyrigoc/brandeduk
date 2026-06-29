@@ -469,6 +469,13 @@
     --action-bar-height: 72px;
     --bottom-nav-height: 64px;
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+    --z-header: 100;
+    --z-bottom-nav: 120;
+    --z-float: 130;
+    --z-overlay: 900;
+    --z-modal: 1000;
+    --z-toast: 1100;
 }
 
 /* === Reset & Base === */
@@ -5744,7 +5751,74 @@ a {
 /* Home Main */
 .home-main {
     padding-top: calc(var(--header-height) + 56px);
-    padding-bottom: 80px;
+    padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+}
+
+.home-page .mobile-main {
+    padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+    background: linear-gradient(
+        to bottom,
+        var(--white) 0,
+        var(--white) calc(100% - var(--bottom-nav-height) - var(--safe-area-bottom)),
+        #000000 calc(100% - var(--bottom-nav-height) - var(--safe-area-bottom)),
+        #000000 100%
+    );
+}
+
+.home-page .quote-footer {
+    margin-bottom: 0;
+}
+
+.home-page.modal-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
+.home-page .mobile-header,
+.home-page .home-header {
+    z-index: var(--z-header);
+}
+
+.home-page .bottom-nav {
+    z-index: var(--z-bottom-nav);
+}
+
+.home-page .whatsapp-float {
+    z-index: var(--z-float);
+}
+
+.home-page .menu-overlay,
+.home-page .account-overlay,
+.home-page .popup-overlay,
+.home-page .upload-modal-overlay {
+    z-index: var(--z-overlay);
+}
+
+.home-page .slide-menu,
+.home-page .account-panel,
+.home-page .popup-contact,
+.home-page .upload-modal,
+.home-page .wa-popup {
+    z-index: var(--z-modal);
+}
+
+.home-page .menu-toggle,
+.home-page .header-action,
+.home-page .social-icon,
+.home-page .featured-control,
+.home-page .quick-action-card,
+.home-page .category-card,
+.home-page .contact-btn,
+.home-page .bottom-nav .nav-item,
+.home-page .bottom-nav .nav-item-center,
+.home-page .popup-contact__close,
+.home-page .upload-modal__close {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.home-page .hero-banner--clickable {
+    cursor: pointer;
 }
 
 /* Hero Section */

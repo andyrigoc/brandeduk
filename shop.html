@@ -1156,7 +1156,7 @@
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260610"></script>
 </head>
 
-<body>
+<body data-shop-renderer="inline">
 
     <div class="header-with-promo">
     <!-- Desktop Header (from main page) -->
@@ -2816,10 +2816,14 @@
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
     <script src="brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
-    <script src="brandedukv15-child/assets/js/api.js?v=20260530"></script>
-    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260409a"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20260629a"></script>
+    <script src="brandedukv15-child/assets/js/shop-api.js?v=20260629a"></script>
     <script>
-        console.log('=== SHOP SCRIPT STARTED (API MODE) ===');
+        const SHOP_DEBUG = window.BRANDED_DEBUG === true;
+        const shopDebug = (...args) => { if (SHOP_DEBUG) console.debug(...args); };
+        const shopWarn = (...args) => { if (SHOP_DEBUG) console.warn(...args); };
+
+        shopDebug('=== SHOP SCRIPT STARTED (API MODE) ===');
 
         // ---------------------------------------------------------------------
         // EXACT COPY of PC filters & API mapping - matching PC version exactly
@@ -3100,7 +3104,7 @@
                 const brandSlug = BRAND_SEARCH_MAP[normQ.toLowerCase().trim()];
                 if (brandSlug) {
                     params.brand = brandSlug;
-                    console.log('🏷️ Brand-name search detected, using brand filter:', brandSlug);
+                    shopDebug('Brand-name search detected, using brand filter:', brandSlug);
                 } else {
                     params.q = normQ;
                 }
@@ -3185,7 +3189,7 @@
                 // â”€â”€ Hi-Vis merge: combine Safety Vests + "high visibility" + "hi-viz" + Yoko brand â”€â”€
                 const isHiVisCategory = (currentState.category === 'hivis');
                 if (isHiVisCategory && data && data.items) {
-                    console.log('ðŸ¦º Hi-Vis merge (mobile): fetching additional hi-vis/high-visibility/yoko productsâ€¦');
+                    shopDebug('Hi-Vis merge (mobile): fetching additional hi-vis/high-visibility/yoko products...');
                     const extraUrls = [
                         `https://api.brandeduk.com/api/products?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
                         `https://api.brandeduk.com/api/products?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
@@ -3208,7 +3212,7 @@
                         }
                     });
                     data.total = (data.total || 0) + added;
-                    console.log(`ðŸ¦º Hi-Vis merge complete (mobile): +${added} extra products â†’ ${data.total} total`);
+                    shopDebug(`Hi-Vis merge complete (mobile): +${added} extra products -> ${data.total} total`);
                 }
                 // â”€â”€ End Hi-Vis merge â”€â”€
 
@@ -3221,9 +3225,9 @@
                         min: data.priceRange.min || 0,
                         max: data.priceRange.max || 0
                     };
-                    console.log('ðŸ’° API priceRange stored (mobile):', currentState.apiPriceRange);
+                    shopDebug('API priceRange stored (mobile):', currentState.apiPriceRange);
                 } else {
-                    console.log('âš ï¸ API response has no priceRange (mobile)');
+                    shopWarn('API response has no priceRange (mobile)');
                 }
 
                 if (window.BrandedColorHex && data.items) {
@@ -3255,7 +3259,7 @@
                 if (activeBrandFilter) {
                     // Use brand-specific filters API: /api/filters/brands/{brand}/filters
                     filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
-                    console.log('ðŸ·ï¸ Using brand-specific filters API for:', activeBrandFilter);
+                    shopDebug('Using brand-specific filters API for:', activeBrandFilter);
                 } else {
                     // Use general products filters API
                     filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
@@ -3305,7 +3309,7 @@
                 const queryString = params.toString();
                 const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
 
-                console.log('ðŸ“Š Fetching filter counts from:', url);
+                shopDebug('Fetching filter counts from:', url);
 
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -3313,7 +3317,7 @@
                 }
 
                 const data = await response.json();
-                console.log('ðŸ“Š Filter counts received:', data);
+                shopDebug('Filter counts received:', data);
 
                 if (data && data.filters) {
                     renderMobileDynamicFilters(data.filters);
@@ -3370,7 +3374,7 @@
         function renderMobileDynamicFilters(filters) {
             const container = document.getElementById('mobileFiltersContainer');
             if (!container) {
-                console.error('âŒ mobileFiltersContainer not found');
+                shopWarn('mobileFiltersContainer not found');
                 return;
             }
 
@@ -3468,7 +3472,7 @@
             // Re-attach checkbox handlers
             setupMobileDynamicCheckboxes();
 
-            console.log('âœ… Mobile dynamic filters rendered');
+            shopDebug('Mobile dynamic filters rendered');
         }
 
         // Setup mobile checkbox handlers
@@ -3624,7 +3628,7 @@
             const inputMax = document.getElementById('priceInputMax');
 
             if (!sliderMin || !sliderMax) {
-                console.error('âŒ Mobile price sliders not found');
+                shopWarn('Mobile price sliders not found');
                 return;
             }
 
@@ -3634,10 +3638,10 @@
                 // First, check if we have priceRange from the latest API response
                 if (currentState.apiPriceRange) {
                     priceRange = currentState.apiPriceRange;
-                    console.log('ðŸ“¡ Using price range from latest API response (mobile):', priceRange);
+                    shopDebug('Using price range from latest API response (mobile):', priceRange);
                 } else {
                     // Fallback: fetch price range from API filtered by current category
-                    console.log('ðŸ“¡ Fetching price range from API (mobile, no cached range)...');
+                    shopDebug('Fetching price range from API (mobile, no cached range)...');
                     const rangeParams = { limit: 1 };
                     if (currentState.category && currentState.category !== 'all') {
                         rangeParams.category = currentState.category;
@@ -3648,7 +3652,7 @@
 
                 mobileCatalogMinPrice = Math.max(1, Math.floor(priceRange.min || 14));
                 mobileCatalogMaxPrice = Math.ceil(priceRange.max || 65);
-                console.log('âœ… Price range determined (mobile):', { mobileCatalogMinPrice, mobileCatalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
+                shopDebug('Price range determined (mobile):', { mobileCatalogMinPrice, mobileCatalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
 
                 // Update slider attributes
                 sliderMin.min = mobileCatalogMinPrice;
@@ -3788,20 +3792,20 @@
             const inputMax = document.getElementById('priceInputMax');
 
             if (!sliderMin || !sliderMax) {
-                console.log('âš ï¸ Mobile price sliders not found in updateMobilePriceSliderRangeFromAPI');
+                shopWarn('Mobile price sliders not found in updateMobilePriceSliderRangeFromAPI');
                 return;
             }
 
             // Check if we have priceRange from API response
             if (!currentState.apiPriceRange) {
-                console.log('âš ï¸ No API price range available yet (mobile)');
+                shopWarn('No API price range available yet (mobile)');
                 return;
             }
 
             const apiMin = Math.max(1, Math.floor(currentState.apiPriceRange.min || 0));
             const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
 
-            console.log('ðŸ”„ Updating mobile price slider range from API:', { apiMin, apiMax });
+            shopDebug('Updating mobile price slider range from API:', { apiMin, apiMax });
 
             // Update slider min/max attributes
             sliderMin.min = apiMin;
@@ -3839,7 +3843,7 @@
             if (inputMin) inputMin.value = '\u00A3' + newMinVal;
             if (inputMax) inputMax.value = '\u00A3' + newMaxVal;
 
-            console.log('âœ… Mobile price slider range updated:', {
+            shopDebug('Mobile price slider range updated:', {
                 min: apiMin,
                 max: apiMax,
                 newMinVal,
@@ -4559,7 +4563,7 @@
         });
     </script>
     <script src="mobile/js/mobile.js?v=20260411A"></script>
-    <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
+    <script src="mobile/js/breadcrumbs.js?v=20260629a"></script>
     <!--Tawk.to â€“ mini chat iframe overlay-->
     <script type="text/javascript">
         (function() {
@@ -4582,9 +4586,8 @@
             closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
             chatBox.appendChild(closeBtn);
 
-            // Iframe with sandbox to prevent parent navigation
+            // Iframe is loaded only after the customer opens chat.
             var iframe = document.createElement('iframe');
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
             iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
             chatBox.appendChild(iframe);
 
