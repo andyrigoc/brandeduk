@@ -641,7 +641,7 @@
             </a>
         </div>
         <div class="tablet-top-bar__right">
-            <a href="index.html" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">← Back to Shop</a>
+            <a href="basket.html#orderSummary" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">← Back to Basket</a>
         </div>
     </div>
 
@@ -1072,7 +1072,7 @@
         }
         function coGetHomeHref() {
             var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-            return isLocal ? '/index.html' : '/';
+            return coGetBasketHref();
         }
         function coSaveAuth(token, user) {
             if (token) {
@@ -1438,7 +1438,7 @@
                 coGoStep(_step - 1);
                 return;
             }
-            window.location.href = coGetHomeHref();
+            window.location.href = coGetBasketHref();
         });
 
         /* ── Panel accordion ── */
@@ -1803,7 +1803,7 @@
     })();
     </script>
 
-    <script src="brandedukv15-child/assets/js/api.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
     <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
     <script src="mobile/js/checkout.js?v=20260530"></script>
 

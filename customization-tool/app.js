@@ -1844,6 +1844,34 @@ function cleanPctBox(box) {
   };
 }
 
+function cssPx(value) {
+  const n = parseFloat(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function elementBoxFromStyles(element, fallbackElement) {
+  if (!element) return { left: 0, top: 0, width: 0, height: 0 };
+  const width = element.offsetWidth || fallbackElement?.offsetWidth || cssPx(element.style.width);
+  const height = element.offsetHeight || fallbackElement?.offsetHeight || cssPx(element.style.height);
+  return {
+    left: cssPx(element.style.left),
+    top: cssPx(element.style.top),
+    width,
+    height
+  };
+}
+
+function boxToPct(box, baseWidth, baseHeight) {
+  const w = Math.max(1, baseWidth || 1);
+  const h = Math.max(1, baseHeight || 1);
+  return {
+    left: (box.left / w) * 100,
+    top: (box.top / h) * 100,
+    width: (box.width / w) * 100,
+    height: (box.height / h) * 100
+  };
+}
+
 function getLayerRotationDegrees(layer) {
   if (!layer) return 0;
   const rotateStyle = layer.style.rotate || "";
@@ -1866,20 +1894,31 @@ function buildDesignPreviewFromState() {
   const wrapRect = wrap.getBoundingClientRect();
   const garmentRect = productShape.getBoundingClientRect();
   const logoRect = (logoFrame || designLayer).getBoundingClientRect();
-  if (wrapRect.width < 10 || wrapRect.height < 10 || logoRect.width < 1 || logoRect.height < 1) return null;
+  const wrapWidth = wrapRect.width || wrap.offsetWidth || productPreview?.offsetWidth || customArea?.offsetWidth || 360;
+  const wrapHeight = wrapRect.height || wrap.offsetHeight || productPreview?.offsetHeight || customArea?.offsetHeight || 420;
+  const canUseRects = wrapRect.width >= 10 && wrapRect.height >= 10 && logoRect.width >= 1 && logoRect.height >= 1;
+  const logoStyleBox = elementBoxFromStyles(designLayer, logoFrame);
+  const garmentBox = canUseRects && garmentRect.width >= 1 && garmentRect.height >= 1
+    ? rectToPct(garmentRect, wrapRect)
+    : { left: 0, top: 0, width: 100, height: 100 };
+  const logoBox = canUseRects
+    ? rectToPct(logoRect, wrapRect)
+    : boxToPct(logoStyleBox, wrapWidth, wrapHeight);
+
+  if (cleanPctBox(logoBox).width <= 0 || cleanPctBox(logoBox).height <= 0) return null;
 
   return {
     type: "garment-logo-preview",
     version: 1,
     area: state.selectedArea || "front",
     garmentImage: garmentSource,
-    garmentBox: cleanPctBox(rectToPct(garmentRect, wrapRect)),
+    garmentBox: cleanPctBox(garmentBox),
     logoImage: logoSource,
-    logoBox: cleanPctBox(rectToPct(logoRect, wrapRect)),
+    logoBox: cleanPctBox(logoBox),
     logoRotation: getLayerRotationDegrees(designLayer),
     garmentHex: normalizeHex(state.colourHex || "") || "",
     colorName: state.colourName || "",
-    wrapAspect: wrapRect.width > 0 ? Number((wrapRect.height / wrapRect.width).toFixed(4)) : 1.15
+    wrapAspect: wrapWidth > 0 ? Number((wrapHeight / wrapWidth).toFixed(4)) : 1.15
   };
 }
 function getItemQty(item) {

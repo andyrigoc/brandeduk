@@ -345,10 +345,58 @@
             justify-content: center;
         }
         .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
-        .item-row-image.has-design-preview {
-            width: 64px;
-            height: 76px;
+        .item-placement-preview-card {
+            display: grid;
+            grid-template-columns: 76px minmax(0, 1fr);
+            gap: 10px;
+            align-items: center;
+            margin: 12px 0 0;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             background: #f8fafc;
+        }
+        .item-placement-preview-card .item-design-preview {
+            width: 76px;
+            height: 88px;
+            border-radius: 7px;
+            border: 1px solid #e5e7eb;
+        }
+        .item-placement-preview-copy {
+            min-width: 0;
+        }
+        .item-placement-preview-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--basket-navy);
+            margin: 0 0 2px;
+        }
+        .item-placement-preview-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+        .item-placement-preview-head .item-placement-preview-title {
+            margin: 0;
+        }
+        .item-placement-preview-btn {
+            border: 0;
+            background: transparent;
+            color: var(--basket-link-blue);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 0;
+            cursor: pointer;
+        }
+        .item-placement-preview-btn:hover {
+            text-decoration: underline;
+        }
+        .item-placement-preview-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin: 0;
         }
         .item-design-preview {
             position: relative;
@@ -371,12 +419,47 @@
             position: absolute;
             z-index: 2;
             mix-blend-mode: multiply;
-            opacity: 0.42;
+            opacity: 0.62;
             pointer-events: none;
         }
         .item-design-preview__logo {
             z-index: 3;
             transform-origin: center center;
+        }
+        .preview-image-modal .confirm-modal {
+            max-width: 560px;
+        }
+        .preview-image-modal__stage {
+            min-height: 220px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+        .preview-image-modal__stage img {
+            display: block;
+            max-width: 100%;
+            max-height: 62vh;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+        .preview-image-modal__stage .item-design-preview {
+            width: min(100%, 420px);
+            aspect-ratio: 1 / 1;
+            max-height: 62vh;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+        .preview-image-modal__status {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+            text-align: center;
         }
         .item-row-head-text {
             flex: 1;
@@ -502,7 +585,14 @@
             overflow: hidden;
             box-sizing: border-box;
             /* Garment colour contrast — do not override in mobile.css; set inline + --garment-bg */
-            background-color: var(--garment-bg, #f3f4f6) !important;
+            background:
+                linear-gradient(45deg, #f8fafc 25%, transparent 25%),
+                linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f8fafc 75%),
+                linear-gradient(-45deg, transparent 75%, #f8fafc 75%),
+                #ffffff;
+            background-size: 12px 12px;
+            background-position: 0 0, 0 6px, 6px -6px, -6px 0;
         }
         .logo-row .logo-thumb-wrap {
             margin-top: 1px;
@@ -1713,6 +1803,7 @@
                         brand: item.brand || '',
                         productType: item.productType || '',
                         logos: rowLogos,
+                        designPreview: item.designPreview ? JSON.parse(JSON.stringify(item.designPreview)) : undefined,
                         pendingLogoPrompt: rowLogos.length === 0 && !!item.pendingLogoPrompt
                     };
                     if (enrichItemColorHex(row)) changed = true;
@@ -1770,9 +1861,13 @@
             if (indices.length < 2) return;
             // Find the richest logos array (most logos)
             let bestLogos = [];
+            let bestPreview = null;
             indices.forEach(idx => {
                 const logos = newBasket[idx].logos || [];
-                if (logos.length > bestLogos.length) bestLogos = logos;
+                if (logos.length > bestLogos.length) {
+                    bestLogos = logos;
+                    bestPreview = newBasket[idx].designPreview || null;
+                }
             });
             if (bestLogos.length === 0) return;
             // Apply to all items missing logos
@@ -1781,6 +1876,9 @@
                 const current = newBasket[idx].logos || [];
                 if (current.length === 0) {
                     newBasket[idx].logos = JSON.parse(JSON.stringify(bestLogos));
+                    if (bestPreview && !newBasket[idx].designPreview) {
+                        newBasket[idx].designPreview = JSON.parse(JSON.stringify(bestPreview));
+                    }
                     changed = true;
                 }
             });
@@ -2137,29 +2235,102 @@
         return `left:${safePct(box && box.left)}%;top:${safePct(box && box.top)}%;width:${safePct(box && box.width)}%;height:${safePct(box && box.height)}%;`;
     }
 
-    function renderItemPreview(item, fallbackImg, altText) {
+    function renderGarmentThumb(item, fallbackImg, altText) {
+        return `<div class="item-row-image" title="${escapeAttr(item && item.color)}"><img src="${escapeAttr(fallbackImg)}" alt="${escapeAttr(altText)}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'"></div>`;
+    }
+
+    function renderPlacementPreview(item, altText, index) {
         const preview = item && item.designPreview;
-        const garmentImage = preview && preview.garmentImage;
+        const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
         const logoImage = preview && preview.logoImage;
         if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
-            return `<div class="item-row-image" title="${escapeAttr(item && item.color)}"><img src="${escapeAttr(fallbackImg)}" alt="${escapeAttr(altText)}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'"></div>`;
+            return '';
         }
 
+        const rotation = parseFloat(preview.logoRotation || 0) || 0;
         const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex)
+        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)
             ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
             : '';
-        const rotation = parseFloat(preview.logoRotation || 0) || 0;
 
         return `
-            <div class="item-row-image has-design-preview" title="Logo placement preview">
+            <div class="item-placement-preview-card" title="Logo placement preview">
                 <div class="item-design-preview" aria-label="Logo placement preview">
                     <img class="item-design-preview__garment" src="${escapeAttr(garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(preview.garmentBox)}" onerror="this.style.display='none'">
                     ${tintHtml}
                     <img class="item-design-preview__logo" src="${escapeAttr(logoImage)}" alt="Logo placement" style="${previewBoxStyle(preview.logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">
                 </div>
+                <div class="item-placement-preview-copy">
+                    <div class="item-placement-preview-head">
+                        <p class="item-placement-preview-title">Placement preview</p>
+                        <button type="button" class="item-placement-preview-btn" onclick="event.stopPropagation(); openPlacementPreview(${index})">Preview</button>
+                    </div>
+                    <p class="item-placement-preview-meta">${escapeAttr(preview.colorName || item.color || '')}${preview.area ? ` · ${escapeAttr(toReadablePosition(preview.area))}` : ''}</p>
+                </div>
             </div>`;
     }
+
+    function renderPlacementPreviewVisual(item, altText) {
+        const preview = item && item.designPreview;
+        const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
+        const logoImage = preview && preview.logoImage;
+        if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
+            return '';
+        }
+
+        const rotation = parseFloat(preview.logoRotation || 0) || 0;
+        const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)
+            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
+            : '';
+
+        return `
+            <div class="item-design-preview" aria-label="Logo placement preview">
+                <img class="item-design-preview__garment" src="${escapeAttr(garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(preview.garmentBox)}" onerror="this.style.display='none'">
+                ${tintHtml}
+                <img class="item-design-preview__logo" src="${escapeAttr(logoImage)}" alt="Logo placement" style="${previewBoxStyle(preview.logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">
+            </div>`;
+    }
+
+    async function openPlacementPreview(index) {
+        const basket = getBasket();
+        const item = basket[index];
+        if (!item || !item.designPreview) {
+            alert('No placement preview found for this item yet.');
+            return;
+        }
+
+        const modal = document.getElementById('placementPreviewModal');
+        const stage = document.getElementById('placementPreviewStage');
+        const title = document.getElementById('placementPreviewTitle');
+        if (!modal || !stage) return;
+
+        if (title) title.textContent = item.name || item.productName || 'Placement preview';
+        stage.innerHTML = '<p class="preview-image-modal__status">Rendering preview...</p>';
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        const previewImage = await renderQuotePreviewImage(item);
+        if (previewImage) {
+            stage.innerHTML = `<img src="${escapeAttr(previewImage)}" alt="${escapeAttr(item.name || item.productName || 'Placement preview')}">`;
+        } else {
+            stage.innerHTML = renderPlacementPreviewVisual(item, item.name || item.productName || 'Placement preview')
+                || '<p class="preview-image-modal__status">Preview could not be rendered for this item.</p>';
+        }
+    }
+
+    function closePlacementPreview() {
+        const modal = document.getElementById('placementPreviewModal');
+        if (!modal) return;
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closePlacementPreview();
+    });
 
     // ========================
     // RENDER ITEM ROWS
@@ -2193,7 +2364,7 @@
 
                     logosHtml += `
                         <div class="logo-row">
-                            ${thumbSrc ? `<div class="${thumbWrapClass}" style="--garment-bg:${garmentHex};background-color:${garmentHex}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
+                            ${thumbSrc ? `<div class="${thumbWrapClass}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
                             <div class="logo-info">
                                 <div class="logo-title-line">
                                     <div class="logo-method-label">${methodLabel}</div>
@@ -2227,7 +2398,7 @@
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
                         <div class="item-row-top">
 
-                            ${renderItemPreview(item, img, item.name || 'Product')}
+                            ${renderGarmentThumb(item, img, item.name || 'Product')}
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
                                     <h4 class="item-row-title">${item.name || 'Product'}</h4>
@@ -2256,6 +2427,7 @@
                     </div>
 
                     <div class="item-logos-section">
+                        ${renderPlacementPreview(item, item.name || 'Product', index)}
                         ${logosHtml}
                     </div>
 
@@ -3059,18 +3231,22 @@
                     const basketItems = [];
                     const customizationsList = [];
                     const uniqueEmbLogos = new Set();
+                    const renderedPreviewImages = await Promise.all(basket.map(renderQuotePreviewImage));
 
-                    basket.forEach(item => {
+                    basket.forEach((item, itemIndex) => {
                         const qty = item.qty || 0;
                         const up = parseFloat(item.unitPrice) || 0;
                         const itemTotal = up * qty;
                         totalGarmentCost += itemTotal;
                         totalQuantity += qty;
+                        const itemDesignPreview = buildQuoteDesignPreview(item);
+                        const previewImage = renderedPreviewImages[itemIndex] || null;
 
                         basketItems.push({
                             name: item.name || 'Product', code: item.code || '', color: item.color || '',
                             size: item.size || '', quantity: qty, unitPrice: up, itemTotal: itemTotal,
-                            image: item.image || item.colorImage || ''
+                            image: safeQuoteMediaRef(item.image || item.colorImage || '') || '',
+                            designPreview: itemDesignPreview
                         });
 
                         if (item.logos) {
@@ -3084,6 +3260,7 @@
                                     method: logo.method === 'embroidery' ? 'Embroidery' : 'Print',
                                     hasLogo: !!logo.logo,
                                     logo: safeQuoteMediaRef(logo.logo),
+                                    designPreview: itemDesignPreview,
                                     unitPrice: logoUp, lineTotal: lineTotal, quantity: qty
                                 });
                             });
@@ -3096,11 +3273,18 @@
 
                     const totalIncVat = totalExVat + vatAmount;
                     const displayTotal = includeVAT ? totalIncVat : totalExVat;
+                    const quotePreviewImage = renderedPreviewImages.find(Boolean) || null;
+                    const quotePreviewImages = renderedPreviewImages.filter(Boolean);
 
                     const notesList = [];
                     const orderNotes = document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || '';
                     if (orderNotes) notesList.push(orderNotes);
                     if (customerNote) notesList.push('Customer note: ' + customerNote);
+
+                    const quoteLogoFiles = {
+                        ...collectQuoteLogoFiles(basket),
+                        ...collectQuotePreviewFiles(basket, renderedPreviewImages)
+                    };
 
                     const quoteData = {
                         customer: { fullName: name, phone: phone, email: emailVal },
@@ -3112,7 +3296,7 @@
                             belowMinimumOrder: !computeBasketTotals(basket).meetsMinOrder
                         },
                         basket: basketItems, customizations: customizationsList,
-                        logoFiles: collectQuoteLogoFiles(basket),
+                        logoFiles: quoteLogoFiles,
                         notes: notesList,
                         source: 'basket_quote_request',
                         timestamp: new Date().toISOString()
@@ -3237,6 +3421,169 @@
         return value.length > 2000 ? null : value;
     }
 
+    function loadQuoteImage(src) {
+        return new Promise((resolve) => {
+            if (!src) { resolve(null); return; }
+            // If the source is already a data URL, no CORS needed
+            if (/^data:/i.test(src)) {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = src;
+                return;
+            }
+            // Try with crossOrigin first (needed for clean canvas export)
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+                // CORS failed — retry without crossOrigin so image still loads
+                // (canvas will be tainted but SVG fallback handles that)
+                const img2 = new Image();
+                img2.onload = () => resolve(img2);
+                img2.onerror = () => resolve(null);
+                img2.src = src;
+            };
+            img.src = src;
+        });
+    }
+
+    function drawPreviewBox(ctx, img, box, canvasWidth, canvasHeight) {
+        if (!ctx || !img || !box) return;
+        const left = (safePct(box.left) / 100) * canvasWidth;
+        const top = (safePct(box.top) / 100) * canvasHeight;
+        const width = (safePct(box.width) / 100) * canvasWidth;
+        const height = (safePct(box.height) / 100) * canvasHeight;
+        if (width <= 0 || height <= 0) return;
+        ctx.drawImage(img, left, top, width, height);
+    }
+
+    function escapeXml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function svgPreviewImageFallback(item) {
+        return null;
+    }
+
+    function isGeneratedGarmentImage(src) {
+        return /^data:image\/svg\+xml/i.test(String(src || ''));
+    }
+
+    function getQuoteGarmentSource(item, preview) {
+        const original = item && (item.sourceColorImage || item.originalColorImage);
+        if (original) return original;
+        if (preview && preview.garmentImage && !isGeneratedGarmentImage(preview.garmentImage)) return preview.garmentImage;
+        const itemImage = item && (item.colorImage || item.image);
+        if (itemImage && !isGeneratedGarmentImage(itemImage)) return itemImage;
+        return preview && preview.garmentImage ? preview.garmentImage : '';
+    }
+
+    function isSavedColourGarmentSource(item, garmentImage) {
+        if (!item || !garmentImage) return false;
+        const saved = item.colorImage || item.image || '';
+        const original = item.sourceColorImage || item.originalColorImage || '';
+        return false;
+    }
+
+    async function renderQuotePreviewImage(item) {
+        const preview = item && item.designPreview;
+        if (!preview || !preview.garmentImage || !preview.logoImage || !preview.garmentBox || !preview.logoBox) return null;
+
+        const width = 520;
+        const aspect = Math.max(0.7, Math.min(1.5, parseFloat(preview.wrapAspect || 1.12) || 1.12));
+        const height = Math.round(width * aspect);
+        const garmentImage = getQuoteGarmentSource(item, preview);
+        const [garmentImg, logoImg] = await Promise.all([
+            loadQuoteImage(garmentImage),
+            loadQuoteImage(preview.logoImage)
+        ]);
+        if (!garmentImg || !logoImg) return null;
+
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return null;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            drawPreviewBox(ctx, garmentImg, preview.garmentBox, width, height);
+
+            const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+            if (tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)) {
+                const garmentBox = preview.garmentBox;
+                ctx.save();
+                ctx.globalAlpha = 0.62;
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.fillStyle = tintHex;
+                ctx.fillRect(
+                    (safePct(garmentBox.left) / 100) * width,
+                    (safePct(garmentBox.top) / 100) * height,
+                    (safePct(garmentBox.width) / 100) * width,
+                    (safePct(garmentBox.height) / 100) * height
+                );
+                ctx.restore();
+            }
+
+            const logoBox = preview.logoBox;
+            const logoLeft = (safePct(logoBox.left) / 100) * width;
+            const logoTop = (safePct(logoBox.top) / 100) * height;
+            const logoWidth = (safePct(logoBox.width) / 100) * width;
+            const logoHeight = (safePct(logoBox.height) / 100) * height;
+            const rotation = (parseFloat(preview.logoRotation || 0) || 0) * Math.PI / 180;
+
+            ctx.save();
+            ctx.translate(logoLeft + logoWidth / 2, logoTop + logoHeight / 2);
+            ctx.rotate(rotation);
+            ctx.drawImage(logoImg, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight);
+            ctx.restore();
+
+            return canvas.toDataURL('image/jpeg', 0.82);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function buildQuoteDesignPreview(item) {
+        const preview = item && item.designPreview;
+        if (!preview || typeof preview !== 'object') return null;
+        return {
+            type: preview.type || 'garment-logo-preview',
+            version: preview.version || 1,
+            area: preview.area || '',
+            colorName: preview.colorName || item.color || '',
+            garmentImage: safeQuoteMediaRef(getQuoteGarmentSource(item, preview)),
+            logoImage: safeQuoteMediaRef(preview.logoImage || ''),
+            garmentBox: preview.garmentBox || null,
+            logoBox: preview.logoBox || null,
+            logoRotation: parseFloat(preview.logoRotation || 0) || 0,
+            garmentHex: normalizeColorHex(preview.garmentHex || item.colorHex || ''),
+            wrapAspect: parseFloat(preview.wrapAspect || 0) || null
+        };
+    }
+
+    function collectQuotePreviewFiles(basket, renderedPreviewImages) {
+        const previewFiles = {};
+        (basket || []).forEach((item, index) => {
+            const previewImage = renderedPreviewImages && renderedPreviewImages[index];
+            if (!previewImage || !/^data:image\//i.test(previewImage)) return;
+            const preview = item && item.designPreview;
+            const area = String(preview?.area || item?.logos?.[0]?.position || item?.logos?.[0]?.positionLabel || 'front')
+                .trim()
+                .replace(/[^a-z0-9]+/gi, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase() || 'front';
+            previewFiles[`preview-image-${index + 1}-${area}`] = previewImage;
+        });
+        return previewFiles;
+    }
+
     function collectQuoteLogoFiles(basket) {
         const logoFiles = {};
         (basket || []).forEach(item => {
@@ -3305,12 +3652,28 @@
             </div>
         </div>
     </div>
+
+    <div class="confirm-modal-overlay preview-image-modal" id="placementPreviewModal" aria-hidden="true" onclick="if(event.target===this) closePlacementPreview();">
+        <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="placementPreviewTitle">
+            <div class="confirm-modal__header">
+                <h3 class="confirm-modal__title" id="placementPreviewTitle">Placement preview</h3>
+            </div>
+            <div class="confirm-modal__body">
+                <div class="preview-image-modal__stage" id="placementPreviewStage">
+                    <p class="preview-image-modal__status">Rendering preview...</p>
+                </div>
+            </div>
+            <div class="confirm-modal__actions">
+                <button type="button" class="confirm-btn confirm-btn--primary" onclick="closePlacementPreview()">Close</button>
+            </div>
+        </div>
+    </div>
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260418"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
-<script src="brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
-<script src="brandedukv15-child/assets/js/api.js?v=20260530"></script>
+<script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>

@@ -97,6 +97,11 @@
 
     var SAMPLE_COLOR_PROXY_ENDPOINTS = resolveProxyEndpoints();
 
+    function isKnownCorsBlockedImageUrl(url) {
+        var value = String(url || '').toLowerCase();
+        return value.indexOf('cdn.pimber.ly/') !== -1 || value.indexOf('pimber.ly/public/asset/') !== -1;
+    }
+
     function normName(name) {
         return String(name || '')
             .trim()
@@ -569,6 +574,7 @@
         var url = String(imageUrl || '').trim();
         if (!url) return Promise.resolve('');
         if (byImage[url]) return Promise.resolve(byImage[url]);
+        if (isKnownCorsBlockedImageUrl(url)) return Promise.resolve('');
         if (samplePending[url]) return samplePending[url];
 
         samplePending[url] = sampleFromImageViaCanvas(url)
@@ -596,6 +602,10 @@
     function resolveGarmentHexAfterDb(url, direct, colorName, productCode) {
         var cached = getImageHexSync(url);
         if (isUsableHex(cached)) return Promise.resolve(cached);
+        if (isKnownCorsBlockedImageUrl(url)) {
+            if (isUsableHex(direct)) return Promise.resolve(direct);
+            return Promise.resolve(lookupByName(colorName, productCode) || '');
+        }
         if (!url) {
             return Promise.resolve(isUsableHex(direct) ? direct : '');
         }

@@ -609,7 +609,7 @@ const BrandedAPI = (function () {
 
     function base64ToBlob(dataUrl, filename = 'logo.png') {
         try {
-            const matches = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+            const matches = dataUrl.match(/^data:image\/([\w+.-]+);base64,(.+)$/);
             if (!matches) {
                 throw new Error('Invalid base64 data URL format');
             }
@@ -746,12 +746,35 @@ const BrandedAPI = (function () {
                 // Also remove any logoData from customizations to avoid sending base64 in JSON
                 const { logoFiles, ...dataWithoutFiles } = quoteData;
 
-                // Clean customizations to ensure no logoData is included (only hasLogo boolean)
+                // Clean customizations to ensure no logoData/previewImage base64 is included
                 if (dataWithoutFiles.customizations && Array.isArray(dataWithoutFiles.customizations)) {
                     dataWithoutFiles.customizations = dataWithoutFiles.customizations.map(c => {
                         const { logoData, logoUrl, ...cleanCustomization } = c;
+                        // Strip previewImage if it's a data URL (sent via files instead)
+                        if (cleanCustomization.previewImage && /^data:/i.test(cleanCustomization.previewImage)) {
+                            delete cleanCustomization.previewImage;
+                        }
                         return cleanCustomization;
                     });
+                }
+
+                // Clean basket items to strip any embedded base64 data
+                if (dataWithoutFiles.basket && Array.isArray(dataWithoutFiles.basket)) {
+                    dataWithoutFiles.basket = dataWithoutFiles.basket.map(item => {
+                        const clean = { ...item };
+                        if (clean.previewImage && /^data:/i.test(clean.previewImage)) delete clean.previewImage;
+                        if (clean.image && /^data:/i.test(clean.image)) delete clean.image;
+                        return clean;
+                    });
+                }
+
+                // Strip top-level previewImage/previewImages if they contain base64
+                if (dataWithoutFiles.previewImage && /^data:/i.test(dataWithoutFiles.previewImage)) {
+                    delete dataWithoutFiles.previewImage;
+                }
+                if (Array.isArray(dataWithoutFiles.previewImages)) {
+                    dataWithoutFiles.previewImages = dataWithoutFiles.previewImages.filter(p => !p || !/^data:/i.test(p));
+                    if (!dataWithoutFiles.previewImages.length) delete dataWithoutFiles.previewImages;
                 }
 
                 const quoteDataJson = JSON.stringify(dataWithoutFiles);

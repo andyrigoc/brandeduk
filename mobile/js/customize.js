@@ -1830,10 +1830,6 @@
             saveCustomizationState();
         });
         
-        window.addEventListener('beforeunload', () => {
-            saveCustomizationState();
-        });
-        
         // Also save periodically when state changes (debounced)
         debugLog('?? State persistence setup complete');
     }
@@ -9278,7 +9274,7 @@
     function getAddedToQuoteModalDelay() {
         const btn = document.getElementById('addToBasketBtn');
         if (btn && btn.classList.contains('rainbow-atc')) {
-            return RAINBOW_ATC_TIMING.completeMs + RAINBOW_ATC_TIMING.logoFlowPauseAfterCompleteMs;
+            return 650;
         }
         return 400;
     }
@@ -9329,7 +9325,7 @@
     }
 
     function runRainbowAtcAnimation(btn) {
-        if (!btn || btn.disabled || btn.classList.contains('loading')) return;
+        if (!btn || btn.classList.contains('loading')) return;
 
         _atcAnimationTimers.forEach(clearTimeout);
         _atcAnimationTimers = [];
@@ -9366,7 +9362,12 @@
         // Add to Basket button
         const addToBasketBtn = document.getElementById('addToBasketBtn');
         if (addToBasketBtn) {
-            addToBasketBtn.addEventListener('click', () => {
+            addToBasketBtn.addEventListener('click', async (event) => {
+                event.preventDefault();
+                if (addToBasketBtn.dataset.saving === '1') return;
+                addToBasketBtn.dataset.saving = '1';
+                addToBasketBtn.setAttribute('aria-busy', 'true');
+                try {
                 debugLog('🔘 Add to basket button clicked! state.quantity:', state.quantity);
                 if (state.quantity === 0 && !isBasketSingleItemEdit()) {
                     showToast('Please add at least one item', true);
@@ -9374,11 +9375,15 @@
                 }
                 if (needsLogoStepBeforeBasket()) {
                     runRainbowAtcAnimation(addToBasketBtn);
-                    addToQuote();
+                    await addToQuote();
                     return;
                 }
                 runRainbowAtcAnimation(addToBasketBtn);
-                addToQuote();
+                await addToQuote();
+                } finally {
+                    addToBasketBtn.dataset.saving = '0';
+                    addToBasketBtn.removeAttribute('aria-busy');
+                }
             });
         }
 
@@ -10538,7 +10543,100 @@
         if (container) container.style.display = '';
     }
 
-    function addToQuote(options = {}) {
+    function loadGarmentImageForCanvas(src) {
+        return new Promise(function (resolve) {
+            if (!src) {
+                resolve(null);
+                return;
+            }
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () { resolve(img); };
+            img.onerror = function () { resolve(null); };
+            img.src = src;
+        });
+    }
+
+    function isNearWhiteHex(hex) {
+        const value = String(hex || '').replace('#', '').trim().toLowerCase();
+        return value === 'fff' || value === 'ffffff' || value === 'faf9f6' || value === 'f7f7f7';
+    }
+
+    function buildSvgTintedGarmentImage(sourceImage, tintHex) {
+        return sourceImage || '';
+    }
+
+    async function buildTintedGarmentImageForBasket(sourceImage, tintHex) {
+        if (!sourceImage || !tintHex || isNearWhiteHex(tintHex)) return sourceImage || '';
+        const img = await loadGarmentImageForCanvas(sourceImage);
+        if (!img) return buildSvgTintedGarmentImage(sourceImage, tintHex);
+
+        try {
+            const maxSide = 480;
+            const ratio = Math.min(maxSide / (img.naturalWidth || maxSide), maxSide / (img.naturalHeight || maxSide), 1);
+            const width = Math.max(1, Math.round((img.naturalWidth || maxSide) * ratio));
+            const height = Math.max(1, Math.round((img.naturalHeight || maxSide) * ratio));
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return sourceImage || '';
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = tintHex;
+            ctx.globalAlpha = 0.86;
+            ctx.fillRect(0, 0, width, height);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
+
+            return canvas.toDataURL('image/jpeg', 0.82);
+        } catch (e) {
+            debugWarn('Could not render tinted basket garment image:', e);
+            return buildSvgTintedGarmentImage(sourceImage, tintHex);
+        }
+    }
+
+    async function getBasketGarmentImage(baseColorImage, baseColorHex) {
+        const sourceImage = baseColorImage || state.selectedColorImage || '';
+        return sourceImage;
+    }
+
+    function mobileLogoBoxForPosition(position) {
+        const key = String(position || '').toLowerCase();
+        if (key.includes('back')) return { left: 42, top: 27, width: 16, height: 16 };
+        if (key.includes('arm') || key.includes('sleeve')) return { left: key.includes('right') ? 69 : 15, top: 34, width: 12, height: 12 };
+        if (key.includes('large') || key.includes('centre') || key.includes('center')) return { left: 42, top: 31, width: 16, height: 16 };
+        if (key.includes('right')) return { left: 55, top: 29, width: 12, height: 12 };
+        return { left: 33, top: 29, width: 12, height: 12 };
+    }
+
+    function buildMobileDesignPreviewForBasket(positionDesigns, sourceColorImage, colorHex, colorName) {
+        const designs = positionDesigns || {};
+        const entry = Object.entries(designs).find(function ([, design]) {
+            return design && design.logo;
+        });
+        if (!entry || !sourceColorImage) return null;
+        const position = entry[0];
+        const design = entry[1];
+        return {
+            type: 'garment-logo-preview',
+            version: 1,
+            area: position,
+            garmentImage: sourceColorImage,
+            garmentBox: { left: 0, top: 0, width: 100, height: 100 },
+            logoImage: design.logo,
+            logoBox: mobileLogoBoxForPosition(position),
+            logoRotation: 0,
+            garmentHex: colorHex || '',
+            colorName: colorName || '',
+            wrapAspect: 1
+        };
+    }
+
+    async function addToQuote(options = {}) {
         const { silent = false } = options; // silent = true skips the success modal
         debugLog('🛒 addToQuote called, silent:', silent, 'state.quantity:', state.quantity, 'sizeQuantities:', JSON.stringify(state.sizeQuantities));
 
@@ -10567,12 +10665,14 @@
         const baseProductName = state.product?.name || 'Gildan Softstyle™ Midweight Hoodie';
         const baseColor = state.selectedColorName || state.selectedColor;
         const baseColorId = state.selectedColor;
-        const baseColorImage = state.selectedColorImage;
+        const sourceColorImage = state.selectedColorImage;
         let baseColorHex = getSelectedColorHex();
         if (!baseColorHex && window.BrandedColorHex && baseColor) {
-            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, baseColorImage, baseColorId) || BrandedColorHex.lookupByName(baseColor, baseColorId) || '';
+            baseColorHex = BrandedColorHex.lookup(baseColor, baseProductCode, sourceColorImage, baseColorId) || BrandedColorHex.lookupByName(baseColor, baseColorId) || '';
             if (baseColorHex) BrandedColorHex.register(baseColor, baseColorHex, baseProductCode);
         }
+        const baseColorImage = await getBasketGarmentImage(sourceColorImage, baseColorHex);
+        const baseDesignPreview = buildMobileDesignPreviewForBasket(basePositionDesigns, sourceColorImage, baseColorHex, baseColor);
         const baseNote = state.itemNote || '';
         const now = new Date().toISOString();
 
@@ -10597,6 +10697,7 @@
                 existing.colorId = baseColorId;
                 existing.colorImage = baseColorImage || existing.colorImage;
                 existing.image = existing.colorImage;
+                existing.sourceColorImage = sourceColorImage || existing.sourceColorImage || '';
                 if (baseColorHex) existing.colorHex = baseColorHex;
                 const sizeEntries = Object.entries(state.sizeQuantities || {}).filter(([, q]) => q > 0);
                 if (sizeEntries.length >= 1) {
@@ -10606,6 +10707,7 @@
                 existing.unitPrice = currentUnitPrice;
                 existing.positions = positions;
                 existing.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                existing.designPreview = baseDesignPreview ? JSON.parse(JSON.stringify(baseDesignPreview)) : existing.designPreview;
                 syncBasketItemLogos(existing);
                 clearBasketLogoPromptIfHasLogo(existing);
                 existing.id = makeBasketRowId(code, existing.color, existing.size);
@@ -10621,6 +10723,7 @@
                 const existing = basket[existingIdx];
                 existing.positions = positions;
                 existing.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                existing.designPreview = baseDesignPreview ? JSON.parse(JSON.stringify(baseDesignPreview)) : existing.designPreview;
                 syncBasketItemLogos(existing);
                 clearBasketLogoPromptIfHasLogo(existing);
                 existing.customizations = getActiveCustomizations().map(c => ({
@@ -10631,6 +10734,8 @@
                 existing.color = baseColor;
                 existing.colorId = baseColorId;
                 existing.colorImage = baseColorImage || existing.colorImage;
+                existing.image = existing.colorImage;
+                existing.sourceColorImage = sourceColorImage || existing.sourceColorImage || '';
                 if (baseColorHex) existing.colorHex = baseColorHex;
                 const quantityKeys = Object.keys(existing.quantities || {});
                 debugLog('🔄 Updated basket item in-place:', existing.productName, existing.color, quantityKeys.join(','));
@@ -10643,11 +10748,14 @@
                 const existing = basket[basketIdx];
                 existing.positions = positions;
                 existing.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                existing.designPreview = baseDesignPreview ? JSON.parse(JSON.stringify(baseDesignPreview)) : existing.designPreview;
                 syncBasketItemLogos(existing);
                 clearBasketLogoPromptIfHasLogo(existing);
                 existing.color = baseColor;
                 existing.colorId = baseColorId;
                 existing.colorImage = baseColorImage || existing.colorImage;
+                existing.image = existing.colorImage;
+                existing.sourceColorImage = sourceColorImage || existing.sourceColorImage || '';
                 if (baseColorHex) existing.colorHex = baseColorHex;
                 // Propagate logos to sibling rows with same product+colour (positions-only flow)
                 const key = (existing.productCode || existing.code || '') + '|' + (existing.color || '');
@@ -10657,8 +10765,12 @@
                     if (itemKey === key) {
                         item.positions = JSON.parse(JSON.stringify(positions));
                         item.positionDesigns = JSON.parse(JSON.stringify(basePositionDesigns));
+                        item.designPreview = baseDesignPreview ? JSON.parse(JSON.stringify(baseDesignPreview)) : item.designPreview;
                         syncBasketItemLogos(item);
                         clearBasketLogoPromptIfHasLogo(item);
+                        item.colorImage = baseColorImage || item.colorImage;
+                        item.image = item.colorImage;
+                        item.sourceColorImage = sourceColorImage || item.sourceColorImage || '';
                         if (baseColorHex) item.colorHex = baseColorHex;
                     }
                 });
@@ -10703,6 +10815,8 @@
                     colorId: baseColorId,
                     colorHex: baseColorHex,
                     colorImage: baseColorImage,
+                    image: baseColorImage,
+                    sourceColorImage: sourceColorImage || '',
                     productType: state.product?.productType || '',
                     quantities: { [size]: qty },
                     totalQty: qty,
@@ -10712,6 +10826,7 @@
                     priceMode: priceMode,
                     positions: sizePositions,
                     positionDesigns: positionsHaveLogo ? JSON.parse(JSON.stringify(basePositionDesigns)) : {},
+                    designPreview: positionsHaveLogo && baseDesignPreview ? JSON.parse(JSON.stringify(baseDesignPreview)) : undefined,
                     customizations: sizeCustomizations,
                     note: baseNote,
                     addedAt: now
@@ -10917,7 +11032,7 @@
             .map(([size]) => `${item.color}, ${size}`)
             .join('<br>');
         
-        const itemImage = item.colorImage || state.selectedColorImage || '';
+        const itemImage = item.sourceColorImage || state.selectedColorImage || item.image || item.colorImage || '';
         const unitPrice = item.unitPrice || 0;
         const totalPrice = unitPrice * (item.totalQty || 0);
         const vatMode = localStorage.getItem('brandeduk-vat-mode') === 'on';

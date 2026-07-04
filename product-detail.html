@@ -42,6 +42,11 @@
             document.getElementById('canonicalLink').setAttribute('href', cleanUrl);
             document.getElementById('ogUrl').setAttribute('content', cleanUrl);
             document.getElementById('twitterUrl').setAttribute('content', cleanUrl);
+
+            var isMobile = window.innerWidth < 1280 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+            if (isMobile && code) {
+                window.location.replace('mobile/customize-mobile.html?code=' + encodeURIComponent(code));
+            }
         })();
     </script>
 

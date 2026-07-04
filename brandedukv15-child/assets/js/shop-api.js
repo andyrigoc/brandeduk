@@ -399,6 +399,7 @@ const ShopManager = (function () {
             try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
             const url = new URL(targetPage, window.location.origin);
+            url.searchParams.set('code', product.code || '');
             if (currentState.color) {
                 url.searchParams.set('color', currentState.color);
             }
