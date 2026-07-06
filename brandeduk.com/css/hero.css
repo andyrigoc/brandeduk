@@ -406,10 +406,12 @@
     transform: translate3d(0%, 0, 0);
 }
 .hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
-.hero-el:nth-child(1).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(1) .hero-el__bg:before {
     transition-delay: 0s;
-    background-image: url('../../hero/images/desktop/T-shirthero-desktop.webp');
     background-position: center center;
+}
+.hero-el:nth-child(1).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/T-shirthero-desktop.webp');
 }
 
 /* 2. Hoodies */
@@ -417,10 +419,12 @@
     transform: translate3d(calc(100% + 12px), 0, 0);
 }
 .hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.06s; }
-.hero-el:nth-child(2).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(2) .hero-el__bg:before {
     transition-delay: 0.06s;
+    background-position: calc(50% - 120px) center;
+}
+.hero-el:nth-child(2).is-bg-ready .hero-el__bg:before {
     background-image: url('../../hero/images/desktop/hoodies-desktop.webp');
-    background-position: calc(50% + 262px) center;
 }
 
 /* 3. Beanies */
@@ -428,10 +432,12 @@
     transform: translate3d(calc(200% + 24px), 0, 0);
 }
 .hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.12s; }
-.hero-el:nth-child(3).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(3) .hero-el__bg:before {
     transition-delay: 0.12s;
-    background-image: url('../../hero/images/desktop/beanie-desktop.webp');
     background-position: center top;
+}
+.hero-el:nth-child(3).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/beanie-desktop.webp');
 }
 
 /* 4. Bags */
@@ -439,10 +445,12 @@
     transform: translate3d(calc(300% + 36px), 0, 0);
 }
 .hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.18s; }
-.hero-el:nth-child(4).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(4) .hero-el__bg:before {
     transition-delay: 0.18s;
+    background-position: calc(50% + 145px) center;
+}
+.hero-el:nth-child(4).is-bg-ready .hero-el__bg:before {
     background-image: url('../../hero/images/desktop/bag-desktop.webp');
-    background-position: center center;
 }
 
 /* 5. Aprons */
@@ -450,10 +458,12 @@
     transform: translate3d(calc(400% + 48px), 0, 0);
 }
 .hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.24s; }
-.hero-el:nth-child(5).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(5) .hero-el__bg:before {
     transition-delay: 0.24s;
-    background-image: url('../../hero/images/desktop/apron-desktop.webp');
     background-position: calc(50% + 250px) center;
+}
+.hero-el:nth-child(5).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/apron-desktop.webp');
 }
 
 /* 6. Hi-Viz */
@@ -461,10 +471,12 @@
     transform: translate3d(calc(500% + 60px), 0, 0);
 }
 .hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.30s; }
-.hero-el:nth-child(6).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(6) .hero-el__bg:before {
     transition-delay: 0.30s;
-    background-image: url('../../hero/images/desktop/Hi-Viz-desktop.webp');
     background-position: calc(50% + 40px) calc(50% - 10px);
+}
+.hero-el:nth-child(6).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/Hi-Viz-desktop.webp');
 }
 
 .hero-cont:not(.s--inactive) .hero-el:nth-child(6):not(.s--active) .hero-el__bg:before {
@@ -476,10 +488,12 @@
     transform: translate3d(calc(600% + 72px), 0, 0);
 }
 .hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.36s; }
-.hero-el:nth-child(7).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(7) .hero-el__bg:before {
     transition-delay: 0.36s;
-    background-image: url('../../hero/images/desktop/Polo-desktop.webp');
     background-position: center center;
+}
+.hero-el:nth-child(7).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/Polo-desktop.webp');
 }
 
 /* 8. Jackets */
@@ -487,10 +501,12 @@
     transform: translate3d(calc(700% + 84px), 0, 0);
 }
 .hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.42s; }
-.hero-el:nth-child(8).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(8) .hero-el__bg:before {
     transition-delay: 0.42s;
-    background-image: url('../../hero/images/desktop/Jacket-desktop.webp');
     background-position: center center;
+}
+.hero-el:nth-child(8).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/Jacket-desktop.webp');
 }
 
 /* 9. Sustainable */
@@ -498,10 +514,12 @@
     transform: translate3d(calc(800% + 96px), 0, 0);
 }
 .hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.48s; }
-.hero-el:nth-child(9).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(9) .hero-el__bg:before {
     transition-delay: 0.48s;
-    background-image: url('../../hero/images/desktop/Sustainable-desktop.webp');
     background-position: center center;
+}
+.hero-el:nth-child(9).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/Sustainable-desktop.webp');
 }
 
 .hero-cont:not(.s--inactive) .hero-el:nth-child(9):not(.s--active) .hero-el__bg:before {
@@ -514,10 +532,12 @@
     transform: translate3d(calc(900% + 108px), 0, 0);
 }
 .hero-el:nth-child(10) .hero-el__inner { transition-delay: 0.54s; }
-.hero-el:nth-child(10).is-bg-ready .hero-el__bg:before {
+.hero-el:nth-child(10) .hero-el__bg:before {
     transition-delay: 0.54s;
-    background-image: url('../../hero/images/desktop/WorkTrousers-desktop.webp');
     background-position: center center;
+}
+.hero-el:nth-child(10).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/desktop/WorkTrousers-desktop.webp');
 }
 
 /* Inactive states for non-active elements */
