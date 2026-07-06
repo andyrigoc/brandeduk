@@ -442,7 +442,7 @@
 }
 .hero-el:nth-child(1) .hero-el__inner { transition-delay: 0s; }
 .hero-el:nth-child(1) .hero-el__bg { transform: none; }
-.hero-el:nth-child(1) .hero-el__bg:before { 
+.hero-el:nth-child(1).is-bg-ready .hero-el__bg:before {
   transition-delay: 0s;
   background-image: url('../../hero/images/T-shirthero.jpg');
   background-position: center center;
@@ -471,7 +471,7 @@
 }
 .hero-el:nth-child(2) .hero-el__inner { transition-delay: 0.07s; }
 .hero-el:nth-child(2) .hero-el__bg { transform: none; }
-.hero-el:nth-child(2) .hero-el__bg:before { 
+.hero-el:nth-child(2).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.07s;
   background-image: url('../../hero/images/hoodies.jpg');
   background-position: center center;
@@ -517,7 +517,7 @@
 }
 .hero-el:nth-child(3) .hero-el__inner { transition-delay: 0.14s; }
 .hero-el:nth-child(3) .hero-el__bg { transform: none; }
-.hero-el:nth-child(3) .hero-el__bg:before { 
+.hero-el:nth-child(3).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.14s;
   background-image: url('../../hero/images/beanie.jpg');
   background-position: center center;
@@ -535,7 +535,7 @@
 }
 .hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.21s; }
 .hero-el:nth-child(4) .hero-el__bg { transform: none; }
-.hero-el:nth-child(4) .hero-el__bg:before { 
+.hero-el:nth-child(4).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.21s;
   background-image: url('../../hero/images/bag.jpg');
   background-position: center center;
@@ -575,7 +575,7 @@
 }
 .hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.28s; }
 .hero-el:nth-child(5) .hero-el__bg { transform: none; }
-.hero-el:nth-child(5) .hero-el__bg:before { 
+.hero-el:nth-child(5).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.28s;
   background-image: url('../../hero/images/apron.jpg');
   background-position: center center;
@@ -610,7 +610,7 @@
 }
 .hero-el:nth-child(6) .hero-el__inner { transition-delay: 0.35s; }
 .hero-el:nth-child(6) .hero-el__bg { transform: none; }
-.hero-el:nth-child(6) .hero-el__bg:before { 
+.hero-el:nth-child(6).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.35s;
   background-image: url('../../hero/images/Hi-Viz.jpg');
   background-position: center center;
@@ -628,7 +628,7 @@
 }
 .hero-el:nth-child(7) .hero-el__inner { transition-delay: 0.42s; }
 .hero-el:nth-child(7) .hero-el__bg { transform: none; }
-.hero-el:nth-child(7) .hero-el__bg:before { 
+.hero-el:nth-child(7).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.42s;
   background-image: url('../../hero/images/Polo.jpg');
   background-position: center center;
@@ -646,7 +646,7 @@
 }
 .hero-el:nth-child(8) .hero-el__inner { transition-delay: 0.49s; }
 .hero-el:nth-child(8) .hero-el__bg { transform: none; }
-.hero-el:nth-child(8) .hero-el__bg:before {
+.hero-el:nth-child(8).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.49s;
   background-image: url('../../hero/images/Jacket.jpeg');
   background-position: center center;
@@ -664,7 +664,7 @@
 }
 .hero-el:nth-child(9) .hero-el__inner { transition-delay: 0.56s; }
 .hero-el:nth-child(9) .hero-el__bg { transform: none; }
-.hero-el:nth-child(9) .hero-el__bg:before {
+.hero-el:nth-child(9).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.56s;
   background-image: url('../../hero/images/Sustainable.jpg');
   background-position: center center;
@@ -677,10 +677,43 @@
 }
 .hero-el:nth-child(10) .hero-el__inner { transition-delay: 0.63s; }
 .hero-el:nth-child(10) .hero-el__bg { transform: none; }
-.hero-el:nth-child(10) .hero-el__bg:before {
+.hero-el:nth-child(10).is-bg-ready .hero-el__bg:before {
   transition-delay: 0.63s;
   background-image: url('../../hero/images/WorkTrousers.jpg');
   background-position: center calc(50% + 10px);
+}
+
+@media (max-width: 767px) {
+  .hero-el:nth-child(1).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/T-shirthero-mobile.webp');
+  }
+  .hero-el:nth-child(2).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/hoodies-mobile.webp');
+  }
+  .hero-el:nth-child(3).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/beanie-mobile.webp');
+  }
+  .hero-el:nth-child(4).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/bag-mobile.webp');
+  }
+  .hero-el:nth-child(5).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/apron-mobile.webp');
+  }
+  .hero-el:nth-child(6).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/Hi-Viz-mobile.webp');
+  }
+  .hero-el:nth-child(7).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/Polo-mobile.webp');
+  }
+  .hero-el:nth-child(8).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/Jacket-mobile.webp');
+  }
+  .hero-el:nth-child(9).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/Sustainable-mobile.webp');
+  }
+  .hero-el:nth-child(10).is-bg-ready .hero-el__bg:before {
+    background-image: url('../../hero/images/mobile/WorkTrousers-mobile.webp');
+  }
 }
 
 /* Inactive states for non-active elements */

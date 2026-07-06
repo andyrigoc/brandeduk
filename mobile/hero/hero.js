@@ -8,6 +8,46 @@
   var $elsArr = [].slice.call($cont.querySelectorAll('.hero-el'));
   var $closeBtnsArr = [].slice.call($cont.querySelectorAll('.hero-el__close-btn'));
 
+  function revealHeroBackground($el) {
+    if ($el && !$el.classList.contains('is-bg-ready')) {
+      $el.classList.add('is-bg-ready');
+    }
+  }
+
+  function scheduleHeroBackgrounds() {
+    var firstVisibleCount = Math.min(5, $elsArr.length);
+    var queuedIndex = 0;
+
+    function revealVisibleBatch() {
+      if (queuedIndex < firstVisibleCount) {
+        revealHeroBackground($elsArr[queuedIndex]);
+        queuedIndex += 1;
+        setTimeout(revealVisibleBatch, 90);
+        return;
+      }
+      scheduleRemainingBatch();
+    }
+
+    function scheduleRemainingBatch() {
+      var runNext = function() {
+        if (queuedIndex >= $elsArr.length) return;
+        revealHeroBackground($elsArr[queuedIndex]);
+        queuedIndex += 1;
+        setTimeout(scheduleRemainingBatch, 450);
+      };
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(runNext, { timeout: 1500 });
+      } else {
+        setTimeout(runNext, 650);
+      }
+    }
+
+    revealVisibleBatch();
+  }
+
+  scheduleHeroBackgrounds();
+
   // Remove s--inactive after a short delay to trigger animation
   setTimeout(function() {
     $cont.classList.remove('s--inactive');
@@ -35,6 +75,7 @@
   function handlePanelActivation($el) {
     var category = $el.getAttribute('data-category');
     if (!category) return;
+    revealHeroBackground($el);
 
     // Expand visually first, then navigate after animation completes
     $cont.classList.add('s--el-active');

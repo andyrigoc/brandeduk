@@ -9,6 +9,27 @@
     var $elsArr = [].slice.call($cont.querySelectorAll('.hero-el'));
     var $closeBtnsArr = [].slice.call($cont.querySelectorAll('.hero-el__close-btn'));
 
+    function revealHeroBackground($el) {
+        if ($el && !$el.classList.contains('is-bg-ready')) {
+            $el.classList.add('is-bg-ready');
+        }
+    }
+
+    function scheduleHeroBackgrounds() {
+        var queuedIndex = 0;
+
+        function revealNext() {
+            if (queuedIndex >= $elsArr.length) return;
+            revealHeroBackground($elsArr[queuedIndex]);
+            queuedIndex += 1;
+            setTimeout(revealNext, queuedIndex <= 5 ? 70 : 180);
+        }
+
+        revealNext();
+    }
+
+    scheduleHeroBackgrounds();
+
     // Remove s--inactive after a short delay to trigger animation
     setTimeout(function() {
         $cont.classList.remove('s--inactive');
@@ -53,6 +74,7 @@
             }
             
             // Step 1: Expand this panel (visual effect)
+            revealHeroBackground(this);
             $cont.classList.add('s--el-active');
             this.classList.add('s--active');
 

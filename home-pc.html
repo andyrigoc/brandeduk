@@ -159,7 +159,7 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
-    <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260109e">
+    <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260706a">
     <style>
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
@@ -3298,7 +3298,7 @@
 <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
 <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
 <script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
-<script src="brandeduk.com/js/hero.js?v=20251230"></script>
+<script src="brandeduk.com/js/hero.js?v=20260706a"></script>
 <script src="brandeduk.com/js/main.js?v=20260117"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
@@ -3781,6 +3781,10 @@ document.addEventListener('DOMContentLoaded', function() {
 (function() {
     'use strict';
 
+    var FEATURED_API_LIMIT = 16;
+    var FEATURED_RENDER_LIMIT = 16;
+    var featuredLoadStarted = false;
+
     // VAT helpers (reuse page-level if available)
     var VAT_KEY = 'brandeduk-vat-mode';
     function _isVatOn() {
@@ -3854,7 +3858,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '<div class="fc-media">' +
                 '<div class="fc-badges">' + badges + '</div>' +
                 '<div class="fc-figure">' +
-                    '<img src="' + (item.image || '') + '" alt="' + (item.style_name||'') + '" loading="lazy">' +
+                    '<img src="' + (item.image || '') + '" alt="' + (item.style_name||'') + '" loading="lazy" decoding="async" fetchpriority="low" width="320" height="400">' +
                 '</div>' +
             '</div>' +
             '<div class="fc-info">' +
@@ -3920,15 +3924,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var carouselContainer = document.getElementById('featuredProductsCarousel');
         var prevBtn = document.getElementById('featPrev');
         var nextBtn = document.getElementById('featNext');
-        if (!carouselContainer) return;
+        if (!carouselContainer || featuredLoadStarted) return;
+        featuredLoadStarted = true;
 
         try {
-            var res = await fetch('https://api.brandeduk.com/api/admin/products/featured?type=featured&limit=500');
+            var res = await fetch('https://api.brandeduk.com/api/admin/products/featured?type=featured&limit=' + FEATURED_API_LIMIT);
             if (!res.ok) throw new Error('Network response was not ok');
             var data = await res.json();
 
             carouselContainer.innerHTML = '';
-            var items = data.items || [];
+            var items = (data.items || []).slice(0, FEATURED_RENDER_LIMIT);
 
             if (items.length === 0) {
                 carouselContainer.parentElement.innerHTML = '<div class="featured-error"><h3>No featured products yet</h3><p>Check back soon for our top picks!</p></div>';
@@ -3936,7 +3941,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Create enough duplicates to fill the track at least once fully, then double it for exact infinite half-wrapping
-            var originalItems = items;
+            var originalItems = items.slice();
             while(originalItems.length < 8) { originalItems = originalItems.concat(items); }
             var renderItems = originalItems.concat(originalItems); // array is now doubled perfectly
 
@@ -3948,23 +3953,33 @@ document.addEventListener('DOMContentLoaded', function() {
             // Smooth infinite continuous scroll logic + Manual override
             var isHovered = false;
             var isManualScrolling = false;
+            var isInViewport = true;
             var manualTimeout;
             var cardWidth = 280 + 24; // card width + gap
+            var rafId = null;
 
             // Wait brief moment for layout/images to be processed
             setTimeout(function() {
                 var halfWidth = carouselContainer.scrollWidth / 2;
 
+                if ('IntersectionObserver' in window) {
+                    var wrapper = document.querySelector('.featured-products-wrapper') || carouselContainer;
+                    var animationObserver = new IntersectionObserver(function(entries) {
+                        isInViewport = entries.some(function(entry) { return entry.isIntersecting; });
+                    }, { rootMargin: '180px 0px' });
+                    animationObserver.observe(wrapper);
+                }
+
                 // 1) Continuous Auto Scroll Frame Loop
                 function loopScroll() {
-                    if (!isHovered && !isManualScrolling) {
+                    if (isInViewport && !document.hidden && !isHovered && !isManualScrolling) {
                         carouselContainer.scrollLeft += 0.8; // Slow, smooth speed
                         // Wrap at half to be seamless
                         if (carouselContainer.scrollLeft >= halfWidth) {
                             carouselContainer.scrollLeft -= halfWidth;
                         }
                     }
-                    requestAnimationFrame(loopScroll);
+                    rafId = requestAnimationFrame(loopScroll);
                 }
 
                 // 2) Manual Jump
@@ -4008,13 +4023,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, {passive:true});
 
                 // Start loop
-                requestAnimationFrame(loopScroll);
+                rafId = requestAnimationFrame(loopScroll);
             }, 100);
 
-            console.log('[Home] Featured products loaded (continuous scroll + manual):', items.length);
-
         } catch (err) {
-            console.error('[Home] Failed to load featured products:', err);
+            if (window.BRANDED_DEBUG) {
+                console.error('[Home] Failed to load featured products:', err);
+            }
             var errWrapper = document.querySelector('.featured-products-wrapper');
             if (errWrapper) {
                 errWrapper.innerHTML = '<div class="featured-error"><h3>Could not load featured products</h3><p>' + (err.message||'') + '</p><button onclick="location.reload()">Retry</button></div>';
@@ -4022,11 +4037,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Run after DOM + API script ready
+    function scheduleFeaturedProducts() {
+        var carouselContainer = document.getElementById('featuredProductsCarousel');
+        if (!carouselContainer) return;
+
+        var wrapper = document.querySelector('.featured-products-wrapper') || carouselContainer;
+        if ('IntersectionObserver' in window) {
+            var loadObserver = new IntersectionObserver(function(entries, observer) {
+                if (entries.some(function(entry) { return entry.isIntersecting; })) {
+                    observer.disconnect();
+                    loadFeaturedProducts();
+                }
+            }, { rootMargin: '700px 0px' });
+            loadObserver.observe(wrapper);
+            return;
+        }
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadFeaturedProducts, { timeout: 1800 });
+        } else {
+            setTimeout(loadFeaturedProducts, 1200);
+        }
+    }
+
+    // Run after DOM is ready, but defer the API work until the carousel is near the viewport.
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() { setTimeout(loadFeaturedProducts, 100); });
+        document.addEventListener('DOMContentLoaded', scheduleFeaturedProducts);
     } else {
-        setTimeout(loadFeaturedProducts, 100);
+        scheduleFeaturedProducts();
     }
 })();
 </script>
