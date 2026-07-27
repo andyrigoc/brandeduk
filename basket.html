@@ -2914,27 +2914,47 @@
 
     function _setCustomizeSessionData(item) {
         const code = item.code || item.productCode || '';
+
+        // Replace the previous tool context atomically. Conditional writes here
+        // used to leave the last basket item's garment/colour behind.
+        [
+            'selectedProduct',
+            'selectedProductData',
+            'selectedColorName',
+            'selectedColorId',
+            'selectedColorUrl',
+            'selectedColorHex'
+        ].forEach(function (key) {
+            sessionStorage.removeItem(key);
+        });
+
         sessionStorage.setItem('selectedProduct', code);
         if (item.color) sessionStorage.setItem('selectedColorName', item.color);
         if (item.colorId) sessionStorage.setItem('selectedColorId', item.colorId);
+        if (item.colorImage || item.image) {
+            sessionStorage.setItem('selectedColorUrl', item.colorImage || item.image);
+        }
+        if (item.colorHex) sessionStorage.setItem('selectedColorHex', item.colorHex);
+
         const itemName = item.productName || item.name || '';
         const lname = String(itemName).toLowerCase();
-        // Try to infer product type from explicit field first, then from name keywords.
-        let inferredType = item.productType || '';
-        if (!inferredType) {
-            if (lname.includes('apron'))                        inferredType = 'Aprons';
-            else if (lname.includes('beanie'))                  inferredType = 'Beanies';
-            else if (lname.includes('cap') || lname.includes('hat')) inferredType = 'Caps';
-            else if (lname.includes('hi-vis') || lname.includes('hivis') || lname.includes('hi vis')) inferredType = 'HiVis';
-            else if (lname.includes('hoodie') || lname.includes('hooded')) inferredType = 'Hoodies';
-            else if (lname.includes('jacket') || lname.includes('softshell') || lname.includes('coat')) inferredType = 'Jackets';
-            else if (lname.includes('polo'))                    inferredType = 'Polos';
-            else if (lname.includes('fleece'))                  inferredType = 'Fleeces';
-            else if (lname.includes('bag'))                     inferredType = 'Bags';
-            else if (lname.includes('t-shirt') || lname.includes('tshirt') || lname.includes('t shirt')) inferredType = 'T-Shirts';
-            else if (lname.includes('sweat'))                   inferredType = 'Sweatshirts';
-            else if (lname.includes('trouser') || lname.includes('pant'))      inferredType = 'Workwear';
-        }
+        // A strong match in the current product name wins over an old/misclassified
+        // basket field. The product API will still provide the final authority.
+        let nameInferredType = '';
+        if (lname.includes('apron'))                        nameInferredType = 'Aprons';
+        else if (lname.includes('beanie'))                  nameInferredType = 'Beanies';
+        else if (lname.includes('cap') || lname.includes('hat')) nameInferredType = 'Caps';
+        else if (lname.includes('hi-vis') || lname.includes('hivis') || lname.includes('hi vis')) nameInferredType = 'Hi Vis';
+        else if (lname.includes('hoodie') || lname.includes('hooded')) nameInferredType = 'Hoodies';
+        else if (lname.includes('jacket') || lname.includes('softshell') || lname.includes('coat')) nameInferredType = 'Jackets';
+        else if (lname.includes('polo'))                    nameInferredType = 'Polos';
+        else if (lname.includes('fleece'))                  nameInferredType = 'Fleece';
+        else if (lname.includes('bag'))                     nameInferredType = 'Bags';
+        else if (lname.includes('t-shirt') || lname.includes('tshirt') || lname.includes('t shirt')) nameInferredType = 'T-Shirts';
+        else if (lname.includes('sweat'))                   nameInferredType = 'Sweatshirts';
+        else if (lname.includes('trouser') || lname.includes('pant')) nameInferredType = 'Trousers';
+        const inferredType = nameInferredType || item.productType || '';
+
         sessionStorage.setItem('selectedProductData', JSON.stringify({
             code: code,
             name: itemName,
@@ -2943,10 +2963,13 @@
             colorImage: item.colorImage || item.image || '',
             brand: item.brand || '',
             productType: inferredType,
+            customizationVariantKey: item.customizationVariantKey || '',
             description: itemName,
             color: item.color || '',
             colorId: item.colorId || '',
             colorHex: item.colorHex || '',
+            selectedColorName: item.color || '',
+            selectedColorImage: item.colorImage || item.image || '',
             size: item.size || '',
             qty: item.qty || 1
         }));

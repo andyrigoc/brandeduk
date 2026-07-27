@@ -3048,6 +3048,10 @@ textarea {
   z-index: 50;
 }
 
+.view-tabs-side .view-tab[hidden] {
+  display: none !important;
+}
+
 .view-tabs-side .view-tab[data-area="left-sleeve"] {
   display: none;
 }

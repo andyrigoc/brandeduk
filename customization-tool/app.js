@@ -1,5 +1,9 @@
 const state = {
   product: "polo",
+  customizationProductTypeSlug: "polos",
+  customizationVariantKey: "",
+  customizationConfig: null,
+  customizationConfigKey: "",
   productName: "Polo",
   productCode: "SKU-2024",
   brandName: "GILDAN",
@@ -229,6 +233,11 @@ function updateAvailableColoursLabel() {
 /** PNG neutro per area (sidebar / mockup) — mai il thumbnail API. */
 function resolveNeutralGarmentPngForArea(area) {
   const normalizedArea = String(area || "front").trim() || "front";
+  const configuredImage = resolveConfiguredGarmentImage(normalizedArea);
+  if (configuredImage) {
+    return configuredImage;
+  }
+
   if (state.product === "beanie") {
     return beanieFrontImage;
   }
@@ -1000,6 +1009,20 @@ function applySelectedProductContext() {
   const params = new URLSearchParams(window.location.search);
   const urlCode = String(params.get("code") || "").trim();
 
+  // Never let product data left in the session by a previously viewed item
+  // choose the garment/configuration for a different code in the URL.
+  if (selectedProductData && urlCode) {
+    const selectedCode = String(
+      selectedProductData.code
+      || selectedProductData.productCode
+      || selectedProductData.sku
+      || ""
+    ).trim();
+    if (!selectedCode || selectedCode.toLowerCase() !== urlCode.toLowerCase()) {
+      selectedProductData = null;
+    }
+  }
+
   if (!selectedProductData && urlCode) {
     try {
       const basket = JSON.parse(localStorage.getItem("quoteBasket") || "[]");
@@ -1011,6 +1034,8 @@ function applySelectedProductContext() {
         selectedProductData = {
           code: matched.productCode || matched.code,
           name: matched.productName || matched.name,
+          productType: matched.productType || "",
+          customizationVariantKey: matched.customizationVariantKey || "",
           brand: matched.brand || "",
           brandLogo: matched.brandLogo || "",
           color: matched.color || "",
@@ -1027,9 +1052,32 @@ function applySelectedProductContext() {
 
   state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
+  const selectedProductType =
+    selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type;
+  // With only a URL code, wait for the product API to identify the type. Using
+  // the hard-coded initial "Polo" context here starts the wrong mockup request.
+  const selectedCustomizationSlug = selectedProductData
+    ? resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
+    : (urlCode ? "" : resolveCustomizationProductTypeSlug(state.productName, selectedProductType));
+  const selectedCustomizationVariant = selectedCustomizationSlug === "bags"
+    ? resolveCustomizationVariantKey(
+      state.productName,
+      selectedProductType,
+      selectedProductData?.customizationVariantKey
+    )
+    : "";
+  if (
+    selectedCustomizationSlug !== state.customizationProductTypeSlug
+    || selectedCustomizationVariant !== state.customizationVariantKey
+  ) {
+    state.customizationProductTypeSlug = selectedCustomizationSlug;
+    state.customizationVariantKey = selectedCustomizationVariant;
+    state.customizationConfig = null;
+    state.customizationConfigKey = "";
+  }
   const contextProductType = inferProductTypeFromCatalog(
     state.productName,
-    selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type
+    selectedProductType
   );
   if (contextProductType) {
     state.product = contextProductType;
@@ -1092,15 +1140,37 @@ async function hydrateSelectedProductFromApi() {
     state.brandName = productData.brand || productData.brand_name || state.brandName;
     state.brandLogo = resolveBrandLogoUrl(state.brandName, productData);
 
+    const apiProductType = productData.productType || productData.category || productData.type;
+    const apiCustomizationSlug =
+      resolveCustomizationProductTypeSlug(state.productName, apiProductType);
+    const apiCustomizationVariant = apiCustomizationSlug === "bags"
+      ? resolveCustomizationVariantKey(state.productName, apiProductType)
+      : "";
+    if (
+      apiCustomizationSlug !== state.customizationProductTypeSlug
+      || apiCustomizationVariant !== state.customizationVariantKey
+    ) {
+      state.customizationProductTypeSlug = apiCustomizationSlug;
+      state.customizationVariantKey = apiCustomizationVariant;
+      state.customizationConfig = null;
+      state.customizationConfigKey = "";
+    }
     const inferredType = inferProductTypeFromCatalog(
       state.productName,
-      productData.productType || productData.category || productData.type
+      apiProductType
     );
     if (inferredType) {
       state.product = inferredType;
       if (productSelect) productSelect.value = inferredType;
       if (mainProductSelect) mainProductSelect.value = inferredType;
       configureViewTabsForProduct();
+    }
+
+    // Resolve and display the correct neutral garment before starting the much
+    // slower colour-image analysis below.
+    const customizationLoaded = await loadCustomizationConfigForCurrentProduct();
+    if (customizationLoaded) {
+      await applyArea();
     }
 
     colourImageByName = buildColourImageMap(productData);
@@ -1134,25 +1204,31 @@ async function hydrateSelectedProductFromApi() {
     renderColours();
     renderMiniColours();
 
-    const refined = await refineSwatchesFromVariantImages(productData, productCode);
-    const filled = fillMissingCatalogueColourHexes(productCode);
-    const sampledAll = await hydrateGarmentColoursFromThumbs(productCode);
-    if (refined || filled || sampledAll) {
-      syncCurrentColourHexFromPalette();
-      renderColours();
-      renderMiniColours();
-    }
+    // Refine the palette in the background. This can download dozens of colour
+    // thumbnails and must not delay or replace the correct garment mockup.
+    (async () => {
+      const refined = await refineSwatchesFromVariantImages(productData, productCode);
+      const filled = fillMissingCatalogueColourHexes(productCode);
+      const sampledAll = await hydrateGarmentColoursFromThumbs(productCode);
+      if (refined || filled || sampledAll) {
+        syncCurrentColourHexFromPalette();
+        renderColours();
+        renderMiniColours();
+      }
 
-    await refreshColourHexFromProductThumb();
-    const tintHex = resolveGarmentDisplayHex(
-      state.colourHex,
-      state.colourName,
-      productCode,
-      state.selectedColorImage
-    ) || "#ffffff";
-    if (colourLayer) colourLayer.style.backgroundColor = tintHex;
-    syncViewThumbTint();
-    applyArea();
+      await refreshColourHexFromProductThumb();
+      const tintHex = resolveGarmentDisplayHex(
+        state.colourHex,
+        state.colourName,
+        productCode,
+        state.selectedColorImage
+      ) || "#ffffff";
+      if (colourLayer) colourLayer.style.backgroundColor = tintHex;
+      syncViewThumbTint();
+      applyArea();
+    })().catch(() => {
+      // Keep the already-rendered garment when optional colour sampling fails.
+    });
   } catch (error) {
     // keep session/fallback product data when API is unavailable
   } finally {
@@ -1366,6 +1442,10 @@ const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png"
 const beanieFrontImage = "https://i.postimg.cc/xdX8y8Mr/beanie-folding.png";
 
 const garmentImageLoadCache = new Map();
+const customizationConfigCache = new Map();
+let customizationConfigRequestId = 0;
+let customizationConfigActivationSlug = "";
+let customizationConfigActivationPromise = null;
 let areaRenderRequestId = 0;
 // Tracks the last print area we re-centred for, so a colour-only refresh
 // (which also calls applyArea) does NOT yank the logo back to centre.
@@ -1407,9 +1487,259 @@ function ensureGarmentImageLoaded(url) {
 })();
 
 function getFrontThumbImageSrc() {
+  const configuredFront = resolveConfiguredGarmentImage("front");
+  if (configuredFront) return configuredFront;
   if (state.product === "beanie") return beanieFrontImage;
   if (state.product === "tshirt") return tshirtFrontCustomImage;
   return tshirtImages.front;
+}
+
+const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
+  "aprons",
+  "bags",
+  "beanies",
+  "caps",
+  "fleece",
+  "gilets-body-warmers",
+  "hats",
+  "safety-vests",
+  "hoodies",
+  "jackets",
+  "polos",
+  "shirts",
+  "shorts",
+  "softshells",
+  "sweatpants",
+  "sweatshirts",
+  "trousers",
+  "tshirts",
+  "vests-t-shirt"
+]);
+
+function normalizeProductTypeSlug(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function resolveCustomizationProductTypeSlug(name, productType) {
+  const explicit = normalizeProductTypeSlug(productType);
+  if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
+
+  const text = `${productType || ""} ${name || ""}`.toLowerCase();
+  if (/hi[\s-]?vis|high[\s-]?vis|safety vest/.test(text)) return "safety-vests";
+  if (/gilet|body[\s-]?warmer/.test(text)) return "gilets-body-warmers";
+  if (/soft[\s-]?shell/.test(text)) return "softshells";
+  if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text)) return "sweatpants";
+  if (/sweatshirt|crew neck sweat|raglan sweat/.test(text)) return "sweatshirts";
+  if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text)) return "beanies";
+  if (/\bcap\b|baseball cap|snapback|trucker|visor/.test(text)) return "caps";
+  if (/\bapron/.test(text)) return "aprons";
+  if (/\bhoodie|hooded/.test(text)) return "hoodies";
+  if (/\bfleece/.test(text)) return "fleece";
+  if (/\bpolo/.test(text)) return "polos";
+  if (/t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
+  if (/\bvest top\b|sleeveless t[\s-]?shirt/.test(text)) return "vests-t-shirt";
+  if (/\bjacket|\bparka|\bcoat|\banorak|windbreaker/.test(text)) return "jackets";
+  if (/\btrouser|\bchino|\bpants?\b/.test(text)) return "trousers";
+  if (/\bshorts?\b/.test(text) && !/\bshirt/.test(text)) return "shorts";
+  if (/\bbag\b|rucksack|backpack|holdall|duffle|duffel|tote/.test(text)) return "bags";
+  if (/\bshirt|\bblouse/.test(text)) return "shirts";
+  if (/\bhat\b|headwear/.test(text)) return "hats";
+  return "";
+}
+
+const BAG_CUSTOMIZATION_VARIANTS = new Set([
+  "backpack",
+  "tote",
+  "holdall",
+  "laptop-document"
+]);
+
+function resolveCustomizationVariantKey(name, productType, explicitVariantKey = "") {
+  const explicit = normalizeProductTypeSlug(explicitVariantKey);
+  if (BAG_CUSTOMIZATION_VARIANTS.has(explicit)) return explicit;
+
+  const text = `${productType || ""} ${name || ""}`.toLowerCase();
+  const isBag = normalizeProductTypeSlug(productType) === "bags"
+    || /\bbag\b|backpack|rucksack|holdall|duffle|duffel|tote|briefcase/.test(text);
+  if (!isBag) return "";
+
+  if (
+    /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
+    || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
+  ) {
+    return "backpack";
+  }
+
+  if (
+    /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
+    || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
+  ) {
+    return "holdall";
+  }
+
+  if (
+    /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
+    || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
+  ) {
+    return "laptop-document";
+  }
+
+  if (
+    /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
+    || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
+    || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
+  ) {
+    return "tote";
+  }
+
+  // Pouches, wash bags, coolers and other uncommon silhouettes continue to use
+  // the generic bag configuration instead of being forced into a wrong subtype.
+  return "";
+}
+
+function getConfiguredPositionMap() {
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+    : [];
+  const map = {};
+  positions.forEach((position) => {
+    const slug = normalizeProductTypeSlug(position?.slug);
+    const imageUrl = String(position?.imageUrl || position?.image_url || "").trim();
+    if (slug && imageUrl) map[slug] = imageUrl;
+  });
+  return map;
+}
+
+function resolveConfiguredGarmentImage(area) {
+  const images = getConfiguredPositionMap();
+  const normalizedArea = normalizeProductTypeSlug(area) || "front";
+  if (images[normalizedArea]) return images[normalizedArea];
+  if (normalizedArea === "left") return images.left || images.sleeve || images.side || "";
+  if (normalizedArea === "right") return images.right || images.sleeve || images.side || images.left || "";
+  if (normalizedArea === "left-sleeve" || normalizedArea === "right-sleeve") {
+    return images.sleeve || images.side || images[normalizedArea] || "";
+  }
+  return "";
+}
+
+function getConfiguredViewAreas() {
+  const images = getConfiguredPositionMap();
+  if (Object.keys(images).length === 0) return null;
+  return {
+    front: Boolean(images.front),
+    back: Boolean(images.back),
+    left: Boolean(images.left || images.sleeve || images.side),
+    right: Boolean(images.right || images.sleeve || images.side || images.left)
+  };
+}
+
+function buildCustomizationConfigKey(productTypeSlug, variantKey = "") {
+  const slug = normalizeProductTypeSlug(productTypeSlug);
+  const subtype = normalizeProductTypeSlug(variantKey);
+  return subtype ? `${slug}::${subtype}` : slug;
+}
+
+async function fetchCustomizationConfig(productTypeSlug, variantKey = "") {
+  if (!productTypeSlug) return null;
+  const cacheKey = buildCustomizationConfigKey(productTypeSlug, variantKey);
+  if (!customizationConfigCache.has(cacheKey)) {
+    const url = new URL(
+      `${API_BASE_URL}/customization-config/${encodeURIComponent(productTypeSlug)}`
+    );
+    if (variantKey) url.searchParams.set("subtype", variantKey);
+    const request = fetch(
+      url.toString()
+    )
+      .then((response) => {
+        if (!response.ok) throw new Error(`Customization config ${response.status}`);
+        return response.json();
+      })
+      .then((body) => {
+        const config = body?.data || body;
+        if (!config || !Array.isArray(config.positions) || config.positions.length === 0) {
+          throw new Error("Customization config has no positions");
+        }
+        return config;
+      })
+      .catch((error) => {
+        customizationConfigCache.delete(cacheKey);
+        throw error;
+      });
+    customizationConfigCache.set(cacheKey, request);
+  }
+  return customizationConfigCache.get(cacheKey);
+}
+
+async function loadCustomizationConfigForCurrentProduct() {
+  const slug = state.customizationProductTypeSlug;
+  const variantKey = slug === "bags" ? state.customizationVariantKey : "";
+  const configKey = buildCustomizationConfigKey(slug, variantKey);
+  if (!slug) {
+    customizationConfigRequestId += 1;
+    customizationConfigActivationSlug = "";
+    customizationConfigActivationPromise = null;
+    state.customizationConfig = null;
+    state.customizationConfigKey = "";
+    configureViewTabsForProduct();
+    return false;
+  }
+
+  if (
+    state.customizationConfigKey === configKey
+    && Array.isArray(state.customizationConfig?.positions)
+  ) {
+    return true;
+  }
+
+  if (customizationConfigActivationSlug === configKey && customizationConfigActivationPromise) {
+    return customizationConfigActivationPromise;
+  }
+
+  const requestId = ++customizationConfigRequestId;
+  customizationConfigActivationSlug = configKey;
+  const activationPromise = (async () => {
+    try {
+      const config = await fetchCustomizationConfig(slug, variantKey);
+      const currentKey = buildCustomizationConfigKey(
+        state.customizationProductTypeSlug,
+        state.customizationProductTypeSlug === "bags" ? state.customizationVariantKey : ""
+      );
+      if (requestId !== customizationConfigRequestId || configKey !== currentKey) {
+        return false;
+      }
+      state.customizationConfig = config;
+      state.customizationConfigKey = configKey;
+      configureViewTabsForProduct();
+
+      // Warm every position image, but do not reject a valid API configuration
+      // merely because an image takes longer than an arbitrary timeout.
+      Promise.allSettled(
+        config.positions.map(position => ensureGarmentImageLoaded(position.imageUrl))
+      );
+      return true;
+    } catch (error) {
+      if (requestId === customizationConfigRequestId) {
+        state.customizationConfig = null;
+        state.customizationConfigKey = "";
+        configureViewTabsForProduct();
+      }
+      return false;
+    }
+  })();
+
+  customizationConfigActivationPromise = activationPromise;
+  activationPromise.finally(() => {
+    if (customizationConfigActivationPromise === activationPromise) {
+      customizationConfigActivationPromise = null;
+      customizationConfigActivationSlug = "";
+    }
+  });
+  return activationPromise;
 }
 
 function inferProductTypeFromCatalog(name, productType) {
@@ -1417,18 +1747,19 @@ function inferProductTypeFromCatalog(name, productType) {
   const type = String(productType || "").toLowerCase();
   if (/beanie|bobble hat|knit hat|wool hat/.test(label) || /beanie|headwear/.test(type)) return "beanie";
   if (/t\s*-?shirt|tee/.test(label) || /t-?shirt/.test(type)) return "tshirt";
-  if (/hoodie|sweatshirt/.test(label) || /hoodie|sweatshirt/.test(type)) return "hoodie";
-  if (/\bcap\b|baseball cap/.test(label) || /\bcap\b/.test(type)) return "cap";
+  if (/hoodie|sweatshirt|fleece|jacket|softshell|gilet|body warmer/.test(label) || /hoodie|sweatshirt|fleece|jacket|softshell|gilet/.test(type)) return "hoodie";
+  if (/\bcap\b|baseball cap|\bhat\b/.test(label) || /\bcap\b|headwear|\bhat\b/.test(type)) return "cap";
   if (/polo/.test(label) || /polo/.test(type)) return "polo";
+  if (/shirt|vest|apron|bag|trouser|short|pant/.test(label) || /shirt|vest|apron|bag|trouser|short|pant/.test(type)) return "tshirt";
   return "";
 }
 
 function restoreDefaultViewTabThumbs() {
   const thumbMap = {
-    front: tshirtImages.front,
-    back: tshirtImages.back,
-    left: tshirtImages.left,
-    right: tshirtImages.right
+    front: resolveConfiguredGarmentImage("front") || tshirtImages.front,
+    back: resolveConfiguredGarmentImage("back") || tshirtImages.back,
+    left: resolveConfiguredGarmentImage("left") || tshirtImages.left,
+    right: resolveConfiguredGarmentImage("right") || tshirtImages.right
   };
   Object.entries(thumbMap).forEach(([area, src]) => {
     const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
@@ -1438,6 +1769,7 @@ function restoreDefaultViewTabThumbs() {
 
 function configureViewTabsForProduct() {
   const isBeanie = state.product === "beanie";
+  const configuredAreas = getConfiguredViewAreas();
   const appRoot = document.querySelector(".customiser-app");
   if (appRoot) {
     appRoot.classList.toggle("product-beanie", isBeanie);
@@ -1447,14 +1779,26 @@ function configureViewTabsForProduct() {
     productPreview.classList.toggle("product-beanie", isBeanie);
   }
 
-  document.querySelectorAll('.view-tab[data-area="back"], .view-tab[data-area="left"], .view-tab[data-area="right"], .view-tab[data-area="left-sleeve"], .view-tab[data-area="right-sleeve"]').forEach((tab) => {
-    tab.hidden = isBeanie;
+  document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
+    const area = tab.dataset.area;
+    tab.hidden = configuredAreas
+      ? !configuredAreas[area]
+      : (isBeanie && area !== "front");
   });
 
   const frontTab = document.querySelector('.view-tab[data-area="front"]');
   if (frontTab) frontTab.hidden = false;
 
-  if (isBeanie) {
+  if (configuredAreas) {
+    restoreDefaultViewTabThumbs();
+    if (!configuredAreas[state.selectedArea]) {
+      state.selectedArea = configuredAreas.front
+        ? "front"
+        : Object.keys(configuredAreas).find(area => configuredAreas[area]) || "front";
+      document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
+      document.querySelector(`.view-tab[data-area="${state.selectedArea}"]`)?.classList.add("active-view");
+    }
+  } else if (isBeanie) {
     const frontThumb = frontTab?.querySelector(".view-thumb");
     if (frontThumb) frontThumb.src = beanieFrontImage;
     state.selectedArea = "front";
@@ -2027,6 +2371,8 @@ function buildBasketItemFromState() {
     productName: state.productName,
     brand: state.brandName || "",
     brandLogo: state.brandLogo || "",
+    productType: state.customizationConfig?.productType?.name || state.customizationProductTypeSlug || "",
+    customizationVariantKey: state.customizationVariantKey || "",
     colorsSnapshot: colours.map(([name, hex]) => ({ name, hex })),
     color: state.colourName,
     colorHex: state.colourHex,
@@ -2048,7 +2394,8 @@ function isNeutralToolMockupImage(url) {
 
   return Object.values(tshirtImages).some((imgUrl) => source.includes(imgUrl))
     || source.includes(tshirtFrontCustomImage)
-    || source.includes(beanieFrontImage);
+    || source.includes(beanieFrontImage)
+    || source.includes("/uploads/customization/");
 }
 
 function upsertBasketItemFromState() {
@@ -2126,12 +2473,22 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
   changer.style.display = changer.style.display === "none" ? "block" : "none";
 });
 
-productSelect.addEventListener("change", () => {
+productSelect.addEventListener("change", async () => {
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
+  state.customizationProductTypeSlug =
+    resolveCustomizationProductTypeSlug(state.productName, productSelect.value)
+    || state.customizationProductTypeSlug;
+  state.customizationVariantKey = state.customizationProductTypeSlug === "bags"
+    ? resolveCustomizationVariantKey(state.productName, productSelect.value)
+    : "";
+  state.customizationConfig = null;
+  state.customizationConfigKey = "";
   configureViewTabsForProduct();
   applyProductHeaderUI();
   applyArea();
+  const loaded = await withTimeout(loadCustomizationConfigForCurrentProduct(), 3000);
+  if (loaded) applyArea();
 });
 
 document.getElementById("addSizeBtn").addEventListener("click", () => {
@@ -4301,14 +4658,16 @@ setupVatToggle();
 setupCustomizerBreadcrumb();
 renderColours();
 const initialAreaPromise = applyArea();
+const customizationConfigPromise = withTimeout(loadCustomizationConfigForCurrentProduct(), 3000)
+  .then(() => applyArea());
 calculatePrice();
 updateBasketUIFromStorage();
 setupToolHeaderSearch();
 updateConfirmButtonState();
 maybeHandleBasketLogoChoice();
-const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 3000);
+const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 
-Promise.allSettled([initialAreaPromise, hydratePromise])
+Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
   .finally(() => finishCustomizerLoading());
 

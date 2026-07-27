@@ -1276,9 +1276,16 @@ function initFiltersDropup() {
         console.log('Filters applied:', activeFilters);
         console.log('Total active filters:', filterCount);
         
-        // If on home page, redirect to shop with filters
+        // Home applies filters by navigating to the shop. The standalone mobile
+        // shop reloads itself with the persisted filter payload so its inline
+        // product loader reads and applies the new selection.
         if (window.location.pathname.includes('home-mobile')) {
             window.location.href = getCanonicalShopUrl('filtered=true');
+        } else if (window.location.pathname.includes('shop-mobile')) {
+            const filteredShopUrl = new URL(window.location.href);
+            filteredShopUrl.searchParams.set('filtered', 'true');
+            filteredShopUrl.searchParams.set('page', '1');
+            window.location.href = filteredShopUrl.toString();
         }
     }
 }

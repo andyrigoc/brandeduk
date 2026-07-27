@@ -164,7 +164,7 @@ window.BrandedConfig = (function () {
         'beanies': 'Beanies',
         'blouses': 'Blouses',
         'chinos': 'Chinos',
-        'fleeces': 'Fleeces',
+        'fleeces': 'Fleece',
         'hivis': 'Hi-Vis',
         'trousers': 'Trousers',
         'workwear': 'Workwear',

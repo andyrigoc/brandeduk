@@ -146,8 +146,10 @@
     }
     </script>
     <script>
-        // Clean URL: show just '/' in address bar
-        if (window.location.pathname !== '/') {
+        // Keep the clean production URL, but preserve the project path on local
+        // servers so relative assets and links continue resolving under /brandeduk/.
+        var isBrandedProductionHost = /(^|\.)brandeduk\.com$/i.test(window.location.hostname);
+        if (isBrandedProductionHost && window.location.pathname !== '/') {
             history.replaceState(null, '', '/');
         }
     </script>
@@ -1241,7 +1243,7 @@
             </a>
         </section>
 
-        <!-- Categories Section â€“ Infinite Carousel -->
+        <!-- Categories Section - Infinite Carousel -->
         <section class="section-block">
             <div class="section-header">
                 <h2 class="section-title">Shop by Category</h2>
@@ -1731,7 +1733,7 @@
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Wash resistance</div>
-                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30Â°C and avoid tumble drying on high heat.</div>
+                        <div class="faq-answer">DTF prints are rated for 50+ washes when following care instructions. Wash inside-out at 30&deg;C and avoid tumble drying on high heat.</div>
                     </div>
                     <div class="faq-row">
                         <div class="faq-question">Small quantities?</div>
@@ -2124,7 +2126,7 @@
         <div class="filters-dropup__header">
             <h2 class="filters-dropup__title">Filter By</h2>
             <button class="filters-dropup__clear" id="filtersClearAll">Clear All</button>
-            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">Ã—</button>
+            <button class="filters-dropup__close" id="filtersClose" aria-label="Close">&times;</button>
         </div>
         <div class="filters-dropup__body">
             <!-- TOGGLE FILTERS -->
@@ -2178,7 +2180,7 @@
                 <div class="filter-expandable" data-expanded="true">
                     <div class="filter-expandable__header">
                         <span>Price Range</span>
-                        <span class="filter-expandable__arrow">âŒ„</span>
+                        <span class="filter-expandable__arrow">&#8964;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <div class="price-range-display">
@@ -2197,7 +2199,7 @@
                 <div class="filter-expandable" data-filter="gender">
                     <div class="filter-expandable__header">
                         <span>Gender</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="mens"> Men's</label>
@@ -2210,7 +2212,7 @@
                 <div class="filter-expandable" data-filter="ageGroup">
                     <div class="filter-expandable__header">
                         <span>Age Group</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="adults"> Adults</label>
@@ -2226,7 +2228,7 @@
                 <div class="filter-expandable" data-filter="sleeve">
                     <div class="filter-expandable__header">
                         <span>Sleeve</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="short"> Short Sleeve</label>
@@ -2242,7 +2244,7 @@
                 <div class="filter-expandable" data-filter="neckline">
                     <div class="filter-expandable__header">
                         <span>Neckline</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="crew"> Crew Neck</label>
@@ -2261,7 +2263,7 @@
                 <div class="filter-expandable" data-filter="accreditations">
                     <div class="filter-expandable__header">
                         <span>Accreditations</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="en20471"> EN ISO 20471</label>
@@ -2279,7 +2281,7 @@
                 <div class="filter-expandable" data-filter="primaryColour">
                     <div class="filter-expandable__header">
                         <span>Primary Colour</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content filter-colors-grid">
                         <label class="filter-color" style="--color: #1a1a1a"><input type="checkbox" value="black"><span>Black</span></label>
@@ -2304,7 +2306,7 @@
                 <div class="filter-expandable" data-filter="colourShade">
                     <div class="filter-expandable__header">
                         <span>Colour Shade</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="light"> Light</label>
@@ -2321,7 +2323,7 @@
                 <div class="filter-expandable" data-filter="cmyk">
                     <div class="filter-expandable__header">
                         <span>CMYK</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <input type="text" class="filter-text-input" placeholder="Enter CMYK values..." aria-label="CMYK values">
@@ -2332,7 +2334,7 @@
                 <div class="filter-expandable" data-filter="pantone">
                     <div class="filter-expandable__header">
                         <span>Pantone</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <input type="text" class="filter-text-input" placeholder="Enter Pantone code..." aria-label="Pantone code">
@@ -2343,7 +2345,7 @@
                 <div class="filter-expandable" data-filter="style">
                     <div class="filter-expandable__header">
                         <span>Style</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="classic"> Classic</label>
@@ -2365,7 +2367,7 @@
                 <div class="filter-expandable" data-filter="features">
                     <div class="filter-expandable__header">
                         <span>Features</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="pockets"> Pockets</label>
@@ -2388,7 +2390,7 @@
                 <div class="filter-expandable" data-filter="size">
                     <div class="filter-expandable__header">
                         <span>Size</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content filter-sizes-grid">
                         <label class="filter-size"><input type="checkbox" value="xxs"><span>XXS</span></label>
@@ -2410,7 +2412,7 @@
                 <div class="filter-expandable" data-filter="fabric">
                     <div class="filter-expandable__header">
                         <span>Fabric</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="cotton100"> 100% Cotton</label>
@@ -2432,7 +2434,7 @@
                 <div class="filter-expandable" data-filter="weight">
                     <div class="filter-expandable__header">
                         <span>Weight (GSM)</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="light"> Lightweight (&lt;150g)</label>
@@ -2447,7 +2449,7 @@
                 <div class="filter-expandable" data-filter="fit">
                     <div class="filter-expandable__header">
                         <span>Fit</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="slim"> Slim Fit</label>
@@ -2463,7 +2465,7 @@
                 <div class="filter-expandable" data-filter="sector">
                     <div class="filter-expandable__header">
                         <span>Related Sector</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="construction"> Construction</label>
@@ -2485,7 +2487,7 @@
                 <div class="filter-expandable" data-filter="sport">
                     <div class="filter-expandable__header">
                         <span>Related Sport</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="football"> Football</label>
@@ -2507,7 +2509,7 @@
                 <div class="filter-expandable" data-filter="tag">
                     <div class="filter-expandable__header">
                         <span>Tag</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="bestseller"> Best Seller</label>
@@ -2524,7 +2526,7 @@
                 <div class="filter-expandable" data-filter="effect">
                     <div class="filter-expandable__header">
                         <span>Effect</span>
-                        <span class="filter-expandable__arrow">â€º</span>
+                        <span class="filter-expandable__arrow">&rsaquo;</span>
                     </div>
                     <div class="filter-expandable__content">
                         <label class="filter-checkbox"><input type="checkbox" value="plain"> Plain</label>
@@ -3214,7 +3216,7 @@
         var scroller = document.getElementById('categoriesScroller');
         if (!scroller) return;
 
-        var speed = 0.4;          // px per frame â€“ slow & smooth
+        var speed = 0.4;          // px per frame - slow & smooth
         var paused = false;
         var isVisible = true;
         var rafId = null;

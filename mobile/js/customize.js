@@ -102,6 +102,93 @@
     // === API ===
     // Minimal API base used by desktop product.js — reuse here for mobile fetches
     const API_BASE_URL = 'https://api.brandeduk.com/api';
+    const CUSTOMIZATION_CONFIG_CACHE = new Map();
+    const CUSTOMIZATION_CONFIGS = new Map();
+    const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
+        'aprons', 'bags', 'beanies', 'caps', 'fleece', 'gilets-body-warmers',
+        'hats', 'safety-vests', 'hoodies', 'jackets', 'polos', 'shirts',
+        'shorts', 'softshells', 'sweatpants', 'sweatshirts', 'trousers',
+        'tshirts', 'vests-t-shirt'
+    ]);
+
+    function customizationSlugify(value) {
+        return String(value || '')
+            .trim()
+            .toLowerCase()
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function resolveCustomizationProductTypeSlug(productType) {
+        const explicit = customizationSlugify(productType);
+        if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
+
+        const normalized = normalizeProductTypeForFolder(productType);
+        const mapped = {
+            'Aprons': 'aprons',
+            'Bags': 'bags',
+            'Tote Bags': 'bags',
+            'Beanies': 'beanies',
+            'Caps': 'caps',
+            'Hats': 'hats',
+            'Fleece': 'fleece',
+            'Gilets & Body Warmers': 'gilets-body-warmers',
+            'Safety Vests': 'safety-vests',
+            'Hoodies': 'hoodies',
+            'Jackets': 'jackets',
+            'Polos': 'polos',
+            'Short Sleeve Polos': 'polos',
+            'Shirts': 'shirts',
+            'Blouses': 'shirts',
+            'Shorts': 'shorts',
+            'Softshells': 'softshells',
+            'Sweatpants': 'sweatpants',
+            'Sweatshirts': 'sweatshirts',
+            'Trousers': 'trousers',
+            'Chinos': 'trousers',
+            'T-shirts': 'tshirts'
+        };
+        return mapped[normalized] || '';
+    }
+
+    async function preloadCustomizationConfigForProductType(productType) {
+        const slug = resolveCustomizationProductTypeSlug(productType);
+        if (!slug) return null;
+        if (!CUSTOMIZATION_CONFIG_CACHE.has(slug)) {
+            const controller = new AbortController();
+            const timeoutId = window.setTimeout(() => controller.abort(), 3000);
+            const request = fetch(
+                `${API_BASE_URL}/customization-config/${encodeURIComponent(slug)}`,
+                { signal: controller.signal }
+            )
+                .then(response => {
+                    if (!response.ok) throw new Error(`Customization config ${response.status}`);
+                    return response.json();
+                })
+                .then(body => {
+                    const config = body && (body.data || body);
+                    if (!config || !Array.isArray(config.positions) || config.positions.length === 0) {
+                        throw new Error('Customization config has no positions');
+                    }
+                    CUSTOMIZATION_CONFIGS.set(slug, config);
+                    return config;
+                })
+                .catch(error => {
+                    CUSTOMIZATION_CONFIG_CACHE.delete(slug);
+                    debugWarn(`Customization API unavailable for ${slug}; using static images`, error);
+                    return null;
+                })
+                .finally(() => window.clearTimeout(timeoutId));
+            CUSTOMIZATION_CONFIG_CACHE.set(slug, request);
+        }
+        return CUSTOMIZATION_CONFIG_CACHE.get(slug);
+    }
+
+    function getCustomizationConfigForProductType(productType) {
+        const slug = resolveCustomizationProductTypeSlug(productType);
+        return slug ? CUSTOMIZATION_CONFIGS.get(slug) || null : null;
+    }
 
     // === DYNAMIC POSITION MAPPING SYSTEM ===
     
@@ -712,6 +799,94 @@
         return '';
     }
     
+    function customizationImageMap(config) {
+        const images = {};
+        (config && Array.isArray(config.positions) ? config.positions : []).forEach(position => {
+            const slug = customizationSlugify(position && position.slug);
+            const imageUrl = String(
+                (position && (position.imageUrl || position.image_url)) || ''
+            ).trim();
+            if (slug && imageUrl) images[slug] = imageUrl;
+        });
+        return images;
+    }
+
+    function customizationImageForPosition(positionCode, images) {
+        if (positionCode === 'large-back') return images.back || images.side || '';
+        if (positionCode === 'left-arm') return images.left || images.sleeve || images.side || '';
+        if (positionCode === 'right-arm') return images.right || images.sleeve || images.side || images.left || '';
+        if (positionCode === 'left-breast') return images.left || images.front || images.side || '';
+        if (positionCode === 'right-breast') return images.right || images.front || images.side || images.left || '';
+        return images.front || '';
+    }
+
+    function createApiPositionConfig(positionCode, label, image, normalizedProductType) {
+        const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+        const isEmbroideryOnly = ['Beanies', 'Fleece'].includes(normalizedProductType);
+        const isPrintOnly = ['Safety Vests'].includes(normalizedProductType);
+        return {
+            label: label,
+            image: image,
+            embroidery: isPrintOnly ? null : prices.embroidery,
+            print: isEmbroideryOnly ? null : prices.print,
+            cssClass: POSITION_TO_CSS_CLASS[positionCode] || 'front-center'
+        };
+    }
+
+    function addApiBackedDefaultPositions(positions, images, normalizedProductType) {
+        const simpleFrontTypes = [
+            'Aprons', 'Bags', 'Tote Bags', 'Trousers', 'Shorts', 'Sweatpants'
+        ];
+        const headwearTypes = ['Caps', 'Beanies', 'Hats'];
+
+        if (images.front) {
+            positions['small-centre-front'] = createApiPositionConfig(
+                'small-centre-front', 'Centre Front', images.front, normalizedProductType
+            );
+            if (!simpleFrontTypes.includes(normalizedProductType) && !headwearTypes.includes(normalizedProductType)) {
+                positions['left-breast'] = createApiPositionConfig(
+                    'left-breast', 'Left Chest', images.front, normalizedProductType
+                );
+                positions['right-breast'] = createApiPositionConfig(
+                    'right-breast', 'Right Chest', images.front, normalizedProductType
+                );
+                positions['large-front-center'] = createApiPositionConfig(
+                    'large-front-center', 'Front Center', images.front, normalizedProductType
+                );
+            }
+        }
+        if (images.back) {
+            positions['large-back'] = createApiPositionConfig(
+                'large-back', 'Back Large', images.back, normalizedProductType
+            );
+        }
+        if (headwearTypes.includes(normalizedProductType)) {
+            if (images.left || images.side) {
+                positions['left-breast'] = createApiPositionConfig(
+                    'left-breast', 'Left Side', images.left || images.side, normalizedProductType
+                );
+            }
+            if (images.right || images.side) {
+                positions['right-breast'] = createApiPositionConfig(
+                    'right-breast', 'Right Side', images.right || images.side, normalizedProductType
+                );
+            }
+        } else if (!simpleFrontTypes.includes(normalizedProductType)) {
+            const leftSleeveImage = images.left || images.sleeve || images.side;
+            const rightSleeveImage = images.right || images.sleeve || images.side || images.left;
+            if (leftSleeveImage) {
+                positions['left-arm'] = createApiPositionConfig(
+                    'left-arm', 'Left Sleeve', leftSleeveImage, normalizedProductType
+                );
+            }
+            if (rightSleeveImage) {
+                positions['right-arm'] = createApiPositionConfig(
+                    'right-arm', 'Right Sleeve', rightSleeveImage, normalizedProductType
+                );
+            }
+        }
+    }
+
     // Build positions dynamically from productType
     function buildPositionsFromProductType(productType) {
         if (!productType) {
@@ -722,13 +897,16 @@
         const productTypeStr = String(productType).trim();
         const normalizedProductType = normalizeProductTypeForFolder(productTypeStr);
         const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedProductType];
-        if (!folderPath) {
+        const apiConfig = getCustomizationConfigForProductType(productTypeStr);
+        const apiImages = customizationImageMap(apiConfig);
+        const hasApiImages = Object.keys(apiImages).length > 0;
+        if (!folderPath && !hasApiImages) {
             debugWarn(`⚠️ No folder mapping for productType: "${productTypeStr}" (normalized: "${normalizedProductType}"), using default`);
             return null;
         }
         
-        const imageFiles = FOLDER_IMAGE_MAP[folderPath];
-        if (!imageFiles || imageFiles.length === 0) {
+        const imageFiles = FOLDER_IMAGE_MAP[folderPath] || [];
+        if (imageFiles.length === 0 && !hasApiImages) {
             debugWarn(`⚠️ No images found for folder: ${folderPath}, using default`);
             return null;
         }
@@ -750,10 +928,11 @@
             if (positionInfo) {
                 const positionCode = positionInfo.code;
                 const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                const apiImage = customizationImageForPosition(positionCode, apiImages);
                 
                 positions[positionCode] = {
                     label: positionInfo.label,
-                    image: useApronNeutral ? APRON_NEUTRAL_IMAGE : `${basePath}/${filename}`,
+                    image: apiImage || (useApronNeutral ? APRON_NEUTRAL_IMAGE : `${basePath}/${filename}`),
                     embroidery: isPrintOnly ? null : prices.embroidery,
                     print: isEmbroideryOnly ? null : prices.print,
                     cssClass: positionInfo.cssClass
@@ -762,6 +941,17 @@
                 debugWarn(`⚠️ No position mapping for filename: ${filename} in folder ${folderPath}`);
             }
         });
+
+        if (hasApiImages) {
+            if (Object.keys(positions).length === 0) {
+                addApiBackedDefaultPositions(positions, apiImages, normalizedProductType);
+            } else {
+                Object.entries(positions).forEach(([positionCode, position]) => {
+                    const apiImage = customizationImageForPosition(positionCode, apiImages);
+                    if (apiImage) position.image = apiImage;
+                });
+            }
+        }
         
         if (Object.keys(positions).length === 0) {
             debugWarn(`⚠️ No valid positions found for productType: "${productTypeStr}", using default`);
@@ -2410,6 +2600,14 @@
                 // Refresh DOM with correct product data
                 refreshProductDOM();
                 
+                const rawProductType = state.product.rawData.productType
+                    || state.product.rawData.category
+                    || state.product.rawData.type
+                    || inferProductTypeFromName(
+                        state.product.rawData.name || state.product.rawData.description || ''
+                    );
+                await preloadCustomizationConfigForProductType(rawProductType);
+
                 // Update position cards with product-specific images (apron, hoodie, etc.)
                 // In positionsOnly mode, applyPositionsOnlyMode() already handled this via CSS !important
                 if (!isPositionsOnly) {
@@ -8503,11 +8701,9 @@
                 const ptName2 = nt || 'Logo';
                 titleEl.textContent = 'Logo Positions: ' + ptName2;
             }
-            const fp = PRODUCT_TYPE_TO_FOLDER[nt];
-            if (fp) {
-                const imgs = FOLDER_IMAGE_MAP[fp] || [];
-                const avail = [];
-                imgs.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) avail.push(pi.code); });
+            const resolvedPositionConfig = buildPositionsFromProductType(pt || nt);
+            if (resolvedPositionConfig) {
+                const avail = Object.keys(resolvedPositionConfig.positions || {});
                 // Only hide cards when there are configured images; if empty, show all static defaults
                 if (avail.length > 0) {
                     document.querySelectorAll('#positionOptions .position-card, .positions-grid .position-card').forEach(card => {
@@ -8608,11 +8804,9 @@
             popupHeader.appendChild(posTitle);
         }
 
-        const folderPath = PRODUCT_TYPE_TO_FOLDER[normalizedType];
-        if (folderPath) {
-            const imageFiles = FOLDER_IMAGE_MAP[folderPath] || [];
-            const availablePositions = [];
-            imageFiles.forEach(fn => { const pi = FILENAME_TO_POSITION[fn]; if (pi) availablePositions.push(pi.code); });
+        const resolvedPositionConfig = buildPositionsFromProductType(productType || normalizedType);
+        if (resolvedPositionConfig) {
+            const availablePositions = Object.keys(resolvedPositionConfig.positions || {});
             // Only hide cards when there are configured images; if empty, show all static defaults
             if (availablePositions.length > 0) {
                 posSection.querySelectorAll('.position-card').forEach(card => {
@@ -10091,13 +10285,21 @@
             new URLSearchParams(window.location.search).get('positionsOnly') === '1';
     }
 
+    function isExplicitBasketEditRequest() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('editItem') === '1' ||
+            params.get('positionsOnly') === '1' ||
+            params.get('logoOnly') === '1';
+    }
+
     /** Clear basket-edit session keys when starting a fresh product (not editing one line from basket). */
     function clearStaleBasketEditSessionUnlessEditing() {
-        // A brand-new product opened from the shop must NEVER inherit a lingering
-        // basket-edit context (e.g. left over from a previous item's "Add logo" flow),
-        // otherwise it skips the "Add logo / Continue" popup and jumps to the basket.
+        // Preserve basket-edit state only when this navigation explicitly asks
+        // to edit an item. Stored flags alone may be leftovers from an earlier
+        // basket item and must never suppress the logo step for a new product.
         var isFreshFromShop = sessionStorage.getItem(CUSTOMIZE_FRESH_KEY) === '1';
-        if (!isFreshFromShop && isActiveBasketItemEdit()) return;
+        var isExplicitEdit = isExplicitBasketEditRequest();
+        if (!isFreshFromShop && isExplicitEdit && isActiveBasketItemEdit()) return;
         sessionStorage.removeItem('customizingBasketIndex');
         sessionStorage.removeItem('returnAfterCustomize');
         sessionStorage.removeItem('basketEditSingleItem');

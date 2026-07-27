@@ -143,8 +143,10 @@
     }
     </script>
     <script>
-        // Clean URL: show just '/' in address bar
-        if (window.location.pathname !== '/') {
+        // Keep the clean production URL, but preserve the project path on local
+        // servers so relative assets and links continue resolving under /brandeduk/.
+        var isBrandedProductionHost = /(^|\.)brandeduk\.com$/i.test(window.location.hostname);
+        if (isBrandedProductionHost && window.location.pathname !== '/') {
             history.replaceState(null, '', '/');
         }
         // Redirect to mobile version on smaller screens (mobile + tablet)

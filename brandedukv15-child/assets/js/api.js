@@ -128,6 +128,26 @@ const BrandedAPI = (function () {
         return CATEGORY_SLUG_MAP[normalized] || normalized;
     }
 
+    /**
+     * Convert frontend category/product-type slugs to the display value expected
+     * by /api/products. For example, "safety-vests" must be sent as "Hi-Vis".
+     * Values already supplied as API names are left unchanged.
+     */
+    function normalizeProductTypeForApi(productType) {
+        if (productType === null || productType === undefined) return productType;
+
+        const value = String(productType).trim();
+        if (!value) return value;
+
+        if (window.BrandedConfig) {
+            const categorySlug = window.BrandedConfig.normalizeCategory(value);
+            const apiName = window.BrandedConfig.getApiCategoryName(categorySlug);
+            if (apiName) return apiName;
+        }
+
+        return value;
+    }
+
     // ── Brands whose NAME we hide from the UI (products still appear) ──
     const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
 
@@ -256,12 +276,12 @@ const BrandedAPI = (function () {
             params.q = (options.q || options.search || '').trim();
         } else if (options.productType) {
             // Only add productType if there's no search query
-            params.productType = options.productType;
+            params.productType = normalizeProductTypeForApi(options.productType);
         } else if (options.category && options.category !== 'all') {
             // Map category slug to productType
             const productType = mapCategoryToProductType(options.category);
             if (productType) {
-                params.productType = productType;
+                params.productType = normalizeProductTypeForApi(productType);
             }
             // Handle special categories
             if (options.category === 'sustainable') {
@@ -291,7 +311,9 @@ const BrandedAPI = (function () {
 
         arrayParamNames.forEach(paramName => {
             if (options[paramName] && Array.isArray(options[paramName])) {
-                params[paramName] = options[paramName];
+                params[paramName] = paramName === 'productType[]'
+                    ? options[paramName].map(normalizeProductTypeForApi)
+                    : options[paramName];
             }
         });
 
