@@ -2614,7 +2614,7 @@
     </div>
 
     <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-    <script src="mobile/js/mobile.js?v=20260411A"></script>
+    <script src="mobile/js/mobile.js?v=20260730a"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20260706a"></script>
     <script src="mobile/js/popup-contact.js?v=20260102"></script>
@@ -2894,7 +2894,11 @@
             
             function updateBadge() {
                 const basket = getBasket();
-                const count = basket.reduce((total, item) => total + (parseInt(item.quantity) || parseInt(item.totalQty) || 1), 0);
+                const count = new Set(basket.map((item, index) => {
+                    const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                    const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                    return code ? `${code}::${color}` : String(item?.id || index);
+                })).size;
                 basketBadge.textContent = count;
                 basketBadge.style.display = count > 0 ? 'flex' : 'none';
             }

@@ -4502,12 +4502,11 @@
         // ---------------------------------------------------------------------
         function updateBasketBadge() {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            let totalItems = 0;
-            basket.forEach(item => {
-                const sizes = item.sizes || item.quantities || {};
-                const sizedCount = Object.values(sizes).reduce((sum, q) => sum + (Number(q) || 0), 0);
-                totalItems += sizedCount > 0 ? sizedCount : (Number(item.quantity) || Number(item.totalQty) || 0);
-            });
+            const totalItems = new Set(basket.map((item, index) => {
+                const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                return code ? `${code}::${color}` : String(item?.id || index);
+            })).size;
             const badgeValue = totalItems > 99 ? '99+' : String(totalItems);
             ['navBasketBadge', 'headerBasketBadge'].forEach(function (badgeId) {
                 const badge = document.getElementById(badgeId);
@@ -4729,7 +4728,7 @@
             updateMobilePagination();
         });
     </script>
-    <script src="mobile/js/mobile.js?v=20260411A"></script>
+    <script src="mobile/js/mobile.js?v=20260730a"></script>
     <script src="mobile/js/breadcrumbs.js?v=20260629a"></script>
     <!--Tawk.to â€“ mini chat iframe overlay-->
     <script type="text/javascript">

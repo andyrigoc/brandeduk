@@ -3301,7 +3301,7 @@
 <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
 <script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
 <script src="brandeduk.com/js/hero.js?v=20260706a"></script>
-<script src="brandeduk.com/js/main.js?v=20260117"></script>
+<script src="brandeduk.com/js/main.js?v=20260730a"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260110"></script>
@@ -3330,8 +3330,12 @@
     
     function renderBasket() {
         const basket = getBasket();
-        // Calculate total quantity of all items (not just number of products)
-        const count = basket.reduce((total, item) => total + (parseInt(item.quantity) || parseInt(item.totalQty) || 1), 0);
+        // Count distinct product/colour basket entries, not garment units.
+        const count = new Set(basket.map((item, index) => {
+            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+            return code ? `${code}::${color}` : String(item?.id || index);
+        })).size;
         
         // Update badge (header-top version)
         if (basketBadge) {

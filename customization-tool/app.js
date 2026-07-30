@@ -130,7 +130,7 @@ const sizesContainer = document.getElementById("sizesContainer");
 const mainQtyInput = document.getElementById("mainQtyInput");
 const basketTotalAmount = document.getElementById("basketTotalAmount");
 const basketTotalMeta = document.getElementById("basketTotalMeta");
-const cartBadge = document.querySelector(".cart-badge");
+const cartBadges = document.querySelectorAll(".cart-badge, .sub-cart-badge");
 const toolBottomBasketBadge = document.getElementById("toolBottomBasketBadge");
 const toolBottomNav = document.querySelector(".tool-bottom-nav");
 const confirmQualityBtn = document.getElementById("confirmQualityBtn");
@@ -2036,7 +2036,12 @@ function readQuoteBasket() {
 }
 
 function writeQuoteBasket(basket) {
-  const attempts = [basket, pruneBasketLogoDuplicates(basket), compactBasketForStorage(basket)];
+  // Always try the compact representation first. Older baskets can contain the
+  // same base64 logo in logos, positions, positionDesigns and designPreview;
+  // writing the raw form first allowed that duplication to grow until the
+  // browser's localStorage quota was exhausted.
+  const deduped = pruneBasketLogoDuplicates(basket);
+  const attempts = [compactBasketForStorage(deduped), deduped, basket];
   let lastError = null;
 
   for (const attempt of attempts) {
@@ -2130,20 +2135,28 @@ function compactBasketItemForStorage(item) {
 
   if (compactItem.designPreview && typeof compactItem.designPreview === "object") {
     const preview = compactItem.designPreview;
+    const primaryLogoSource = compactLogos[0]?.logo || "";
+    const previewLogoSource = preview.logoImage || primaryLogoSource;
     compactItem.designPreview = {
       type: preview.type || "garment-logo-preview",
       version: preview.version || 1,
       area: preview.area || "front",
       garmentImage: preview.garmentImage || "",
       garmentBox: cleanPctBox(preview.garmentBox),
-      logoImage: preview.logoImage || "",
+      // The canonical logo already lives in compactItem.logos. Only retain a
+      // separate preview image when it is genuinely different.
+      logoImage: previewLogoSource !== primaryLogoSource ? previewLogoSource : "",
       logoBox: cleanPctBox(preview.logoBox),
       logoRotation: parseFloat(preview.logoRotation || 0) || 0,
       garmentHex: normalizeHex(preview.garmentHex || "") || "",
       colorName: preview.colorName || "",
       wrapAspect: Math.max(0.6, Math.min(1.8, parseFloat(preview.wrapAspect || 1.15) || 1.15))
     };
-    if (!compactItem.designPreview.garmentImage || !compactItem.designPreview.logoImage) {
+    if (
+      !compactItem.designPreview.garmentImage
+      || !compactItem.designPreview.logoBox
+      || (!compactItem.designPreview.logoImage && !primaryLogoSource)
+    ) {
       delete compactItem.designPreview;
     }
   }
@@ -2278,14 +2291,24 @@ function getItemQty(item) {
   return Number.isFinite(item.quantity) ? item.quantity : 0;
 }
 
+function getBasketEntryCount(basket) {
+  const groups = new Set();
+  (Array.isArray(basket) ? basket : []).forEach((item, index) => {
+    const code = String(item?.productCode || item?.code || "").trim().toLowerCase();
+    const color = String(item?.color || item?.selectedColorName || "").trim().toLowerCase();
+    const fallback = String(item?.id || index);
+    groups.add(code ? `${code}::${color}` : fallback);
+  });
+  return groups.size;
+}
+
 function getBasketTotals(basket) {
-  let items = 0;
+  const items = getBasketEntryCount(basket);
   let subtotal = 0;
 
   basket.forEach((item) => {
     const qty = getItemQty(item);
     const unitPrice = parseFloat(item.unitPrice || item.price || 0) || 0;
-    items += qty;
     subtotal += unitPrice * qty;
 
     if (Array.isArray(item.logos)) {
@@ -2305,7 +2328,10 @@ function updateBasketUIFromStorage() {
 
   if (basketTotalAmount) basketTotalAmount.textContent = `£${shownTotal.toFixed(2)}`;
   if (basketTotalMeta) basketTotalMeta.textContent = `${totals.items} item${totals.items === 1 ? "" : "s"} • ${vatSuffixLabel()}`;
-  if (cartBadge) cartBadge.textContent = String(totals.items);
+  cartBadges.forEach((badge) => {
+    badge.textContent = String(totals.items);
+    badge.style.display = totals.items > 0 ? "flex" : "none";
+  });
   if (toolBottomBasketBadge) {
     toolBottomBasketBadge.textContent = String(totals.items);
     toolBottomBasketBadge.classList.toggle("is-empty", totals.items <= 0);
@@ -3229,16 +3255,87 @@ function showPositionPickerModal(options = {}) {
   document.body.appendChild(overlay);
 }
 
-document.getElementById("logoFileInput").addEventListener("change", event => {
+const MAX_STORED_LOGO_DATA_URL_LENGTH = 220000;
+
+function readLogoFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("Unable to read logo file"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadLogoImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Unable to decode logo image"));
+    image.src = dataUrl;
+  });
+}
+
+async function optimizeLogoDataUrlForBasket(originalDataUrl) {
+  if (
+    !originalDataUrl.startsWith("data:image/")
+    || originalDataUrl.length <= MAX_STORED_LOGO_DATA_URL_LENGTH
+  ) {
+    return originalDataUrl;
+  }
+
+  try {
+    const image = await loadLogoImage(originalDataUrl);
+    const sourceWidth = Math.max(1, image.naturalWidth || image.width || 1);
+    const sourceHeight = Math.max(1, image.naturalHeight || image.height || 1);
+    const maxDimensions = [1200, 960, 720, 560];
+    const qualities = [0.9, 0.84, 0.78, 0.72];
+    let bestDataUrl = originalDataUrl;
+
+    for (let index = 0; index < maxDimensions.length; index += 1) {
+      const maxDimension = maxDimensions[index];
+      const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { alpha: true });
+      if (!context) break;
+
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.clearRect(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+
+      const quality = qualities[index];
+      const candidate = canvas.toDataURL("image/webp", quality);
+      if (candidate.startsWith("data:image/webp") && candidate.length < bestDataUrl.length) {
+        bestDataUrl = candidate;
+      }
+      if (bestDataUrl.length <= MAX_STORED_LOGO_DATA_URL_LENGTH) break;
+    }
+
+    return bestDataUrl;
+  } catch (error) {
+    // Some SVGs reference external resources and cannot be drawn to canvas.
+    // Keep the original data URL so upload still works for those files.
+    return originalDataUrl;
+  }
+}
+
+async function optimizeLogoFileForBasket(file) {
+  return optimizeLogoDataUrlForBasket(await readLogoFileAsDataUrl(file));
+}
+
+document.getElementById("logoFileInput").addEventListener("change", async event => {
   const file = event.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
-
-  reader.onload = e => {
-    state.uploadedLogo = e.target.result;
-    state.originalUploadedLogo = e.target.result;
-    rememberUploadedLogo(e.target.result, state.decorationType);
+  try {
+    const optimizedLogo = await optimizeLogoFileForBasket(file);
+    state.uploadedLogo = optimizedLogo;
+    state.originalUploadedLogo = optimizedLogo;
+    rememberUploadedLogo(optimizedLogo, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -3254,9 +3351,12 @@ document.getElementById("logoFileInput").addEventListener("change", event => {
     state.copyrightConfirmed = false;
     updateConfirmButtonState();
     openScreen("copyrightPage");
-  };
-
-  reader.readAsDataURL(file);
+  } catch (error) {
+    console.error("Logo upload failed", error);
+    alert("We couldn't read that logo file. Please try another PNG, JPG, WEBP or SVG image.");
+  } finally {
+    event.target.value = "";
+  }
 });
 
 document.getElementById("continueLogoBtn").addEventListener("click", () => {
@@ -3983,7 +4083,9 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     const oldHeight = logoFrame.style.height;
     const oldRotate = designLayer.style.rotate;
 
-    const cleanedLogo = await removeImageBackground(state.uploadedLogo, 55);
+    const cleanedLogo = await optimizeLogoDataUrlForBasket(
+      await removeImageBackground(state.uploadedLogo, 55)
+    );
 
     state.uploadedLogo = cleanedLogo;
     uploadedLogo.src = cleanedLogo;

@@ -1608,14 +1608,11 @@
         // Update basket badge
         function updateBasketBadge() {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            let totalItems = 0;
-
-            basket.forEach(item => {
-                const sizes = item.sizes || item.quantities || {};
-                const sizedCount = Object.values(sizes).reduce((sum, q) => sum + (Number(q) || 0), 0);
-                const directCount = Number(item.qty) || Number(item.quantity) || Number(item.totalQty) || 0;
-                totalItems += sizedCount > 0 ? sizedCount : (directCount > 0 ? directCount : 1);
-            });
+            const totalItems = new Set(basket.map((item, index) => {
+                const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                return code ? `${code}::${color}` : String(item?.id || index);
+            })).size;
 
             const badge = document.getElementById('navBasketBadge');
             if (badge) {
@@ -1871,7 +1868,7 @@
         });
     })();
     </script>
-    <script src="js/mobile.js?v=20260726b"></script>
+    <script src="js/mobile.js?v=20260730a"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>
     <script src="footer/footer.js?v=FTR10APR2026"></script>
 </body>

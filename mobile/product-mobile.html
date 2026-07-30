@@ -474,7 +474,7 @@
         </div>
     </div>
 
-    <script src="js/mobile.js?v=20260610m"></script>
+    <script src="js/mobile.js?v=20260730a"></script>
     <script src="js/breadcrumbs.js?v=20260403a"></script>
     <script src="../brandedukv15-child/assets/js/product-recommendations.js?v=20260403b"></script>
     <script>
@@ -819,26 +819,22 @@
             function updateCartBadge() {
                 try {
                     const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-                    let totalQty = 0;
-                    basket.forEach(item => {
-                        if (typeof item.qty === 'number') {
-                            totalQty += item.qty;
-                        } else {
-                            const sizes = item.sizes || item.quantities || {};
-                            totalQty += Object.values(sizes).reduce((sum, q) => sum + q, 0);
-                        }
-                    });
+                    const totalItems = new Set(basket.map((item, index) => {
+                        const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                        const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                        return code ? `${code}::${color}` : String(item?.id || index);
+                    })).size;
                     // Update header badge
                     const badge = document.getElementById('cartBadge');
                     if (badge) {
-                        badge.textContent = totalQty > 99 ? '99+' : totalQty;
-                        badge.style.display = totalQty > 0 ? 'flex' : 'none';
+                        badge.textContent = totalItems > 99 ? '99+' : totalItems;
+                        badge.style.display = totalItems > 0 ? 'flex' : 'none';
                     }
                     // Update nav badge
                     const navBadge = document.getElementById('navCartBadge');
                     if (navBadge) {
-                        navBadge.textContent = totalQty > 99 ? '99+' : totalQty;
-                        navBadge.style.display = totalQty > 0 ? 'flex' : 'none';
+                        navBadge.textContent = totalItems > 99 ? '99+' : totalItems;
+                        navBadge.style.display = totalItems > 0 ? 'flex' : 'none';
                     }
                 } catch (e) {}
             }

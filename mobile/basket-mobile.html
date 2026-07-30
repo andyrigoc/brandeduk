@@ -1443,15 +1443,14 @@
         function updateItemCount(basket) {
             const countEl = document.getElementById('basketItemCount');
             if (!countEl) return;
-            
-            let totalQty = 0;
-            basket.forEach(item => {
-                // Support both 'sizes' and 'quantities' keys
-                const sizes = item.sizes || item.quantities || {};
-                totalQty += Object.values(sizes).reduce((sum, q) => sum + q, 0);
-            });
-            
-            countEl.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+
+            const totalItems = new Set(basket.map((item, index) => {
+                const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                return code ? `${code}::${color}` : String(item?.id || index);
+            })).size;
+
+            countEl.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
         }
         
         // Attach quantity button listeners

@@ -559,17 +559,13 @@ function updateCartCount() {
 
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        let totalItems = 0;
-
-        basket.forEach(item => {
-            if (item.quantities && typeof item.quantities === 'object') {
-                Object.values(item.quantities).forEach(qty => {
-                    totalItems += parseInt(qty) || 0;
-                });
-            } else if (item.quantity) {
-                totalItems += parseInt(item.quantity) || 0;
-            }
+        const groups = new Set();
+        basket.forEach((item, index) => {
+            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+            groups.add(code ? `${code}::${color}` : String(item?.id || index));
         });
+        const totalItems = groups.size;
 
         cartCountEl.textContent = totalItems;
         cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
@@ -898,38 +894,26 @@ function updateLiveBadge() {
     
     if (badges.length === 0) return;
 
-    let totalQty = 0;
+    let totalItems = 0;
     
     // Get items from basket
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        basket.forEach(item => {
-            if (item.quantities && typeof item.quantities === 'object') {
-                Object.values(item.quantities).forEach(qty => {
-                    totalQty += parseInt(qty) || 0;
-                });
-            } else if (item.sizes && typeof item.sizes === 'object' && !Array.isArray(item.sizes)) {
-                Object.values(item.sizes).forEach(qty => {
-                    totalQty += parseInt(qty) || 0;
-                });
-            } else if (item.sizeQuantities && typeof item.sizeQuantities === 'object') {
-                Object.values(item.sizeQuantities).forEach(qty => {
-                    totalQty += parseInt(qty) || 0;
-                });
-            } else if (item.quantity) {
-                totalQty += parseInt(item.quantity) || 0;
-            } else if (item.qty) {
-                totalQty += parseInt(item.qty) || 0;
-            }
+        const groups = new Set();
+        basket.forEach((item, index) => {
+            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+            groups.add(code ? `${code}::${color}` : String(item?.id || index));
         });
+        totalItems = groups.size;
     } catch (e) {
         console.error('Error reading basket:', e);
     }
     
     // Update all badge elements
     badges.forEach(badge => {
-        if (totalQty > 0) {
-            badge.textContent = totalQty;
+        if (totalItems > 0) {
+            badge.textContent = totalItems;
             badge.style.display = 'flex';
         } else {
             badge.style.display = 'none';

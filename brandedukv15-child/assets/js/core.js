@@ -46,22 +46,16 @@
     }
   }
 
-  function getItemQty(item) {
-    if (!item) return 0;
-    
-    // Handle quantities object (with sizes like {S: 1, M: 1})
-    if (item.quantities && typeof item.quantities === 'object') {
-      return Object.values(item.quantities).reduce(function(sum, q) {
-        var num = parseInt(q, 10);
-        return sum + (Number.isFinite(num) && num > 0 ? num : 0);
-      }, 0);
+  function getBasketEntryCount(basket) {
+    var groups = {};
+    for (var i = 0; i < basket.length; i++) {
+      var item = basket[i] || {};
+      var code = String(item.productCode || item.code || '').trim().toLowerCase();
+      var color = String(item.color || item.selectedColorName || '').trim().toLowerCase();
+      var key = code ? code + '::' + color : String(item.id || i);
+      groups[key] = true;
     }
-    
-    // Fallback to single quantity
-    var raw = item.quantity;
-    var qty = parseInt(raw, 10);
-    if (!Number.isFinite(qty) || qty < 1) qty = 1;
-    return qty;
+    return Object.keys(groups).length;
   }
 
   function setBadgeCount(badge, totalItems) {
@@ -97,9 +91,7 @@
   // Cart badge update function
   window.brandedukv15.updateCartBadge = function () {
     var basket = getBasketSafe();
-    var totalItems = basket.reduce(function (sum, item) {
-      return sum + getItemQty(item);
-    }, 0);
+    var totalItems = getBasketEntryCount(basket);
 
     // Support multiple badge ids used across pages.
     setBadgeCount(document.getElementById('cartBadge'), totalItems);

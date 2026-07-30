@@ -8238,23 +8238,20 @@
         updateOrderCard();
     }
 
+    function getStoredBasketEntryCount(basket) {
+        const groups = new Set();
+        (Array.isArray(basket) ? basket : []).forEach((item, index) => {
+            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+            groups.add(code ? `${code}::${color}` : String(item?.id || index));
+        });
+        return groups.size;
+    }
+
     // === Update Basket Count Badge in Navigation ===
     function updateBasketCount() {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        let totalItems = 0;
-        
-        basket.forEach(item => {
-            const sizes = item.sizes || item.quantities || {};
-            if (Object.keys(sizes).length > 0) {
-                Object.values(sizes).forEach(qty => {
-                    totalItems += Number(qty) || 0;
-                });
-            } else if (item.totalQty) {
-                totalItems += Number(item.totalQty) || 0;
-            } else if (item.quantity) {
-                totalItems += Number(item.quantity) || 0;
-            }
-        });
+        const totalItems = getStoredBasketEntryCount(basket);
         
         // Update all basket badges in navigation
         const badges = document.querySelectorAll('.nav-badge');
@@ -11430,24 +11427,7 @@
 
         try {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            let totalItems = 0;
-            
-            // Count total quantities across all items (supports V2 per-size rows and legacy)
-            basket.forEach(item => {
-                if (item.qty) {
-                    totalItems += parseInt(item.qty) || 0;
-                } else if (item.quantities && typeof item.quantities === 'object') {
-                    Object.values(item.quantities).forEach(qty => {
-                        totalItems += parseInt(qty) || 0;
-                    });
-                } else if (item.totalQty) {
-                    totalItems += parseInt(item.totalQty) || 0;
-                } else if (item.quantity) {
-                    totalItems += parseInt(item.quantity) || 0;
-                } else {
-                    totalItems += 1;
-                }
-            });
+            const totalItems = getStoredBasketEntryCount(basket);
             
             badges.forEach(badge => {
                 badge.textContent = totalItems;
@@ -11460,7 +11440,8 @@
         }
     }
 
-    // Update badge with CURRENT selection + basket items
+    // The navigation badge represents saved basket entries, not garment units
+    // currently selected in the editor.
     function updateLiveBadge() {
         const badges = [
             document.getElementById('cartBadge'),
@@ -11470,30 +11451,15 @@
         
         if (badges.length === 0) return;
 
-        // Current selection from state
-        let currentQty = state.quantity || 0;
-        
-        // Plus items already in basket (supports V2 per-size rows and legacy)
+        let totalItems = 0;
         try {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-            basket.forEach(item => {
-                if (item.qty) {
-                    currentQty += parseInt(item.qty) || 0;
-                } else if (item.quantities && typeof item.quantities === 'object') {
-                    Object.values(item.quantities).forEach(qty => {
-                        currentQty += parseInt(qty) || 0;
-                    });
-                } else if (item.totalQty) {
-                    currentQty += parseInt(item.totalQty) || 0;
-                } else if (item.quantity) {
-                    currentQty += parseInt(item.quantity) || 0;
-                }
-            });
+            totalItems = getStoredBasketEntryCount(basket);
         } catch (e) {}
         
         badges.forEach(badge => {
-            badge.textContent = currentQty;
-            badge.style.display = currentQty > 0 ? 'flex' : 'none';
+            badge.textContent = totalItems;
+            badge.style.display = totalItems > 0 ? 'flex' : 'none';
         });
     }
 

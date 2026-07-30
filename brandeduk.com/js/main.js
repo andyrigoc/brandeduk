@@ -218,7 +218,13 @@ function updateBasketCount() {
     
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-        const count = basket.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        const groups = new Set();
+        basket.forEach((item, index) => {
+            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+            groups.add(code ? `${code}::${color}` : String(item?.id || index));
+        });
+        const count = groups.size;
         badge.textContent = count;
         badge.style.display = count > 0 ? 'flex' : 'none';
     } catch (e) {

@@ -308,7 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== BASKET =====
 function updateBasketCount() {
+    const count = new Set(quoteBasket.map((item, index) => {
+        const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+        const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+        return code ? `${code}::${color}` : String(item?.id || index);
+    })).size;
     document.querySelectorAll('.basket-count').forEach(el => {
-        el.textContent = quoteBasket.length;
+        el.textContent = count;
     });
 }

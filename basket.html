@@ -1742,7 +1742,22 @@
 
     // Save basket
     function saveBasket(basket) {
-        localStorage.setItem('quoteBasket', JSON.stringify(basket));
+        const compactBasket = (Array.isArray(basket) ? basket : []).map(function (item) {
+            if (!item || typeof item !== 'object') return item;
+
+            const primaryLogo = Array.isArray(item.logos) && item.logos[0]
+                ? item.logos[0].logo
+                : '';
+            const previewLogo = item.designPreview && item.designPreview.logoImage;
+
+            if (!primaryLogo || !previewLogo || primaryLogo !== previewLogo) return item;
+
+            return Object.assign({}, item, {
+                designPreview: Object.assign({}, item.designPreview, { logoImage: '' })
+            });
+        });
+
+        localStorage.setItem('quoteBasket', JSON.stringify(compactBasket));
     }
 
     // Generate a unique row ID
@@ -2139,6 +2154,16 @@
 
     function renderBasket() {
         const basket = getBasket();
+        const headerBadge = document.getElementById('headerBasketBadge');
+        if (headerBadge) {
+            const entryCount = new Set(basket.map((item, index) => {
+                const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
+                const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
+                return code ? `${code}::${color}` : String(item?.id || index);
+            })).size;
+            headerBadge.textContent = entryCount > 99 ? '99+' : String(entryCount);
+            headerBadge.style.display = entryCount > 0 ? 'flex' : 'none';
+        }
         let hexDirty = false;
         basket.forEach(function (item) {
             if (enrichItemColorHex(item)) hexDirty = true;
@@ -2242,7 +2267,7 @@
     function renderPlacementPreview(item, altText, index) {
         const preview = item && item.designPreview;
         const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
-        const logoImage = preview && preview.logoImage;
+        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
         if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
             return '';
         }
@@ -2273,7 +2298,7 @@
     function renderPlacementPreviewVisual(item, altText) {
         const preview = item && item.designPreview;
         const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
-        const logoImage = preview && preview.logoImage;
+        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
         if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
             return '';
         }
@@ -3515,7 +3540,8 @@
 
     async function renderQuotePreviewImage(item) {
         const preview = item && item.designPreview;
-        if (!preview || !preview.garmentImage || !preview.logoImage || !preview.garmentBox || !preview.logoBox) return null;
+        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
+        if (!preview || !preview.garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) return null;
 
         const width = 520;
         const aspect = Math.max(0.7, Math.min(1.5, parseFloat(preview.wrapAspect || 1.12) || 1.12));
@@ -3523,7 +3549,7 @@
         const garmentImage = getQuoteGarmentSource(item, preview);
         const [garmentImg, logoImg] = await Promise.all([
             loadQuoteImage(garmentImage),
-            loadQuoteImage(preview.logoImage)
+            loadQuoteImage(logoImage)
         ]);
         if (!garmentImg || !logoImg) return null;
 
@@ -3576,13 +3602,14 @@
     function buildQuoteDesignPreview(item) {
         const preview = item && item.designPreview;
         if (!preview || typeof preview !== 'object') return null;
+        const logoImage = preview.logoImage || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
         return {
             type: preview.type || 'garment-logo-preview',
             version: preview.version || 1,
             area: preview.area || '',
             colorName: preview.colorName || item.color || '',
             garmentImage: safeQuoteMediaRef(getQuoteGarmentSource(item, preview)),
-            logoImage: safeQuoteMediaRef(preview.logoImage || ''),
+            logoImage: safeQuoteMediaRef(logoImage),
             garmentBox: preview.garmentBox || null,
             logoBox: preview.logoBox || null,
             logoRotation: parseFloat(preview.logoRotation || 0) || 0,
