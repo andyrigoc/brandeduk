@@ -1548,7 +1548,8 @@ function hydrateAreaDesignsFromBasketContext() {
     const area = getDesignAreaKey(logo?.position || logo?.area);
     const source = getLogoSource(logo);
     if (!source) return;
-    const preview = item.designPreview?.area === area ? item.designPreview : null;
+    const preview = logo.designPreview
+      || (item.designPreview?.area === area ? item.designPreview : null);
     hydrated[area] = {
       area,
       logo: source,
@@ -2427,6 +2428,31 @@ function compactLogoForStorage(logo) {
       : null
   };
 
+  if (logo.designPreview && typeof logo.designPreview === "object") {
+    const preview = logo.designPreview;
+    compactLogo.designPreview = {
+      type: preview.type || "garment-logo-preview",
+      version: preview.version || 1,
+      area: preview.area || compactLogo.position || compactLogo.area || "front",
+      garmentImage: preview.garmentImage || "",
+      garmentBox: cleanPctBox(preview.garmentBox),
+      logoBox: cleanPctBox(preview.logoBox),
+      logoRotation: parseFloat(preview.logoRotation ?? compactLogo.logoRotation ?? 0) || 0,
+      garmentHex: normalizeHex(preview.garmentHex || "") || "",
+      colorName: preview.colorName || "",
+      wrapAspect: Math.max(0.6, Math.min(1.8, parseFloat(preview.wrapAspect || 1.15) || 1.15))
+    };
+    if (
+      !compactLogo.designPreview.garmentImage
+      || compactLogo.designPreview.garmentBox.width <= 0
+      || compactLogo.designPreview.garmentBox.height <= 0
+      || compactLogo.designPreview.logoBox.width <= 0
+      || compactLogo.designPreview.logoBox.height <= 0
+    ) {
+      delete compactLogo.designPreview;
+    }
+  }
+
   Object.keys(compactLogo).forEach((key) => {
     if (compactLogo[key] === "" || compactLogo[key] === null || compactLogo[key] === undefined) delete compactLogo[key];
   });
@@ -2741,7 +2767,8 @@ function buildBasketItemFromState() {
       unitPrice: getLogoUnitPrice(method),
       qualityPct: parseInt(design.qualityPct || 0, 10) || 0,
       logoRotation: parseFloat(design.rotation || 0) || 0,
-      placement: design.placement || null
+      placement: design.placement || null,
+      designPreview: design.preview || null
     };
   });
   const legacyPositions = logos.map((logo) => ({

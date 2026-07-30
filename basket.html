@@ -356,6 +356,21 @@
             border-radius: 8px;
             background: #f8fafc;
         }
+        .item-placement-preview-list {
+            margin: 12px 0 0;
+        }
+        .item-placement-preview-list-title {
+            margin-bottom: 7px;
+            color: var(--basket-navy);
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .item-placement-preview-list .item-placement-preview-card {
+            margin-top: 0;
+        }
+        .item-placement-preview-list .item-placement-preview-card + .item-placement-preview-card {
+            margin-top: 8px;
+        }
         .item-placement-preview-card .item-design-preview {
             width: 76px;
             height: 88px;
@@ -1574,6 +1589,7 @@
 
     const BASKET_DEBUG = window.BRANDED_DEBUG === true;
     const basketDebug = (...args) => { if (BASKET_DEBUG) console.debug(...args); };
+    const placementPreviewConfigCache = new Map();
 
     // --- State ---
     function readVatPreference() {
@@ -1599,6 +1615,7 @@
         initEventListeners();
         loadOrderNotes();
         hydrateAllBasketColorHex();
+        hydrateMissingPositionPreviews();
         showReorderNotice();
         // Disabled: auto-opening the logo-positions popup on basket load was
         // showing an empty intermediate page. Users add logos via the
@@ -1760,6 +1777,147 @@
         localStorage.setItem('quoteBasket', JSON.stringify(compactBasket));
     }
 
+    function normalizeCustomizationPreviewSlug(value) {
+        return String(value || '')
+            .trim()
+            .toLowerCase()
+            .replace(/&/g, ' and ')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function resolveCustomizationPreviewType(item) {
+        const explicit = normalizeCustomizationPreviewSlug(item && item.productType);
+        const text = `${explicit} ${item?.name || item?.productName || ''}`.toLowerCase();
+        if (/apron/.test(text)) return 'aprons';
+        if (/hoodie|hooded/.test(text)) return 'hoodies';
+        if (/fleece/.test(text)) return 'fleece';
+        if (/polo/.test(text)) return 'polos';
+        if (/t-?shirt|\btee\b/.test(text)) return 'tshirts';
+        if (/hi-?vis|safety-vest|waistcoat/.test(text)) return 'safety-vests';
+        if (/jacket|parka|coat|anorak|windbreaker/.test(text)) return 'jackets';
+        if (/trouser|chino|pants?/.test(text)) return 'trousers';
+        if (/shorts?/.test(text) && !/shirt/.test(text)) return 'shorts';
+        if (/bag|rucksack|backpack|holdall|duffle|duffel|tote/.test(text)) return 'bags';
+        if (/shirt|blouse/.test(text)) return 'shirts';
+        if (/beanie/.test(text)) return 'beanies';
+        if (/\bcap\b/.test(text)) return 'caps';
+        if (/hat|headwear/.test(text)) return 'hats';
+        return explicit;
+    }
+
+    function resolveConfiguredPreviewImage(config, area) {
+        const positions = Array.isArray(config && config.positions) ? config.positions : [];
+        const images = {};
+        positions.forEach(function (position) {
+            const slug = normalizeCustomizationPreviewSlug(position && position.slug);
+            const image = String(position?.imageUrl || position?.image_url || '').trim();
+            if (slug && image) images[slug] = image;
+        });
+
+        const normalized = normalizeCustomizationPreviewSlug(area) || 'front';
+        if (images[normalized]) return images[normalized];
+        if (normalized === 'left') return images.left || images.sleeve || images.side || '';
+        if (normalized === 'right') return images.right || images.sleeve || images.side || images.left || '';
+        return '';
+    }
+
+    function fetchPlacementPreviewConfig(productType, variantKey) {
+        const type = normalizeCustomizationPreviewSlug(productType);
+        const variant = normalizeCustomizationPreviewSlug(variantKey);
+        if (!type) return Promise.resolve(null);
+        const cacheKey = `${type}::${variant}`;
+        if (placementPreviewConfigCache.has(cacheKey)) {
+            return placementPreviewConfigCache.get(cacheKey);
+        }
+
+        const url = new URL(`https://api.brandeduk.com/api/customization-config/${encodeURIComponent(type)}`);
+        if (variant) url.searchParams.set('subtype', variant);
+        const request = fetch(url.toString())
+            .then(function (response) {
+                if (!response.ok) throw new Error(`Customization preview ${response.status}`);
+                return response.json();
+            })
+            .then(function (body) {
+                return body && (body.data || body);
+            })
+            .catch(function () {
+                return null;
+            });
+        placementPreviewConfigCache.set(cacheKey, request);
+        return request;
+    }
+
+    function buildMigratedLogoPreview(item, logo, garmentImage) {
+        const placement = logo && logo.placement;
+        if (!garmentImage || !placement) return null;
+        const base = item && item.designPreview && typeof item.designPreview === 'object'
+            ? item.designPreview
+            : {};
+        return {
+            type: 'garment-logo-preview',
+            version: 1,
+            area: logo.position || logo.area || 'front',
+            garmentImage: garmentImage,
+            garmentBox: base.garmentBox || { left: 0, top: 0, width: 100, height: 100 },
+            logoBox: {
+                left: parseFloat(placement.leftPct || 0) || 0,
+                top: parseFloat(placement.topPct || 0) || 0,
+                width: parseFloat(placement.widthPct || 0) || 0,
+                height: parseFloat(placement.heightPct || 0) || 0
+            },
+            logoRotation: parseFloat(logo.logoRotation || 0) || 0,
+            garmentHex: base.garmentHex || item.colorHex || '',
+            colorName: base.colorName || item.color || '',
+            wrapAspect: parseFloat(base.wrapAspect || 1.15) || 1.15
+        };
+    }
+
+    async function hydrateMissingPositionPreviews() {
+        const basket = getBasket();
+        const jobs = [];
+
+        basket.forEach(function (item) {
+            const logos = Array.isArray(item && item.logos) ? item.logos : [];
+            if (logos.length === 0) return;
+            const missing = logos.filter(function (logo) { return !logo.designPreview; });
+            if (missing.length === 0) return;
+
+            const productType = resolveCustomizationPreviewType(item);
+            jobs.push(
+                fetchPlacementPreviewConfig(productType, item.customizationVariantKey).then(function (config) {
+                    let changed = false;
+                    missing.forEach(function (logo) {
+                        const area = logo.position || logo.area || 'front';
+                        const itemPreview = item.designPreview;
+                        if (
+                            itemPreview
+                            && normalizeCustomizationPreviewSlug(itemPreview.area) === normalizeCustomizationPreviewSlug(area)
+                        ) {
+                            logo.designPreview = Object.assign({}, itemPreview, { logoImage: '' });
+                            changed = true;
+                            return;
+                        }
+
+                        const garmentImage = resolveConfiguredPreviewImage(config, area);
+                        const migrated = buildMigratedLogoPreview(item, logo, garmentImage);
+                        if (migrated) {
+                            logo.designPreview = migrated;
+                            changed = true;
+                        }
+                    });
+                    return changed;
+                })
+            );
+        });
+
+        if (jobs.length === 0) return;
+        const results = await Promise.allSettled(jobs);
+        if (!results.some(function (result) { return result.status === 'fulfilled' && result.value; })) return;
+        saveBasket(basket);
+        renderBasket();
+    }
+
     // Generate a unique row ID
     function makeRowId(code, color, size) {
         const slug = (color || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1817,6 +1975,7 @@
                         priceBreaks: item.priceBreaks || [],
                         brand: item.brand || '',
                         productType: item.productType || '',
+                        customizationVariantKey: item.customizationVariantKey || '',
                         logos: rowLogos,
                         designPreview: item.designPreview ? JSON.parse(JSON.stringify(item.designPreview)) : undefined,
                         pendingLogoPrompt: rowLogos.length === 0 && !!item.pendingLogoPrompt
@@ -1961,6 +2120,9 @@
                 logoRotation: parseFloat(entry.logoRotation || entry.rotation || 0) || 0,
                 placement: entry.placement && typeof entry.placement === 'object'
                     ? JSON.parse(JSON.stringify(entry.placement))
+                    : null,
+                designPreview: entry.designPreview && typeof entry.designPreview === 'object'
+                    ? JSON.parse(JSON.stringify(entry.designPreview))
                     : null
             });
         }
@@ -1977,7 +2139,8 @@
                     unitPrice: p.unitPrice,
                     qualityPct: p.qualityPct,
                     logoRotation: p.logoRotation,
-                    placement: p.placement
+                    placement: p.placement,
+                    designPreview: p.designPreview
                 });
             });
         }
@@ -1995,7 +2158,8 @@
                     unitPrice: d.unitPrice,
                     qualityPct: d.qualityPct,
                     logoRotation: d.logoRotation,
-                    placement: d.placement
+                    placement: d.placement,
+                    designPreview: d.designPreview
                 });
             });
         }
@@ -2012,7 +2176,8 @@
                     unitPrice: l.unitPrice,
                     qualityPct: l.qualityPct,
                     logoRotation: l.logoRotation,
-                    placement: l.placement
+                    placement: l.placement,
+                    designPreview: l.designPreview
                 });
             });
         }
@@ -2331,6 +2496,141 @@
             </div>`;
     }
 
+    function normalizePositionPreviewArea(value) {
+        return String(value || '').trim().toLowerCase().replace(/[\s_]+/g, '-');
+    }
+
+    function getPositionPreviewContext(item, logoIndex) {
+        if (!item) return null;
+        const logos = Array.isArray(item.logos) ? item.logos : [];
+        const logo = Number.isInteger(logoIndex) && logoIndex >= 0 ? logos[logoIndex] : logos[0];
+        const logoArea = normalizePositionPreviewArea(logo && (logo.position || logo.area));
+        let preview = logo && logo.designPreview;
+
+        if (!preview && item.designPreview) {
+            const itemArea = normalizePositionPreviewArea(item.designPreview.area);
+            if (!logo || !logoArea || !itemArea || logoArea === itemArea) {
+                preview = item.designPreview;
+            }
+        }
+
+        if (!preview) return null;
+        const logoImage = preview.logoImage || (logo && logo.logo) || '';
+        const garmentImage = (
+            preview.garmentImage && !isGeneratedGarmentImage(preview.garmentImage)
+                ? preview.garmentImage
+                : ''
+        )
+            || getQuoteGarmentSource(item, preview)
+            || item.colorImage
+            || item.image;
+        if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) return null;
+        return { preview, logo, logoImage, garmentImage };
+    }
+
+    function renderPositionPlacementCard(item, altText, itemIndex, logoIndex) {
+        const context = getPositionPreviewContext(item, logoIndex);
+        if (!context) return '';
+        const preview = context.preview;
+        const logo = context.logo;
+        const rotation = parseFloat(preview.logoRotation || (logo && logo.logoRotation) || 0) || 0;
+        const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
+            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
+            : '';
+        const area = preview.area || (logo && (logo.position || logo.area)) || '';
+        const areaLabel = area ? toReadablePosition(area) : 'Placement';
+
+        return `
+            <div class="item-placement-preview-card" title="${escapeAttr(areaLabel)} logo placement preview">
+                <div class="item-design-preview" aria-label="${escapeAttr(areaLabel)} logo placement preview">
+                    <img class="item-design-preview__garment" src="${escapeAttr(context.garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(preview.garmentBox)}" onerror="this.style.display='none'">
+                    ${tintHtml}
+                    <img class="item-design-preview__logo" src="${escapeAttr(context.logoImage)}" alt="${escapeAttr(areaLabel)} logo placement" style="${previewBoxStyle(preview.logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">
+                </div>
+                <div class="item-placement-preview-copy">
+                    <div class="item-placement-preview-head">
+                        <p class="item-placement-preview-title">${escapeAttr(areaLabel)} preview</p>
+                        <button type="button" class="item-placement-preview-btn" onclick="event.stopPropagation(); openPositionPlacementPreview(${itemIndex}, ${logoIndex})">Preview</button>
+                    </div>
+                    <p class="item-placement-preview-meta">${escapeAttr(preview.colorName || item.color || '')} &middot; ${escapeAttr(areaLabel)}</p>
+                </div>
+            </div>`;
+    }
+
+    function renderAllPlacementPreviews(item, altText, itemIndex) {
+        const logos = Array.isArray(item && item.logos) ? item.logos : [];
+        const cards = logos.map(function (logo, logoIndex) {
+            return renderPositionPlacementCard(item, altText, itemIndex, logoIndex);
+        }).filter(Boolean);
+
+        if (cards.length === 0 && item && item.designPreview) {
+            const fallback = renderPositionPlacementCard(item, altText, itemIndex, -1);
+            if (fallback) cards.push(fallback);
+        }
+        if (cards.length === 0) return '';
+
+        return `
+            <div class="item-placement-preview-list">
+                <div class="item-placement-preview-list-title">Placement previews (${cards.length})</div>
+                ${cards.join('')}
+            </div>`;
+    }
+
+    function renderPositionPlacementVisual(item, altText, logoIndex) {
+        const context = getPositionPreviewContext(item, logoIndex);
+        if (!context) return '';
+        const preview = context.preview;
+        const rotation = parseFloat(preview.logoRotation || (context.logo && context.logo.logoRotation) || 0) || 0;
+        const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
+            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
+            : '';
+
+        return `
+            <div class="item-design-preview" aria-label="Logo placement preview">
+                <img class="item-design-preview__garment" src="${escapeAttr(context.garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(preview.garmentBox)}" onerror="this.style.display='none'">
+                ${tintHtml}
+                <img class="item-design-preview__logo" src="${escapeAttr(context.logoImage)}" alt="Logo placement" style="${previewBoxStyle(preview.logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">
+            </div>`;
+    }
+
+    async function openPositionPlacementPreview(index, logoIndex) {
+        const basket = getBasket();
+        const item = basket[index];
+        const context = getPositionPreviewContext(item, logoIndex);
+        if (!item || !context) {
+            alert('No placement preview found for this position yet.');
+            return;
+        }
+
+        const previewItem = Object.assign({}, item, {
+            designPreview: context.preview,
+            logos: context.logo ? [context.logo] : item.logos,
+            sourceColorImage: '',
+            originalColorImage: ''
+        });
+        const modal = document.getElementById('placementPreviewModal');
+        const stage = document.getElementById('placementPreviewStage');
+        const title = document.getElementById('placementPreviewTitle');
+        if (!modal || !stage) return;
+
+        const areaLabel = toReadablePosition(context.preview.area || (context.logo && context.logo.position) || 'Placement');
+        if (title) title.textContent = `${item.name || item.productName || 'Placement'} - ${areaLabel}`;
+        stage.innerHTML = '<p class="preview-image-modal__status">Rendering preview...</p>';
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        const previewImage = await renderQuotePreviewImage(previewItem);
+        if (previewImage) {
+            stage.innerHTML = `<img src="${escapeAttr(previewImage)}" alt="${escapeAttr(areaLabel + ' placement preview')}">`;
+        } else {
+            stage.innerHTML = renderPositionPlacementVisual(previewItem, item.name || item.productName || 'Placement preview', 0)
+                || '<p class="preview-image-modal__status">Preview could not be rendered for this position.</p>';
+        }
+    }
+
     async function openPlacementPreview(index) {
         const basket = getBasket();
         const item = basket[index];
@@ -2466,7 +2766,7 @@
                     </div>
 
                     <div class="item-logos-section">
-                        ${renderPlacementPreview(item, item.name || 'Product', index)}
+                        ${renderAllPlacementPreviews(item, item.name || 'Product', index)}
                         ${logosHtml}
                     </div>
 
@@ -2693,7 +2993,8 @@
                     logo: l.logo || '',
                     qualityPct: l.qualityPct || 0,
                     logoRotation: l.logoRotation || 0,
-                    placement: l.placement || null
+                    placement: l.placement || null,
+                    designPreview: l.designPreview || null
                 }));
                 bi.positionDesigns = {};
                 logos.forEach(l => {
@@ -2704,7 +3005,8 @@
                         unitPrice: l.unitPrice || 5.00,
                         qualityPct: l.qualityPct || 0,
                         logoRotation: l.logoRotation || 0,
-                        placement: l.placement || null
+                        placement: l.placement || null,
+                        designPreview: l.designPreview || null
                     };
                 });
             }
