@@ -21,7 +21,7 @@
     })();
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css?v=20260726b" />
+  <link rel="stylesheet" href="style.css?v=20260730b" />
 </head>
 
 <body class="tool-with-site-header">
@@ -270,6 +270,25 @@
       <span class="canvas-selected-colour-label">COLOUR</span>
       <span id="selectedCanvasColourName" class="canvas-selected-colour-value">White</span>
     </div>
+
+    <section id="positionDesignPanel" class="position-design-panel" aria-labelledby="positionDesignTitle">
+      <div class="position-design-heading">
+        <div>
+          <span class="position-design-eyebrow">DECORATION POSITION</span>
+          <strong id="positionDesignTitle" class="position-design-title">Front</strong>
+        </div>
+        <span id="positionDesignCount" class="position-design-count">0 positions added</span>
+      </div>
+      <div id="positionDesignStatus" class="position-design-status" aria-live="polite">
+        <span class="position-design-status-icon" aria-hidden="true"></span>
+        <span id="positionDesignStatusText">Choose a logo for this position.</span>
+      </div>
+      <div id="positionDesignActions" class="position-design-actions">
+        <button id="positionReuseLogoBtn" class="position-design-btn position-design-btn-secondary" type="button" hidden>Use existing logo</button>
+        <button id="positionAddLogoBtn" class="position-design-btn position-design-btn-primary" type="button">Add logo here</button>
+      </div>
+      <p class="position-design-help">Your logo and placement are saved automatically when you switch garment views.</p>
+    </section>
 
     <!-- Logo quality bar -->
     <div class="main-quality-bar" id="mainQualityBar">
@@ -959,9 +978,10 @@
 
 <div id="postConfirmModal" class="post-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="postConfirmTitle">
   <div class="post-confirm-card">
-    <h3 id="postConfirmTitle" class="post-confirm-title">Logo added to basket</h3>
-    <p class="post-confirm-subtitle">What would you like to do next?</p>
-    <button id="postConfirmAddAnotherLogo" type="button" class="post-confirm-btn post-confirm-btn-primary">Add another logo</button>
+    <h3 id="postConfirmTitle" class="post-confirm-title">Design added to basket</h3>
+    <p class="post-confirm-subtitle">Your decoration positions have been saved.</p>
+    <div id="postConfirmDesignSummary" class="post-confirm-design-summary"></div>
+    <button id="postConfirmAddAnotherLogo" type="button" class="post-confirm-btn post-confirm-btn-primary">Add another position</button>
     <button id="postConfirmContinueShopping" type="button" class="post-confirm-btn">Continue shopping</button>
     <button id="postConfirmViewBasket" type="button" class="post-confirm-btn">View basket</button>
     <button id="postConfirmClose" type="button" class="post-confirm-close" aria-label="Close">Close</button>
@@ -971,6 +991,6 @@
 <script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610n"></script>
-<script src="app.js?v=20260730a"></script>
+<script src="app.js?v=20260730b"></script>
 </body>
 </html>

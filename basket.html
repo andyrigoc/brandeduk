@@ -1956,7 +1956,12 @@
                 positionLabel: entry.positionLabel || toReadablePosition(pos),
                 method: method,
                 logo: entry.logo || '',
-                unitPrice: safeUnitPrice
+                unitPrice: safeUnitPrice,
+                qualityPct: parseInt(entry.qualityPct || 0, 10) || 0,
+                logoRotation: parseFloat(entry.logoRotation || entry.rotation || 0) || 0,
+                placement: entry.placement && typeof entry.placement === 'object'
+                    ? JSON.parse(JSON.stringify(entry.placement))
+                    : null
             });
         }
 
@@ -1969,7 +1974,10 @@
                     positionLabel: toReadablePosition(p.name || p.position || ''),
                     method: (p.method || methodByPos[p.position] || 'embroidery').toLowerCase(),
                     logo: p.logo || '',
-                    unitPrice: p.unitPrice
+                    unitPrice: p.unitPrice,
+                    qualityPct: p.qualityPct,
+                    logoRotation: p.logoRotation,
+                    placement: p.placement
                 });
             });
         }
@@ -1984,7 +1992,10 @@
                     positionLabel: toReadablePosition(d.position || posKey),
                     method: method,
                     logo: d.logo || '',
-                    unitPrice: d.unitPrice
+                    unitPrice: d.unitPrice,
+                    qualityPct: d.qualityPct,
+                    logoRotation: d.logoRotation,
+                    placement: d.placement
                 });
             });
         }
@@ -1998,7 +2009,10 @@
                     positionLabel: l.positionLabel || toReadablePosition(l.position),
                     method: (l.method || methodByPos[l.position] || 'embroidery').toLowerCase(),
                     logo: l.logo || '',
-                    unitPrice: l.unitPrice
+                    unitPrice: l.unitPrice,
+                    qualityPct: l.qualityPct,
+                    logoRotation: l.logoRotation,
+                    placement: l.placement
                 });
             });
         }
@@ -2676,7 +2690,10 @@
                     name: l.positionLabel || toReadablePosition(l.position),
                     method: l.method || 'embroidery',
                     unitPrice: l.unitPrice || 5.00,
-                    logo: l.logo || ''
+                    logo: l.logo || '',
+                    qualityPct: l.qualityPct || 0,
+                    logoRotation: l.logoRotation || 0,
+                    placement: l.placement || null
                 }));
                 bi.positionDesigns = {};
                 logos.forEach(l => {
@@ -2684,7 +2701,10 @@
                         position: l.position,
                         method: l.method || 'embroidery',
                         logo: l.logo || '',
-                        unitPrice: l.unitPrice || 5.00
+                        unitPrice: l.unitPrice || 5.00,
+                        qualityPct: l.qualityPct || 0,
+                        logoRotation: l.logoRotation || 0,
+                        placement: l.placement || null
                     };
                 });
             }

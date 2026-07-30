@@ -28,7 +28,9 @@ const state = {
   price: 11.99,
   logoRotation: 0,
   textRotation: 0,
-  logoZIndex: 40
+  logoZIndex: 40,
+  areaDesigns: {},
+  pendingDecorationType: null
 };
 
 // ---------------------------------------------------------------------------
@@ -134,6 +136,12 @@ const cartBadges = document.querySelectorAll(".cart-badge, .sub-cart-badge");
 const toolBottomBasketBadge = document.getElementById("toolBottomBasketBadge");
 const toolBottomNav = document.querySelector(".tool-bottom-nav");
 const confirmQualityBtn = document.getElementById("confirmQualityBtn");
+const positionDesignPanel = document.getElementById("positionDesignPanel");
+const positionDesignTitle = document.getElementById("positionDesignTitle");
+const positionDesignCount = document.getElementById("positionDesignCount");
+const positionDesignStatusText = document.getElementById("positionDesignStatusText");
+const positionReuseLogoBtn = document.getElementById("positionReuseLogoBtn");
+const positionAddLogoBtn = document.getElementById("positionAddLogoBtn");
 
 const colourLayer = document.getElementById("colourLayer");
 const designLayer = document.getElementById("designLayer");
@@ -1238,7 +1246,330 @@ async function hydrateSelectedProductFromApi() {
 
 function updateConfirmButtonState() {
   if (!confirmQualityBtn) return;
-  confirmQualityBtn.disabled = !(state.uploadedLogo && state.copyrightConfirmed);
+  if (state.uploadedLogo && !state.copyrightConfirmed) {
+    confirmQualityBtn.disabled = true;
+    return;
+  }
+  const hasConfirmedCurrentLogo = Boolean(state.uploadedLogo && state.copyrightConfirmed);
+  const hasSavedPosition = Object.values(state.areaDesigns || {}).some(
+    (design) => Boolean(design?.logo && design?.copyrightConfirmed !== false)
+  );
+  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition);
+}
+
+function getDesignAreaKey(area = state.selectedArea) {
+  return normalizeAreaForPicker(area) || "front";
+}
+
+function getDesignAreaLabel(area = state.selectedArea) {
+  return areaLabelForPicker(getDesignAreaKey(area));
+}
+
+function getCurrentLogoQualityPct() {
+  return parseInt(
+    (document.getElementById("mainQualityPct")?.textContent || "0").replace(/[^0-9]/g, ""),
+    10
+  ) || 0;
+}
+
+function captureCurrentLogoPlacement() {
+  const logoFrame = getLogoFrameEl();
+  const areaWidth = Math.max(0, customArea?.clientWidth || 0);
+  const areaHeight = Math.max(0, customArea?.clientHeight || 0);
+  if (!logoFrame || areaWidth < 20 || areaHeight < 20) return null;
+
+  const left = Number.isFinite(parseFloat(designLayer.style.left))
+    ? parseFloat(designLayer.style.left)
+    : designLayer.offsetLeft;
+  const top = Number.isFinite(parseFloat(designLayer.style.top))
+    ? parseFloat(designLayer.style.top)
+    : designLayer.offsetTop;
+  const width = logoFrame.offsetWidth || parseFloat(logoFrame.style.width) || 0;
+  const height = logoFrame.offsetHeight || parseFloat(logoFrame.style.height) || 0;
+  if (width < 1 || height < 1) return null;
+
+  return {
+    leftPct: Number(((left / areaWidth) * 100).toFixed(4)),
+    topPct: Number(((top / areaHeight) * 100).toFixed(4)),
+    widthPct: Number(((width / areaWidth) * 100).toFixed(4)),
+    heightPct: Number(((height / areaHeight) * 100).toFixed(4))
+  };
+}
+
+function captureCurrentAreaDesign() {
+  const area = getDesignAreaKey();
+  if (!state.uploadedLogo) return state.areaDesigns?.[area] || null;
+
+  const existing = state.areaDesigns?.[area] || {};
+  const preview = buildDesignPreviewFromState() || existing.preview || null;
+  const placement = captureCurrentLogoPlacement() || existing.placement || null;
+
+  const design = {
+    area,
+    logo: state.uploadedLogo,
+    originalLogo: state.originalUploadedLogo || state.uploadedLogo,
+    method: normalizeDecorationMethod(state.decorationType),
+    copyrightConfirmed: Boolean(state.copyrightConfirmed),
+    rotation: getLayerRotationDegrees(designLayer),
+    placement,
+    qualityPct: getCurrentLogoQualityPct(),
+    preview
+  };
+
+  state.areaDesigns[area] = design;
+  return design;
+}
+
+function resetLogoQualityUi() {
+  const mainMask = document.getElementById("mainQualityMask");
+  const mainPct = document.getElementById("mainQualityPct");
+  if (mainMask) {
+    mainMask.style.width = "100%";
+    mainMask.style.borderRadius = "0 6px 6px 0";
+  }
+  if (mainPct) {
+    mainPct.textContent = "0%";
+    mainPct.style.color = "#9098a3";
+  }
+  const warning = document.getElementById("qualityWarning");
+  if (warning) warning.style.display = "none";
+}
+
+function clearCanvasLogoState() {
+  uploadedLogo.onload = null;
+  uploadedLogo.src = "";
+  uploadedLogo.style.display = "none";
+  designLayer.style.display = "none";
+  designLayer.classList.remove("active-logo");
+  designLayer.style.left = "";
+  designLayer.style.top = "";
+  designLayer.style.rotate = "0deg";
+  designLayer.style.transform = "none";
+
+  const logoFrame = getLogoFrameEl();
+  if (logoFrame) {
+    logoFrame.style.width = "";
+    logoFrame.style.height = "";
+  }
+
+  state.uploadedLogo = null;
+  state.originalUploadedLogo = null;
+  state.copyrightConfirmed = false;
+  state.logoRotation = 0;
+  resetLogoQualityUi();
+}
+
+function getDraftAreaDesigns() {
+  const designs = { ...(state.areaDesigns || {}) };
+  if (state.uploadedLogo) {
+    const area = getDesignAreaKey();
+    designs[area] = {
+      ...(designs[area] || {}),
+      area,
+      logo: state.uploadedLogo,
+      originalLogo: state.originalUploadedLogo || state.uploadedLogo,
+      method: normalizeDecorationMethod(state.decorationType),
+      copyrightConfirmed: Boolean(state.copyrightConfirmed),
+      rotation: getLayerRotationDegrees(designLayer),
+      qualityPct: getCurrentLogoQualityPct()
+    };
+  }
+  return designs;
+}
+
+function updateViewTabDesignStatus(designs = getDraftAreaDesigns()) {
+  document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
+    const area = getDesignAreaKey(tab.dataset.area);
+    const hasDesign = Boolean(designs[area]?.logo);
+    const label = getDesignAreaLabel(area);
+    tab.classList.toggle("has-position-design", hasDesign);
+    tab.setAttribute(
+      "aria-label",
+      `${label}${hasDesign ? ", logo added" : ", no logo"}`
+    );
+    const visibleLabel = tab.querySelector(".view-thumb-label");
+    if (visibleLabel) visibleLabel.textContent = label;
+
+    let badge = tab.querySelector(".view-design-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "view-design-badge";
+      badge.setAttribute("aria-hidden", "true");
+      badge.textContent = "✓";
+      tab.appendChild(badge);
+    }
+  });
+}
+
+function updatePositionDesignUi() {
+  const designs = getDraftAreaDesigns();
+  const currentArea = getDesignAreaKey();
+  const currentDesign = designs[currentArea];
+  const designCount = Object.values(designs).filter((design) => Boolean(design?.logo)).length;
+  const hasDesign = Boolean(currentDesign?.logo);
+  const reusableLogos = getSessionLogoLibrary();
+
+  if (positionDesignPanel) positionDesignPanel.classList.toggle("has-design", hasDesign);
+  if (positionDesignTitle) positionDesignTitle.textContent = getDesignAreaLabel(currentArea);
+  if (positionDesignCount) {
+    positionDesignCount.textContent = `${designCount} position${designCount === 1 ? "" : "s"} added`;
+  }
+  if (positionDesignStatusText) {
+    const method = normalizeDecorationMethod(currentDesign?.method || state.decorationType);
+    const methodLabel = method === "dtf"
+      ? "DTF print"
+      : method === "screen"
+        ? "Screen print"
+        : method.charAt(0).toUpperCase() + method.slice(1);
+    positionDesignStatusText.textContent = hasDesign
+      ? `${methodLabel} logo saved for ${getDesignAreaLabel(currentArea)}.`
+      : `No logo added to ${getDesignAreaLabel(currentArea)} yet.`;
+  }
+  if (positionReuseLogoBtn) {
+    positionReuseLogoBtn.hidden = hasDesign || reusableLogos.length === 0;
+  }
+  if (positionAddLogoBtn) {
+    positionAddLogoBtn.textContent = hasDesign ? "Replace logo" : "Add logo here";
+  }
+
+  updateViewTabDesignStatus(designs);
+  updateConfirmButtonState();
+}
+
+function waitForLogoImage(image) {
+  if (image.complete && image.naturalWidth > 0) return Promise.resolve();
+  return new Promise((resolve) => {
+    const finish = () => resolve();
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", finish, { once: true });
+    setTimeout(finish, 1500);
+  });
+}
+
+async function restoreAreaDesign(area = state.selectedArea) {
+  const key = getDesignAreaKey(area);
+  const design = state.areaDesigns?.[key];
+  clearCanvasLogoState();
+
+  if (!design?.logo) {
+    calculatePrice();
+    updatePositionDesignUi();
+    return false;
+  }
+
+  state.uploadedLogo = design.logo;
+  state.originalUploadedLogo = design.originalLogo || design.logo;
+  state.decorationType = normalizeDecorationMethod(design.method);
+  state.copyrightConfirmed = design.copyrightConfirmed !== false;
+  state.logoRotation = parseFloat(design.rotation || 0) || 0;
+
+  uploadedLogo.src = design.logo;
+  uploadedLogo.style.display = "block";
+  await waitForLogoImage(uploadedLogo);
+
+  if (getDesignAreaKey() !== key) return false;
+
+  designLayer.style.display = "block";
+  const logoFrame = getLogoFrameEl();
+  const placement = design.placement;
+  const areaWidth = Math.max(1, customArea.clientWidth);
+  const areaHeight = Math.max(1, customArea.clientHeight);
+
+  if (placement && logoFrame) {
+    logoFrame.style.width = `${Math.max(20, areaWidth * (placement.widthPct / 100))}px`;
+    logoFrame.style.height = `${Math.max(20, areaHeight * (placement.heightPct / 100))}px`;
+    designLayer.style.left = `${areaWidth * (placement.leftPct / 100)}px`;
+    designLayer.style.top = `${areaHeight * (placement.topPct / 100)}px`;
+  } else {
+    fitLogoToPrintArea();
+    centerLogo();
+  }
+
+  designLayer.style.rotate = `${state.logoRotation}deg`;
+  designLayer.style.transform = "none";
+  activateLogo();
+  updateLogoSizeLabels();
+  updateVisibilityByPrintArea(designLayer);
+  calculatePrice();
+  updatePositionDesignUi();
+  return true;
+}
+
+let designAreaSwitchRequest = 0;
+
+async function switchToDesignArea(nextArea, options = {}) {
+  const next = getDesignAreaKey(nextArea);
+  const previous = getDesignAreaKey();
+  const requestId = ++designAreaSwitchRequest;
+
+  if (options.captureCurrent !== false && state.uploadedLogo) {
+    captureCurrentAreaDesign();
+  }
+
+  if (previous === next && options.force !== true) {
+    updatePositionDesignUi();
+    return;
+  }
+
+  clearCanvasLogoState();
+  state.selectedArea = next;
+  document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
+    tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
+  });
+
+  const viewLabel = document.getElementById("viewNameLabel");
+  if (viewLabel) viewLabel.textContent = next.toUpperCase();
+
+  await applyArea();
+  if (requestId !== designAreaSwitchRequest) return;
+  await restoreAreaDesign(next);
+}
+
+function hydrateAreaDesignsFromBasketContext() {
+  const indexRaw = sessionStorage.getItem("customizingBasketIndex");
+  const itemIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  if (!Number.isInteger(itemIndex) || itemIndex < 0) return false;
+
+  const basket = readQuoteBasket();
+  const item = basket[itemIndex];
+  if (!item) return false;
+
+  const logoCandidates = [];
+  if (Array.isArray(item.logos)) logoCandidates.push(...item.logos);
+  if (Array.isArray(item.positions)) logoCandidates.push(...item.positions);
+  if (item.positionDesigns && typeof item.positionDesigns === "object") {
+    Object.entries(item.positionDesigns).forEach(([position, design]) => {
+      if (design) logoCandidates.push({ ...design, position: design.position || position });
+    });
+  }
+
+  const hydrated = {};
+  dedupeLogos(logoCandidates).forEach((logo) => {
+    const area = getDesignAreaKey(logo?.position || logo?.area);
+    const source = getLogoSource(logo);
+    if (!source) return;
+    const preview = item.designPreview?.area === area ? item.designPreview : null;
+    hydrated[area] = {
+      area,
+      logo: source,
+      originalLogo: source,
+      method: normalizeDecorationMethod(logo.method),
+      copyrightConfirmed: true,
+      rotation: parseFloat(logo.logoRotation ?? logo.rotation ?? preview?.logoRotation ?? 0) || 0,
+      placement: logo.placement || null,
+      qualityPct: parseInt(logo.qualityPct || 0, 10) || 0,
+      preview
+    };
+    rememberUploadedLogo(source, logo.method);
+  });
+
+  if (Object.keys(hydrated).length === 0) return false;
+  state.areaDesigns = hydrated;
+
+  const requestedArea = sessionStorage.getItem("editingPosition");
+  const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || Object.keys(hydrated)[0]);
+  state.selectedArea = hydrated[initialArea] ? initialArea : Object.keys(hydrated)[0];
+  return true;
 }
 
 const BASE_FONT_OPTIONS = [
@@ -1377,7 +1708,7 @@ function openScreen(screenId) {
     showPositionPickerModal({
       title: "Pick your new position",
       subtitle: "",
-      restrictToRemaining: !!state.uploadedLogo,
+      restrictToRemaining: Object.values(getDraftAreaDesigns()).some((design) => Boolean(design?.logo)),
       onPick: () => openScreen("mainEditor"),
       onCancel: () => openScreen("mainEditor")
     });
@@ -1961,10 +2292,9 @@ function calculatePrice() {
   const qty = parseInt(mainQtyInput.value) || state.totalQty || 1;
   let unit = state.basePrice;
 
-  if (state.decorationType === "embroidery") unit += 4.5;
-  if (state.decorationType === "dtf") unit += 3.95;
-  if (state.decorationType === "screen") unit += 2.95;
-  if (state.decorationType === "vinyl") unit += 3.5;
+  Object.values(getDraftAreaDesigns()).forEach((design) => {
+    if (design?.logo) unit += getLogoUnitPrice(design.method);
+  });
   if (state.text) unit += 1.5;
   if (state.names.length > 0) unit += 4;
 
@@ -2085,7 +2415,16 @@ function compactLogoForStorage(logo) {
     positionLabel: logo.positionLabel || "",
     logo: source,
     unitPrice: parseFloat(logo.unitPrice || 0) || 0,
-    qualityPct: parseInt(logo.qualityPct || 0, 10) || 0
+    qualityPct: parseInt(logo.qualityPct || 0, 10) || 0,
+    logoRotation: parseFloat(logo.logoRotation ?? logo.rotation ?? 0) || 0,
+    placement: logo.placement && typeof logo.placement === "object"
+      ? {
+          leftPct: parseFloat(logo.placement.leftPct || 0) || 0,
+          topPct: parseFloat(logo.placement.topPct || 0) || 0,
+          widthPct: parseFloat(logo.placement.widthPct || 0) || 0,
+          heightPct: parseFloat(logo.placement.heightPct || 0) || 0
+        }
+      : null
   };
 
   Object.keys(compactLogo).forEach((key) => {
@@ -2341,7 +2680,34 @@ function updateBasketUIFromStorage() {
 function showPostConfirmModal() {
   const modal = document.getElementById("postConfirmModal");
   if (!modal) return;
+  renderPostConfirmDesignSummary();
   modal.classList.add("open");
+}
+
+function renderPostConfirmDesignSummary() {
+  captureCurrentAreaDesign();
+  const summary = document.getElementById("postConfirmDesignSummary");
+  const addAnotherBtn = document.getElementById("postConfirmAddAnotherLogo");
+  const allDesigns = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
+  const currentDesign = state.areaDesigns[getDesignAreaKey()];
+  const designs = currentDesign?.logo
+    ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
+    : allDesigns;
+
+  if (summary) {
+    summary.innerHTML = designs.map((design) => `
+      <div class="post-confirm-design-position">
+        <img src="${design.logo}" alt="">
+        <span>${getDesignAreaLabel(design.area)}</span>
+      </div>
+    `).join("");
+  }
+
+  if (addAnotherBtn) {
+    const used = new Set(designs.map((design) => getDesignAreaKey(design.area)));
+    const hasRemainingPosition = getPickerAreas().some((area) => !used.has(getDesignAreaKey(area)));
+    addAnotherBtn.hidden = !hasRemainingPosition;
+  }
 }
 
 function closePostConfirmModal() {
@@ -2351,43 +2717,62 @@ function closePostConfirmModal() {
 }
 
 function buildBasketItemFromState() {
+  captureCurrentAreaDesign();
   const quantities = {};
   state.sizes.forEach(({ size, qty }) => {
     quantities[size] = (quantities[size] || 0) + qty;
   });
 
-  const unitPrice = state.totalQty > 0 ? state.price / state.totalQty : state.basePrice;
   const productCode = state.productCode || new URLSearchParams(window.location.search).get("code") || "GD067";
-  const logoQualityPct = parseInt((document.getElementById("mainQualityPct")?.textContent || "0").replace(/[^0-9]/g, ""), 10) || 0;
-  const logoMethod = normalizeDecorationMethod(state.decorationType);
-  const logoUnitPrice = getLogoUnitPrice(logoMethod);
-  const logos = state.uploadedLogo ? [{
-    type: "logo",
-    method: logoMethod,
-    area: state.selectedArea,
-    position: state.selectedArea,
-    logo: state.uploadedLogo,
-    unitPrice: logoUnitPrice,
-    qualityPct: logoQualityPct
-  }] : [];
-  const legacyPositions = state.uploadedLogo ? [{
-    position: state.selectedArea,
-    name: state.selectedArea,
-    method: logoMethod,
-    logo: state.uploadedLogo,
-    unitPrice: logoUnitPrice
-  }] : [{ area: state.selectedArea, method: logoMethod }];
-  const legacyPositionDesigns = state.uploadedLogo ? {
-    [state.selectedArea]: {
-      position: state.selectedArea,
-      method: logoMethod,
-      logo: state.uploadedLogo,
-      unitPrice: logoUnitPrice
-    }
-  } : {};
+  const allDesigns = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
+  const currentDesign = state.areaDesigns[getDesignAreaKey()];
+  const designs = currentDesign?.logo
+    ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
+    : allDesigns;
+  const logos = designs.map((design) => {
+    const method = normalizeDecorationMethod(design.method);
+    return {
+      type: "logo",
+      method,
+      area: design.area,
+      position: design.area,
+      positionLabel: getDesignAreaLabel(design.area),
+      logo: design.logo,
+      unitPrice: getLogoUnitPrice(method),
+      qualityPct: parseInt(design.qualityPct || 0, 10) || 0,
+      logoRotation: parseFloat(design.rotation || 0) || 0,
+      placement: design.placement || null
+    };
+  });
+  const legacyPositions = logos.map((logo) => ({
+    position: logo.position,
+    name: logo.positionLabel,
+    method: logo.method,
+    logo: logo.logo,
+    unitPrice: logo.unitPrice,
+    qualityPct: logo.qualityPct,
+    logoRotation: logo.logoRotation,
+    placement: logo.placement
+  }));
+  const legacyPositionDesigns = {};
+  logos.forEach((logo) => {
+    legacyPositionDesigns[logo.position] = {
+      position: logo.position,
+      method: logo.method,
+      logo: logo.logo,
+      unitPrice: logo.unitPrice,
+      qualityPct: logo.qualityPct,
+      logoRotation: logo.logoRotation,
+      placement: logo.placement
+    };
+  });
 
   const basketColorImage = state.selectedColorImage || productShape.currentSrc || productShape.src || "";
-  const designPreview = buildDesignPreviewFromState();
+  const preferredDesign = designs[0] || state.areaDesigns.front;
+  const designPreview = preferredDesign?.preview || buildDesignPreviewFromState();
+  const nonLogoUnitPrice = (state.basePrice || 0)
+    + (state.text ? 1.5 : 0)
+    + (state.names.length > 0 ? 4 : 0);
 
   return {
     id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -2406,7 +2791,7 @@ function buildBasketItemFromState() {
     image: basketColorImage,
     quantities,
     totalQty: state.totalQty,
-    unitPrice: parseFloat(unitPrice.toFixed(2)),
+    unitPrice: parseFloat(nonLogoUnitPrice.toFixed(2)),
     positions: legacyPositions,
     positionDesigns: legacyPositionDesigns,
     logos,
@@ -2452,21 +2837,16 @@ function upsertBasketItemFromState() {
     const prevItem = basket[matchIndex] || {};
     const previousPreview = prevItem.colorImage || prevItem.image || "";
     const nextLooksNeutral = isNeutralToolMockupImage(nextItem.colorImage || nextItem.image || "");
-    const mergedLogos = dedupeLogos(
-      isBasketContext && Array.isArray(nextItem.logos) && nextItem.logos.length > 0
-        ? [...(Array.isArray(prevItem.logos) ? prevItem.logos : []), ...nextItem.logos]
-        : nextItem.logos
-    );
+    // The editor hydrates every existing position before editing, so the new
+    // array is authoritative. A removed position must not be merged back in.
+    const mergedLogos = dedupeLogos(nextItem.logos);
     const nextColorHex = normalizeHex(nextItem.colorHex || "");
     const prevColorHex = normalizeHex(prevItem.colorHex || "");
 
-    const mergedPositions = isBasketContext
-      ? (prevItem.positions || nextItem.positions)
-      : nextItem.positions;
-
-    const mergedPositionDesigns = isBasketContext
-      ? { ...(prevItem.positionDesigns || {}), ...(nextItem.positionDesigns || {}) }
-      : nextItem.positionDesigns;
+    // Legacy copies can contain stale logos. The canonical position-aware
+    // logos array above is the only source used for the rewritten item.
+    const mergedPositions = [];
+    const mergedPositionDesigns = {};
 
     basket[matchIndex] = compactBasketItemForStorage({
       ...prevItem,
@@ -2500,6 +2880,8 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 });
 
 productSelect.addEventListener("change", async () => {
+  state.areaDesigns = {};
+  clearCanvasLogoState();
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
   state.customizationProductTypeSlug =
@@ -2515,6 +2897,7 @@ productSelect.addEventListener("change", async () => {
   applyArea();
   const loaded = await withTimeout(loadCustomizationConfigForCurrentProduct(), 3000);
   if (loaded) applyArea();
+  updatePositionDesignUi();
 });
 
 document.getElementById("addSizeBtn").addEventListener("click", () => {
@@ -2919,7 +3302,7 @@ deleteTextBtn.addEventListener("click", e => {
 document.querySelectorAll("[data-design-type]").forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("is-disabled")) return;
-    state.decorationType = card.dataset.designType;
+    state.pendingDecorationType = card.dataset.designType;
     const library = getSessionLogoLibrary();
     if (library.length > 0) {
       showLogoLibraryPicker(library);
@@ -2942,6 +3325,8 @@ function getSessionLogoLibrary() {
     out.push({ logo: key, method: method || "logo" });
   };
   sessionLogoLibrary.forEach((entry) => add(entry.logo, entry.method));
+  Object.values(state.areaDesigns || {}).forEach((entry) => add(entry?.logo, entry?.method));
+  if (state.uploadedLogo) add(state.uploadedLogo, state.decorationType);
   try {
     const parsed = JSON.parse(sessionStorage.getItem("toolReusableLogos") || "[]");
     if (Array.isArray(parsed)) parsed.forEach((entry) => entry && add(entry.logo, entry.method));
@@ -2958,6 +3343,7 @@ function rememberUploadedLogo(src, method) {
 
 function reuseLibraryLogo(src) {
   state.copyrightConfirmed = true;
+  state.pendingDecorationType = null;
   openScreen("mainEditor");
   showLogoOnCanvas(src);
   calculatePrice();
@@ -2975,10 +3361,10 @@ function showLogoLibraryPicker(library) {
   const panel = document.createElement("div");
   panel.style.cssText = "width:min(94vw,520px);background:#fff;border-radius:16px;box-shadow:0 16px 36px rgba(2,8,23,.22);padding:18px 16px;";
   panel.innerHTML = `
-    <h3 style="margin:0 0 4px;font-size:18px;line-height:1.2;color:#0f172a;">Your logos</h3>
-    <p style="margin:0 0 12px;font-size:13px;line-height:1.4;color:#475569;">Tap a logo to reuse it, or upload a new one.</p>
+    <h3 style="margin:0 0 4px;font-size:18px;line-height:1.2;color:#0f172a;">Choose a logo for ${getDesignAreaLabel()}</h3>
+    <p style="margin:0 0 12px;font-size:13px;line-height:1.4;color:#475569;">Reuse an uploaded logo or add a different design for this position.</p>
     <div id="toolLogoLibraryGrid" style="display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px;"></div>
-    <button id="toolLogoLibraryUpload" type="button" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border-radius:10px;border:1px solid #0f172a;background:#0f172a;color:#fff;font-weight:700;cursor:pointer;">Upload new logo</button>
+    <button id="toolLogoLibraryUpload" type="button" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border-radius:10px;border:1px solid #0f172a;background:#0f172a;color:#fff;font-weight:700;cursor:pointer;">Upload a different logo</button>
     <button id="toolLogoLibraryCancel" type="button" style="display:block;width:100%;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-weight:600;cursor:pointer;">Cancel</button>
   `;
 
@@ -2989,9 +3375,10 @@ function showLogoLibraryPicker(library) {
     cell.style.cssText = "flex:0 0 auto;width:90px;height:90px;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc center/contain no-repeat;cursor:pointer;padding:0;";
     cell.style.backgroundImage = `url("${entry.logo}")`;
     cell.title = "Reuse this logo";
+    cell.setAttribute("aria-label", `Use this logo on ${getDesignAreaLabel()}`);
     cell.addEventListener("click", () => {
       overlay.remove();
-      state.decorationType = entry.method || state.decorationType || "logo";
+      state.decorationType = state.pendingDecorationType || entry.method || state.decorationType || "logo";
       reuseLibraryLogo(entry.logo);
     });
     grid.appendChild(cell);
@@ -3001,8 +3388,15 @@ function showLogoLibraryPicker(library) {
     overlay.remove();
     document.getElementById("logoFileInput").click();
   });
-  panel.querySelector("#toolLogoLibraryCancel").addEventListener("click", () => overlay.remove());
-  overlay.addEventListener("click", (event) => { if (event.target === overlay) overlay.remove(); });
+  panel.querySelector("#toolLogoLibraryCancel").addEventListener("click", () => {
+    state.pendingDecorationType = null;
+    overlay.remove();
+  });
+  overlay.addEventListener("click", (event) => {
+    if (event.target !== overlay) return;
+    state.pendingDecorationType = null;
+    overlay.remove();
+  });
 
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
@@ -3131,8 +3525,9 @@ function areaLabelForPicker(area) {
   const normalized = normalizeAreaForPicker(area);
   if (normalized === "front") return "Front";
   if (normalized === "back") return "Back";
-  if (normalized === "left") return "Left";
-  if (normalized === "right") return "Right";
+  const garmentHasSleeves = ["tshirt", "polo", "hoodie"].includes(state.product);
+  if (normalized === "left") return garmentHasSleeves ? "Left sleeve" : "Left";
+  if (normalized === "right") return garmentHasSleeves ? "Right sleeve" : "Right";
   return "Front";
 }
 
@@ -3153,6 +3548,9 @@ function getPickerAreas() {
 
 function getUsedLogoAreasForCurrentProduct() {
   const used = new Set();
+  Object.values(getDraftAreaDesigns()).forEach((design) => {
+    if (design?.logo) used.add(getDesignAreaKey(design.area));
+  });
   const code = String(state.productCode || "").trim().toLowerCase();
   const color = String(state.colourName || "").trim().toLowerCase();
   if (!code) return used;
@@ -3175,17 +3573,7 @@ function getUsedLogoAreasForCurrentProduct() {
 
 function setSelectedAreaFromPicker(area) {
   const normalized = normalizeAreaForPicker(area) || "front";
-  state.selectedArea = normalized;
-
-  document.querySelectorAll(".view-tab").forEach((btn) => {
-    const isActive = normalizeAreaForPicker(btn.dataset.area) === normalized;
-    btn.classList.toggle("active-view", isActive);
-  });
-
-  const viewLabel = document.getElementById("viewNameLabel");
-  if (viewLabel) viewLabel.textContent = normalized.toUpperCase();
-
-  applyArea();
+  return switchToDesignArea(normalized);
 }
 
 function showPositionPickerModal(options = {}) {
@@ -3229,8 +3617,8 @@ function showPositionPickerModal(options = {}) {
     btn.type = "button";
     btn.textContent = areaLabelForPicker(area);
     btn.style.cssText = "flex:0 0 auto;padding:10px 14px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;";
-    btn.addEventListener("click", () => {
-      setSelectedAreaFromPicker(area);
+    btn.addEventListener("click", async () => {
+      await setSelectedAreaFromPicker(area);
       overlay.remove();
       if (typeof onPick === "function") onPick(area);
     });
@@ -3333,9 +3721,10 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
 
   try {
     const optimizedLogo = await optimizeLogoFileForBasket(file);
+    state.decorationType = state.pendingDecorationType || state.decorationType || "print";
+    state.pendingDecorationType = null;
     state.uploadedLogo = optimizedLogo;
     state.originalUploadedLogo = optimizedLogo;
-    rememberUploadedLogo(optimizedLogo, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -3410,10 +3799,19 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   }
 
   state.copyrightConfirmed = true;
+  state.pendingDecorationType = null;
+  rememberUploadedLogo(state.uploadedLogo, state.decorationType);
   openScreen("mainEditor");
   showLogoOnCanvas(state.uploadedLogo);
   calculatePrice();
   updateConfirmButtonState();
+});
+
+document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((button) => {
+  button.addEventListener("click", () => {
+    state.pendingDecorationType = null;
+    restoreAreaDesign(state.selectedArea);
+  });
 });
 
 function showLogoOnCanvas(imageSrc) {
@@ -3440,6 +3838,7 @@ function showLogoOnCanvas(imageSrc) {
     activateLogo();
     updateLogoSizeLabels();
     updateVisibilityByPrintArea(designLayer);
+    updatePositionDesignUi();
   };
 
   if (uploadedLogo.complete && uploadedLogo.naturalWidth > 0 && uploadedLogo.naturalHeight > 0) {
@@ -3594,37 +3993,22 @@ deleteLogoBtn.addEventListener("click", e => {
 document.getElementById("deleteDesignShortcut").addEventListener("click", clearLogo);
 
 function clearLogo() {
-  uploadedLogo.src = "";
-  uploadedLogo.style.display = "none";
-  designLayer.style.display = "none";
-  designLayer.classList.remove("active-logo");
-
-  state.uploadedLogo = null;
-  state.originalUploadedLogo = null;
-  state.copyrightConfirmed = false;
-  state.logoRotation = 0;
-  updateConfirmButtonState();
-
-  // Reset quality bar to 0%
-  const mainBarReset = document.getElementById('mainQualityBar');
-  const mainMaskReset = document.getElementById('mainQualityMask');
-  const mainPctReset = document.getElementById('mainQualityPct');
-  if (mainMaskReset) { mainMaskReset.style.width = '100%'; mainMaskReset.style.borderRadius = '0 6px 6px 0'; }
-  if (mainPctReset) { mainPctReset.textContent = '0%'; mainPctReset.style.color = '#9098a3'; }
-  const warningReset = document.getElementById('qualityWarning');
-  if (warningReset) warningReset.style.display = 'none';
-
+  delete state.areaDesigns[getDesignAreaKey()];
+  clearCanvasLogoState();
   calculatePrice();
+  updatePositionDesignUi();
 }
 
 if (confirmQualityBtn) {
   confirmQualityBtn.addEventListener("click", () => {
-    if (!state.uploadedLogo) {
-      alert("Please upload your logo before confirming.");
+    captureCurrentAreaDesign();
+    const designs = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
+    if (designs.length === 0) {
+      alert("Please add at least one logo before confirming.");
       return;
     }
 
-    if (!state.copyrightConfirmed) {
+    if (designs.some((design) => design.copyrightConfirmed === false)) {
       alert("Please confirm copyright permission first.");
       return;
     }
@@ -3658,8 +4042,17 @@ const postConfirmAddAnotherLogoBtn = document.getElementById("postConfirmAddAnot
 if (postConfirmAddAnotherLogoBtn) {
   postConfirmAddAnotherLogoBtn.addEventListener("click", () => {
     closePostConfirmModal();
-    clearLogo();
-    openScreen("designTypePage");
+    showPositionPickerModal({
+      title: "Choose another position",
+      subtitle: "Your existing positions are already saved.",
+      restrictToRemaining: true,
+      onPick: () => {
+        state.pendingDecorationType = null;
+        const library = getSessionLogoLibrary();
+        if (library.length > 0) showLogoLibraryPicker(library);
+        else openScreen("designTypePage");
+      }
+    });
   });
 }
 
@@ -4488,12 +4881,30 @@ document.getElementById("namesNextBtn").addEventListener("click", () => {
 });
 
 document.querySelectorAll(".location-item").forEach(item => {
-  item.addEventListener("click", () => {
-    state.selectedArea = item.dataset.area;
-    applyArea();
+  item.addEventListener("click", async () => {
+    await switchToDesignArea(item.dataset.area);
     openScreen("mainEditor");
   });
 });
+
+if (positionReuseLogoBtn) {
+  positionReuseLogoBtn.addEventListener("click", () => {
+    state.pendingDecorationType = null;
+    const library = getSessionLogoLibrary();
+    if (library.length > 0) {
+      showLogoLibraryPicker(library);
+    } else {
+      openScreen("designTypePage");
+    }
+  });
+}
+
+if (positionAddLogoBtn) {
+  positionAddLogoBtn.addEventListener("click", () => {
+    state.pendingDecorationType = null;
+    openScreen("designTypePage");
+  });
+}
 
 document.getElementById("colourShortcut").addEventListener("click", () => openScreen("productPage"));
 
@@ -4755,6 +5166,7 @@ startCustomizerLoadingProgress();
 setCustomizerLoadingStatus("Loading colours and mockups...");
 
 applySelectedProductContext();
+hydrateAreaDesignsFromBasketContext();
 
 setupVatToggle();
 setupCustomizerBreadcrumb();
@@ -4766,12 +5178,16 @@ calculatePrice();
 updateBasketUIFromStorage();
 setupToolHeaderSearch();
 updateConfirmButtonState();
-maybeHandleBasketLogoChoice();
 const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 
 Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
-  .finally(() => finishCustomizerLoading());
+  .then(() => restoreAreaDesign(state.selectedArea))
+  .finally(() => {
+    updatePositionDesignUi();
+    finishCustomizerLoading();
+    maybeHandleBasketLogoChoice();
+  });
 
 /* =====================================================
    REDESIGNED MAIN EDITOR — new interactions
@@ -4838,12 +5254,8 @@ renderMiniColours();
 const viewNameLabel = document.getElementById("viewNameLabel");
 
 document.querySelectorAll(".view-tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".view-tab").forEach(b => b.classList.remove("active-view"));
-    btn.classList.add("active-view");
-    state.selectedArea = btn.dataset.area;
-    if (viewNameLabel) viewNameLabel.textContent = btn.dataset.area.toUpperCase();
-    applyArea();
+  btn.addEventListener("click", async () => {
+    await switchToDesignArea(btn.dataset.area);
   });
 });
 
