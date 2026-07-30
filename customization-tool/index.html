@@ -15,13 +15,21 @@
       var markerIndex = pathname.toLowerCase().lastIndexOf(marker);
       if (markerIndex < 0) return;
 
+      var folderPath = pathname.slice(0, markerIndex + marker.length) + "/";
       var base = document.createElement("base");
-      base.href = pathname.slice(0, markerIndex + marker.length) + "/";
+      base.href = folderPath;
       document.head.appendChild(base);
+
+      // Add the tool stylesheet only after the folder base is known. A normal
+      // relative <link> can be prefetched as /style.css before this script
+      // runs when Vercel serves the extensionless /customization-tool URL.
+      var toolStyles = document.createElement("link");
+      toolStyles.rel = "stylesheet";
+      toolStyles.href = folderPath + "style.css?v=20260730c";
+      document.head.appendChild(toolStyles);
     })();
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css?v=20260730b" />
 </head>
 
 <body class="tool-with-site-header">
@@ -991,6 +999,15 @@
 <script src="../brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610n"></script>
-<script src="app.js?v=20260730b"></script>
+<script>
+  // Resolve app.js from the established tool folder instead of from the
+  // extensionless document URL, whose native relative base is the site root.
+  (function loadCustomizationToolApp() {
+    var appScript = document.createElement("script");
+    appScript.src = new URL("app.js?v=20260730c", document.baseURI).href;
+    appScript.async = false;
+    document.body.appendChild(appScript);
+  })();
+</script>
 </body>
 </html>
