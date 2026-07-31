@@ -2717,7 +2717,7 @@
             </div>`;
     }
 
-    function renderAllPlacementPreviews(item, altText, itemIndex) {
+    function getDecoratedAreas(item) {
         const logos = Array.isArray(item && item.logos) ? item.logos : [];
         const texts = Array.isArray(item && item.texts) ? item.texts : [];
         const areas = [];
@@ -2734,6 +2734,11 @@
             const bIndex = areaOrder.indexOf(b);
             return (aIndex < 0 ? areaOrder.length : aIndex) - (bIndex < 0 ? areaOrder.length : bIndex);
         });
+        return areas;
+    }
+
+    function renderAllPlacementPreviews(item, altText, itemIndex) {
+        const areas = getDecoratedAreas(item);
         const cards = areas.map(function (area) {
             return renderAreaPlacementCard(item, altText, itemIndex, area);
         }).filter(Boolean);
@@ -3849,14 +3854,17 @@
                 if (submitBtn) { submitBtn.textContent = 'Sending...'; submitBtn.disabled = true; }
 
                 try {
+                    // Ensure older basket entries have per-view garment
+                    // previews before rendering the email attachments.
+                    await hydrateMissingPositionPreviews();
                     const basket = getBasket();
                     let totalGarmentCost = 0, totalQuantity = 0, customizationTotal = 0, digitizingFee = 0;
                     const basketItems = [];
                     const customizationsList = [];
                     const uniqueEmbLogos = new Set();
-                    const renderedPreviewImages = await Promise.all(basket.map(renderQuotePreviewImage));
+                    const renderedPreviewEntries = await renderAllQuotePreviewImages(basket);
 
-                    basket.forEach((item, itemIndex) => {
+                    basket.forEach(item => {
                         const qty = item.qty || 0;
                         const up = parseFloat(item.unitPrice) || 0;
                         const itemTexts = Array.isArray(item.texts) ? item.texts : [];
@@ -3869,7 +3877,6 @@
                         totalGarmentCost += itemTotal;
                         totalQuantity += qty;
                         const itemDesignPreview = buildQuoteDesignPreview(item);
-                        const previewImage = renderedPreviewImages[itemIndex] || null;
 
                         basketItems.push({
                             name: item.name || 'Product', code: item.code || '', color: item.color || '',
@@ -3926,18 +3933,13 @@
 
                     const totalIncVat = totalExVat + vatAmount;
                     const displayTotal = includeVAT ? totalIncVat : totalExVat;
-                    const quotePreviewImage = renderedPreviewImages.find(Boolean) || null;
-                    const quotePreviewImages = renderedPreviewImages.filter(Boolean);
-
                     const notesList = [];
                     const orderNotes = document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || '';
                     if (orderNotes) notesList.push(orderNotes);
                     if (customerNote) notesList.push('Customer note: ' + customerNote);
 
-                    const quoteLogoFiles = {
-                        ...collectQuoteLogoFiles(basket),
-                        ...collectQuotePreviewFiles(basket, renderedPreviewImages)
-                    };
+                    const quoteLogoFiles = collectQuoteLogoFiles(basket);
+                    const quotePreviewFiles = collectQuotePreviewFiles(basket, renderedPreviewEntries);
 
                     const quoteData = {
                         customer: { fullName: name, phone: phone, email: emailVal },
@@ -3950,11 +3952,13 @@
                         },
                         basket: basketItems, customizations: customizationsList,
                         logoFiles: quoteLogoFiles,
+                        previewFiles: quotePreviewFiles,
                         notes: notesList,
                         source: 'basket_quote_request',
                         timestamp: new Date().toISOString()
                     };
                     if (!Object.keys(quoteData.logoFiles).length) delete quoteData.logoFiles;
+                    if (!Object.keys(quoteData.previewFiles).length) delete quoteData.previewFiles;
                     let result = { success: false };
                     const API_BASE_URL = (typeof window.resolveBrandedApiBase === 'function'
                         ? window.resolveBrandedApiBase()
@@ -4204,6 +4208,135 @@
         }
     }
 
+    async function renderAreaQuotePreviewImage(item, area) {
+        const context = getAreaPlacementContext(item, area);
+        if (!context) return null;
+
+        const preview = context.basePreview;
+        const width = 520;
+        const aspect = Math.max(0.7, Math.min(1.5, parseFloat(preview.wrapAspect || 1.12) || 1.12));
+        const height = Math.round(width * aspect);
+        const logoSource = context.logoPreview && (
+            context.logoPreview.logoImage || context.logo?.logo || ''
+        );
+        const [garmentImg, logoImg] = await Promise.all([
+            loadQuoteImage(context.garmentImage),
+            logoSource ? loadQuoteImage(logoSource) : Promise.resolve(null)
+        ]);
+        if (!garmentImg) return null;
+
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return null;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            drawPreviewBox(ctx, garmentImg, preview.garmentBox, width, height);
+
+            const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
+            if (tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)) {
+                const garmentBox = preview.garmentBox;
+                ctx.save();
+                ctx.globalAlpha = 0.62;
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.fillStyle = tintHex;
+                ctx.fillRect(
+                    (safePct(garmentBox.left) / 100) * width,
+                    (safePct(garmentBox.top) / 100) * height,
+                    (safePct(garmentBox.width) / 100) * width,
+                    (safePct(garmentBox.height) / 100) * height
+                );
+                ctx.restore();
+            }
+
+            let decorationDrawn = false;
+            const logoPreview = context.logoPreview;
+            const logoBox = logoPreview && logoPreview.logoBox;
+            if (
+                logoImg
+                && logoBox
+                && safePct(logoBox.width) > 0
+                && safePct(logoBox.height) > 0
+            ) {
+                const logoLeft = (safePct(logoBox.left) / 100) * width;
+                const logoTop = (safePct(logoBox.top) / 100) * height;
+                const logoWidth = (safePct(logoBox.width) / 100) * width;
+                const logoHeight = (safePct(logoBox.height) / 100) * height;
+                const rotation = (parseFloat(logoPreview.logoRotation || context.logo?.logoRotation || 0) || 0) * Math.PI / 180;
+
+                ctx.save();
+                ctx.translate(logoLeft + logoWidth / 2, logoTop + logoHeight / 2);
+                ctx.rotate(rotation);
+                ctx.drawImage(logoImg, -logoWidth / 2, -logoHeight / 2, logoWidth, logoHeight);
+                ctx.restore();
+                decorationDrawn = true;
+            }
+
+            const textPreview = context.textPreview;
+            const textValue = String(textPreview?.text || context.textDesign?.text || '');
+            const textBox = textPreview && textPreview.textBox;
+            if (
+                textValue
+                && textBox
+                && safePct(textBox.width) > 0
+                && safePct(textBox.height) > 0
+            ) {
+                const textLeft = (safePct(textBox.left) / 100) * width;
+                const textTop = (safePct(textBox.top) / 100) * height;
+                const textWidth = (safePct(textBox.width) / 100) * width;
+                const textHeight = (safePct(textBox.height) / 100) * height;
+                const fontSize = Math.max(6, (parseFloat(textPreview.fontSizePct || 5) / 100) * height);
+                const lines = textValue.split(/\r?\n/);
+                const lineHeight = fontSize * 1.08;
+                const totalTextHeight = Math.max(lineHeight, lines.length * lineHeight);
+                const align = ['left', 'center', 'right'].includes(textPreview.textAlign)
+                    ? textPreview.textAlign
+                    : 'center';
+                const textX = align === 'left' ? (-textWidth / 2) : align === 'right' ? (textWidth / 2) : 0;
+                const rotation = (parseFloat(textPreview.textRotation || context.textDesign?.textRotation || 0) || 0) * Math.PI / 180;
+
+                ctx.save();
+                ctx.translate(textLeft + textWidth / 2, textTop + textHeight / 2);
+                ctx.rotate(rotation);
+                ctx.beginPath();
+                ctx.rect(-textWidth / 2, -textHeight / 2, textWidth, textHeight);
+                ctx.clip();
+                ctx.fillStyle = textPreview.textColour || '#000000';
+                ctx.font = `${textPreview.fontStyle || 'normal'} ${textPreview.fontWeight || '400'} ${fontSize}px ${safePreviewFontFamily(textPreview.fontFamily || textPreview.font)}`;
+                ctx.textAlign = align;
+                ctx.textBaseline = 'middle';
+                lines.forEach(function (line, lineIndex) {
+                    const lineY = (-totalTextHeight / 2) + (lineIndex * lineHeight) + (lineHeight / 2);
+                    ctx.fillText(line, textX, lineY, textWidth);
+                });
+                ctx.restore();
+                decorationDrawn = true;
+            }
+
+            return decorationDrawn ? canvas.toDataURL('image/jpeg', 0.84) : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    async function renderAllQuotePreviewImages(basket) {
+        const tasks = [];
+        (Array.isArray(basket) ? basket : []).forEach(function (item, itemIndex) {
+            getDecoratedAreas(item).forEach(function (area) {
+                tasks.push(
+                    renderAreaQuotePreviewImage(item, area).then(function (image) {
+                        return image ? { itemIndex, area, image } : null;
+                    })
+                );
+            });
+        });
+        const entries = await Promise.all(tasks);
+        return entries.filter(Boolean);
+    }
+
     function buildQuoteDesignPreview(item) {
         const preview = item && item.designPreview;
         if (!preview || typeof preview !== 'object') return null;
@@ -4223,18 +4356,23 @@
         };
     }
 
-    function collectQuotePreviewFiles(basket, renderedPreviewImages) {
+    function collectQuotePreviewFiles(basket, renderedPreviewEntries) {
         const previewFiles = {};
-        (basket || []).forEach((item, index) => {
-            const previewImage = renderedPreviewImages && renderedPreviewImages[index];
-            if (!previewImage || !/^data:image\//i.test(previewImage)) return;
-            const preview = item && item.designPreview;
-            const area = String(preview?.area || item?.logos?.[0]?.position || item?.logos?.[0]?.positionLabel || 'front')
+        (Array.isArray(renderedPreviewEntries) ? renderedPreviewEntries : []).forEach((entry) => {
+            if (!entry || !/^data:image\//i.test(String(entry.image || ''))) return;
+            const itemIndex = parseInt(entry.itemIndex, 10);
+            const item = Number.isInteger(itemIndex) ? basket?.[itemIndex] : null;
+            const code = String(item?.code || item?.productCode || `item-${itemIndex + 1}`)
+                .trim()
+                .replace(/[^a-z0-9]+/gi, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase() || `item-${itemIndex + 1}`;
+            const area = String(entry.area || 'front')
                 .trim()
                 .replace(/[^a-z0-9]+/gi, '-')
                 .replace(/^-+|-+$/g, '')
                 .toLowerCase() || 'front';
-            previewFiles[`preview-image-${index + 1}-${area}`] = previewImage;
+            previewFiles[`item-${itemIndex + 1}-${code}-${area}`] = entry.image;
         });
         return previewFiles;
     }
@@ -4328,7 +4466,7 @@
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
-<script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
+<script src="brandedukv15-child/assets/js/api.js?v=20260731a"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>

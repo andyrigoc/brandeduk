@@ -726,6 +726,7 @@ const BrandedAPI = (function () {
      * @param {Array} quoteData.basket - Basket items array
      * @param {Array} quoteData.customizations - Customizations array (may contain logoFile or logoData)
      * @param {Object} [quoteData.logoFiles] - Optional object mapping position to File objects { position: File }
+     * @param {Object} [quoteData.previewFiles] - Optional object mapping garment view to rendered preview images
      * @returns {Promise<Object>} - { success: boolean, message: string }
      */
     async function submitQuote(quoteData) {
@@ -740,6 +741,7 @@ const BrandedAPI = (function () {
             customer: quoteData.customer?.fullName || 'N/A',
             hasLogoFiles: !!quoteData.logoFiles,
             logoFilesKeys: quoteData.logoFiles ? Object.keys(quoteData.logoFiles) : [],
+            previewFilesKeys: quoteData.previewFiles ? Object.keys(quoteData.previewFiles) : [],
             timestamp: new Date().toISOString()
         });
 
@@ -757,16 +759,18 @@ const BrandedAPI = (function () {
         }
 
         try {
-            // Check if we have logo files to upload
+            // Check if we have logo or rendered garment preview files to upload.
             const hasLogoFiles = quoteData.logoFiles && Object.keys(quoteData.logoFiles).length > 0;
+            const hasPreviewFiles = quoteData.previewFiles && Object.keys(quoteData.previewFiles).length > 0;
+            const hasUploadFiles = hasLogoFiles || hasPreviewFiles;
 
-            // If we have logo files, use FormData; otherwise use JSON
-            if (hasLogoFiles) {
+            // If we have any image files, use FormData; otherwise use JSON.
+            if (hasUploadFiles) {
                 const formData = new FormData();
 
-                // Add all quote data as JSON string (except logoFiles)
+                // Add all quote data as JSON string (except binary upload maps).
                 // Also remove any logoData from customizations to avoid sending base64 in JSON
-                const { logoFiles, ...dataWithoutFiles } = quoteData;
+                const { logoFiles = {}, previewFiles = {}, ...dataWithoutFiles } = quoteData;
 
                 // Clean customizations to ensure no logoData/previewImage base64 is included
                 if (dataWithoutFiles.customizations && Array.isArray(dataWithoutFiles.customizations)) {
@@ -819,6 +823,41 @@ const BrandedAPI = (function () {
                 // Track total file size and individual file sizes for error detection
                 let totalFileSize = 0;
                 const fileSizes = {};
+
+                const appendPreviewFiles = async (targetFormData, forceCompression = false) => {
+                    let appendedBytes = 0;
+                    for (const [view, file] of Object.entries(previewFiles)) {
+                        const viewSlug = String(view || 'main')
+                            .trim()
+                            .toLowerCase()
+                            .replace(/[^a-z0-9_-]+/g, '-')
+                            .replace(/^-+|-+$/g, '') || 'main';
+                        const formDataKey = `preview_${viewSlug}`;
+                        let fileToUpload = file;
+
+                        if (typeof file === 'string' && file.startsWith('data:')) {
+                            fileToUpload = base64ToBlob(file, `preview-${viewSlug}.jpg`);
+                        }
+                        if (!(fileToUpload instanceof File) && !(fileToUpload instanceof Blob)) continue;
+
+                        if (forceCompression || fileToUpload.size > 1.5 * 1024 * 1024) {
+                            try {
+                                fileToUpload = await compressImageFile(fileToUpload, 0.78, 1400);
+                            } catch (compressErr) {
+                                debugWarn(`Preview compression failed for "${formDataKey}", using original:`, compressErr);
+                            }
+                        }
+
+                        targetFormData.append(
+                            formDataKey,
+                            fileToUpload,
+                            buildUploadFileName(`preview-${viewSlug}`, fileToUpload.type, fileToUpload.name || '')
+                        );
+                        appendedBytes += fileToUpload.size;
+                        debugLog(`Added garment preview "${formDataKey}" (${(fileToUpload.size / 1024).toFixed(2)}KB)`);
+                    }
+                    return appendedBytes;
+                };
 
                 // Process files - compress if >1.5MB to avoid proxy/CDN limits
                 for (const [position, file] of Object.entries(logoFiles)) {
@@ -880,8 +919,8 @@ const BrandedAPI = (function () {
                     }
                 }
 
+                totalFileSize += await appendPreviewFiles(formData, false);
                 debugLog(`📊 [BrandedAPI] Total file size: ${(totalFileSize / 1024 / 1024).toFixed(2)}MB`);
-
 
                 // Try request first without compression
                 let response;
@@ -1009,6 +1048,8 @@ const BrandedAPI = (function () {
                             );
                         }
                     }
+
+                    await appendPreviewFiles(compressedFormData, true);
 
                     // Calculate compressed total size
                     let compressedTotalSize = quoteDataSize;
