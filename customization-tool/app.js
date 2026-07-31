@@ -1358,17 +1358,25 @@ function buildTextDesignPreviewFromState() {
 
   const wrapRect = wrap.getBoundingClientRect();
   const garmentRect = productShape.getBoundingClientRect();
-  const textRect = textLayer.getBoundingClientRect();
   const wrapWidth = wrapRect.width || wrap.offsetWidth || productPreview?.offsetWidth || customArea?.offsetWidth || 360;
   const wrapHeight = wrapRect.height || wrap.offsetHeight || productPreview?.offsetHeight || customArea?.offsetHeight || 420;
-  const canUseRects = wrapRect.width >= 10 && wrapRect.height >= 10 && textRect.width >= 1 && textRect.height >= 1;
+  const canUseRects = wrapRect.width >= 10 && wrapRect.height >= 10;
   const textStyle = window.getComputedStyle(textContent);
+  const placement = captureCurrentTextPlacement();
 
   const garmentBox = canUseRects && garmentRect.width >= 1 && garmentRect.height >= 1
     ? rectToPct(garmentRect, wrapRect)
     : { left: 0, top: 0, width: 100, height: 100 };
-  const textBox = canUseRects
-    ? rectToPct(textRect, wrapRect)
+  // The text layer is rotated around its centre. getBoundingClientRect() returns
+  // the larger transformed bounds, which shifts the saved preview when that
+  // same rotation is applied again. Save the unrotated layout box instead.
+  const textBox = placement
+    ? {
+        left: placement.leftPct,
+        top: placement.topPct,
+        width: placement.widthPct,
+        height: placement.heightPct
+      }
     : boxToPct(elementBoxFromStyles(textLayer), wrapWidth, wrapHeight);
   const cleanedTextBox = cleanPctBox(textBox);
   if (cleanedTextBox.width <= 0 || cleanedTextBox.height <= 0) return null;
@@ -3488,6 +3496,7 @@ function fitTextFontToLayerBounds() {
   const style = window.getComputedStyle(textContent);
   const measurer = document.createElement("span");
   const maxWidth = Math.max(10, textLayer.clientWidth - 2);
+  const maxHeight = Math.max(10, textLayer.clientHeight - 2);
   const initialFontSize = parseFloat(style.fontSize) || 24;
   const computedLineHeight = parseFloat(style.lineHeight);
   const lineHeightRatio = Number.isFinite(computedLineHeight) && initialFontSize > 0
@@ -3511,19 +3520,23 @@ function fitTextFontToLayerBounds() {
   document.body.appendChild(measurer);
 
   let bounds = measurer.getBoundingClientRect();
-  while (bounds.width > maxWidth && fontSize > 4) {
+  while ((bounds.width > maxWidth || bounds.height > maxHeight) && fontSize > 4) {
     fontSize -= 1;
     measurer.style.fontSize = `${fontSize}px`;
     bounds = measurer.getBoundingClientRect();
   }
 
-  // If there is extra gap, grow text until it nearly reaches the layer bounds.
-  while (bounds.width < maxWidth * 0.985 && fontSize < 420) {
+  // If there is extra space, grow the text without changing the user's box.
+  while (
+    bounds.width < maxWidth * 0.985
+    && bounds.height < maxHeight * 0.985
+    && fontSize < 420
+  ) {
     fontSize += 1;
     measurer.style.fontSize = `${fontSize}px`;
     const nextBounds = measurer.getBoundingClientRect();
 
-    if (nextBounds.width > maxWidth) {
+    if (nextBounds.width > maxWidth || nextBounds.height > maxHeight) {
       fontSize -= 1;
       measurer.style.fontSize = `${fontSize}px`;
       bounds = measurer.getBoundingClientRect();
@@ -3535,12 +3548,6 @@ function fitTextFontToLayerBounds() {
 
   document.body.removeChild(measurer);
   textContent.style.fontSize = `${fontSize}px`;
-
-  const strokeSize = parseFloat(style.webkitTextStrokeWidth || "0") || 0;
-  const fittedWidth = Math.max(20, Math.ceil(bounds.width + strokeSize * 2 + 2));
-  const fittedHeight = Math.max(20, Math.ceil(bounds.height + strokeSize * 2 + 2));
-  textLayer.style.width = `${fittedWidth}px`;
-  textLayer.style.height = `${fittedHeight}px`;
 }
 
 function centerText() {
@@ -4496,6 +4503,51 @@ let textStartHeight = 0;
 let textStartRotation = 0;
 let textStartAngle = 0;
 
+function getLayerLayoutPosition(layer) {
+  const styleLeft = parseFloat(layer?.style?.left);
+  const styleTop = parseFloat(layer?.style?.top);
+  return {
+    left: Number.isFinite(styleLeft) ? styleLeft : (layer?.offsetLeft || 0),
+    top: Number.isFinite(styleTop) ? styleTop : (layer?.offsetTop || 0)
+  };
+}
+
+function getAnchoredResizePosition(
+  startLeft,
+  startTop,
+  startWidth,
+  startHeight,
+  nextWidth,
+  nextHeight,
+  action,
+  rotationDegrees
+) {
+  const radians = (parseFloat(rotationDegrees || 0) || 0) * Math.PI / 180;
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const anchorSignX = String(action || "").endsWith("l") ? 1 : -1;
+  const anchorSignY = String(action || "").startsWith("t") ? 1 : -1;
+  const startCenterX = startLeft + startWidth / 2;
+  const startCenterY = startTop + startHeight / 2;
+  const startAnchorX = startCenterX
+    + cos * (anchorSignX * startWidth / 2)
+    - sin * (anchorSignY * startHeight / 2);
+  const startAnchorY = startCenterY
+    + sin * (anchorSignX * startWidth / 2)
+    + cos * (anchorSignY * startHeight / 2);
+  const nextCenterX = startAnchorX
+    - cos * (anchorSignX * nextWidth / 2)
+    + sin * (anchorSignY * nextHeight / 2);
+  const nextCenterY = startAnchorY
+    - sin * (anchorSignX * nextWidth / 2)
+    - cos * (anchorSignY * nextHeight / 2);
+
+  return {
+    left: nextCenterX - nextWidth / 2,
+    top: nextCenterY - nextHeight / 2
+  };
+}
+
 designLayer.addEventListener("pointerdown", e => {
   if (!state.uploadedLogo) return;
 
@@ -4581,13 +4633,12 @@ textLayer.addEventListener("pointerdown", e => {
 
   textAction = "move";
 
-  const rect = textLayer.getBoundingClientRect();
-  const parentRect = customArea.getBoundingClientRect();
+  const layoutPosition = getLayerLayoutPosition(textLayer);
 
   textStartX = e.clientX;
   textStartY = e.clientY;
-  textStartLeft = rect.left - parentRect.left;
-  textStartTop = rect.top - parentRect.top;
+  textStartLeft = layoutPosition.left;
+  textStartTop = layoutPosition.top;
 
   activateText();
   textLayer.setPointerCapture(e.pointerId);
@@ -4602,13 +4653,12 @@ document.querySelectorAll(".text-resize-dot").forEach(handle => {
 
     textAction = handle.dataset.textResize;
 
-    const rect = textLayer.getBoundingClientRect();
-    const parentRect = customArea.getBoundingClientRect();
+    const layoutPosition = getLayerLayoutPosition(textLayer);
 
     textStartX = e.clientX;
     textStartY = e.clientY;
-    textStartLeft = rect.left - parentRect.left;
-    textStartTop = rect.top - parentRect.top;
+    textStartLeft = layoutPosition.left;
+    textStartTop = layoutPosition.top;
     textStartWidth = textLayer.offsetWidth;
     textStartHeight = textLayer.offsetHeight;
 
@@ -4642,6 +4692,11 @@ document.addEventListener("pointermove", e => {
 });
 
 document.addEventListener("pointerup", () => {
+  logoAction = null;
+  textAction = null;
+});
+
+document.addEventListener("pointercancel", () => {
   logoAction = null;
   textAction = null;
 });
@@ -4702,6 +4757,15 @@ function handleObjectTransform(e, type) {
 
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
+  const resizeRadians = !isLogo
+    ? ((parseFloat(state.textRotation || 0) || 0) * Math.PI / 180)
+    : 0;
+  const resizeDx = !isLogo
+    ? (dx * Math.cos(resizeRadians) + dy * Math.sin(resizeRadians))
+    : dx;
+  const resizeDy = !isLogo
+    ? (-dx * Math.sin(resizeRadians) + dy * Math.cos(resizeRadians))
+    : dy;
 
   let newLeft = startLeft;
   let newTop = startTop;
@@ -4709,27 +4773,27 @@ function handleObjectTransform(e, type) {
   let newHeight = startHeight;
 
   if (action === "br") {
-    newWidth = startWidth + dx;
-    newHeight = proportional ? startHeight + dx * aspectRatio : startHeight + dy;
+    newWidth = startWidth + resizeDx;
+    newHeight = proportional ? startHeight + resizeDx * aspectRatio : startHeight + resizeDy;
   }
 
   if (action === "bl") {
-    newWidth = startWidth - dx;
-    newHeight = proportional ? startHeight - dx * aspectRatio : startHeight + dy;
-    newLeft = startLeft + dx;
+    newWidth = startWidth - resizeDx;
+    newHeight = proportional ? startHeight - resizeDx * aspectRatio : startHeight + resizeDy;
+    newLeft = startLeft + resizeDx;
   }
 
   if (action === "tr") {
-    newWidth = startWidth + dx;
-    newHeight = proportional ? startHeight + dx * aspectRatio : startHeight - dy;
-    newTop = proportional ? startTop - dx * aspectRatio : startTop + dy;
+    newWidth = startWidth + resizeDx;
+    newHeight = proportional ? startHeight + resizeDx * aspectRatio : startHeight - resizeDy;
+    newTop = proportional ? startTop - resizeDx * aspectRatio : startTop + resizeDy;
   }
 
   if (action === "tl") {
-    newWidth = startWidth - dx;
-    newHeight = proportional ? startHeight - dx * aspectRatio : startHeight - dy;
-    newLeft = startLeft + dx;
-    newTop = proportional ? startTop + dx * aspectRatio : startTop + dy;
+    newWidth = startWidth - resizeDx;
+    newHeight = proportional ? startHeight - resizeDx * aspectRatio : startHeight - resizeDy;
+    newLeft = startLeft + resizeDx;
+    newTop = proportional ? startTop + resizeDx * aspectRatio : startTop + resizeDy;
   }
 
   if (newWidth < 25) newWidth = 25;
@@ -4759,6 +4823,21 @@ function handleObjectTransform(e, type) {
       newWidth = 500;
       newHeight = newWidth * aspectRatio;
     }
+  }
+
+  if (!isLogo) {
+    const anchoredPosition = getAnchoredResizePosition(
+      startLeft,
+      startTop,
+      startWidth,
+      startHeight,
+      newWidth,
+      newHeight,
+      action,
+      state.textRotation
+    );
+    newLeft = anchoredPosition.left;
+    newTop = anchoredPosition.top;
   }
 
   layer.style.left = `${newLeft}px`;
