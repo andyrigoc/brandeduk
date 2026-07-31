@@ -441,6 +441,17 @@
             z-index: 3;
             transform-origin: center center;
         }
+        .item-design-preview__text {
+            position: absolute;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            white-space: pre-line;
+            line-height: 1.05;
+            overflow: hidden;
+            pointer-events: none;
+            transform-origin: center center;
+        }
         .preview-image-modal .confirm-modal {
             max-width: 560px;
         }
@@ -1960,6 +1971,7 @@
 
                 sizeEntries.forEach(([size, qty], entryIdx) => {
                     const rowLogos = logos.length > 0 ? JSON.parse(JSON.stringify(logos)) : [];
+                    const rowTexts = Array.isArray(item.texts) ? JSON.parse(JSON.stringify(item.texts)) : [];
                     const row = {
                         id: (entryIdx === 0 && item.id) ? item.id : makeRowId(item.productCode || item.code, item.color, size),
                         code: item.productCode || item.code || '',
@@ -1977,6 +1989,7 @@
                         productType: item.productType || '',
                         customizationVariantKey: item.customizationVariantKey || '',
                         logos: rowLogos,
+                        texts: rowTexts,
                         designPreview: item.designPreview ? JSON.parse(JSON.stringify(item.designPreview)) : undefined,
                         pendingLogoPrompt: rowLogos.length === 0 && !!item.pendingLogoPrompt
                     };
@@ -2558,10 +2571,171 @@
             </div>`;
     }
 
+    function getDecorationArea(value) {
+        return normalizePositionPreviewArea(value) || 'front';
+    }
+
+    function getAreaPlacementContext(item, area) {
+        if (!item) return null;
+        const normalizedArea = getDecorationArea(area);
+        const logos = Array.isArray(item.logos) ? item.logos : [];
+        const texts = Array.isArray(item.texts) ? item.texts : [];
+        const logoIndex = logos.findIndex(function (logo) {
+            return getDecorationArea(logo && (logo.position || logo.area)) === normalizedArea;
+        });
+        const textIndex = texts.findIndex(function (textDesign) {
+            return getDecorationArea(textDesign && (textDesign.position || textDesign.area)) === normalizedArea;
+        });
+        const logo = logoIndex >= 0 ? logos[logoIndex] : null;
+        const textDesign = textIndex >= 0 ? texts[textIndex] : null;
+        const itemPreview = item.designPreview && getDecorationArea(item.designPreview.area) === normalizedArea
+            ? item.designPreview
+            : null;
+        let logoPreview = (logo && logo.designPreview) || itemPreview;
+        const textPreview = (textDesign && textDesign.designPreview) || (
+            itemPreview && itemPreview.type === 'garment-text-preview' ? itemPreview : null
+        );
+        const previewSeed = logoPreview || textPreview;
+        const placement = logo && logo.placement;
+        if (
+            logo
+            && previewSeed
+            && placement
+            && (
+                !logoPreview?.logoBox
+                || safePct(logoPreview.logoBox.width) <= 0
+                || safePct(logoPreview.logoBox.height) <= 0
+            )
+        ) {
+            logoPreview = Object.assign({}, previewSeed, {
+                type: 'garment-logo-preview',
+                area: normalizedArea,
+                logoBox: {
+                    left: parseFloat(placement.leftPct || 0) || 0,
+                    top: parseFloat(placement.topPct || 0) || 0,
+                    width: parseFloat(placement.widthPct || 0) || 0,
+                    height: parseFloat(placement.heightPct || 0) || 0
+                },
+                logoRotation: parseFloat(logo.logoRotation || 0) || 0
+            });
+        }
+        const basePreview = logoPreview || textPreview;
+        if (!basePreview || !basePreview.garmentBox) return null;
+
+        const garmentImage = (
+            basePreview.garmentImage && !isGeneratedGarmentImage(basePreview.garmentImage)
+                ? basePreview.garmentImage
+                : ''
+        ) || getQuoteGarmentSource(item, basePreview) || item.colorImage || item.image;
+        if (!garmentImage) return null;
+
+        return {
+            area: normalizedArea,
+            logoIndex,
+            textIndex,
+            logo,
+            textDesign,
+            logoPreview,
+            textPreview,
+            basePreview,
+            garmentImage
+        };
+    }
+
+    function safePreviewFontFamily(value) {
+        return String(value || 'Arial, sans-serif').replace(/[;"<>]/g, '');
+    }
+
+    function renderAreaPlacementVisual(context, item, altText, modalMode) {
+        if (!context) return '';
+        const basePreview = context.basePreview;
+        const tintHex = normalizeColorHex(basePreview.garmentHex || item.colorHex || '');
+        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
+            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(basePreview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
+            : '';
+
+        let logoHtml = '';
+        const logoImage = context.logoPreview && (
+            context.logoPreview.logoImage || (context.logo && context.logo.logo)
+        );
+        const logoBox = context.logoPreview && context.logoPreview.logoBox;
+        if (logoImage && logoBox && safePct(logoBox.width) > 0 && safePct(logoBox.height) > 0) {
+            const rotation = parseFloat(
+                context.logoPreview.logoRotation || context.logo?.logoRotation || 0
+            ) || 0;
+            logoHtml = `<img class="item-design-preview__logo" src="${escapeAttr(logoImage)}" alt="${escapeAttr(context.area + ' logo')}" style="${previewBoxStyle(logoBox)}transform:rotate(${rotation}deg);" onerror="this.style.display='none'">`;
+        }
+
+        let textHtml = '';
+        const textPreview = context.textPreview;
+        const textValue = String(textPreview?.text || context.textDesign?.text || '');
+        const textBox = textPreview?.textBox;
+        if (textValue && textBox && safePct(textBox.width) > 0 && safePct(textBox.height) > 0) {
+            const rotation = parseFloat(textPreview.textRotation || context.textDesign?.textRotation || 0) || 0;
+            const fontSizePct = Math.max(1, Math.min(30, parseFloat(textPreview.fontSizePct || 5) || 5));
+            const fontSize = modalMode
+                ? `clamp(8px, ${fontSizePct * 4.2}px, 72px)`
+                : `clamp(6px, ${fontSizePct * 0.88}px, 18px)`;
+            const align = ['left', 'center', 'right'].includes(textPreview.textAlign)
+                ? textPreview.textAlign
+                : 'center';
+            textHtml = `<span class="item-design-preview__text" style="${previewBoxStyle(textBox)}transform:rotate(${rotation}deg);color:${escapeAttr(textPreview.textColour || '#000000')};font-family:${escapeAttr(safePreviewFontFamily(textPreview.fontFamily || textPreview.font))};font-size:${fontSize};font-weight:${escapeAttr(textPreview.fontWeight || '400')};font-style:${escapeAttr(textPreview.fontStyle || 'normal')};text-align:${align};justify-content:${align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center'};">${escapeAttr(textValue)}</span>`;
+        }
+
+        if (!logoHtml && !textHtml) return '';
+        const aspect = Math.max(0.6, Math.min(1.8, parseFloat(basePreview.wrapAspect || 1) || 1));
+        return `
+            <div class="item-design-preview" aria-label="${escapeAttr(toReadablePosition(context.area))} placement preview"${modalMode ? ` style="aspect-ratio:1 / ${aspect};"` : ''}>
+                <img class="item-design-preview__garment" src="${escapeAttr(context.garmentImage)}" alt="${escapeAttr(altText)}" style="${previewBoxStyle(basePreview.garmentBox)}" onerror="this.style.display='none'">
+                ${tintHtml}
+                ${logoHtml}
+                ${textHtml}
+            </div>`;
+    }
+
+    function renderAreaPlacementCard(item, altText, itemIndex, area) {
+        const context = getAreaPlacementContext(item, area);
+        const visual = renderAreaPlacementVisual(context, item, altText, false);
+        if (!context || !visual) return '';
+        const areaLabel = toReadablePosition(context.area);
+        const decorationLabel = context.logo && context.textDesign
+            ? 'Logo + text'
+            : context.logo
+                ? 'Logo'
+                : 'Text';
+
+        return `
+            <div class="item-placement-preview-card" title="${escapeAttr(areaLabel)} decoration preview">
+                ${visual}
+                <div class="item-placement-preview-copy">
+                    <div class="item-placement-preview-head">
+                        <p class="item-placement-preview-title">${escapeAttr(areaLabel)} preview</p>
+                        <button type="button" class="item-placement-preview-btn" onclick="event.stopPropagation(); openAreaPlacementPreview(${itemIndex}, '${escapeAttr(context.area)}')">Preview</button>
+                    </div>
+                    <p class="item-placement-preview-meta">${escapeAttr(context.basePreview.colorName || item.color || '')} &middot; ${escapeAttr(decorationLabel)}</p>
+                </div>
+            </div>`;
+    }
+
     function renderAllPlacementPreviews(item, altText, itemIndex) {
         const logos = Array.isArray(item && item.logos) ? item.logos : [];
-        const cards = logos.map(function (logo, logoIndex) {
-            return renderPositionPlacementCard(item, altText, itemIndex, logoIndex);
+        const texts = Array.isArray(item && item.texts) ? item.texts : [];
+        const areas = [];
+        const seenAreas = new Set();
+        [...logos, ...texts].forEach(function (decoration) {
+            const area = getDecorationArea(decoration && (decoration.position || decoration.area));
+            if (seenAreas.has(area)) return;
+            seenAreas.add(area);
+            areas.push(area);
+        });
+        const areaOrder = ['front', 'back', 'left', 'left-sleeve', 'right', 'right-sleeve', 'side', 'sleeve'];
+        areas.sort(function (a, b) {
+            const aIndex = areaOrder.indexOf(a);
+            const bIndex = areaOrder.indexOf(b);
+            return (aIndex < 0 ? areaOrder.length : aIndex) - (bIndex < 0 ? areaOrder.length : bIndex);
+        });
+        const cards = areas.map(function (area) {
+            return renderAreaPlacementCard(item, altText, itemIndex, area);
         }).filter(Boolean);
 
         if (cards.length === 0 && item && item.designPreview) {
@@ -2575,6 +2749,34 @@
                 <div class="item-placement-preview-list-title">Placement previews (${cards.length})</div>
                 ${cards.join('')}
             </div>`;
+    }
+
+    function openAreaPlacementPreview(index, area) {
+        const basket = getBasket();
+        const item = basket[index];
+        const context = getAreaPlacementContext(item, area);
+        const visual = renderAreaPlacementVisual(
+            context,
+            item,
+            item && (item.name || item.productName) || 'Placement preview',
+            true
+        );
+        if (!item || !context || !visual) {
+            alert('No placement preview found for this position yet.');
+            return;
+        }
+
+        const modal = document.getElementById('placementPreviewModal');
+        const stage = document.getElementById('placementPreviewStage');
+        const title = document.getElementById('placementPreviewTitle');
+        if (!modal || !stage) return;
+
+        const areaLabel = toReadablePosition(context.area);
+        if (title) title.textContent = `${item.name || item.productName || 'Placement'} - ${areaLabel}`;
+        stage.innerHTML = visual;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
     }
 
     function renderPositionPlacementVisual(item, altText, logoIndex) {
@@ -2609,6 +2811,25 @@
             logos: context.logo ? [context.logo] : item.logos,
             sourceColorImage: '',
             originalColorImage: ''
+        });
+
+        // Text decorations use the same product+colour propagation as logos so
+        // every size row keeps the exact same per-view customization.
+        Object.values(grouped).forEach(indices => {
+            if (indices.length < 2) return;
+            let bestTexts = [];
+            indices.forEach(idx => {
+                const texts = Array.isArray(newBasket[idx].texts) ? newBasket[idx].texts : [];
+                if (texts.length > bestTexts.length) bestTexts = texts;
+            });
+            if (bestTexts.length === 0) return;
+            indices.forEach(idx => {
+                const current = Array.isArray(newBasket[idx].texts) ? newBasket[idx].texts : [];
+                if (current.length === 0) {
+                    newBasket[idx].texts = JSON.parse(JSON.stringify(bestTexts));
+                    changed = true;
+                }
+            });
         });
         const modal = document.getElementById('placementPreviewModal');
         const stage = document.getElementById('placementPreviewStage');
@@ -2689,8 +2910,11 @@
 
             // Logo rows
             let logosHtml = '';
+            const itemTexts = Array.isArray(item.texts) ? item.texts : [];
+            if ((item.logos && item.logos.length > 0) || itemTexts.length > 0) {
+                logosHtml += `<div class="logos-applied-header">Decorations applied to this item</div>`;
+            }
             if (item.logos && item.logos.length > 0) {
-                logosHtml += `<div class="logos-applied-header">Logos applied to this item</div>`;
                 item.logos.forEach((logo, logoIdx) => {
                     const methodNorm = (logo.method || 'embroidery').toLowerCase();
                     const isEmb = methodNorm === 'embroidery';
@@ -2723,6 +2947,22 @@
                     `;
                 });
             }
+            itemTexts.forEach((textDesign, textIdx) => {
+                const posLabel = textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area);
+                logosHtml += `
+                    <div class="logo-row">
+                        <div class="logo-thumb-wrap" aria-hidden="true" style="font-size:20px;font-weight:800;color:${escapeAttr(textDesign.textColour || '#111827')};">T</div>
+                        <div class="logo-info">
+                            <div class="logo-title-line">
+                                <div class="logo-method-label">Text</div>
+                                <button type="button" class="logo-row-remove" onclick="removeTextDecoration(${index}, ${textIdx})">Remove</button>
+                            </div>
+                            <div class="logo-position-label">Position: ${escapeAttr(posLabel)}</div>
+                            <div class="logo-notes">${escapeAttr(textDesign.text || '')}</div>
+                        </div>
+                    </div>
+                `;
+            });
 
             // Item total = garment + logos
             const garmentTotal = unitPrice * qty;
@@ -3019,6 +3259,19 @@
         if (itemIndex < 0 || itemIndex >= basket.length) return;
         if (!basket[itemIndex].logos) return;
         basket[itemIndex].logos.splice(logoIndex, 1);
+        saveBasket(basket);
+        renderBasket();
+        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+    }
+
+    function removeTextDecoration(itemIndex, textIndex) {
+        const basket = getBasket();
+        if (itemIndex < 0 || itemIndex >= basket.length) return;
+        const item = basket[itemIndex];
+        if (!Array.isArray(item.texts) || textIndex < 0 || textIndex >= item.texts.length) return;
+        const removed = item.texts.splice(textIndex, 1)[0];
+        const textPrice = parseFloat(removed && removed.unitPrice || 1.5) || 1.5;
+        item.unitPrice = Math.max(0, (parseFloat(item.unitPrice) || 0) - textPrice);
         saveBasket(basket);
         renderBasket();
         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
@@ -3606,7 +3859,13 @@
                     basket.forEach((item, itemIndex) => {
                         const qty = item.qty || 0;
                         const up = parseFloat(item.unitPrice) || 0;
-                        const itemTotal = up * qty;
+                        const itemTexts = Array.isArray(item.texts) ? item.texts : [];
+                        const textUnitTotal = itemTexts.reduce(
+                            (sum, textDesign) => sum + (parseFloat(textDesign.unitPrice || 1.5) || 1.5),
+                            0
+                        );
+                        const garmentUnitPrice = Math.max(0, up - textUnitTotal);
+                        const itemTotal = garmentUnitPrice * qty;
                         totalGarmentCost += itemTotal;
                         totalQuantity += qty;
                         const itemDesignPreview = buildQuoteDesignPreview(item);
@@ -3614,9 +3873,16 @@
 
                         basketItems.push({
                             name: item.name || 'Product', code: item.code || '', color: item.color || '',
-                            size: item.size || '', quantity: qty, unitPrice: up, itemTotal: itemTotal,
+                            size: item.size || '', quantity: qty, unitPrice: garmentUnitPrice, itemTotal: itemTotal,
                             image: safeQuoteMediaRef(item.image || item.colorImage || '') || '',
-                            designPreview: itemDesignPreview
+                            designPreview: itemDesignPreview,
+                            texts: itemTexts.map(textDesign => ({
+                                position: textDesign.positionLabel || textDesign.position || textDesign.area || '',
+                                text: textDesign.text || '',
+                                textColour: textDesign.textColour || '',
+                                font: textDesign.font || '',
+                                textAlign: textDesign.textAlign || 'center'
+                            }))
                         });
 
                         if (item.logos) {
@@ -3635,6 +3901,23 @@
                                 });
                             });
                         }
+                        itemTexts.forEach(textDesign => {
+                            const textUp = parseFloat(textDesign.unitPrice || 1.5) || 1.5;
+                            const lineTotal = textUp * qty;
+                            customizationTotal += lineTotal;
+                            customizationsList.push({
+                                position: textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area),
+                                method: 'Text',
+                                type: 'text',
+                                text: textDesign.text || '',
+                                textColour: textDesign.textColour || '',
+                                font: textDesign.font || '',
+                                hasLogo: false,
+                                unitPrice: textUp,
+                                lineTotal: lineTotal,
+                                quantity: qty
+                            });
+                        });
                     });
 
                     digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;

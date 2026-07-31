@@ -816,13 +816,14 @@ textarea {
 
 .position-design-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
 
 .position-design-btn {
   min-height: 34px;
-  flex: 1 1 0;
+  flex: 1 1 120px;
   border-radius: 8px;
   padding: 7px 10px;
   font-size: 11px;
@@ -844,6 +845,17 @@ textarea {
   border: 1px solid #d8b4fe;
   background: #faf5ff;
   color: #6b21a8;
+}
+
+.position-design-btn-danger {
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #dc2626;
+}
+
+.position-design-btn-danger:hover {
+  border-color: #fca5a5;
+  background: #fef2f2;
 }
 
 .position-design-help {

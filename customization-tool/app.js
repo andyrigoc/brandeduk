@@ -30,6 +30,7 @@ const state = {
   textRotation: 0,
   logoZIndex: 40,
   areaDesigns: {},
+  areaTextDesigns: {},
   pendingDecorationType: null
 };
 
@@ -142,6 +143,8 @@ const positionDesignCount = document.getElementById("positionDesignCount");
 const positionDesignStatusText = document.getElementById("positionDesignStatusText");
 const positionReuseLogoBtn = document.getElementById("positionReuseLogoBtn");
 const positionAddLogoBtn = document.getElementById("positionAddLogoBtn");
+const positionRemoveLogoBtn = document.getElementById("positionRemoveLogoBtn");
+const positionRemoveTextBtn = document.getElementById("positionRemoveTextBtn");
 
 const colourLayer = document.getElementById("colourLayer");
 const designLayer = document.getElementById("designLayer");
@@ -1254,7 +1257,11 @@ function updateConfirmButtonState() {
   const hasSavedPosition = Object.values(state.areaDesigns || {}).some(
     (design) => Boolean(design?.logo && design?.copyrightConfirmed !== false)
   );
-  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition);
+  const hasCurrentText = Boolean(String(state.text || "").trim());
+  const hasSavedText = Object.values(state.areaTextDesigns || {}).some(
+    (design) => Boolean(String(design?.text || "").trim())
+  );
+  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText);
 }
 
 function getDesignAreaKey(area = state.selectedArea) {
@@ -1320,6 +1327,100 @@ function captureCurrentAreaDesign() {
   return design;
 }
 
+function captureCurrentTextPlacement() {
+  const areaWidth = Math.max(0, customArea?.clientWidth || 0);
+  const areaHeight = Math.max(0, customArea?.clientHeight || 0);
+  if (!textLayer || areaWidth < 20 || areaHeight < 20) return null;
+
+  const left = Number.isFinite(parseFloat(textLayer.style.left))
+    ? parseFloat(textLayer.style.left)
+    : textLayer.offsetLeft;
+  const top = Number.isFinite(parseFloat(textLayer.style.top))
+    ? parseFloat(textLayer.style.top)
+    : textLayer.offsetTop;
+  const width = textLayer.offsetWidth || cssPx(textLayer.style.width);
+  const height = textLayer.offsetHeight || cssPx(textLayer.style.height);
+  if (width < 1 || height < 1) return null;
+
+  return {
+    leftPct: Number(((left / areaWidth) * 100).toFixed(4)),
+    topPct: Number(((top / areaHeight) * 100).toFixed(4)),
+    widthPct: Number(((width / areaWidth) * 100).toFixed(4)),
+    heightPct: Number(((height / areaHeight) * 100).toFixed(4))
+  };
+}
+
+function buildTextDesignPreviewFromState() {
+  const wrap = document.querySelector(".polo-colour-wrap");
+  const garmentSource = productShape?.currentSrc || productShape?.src || state.selectedColorImage || "";
+  const textValue = String(state.text || textContent?.textContent || "").trim();
+  if (!wrap || !productShape || !textLayer || !textValue || !garmentSource) return null;
+
+  const wrapRect = wrap.getBoundingClientRect();
+  const garmentRect = productShape.getBoundingClientRect();
+  const textRect = textLayer.getBoundingClientRect();
+  const wrapWidth = wrapRect.width || wrap.offsetWidth || productPreview?.offsetWidth || customArea?.offsetWidth || 360;
+  const wrapHeight = wrapRect.height || wrap.offsetHeight || productPreview?.offsetHeight || customArea?.offsetHeight || 420;
+  const canUseRects = wrapRect.width >= 10 && wrapRect.height >= 10 && textRect.width >= 1 && textRect.height >= 1;
+  const textStyle = window.getComputedStyle(textContent);
+
+  const garmentBox = canUseRects && garmentRect.width >= 1 && garmentRect.height >= 1
+    ? rectToPct(garmentRect, wrapRect)
+    : { left: 0, top: 0, width: 100, height: 100 };
+  const textBox = canUseRects
+    ? rectToPct(textRect, wrapRect)
+    : boxToPct(elementBoxFromStyles(textLayer), wrapWidth, wrapHeight);
+  const cleanedTextBox = cleanPctBox(textBox);
+  if (cleanedTextBox.width <= 0 || cleanedTextBox.height <= 0) return null;
+
+  return {
+    type: "garment-text-preview",
+    version: 1,
+    area: state.selectedArea || "front",
+    garmentImage: garmentSource,
+    garmentBox: cleanPctBox(garmentBox),
+    text: textValue,
+    textBox: cleanedTextBox,
+    textRotation: getLayerRotationDegrees(textLayer),
+    textColour: state.textColour || textStyle.color || "#000000",
+    font: state.font || "Arial",
+    fontFamily: textStyle.fontFamily || getFontByName(state.font).cssFamily,
+    fontWeight: textStyle.fontWeight || "400",
+    fontStyle: textStyle.fontStyle || "normal",
+    textAlign: state.textAlign || textStyle.textAlign || "center",
+    fontSizePct: wrapHeight > 0
+      ? Number((((parseFloat(textStyle.fontSize) || 24) / wrapHeight) * 100).toFixed(4))
+      : 5,
+    garmentHex: normalizeHex(state.colourHex || "") || "",
+    colorName: state.colourName || "",
+    wrapAspect: wrapWidth > 0 ? Number((wrapHeight / wrapWidth).toFixed(4)) : 1.15
+  };
+}
+
+function captureCurrentTextDesign() {
+  const area = getDesignAreaKey();
+  const value = String(state.text || "").trim();
+  if (!value) return state.areaTextDesigns?.[area] || null;
+
+  const existing = state.areaTextDesigns?.[area] || {};
+  const computed = window.getComputedStyle(textContent);
+  const design = {
+    area,
+    text: value,
+    textColour: state.textColour || "#000000",
+    font: state.font || "Arial",
+    fontFamily: computed.fontFamily || getFontByName(state.font).cssFamily,
+    fontWeight: computed.fontWeight || "400",
+    fontStyle: computed.fontStyle || "normal",
+    textAlign: state.textAlign || "center",
+    rotation: getLayerRotationDegrees(textLayer),
+    placement: captureCurrentTextPlacement() || existing.placement || null,
+    preview: buildTextDesignPreviewFromState() || existing.preview || null
+  };
+  state.areaTextDesigns[area] = design;
+  return design;
+}
+
 function resetLogoQualityUi() {
   const mainMask = document.getElementById("mainQualityMask");
   const mainPct = document.getElementById("mainQualityPct");
@@ -1359,6 +1460,20 @@ function clearCanvasLogoState() {
   resetLogoQualityUi();
 }
 
+function clearCanvasTextState() {
+  state.text = "";
+  state.textRotation = 0;
+  textContent.textContent = "";
+  textLayer.style.display = "none";
+  textLayer.style.left = "";
+  textLayer.style.top = "";
+  textLayer.style.width = "";
+  textLayer.style.height = "";
+  textLayer.style.rotate = "0deg";
+  textLayer.style.transform = "none";
+  textLayer.classList.remove("active-text");
+}
+
 function getDraftAreaDesigns() {
   const designs = { ...(state.areaDesigns || {}) };
   if (state.uploadedLogo) {
@@ -1377,15 +1492,35 @@ function getDraftAreaDesigns() {
   return designs;
 }
 
-function updateViewTabDesignStatus(designs = getDraftAreaDesigns()) {
+function getDraftTextDesigns() {
+  const designs = { ...(state.areaTextDesigns || {}) };
+  const text = String(state.text || "").trim();
+  if (text) {
+    const area = getDesignAreaKey();
+    designs[area] = {
+      ...(designs[area] || {}),
+      area,
+      text,
+      textColour: state.textColour,
+      font: state.font,
+      textAlign: state.textAlign,
+      rotation: getLayerRotationDegrees(textLayer)
+    };
+  }
+  return designs;
+}
+
+function updateViewTabDesignStatus(designs = getDraftAreaDesigns(), textDesigns = getDraftTextDesigns()) {
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
     const area = getDesignAreaKey(tab.dataset.area);
-    const hasDesign = Boolean(designs[area]?.logo);
+    const hasLogo = Boolean(designs[area]?.logo);
+    const hasText = Boolean(String(textDesigns[area]?.text || "").trim());
+    const hasDesign = hasLogo || hasText;
     const label = getDesignAreaLabel(area);
     tab.classList.toggle("has-position-design", hasDesign);
     tab.setAttribute(
       "aria-label",
-      `${label}${hasDesign ? ", logo added" : ", no logo"}`
+      `${label}${hasDesign ? `, ${hasLogo && hasText ? "logo and text" : hasLogo ? "logo" : "text"} added` : ", no decoration"}`
     );
     const visibleLabel = tab.querySelector(".view-thumb-label");
     if (visibleLabel) visibleLabel.textContent = label;
@@ -1403,10 +1538,17 @@ function updateViewTabDesignStatus(designs = getDraftAreaDesigns()) {
 
 function updatePositionDesignUi() {
   const designs = getDraftAreaDesigns();
+  const textDesigns = getDraftTextDesigns();
   const currentArea = getDesignAreaKey();
   const currentDesign = designs[currentArea];
-  const designCount = Object.values(designs).filter((design) => Boolean(design?.logo)).length;
-  const hasDesign = Boolean(currentDesign?.logo);
+  const currentTextDesign = textDesigns[currentArea];
+  const hasLogo = Boolean(currentDesign?.logo);
+  const hasText = Boolean(String(currentTextDesign?.text || "").trim());
+  const decoratedAreas = new Set();
+  Object.values(designs).forEach((design) => { if (design?.logo) decoratedAreas.add(getDesignAreaKey(design.area)); });
+  Object.values(textDesigns).forEach((design) => { if (String(design?.text || "").trim()) decoratedAreas.add(getDesignAreaKey(design.area)); });
+  const designCount = decoratedAreas.size;
+  const hasDesign = hasLogo || hasText;
   const reusableLogos = getSessionLogoLibrary();
 
   if (positionDesignPanel) positionDesignPanel.classList.toggle("has-design", hasDesign);
@@ -1421,18 +1563,24 @@ function updatePositionDesignUi() {
       : method === "screen"
         ? "Screen print"
         : method.charAt(0).toUpperCase() + method.slice(1);
-    positionDesignStatusText.textContent = hasDesign
-      ? `${methodLabel} logo saved for ${getDesignAreaLabel(currentArea)}.`
-      : `No logo added to ${getDesignAreaLabel(currentArea)} yet.`;
+    positionDesignStatusText.textContent = hasLogo && hasText
+      ? `${methodLabel} logo and text saved for ${getDesignAreaLabel(currentArea)}.`
+      : hasLogo
+        ? `${methodLabel} logo saved for ${getDesignAreaLabel(currentArea)}.`
+        : hasText
+          ? `Text saved for ${getDesignAreaLabel(currentArea)}.`
+          : `No decoration added to ${getDesignAreaLabel(currentArea)} yet.`;
   }
   if (positionReuseLogoBtn) {
-    positionReuseLogoBtn.hidden = hasDesign || reusableLogos.length === 0;
+    positionReuseLogoBtn.hidden = hasLogo || reusableLogos.length === 0;
   }
   if (positionAddLogoBtn) {
-    positionAddLogoBtn.textContent = hasDesign ? "Replace logo" : "Add logo here";
+    positionAddLogoBtn.textContent = hasLogo ? "Replace logo" : "Add logo here";
   }
+  if (positionRemoveLogoBtn) positionRemoveLogoBtn.hidden = !hasLogo;
+  if (positionRemoveTextBtn) positionRemoveTextBtn.hidden = !hasText;
 
-  updateViewTabDesignStatus(designs);
+  updateViewTabDesignStatus(designs, textDesigns);
   updateConfirmButtonState();
 }
 
@@ -1495,6 +1643,57 @@ async function restoreAreaDesign(area = state.selectedArea) {
   return true;
 }
 
+async function restoreAreaTextDesign(area = state.selectedArea) {
+  const key = getDesignAreaKey(area);
+  const design = state.areaTextDesigns?.[key];
+  clearCanvasTextState();
+
+  if (!design || !String(design.text || "").trim()) {
+    syncTextEditorFieldsFromState();
+    calculatePrice();
+    updatePositionDesignUi();
+    return false;
+  }
+
+  state.text = String(design.text);
+  state.textColour = design.textColour || "#000000";
+  state.font = design.font || "Arial";
+  state.textAlign = design.textAlign || "center";
+  state.textRotation = parseFloat(design.rotation || 0) || 0;
+
+  textContent.textContent = state.text;
+  textContent.style.color = state.textColour;
+  textContent.style.fontFamily = design.fontFamily || getFontByName(state.font).cssFamily;
+  textContent.style.fontWeight = design.fontWeight || "400";
+  textContent.style.fontStyle = design.fontStyle || "normal";
+  textContent.style.textAlign = state.textAlign;
+  textLayer.style.display = "flex";
+  textLayer.style.rotate = `${state.textRotation}deg`;
+  textLayer.style.transform = "none";
+
+  const placement = design.placement;
+  const areaWidth = Math.max(1, customArea.clientWidth);
+  const areaHeight = Math.max(1, customArea.clientHeight);
+  if (placement) {
+    textLayer.style.width = `${Math.max(20, areaWidth * ((parseFloat(placement.widthPct) || 0) / 100))}px`;
+    textLayer.style.height = `${Math.max(20, areaHeight * ((parseFloat(placement.heightPct) || 0) / 100))}px`;
+    textLayer.style.left = `${areaWidth * ((parseFloat(placement.leftPct) || 0) / 100)}px`;
+    textLayer.style.top = `${areaHeight * ((parseFloat(placement.topPct) || 0) / 100)}px`;
+    fitTextFontToLayerBounds();
+  } else {
+    fitTextLayerToContent();
+    centerText();
+  }
+
+  setTextAlignment(state.textAlign);
+  syncTextEditorFieldsFromState();
+  updateTextSizeLabels();
+  updateVisibilityByPrintArea(textLayer);
+  calculatePrice();
+  updatePositionDesignUi();
+  return true;
+}
+
 let designAreaSwitchRequest = 0;
 
 async function switchToDesignArea(nextArea, options = {}) {
@@ -1505,6 +1704,9 @@ async function switchToDesignArea(nextArea, options = {}) {
   if (options.captureCurrent !== false && state.uploadedLogo) {
     captureCurrentAreaDesign();
   }
+  if (options.captureCurrent !== false && String(state.text || "").trim()) {
+    captureCurrentTextDesign();
+  }
 
   if (previous === next && options.force !== true) {
     updatePositionDesignUi();
@@ -1512,6 +1714,7 @@ async function switchToDesignArea(nextArea, options = {}) {
   }
 
   clearCanvasLogoState();
+  clearCanvasTextState();
   state.selectedArea = next;
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
     tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
@@ -1522,7 +1725,10 @@ async function switchToDesignArea(nextArea, options = {}) {
 
   await applyArea();
   if (requestId !== designAreaSwitchRequest) return;
-  await restoreAreaDesign(next);
+  await Promise.all([
+    restoreAreaDesign(next),
+    restoreAreaTextDesign(next)
+  ]);
 }
 
 function hydrateAreaDesignsFromBasketContext() {
@@ -1564,12 +1770,41 @@ function hydrateAreaDesignsFromBasketContext() {
     rememberUploadedLogo(source, logo.method);
   });
 
-  if (Object.keys(hydrated).length === 0) return false;
+  const hydratedTexts = {};
+  const textCandidates = [];
+  if (Array.isArray(item.texts)) textCandidates.push(...item.texts);
+  if (item.textDesigns && typeof item.textDesigns === "object") {
+    Object.entries(item.textDesigns).forEach(([position, design]) => {
+      if (design) textCandidates.push({ ...design, position: design.position || position });
+    });
+  }
+  textCandidates.forEach((textDesign) => {
+    const value = String(textDesign?.text || textDesign?.value || "").trim();
+    if (!value) return;
+    const area = getDesignAreaKey(textDesign.position || textDesign.area);
+    hydratedTexts[area] = {
+      area,
+      text: value,
+      textColour: textDesign.textColour || textDesign.color || "#000000",
+      font: textDesign.font || "Arial",
+      fontFamily: textDesign.fontFamily || "",
+      fontWeight: textDesign.fontWeight || "400",
+      fontStyle: textDesign.fontStyle || "normal",
+      textAlign: textDesign.textAlign || "center",
+      rotation: parseFloat(textDesign.textRotation ?? textDesign.rotation ?? 0) || 0,
+      placement: textDesign.placement || null,
+      preview: textDesign.designPreview || textDesign.preview || null
+    };
+  });
+
+  const decoratedAreas = [...Object.keys(hydrated), ...Object.keys(hydratedTexts)];
+  if (decoratedAreas.length === 0) return false;
   state.areaDesigns = hydrated;
+  state.areaTextDesigns = hydratedTexts;
 
   const requestedArea = sessionStorage.getItem("editingPosition");
-  const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || Object.keys(hydrated)[0]);
-  state.selectedArea = hydrated[initialArea] ? initialArea : Object.keys(hydrated)[0];
+  const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || decoratedAreas[0]);
+  state.selectedArea = (hydrated[initialArea] || hydratedTexts[initialArea]) ? initialArea : decoratedAreas[0];
   return true;
 }
 
@@ -2267,10 +2502,12 @@ async function applyArea() {
   const areaChanged = lastCenteredArea !== state.selectedArea;
   lastCenteredArea = state.selectedArea;
   if (areaChanged) {
+    const shouldCenterLogo = Boolean(state.uploadedLogo);
+    const shouldCenterText = Boolean(state.text);
     setTimeout(() => {
       if (requestId !== areaRenderRequestId) return;
-      if (state.uploadedLogo) centerLogo();
-      if (state.text) centerText();
+      if (shouldCenterLogo && state.uploadedLogo) centerLogo();
+      if (shouldCenterText && state.text) centerText();
     }, 0);
   }
 }
@@ -2296,7 +2533,9 @@ function calculatePrice() {
   Object.values(getDraftAreaDesigns()).forEach((design) => {
     if (design?.logo) unit += getLogoUnitPrice(design.method);
   });
-  if (state.text) unit += 1.5;
+  Object.values(getDraftTextDesigns()).forEach((design) => {
+    if (String(design?.text || "").trim()) unit += 1.5;
+  });
   if (state.names.length > 0) unit += 4;
 
   state.price = qty * unit;
@@ -2491,6 +2730,65 @@ function compactBasketItemForStorage(item) {
 
   delete compactItem.positions;
   delete compactItem.positionDesigns;
+  if (Array.isArray(compactItem.texts)) {
+    compactItem.texts = compactItem.texts.map((textDesign) => {
+      if (!textDesign || typeof textDesign !== "object") return null;
+      const preview = textDesign.designPreview && typeof textDesign.designPreview === "object"
+        ? textDesign.designPreview
+        : null;
+      const compactText = {
+        type: "text",
+        area: textDesign.area || textDesign.position || "",
+        position: textDesign.position || textDesign.area || "",
+        positionLabel: textDesign.positionLabel || "",
+        text: String(textDesign.text || ""),
+        textColour: textDesign.textColour || "#000000",
+        font: textDesign.font || "Arial",
+        fontFamily: textDesign.fontFamily || "",
+        fontWeight: textDesign.fontWeight || "400",
+        fontStyle: textDesign.fontStyle || "normal",
+        textAlign: textDesign.textAlign || "center",
+        textRotation: parseFloat(textDesign.textRotation ?? textDesign.rotation ?? 0) || 0,
+        placement: textDesign.placement || null,
+        unitPrice: parseFloat(textDesign.unitPrice || 1.5) || 1.5
+      };
+      if (preview) {
+        compactText.designPreview = {
+          type: preview.type || "garment-text-preview",
+          version: preview.version || 1,
+          area: preview.area || compactText.position || compactText.area || "front",
+          garmentImage: preview.garmentImage || "",
+          garmentBox: cleanPctBox(preview.garmentBox),
+          text: String(preview.text || compactText.text || ""),
+          textBox: cleanPctBox(preview.textBox),
+          textRotation: parseFloat(preview.textRotation ?? compactText.textRotation ?? 0) || 0,
+          textColour: preview.textColour || compactText.textColour,
+          font: preview.font || compactText.font,
+          fontFamily: preview.fontFamily || compactText.fontFamily,
+          fontWeight: preview.fontWeight || compactText.fontWeight,
+          fontStyle: preview.fontStyle || compactText.fontStyle,
+          textAlign: preview.textAlign || compactText.textAlign,
+          fontSizePct: parseFloat(preview.fontSizePct || 5) || 5,
+          garmentHex: normalizeHex(preview.garmentHex || "") || "",
+          colorName: preview.colorName || "",
+          wrapAspect: Math.max(0.6, Math.min(1.8, parseFloat(preview.wrapAspect || 1.15) || 1.15))
+        };
+        if (
+          !compactText.designPreview.garmentImage
+          || compactText.designPreview.garmentBox.width <= 0
+          || compactText.designPreview.garmentBox.height <= 0
+          || compactText.designPreview.textBox.width <= 0
+          || compactText.designPreview.textBox.height <= 0
+        ) {
+          delete compactText.designPreview;
+        }
+      }
+      return compactText.text ? compactText : null;
+    }).filter(Boolean);
+  } else {
+    compactItem.texts = [];
+  }
+  delete compactItem.textDesigns;
   delete compactItem.logoData;
   delete compactItem.fileData;
   delete compactItem.previewData;
@@ -2712,21 +3010,32 @@ function showPostConfirmModal() {
 
 function renderPostConfirmDesignSummary() {
   captureCurrentAreaDesign();
+  captureCurrentTextDesign();
   const summary = document.getElementById("postConfirmDesignSummary");
   const addAnotherBtn = document.getElementById("postConfirmAddAnotherLogo");
   const allDesigns = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
+  const allTexts = Object.values(state.areaTextDesigns || {}).filter(
+    (design) => Boolean(String(design?.text || "").trim())
+  );
   const currentDesign = state.areaDesigns[getDesignAreaKey()];
   const designs = currentDesign?.logo
     ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
     : allDesigns;
 
   if (summary) {
-    summary.innerHTML = designs.map((design) => `
+    const logoRows = designs.map((design) => `
       <div class="post-confirm-design-position">
         <img src="${design.logo}" alt="">
-        <span>${getDesignAreaLabel(design.area)}</span>
+        <span>${getDesignAreaLabel(design.area)} logo</span>
       </div>
-    `).join("");
+    `);
+    const textRows = allTexts.map((design) => `
+      <div class="post-confirm-design-position">
+        <span aria-hidden="true" style="font-weight:800;font-size:18px;">T</span>
+        <span>${getDesignAreaLabel(design.area)} text</span>
+      </div>
+    `);
+    summary.innerHTML = [...logoRows, ...textRows].join("");
   }
 
   if (addAnotherBtn) {
@@ -2744,6 +3053,7 @@ function closePostConfirmModal() {
 
 function buildBasketItemFromState() {
   captureCurrentAreaDesign();
+  captureCurrentTextDesign();
   const quantities = {};
   state.sizes.forEach(({ size, qty }) => {
     quantities[size] = (quantities[size] || 0) + qty;
@@ -2771,6 +3081,30 @@ function buildBasketItemFromState() {
       designPreview: design.preview || null
     };
   });
+  const allTextDesigns = Object.values(state.areaTextDesigns || {}).filter(
+    (design) => Boolean(String(design?.text || "").trim())
+  );
+  const currentTextDesign = state.areaTextDesigns[getDesignAreaKey()];
+  const orderedTextDesigns = currentTextDesign?.text
+    ? [currentTextDesign, ...allTextDesigns.filter((design) => design !== currentTextDesign)]
+    : allTextDesigns;
+  const texts = orderedTextDesigns.map((design) => ({
+    type: "text",
+    area: design.area,
+    position: design.area,
+    positionLabel: getDesignAreaLabel(design.area),
+    text: String(design.text || ""),
+    textColour: design.textColour || "#000000",
+    font: design.font || "Arial",
+    fontFamily: design.fontFamily || "",
+    fontWeight: design.fontWeight || "400",
+    fontStyle: design.fontStyle || "normal",
+    textAlign: design.textAlign || "center",
+    textRotation: parseFloat(design.rotation || 0) || 0,
+    placement: design.placement || null,
+    unitPrice: 1.5,
+    designPreview: design.preview || null
+  }));
   const legacyPositions = logos.map((logo) => ({
     position: logo.position,
     name: logo.positionLabel,
@@ -2793,12 +3127,20 @@ function buildBasketItemFromState() {
       placement: logo.placement
     };
   });
+  const legacyTextDesigns = {};
+  texts.forEach((textDesign) => {
+    legacyTextDesigns[textDesign.position] = { ...textDesign };
+  });
 
   const basketColorImage = state.selectedColorImage || productShape.currentSrc || productShape.src || "";
   const preferredDesign = designs[0] || state.areaDesigns.front;
-  const designPreview = preferredDesign?.preview || buildDesignPreviewFromState();
+  const preferredTextDesign = orderedTextDesigns[0] || state.areaTextDesigns.front;
+  const designPreview = preferredDesign?.preview
+    || preferredTextDesign?.preview
+    || buildDesignPreviewFromState()
+    || buildTextDesignPreviewFromState();
   const nonLogoUnitPrice = (state.basePrice || 0)
-    + (state.text ? 1.5 : 0)
+    + (texts.length * 1.5)
     + (state.names.length > 0 ? 4 : 0);
 
   return {
@@ -2822,6 +3164,8 @@ function buildBasketItemFromState() {
     positions: legacyPositions,
     positionDesigns: legacyPositionDesigns,
     logos,
+    texts,
+    textDesigns: legacyTextDesigns,
     designPreview
   };
 }
@@ -2869,6 +3213,14 @@ function upsertBasketItemFromState() {
     const mergedLogos = dedupeLogos(nextItem.logos);
     const nextColorHex = normalizeHex(nextItem.colorHex || "");
     const prevColorHex = normalizeHex(prevItem.colorHex || "");
+    const previousTextCount = Array.isArray(prevItem.texts) ? prevItem.texts.length : 0;
+    const nextTextCount = Array.isArray(nextItem.texts) ? nextItem.texts.length : 0;
+    const basketContextUnitPrice = Math.max(
+      0,
+      (parseFloat(prevItem.unitPrice || nextItem.unitPrice || 0) || 0)
+        - (previousTextCount * 1.5)
+        + (nextTextCount * 1.5)
+    );
 
     // Legacy copies can contain stale logos. The canonical position-aware
     // logos array above is the only source used for the rewritten item.
@@ -2888,7 +3240,7 @@ function upsertBasketItemFromState() {
       qty: isBasketContext ? (prevItem.qty || nextItem.qty) : nextItem.qty,
       size: isBasketContext ? (prevItem.size || nextItem.size) : nextItem.size,
       totalQty: isBasketContext ? (prevItem.totalQty || nextItem.totalQty) : nextItem.totalQty,
-      unitPrice: isBasketContext ? (prevItem.unitPrice || nextItem.unitPrice) : nextItem.unitPrice,
+      unitPrice: isBasketContext ? basketContextUnitPrice : nextItem.unitPrice,
       id: previousId
     });
   } else {
@@ -2908,7 +3260,9 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 
 productSelect.addEventListener("change", async () => {
   state.areaDesigns = {};
+  state.areaTextDesigns = {};
   clearCanvasLogoState();
+  clearCanvasTextState();
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
   state.customizationProductTypeSlug =
@@ -3071,6 +3425,8 @@ function showTextOnCanvas(value) {
     designLayer.classList.remove("active-logo");
     updateTextSizeLabels();
     updateVisibilityByPrintArea(textLayer);
+    captureCurrentTextDesign();
+    updatePositionDesignUi();
   };
 
   placeText();
@@ -3316,14 +3672,17 @@ if (openTeTextPropertiesBtn) {
   openTeTextPropertiesBtn.addEventListener("click", () => setTeAccordionOpen("teTextPropertiesItem"));
 }
 
+function clearText() {
+  delete state.areaTextDesigns[getDesignAreaKey()];
+  clearCanvasTextState();
+  syncTextEditorFieldsFromState();
+  calculatePrice();
+  updatePositionDesignUi();
+}
+
 deleteTextBtn.addEventListener("click", e => {
   e.stopPropagation();
-
-  state.text = "";
-  textContent.textContent = "";
-  textLayer.style.display = "none";
-  textLayer.classList.remove("active-text");
-  calculatePrice();
+  clearText();
 });
 
 document.querySelectorAll("[data-design-type]").forEach(card => {
@@ -4029,9 +4388,13 @@ function clearLogo() {
 if (confirmQualityBtn) {
   confirmQualityBtn.addEventListener("click", () => {
     captureCurrentAreaDesign();
+    captureCurrentTextDesign();
     const designs = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
-    if (designs.length === 0) {
-      alert("Please add at least one logo before confirming.");
+    const textDesigns = Object.values(state.areaTextDesigns || {}).filter(
+      (design) => Boolean(String(design?.text || "").trim())
+    );
+    if (designs.length === 0 && textDesigns.length === 0) {
+      alert("Please add a logo or text before confirming.");
       return;
     }
 
@@ -4933,6 +5296,14 @@ if (positionAddLogoBtn) {
   });
 }
 
+if (positionRemoveLogoBtn) {
+  positionRemoveLogoBtn.addEventListener("click", clearLogo);
+}
+
+if (positionRemoveTextBtn) {
+  positionRemoveTextBtn.addEventListener("click", clearText);
+}
+
 document.getElementById("colourShortcut").addEventListener("click", () => openScreen("productPage"));
 
 function copyInlineStyles(source, target, props) {
@@ -5209,7 +5580,10 @@ const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 
 Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
-  .then(() => restoreAreaDesign(state.selectedArea))
+  .then(() => Promise.all([
+    restoreAreaDesign(state.selectedArea),
+    restoreAreaTextDesign(state.selectedArea)
+  ]))
   .finally(() => {
     updatePositionDesignUi();
     finishCustomizerLoading();

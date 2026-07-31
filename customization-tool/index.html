@@ -25,7 +25,7 @@
       // runs when Vercel serves the extensionless /customization-tool URL.
       var toolStyles = document.createElement("link");
       toolStyles.rel = "stylesheet";
-      toolStyles.href = folderPath + "style.css?v=20260730c";
+      toolStyles.href = folderPath + "style.css?v=20260730d";
       document.head.appendChild(toolStyles);
     })();
   </script>
@@ -294,8 +294,10 @@
       <div id="positionDesignActions" class="position-design-actions">
         <button id="positionReuseLogoBtn" class="position-design-btn position-design-btn-secondary" type="button" hidden>Use existing logo</button>
         <button id="positionAddLogoBtn" class="position-design-btn position-design-btn-primary" type="button">Add logo here</button>
+        <button id="positionRemoveLogoBtn" class="position-design-btn position-design-btn-danger" type="button" hidden>Remove logo</button>
+        <button id="positionRemoveTextBtn" class="position-design-btn position-design-btn-danger" type="button" hidden>Remove text</button>
       </div>
-      <p class="position-design-help">Your logo and placement are saved automatically when you switch garment views.</p>
+      <p class="position-design-help">Your logo, text and placements are saved separately when you switch garment views.</p>
     </section>
 
     <!-- Logo quality bar -->
@@ -1004,7 +1006,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260730c", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260730d", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
