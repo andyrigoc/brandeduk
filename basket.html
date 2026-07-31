@@ -418,7 +418,13 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #fff;
+            background:
+                linear-gradient(45deg, rgba(226, 232, 240, 0.45) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(226, 232, 240, 0.45) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(226, 232, 240, 0.45) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(226, 232, 240, 0.45) 75%);
+            background-size: 12px 12px;
+            background-position: 0 0, 0 6px, 6px -6px, -6px 0;
         }
         .item-design-preview__garment,
         .item-design-preview__logo {
@@ -448,7 +454,7 @@
             align-items: center;
             white-space: pre-line;
             line-height: 1.05;
-            overflow: hidden;
+            overflow: visible;
             pointer-events: none;
             transform-origin: center center;
         }
@@ -1884,21 +1890,74 @@
         };
     }
 
+    function buildMigratedTextPreview(item, textDesign, garmentImage) {
+        const value = String(textDesign && textDesign.text || '').trim();
+        if (!garmentImage || !value) return null;
+        const placement = textDesign.placement && typeof textDesign.placement === 'object'
+            ? textDesign.placement
+            : null;
+        const fallbackWidth = Math.max(18, Math.min(64, value.length * 3.2));
+        const textBox = placement
+            ? {
+                left: parseFloat(placement.leftPct || 0) || 0,
+                top: parseFloat(placement.topPct || 0) || 0,
+                width: parseFloat(placement.widthPct || 0) || 0,
+                height: parseFloat(placement.heightPct || 0) || 0
+            }
+            : {
+                left: (100 - fallbackWidth) / 2,
+                top: 45,
+                width: fallbackWidth,
+                height: 10
+            };
+        if (safePct(textBox.width) <= 0 || safePct(textBox.height) <= 0) {
+            textBox.left = (100 - fallbackWidth) / 2;
+            textBox.top = 45;
+            textBox.width = fallbackWidth;
+            textBox.height = 10;
+        }
+        const base = item && item.designPreview && typeof item.designPreview === 'object'
+            ? item.designPreview
+            : {};
+
+        return {
+            type: 'garment-text-preview',
+            version: 1,
+            area: textDesign.position || textDesign.area || 'front',
+            garmentImage,
+            garmentBox: base.garmentBox || { left: 0, top: 0, width: 100, height: 100 },
+            text: value,
+            textBox,
+            textRotation: parseFloat(textDesign.textRotation || textDesign.rotation || 0) || 0,
+            textColour: textDesign.textColour || '#000000',
+            font: textDesign.font || 'Arial',
+            fontFamily: textDesign.fontFamily || textDesign.font || 'Arial, sans-serif',
+            fontWeight: textDesign.fontWeight || '400',
+            fontStyle: textDesign.fontStyle || 'normal',
+            textAlign: textDesign.textAlign || 'center',
+            fontSizePct: Math.max(2.5, Math.min(14, safePct(textBox.height) * 0.65)),
+            garmentHex: base.garmentHex || item.colorHex || '',
+            colorName: base.colorName || item.color || '',
+            wrapAspect: parseFloat(base.wrapAspect || 1.15) || 1.15
+        };
+    }
+
     async function hydrateMissingPositionPreviews() {
         const basket = getBasket();
         const jobs = [];
 
         basket.forEach(function (item) {
             const logos = Array.isArray(item && item.logos) ? item.logos : [];
-            if (logos.length === 0) return;
-            const missing = logos.filter(function (logo) { return !logo.designPreview; });
-            if (missing.length === 0) return;
+            const texts = Array.isArray(item && item.texts) ? item.texts : [];
+            const missingLogos = logos.filter(function (logo) { return !logo.designPreview; });
+            const missingTexts = texts.filter(function (textDesign) { return !textDesign.designPreview; });
+            if (missingLogos.length === 0 && missingTexts.length === 0) return;
 
             const productType = resolveCustomizationPreviewType(item);
             jobs.push(
                 fetchPlacementPreviewConfig(productType, item.customizationVariantKey).then(function (config) {
                     let changed = false;
-                    missing.forEach(function (logo) {
+                    missingLogos.forEach(function (logo) {
                         const area = logo.position || logo.area || 'front';
                         const itemPreview = item.designPreview;
                         if (
@@ -1914,6 +1973,24 @@
                         const migrated = buildMigratedLogoPreview(item, logo, garmentImage);
                         if (migrated) {
                             logo.designPreview = migrated;
+                            changed = true;
+                        }
+                    });
+                    missingTexts.forEach(function (textDesign) {
+                        const area = textDesign.position || textDesign.area || 'front';
+                        const ownPreview = textDesign.designPreview;
+                        if (ownPreview) return;
+                        const itemPreview = item.designPreview;
+                        const garmentImage = (
+                            itemPreview
+                            && normalizeCustomizationPreviewSlug(itemPreview.area) === normalizeCustomizationPreviewSlug(area)
+                            && itemPreview.garmentImage
+                        ) || resolveConfiguredPreviewImage(config, area)
+                            || item.colorImage
+                            || item.image;
+                        const migrated = buildMigratedTextPreview(item, textDesign, garmentImage);
+                        if (migrated) {
+                            textDesign.designPreview = migrated;
                             changed = true;
                         }
                     });
@@ -2592,9 +2669,24 @@
             ? item.designPreview
             : null;
         let logoPreview = (logo && logo.designPreview) || itemPreview;
-        const textPreview = (textDesign && textDesign.designPreview) || (
+        let textPreview = (textDesign && textDesign.designPreview) || (
             itemPreview && itemPreview.type === 'garment-text-preview' ? itemPreview : null
         );
+        if (
+            textDesign
+            && (
+                !textPreview
+                || !textPreview.textBox
+                || safePct(textPreview.textBox.width) <= 0
+                || safePct(textPreview.textBox.height) <= 0
+            )
+        ) {
+            textPreview = buildMigratedTextPreview(
+                item,
+                textDesign,
+                logoPreview?.garmentImage || itemPreview?.garmentImage || item.colorImage || item.image
+            );
+        }
         const previewSeed = logoPreview || textPreview;
         const placement = logo && logo.placement;
         if (
@@ -4232,8 +4324,7 @@
             const ctx = canvas.getContext('2d');
             if (!ctx) return null;
 
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, width, height);
+            ctx.clearRect(0, 0, width, height);
             drawPreviewBox(ctx, garmentImg, preview.garmentBox, width, height);
 
             const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
@@ -4316,7 +4407,7 @@
                 decorationDrawn = true;
             }
 
-            return decorationDrawn ? canvas.toDataURL('image/jpeg', 0.84) : null;
+            return decorationDrawn ? canvas.toDataURL('image/png') : null;
         } catch (error) {
             return null;
         }

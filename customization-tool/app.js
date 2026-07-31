@@ -2669,12 +2669,17 @@ function compactLogoForStorage(logo) {
 
   if (logo.designPreview && typeof logo.designPreview === "object") {
     const preview = logo.designPreview;
+    const previewLogoSource = preview.logoImage || source;
     compactLogo.designPreview = {
       type: preview.type || "garment-logo-preview",
       version: preview.version || 1,
       area: preview.area || compactLogo.position || compactLogo.area || "front",
       garmentImage: preview.garmentImage || "",
       garmentBox: cleanPctBox(preview.garmentBox),
+      // Usually this is the same image as compactLogo.logo, so avoid storing it
+      // twice. Keep it when background removal produced a distinct transparent
+      // preview; otherwise basket rendering would fall back to the original.
+      logoImage: previewLogoSource !== source ? previewLogoSource : "",
       logoBox: cleanPctBox(preview.logoBox),
       logoRotation: parseFloat(preview.logoRotation ?? compactLogo.logoRotation ?? 0) || 0,
       garmentHex: normalizeHex(preview.garmentHex || "") || "",
