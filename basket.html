@@ -2536,7 +2536,7 @@
     function renderPlacementPreview(item, altText, index) {
         const preview = item && item.designPreview;
         const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
-        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
+        const logoImage = (item && item.logos && item.logos[0] && item.logos[0].logo) || (preview && preview.logoImage) || '';
         if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
             return '';
         }
@@ -2567,7 +2567,7 @@
     function renderPlacementPreviewVisual(item, altText) {
         const preview = item && item.designPreview;
         const garmentImage = getQuoteGarmentSource(item, preview) || (item && (item.colorImage || item.image)) || (preview && preview.garmentImage);
-        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
+        const logoImage = (item && item.logos && item.logos[0] && item.logos[0].logo) || (preview && preview.logoImage) || '';
         if (!garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) {
             return '';
         }
@@ -2605,7 +2605,7 @@
         }
 
         if (!preview) return null;
-        const logoImage = preview.logoImage || (logo && logo.logo) || '';
+        const logoImage = (logo && logo.logo) || preview.logoImage || '';
         const garmentImage = (
             preview.garmentImage && !isGeneratedGarmentImage(preview.garmentImage)
                 ? preview.garmentImage
@@ -2748,7 +2748,7 @@
 
         let logoHtml = '';
         const logoImage = context.logoPreview && (
-            context.logoPreview.logoImage || (context.logo && context.logo.logo)
+            (context.logo && context.logo.logo) || context.logoPreview.logoImage
         );
         const logoBox = context.logoPreview && context.logoPreview.logoBox;
         if (logoImage && logoBox && safePct(logoBox.width) > 0 && safePct(logoBox.height) > 0) {
@@ -4241,7 +4241,7 @@
 
     async function renderQuotePreviewImage(item) {
         const preview = item && item.designPreview;
-        const logoImage = (preview && preview.logoImage) || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
+        const logoImage = (item && item.logos && item.logos[0] && item.logos[0].logo) || (preview && preview.logoImage) || '';
         if (!preview || !preview.garmentImage || !logoImage || !preview.garmentBox || !preview.logoBox) return null;
 
         const width = 520;
@@ -4309,7 +4309,7 @@
         const aspect = Math.max(0.7, Math.min(1.5, parseFloat(preview.wrapAspect || 1.12) || 1.12));
         const height = Math.round(width * aspect);
         const logoSource = context.logoPreview && (
-            context.logoPreview.logoImage || context.logo?.logo || ''
+            context.logo?.logo || context.logoPreview.logoImage || ''
         );
         const [garmentImg, logoImg] = await Promise.all([
             loadQuoteImage(context.garmentImage),
@@ -4431,7 +4431,7 @@
     function buildQuoteDesignPreview(item) {
         const preview = item && item.designPreview;
         if (!preview || typeof preview !== 'object') return null;
-        const logoImage = preview.logoImage || (item && item.logos && item.logos[0] && item.logos[0].logo) || '';
+        const logoImage = (item && item.logos && item.logos[0] && item.logos[0].logo) || preview.logoImage || '';
         return {
             type: preview.type || 'garment-logo-preview',
             version: preview.version || 1,

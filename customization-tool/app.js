@@ -2669,17 +2669,12 @@ function compactLogoForStorage(logo) {
 
   if (logo.designPreview && typeof logo.designPreview === "object") {
     const preview = logo.designPreview;
-    const previewLogoSource = preview.logoImage || source;
     compactLogo.designPreview = {
       type: preview.type || "garment-logo-preview",
       version: preview.version || 1,
       area: preview.area || compactLogo.position || compactLogo.area || "front",
       garmentImage: preview.garmentImage || "",
       garmentBox: cleanPctBox(preview.garmentBox),
-      // Usually this is the same image as compactLogo.logo, so avoid storing it
-      // twice. Keep it when background removal produced a distinct transparent
-      // preview; otherwise basket rendering would fall back to the original.
-      logoImage: previewLogoSource !== source ? previewLogoSource : "",
       logoBox: cleanPctBox(preview.logoBox),
       logoRotation: parseFloat(preview.logoRotation ?? compactLogo.logoRotation ?? 0) || 0,
       garmentHex: normalizeHex(preview.garmentHex || "") || "",
@@ -2804,7 +2799,7 @@ function compactBasketItemForStorage(item) {
   if (compactItem.designPreview && typeof compactItem.designPreview === "object") {
     const preview = compactItem.designPreview;
     const primaryLogoSource = compactLogos[0]?.logo || "";
-    const previewLogoSource = preview.logoImage || primaryLogoSource;
+    const previewLogoSource = primaryLogoSource || preview.logoImage;
     compactItem.designPreview = {
       type: preview.type || "garment-logo-preview",
       version: preview.version || 1,
@@ -2911,7 +2906,9 @@ function getLayerRotationDegrees(layer) {
 function buildDesignPreviewFromState() {
   const wrap = document.querySelector(".polo-colour-wrap");
   const logoFrame = getLogoFrameEl();
-  const logoSource = uploadedLogo?.currentSrc || uploadedLogo?.src || state.uploadedLogo || "";
+  // State is updated synchronously after background removal, while currentSrc
+  // can briefly remain on the previous white-background image.
+  const logoSource = state.uploadedLogo || uploadedLogo?.currentSrc || uploadedLogo?.src || "";
   const garmentSource = productShape?.currentSrc || productShape?.src || state.selectedColorImage || "";
 
   if (!wrap || !productShape || !designLayer || !logoSource || !garmentSource) return null;
@@ -4878,6 +4875,7 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     state.uploadedLogo = cleanedLogo;
     uploadedLogo.src = cleanedLogo;
     uploadedLogo.style.display = "block";
+    await waitForLogoImage(uploadedLogo);
 
     designLayer.style.display = "block";
     designLayer.style.left = oldLeft;
