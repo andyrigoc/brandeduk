@@ -1070,13 +1070,11 @@ function applySelectedProductContext() {
   const selectedCustomizationSlug = selectedProductData
     ? resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
     : (urlCode ? "" : resolveCustomizationProductTypeSlug(state.productName, selectedProductType));
-  const selectedCustomizationVariant = selectedCustomizationSlug === "bags"
-    ? resolveCustomizationVariantKey(
-      state.productName,
-      selectedProductType,
-      selectedProductData?.customizationVariantKey
-    )
-    : "";
+  const selectedCustomizationVariant = resolveCustomizationVariantKey(
+    state.productName,
+    selectedProductType,
+    selectedProductData?.customizationVariantKey
+  );
   if (
     selectedCustomizationSlug !== state.customizationProductTypeSlug
     || selectedCustomizationVariant !== state.customizationVariantKey
@@ -1154,9 +1152,10 @@ async function hydrateSelectedProductFromApi() {
     const apiProductType = productData.productType || productData.category || productData.type;
     const apiCustomizationSlug =
       resolveCustomizationProductTypeSlug(state.productName, apiProductType);
-    const apiCustomizationVariant = apiCustomizationSlug === "bags"
-      ? resolveCustomizationVariantKey(state.productName, apiProductType)
-      : "";
+    const apiCustomizationVariant = resolveCustomizationVariantKey(
+      state.productName,
+      apiProductType
+    );
     if (
       apiCustomizationSlug !== state.customizationProductTypeSlug
       || apiCustomizationVariant !== state.customizationVariantKey
@@ -2117,7 +2116,7 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (/\bfleece/.test(text)) return "fleece";
   if (/\bpolo/.test(text)) return "polos";
   if (/t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
-  if (/\bvest top\b|sleeveless t[\s-]?shirt/.test(text)) return "vests-t-shirt";
+  if (/\bvest tops?\b|tank top|racer[\s-]?back|sleeveless t[\s-]?shirt/.test(text)) return "vests-t-shirt";
   if (/\bjacket|\bparka|\bcoat|\banorak|windbreaker/.test(text)) return "jackets";
   if (/\btrouser|\bchino|\bpants?\b/.test(text)) return "trousers";
   if (/\bshorts?\b/.test(text) && !/\bshirt/.test(text)) return "shorts";
@@ -2127,53 +2126,75 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   return "";
 }
 
-const BAG_CUSTOMIZATION_VARIANTS = new Set([
-  "backpack",
-  "tote",
-  "holdall",
-  "laptop-document"
-]);
+const CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE = {
+  aprons: new Set(["bib", "waist"]),
+  bags: new Set(["backpack", "tote", "holdall", "laptop-document"]),
+  beanies: new Set(["cuffed", "bobble"]),
+  fleece: new Set(["full-zip", "quarter-zip"]),
+  "gilets-body-warmers": new Set(["padded", "fleece"]),
+  hats: new Set(["bucket", "wide-brim"]),
+  "safety-vests": new Set(["waistcoat", "jacket-bomber"]),
+  hoodies: new Set(["pullover", "full-zip"]),
+  jackets: new Set(["lightweight", "padded-puffer", "waterproof-parka"]),
+  polos: new Set(["short-sleeve", "long-sleeve"]),
+  shirts: new Set(["short-sleeve", "long-sleeve"]),
+  shorts: new Set(["sports", "cargo-workwear"]),
+  sweatshirts: new Set(["crewneck", "quarter-zip"]),
+  tshirts: new Set(["short-sleeve", "long-sleeve"]),
+  "vests-t-shirt": new Set(["standard", "racerback"])
+};
 
 function resolveCustomizationVariantKey(name, productType, explicitVariantKey = "") {
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
-  if (BAG_CUSTOMIZATION_VARIANTS.has(explicit)) return explicit;
-
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
-  const isBag = normalizeProductTypeSlug(productType) === "bags"
-    || /\bbag\b|backpack|rucksack|holdall|duffle|duffel|tote|briefcase/.test(text);
-  if (!isBag) return "";
+  const slug = resolveCustomizationProductTypeSlug(name, productType);
+  const allowed = CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE[slug];
+  if (!allowed) return "";
+  if (allowed.has(explicit)) return explicit;
 
-  if (
-    /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
-    || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
-  ) {
-    return "backpack";
+  if (slug === "bags") {
+    if (
+      /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
+      || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
+    ) return "backpack";
+    if (
+      /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
+      || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
+    ) return "holdall";
+    if (
+      /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
+      || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
+    ) return "laptop-document";
+    if (
+      /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
+      || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
+      || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
+    ) return "tote";
+    return "";
   }
 
-  if (
-    /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
-    || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
-  ) {
-    return "holdall";
+  if (slug === "aprons") return /\bwaist(?:er)?\b|waist apron|server apron/.test(text) ? "waist" : "bib";
+  if (slug === "beanies") return /bobble|pom[\s-]?pom|pom beanie/.test(text) ? "bobble" : "cuffed";
+  if (slug === "fleece") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "full-zip";
+  if (slug === "gilets-body-warmers") return /\bfleece\b|microfleece/.test(text) ? "fleece" : "padded";
+  if (slug === "hats") return /wide[\s-]?brim|sun hat|safari|bush hat|legionnaire/.test(text) ? "wide-brim" : "bucket";
+  if (slug === "safety-vests") {
+    return /\bjacket\b|bomber|\bcoat\b|parka|long[\s-]?sleeve/.test(text)
+      ? "jacket-bomber"
+      : "waistcoat";
   }
-
-  if (
-    /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
-    || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
-  ) {
-    return "laptop-document";
+  if (slug === "hoodies") return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  if (slug === "jackets") {
+    if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return "padded-puffer";
+    if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return "waterproof-parka";
+    return "lightweight";
   }
-
-  if (
-    /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
-    || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
-    || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
-  ) {
-    return "tote";
+  if (slug === "polos" || slug === "shirts" || slug === "tshirts") {
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
   }
-
-  // Pouches, wash bags, coolers and other uncommon silhouettes continue to use
-  // the generic bag configuration instead of being forced into a wrong subtype.
+  if (slug === "shorts") return /cargo|workwear|work short|combat|utility/.test(text) ? "cargo-workwear" : "sports";
+  if (slug === "sweatshirts") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
+  if (slug === "vests-t-shirt") return /racer[\s-]?back|sports vest|athletic vest/.test(text) ? "racerback" : "standard";
   return "";
 }
 
@@ -2252,7 +2273,7 @@ async function fetchCustomizationConfig(productTypeSlug, variantKey = "") {
 
 async function loadCustomizationConfigForCurrentProduct() {
   const slug = state.customizationProductTypeSlug;
-  const variantKey = slug === "bags" ? state.customizationVariantKey : "";
+  const variantKey = state.customizationVariantKey || "";
   const configKey = buildCustomizationConfigKey(slug, variantKey);
   if (!slug) {
     customizationConfigRequestId += 1;
@@ -2282,7 +2303,7 @@ async function loadCustomizationConfigForCurrentProduct() {
       const config = await fetchCustomizationConfig(slug, variantKey);
       const currentKey = buildCustomizationConfigKey(
         state.customizationProductTypeSlug,
-        state.customizationProductTypeSlug === "bags" ? state.customizationVariantKey : ""
+        state.customizationVariantKey || ""
       );
       if (requestId !== customizationConfigRequestId || configKey !== currentKey) {
         return false;
@@ -3278,9 +3299,10 @@ productSelect.addEventListener("change", async () => {
   state.customizationProductTypeSlug =
     resolveCustomizationProductTypeSlug(state.productName, productSelect.value)
     || state.customizationProductTypeSlug;
-  state.customizationVariantKey = state.customizationProductTypeSlug === "bags"
-    ? resolveCustomizationVariantKey(state.productName, productSelect.value)
-    : "";
+  state.customizationVariantKey = resolveCustomizationVariantKey(
+    state.productName,
+    productSelect.value
+  );
   state.customizationConfig = null;
   state.customizationConfigKey = "";
   configureViewTabsForProduct();
