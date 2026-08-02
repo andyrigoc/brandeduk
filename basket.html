@@ -440,7 +440,13 @@
             position: absolute;
             z-index: 2;
             mix-blend-mode: multiply;
-            opacity: 0.62;
+            opacity: 1;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center center;
+            mask-position: center center;
             pointer-events: none;
         }
         .item-design-preview__logo {
@@ -471,7 +477,7 @@
             justify-content: center;
             padding: 12px;
         }
-        .preview-image-modal__stage img {
+        .preview-image-modal__stage > img {
             display: block;
             max-width: 100%;
             max-height: 62vh;
@@ -2543,9 +2549,7 @@
 
         const rotation = parseFloat(preview.logoRotation || 0) || 0;
         const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)
-            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
-            : '';
+        const tintHtml = renderGarmentTint(item, garmentImage, preview.garmentBox, tintHex);
 
         return `
             <div class="item-placement-preview-card" title="Logo placement preview">
@@ -2574,9 +2578,7 @@
 
         const rotation = parseFloat(preview.logoRotation || 0) || 0;
         const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)
-            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
-            : '';
+        const tintHtml = renderGarmentTint(item, garmentImage, preview.garmentBox, tintHex);
 
         return `
             <div class="item-design-preview" aria-label="Logo placement preview">
@@ -2625,9 +2627,7 @@
         const logo = context.logo;
         const rotation = parseFloat(preview.logoRotation || (logo && logo.logoRotation) || 0) || 0;
         const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
-            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
-            : '';
+        const tintHtml = renderGarmentTint(item, context.garmentImage, preview.garmentBox, tintHex);
         const area = preview.area || (logo && (logo.position || logo.area)) || '';
         const areaLabel = area ? toReadablePosition(area) : 'Placement';
 
@@ -2742,9 +2742,7 @@
         if (!context) return '';
         const basePreview = context.basePreview;
         const tintHex = normalizeColorHex(basePreview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
-            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(basePreview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
-            : '';
+        const tintHtml = renderGarmentTint(item, context.garmentImage, basePreview.garmentBox, tintHex);
 
         let logoHtml = '';
         const logoImage = context.logoPreview && (
@@ -2882,9 +2880,7 @@
         const preview = context.preview;
         const rotation = parseFloat(preview.logoRotation || (context.logo && context.logo.logoRotation) || 0) || 0;
         const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-        const tintHtml = tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)
-            ? `<span class="item-design-preview__tint" style="${previewBoxStyle(preview.garmentBox)}background:${escapeAttr(tintHex)}"></span>`
-            : '';
+        const tintHtml = renderGarmentTint(item, context.garmentImage, preview.garmentBox, tintHex);
 
         return `
             <div class="item-design-preview" aria-label="Logo placement preview">
@@ -4204,7 +4200,42 @@
         const width = (safePct(box.width) / 100) * canvasWidth;
         const height = (safePct(box.height) / 100) * canvasHeight;
         if (width <= 0 || height <= 0) return;
-        ctx.drawImage(img, left, top, width, height);
+
+        // Match the customizer's `object-fit: contain`. Stretching the square
+        // garment PNG into the editor's portrait box changes both the garment
+        // proportions and the apparent logo placement in basket/email renders.
+        const naturalWidth = Math.max(1, img.naturalWidth || img.width || 1);
+        const naturalHeight = Math.max(1, img.naturalHeight || img.height || 1);
+        const scale = Math.min(width / naturalWidth, height / naturalHeight);
+        const drawWidth = naturalWidth * scale;
+        const drawHeight = naturalHeight * scale;
+        const drawLeft = left + ((width - drawWidth) / 2);
+        const drawTop = top + ((height - drawHeight) / 2);
+        ctx.drawImage(img, drawLeft, drawTop, drawWidth, drawHeight);
+    }
+
+    function drawTintedGarmentPreview(ctx, img, box, canvasWidth, canvasHeight, tintHex, skipTint) {
+        drawPreviewBox(ctx, img, box, canvasWidth, canvasHeight);
+        if (!tintHex || skipTint) return;
+
+        // The live customizer applies colour through the garment PNG's alpha
+        // mask. Recreate that mask here instead of tinting the whole preview
+        // rectangle, which previously produced grey/black square backgrounds.
+        const tintCanvas = document.createElement('canvas');
+        tintCanvas.width = canvasWidth;
+        tintCanvas.height = canvasHeight;
+        const tintCtx = tintCanvas.getContext('2d');
+        if (!tintCtx) return;
+
+        tintCtx.fillStyle = tintHex;
+        tintCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+        tintCtx.globalCompositeOperation = 'destination-in';
+        drawPreviewBox(tintCtx, img, box, canvasWidth, canvasHeight);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.drawImage(tintCanvas, 0, 0);
+        ctx.restore();
     }
 
     function escapeXml(value) {
@@ -4234,9 +4265,20 @@
 
     function isSavedColourGarmentSource(item, garmentImage) {
         if (!item || !garmentImage) return false;
-        const saved = item.colorImage || item.image || '';
         const original = item.sourceColorImage || item.originalColorImage || '';
-        return false;
+        return Boolean(original && String(original) === String(garmentImage));
+    }
+
+    function renderGarmentTint(item, garmentImage, garmentBox, tintHex) {
+        if (
+            !tintHex
+            || isSavedColourGarmentSource(item, garmentImage)
+            || !garmentImage
+        ) {
+            return '';
+        }
+
+        return `<span class="item-design-preview__tint" style="${previewBoxStyle(garmentBox)}background:${escapeAttr(tintHex)};-webkit-mask-image:url(&quot;${escapeAttr(garmentImage)}&quot;);mask-image:url(&quot;${escapeAttr(garmentImage)}&quot;);"></span>`;
     }
 
     async function renderQuotePreviewImage(item) {
@@ -4263,23 +4305,16 @@
 
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, width, height);
-            drawPreviewBox(ctx, garmentImg, preview.garmentBox, width, height);
-
             const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-            if (tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, garmentImage)) {
-                const garmentBox = preview.garmentBox;
-                ctx.save();
-                ctx.globalAlpha = 0.62;
-                ctx.globalCompositeOperation = 'multiply';
-                ctx.fillStyle = tintHex;
-                ctx.fillRect(
-                    (safePct(garmentBox.left) / 100) * width,
-                    (safePct(garmentBox.top) / 100) * height,
-                    (safePct(garmentBox.width) / 100) * width,
-                    (safePct(garmentBox.height) / 100) * height
-                );
-                ctx.restore();
-            }
+            drawTintedGarmentPreview(
+                ctx,
+                garmentImg,
+                preview.garmentBox,
+                width,
+                height,
+                tintHex,
+                isSavedColourGarmentSource(item, garmentImage)
+            );
 
             const logoBox = preview.logoBox;
             const logoLeft = (safePct(logoBox.left) / 100) * width;
@@ -4324,24 +4359,20 @@
             const ctx = canvas.getContext('2d');
             if (!ctx) return null;
 
-            ctx.clearRect(0, 0, width, height);
-            drawPreviewBox(ctx, garmentImg, preview.garmentBox, width, height);
-
+            // Use an explicit white background so dark-mode email clients do
+            // not render the transparent canvas as a black square.
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
             const tintHex = normalizeColorHex(preview.garmentHex || item.colorHex || '');
-            if (tintHex && !isLightColorHex(tintHex) && !isSavedColourGarmentSource(item, context.garmentImage)) {
-                const garmentBox = preview.garmentBox;
-                ctx.save();
-                ctx.globalAlpha = 0.62;
-                ctx.globalCompositeOperation = 'multiply';
-                ctx.fillStyle = tintHex;
-                ctx.fillRect(
-                    (safePct(garmentBox.left) / 100) * width,
-                    (safePct(garmentBox.top) / 100) * height,
-                    (safePct(garmentBox.width) / 100) * width,
-                    (safePct(garmentBox.height) / 100) * height
-                );
-                ctx.restore();
-            }
+            drawTintedGarmentPreview(
+                ctx,
+                garmentImg,
+                preview.garmentBox,
+                width,
+                height,
+                tintHex,
+                isSavedColourGarmentSource(item, context.garmentImage)
+            );
 
             let decorationDrawn = false;
             const logoPreview = context.logoPreview;
