@@ -4138,9 +4138,12 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
 
   try {
     const optimizedLogo = await optimizeLogoFileForBasket(file);
+    const preparedLogo = removeBackgroundCheck?.checked
+      ? await optimizeLogoDataUrlForBasket(await removeImageBackground(optimizedLogo, 55))
+      : optimizedLogo;
     state.decorationType = state.pendingDecorationType || state.decorationType || "print";
     state.pendingDecorationType = null;
-    state.uploadedLogo = optimizedLogo;
+    state.uploadedLogo = preparedLogo;
     state.originalUploadedLogo = optimizedLogo;
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
@@ -4969,8 +4972,9 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     const oldHeight = logoFrame.style.height;
     const oldRotate = designLayer.style.rotate;
 
+    const originalLogo = state.originalUploadedLogo || state.uploadedLogo;
     const cleanedLogo = await optimizeLogoDataUrlForBasket(
-      await removeImageBackground(state.uploadedLogo, 55)
+      await removeImageBackground(originalLogo, 55)
     );
 
     state.uploadedLogo = cleanedLogo;
@@ -4985,6 +4989,11 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     logoFrame.style.height = oldHeight;
     designLayer.style.rotate = oldRotate;
     designLayer.style.transform = "none";
+  } else if (state.originalUploadedLogo && state.uploadedLogo !== state.originalUploadedLogo) {
+    state.uploadedLogo = state.originalUploadedLogo;
+    uploadedLogo.src = state.originalUploadedLogo;
+    uploadedLogo.style.display = "block";
+    await waitForLogoImage(uploadedLogo);
   }
 
   openScreen("mainEditor");
@@ -5002,38 +5011,82 @@ async function removeImageBackground(imageSrc, tolerance = 45) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
 
       ctx.drawImage(img, 0, 0);
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
-      const bg = getCornerAverageColour(data, canvas.width, canvas.height);
+      const width = canvas.width;
+      const height = canvas.height;
+      const cornerPixels = [
+        getPixel(data, 0, 0, width),
+        getPixel(data, width - 1, 0, width),
+        getPixel(data, 0, height - 1, width),
+        getPixel(data, width - 1, height - 1, width)
+      ];
 
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
+      // A logo that already has transparent corners is already background-free.
+      // Keep it untouched so a second pass cannot remove intentional dark art.
+      if (cornerPixels.some(pixel => pixel.a < 16)) {
+        resolve(imageSrc);
+        return;
+      }
 
-        const distance = Math.sqrt(
-          Math.pow(r - bg.r, 2) +
-          Math.pow(g - bg.g, 2) +
-          Math.pow(b - bg.b, 2)
-        );
+      const bg = getCornerAverageColour(data, width, height);
+      const maxDistanceSquared = tolerance * tolerance;
+      const pixelCount = width * height;
+      const visited = new Uint8Array(pixelCount);
+      const queue = new Uint32Array(pixelCount);
+      let queueStart = 0;
+      let queueEnd = 0;
 
-        const isNearWhite = r > 235 && g > 235 && b > 235;
-        const isNearBlack = r < 25 && g < 25 && b < 25;
+      const enqueueBackgroundPixel = (pixelIndex) => {
+        if (visited[pixelIndex]) return;
+        visited[pixelIndex] = 1;
 
-        if (distance < tolerance || isNearWhite || isNearBlack) {
-          data[i + 3] = 0;
-        }
+        const offset = pixelIndex * 4;
+        const redDiff = data[offset] - bg.r;
+        const greenDiff = data[offset + 1] - bg.g;
+        const blueDiff = data[offset + 2] - bg.b;
+        const distanceSquared = (redDiff * redDiff) + (greenDiff * greenDiff) + (blueDiff * blueDiff);
+        if (data[offset + 3] < 1 || distanceSquared > maxDistanceSquared) return;
+
+        queue[queueEnd] = pixelIndex;
+        queueEnd += 1;
+      };
+
+      for (let x = 0; x < width; x += 1) {
+        enqueueBackgroundPixel(x);
+        enqueueBackgroundPixel(((height - 1) * width) + x);
+      }
+      for (let y = 1; y < height - 1; y += 1) {
+        enqueueBackgroundPixel(y * width);
+        enqueueBackgroundPixel((y * width) + width - 1);
+      }
+
+      // Only remove matching pixels connected to an outside edge. This keeps
+      // black/white details enclosed inside the artwork instead of deleting
+      // every pixel of that colour across the complete logo.
+      while (queueStart < queueEnd) {
+        const pixelIndex = queue[queueStart];
+        queueStart += 1;
+        data[(pixelIndex * 4) + 3] = 0;
+
+        const x = pixelIndex % width;
+        const y = Math.floor(pixelIndex / width);
+        if (x > 0) enqueueBackgroundPixel(pixelIndex - 1);
+        if (x + 1 < width) enqueueBackgroundPixel(pixelIndex + 1);
+        if (y > 0) enqueueBackgroundPixel(pixelIndex - width);
+        if (y + 1 < height) enqueueBackgroundPixel(pixelIndex + width);
       }
 
       ctx.putImageData(imageData, 0, 0);
       resolve(canvas.toDataURL("image/png"));
     };
 
+    img.onerror = () => resolve(imageSrc);
     img.src = imageSrc;
   });
 }
@@ -5059,7 +5112,8 @@ function getPixel(data, x, y, width) {
   return {
     r: data[index],
     g: data[index + 1],
-    b: data[index + 2]
+    b: data[index + 2],
+    a: data[index + 3]
   };
 }
 

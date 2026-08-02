@@ -777,7 +777,7 @@
         <label class="img-props-toggle-row">
           <span class="img-props-toggle-label">Remove background</span>
           <div class="img-props-toggle">
-            <input id="removeBackgroundCheck" type="checkbox">
+            <input id="removeBackgroundCheck" type="checkbox" checked>
             <span class="img-props-toggle-track"></span>
           </div>
         </label>
@@ -1006,7 +1006,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260801a", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260802a", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
