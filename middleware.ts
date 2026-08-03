@@ -24,5 +24,5 @@ export default function desktopComingSoonGate(request: Request) {
     return next();
   }
 
-  return rewrite(new URL('/desktop-coming-soon.html', request.url));
+  return rewrite(new URL('/desktop-coming-soon', request.url));
 }
