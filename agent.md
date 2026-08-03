@@ -1,5 +1,4 @@
 # BrandedUK API Integration Agent
-
 ## Project Overview
 
 **Goal**: Connect the static frontend to a backend API for dynamic product catalog data. **No UI/frontend changes** - only data binding and API integration.
