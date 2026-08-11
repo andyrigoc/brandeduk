@@ -924,6 +924,12 @@ function syncCurrentColourHexFromPalette() {
   syncViewThumbTint();
 }
 
+function isDesktopToolExperience() {
+  const params = new URLSearchParams(window.location.search);
+  if (String(params.get("from") || "").toLowerCase() === "customize-pc") return true;
+  return Boolean(window.matchMedia && window.matchMedia("(min-width: 800px)").matches);
+}
+
 function setupCustomizerBreadcrumb() {
   const params = new URLSearchParams(window.location.search);
   const from = String(params.get("from") || "").toLowerCase();
@@ -938,6 +944,9 @@ function setupCustomizerBreadcrumb() {
   } else if (from === "customize-mobile") {
     fallbackTarget = code ? `../mobile/customize-mobile.html?code=${encodeURIComponent(code)}` : "../mobile/customize-mobile.html";
     label = "Home > Customize > Logo Tool";
+  } else if (from === "customize-pc" || isDesktopToolExperience()) {
+    fallbackTarget = code ? `../product-detail.html?code=${encodeURIComponent(code)}` : "../shop.html";
+    label = "Shop > Product > Customise";
   }
 
   if (customizerBreadcrumbLabel) {
@@ -989,8 +998,14 @@ function getLogoUnitPrice(method) {
 function applyProductHeaderUI() {
   const modelEl = document.getElementById("cibModelName");
   const codeEl = document.getElementById("cibCode");
+  const desktopModelEl = document.getElementById("desktopProductName");
+  const desktopCodeEl = document.getElementById("desktopProductCode");
+  const desktopBrandEl = document.getElementById("desktopBrandName");
   if (modelEl) modelEl.textContent = state.productName || "Product";
   if (codeEl) codeEl.textContent = state.productCode || "SKU-2024";
+  if (desktopModelEl) desktopModelEl.textContent = state.productName || "Product";
+  if (desktopCodeEl) desktopCodeEl.textContent = state.productCode || "SKU-2024";
+  if (desktopBrandEl) desktopBrandEl.textContent = state.brandName || "BRANDED";
   if (productPageTitle) productPageTitle.textContent = `Custom ${state.productName || "Product"}`;
 
   if (phBrandText) {
@@ -4483,7 +4498,9 @@ if (postConfirmAddAnotherLogoBtn) {
 const postConfirmContinueShoppingBtn = document.getElementById("postConfirmContinueShopping");
 if (postConfirmContinueShoppingBtn) {
   postConfirmContinueShoppingBtn.addEventListener("click", () => {
-    window.location.href = "../mobile/shop-mobile.html";
+    window.location.href = isDesktopToolExperience()
+      ? "../shop.html"
+      : "../mobile/shop-mobile.html";
   });
 }
 

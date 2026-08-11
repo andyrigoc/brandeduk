@@ -1,0 +1,631 @@
+/*
+ * BrandedUK desktop customiser
+ *
+ * This file only changes presentation. The product/template API, per-view
+ * design state, pricing and basket persistence continue to live in app.js so
+ * mobile and desktop always produce the same order data.
+ */
+
+.desktop-inspector {
+  display: contents;
+}
+
+.desktop-product-summary {
+  display: none;
+}
+
+.nav-logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 800px) {
+  :root {
+    --desktop-navy: #142456;
+    --desktop-purple: #8f2ca3;
+    --desktop-orange: #ef5226;
+    --desktop-border: #e3e8f1;
+    --desktop-muted: #667085;
+    --desktop-surface: #ffffff;
+    --desktop-canvas: #f4f6fa;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--desktop-canvas);
+  }
+
+  body.tool-with-site-header {
+    padding: 0;
+  }
+
+  .tool-site-header,
+  .tool-bottom-nav {
+    display: none !important;
+  }
+
+  .customiser-app {
+    width: 100%;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--desktop-canvas);
+  }
+
+  .screen:not(.active-screen) {
+    display: none !important;
+  }
+
+  #mainEditor.active-screen {
+    width: 100%;
+    height: 100vh;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 292px minmax(460px, 1fr) 340px;
+    grid-template-rows: 72px minmax(0, 1fr);
+    grid-template-areas:
+      "header header header"
+      "controls canvas inspector";
+    overflow: hidden;
+    background: var(--desktop-canvas);
+  }
+
+  /* Header */
+  .editor-top {
+    grid-area: header;
+    position: relative;
+    z-index: 100;
+    height: 72px;
+    display: grid;
+    grid-template-columns: 292px 190px minmax(430px, 1fr) 168px;
+    align-items: stretch;
+    background: #fff;
+    border-bottom: 1px solid var(--desktop-border);
+    box-shadow: 0 1px 10px rgba(18, 36, 86, 0.04);
+  }
+
+  .customizer-breadcrumb {
+    width: auto;
+    height: 72px;
+    padding: 0 22px;
+    gap: 12px;
+    border: 0;
+    border-right: 1px solid var(--desktop-border);
+    background: #fff;
+  }
+
+  .customizer-breadcrumb-back {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    overflow: hidden;
+    color: transparent;
+    border-color: #dce2ed;
+    position: relative;
+    flex: 0 0 38px;
+  }
+
+  .customizer-breadcrumb-back::after {
+    content: "\2190";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--desktop-navy);
+    font-size: 18px;
+  }
+
+  .customizer-breadcrumb-label {
+    color: #344054;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .top-nav {
+    position: static;
+    width: auto;
+    height: 72px;
+    padding: 0 20px;
+    border: 0;
+    border-right: 1px solid var(--desktop-border);
+    background: #fff;
+  }
+
+  #menuBtn,
+  .nav-spacer {
+    display: none;
+  }
+
+  .nav-logo {
+    width: 150px;
+    height: 50px;
+    margin: 0;
+    padding: 4px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .nav-logo img {
+    width: 150px;
+    height: 46px;
+    object-fit: contain;
+  }
+
+  .nav-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 168px;
+    height: 72px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    background: #fff;
+    border-left: 1px solid var(--desktop-border);
+  }
+
+  .nav-icon-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid transparent;
+  }
+
+  .nav-icon-btn:hover {
+    color: var(--desktop-navy);
+    border-color: #e0e5ee;
+    background: #f8fafc;
+  }
+
+  .tab-bar {
+    position: static;
+    width: auto;
+    height: 72px;
+    padding: 0 10px;
+    gap: 2px;
+    overflow: hidden;
+    border: 0;
+    background: #fff;
+  }
+
+  .tab-btn {
+    height: 72px;
+    min-width: 92px;
+    padding: 0 14px;
+    flex-direction: row;
+    gap: 8px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .tab-btn.active-tab {
+    color: var(--desktop-orange);
+    border-bottom-color: var(--desktop-orange);
+    background: #fffaf8;
+  }
+
+  /* Left product controls */
+  .bottom-sheet {
+    grid-area: controls;
+    position: static !important;
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    padding: 22px 0 32px;
+    transform: none !important;
+    overflow-y: auto;
+    background: #fff;
+    border: 0;
+    border-right: 1px solid var(--desktop-border);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .bottom-sheet::before {
+    content: "Product options";
+    display: block;
+    padding: 0 22px 16px;
+    color: var(--desktop-navy);
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .sheet-pill {
+    display: none;
+  }
+
+  .sheet-row {
+    margin: 0;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 11px;
+    border: 0;
+    border-top: 1px solid #eef1f5;
+  }
+
+  .sheet-label {
+    color: #667085;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .qty-controls-inline {
+    width: 136px;
+    height: 42px;
+    border-color: #dce2ec;
+    border-radius: 10px;
+  }
+
+  .mini-colour-wrap,
+  .mini-colour-row {
+    width: 100%;
+  }
+
+  .mini-colour-row {
+    display: grid;
+    grid-template-columns: repeat(6, 30px);
+    gap: 10px;
+  }
+
+  .mini-swatch,
+  .mini-swatch-plus {
+    width: 30px;
+    height: 30px;
+  }
+
+  .colour-dropdown {
+    left: 0;
+    right: auto;
+    bottom: auto;
+    top: calc(100% + 8px);
+    width: 248px;
+    max-height: 230px;
+    overflow-y: auto;
+  }
+
+  .sheet-info-row {
+    margin: 0;
+    padding: 15px 22px;
+    border-top: 1px solid #eef1f5;
+  }
+
+  /* Central garment canvas */
+  .product-header {
+    display: none;
+  }
+
+  .canvas-wrap {
+    grid-area: canvas;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 28px 94px 28px 100px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 44%, #ffffff 0, #ffffff 29%, transparent 58%),
+      linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);
+    border: 0;
+  }
+
+  .canvas-wrap::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 6%;
+    width: min(58%, 520px);
+    height: 30px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: rgba(15, 23, 42, .08);
+    filter: blur(18px);
+    pointer-events: none;
+  }
+
+  .product-preview {
+    position: relative;
+    z-index: 2;
+    width: min(610px, 78vh);
+    max-width: 100%;
+    height: min(610px, calc(100vh - 126px));
+    max-height: calc(100vh - 126px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .polo-colour-wrap {
+    width: min(560px, calc(100vh - 164px));
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .view-tabs-side {
+    left: 20px;
+    top: 50%;
+    gap: 10px;
+  }
+
+  .view-tabs-side .view-tab {
+    width: 66px;
+    min-height: 72px;
+    padding: 7px 5px 6px;
+    border: 1px solid #dde3ec;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .07);
+  }
+
+  .view-tabs-side .view-tab.active-view {
+    border: 2px solid #31b7ec;
+    background: #effbff;
+    box-shadow: 0 0 0 3px rgba(49, 183, 236, .12);
+  }
+
+  .view-thumb {
+    width: 48px;
+    height: 48px;
+  }
+
+  .right-panel {
+    right: 18px;
+    width: 62px;
+    padding: 6px 0;
+    border: 1px solid #e0e5ed;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .1);
+  }
+
+  .right-action-btn {
+    width: 60px;
+    min-height: 54px;
+    padding: 7px 3px;
+    font-size: 10px;
+  }
+
+  /* Right order/design inspector */
+  .desktop-inspector {
+    grid-area: inspector;
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    padding: 24px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    background: #fff;
+    border-left: 1px solid var(--desktop-border);
+  }
+
+  .desktop-product-summary {
+    display: block;
+    padding: 0 2px 16px;
+    border-bottom: 1px solid #edf0f5;
+  }
+
+  .desktop-summary-eyebrow {
+    color: var(--desktop-purple);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .12em;
+  }
+
+  .desktop-product-summary h1 {
+    margin: 7px 0 5px;
+    color: #101828;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .desktop-product-summary p {
+    margin: 0;
+    color: var(--desktop-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .canvas-selected-colour,
+  .position-design-panel,
+  .main-quality-bar,
+  .confirm-quality-btn,
+  .quality-warning {
+    width: 100%;
+    margin: 0;
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+  }
+
+  .canvas-selected-colour {
+    min-height: 64px;
+    padding: 11px 14px;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+
+  .canvas-selected-colour-value {
+    margin-top: 6px;
+    font-size: 15px;
+  }
+
+  .position-design-panel {
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .position-design-title {
+    font-size: 16px;
+  }
+
+  .position-design-status {
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .position-design-actions {
+    margin-top: 14px;
+  }
+
+  .position-design-btn {
+    min-height: 40px;
+    font-size: 12px;
+  }
+
+  .position-design-help {
+    margin-bottom: 0;
+    line-height: 1.45;
+  }
+
+  .main-quality-bar {
+    padding: 14px;
+    border: 1px solid #e5e9f0;
+    border-radius: 12px;
+    box-shadow: none;
+  }
+
+  .confirm-quality-btn {
+    min-height: 48px;
+    margin-top: auto;
+    border-color: var(--desktop-navy);
+    border-radius: 11px;
+    background: var(--desktop-navy);
+    font-size: 12px;
+  }
+
+  .confirm-quality-btn:hover:not(:disabled) {
+    background: #1b306e;
+    box-shadow: 0 8px 18px rgba(20, 36, 86, .18);
+  }
+
+  .quality-warning {
+    margin-top: 0;
+    padding: 11px 12px;
+    font-size: 11px;
+  }
+
+  /* Secondary customisation steps become focused desktop cards. */
+  .customiser-app > .screen.active-screen:not(#mainEditor) {
+    width: min(760px, calc(100vw - 64px));
+    height: min(860px, calc(100vh - 48px));
+    min-height: 0;
+    margin: 24px auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--desktop-border);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(20, 36, 86, .14);
+  }
+
+  .black-header,
+  .orange-header {
+    flex: 0 0 68px;
+    height: 68px;
+    padding: 0 26px;
+    background: var(--desktop-navy);
+    border: 0;
+    color: #fff;
+    font-size: 20px;
+  }
+
+  .page-body {
+    min-height: 0;
+    flex: 1 1 auto;
+    padding: 26px;
+    padding-bottom: 28px;
+    overflow-y: auto;
+  }
+
+  .fixed-action-bar,
+  .full-action-bar {
+    position: static;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 76px;
+    padding: 12px 18px;
+    background: #fff;
+    border-top: 1px solid var(--desktop-border);
+  }
+
+  .fixed-action-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .fixed-action-bar .btn-black,
+  .fixed-action-bar .btn-grey,
+  .full-action-bar .btn-black {
+    height: 52px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  .fixed-action-bar .btn-black,
+  .full-action-bar .btn-black {
+    background: var(--desktop-navy);
+  }
+
+  .post-confirm-modal-card,
+  .preview-modal-card {
+    border-radius: 20px;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 1120px) {
+  #mainEditor.active-screen {
+    grid-template-columns: 220px minmax(300px, 1fr) 270px;
+  }
+
+  .editor-top {
+    grid-template-columns: 220px 130px minmax(300px, 1fr) 140px;
+  }
+
+  .customizer-breadcrumb {
+    padding: 0 14px;
+  }
+
+  .nav-logo,
+  .nav-logo img {
+    width: 100px;
+  }
+
+  .nav-actions {
+    width: 140px;
+    padding: 0 7px;
+  }
+
+  .tab-bar {
+    padding: 0 4px;
+  }
+
+  .tab-btn {
+    min-width: 58px;
+    padding: 0 5px;
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .canvas-wrap {
+    padding-left: 74px;
+    padding-right: 68px;
+  }
+}

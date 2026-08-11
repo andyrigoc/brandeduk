@@ -2763,12 +2763,12 @@ if (popupAddLogoBtn) {
         // Find the basket item we just saved
         const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
         const itemIndex = basket.length - 1; // Last added item
+        const item = itemIndex >= 0 ? basket[itemIndex] : null;
         if (itemIndex >= 0) {
             sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
             sessionStorage.setItem('returnAfterCustomize', 'basket');
 
             // Store product data for customize page
-            const item = basket[itemIndex];
             sessionStorage.setItem('selectedProduct', item.code);
             sessionStorage.setItem('selectedColorName', item.color);
             sessionStorage.setItem('selectedProductData', JSON.stringify({
@@ -2782,7 +2782,16 @@ if (popupAddLogoBtn) {
         }
         try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
         const isMobile = window.innerWidth < 1024;
-        window.location.href = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+        if (isMobile) {
+            window.location.href = 'mobile/customize-mobile.html';
+        } else {
+            const code = item && (item.code || item.productCode) || sessionStorage.getItem('selectedProduct') || '';
+            const target = new URL('customization-tool/index.html', window.location.origin);
+            if (code) target.searchParams.set('code', code);
+            target.searchParams.set('from', 'customize-pc');
+            target.searchParams.set('desktop-preview', '1');
+            window.location.href = target.toString();
+        }
     };
 }
 

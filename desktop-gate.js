@@ -10,6 +10,15 @@
   }
 
   var currentPath = window.location.pathname.replace(/\\/g, '/');
+  var isCustomiserPreview = /\/customization-tool(?:\/|$)/i.test(currentPath)
+    && new URLSearchParams(window.location.search).get('desktop-preview') === '1';
+
+  // The main desktop store remains behind the launch page. This narrowly
+  // scoped flag lets the new shared customiser be reviewed before PC launch.
+  if (isCustomiserPreview) {
+    return;
+  }
+
   if (/\/desktop-coming-soon(?:\.html)?\/?$/i.test(currentPath)) {
     return;
   }

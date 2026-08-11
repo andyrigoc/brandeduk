@@ -397,9 +397,13 @@ const ShopManager = (function () {
                 window.innerWidth < 1280;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
-            const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customize.html';
+            const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customization-tool/index.html';
             const url = new URL(targetPage, window.location.origin);
             url.searchParams.set('code', product.code || '');
+            if (!isMobile) {
+                url.searchParams.set('from', 'customize-pc');
+                url.searchParams.set('desktop-preview', '1');
+            }
             if (currentState.color) {
                 url.searchParams.set('color', currentState.color);
             }

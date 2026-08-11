@@ -10,7 +10,7 @@
             var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
                 ? path.slice(0, mountAt + '/brandeduk'.length)
                 : '';
-            d.write('<script src="' + base + '/desktop-gate.js?v=20260803a"><\/script>');
+            d.write('<script src="' + base + '/desktop-gate.js?v=20260811a"><\/script>');
         }(document));
     </script>
   <meta charset="UTF-8" />
@@ -39,6 +39,14 @@
       toolStyles.rel = "stylesheet";
       toolStyles.href = folderPath + "style.css?v=20260730d";
       document.head.appendChild(toolStyles);
+
+      // Desktop is a responsive presentation of this same customisation
+      // engine. Keeping its overrides separate prevents PC layout work from
+      // changing the proven mobile flow or its API/basket contracts.
+      var desktopStyles = document.createElement("link");
+      desktopStyles.rel = "stylesheet";
+      desktopStyles.href = folderPath + "desktop.css?v=20260811a";
+      document.head.appendChild(desktopStyles);
     })();
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -123,7 +131,9 @@
       <button class="nav-icon-btn" id="menuBtn" title="Menu" aria-label="Menu">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect y="0" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="6.75" width="20" height="2.5" rx="1.25" fill="#222"/><rect y="13.5" width="20" height="2.5" rx="1.25" fill="#222"/></svg>
       </button>
-      <div class="nav-logo"><span class="logo-c">C</span></div>
+      <a class="nav-logo" href="../index.html" aria-label="BrandedUK home">
+        <img src="../brandedukv15-child/assets/images/ui/brandeduk-logo-full-removebg-preview%20(1).png" alt="BrandedUK">
+      </a>
       <div class="nav-spacer"></div>
       <div class="nav-actions">
         <button class="nav-icon-btn" id="undoBtn" title="Undo" aria-label="Undo">
@@ -286,6 +296,13 @@
       </div>
     </div>
 
+    <aside class="desktop-inspector" aria-label="Customisation details">
+    <div class="desktop-product-summary">
+      <span class="desktop-summary-eyebrow">CUSTOMISING</span>
+      <h1 id="desktopProductName">Polo Shirt</h1>
+      <p><span id="desktopProductCode">SKU-2024</span><span aria-hidden="true"> &middot; </span><span id="desktopBrandName">BRANDED</span></p>
+    </div>
+
     <div class="canvas-selected-colour" aria-live="polite">
       <span class="canvas-selected-colour-label">COLOUR</span>
       <span id="selectedCanvasColourName" class="canvas-selected-colour-value">White</span>
@@ -330,6 +347,7 @@
       <span class="quality-warning-icon">&#9888;</span>
       <span class="quality-warning-text">If you have any concerns about the quality of your image, please contact us. Our team will be happy to guide you and help you identify the most suitable file for printing.</span>
     </div>
+    </aside>
 
     <!-- Bottom sheet -->
     <div class="bottom-sheet">
@@ -1018,7 +1036,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260802a", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260811a", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
