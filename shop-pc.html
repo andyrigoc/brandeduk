@@ -2035,8 +2035,9 @@
     
     <!-- Order Popup Styles -->
     <link rel="stylesheet" href="test-order-popup/order.css">
-    <link rel="stylesheet" href="test-order-popup/order-shop.css">
+    <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260811a">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
+    <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260811b">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -5840,7 +5841,9 @@
                     if (controls) controls.style.display = 'none';
                 }
 
-                // Card click - open order popup
+                // Card click - keep the established PC product, colour and
+                // size/quantity flow. Its Add Logo action opens the shared
+                // backend-driven customizer inside the same order window.
                 card.addEventListener('click', () => {
                     sessionStorage.setItem('selectedProduct', product.code);
                     sessionStorage.setItem('selectedProductData', JSON.stringify(product));
@@ -5849,12 +5852,9 @@
                         sessionStorage.setItem('selectedColorName', activeColor.dataset.color);
                         sessionStorage.setItem('selectedColorUrl', activeColor.dataset.main);
                     }
-                    // Open order popup with product data directly (more efficient than re-fetching)
                     if (typeof window.openOrderPopup === 'function') {
-                        // Pass the full product object for immediate display
                         window.openOrderPopup(product.code, product);
                     } else {
-                        // Fallback to old behavior if popup not loaded
                         window.location.href = 'product-detail.html?code=' + encodeURIComponent(product.code);
                     }
                 });
@@ -7576,7 +7576,7 @@
                                 </div>
 
                                 <!-- Size & Quantity Grid -->
-                                <div class="sizes-section-p3">
+                                <div class="sizes-section-p3" tabindex="0" aria-label="Available sizes and quantities. Scroll for more sizes.">
                                     <div class="sizes-header">
                                         <h3 class="sizes-title">Select Sizes &amp; Quantities</h3>
                                         <div class="sizes-meta">
@@ -7894,6 +7894,34 @@
 
                     </div>
                 </div>
+
+                <!-- Shared desktop customizer. It replaces only the legacy
+                     logo-card steps; product, colour and sizing stay in the
+                     established PC order flow above. -->
+                <section id="pcCustomizerPanel" class="pc-customizer-panel" hidden aria-label="Customize your product">
+                    <header class="pc-customizer-header">
+                        <button type="button" id="pcCustomizerBack" class="pc-customizer-back" aria-label="Back to order">
+                            <span aria-hidden="true">&larr;</span>
+                            <span>Back to order</span>
+                        </button>
+                        <div class="pc-customizer-heading">
+                            <span class="pc-customizer-kicker">BRANDEDUK DESIGN STUDIO</span>
+                            <strong id="pcCustomizerTitle">Customize your product</strong>
+                            <span id="pcCustomizerSummary">Your colour and quantities are preserved</span>
+                        </div>
+                        <div class="pc-customizer-secure" aria-label="Your selections are saved">
+                            <span aria-hidden="true">&#10003;</span>
+                            Selections saved
+                        </div>
+                    </header>
+                    <div class="pc-customizer-frame-wrap">
+                        <div id="pcCustomizerLoading" class="pc-customizer-loading" aria-live="polite">
+                            <span class="pc-customizer-spinner" aria-hidden="true"></span>
+                            Loading design studio&hellip;
+                        </div>
+                        <iframe id="pcCustomizerFrame" class="pc-customizer-frame" title="BrandedUK desktop customization tool" allow="clipboard-read; clipboard-write"></iframe>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
@@ -7974,6 +8002,7 @@
     <!-- Order Popup Scripts -->
     <script src="test-order-popup/order.js"></script>
     <script src="test-order-popup/order-integration.js"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20260811b"></script>
 
     <script>
         // Color Zoom Modal Functions

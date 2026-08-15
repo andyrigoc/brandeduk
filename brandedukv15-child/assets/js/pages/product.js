@@ -2789,7 +2789,6 @@ if (popupAddLogoBtn) {
             const target = new URL('customization-tool/index.html', window.location.origin);
             if (code) target.searchParams.set('code', code);
             target.searchParams.set('from', 'customize-pc');
-            target.searchParams.set('desktop-preview', '1');
             window.location.href = target.toString();
         }
     };

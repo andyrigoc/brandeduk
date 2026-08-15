@@ -502,7 +502,8 @@ $(document).on("click", "#btnContinueShopping", function() {
     }
 });
 
-// Add Your Logo - go to page 4 (logo positions)
+// Add Your Logo - keep the existing product/colour/size flow, then open the
+// shared backend-driven customizer inside this same PC order window.
 $(document).on("click", "#btnAddLogo", function() {
     $('#addQuoteSuccess').hide();
     $('#btnAddToQuote').show();
@@ -515,14 +516,12 @@ $(document).on("click", "#btnAddLogo", function() {
         if (qty > 0 && size) window.quantities[size] = qty;
     });
 
-    // Mark the last saved basket item for logo update (avoid duplicate on page 5)
-    try {
-        var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        if (basket.length > 0) {
-            window.logoUpdateItemId = basket[basket.length - 1].id;
-        }
-    } catch(e) {}
+    if (typeof window.openPcOrderCustomizer === 'function') {
+        window.openPcOrderCustomizer();
+        return;
+    }
 
+    // Safe fallback if the embedded tool module ever fails to load.
     window.goToPage(3);
 });
 

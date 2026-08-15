@@ -13,9 +13,6 @@ export const config = {
 
 export default function desktopComingSoonGate(request: Request) {
   const userAgent = request.headers.get('user-agent') || '';
-  const url = new URL(request.url);
-  const isCustomiserPreview = /\/customization-tool(?:\/|$)/i.test(url.pathname)
-    && url.searchParams.get('desktop-preview') === '1';
 
   // Mobile/tablet visitors keep the complete live experience. Search and
   // social crawlers also continue so a temporary desktop launch screen does
@@ -23,7 +20,6 @@ export default function desktopComingSoonGate(request: Request) {
   if (
     MOBILE_OR_TABLET_USER_AGENT.test(userAgent)
     || SEARCH_CRAWLER_USER_AGENT.test(userAgent)
-    || isCustomiserPreview
   ) {
     return next();
   }

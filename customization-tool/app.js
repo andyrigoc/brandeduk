@@ -34,6 +34,12 @@ const state = {
   pendingDecorationType: null
 };
 
+const customizationRouteParams = new URLSearchParams(window.location.search);
+const isPcOrderEmbed = customizationRouteParams.get("embedded") === "pc-order";
+if (isPcOrderEmbed) {
+  document.body.classList.add("is-pc-order-embed");
+}
+
 // ---------------------------------------------------------------------------
 // Print-area calibration — single source of truth for logo sizing.
 //
@@ -928,6 +934,16 @@ function isDesktopToolExperience() {
   const params = new URLSearchParams(window.location.search);
   if (String(params.get("from") || "").toLowerCase() === "customize-pc") return true;
   return Boolean(window.matchMedia && window.matchMedia("(min-width: 800px)").matches);
+}
+
+function notifyEmbeddedOrderSaved(result) {
+  if (!isPcOrderEmbed || window.parent === window) return false;
+  window.parent.postMessage({
+    type: "brandeduk:customization-saved",
+    basketIndex: parseInt(sessionStorage.getItem("customizingBasketIndex"), 10),
+    saved: result?.saved !== false
+  }, window.location.origin);
+  return true;
 }
 
 function setupCustomizerBreadcrumb() {
@@ -1974,7 +1990,14 @@ function openScreen(screenId) {
   }
 
   screens.forEach(screen => screen.classList.remove("active-screen"));
-  document.getElementById(screenId).classList.add("active-screen");
+  const nextScreen = document.getElementById(screenId);
+  nextScreen.classList.add("active-screen");
+  nextScreen.scrollTop = 0;
+  nextScreen.querySelectorAll(
+    ".page-body, .print-type-list, .text-editor-wrap, .copyright-content, .img-props-body, .names-body"
+  ).forEach((scrollArea) => {
+    scrollArea.scrollTop = 0;
+  });
   if (toolBottomNav) {
     toolBottomNav.classList.toggle("is-hidden", screenId !== "mainEditor");
   }
@@ -4473,6 +4496,7 @@ if (confirmQualityBtn) {
       confirmQualityBtn.textContent = previousText;
       confirmQualityBtn.classList.remove("is-confirmed");
     }, 1200);
+    if (notifyEmbeddedOrderSaved(result)) return;
     showPostConfirmModal();
   });
 }

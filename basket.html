@@ -3398,7 +3398,7 @@
         sessionStorage.setItem('returnAfterCustomize', 'basket');
         _setCustomizeSessionData(item);
         const code = encodeURIComponent(item.code || item.productCode || '');
-        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&editLogo=1&desktop-preview=1&_cb=${Date.now()}`;
+        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&editLogo=1&_cb=${Date.now()}`;
     }
 
     function copyLogo(itemIndex, logoIndex) {
@@ -3565,7 +3565,7 @@
         const codeQ = code ? ('code=' + encodeURIComponent(code) + '&') : '';
         const url = isMobile
             ? 'mobile/customize-mobile.html?' + codeQ + 'editItem=1&_cb=' + Date.now()
-            : 'customization-tool/index.html?' + codeQ + 'from=basket&editItem=1&desktop-preview=1&_cb=' + Date.now();
+            : 'customization-tool/index.html?' + codeQ + 'from=basket&editItem=1&_cb=' + Date.now();
         openCustomizePopup(url);
     };
 
@@ -3616,7 +3616,7 @@
             sessionStorage.removeItem('toolAskLogoChoice');
         }
         const code = encodeURIComponent(item.code || item.productCode || '');
-        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&askLogoChoice=1&desktop-preview=1&_cb=${Date.now()}`;
+        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&askLogoChoice=1&_cb=${Date.now()}`;
     }
 
     function _setCustomizeSessionData(item) {

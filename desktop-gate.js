@@ -10,12 +10,12 @@
   }
 
   var currentPath = window.location.pathname.replace(/\\/g, '/');
-  var isCustomiserPreview = /\/customization-tool(?:\/|$)/i.test(currentPath)
-    && new URLSearchParams(window.location.search).get('desktop-preview') === '1';
+  var localDevelopment = window.location.protocol === 'file:'
+    || /^(?:localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname);
 
-  // The main desktop store remains behind the launch page. This narrowly
-  // scoped flag lets the new shared customiser be reviewed before PC launch.
-  if (isCustomiserPreview) {
+  // Never hide the desktop website during local development. The production
+  // middleware still enforces the public Coming Soon experience.
+  if (localDevelopment) {
     return;
   }
 
@@ -26,12 +26,8 @@
   var target = '/desktop-coming-soon.html';
   var brandedMount = currentPath.toLowerCase().indexOf('/brandeduk/');
 
-  // VS Code Live Server commonly serves D:\Anderson as its root, meaning the
-  // project is mounted at /brandeduk. Production serves the project at /.
-  if (
-    brandedMount !== -1
-    && (window.location.protocol === 'file:' || /^(?:localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname))
-  ) {
+  // Retain support for deployments mounted beneath /brandeduk.
+  if (brandedMount !== -1) {
     target = currentPath.slice(0, brandedMount + '/brandeduk'.length) + target;
   }
 

@@ -1233,6 +1233,18 @@
     overflow: hidden;
 }
 
+/* The sliding track previously had no resolved height, so Page 3 expanded to
+   fit every size and the viewport clipped the rows and action button. Give the
+   flex page a real height; only the size panel then scrolls. */
+#orderPopup .viewport > .track {
+    height: 100%;
+}
+
+#orderPopup .page-3 {
+    height: 100%;
+    min-height: 0;
+}
+
 /* Selected colour bar */
 .selected-colour-bar {
     display: flex;
@@ -1310,9 +1322,33 @@
     border-radius: 12px;
     margin: 0 14px 8px 14px;
     padding: 12px 14px 10px 14px;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: auto;
+    scrollbar-color: #8f9bb2 #edf1f6;
     flex: 1;
     min-height: 0;
+}
+
+.sizes-section-p3::-webkit-scrollbar {
+    width: 12px;
+}
+
+.sizes-section-p3::-webkit-scrollbar-track {
+    background: #edf1f6;
+    border-radius: 999px;
+}
+
+.sizes-section-p3::-webkit-scrollbar-thumb {
+    min-height: 42px;
+    background: #8f9bb2;
+    border: 3px solid #edf1f6;
+    border-radius: 999px;
+}
+
+.sizes-section-p3::-webkit-scrollbar-thumb:hover {
+    background: #66738b;
 }
 
 .sizes-title {
@@ -1661,9 +1697,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     flex-shrink: 0;
-    scrollbar-width: thin;
-    scrollbar-color: #d1d5db #f9fafb;
-}
     scrollbar-width: thin;
     scrollbar-color: #d1d5db #f9fafb;
 }

@@ -402,7 +402,6 @@ const ShopManager = (function () {
             url.searchParams.set('code', product.code || '');
             if (!isMobile) {
                 url.searchParams.set('from', 'customize-pc');
-                url.searchParams.set('desktop-preview', '1');
             }
             if (currentState.color) {
                 url.searchParams.set('color', currentState.color);
