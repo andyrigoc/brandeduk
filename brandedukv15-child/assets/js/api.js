@@ -233,8 +233,8 @@ const BrandedAPI = (function () {
             brand: rawBrand,
             // Additional fields from API
             description: apiProduct.description || '',
-            fabric: apiProduct.fabric || '',
-            weight: apiProduct.weight || '',
+            fabric: apiProduct.fabric || (apiProduct.details && apiProduct.details.fabric) || '',
+            weight: apiProduct.weight || (apiProduct.details && apiProduct.details.weight) || '',
             fit: apiProduct.fit || '',
             gender: apiProduct.gender || '',
             ageGroup: apiProduct.age_group || apiProduct.ageGroup || '',
@@ -255,6 +255,35 @@ const BrandedAPI = (function () {
     // PUBLIC API METHODS
     // ==========================================================================
 
+    const FILTER_VALUE_ALIASES = {
+        'fabric[]': {
+            cotton100: [
+                'cotton-100', 'cotton-100-1',
+                'organic-100', 'organic-100-1',
+                'ringspun-100', 'combed-100', 'pre-100'
+            ],
+            polyester100: ['polyester-100', 'polyester-100-1', 'poly-100'],
+            organic: ['organic-100', 'organic-100-1'],
+            recycled: ['recycled-100', 'recycled-100-1'],
+            nylon: ['nylon-100']
+        },
+        'weight[]': {
+            light: ['0-50gsm', '051-100gsm', '101-150gsm'],
+            mid: ['151-200gsm'],
+            standard: ['201-250gsm'],
+            heavy: ['251-300gsm'],
+            superheavy: ['over-300gsm']
+        }
+    };
+
+    function expandFilterValues(paramName, values) {
+        const aliases = FILTER_VALUE_ALIASES[paramName] || {};
+        return Array.from(new Set(values.flatMap(value => {
+            const normalized = String(value || '').trim();
+            return aliases[normalized] || [normalized];
+        }).filter(Boolean)));
+    }
+
     /**
      * Get products with filters
      * @param {Object} options - Filter options (can include array params like gender[]: ['male', 'female'])
@@ -266,9 +295,11 @@ const BrandedAPI = (function () {
             limit: Math.min(options.limit || DEFAULT_LIMIT, MAX_LIMIT)
         };
 
-        // Variant color filter (expects normalized slug e.g. "black")
+        // Variant colour filter. The backend route accepts `colour[]`; the old
+        // `color` parameter was silently ignored, which made mobile colour
+        // selections affect only the heading/thumbnail rather than results.
         if (options.color) {
-            params.color = options.color;
+            params['colour[]'] = [options.color];
         }
 
         // Search query (mutually exclusive with productType)
@@ -304,16 +335,24 @@ const BrandedAPI = (function () {
         // flag[]: ['raladeal', 'offers']
         const arrayParamNames = [
             'gender[]', 'ageGroup[]', 'sleeve[]', 'neckline[]', 'accreditations[]',
-            'primaryColour[]', 'colourShade[]', 'style[]', 'feature[]', 'size[]',
+            'primaryColour[]', 'colourShade[]', 'colour[]', 'style[]', 'feature[]', 'size[]',
             'fabric[]', 'weight[]', 'fit[]', 'sector[]', 'sport[]', 'tag[]',
             'effect[]', 'cmyk[]', 'pantone[]', 'flag[]', 'brand[]', 'productType[]'
         ];
 
+        // The mobile filter uses readable UI values, while catalogue imports
+        // contain several valid slugs for the same customer-facing material.
+        // Expanding aliases preserves OR semantics and includes products such
+        // as BA212, whose 100% cotton import is classified as `pre-100`.
         arrayParamNames.forEach(paramName => {
             if (options[paramName] && Array.isArray(options[paramName])) {
-                params[paramName] = paramName === 'productType[]'
+                const values = paramName === 'productType[]'
                     ? options[paramName].map(normalizeProductTypeForApi)
-                    : options[paramName];
+                    : expandFilterValues(paramName, options[paramName]);
+                params[paramName] = Array.from(new Set([
+                    ...(Array.isArray(params[paramName]) ? params[paramName] : []),
+                    ...values
+                ]));
             }
         });
 
@@ -411,9 +450,9 @@ const BrandedAPI = (function () {
             limit: 1 // Only need metadata, not products
         };
 
-        // Variant color filter
+        // Variant colour filter
         if (currentFilters.color) {
-            params.color = currentFilters.color;
+            params['colour[]'] = [currentFilters.color];
         }
 
         // Search query (mutually exclusive with productType)
@@ -439,14 +478,17 @@ const BrandedAPI = (function () {
         // Copy all array parameters directly (keys ending with [])
         const arrayParamNames = [
             'gender[]', 'ageGroup[]', 'sleeve[]', 'neckline[]', 'accreditations[]',
-            'primaryColour[]', 'colourShade[]', 'style[]', 'feature[]', 'size[]',
+            'primaryColour[]', 'colourShade[]', 'colour[]', 'style[]', 'feature[]', 'size[]',
             'fabric[]', 'weight[]', 'fit[]', 'sector[]', 'sport[]', 'tag[]',
             'effect[]', 'cmyk[]', 'pantone[]', 'flag[]'
         ];
 
         arrayParamNames.forEach(paramName => {
             if (currentFilters[paramName] && Array.isArray(currentFilters[paramName])) {
-                params[paramName] = currentFilters[paramName];
+                params[paramName] = Array.from(new Set([
+                    ...(Array.isArray(params[paramName]) ? params[paramName] : []),
+                    ...expandFilterValues(paramName, currentFilters[paramName])
+                ]));
             }
         });
 

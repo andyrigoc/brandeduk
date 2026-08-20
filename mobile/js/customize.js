@@ -1416,6 +1416,58 @@
         return getEntryImage(modelEntry);
     }
 
+    function normalizeProductWeight(productData) {
+        const explicitValues = [
+            productData && productData.weight,
+            productData && productData.details && productData.details.weight
+        ].filter(Boolean);
+
+        for (const value of explicitValues) {
+            const text = String(value).trim();
+            if (!text) continue;
+            if (/^\d{2,3}$/.test(text)) return `${text} gsm`;
+            if (/\d/.test(text)) {
+                return text
+                    .replace(/\s*gsm\b/i, ' gsm')
+                    .replace(/\s*-\s*/g, '-');
+            }
+        }
+
+        const descriptiveText = [
+            productData && productData.description,
+            productData && productData.fabric,
+            productData && productData.details && productData.details.fabric,
+            productData && productData.name
+        ].filter(Boolean).join(' ');
+        const explicitGsm = descriptiveText.match(/\b(\d{2,3})\s*(?:gsm|g\s*\/\s*m(?:2|\u00b2))\b/i);
+        if (explicitGsm) return `${explicitGsm[1]} gsm`;
+
+        // Several T-shirt ranges encode their actual garment weight in the
+        // product name (for example B&C #Inspire E150 and The AWDis 180 T).
+        // Restrict this inference to T-shirts so unrelated model numbers are
+        // never presented as GSM values.
+        const productType = String(
+            (productData && (productData.productType || productData.category || productData.type)) || ''
+        ).toLowerCase();
+        const productName = String((productData && productData.name) || '');
+        if (/t[\s-]*shirts?|\btees?\b/.test(productType) || /\bt[\s-]*shirts?\b|\btees?\b/i.test(productName)) {
+            const encodedWeight = productName.match(/\bE(\d{3})\b/i)
+                || productName.match(/\b(\d{3})\s*(?:T|tee|t[\s-]*shirt)\b/i)
+                || productName.match(/\b(?:T|tee|t[\s-]*shirt)\s*(\d{3})\b/i);
+            if (encodedWeight) {
+                const gsm = Number(encodedWeight[1]);
+                if (gsm >= 50 && gsm <= 500) return `${gsm} gsm`;
+            }
+        }
+
+        return '';
+    }
+
+    function exactGsmFromWeight(weight) {
+        const match = String(weight || '').trim().match(/^(\d{2,3})\s*gsm$/i);
+        return match ? Number(match[1]) : null;
+    }
+
     async function loadProductFromSessionOrApi() {
         try {
             const savedProductData = sessionStorage.getItem('selectedProductData');
@@ -1565,7 +1617,7 @@
             state.product.basePrice = Number(productData.price || productData.basePrice || productData.startPrice || productData.startingPrice) || state.product.basePrice;
             state.product.brand = productData.brand || productData.brand_name || state.product.brand;
             state.product.sizes = normalizeProductSizesFromApi(productData);
-            state.product.weight = productData.weight || (productData.details && productData.details.weight) || '';
+            state.product.weight = normalizeProductWeight(productData);
             state.product.fabric = productData.fabric || (productData.details && productData.details.fabric) || '';
             state.product.description = productData.description || (productData.details && productData.details.description) || '';
             state.product.productType = productData.productType || productData.category || productData.type || inferProductTypeFromName(productData.name || '') || '';
@@ -1758,33 +1810,23 @@
                 // Colors count
                 specs.push(`${PRODUCT_COLORS.length} Colors`);
                 
-                // Weight/GSM - try to extract numeric value and format
+                // Show verified product weight only; never invent a fallback.
                 if (state.product.weight) {
                     const weightStr = String(state.product.weight);
-                    // Try to extract number from weight string (e.g., "251-300gsm" -> "251-300gsm" or "276" -> "276 gsm")
+                    // Preserve exact values and API ranges without altering them.
                     if (weightStr.match(/\d/)) {
-                        specs.push(weightStr.includes('gsm') ? weightStr : `${weightStr} gsm`);
+                        specs.push(/gsm/i.test(weightStr) ? weightStr : `${weightStr} gsm`);
                     } else {
                         specs.push(weightStr);
                     }
-                } else {
-                    specs.push('276 gsm'); // Fallback
                 }
                 
-                // Convert GSM to oz (approximate: 1 oz — 28.35 g)
-                // Try to extract numeric GSM value for conversion
-                const weightValue = state.product.weight || '276';
-                const gsmMatch = String(weightValue).match(/(\d+)/);
-                if (gsmMatch) {
-                    const gsm = parseFloat(gsmMatch[1]);
-                    if (!isNaN(gsm)) {
-                        const oz = (gsm / 28.35).toFixed(1);
-                        specs.push(`${oz} oz`);
-                    } else {
-                        specs.push('8.0 oz'); // Fallback
-                    }
-                } else {
-                    specs.push('8.0 oz'); // Fallback
+                // Textile conversion: 1 oz/yd² is approximately 33.906 gsm.
+                // Convert exact values only; broad weight ranges are not converted.
+                const weightValue = state.product.weight || '';
+                const exactWeightGsm = exactGsmFromWeight(weightValue);
+                if (Number.isFinite(exactWeightGsm)) {
+                    specs.push(`${(exactWeightGsm / 33.906).toFixed(1)} oz`);
                 }
                 
                 // Update the specs HTML
