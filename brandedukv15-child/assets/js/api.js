@@ -256,6 +256,19 @@ const BrandedAPI = (function () {
     // ==========================================================================
 
     const FILTER_VALUE_ALIASES = {
+        'primaryColour[]': {
+            grey: ['grey', 'gray', 'charcoal', 'heather grey', 'silver', 'ash'],
+            blue: ['blue', 'navy', 'royal', 'french navy', 'sapphire', 'sky', 'light blue', 'dark blue', 'navy/royal'],
+            green: ['green', 'olive', 'bottle green', 'kelly green', 'khaki', 'lime', 'military green'],
+            red: ['red', 'burgundy', 'maroon', 'crimson', 'scarlet', 'wine'],
+            pink: ['pink', 'hot pink', 'fuchsia', 'magenta'],
+            yellow: ['yellow', 'gold', 'mustard'],
+            purple: ['purple', 'violet', 'lilac', 'plum'],
+            orange: ['orange', 'coral'],
+            brown: ['brown', 'tan', 'camel', 'chocolate'],
+            neutral: ['neutral', 'beige', 'natural', 'stone', 'sand', 'cream', 'oatmeal'],
+            pattern: ['pattern', 'multi', 'multicolour']
+        },
         'fabric[]': {
             cotton100: [
                 'cotton-100', 'cotton-100-1',
@@ -280,6 +293,9 @@ const BrandedAPI = (function () {
         const aliases = FILTER_VALUE_ALIASES[paramName] || {};
         return Array.from(new Set(values.flatMap(value => {
             const normalized = String(value || '').trim();
+            if ((paramName === 'style[]' || paramName === 'feature[]') && normalized && !/-\d+$/.test(normalized)) {
+                return [normalized, `${normalized}-1`, `${normalized}-2`];
+            }
             return aliases[normalized] || [normalized];
         }).filter(Boolean)));
     }

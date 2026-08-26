@@ -814,6 +814,21 @@ textarea {
   box-shadow: 0 0 0 3px #dcfce7;
 }
 
+.position-design-price {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.position-design-price[hidden] {
+  display: none;
+}
+
 .position-design-actions {
   display: flex;
   flex-wrap: wrap;

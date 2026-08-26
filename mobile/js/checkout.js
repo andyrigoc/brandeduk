@@ -388,7 +388,7 @@ function calculateBasketTotals(basket) {
             }
 
             customizations.push({
-                productName: item.productName || item.name || 'Product',
+                productName: cleanCheckoutText(item.productName || item.name || 'Product'),
                 productCode: item.code || item.productCode || '',
                 position: customization.positionLabel || customization.position || '',
                 method: normalizeMethod(customization.method),
@@ -422,7 +422,7 @@ function buildBasketItems(basket) {
         const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
         const unitPrice = number(item.unitPrice || item.price || 0, 0);
         return {
-            name: item.name || item.productName || 'Product',
+            name: cleanCheckoutText(item.name || item.productName || 'Product'),
             code: item.code || item.productCode || '',
             color: item.color || item.colour || '',
             size: item.size || '',
@@ -433,6 +433,14 @@ function buildBasketItems(basket) {
             logos: sanitizeCustomizations(Array.isArray(item.logos) ? item.logos : []),
         };
     });
+}
+
+function cleanCheckoutText(value) {
+    return String(value || '')
+        .replace(/[\uFFFD\u25A1]+/g, ' ')
+        .replace(/\[\s*\]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 function extractItemCustomizations(item) {

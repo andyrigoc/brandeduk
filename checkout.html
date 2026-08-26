@@ -82,6 +82,27 @@
             font-weight: 700;
             color: var(--co-navy);
         }
+        .co-mobile-header__brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .co-mobile-header__logo {
+            width: 92px;
+            max-height: 30px;
+            object-fit: contain;
+        }
+        .co-mobile-header__secure {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #166534;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
 
         /* ── Step progress bar ── */
         .co-steps-bar {
@@ -123,6 +144,28 @@
         .co-step-pill.active .co-step-dot  { background: var(--co-navy); }
         .co-step-pill.done  .co-step-dot  { background: var(--co-navy); }
         .co-step-sep { color: #d1d5db; font-size: 15px; }
+
+        .co-order-glance {
+            width: calc(100% - 32px);
+            max-width: 548px;
+            min-height: 44px;
+            margin: 12px auto 0;
+            padding: 10px 13px;
+            border: 1px solid var(--co-border);
+            border-radius: 10px;
+            background: var(--co-white);
+            color: var(--co-navy);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 1px 5px rgba(0,0,0,.04);
+            font: inherit;
+            cursor: pointer;
+        }
+        .co-order-glance[hidden] { display: none; }
+        .co-order-glance__label { font-size: 12px; font-weight: 700; text-align: left; }
+        .co-order-glance__total { font-size: 14px; font-weight: 800; white-space: nowrap; }
 
         /* ── Step content areas ── */
         .co-step { display: none; }
@@ -419,6 +462,14 @@
             color: var(--co-grey);
             margin-bottom: 10px;
         }
+        .co-guest--primary {
+            margin-bottom: 12px;
+            padding: 12px;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--co-radius);
+            background: #f0fdf4;
+        }
+        .co-guest--primary .co-btn-primary { min-height: 44px; }
 
         /* ── Delivery step card ── */
         .co-delivery-wrap {
@@ -664,7 +715,14 @@
                 <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
             </svg>
         </button>
-        <span class="co-mobile-header__title">Checkout</span>
+        <span class="co-mobile-header__brand">
+            <img class="co-mobile-header__logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+            <span class="co-mobile-header__title">Checkout</span>
+        </span>
+        <span class="co-mobile-header__secure" aria-label="Secure checkout">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+            Secure
+        </span>
     </header>
 
     <!-- ── Step indicator ── -->
@@ -682,11 +740,20 @@
         </div>
     </nav>
 
+    <button type="button" class="co-order-glance" id="coOrderGlance" aria-label="View basket order summary">
+        <span class="co-order-glance__label" id="coOrderGlanceLabel">Your order</span>
+        <span class="co-order-glance__total" id="coOrderGlanceTotal">&pound;0.00</span>
+    </button>
+
     <div class="co-wrap">
 
         <!-- ════════════════ STEP 1 — ACCOUNT ════════════════ -->
         <section class="co-step active" id="coStep1" aria-label="Account step">
             <div class="co-step-inner">
+
+                <div class="co-guest co-guest--primary">
+                    <button type="button" class="co-btn-primary full" onclick="coContinueGuest()">Continue as Guest &rarr;</button>
+                </div>
 
                 <!-- LOGIN panel (open by default) -->
                 <div class="co-card open" id="coCardLogin">
@@ -808,12 +875,6 @@
                     </div><!-- /co-card-body reg -->
                 </div><!-- /co-card reg -->
 
-                <!-- Guest option -->
-                <div class="co-guest">
-                    <p>Don't have an account?</p>
-                    <button type="button" class="co-btn-outline full" onclick="coContinueGuest()">Continue as Guest &rarr;</button>
-                </div>
-
             </div><!-- /co-step-inner -->
         </section>
 
@@ -867,8 +928,8 @@
 
                     <div class="co-field">
                         <label class="co-label" for="coDelPhone">Phone Number *</label>
-                        <input type="tel" id="coDelPhone" class="co-input" placeholder="Phone" autocomplete="tel">
-                        <span class="co-field-err" id="coDelPhoneErr">Required</span>
+                            <input type="tel" id="coDelPhone" class="co-input" placeholder="Phone" autocomplete="tel" inputmode="tel">
+                            <span class="co-field-err" id="coDelPhoneErr">Enter a valid phone number</span>
                     </div>
 
                     <div class="co-field">
@@ -890,8 +951,8 @@
                         </div>
                         <div class="co-field">
                             <label class="co-label" for="coDelPost">Postcode *</label>
-                            <input type="text" id="coDelPost" class="co-input" placeholder="Postcode" autocomplete="postal-code">
-                            <span class="co-field-err" id="coDelPostErr">Required</span>
+                            <input type="text" id="coDelPost" class="co-input" placeholder="Postcode" autocomplete="postal-code" autocapitalize="characters">
+                            <span class="co-field-err" id="coDelPostErr">Enter a valid postcode</span>
                         </div>
                     </div>
 
@@ -961,8 +1022,8 @@
                                 <span id="coSubtotal">£0.00</span>
                             </div>
                             <div class="co-summary-row">
-                                <span>Shipping</span>
-                                <span>Quoted separately</span>
+                                <span>Delivery</span>
+                                <span>Confirmed separately</span>
                             </div>
                             <div class="co-summary-row" id="coVatRow" style="display:none">
                                 <span>VAT (20%)</span>
@@ -989,10 +1050,10 @@
                     <!-- Stripe Checkout redirect -->
                     <form id="stripe-payment-form" style="display:none">
                         <div class="stripe-checkout-note">
-                            You will be redirected to Stripe's secure checkout to complete payment.
+                            You will be redirected to Stripe's secure checkout. Delivery is confirmed separately and is not charged today.
                         </div>
                         <button type="submit" id="stripe-pay-btn" class="stripe-pay-btn">
-                            <span id="stripe-btn-text">Pay Now</span>
+                            <span id="stripe-btn-text">Continue to Secure Payment</span>
                             <span id="stripe-btn-spinner" style="display:none">Redirecting...</span>
                         </button>
                     </form>
@@ -1408,6 +1469,8 @@
                 }
             });
             _step = n;
+            var glance = document.getElementById('coOrderGlance');
+            if (glance) glance.hidden = n === 3;
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (n === 3) {
@@ -1452,6 +1515,9 @@
             }
             window.location.href = coGetBasketHref();
         });
+        document.getElementById('coOrderGlance').addEventListener('click', function () {
+            window.location.href = coGetBasketHref();
+        });
 
         /* ── Panel accordion ── */
         window.coPanel = function (p) {
@@ -1494,6 +1560,16 @@
             return valid;
         }
         function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+        function isPhone(v) {
+            var digits = String(v || '').replace(/\D/g, '');
+            return digits.length >= 7 && digits.length <= 15;
+        }
+        function isPostcode(v, country) {
+            var value = String(v || '').trim().toUpperCase();
+            if (!value) return false;
+            if (country !== 'GB') return value.length >= 3;
+            return /^(GIR\s?0AA|(?:[A-Z]{1,2}\d[A-Z\d]?|[A-Z]{1,2}\d{2})\s?\d[A-Z]{2})$/.test(value);
+        }
 
         /* ── Login ── */
         window.coDoLogin = async function () {
@@ -1578,7 +1654,13 @@
             var ok = true;
             required.forEach(function (pair) {
                 var el    = document.getElementById(pair[0]);
-                var valid = pair[0] === 'coDelEmail' ? isEmail(el.value) : el.value.trim().length > 0;
+                var valid = pair[0] === 'coDelEmail'
+                    ? isEmail(el.value)
+                    : pair[0] === 'coDelPhone'
+                        ? isPhone(el.value)
+                        : pair[0] === 'coDelPost'
+                            ? isPostcode(el.value, document.getElementById('coDelCountry').value)
+                            : el.value.trim().length > 0;
                 if (!fieldOk(el, pair[1], valid)) ok = false;
             });
             if (!ok) {
@@ -1619,6 +1701,7 @@
             try {
                 var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
                 var total  = 0;
+                var totalQuantity = 0;
                 var itemsEl = document.getElementById('coSummaryItems');
 
                 if (!basket.length) {
@@ -1626,6 +1709,7 @@
                 } else {
                     itemsEl.innerHTML = basket.map(function (item) {
                         var qty = _num(item.qty || item.quantity || item.totalQty, 1);
+                        totalQuantity += qty;
                         var unit = _num(item.unitPrice || item.price, 0);
                         var base = unit * qty;
 
@@ -1643,7 +1727,7 @@
                         }
 
                         total += line;
-                        var name  = item.productName || item.name || 'Product';
+                        var name  = _cleanProductName(item.productName || item.name || 'Product');
                         return '<div class="co-summary-item">' +
                                '<span class="co-summary-qty">' + qty + '</span>' +
                                '<span class="co-summary-name">' + _esc(name) + '</span>' +
@@ -1667,6 +1751,8 @@
                     var totalFmtFromBasket = '\u00A3' + totalIncFromBasket.toFixed(2);
 
                     document.getElementById('coSummaryTotal').textContent = totalFmtFromBasket;
+                    document.getElementById('coOrderGlanceTotal').textContent = totalFmtFromBasket;
+                    document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' · View basket';
                     document.getElementById('coGarmentCost').textContent = '\u00A3' + garmentCost.toFixed(2);
                     document.getElementById('coCustomizationCost').textContent = '\u00A3' + customizationCost.toFixed(2);
                     document.getElementById('coSubtotal').textContent = subtotalFmtFromBasket;
@@ -1696,6 +1782,8 @@
                 var totalFmt = '£' + totalInc.toFixed(2);
 
                 document.getElementById('coSummaryTotal').textContent = totalFmt;
+                document.getElementById('coOrderGlanceTotal').textContent = totalFmt;
+                document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' · View basket';
                 document.getElementById('coSubtotal').textContent     = subtotalFmt;
 
                 var vatRow = document.getElementById('coVatRow');
@@ -1716,6 +1804,13 @@
 
         function _esc(s) {
             return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+        function _cleanProductName(value) {
+            return String(value || 'Product')
+                .replace(/[\uFFFD\u25A1]+/g, ' ')
+                .replace(/\[\s*\]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         /* ── Quote submission fallback ── */
@@ -1817,7 +1912,7 @@
 
     <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
     <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
-    <script src="mobile/js/checkout.js?v=20260530"></script>
+    <script src="mobile/js/checkout.js?v=20260826a"></script>
 
 </body>
 </html>

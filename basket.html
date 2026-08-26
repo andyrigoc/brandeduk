@@ -797,11 +797,45 @@
         }
         .btn-continue-shopping:hover { background: #f9fafb; }
         .btn-share-basket {
-            width: 100%; padding: 14px; background: #fff; color: #374151;
-            border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-weight: 600;
-            cursor: pointer;
+            width: 100%; padding: 13px 14px; display: flex; align-items: center;
+            justify-content: center; gap: 8px; background: #f5f6ff; color: #273469;
+            border: 2px solid #273469; border-radius: 10px; font-size: 14px; font-weight: 750;
+            cursor: pointer; box-shadow: 0 3px 10px rgba(39, 52, 105, .10);
+            transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
         }
-        .btn-share-basket:hover { background: #f9fafb; }
+        .btn-share-basket:hover {
+            background: #eceeff; box-shadow: 0 5px 14px rgba(39, 52, 105, .16);
+            transform: translateY(-1px);
+        }
+        .btn-share-basket:focus-visible {
+            outline: 3px solid rgba(39, 52, 105, .22); outline-offset: 2px;
+        }
+        .btn-share-basket:disabled { opacity: .65; cursor: wait; transform: none; }
+        .share-basket-modal {
+            position: fixed; inset: 0; z-index: 10020; display: none;
+            align-items: center; justify-content: center; padding: 18px;
+            background: rgba(15, 23, 42, .58);
+        }
+        .share-basket-modal.active { display: flex; }
+        .share-basket-dialog {
+            width: min(100%, 420px); padding: 20px; border-radius: 16px;
+            background: #fff; box-shadow: 0 24px 60px rgba(15, 23, 42, .25);
+        }
+        .share-basket-dialog h3 { margin: 0 0 6px; color: #111827; font-size: 19px; }
+        .share-basket-dialog p { margin: 0 0 14px; color: #64748b; font-size: 13px; line-height: 1.45; }
+        .share-basket-link-row { display: flex; gap: 8px; }
+        .share-basket-link {
+            min-width: 0; flex: 1; padding: 11px 12px; border: 1px solid #dbe1ea;
+            border-radius: 9px; color: #334155; background: #f8fafc; font-size: 12px;
+        }
+        .share-basket-copy {
+            border: 0; border-radius: 9px; padding: 0 16px; background: #273469;
+            color: #fff; font-weight: 700; cursor: pointer;
+        }
+        .share-basket-close {
+            width: 100%; margin-top: 12px; padding: 11px; border: 1px solid #e2e8f0;
+            border-radius: 9px; background: #fff; color: #334155; font-weight: 700; cursor: pointer;
+        }
         .btn-checkout {
             width: 100%; padding: 16px; background: #ea580c; color: #fff;
             border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
@@ -1405,7 +1439,6 @@
         <!-- Desktop title row (hidden on mobile via CSS) -->
         <div class="basket-desktop-title">
             <h2>Your Cart</h2>
-            <button class="clear-desktop-btn" id="clearBasketBtnDesktop">Clear Cart</button>
         </div>
 
         <!-- Empty State (hidden by default) -->
@@ -1497,6 +1530,12 @@
                         </svg>
                         Request a Quote
                     </button>
+                    <button type="button" class="btn-share-basket" id="shareBasketBtn">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/>
+                        </svg>
+                        Share Basket
+                    </button>
                     <a href="/shop-pc.html?category=all" class="btn-continue-shopping" id="continueShoppingBtn">← Continue Shopping / Add another item</a>
                 </div>
             </div>
@@ -1523,10 +1562,22 @@
                 <div class="trust-badge">&#127970; <strong>In business since 1990</strong></div>
                 <div class="trust-badge">&#128101; <strong>300 staff</strong>, based in the UK</div>
                 <div class="trust-badge">&#127468;&#127463; Trusted by over <strong>2 million customers</strong></div>
-                <div class="trust-badge">&#11088; <strong>137,500+ positive reviews</strong> &#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="trust-badge">&#11088; <strong>137,500+ positive reviews</strong> &#9733;&#9733;&#9733;&#9733;&#9733;</div>
             </div>
         </div>
     </main>
+
+    <div class="share-basket-modal" id="shareBasketModal" role="dialog" aria-modal="true" aria-labelledby="shareBasketTitle" aria-hidden="true">
+        <div class="share-basket-dialog">
+            <h3 id="shareBasketTitle">Share your basket</h3>
+            <p>This private link includes the garments, quantities and customisation previews in your basket. It expires after 30 days.</p>
+            <div class="share-basket-link-row">
+                <input type="text" class="share-basket-link" id="shareBasketLink" readonly aria-label="Shared basket link">
+                <button type="button" class="share-basket-copy" id="copyShareBasketBtn">Copy</button>
+            </div>
+            <button type="button" class="share-basket-close" id="closeShareBasketBtn">Close</button>
+        </div>
+    </div>
 
     <!-- Customize Popup (iframe to existing customize page) -->
     <div class="customize-popup-overlay" id="customizePopupOverlay" hidden>
@@ -1642,7 +1693,8 @@
     let includeVAT = readVatPreference();
 
     // --- Init ---
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        await restoreSharedBasketFromUrl();
         normalizeBasket();          // Single-pass: sync logos + convert to per-size rows
         recalcAllTierPricing();     // Ensure consistent prices across same-code items
         initVATToggle();
@@ -1657,7 +1709,147 @@
         // "Add logo to this item" button on each row instead.
         // setTimeout(handlePendingLogoPrompt, 700);
         clearPendingLogoPrompts();
+        initShareBasketFlow();
     });
+
+    function basketShareApiBase() {
+        const resolved = typeof window.resolveBrandedApiBase === 'function'
+            ? window.resolveBrandedApiBase()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com');
+        return String(resolved || 'https://api.brandeduk.com').replace(/\/+$/, '');
+    }
+
+    function basketShareUrl(token) {
+        const local = /^(?:localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname);
+        const pathname = local ? '/brandeduk/basket.html' : '/basket';
+        return `${window.location.origin}${pathname}?share=${encodeURIComponent(token)}`;
+    }
+
+    function removeShareParameter() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('share');
+        window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    }
+
+    async function restoreSharedBasketFromUrl() {
+        const token = new URLSearchParams(window.location.search).get('share');
+        if (!token) return;
+        if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) {
+            removeShareParameter();
+            return;
+        }
+
+        const existing = getBasket();
+        if (existing.length && !window.confirm('Open this shared basket? Your current basket will be replaced.')) {
+            removeShareParameter();
+            return;
+        }
+
+        try {
+            const response = await fetch(`${basketShareApiBase()}/api/basket-shares/${encodeURIComponent(token)}`, { cache: 'no-store' });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.success || !Array.isArray(result.basket)) {
+                throw new Error(result.message || 'Unable to open this shared basket.');
+            }
+            localStorage.setItem('quoteBasket', JSON.stringify(result.basket));
+            removeShareParameter();
+            sessionStorage.setItem('reorderNotice', 'Shared basket opened');
+        } catch (error) {
+            removeShareParameter();
+            setTimeout(() => showToast(error.message || 'Unable to open this shared basket.'), 0);
+        }
+    }
+
+    function openShareBasketModal(url) {
+        const modal = document.getElementById('shareBasketModal');
+        const input = document.getElementById('shareBasketLink');
+        if (input) input.value = url;
+        if (modal) {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeShareBasketModal() {
+        const modal = document.getElementById('shareBasketModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+    }
+
+    async function copyShareBasketLink() {
+        const input = document.getElementById('shareBasketLink');
+        if (!input || !input.value) return;
+        try {
+            await navigator.clipboard.writeText(input.value);
+        } catch (error) {
+            input.focus();
+            input.select();
+            document.execCommand('copy');
+        }
+        const button = document.getElementById('copyShareBasketBtn');
+        if (button) {
+            button.textContent = 'Copied';
+            setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+        }
+        showToast('Basket link copied');
+    }
+
+    async function createBasketShare() {
+        const button = document.getElementById('shareBasketBtn');
+        const basket = getBasket();
+        if (!basket.length) {
+            showToast('Your basket is empty');
+            return;
+        }
+
+        if (button) {
+            button.disabled = true;
+            button.dataset.originalText = button.innerHTML;
+            button.textContent = 'Creating link...';
+        }
+        try {
+            const response = await fetch(`${basketShareApiBase()}/api/basket-shares`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ basket })
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.success || !result.token) {
+                throw new Error(result.message || 'Unable to share this basket.');
+            }
+            const url = basketShareUrl(result.token);
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'BrandedUK basket', text: 'View this BrandedUK basket', url });
+                    showToast('Basket shared');
+                    return;
+                } catch (error) {
+                    if (error && error.name === 'AbortError') return;
+                }
+            }
+            openShareBasketModal(url);
+        } catch (error) {
+            showToast(error.message || 'Unable to share this basket.');
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || 'Share Basket';
+            }
+        }
+    }
+
+    function initShareBasketFlow() {
+        document.getElementById('shareBasketBtn')?.addEventListener('click', createBasketShare);
+        document.getElementById('copyShareBasketBtn')?.addEventListener('click', copyShareBasketLink);
+        document.getElementById('closeShareBasketBtn')?.addEventListener('click', closeShareBasketModal);
+        document.getElementById('shareBasketModal')?.addEventListener('click', (event) => {
+            if (event.target.id === 'shareBasketModal') closeShareBasketModal();
+        });
+    }
 
     // Clear any leftover pendingLogoPrompt flags so they don't trigger
     // unwanted auto-popups in the future.

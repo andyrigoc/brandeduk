@@ -747,6 +747,180 @@
             color: #9ca3af;
         }
 
+        /* Keep the most useful catalogue shortcuts visible. These were hidden
+           by the legacy mobile stylesheet, which made In Stock impossible to use. */
+        #filtersDropup .filters-toggles {
+            display: block !important;
+        }
+
+        .filter-expandable__title-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .filter-selected-count {
+            display: none;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #273469;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .filter-selected-count.is-visible {
+            display: inline-flex;
+        }
+
+        .filter-section-clear {
+            margin-left: auto;
+            margin-right: 10px;
+            padding: 4px 6px;
+            border: 0;
+            background: transparent;
+            color: #273469;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .filter-option-tools {
+            display: flex;
+            gap: 8px;
+            padding: 4px 0 10px;
+        }
+
+        .filter-option-search {
+            width: 100%;
+            min-width: 0;
+            padding: 9px 11px;
+            border: 1px solid #dbe1ea;
+            border-radius: 8px;
+            background: #fff;
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        .filter-option-search:focus {
+            outline: none;
+            border-color: #273469;
+            box-shadow: 0 0 0 3px rgba(39, 52, 105, .1);
+        }
+
+        .filter-show-more {
+            width: 100%;
+            padding: 9px 0 2px;
+            border: 0;
+            background: transparent;
+            color: #273469;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        [data-filter-option][hidden],
+        .filter-size-group[hidden],
+        .filter-show-more[hidden] {
+            display: none !important;
+        }
+
+        .filter-size-group {
+            grid-column: 1 / -1;
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .active-filter-chips {
+            display: none;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: #fff;
+        }
+
+        .active-filter-chips.is-visible {
+            display: flex;
+        }
+
+        .active-filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+
+        .active-filter-chip {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+            padding: 5px 9px;
+            border: 1px solid #d7ddeb;
+            border-radius: 999px;
+            background: #f7f8fc;
+            color: #273469;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .active-filter-chip span {
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        .active-filter-chip--clear {
+            border-color: transparent;
+            background: transparent;
+            color: #dc2626;
+        }
+
+        .filters-results-footer {
+            position: sticky;
+            bottom: 0;
+            z-index: 12;
+            flex: 0 0 auto;
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+            border-top: 1px solid #e5e7eb;
+            background: rgba(255,255,255,.97);
+            backdrop-filter: blur(8px);
+        }
+
+        .filters-show-results {
+            width: 100%;
+            min-height: 44px;
+            border: 0;
+            border-radius: 10px;
+            background: #273469;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .filters-show-results[disabled] {
+            background: #9ca3af;
+            cursor: default;
+        }
+
+        @media (min-width: 1280px) {
+            #shopPageLayout > #filtersDropup .filters-results-footer {
+                display: none;
+            }
+        }
+
         /* Color filter count badge */
         .filter-color .count {
             position: absolute;
@@ -2237,6 +2411,8 @@
         </div>
     </div>
 
+    <div class="active-filter-chips" id="activeFilterChips" aria-label="Applied filters"></div>
+
     <!-- Mobile Product Controls -->
     <div class="shop-products-controls">
         <div class="shop-controls-row">
@@ -2453,52 +2629,6 @@
             <button class="filters-dropup__close" id="filtersClose" aria-label="Close"></button>
         </div>
         <div class="filters-dropup__body">
-            <!-- TOGGLE FILTERS -->
-            <div class="filters-section filters-toggles">
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--new-in">New In</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterNewIn" class="vat-checkbox" data-filter="newIn" />
-                        <label for="filterNewIn" class="vat-toggle-label">Toggle New In</label>
-                    </div>
-                </div>
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--bradeal">Bradeal</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterBradeal" class="vat-checkbox" data-filter="bradeal" checked />
-                        <label for="filterBradeal" class="vat-toggle-label">Toggle Bradeal</label>
-                    </div>
-                </div>
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--offers">Offers</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterOffers" class="vat-checkbox" data-filter="offers" />
-                        <label for="filterOffers" class="vat-toggle-label">Toggle Offers</label>
-                    </div>
-                </div>
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--in-stock">In Stock</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterInStock" class="vat-checkbox" data-filter="inStock" />
-                        <label for="filterInStock" class="vat-toggle-label">Toggle In Stock</label>
-                    </div>
-                </div>
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--recycled">Recycled / Organic</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterRecycled" class="vat-checkbox" data-filter="recycled" />
-                        <label for="filterRecycled" class="vat-toggle-label">Toggle Recycled</label>
-                    </div>
-                </div>
-                <div class="filter-toggle-row">
-                    <span class="filter-toggle-label filter-label--plus-sizes">Plus Sizes</span>
-                    <div class="vat-toggle-mobile">
-                        <input type="checkbox" id="filterPlusSizes" class="vat-checkbox" data-filter="plusSizes" />
-                        <label for="filterPlusSizes" class="vat-toggle-label">Toggle Plus Sizes</label>
-                    </div>
-                </div>
-            </div>
-
             <!-- SEARCH WITHIN RESULTS -->
             <div class="filters-section">
                 <label class="filter-search-label">Search products</label>
@@ -2869,6 +2999,9 @@
                 </div>
             </div>
         </div>
+        <div class="filters-results-footer">
+            <button type="button" class="filters-show-results" id="filtersShowResultsBtn">Show products</button>
+        </div>
     </div>
 
     <!-- ── DESKTOP SIDEBAR LAYOUT ── -->
@@ -2979,7 +3112,7 @@
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
     <script src="brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
-    <script src="brandedukv15-child/assets/js/api.js?v=20260726b"></script>
+    <script src="brandedukv15-child/assets/js/api.js?v=20260824a"></script>
     <script src="brandedukv15-child/assets/js/shop-api.js?v=20260629a"></script>
     <script>
         const SHOP_DEBUG = window.BRANDED_DEBUG === true;
@@ -3334,7 +3467,14 @@
                     : [];
 
                 if (quickValues.length > 0) {
-                    const mappedQuickFilters = quickValues.map(val => FILTER_MAPPINGS.quickFilter?.[val] || val).filter(v => v);
+                    const quickMap = {
+                        'new-in': 'new-in',
+                        'bradeal': 'raladeal',
+                        'offers': 'offers',
+                        'in-stock': 'in-stock',
+                        'recycled': 'recycled-organic'
+                    };
+                    const mappedQuickFilters = quickValues.map(val => quickMap[val] || FILTER_MAPPINGS.quickFilter?.[val] || val).filter(v => v);
                     if (mappedQuickFilters.length > 0) {
                         params['flag[]'] = mappedQuickFilters;
                     }
@@ -3406,88 +3546,90 @@
             }
         }
 
+        const QUICK_FILTER_API_MAP = {
+            'new-in': 'new-in',
+            'bradeal': 'raladeal',
+            'offers': 'offers',
+            'in-stock': 'in-stock',
+            'recycled': 'recycled-organic'
+        };
+        const FILTER_COUNT_PARAM_MAP = {
+            gender: 'gender', ageGroup: 'ageGroup', brand: 'brand', productType: 'productType',
+            sleeve: 'sleeve', neckline: 'neckline', accreditations: 'accreditations',
+            primaryColour: 'primaryColour', colourShade: 'colourShade', style: 'style',
+            feature: 'feature', size: 'size', fabric: 'fabric', weight: 'weight', fit: 'fit',
+            sector: 'sector', sport: 'sport', tag: 'tag', effect: 'effect'
+        };
+        const filterBaselineCache = new Map();
+        let filterCountsRequestId = 0;
+
+        function buildFilterCountParams(excludedKey = null, baseline = false) {
+            const params = new URLSearchParams();
+            const slugMap = { tshirts: 't-shirts', polo: 'polos', fleeces: 'fleece', hivis: 'safety-vests', sustainable: null };
+            if (currentState.category && currentState.category !== 'all') {
+                const apiSlug = slugMap[currentState.category] !== undefined ? slugMap[currentState.category] : currentState.category;
+                if (apiSlug) params.append('productType', apiSlug);
+            }
+            if (currentState.search && currentState.search.trim()) params.append('q', normalizeSearchQuery(currentState.search.trim()));
+            if (baseline) return params;
+            if (currentState.priceMin !== null) params.append('priceMin', currentState.priceMin);
+            if (currentState.priceMax !== null) params.append('priceMax', currentState.priceMax);
+
+            Object.entries(FILTER_COUNT_PARAM_MAP).forEach(([stateKey, apiKey]) => {
+                if (stateKey === excludedKey) return;
+                (currentState.filters[stateKey] || []).forEach(value => params.append(`${apiKey}[]`, value));
+            });
+            (currentState.filters.quickFilters || []).forEach(flag => {
+                params.append('flag[]', QUICK_FILTER_API_MAP[flag] || flag);
+            });
+            return params;
+        }
+
+        async function requestFilterCounts(params) {
+            const response = await fetch(`https://api.brandeduk.com/api/products/filters?${params.toString()}`);
+            if (!response.ok) throw new Error(`Filter API error: ${response.status}`);
+            const data = await response.json();
+            return data.filters || {};
+        }
+
+        function mergeFilterOptions(baseFilters, contextualFilters, ownFacetResponses) {
+            const merged = {};
+            Object.keys(MOBILE_FILTER_CONFIG).forEach(key => {
+                const source = ownFacetResponses[key] || contextualFilters[key] || [];
+                const counts = new Map(source.map(item => [String(item.slug || '').toLowerCase(), Number(item.count || 0)]));
+                const all = [...(baseFilters[key] || [])];
+                source.forEach(item => {
+                    if (!all.some(base => String(base.slug || '').toLowerCase() === String(item.slug || '').toLowerCase())) all.push(item);
+                });
+                merged[key] = all.map(item => ({ ...item, count: counts.get(String(item.slug || '').toLowerCase()) || 0 }));
+            });
+            return merged;
+        }
+
         async function fetchFilterCounts() {
+            const requestId = ++filterCountsRequestId;
             try {
-                // Build query params for filters API
-                const params = new URLSearchParams();
-
-                // Determine which filters API to use: brand-specific or general
-                let filterApiUrl;
-
-                // Check if brand filter is active (from sidebar filters, not URL)
-                const activeBrandFilter = currentState.filters.brand && currentState.filters.brand.length > 0
-                    ? currentState.filters.brand[0]
-                    : null;
-
-                if (activeBrandFilter) {
-                    // Use brand-specific filters API: /api/filters/brands/{brand}/filters
-                    filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
-                    shopDebug('Using brand-specific filters API for:', activeBrandFilter);
-                } else {
-                    // Use general products filters API
-                    filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
-
-                    // Add productType if set (category maps to productType for filter API)
-                    if (currentState.category && currentState.category !== 'all') {
-                        // Use CATEGORY_SLUG_MAP from api.js for consistent mapping
-                        const slugMap = {
-                            'tshirts': 't-shirts', 'polo': 'polos', 'fleeces': 'fleece',
-                            'hivis': 'safety-vests', 'sustainable': null
-                        };
-                        const apiSlug = slugMap[currentState.category] !== undefined
-                            ? slugMap[currentState.category]
-                            : currentState.category;
-                        if (apiSlug) {
-                            params.append('productType', apiSlug);
-                        }
-                    }
-
-                    // Add productType from filters if set (sidebar filter)
-                    if (currentState.filters.productType && currentState.filters.productType.length > 0) {
-                        params.append('productType', currentState.filters.productType[0]);
-                    }
+                const baselineParams = buildFilterCountParams(null, true);
+                const baselineKey = baselineParams.toString();
+                let baselinePromise = filterBaselineCache.get(baselineKey);
+                if (!baselinePromise) {
+                    baselinePromise = requestFilterCounts(baselineParams);
+                    filterBaselineCache.set(baselineKey, baselinePromise);
                 }
 
-                // Add search query if present (normalized for consistent API results)
-                if (currentState.search && currentState.search.trim()) {
-                    params.append('q', normalizeSearchQuery(currentState.search.trim()));
-                }
-
-                // Add price range if set
-                if (currentState.priceMin !== null) {
-                    params.append('priceMin', currentState.priceMin);
-                }
-                if (currentState.priceMax !== null) {
-                    params.append('priceMax', currentState.priceMax);
-                }
-
-                // Add quick filters
-                if (currentState.filters.quickFilters && currentState.filters.quickFilters.length > 0) {
-                    currentState.filters.quickFilters.forEach(flag => {
-                        const mappedFlag = FILTER_MAPPINGS.quickFilter?.[flag] || flag;
-                        params.append('flag[]', mappedFlag);
-                    });
-                }
-
-                const queryString = params.toString();
-                const url = `${filterApiUrl}${queryString ? '?' + queryString : ''}`;
-
-                shopDebug('Fetching filter counts from:', url);
-
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Filter API error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                shopDebug('Filter counts received:', data);
-
-                if (data && data.filters) {
-                    renderMobileDynamicFilters(data.filters);
-                }
+                const activeFacetKeys = Object.keys(FILTER_COUNT_PARAM_MAP).filter(key =>
+                    Array.isArray(currentState.filters[key]) && currentState.filters[key].length > 0);
+                const contextualPromise = requestFilterCounts(buildFilterCountParams());
+                const ownFacetPromises = activeFacetKeys.map(async key => [key, await requestFilterCounts(buildFilterCountParams(key))]);
+                const [baselineFilters, contextualFilters, ownFacetEntries] = await Promise.all([
+                    baselinePromise,
+                    contextualPromise,
+                    Promise.all(ownFacetPromises)
+                ]);
+                if (requestId !== filterCountsRequestId) return;
+                renderMobileDynamicFilters(mergeFilterOptions(baselineFilters, contextualFilters, Object.fromEntries(ownFacetEntries)));
             } catch (err) {
-                console.error('Error fetching filter counts (mobile):', err);
-                // Keep static fallback on error
+                console.error('Error fetching contextual filter counts:', err);
             }
         }
 
@@ -3533,143 +3675,238 @@
             'other': '#e5e7eb'
         };
 
-        // Render dynamic filters for mobile
+        const MOBILE_FILTER_OPTION_LIMIT = 8;
+        const MOBILE_FILTER_SEARCH_KEYS = new Set(['brand', 'productType', 'colourShade', 'fabric']);
+        const MOBILE_PRIMARY_COLOUR_ORDER = ['black','white','grey','blue','green','red','pink','yellow','purple','orange','brown','neutral','pattern'];
+        const mobileFilterUiState = { expanded: new Set(), showAll: new Set(), search: {}, labels: {} };
+
+        function escapeFilterHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function normalizePrimaryColour(item) {
+            const text = `${item.slug || ''} ${item.name || ''}`.toLowerCase();
+            if (/pattern|multi|camo|stripe|tie.?dye/.test(text)) return { slug: 'pattern', name: 'Pattern / Multi' };
+            if (/black|jet|ebony/.test(text)) return { slug: 'black', name: 'Black' };
+            if (/white|ivory/.test(text)) return { slug: 'white', name: 'White' };
+            if (/grey|gray|charcoal|silver|ash/.test(text)) return { slug: 'grey', name: 'Grey' };
+            if (/navy|blue|royal|sapphire|sky|cobalt|azure/.test(text)) return { slug: 'blue', name: 'Blue' };
+            if (/green|olive|bottle|kelly|khaki|lime/.test(text)) return { slug: 'green', name: 'Green' };
+            if (/red|burgundy|maroon|crimson|scarlet|wine/.test(text)) return { slug: 'red', name: 'Red' };
+            if (/pink|fuchsia|magenta/.test(text)) return { slug: 'pink', name: 'Pink' };
+            if (/yellow|gold|mustard/.test(text)) return { slug: 'yellow', name: 'Yellow' };
+            if (/purple|violet|lilac|plum/.test(text)) return { slug: 'purple', name: 'Purple' };
+            if (/orange|coral/.test(text)) return { slug: 'orange', name: 'Orange' };
+            if (/brown|tan|camel|chocolate/.test(text)) return { slug: 'brown', name: 'Brown' };
+            if (/neutral|beige|natural|stone|sand|cream|oatmeal/.test(text)) return { slug: 'neutral', name: 'Neutral' };
+            return null;
+        }
+
+        function normalizeFabricItem(item) {
+            const slug = String(item.slug || '').toLowerCase().trim();
+            const name = String(item.name || item.slug || '').trim();
+            if (/^cotton-100(?:-\d+)?$/.test(slug)) return { slug: 'cotton100', name: 'Cotton (100%)' };
+            if (/^poly(?:ester)?-100(?:-\d+)?$/.test(slug)) return { slug: 'polyester100', name: 'Polyester (100%)' };
+            if (/^organic-100(?:-\d+)?$/.test(slug)) return { slug: 'organic', name: 'Organic Cotton' };
+            if (/^recycled-100(?:-\d+)?$/.test(slug)) return { slug: 'recycled', name: 'Recycled Polyester' };
+            if (/^nylon-100(?:-\d+)?$/.test(slug)) return { slug: 'nylon', name: 'Nylon (100%)' };
+            if (/^(airlume|combed|pre|ringspun|us|heavy|heavyweight|sustainably|hicool|coolplus|fine|anti|brushed)(-|$)/.test(slug)) return null;
+            if (!/cotton|polyester|nylon|wool|acrylic|viscose|elastane|spandex|linen|bamboo|modal|polyamide|blend|polycotton|fleece|jersey|pique|softshell|ripstop/i.test(`${slug} ${name}`)) return null;
+            return { slug, name };
+        }
+
+        function sizeGroup(item) {
+            const value = `${item.slug || ''} ${item.name || ''}`.toLowerCase();
+            if (/month|baby|infant|newborn|0\/3|0-3/.test(value)) return 'Infant';
+            if (/year|yrs|kids|youth|^y|\b116\b|\b128\b|\b140\b|\b152\b|\b164\b/.test(value)) return 'Kids';
+            if (/women|ladies|dress/.test(value)) return 'Women';
+            return 'Adult / Unisex';
+        }
+
+        function sizeRank(item) {
+            const raw = String(item.name || item.slug || '').toUpperCase().replace(/[\s-]+/g, '');
+            const ranks = ['XXXS','3XS','XXS','2XS','XS','S','M','L','XL','2XL','XXL','3XL','4XL','5XL','6XL','7XL','8XL','9XL','10XL','ONESIZE'];
+            const index = ranks.indexOf(raw);
+            return index >= 0 ? index : 100 + Number((raw.match(/\d+/) || [999])[0]);
+        }
+
+        function normalizeMobileFilterItems(filterKey, items) {
+            const bySlug = new Map();
+            (Array.isArray(items) ? items : []).forEach(raw => {
+                let normalized = { slug: String(raw.slug || '').trim(), name: String(raw.name || raw.slug || '').trim() };
+                if (!normalized.slug || !normalized.name) return;
+                if (filterKey === 'primaryColour') normalized = normalizePrimaryColour(raw);
+                if (filterKey === 'fabric') normalized = normalizeFabricItem(raw);
+                if (!normalized) return;
+                if (filterKey === 'style' || filterKey === 'feature') {
+                    normalized.slug = normalized.slug.toLowerCase().replace(/-\d+$/, '');
+                    normalized.name = normalized.name.replace(/^\w/, char => char.toUpperCase());
+                }
+                const key = (filterKey === 'style' || filterKey === 'feature')
+                    ? normalized.name.toLowerCase().replace(/\s+/g, ' ').trim()
+                    : normalized.slug.toLowerCase();
+                const count = Math.max(0, Number(raw.count || raw.product_count || 0));
+                const existing = bySlug.get(key);
+                if (!existing) bySlug.set(key, { ...normalized, count });
+                else existing.count = Math.max(existing.count, count);
+            });
+            const output = Array.from(bySlug.values());
+            if (filterKey === 'primaryColour') {
+                output.sort((a, b) => MOBILE_PRIMARY_COLOUR_ORDER.indexOf(a.slug) - MOBILE_PRIMARY_COLOUR_ORDER.indexOf(b.slug));
+            } else if (filterKey === 'size') {
+                const groups = ['Adult / Unisex', 'Women', 'Kids', 'Infant'];
+                output.sort((a, b) => groups.indexOf(sizeGroup(a)) - groups.indexOf(sizeGroup(b)) || sizeRank(a) - sizeRank(b) || a.name.localeCompare(b.name));
+            }
+            return output;
+        }
+
+        // Render API-driven filters while keeping expanded/search/show-more state.
         function renderMobileDynamicFilters(filters) {
             const container = document.getElementById('mobileFiltersContainer');
-            if (!container) {
-                shopWarn('mobileFiltersContainer not found');
-                return;
-            }
+            if (!container) return;
 
-            // Save current checked states
-            const checkedStates = {};
-            container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                const section = cb.closest('.filter-expandable');
-                const filterKey = section?.dataset?.filter;
-                if (filterKey) {
-                    if (!checkedStates[filterKey]) checkedStates[filterKey] = [];
-                    checkedStates[filterKey].push(cb.value);
-                }
+            container.querySelectorAll('.filter-expandable[data-expanded="true"]').forEach(section => {
+                if (section.dataset.filter) mobileFilterUiState.expanded.add(section.dataset.filter);
             });
 
-            // Also get from currentState.filters
-            Object.keys(currentState.filters).forEach(key => {
-                if (Array.isArray(currentState.filters[key]) && currentState.filters[key].length > 0) {
-                    checkedStates[key] = currentState.filters[key];
-                }
-            });
-
-            // Sort filter keys
-            const sortedKeys = Object.keys(filters).sort((a, b) => {
-                const orderA = MOBILE_FILTER_CONFIG[a]?.order || 99;
-                const orderB = MOBILE_FILTER_CONFIG[b]?.order || 99;
-                return orderA - orderB;
-            });
-
+            const sortedKeys = Object.keys(filters || {}).sort((a, b) =>
+                (MOBILE_FILTER_CONFIG[a]?.order || 99) - (MOBILE_FILTER_CONFIG[b]?.order || 99));
             let html = '';
 
             sortedKeys.forEach(filterKey => {
-                const filterData = filters[filterKey];
                 const config = MOBILE_FILTER_CONFIG[filterKey] || { title: filterKey, stateKey: filterKey };
+                const filterData = normalizeMobileFilterItems(filterKey, filters[filterKey]);
+                if (!filterData.length) return;
 
-                if (!filterData || !Array.isArray(filterData) || filterData.length === 0) return;
-
-                const checkedValues = checkedStates[config.stateKey] || checkedStates[filterKey] || [];
-                const isColorGrid = config.isColorGrid;
-                const isSizeGrid = config.isSizeGrid;
-
-                html += `<div class="filter-expandable" data-filter="${filterKey}">
-                    <div class="filter-expandable__header">
-                        <span>${config.title}</span>
-                        <span class="filter-expandable__arrow"></span>
-                    </div>
-                    <div class="filter-expandable__content${isColorGrid ? ' filter-colors-grid' : ''}${isSizeGrid ? ' filter-sizes-grid' : ''}">`;
+                const checkedValues = currentState.filters[config.stateKey] || [];
+                const isColorGrid = !!config.isColorGrid;
+                const isSizeGrid = !!config.isSizeGrid;
+                const isShowingAll = mobileFilterUiState.showAll.has(filterKey);
+                let lastSizeGroup = '';
 
                 filterData.forEach(item => {
-                    const isChecked = checkedValues.includes(item.slug) ? 'checked' : '';
+                    mobileFilterUiState.labels[`${config.stateKey}:${item.slug}`] = item.name;
+                });
+
+                html += `<div class="filter-expandable" data-filter="${escapeFilterHtml(filterKey)}" data-expanded="${mobileFilterUiState.expanded.has(filterKey)}">
+                    <div class="filter-expandable__header">
+                        <span class="filter-expandable__title-row"><span>${escapeFilterHtml(config.title)}</span><span class="filter-selected-count${checkedValues.length ? ' is-visible' : ''}">${checkedValues.length}</span></span>
+                        ${checkedValues.length ? '<button type="button" class="filter-section-clear">Clear</button>' : ''}
+                        <span class="filter-expandable__arrow"></span>
+                    </div>
+                    <div class="filter-expandable__content${isColorGrid ? ' filter-colors-grid' : ''}${isSizeGrid ? ' filter-sizes-grid' : ''}">
+                        ${MOBILE_FILTER_SEARCH_KEYS.has(filterKey) ? `<div class="filter-option-tools"><input type="search" class="filter-option-search" value="${escapeFilterHtml(mobileFilterUiState.search[filterKey] || '')}" placeholder="Search ${escapeFilterHtml(config.title.toLowerCase())}..." aria-label="Search ${escapeFilterHtml(config.title)}"></div>` : ''}`;
+
+                filterData.forEach((item, index) => {
+                    const isChecked = checkedValues.includes(item.slug);
+                    const isDisabled = item.count <= 0 && !isChecked;
+                    const isHidden = !isShowingAll && index >= MOBILE_FILTER_OPTION_LIMIT && !isChecked;
+                    const commonAttrs = `data-filter-option data-option-name="${escapeFilterHtml(item.name.toLowerCase())}"${isHidden ? ' hidden' : ''}`;
+
+                    if (isSizeGrid) {
+                        const group = sizeGroup(item);
+                        if (group !== lastSizeGroup) {
+                            html += `<div class="filter-size-group"${isHidden ? ' hidden' : ''}>${escapeFilterHtml(group)}</div>`;
+                            lastSizeGroup = group;
+                        }
+                    }
 
                     if (isColorGrid) {
                         const colorValue = MOBILE_COLOR_MAP[item.slug] || '#e5e7eb';
-                        const isMulti = item.slug === 'pattern' || item.slug === 'multi';
-                        const style = colorValue.includes('gradient')
-                            ? `background: ${colorValue}`
-                            : `--color: ${colorValue}`;
-                        // Don't show count for primary colour swatches
-                        html += `<label class="filter-color${isMulti ? ' filter-color--multi' : ''}" style="${style}">
-                            <input type="checkbox" value="${item.slug}" ${isChecked}>
-                            <span>${item.name}</span>
-                        </label>`;
+                        const style = colorValue.includes('gradient') ? `background:${colorValue}` : `--color:${colorValue}`;
+                        html += `<label class="filter-color${item.slug === 'pattern' ? ' filter-color--multi' : ''}${isDisabled ? ' disabled' : ''}" style="${style}" ${commonAttrs}>
+                            <input type="checkbox" value="${escapeFilterHtml(item.slug)}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}><span>${escapeFilterHtml(item.name)}</span></label>`;
                     } else if (isSizeGrid) {
-                        html += `<label class="filter-size">
-                            <input type="checkbox" value="${item.slug}" ${isChecked}>
-                            <span>${item.name}</span>
-                            ${item.count > 0 ? `<span class="count">(${item.count})</span>` : ''}
-                        </label>`;
+                        html += `<label class="filter-size${isDisabled ? ' disabled' : ''}" ${commonAttrs}>
+                            <input type="checkbox" value="${escapeFilterHtml(item.slug)}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}><span>${escapeFilterHtml(item.name)}</span><span class="count">(${item.count})</span></label>`;
                     } else {
-                        html += `<label class="filter-checkbox">
-                            <input type="checkbox" value="${item.slug}" ${isChecked}>
-                            ${item.name}
-                            ${item.count > 0 ? `<span class="count">(${item.count})</span>` : ''}
-                        </label>`;
+                        html += `<label class="filter-checkbox${isDisabled ? ' disabled' : ''}" ${commonAttrs}>
+                            <input type="checkbox" value="${escapeFilterHtml(item.slug)}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>${escapeFilterHtml(item.name)}<span class="count">(${item.count})</span></label>`;
                     }
                 });
 
-                html += `</div></div>`;
+                if (filterData.length > MOBILE_FILTER_OPTION_LIMIT) {
+                    html += `<button type="button" class="filter-show-more">${isShowingAll ? 'Show less' : `Show more (${filterData.length - MOBILE_FILTER_OPTION_LIMIT})`}</button>`;
+                }
+                html += '</div></div>';
             });
 
             container.innerHTML = html;
 
-            // Re-attach expand/collapse handlers
             container.querySelectorAll('.filter-expandable__header').forEach(header => {
-                header.addEventListener('click', function () {
-                    const expandable = this.closest('.filter-expandable');
-                    const isExpanded = expandable.dataset.expanded === 'true';
-                    expandable.dataset.expanded = isExpanded ? 'false' : 'true';
-                    const content = expandable.querySelector('.filter-expandable__content');
-                    if (content) {
-                        content.style.display = isExpanded ? 'none' : 'block';
-                    }
+                header.addEventListener('click', () => {
+                    const section = header.closest('.filter-expandable');
+                    const open = section.dataset.expanded === 'true';
+                    section.dataset.expanded = String(!open);
+                    if (open) mobileFilterUiState.expanded.delete(section.dataset.filter);
+                    else mobileFilterUiState.expanded.add(section.dataset.filter);
                 });
             });
 
-            // Re-attach checkbox handlers
-            setupMobileDynamicCheckboxes();
+            container.querySelectorAll('.filter-section-clear').forEach(button => {
+                button.addEventListener('click', async event => {
+                    event.stopPropagation();
+                    const section = button.closest('.filter-expandable');
+                    const config = MOBILE_FILTER_CONFIG[section.dataset.filter] || { stateKey: section.dataset.filter };
+                    currentState.filters[config.stateKey] = [];
+                    await refreshProductsForFilterChange();
+                });
+            });
 
-            shopDebug('Mobile dynamic filters rendered');
+            container.querySelectorAll('.filter-show-more').forEach(button => {
+                button.addEventListener('click', () => {
+                    const section = button.closest('.filter-expandable');
+                    const key = section.dataset.filter;
+                    const showAll = !mobileFilterUiState.showAll.has(key);
+                    if (showAll) mobileFilterUiState.showAll.add(key); else mobileFilterUiState.showAll.delete(key);
+                    section.querySelectorAll('[data-filter-option]').forEach((option, index) => {
+                        option.hidden = !showAll && index >= MOBILE_FILTER_OPTION_LIMIT && !option.querySelector('input:checked');
+                    });
+                    button.textContent = showAll ? 'Show less' : 'Show more';
+                });
+            });
+
+            container.querySelectorAll('.filter-option-search').forEach(input => {
+                input.addEventListener('input', () => {
+                    const section = input.closest('.filter-expandable');
+                    const query = input.value.trim().toLowerCase();
+                    mobileFilterUiState.search[section.dataset.filter] = input.value;
+                    section.querySelectorAll('[data-filter-option]').forEach(option => {
+                        option.hidden = !!query && !String(option.dataset.optionName || '').includes(query);
+                    });
+                    const more = section.querySelector('.filter-show-more');
+                    if (more) more.hidden = !!query;
+                });
+            });
+
+            setupMobileDynamicCheckboxes();
         }
 
-        // Setup mobile checkbox handlers
         function setupMobileDynamicCheckboxes() {
             const container = document.getElementById('mobileFiltersContainer');
             if (!container) return;
-
             container.querySelectorAll('.filter-expandable[data-filter]').forEach(section => {
-                const filterKey = section.dataset.filter;
-                const config = MOBILE_FILTER_CONFIG[filterKey];
-                const stateKey = config?.stateKey || filterKey;
+                const config = MOBILE_FILTER_CONFIG[section.dataset.filter] || { stateKey: section.dataset.filter };
                 const content = section.querySelector('.filter-expandable__content');
-                if (!content) return;
-
                 content.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    if (cb.dataset.mobileListenerAttached) return;
-                    cb.dataset.mobileListenerAttached = 'true';
-
                     cb.addEventListener('change', async () => {
-                        const checkedValues = Array.from(
-                            content.querySelectorAll('input[type="checkbox"]:checked')
-                        ).map(c => c.value);
-
-                        if (!currentState.filters[stateKey]) {
-                            currentState.filters[stateKey] = [];
-                        }
-                        currentState.filters[stateKey] = checkedValues;
-
-                        currentState.page = 1;
-                        updateURL();
-                        await renderProducts();
+                        currentState.filters[config.stateKey] = Array.from(content.querySelectorAll('input[type="checkbox"]:checked')).map(item => item.value);
+                        await refreshProductsForFilterChange();
                     });
                 });
             });
+        }
+
+        async function refreshProductsForFilterChange() {
+            currentState.page = 1;
+            updateURL();
+            renderActiveFilterChips();
+            updateFiltersShowResults(true);
+            await renderProducts();
+            updateFiltersShowResults(false);
+            await fetchFilterCounts();
         }
 
         function updateURL() {
@@ -3708,8 +3945,96 @@
             } else {
                 url.searchParams.delete('accreditation');
             }
+            if (currentState.filters.quickFilters && currentState.filters.quickFilters.length) {
+                url.searchParams.set('quickFilters', currentState.filters.quickFilters.join(','));
+            } else {
+                url.searchParams.delete('quickFilters');
+            }
 
             window.history.replaceState({}, '', url);
+        }
+
+        function getFilterLabel(stateKey, value) {
+            return mobileFilterUiState.labels[`${stateKey}:${value}`]
+                || String(value || '').replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        function renderActiveFilterChips() {
+            const container = document.getElementById('activeFilterChips');
+            if (!container) return;
+            const chips = [];
+            const titles = {
+                gender: 'Gender', ageGroup: 'Age', brand: 'Brand', productType: 'Type', sleeve: 'Sleeve',
+                neckline: 'Neckline', accreditations: 'Accreditation', primaryColour: 'Colour',
+                colourShade: 'Shade', style: 'Style', feature: 'Feature', size: 'Size', fabric: 'Fabric',
+                weight: 'GSM', fit: 'Fit', sector: 'Sector', sport: 'Sport', tag: 'Tag', effect: 'Effect'
+            };
+            Object.keys(titles).forEach(key => {
+                (currentState.filters[key] || []).forEach(value => {
+                    chips.push({ kind: 'facet', key, value, label: `${titles[key]}: ${getFilterLabel(key, value)}` });
+                });
+            });
+            const quickLabels = { 'new-in': 'New In', bradeal: 'Bradeal', offers: 'Offers', 'in-stock': 'In Stock', recycled: 'Recycled / Organic' };
+            (currentState.filters.quickFilters || []).forEach(value => chips.push({ kind: 'quick', value, label: quickLabels[value] || value }));
+            if (currentState.search) chips.push({ kind: 'search', label: `Search: ${currentState.search}` });
+            if (currentState.priceMin !== null || currentState.priceMax !== null) {
+                chips.push({ kind: 'price', label: `Price: £${currentState.priceMin ?? mobileCatalogMinPrice}–£${currentState.priceMax ?? mobileCatalogMaxPrice}` });
+            }
+
+            container.classList.toggle('is-visible', chips.length > 0);
+            container.innerHTML = chips.map(chip => `<button type="button" class="active-filter-chip" data-kind="${chip.kind}" data-key="${escapeFilterHtml(chip.key || '')}" data-value="${escapeFilterHtml(chip.value || '')}">${escapeFilterHtml(chip.label)} <span aria-hidden="true">×</span></button>`).join('')
+                + (chips.length > 1 ? '<button type="button" class="active-filter-chip active-filter-chip--clear" data-kind="all">Clear all</button>' : '');
+
+            container.querySelectorAll('.active-filter-chip').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const kind = button.dataset.kind;
+                    if (kind === 'all') return clearAllProductFilters();
+                    if (kind === 'facet') {
+                        const key = button.dataset.key;
+                        currentState.filters[key] = (currentState.filters[key] || []).filter(value => value !== button.dataset.value);
+                    } else if (kind === 'quick') {
+                        currentState.filters.quickFilters = (currentState.filters.quickFilters || []).filter(value => value !== button.dataset.value);
+                    } else if (kind === 'search') {
+                        currentState.search = '';
+                    } else if (kind === 'price') {
+                        currentState.priceMin = null;
+                        currentState.priceMax = null;
+                    }
+                    await refreshProductsForFilterChange();
+                });
+            });
+
+            const filterButton = document.getElementById('filtersNavBtn');
+            if (filterButton) filterButton.setAttribute('aria-label', chips.length ? `Filters, ${chips.length} applied` : 'Filters');
+        }
+
+        function syncQuickFilterControls() {
+            const reverseMap = { newIn: 'new-in', bradeal: 'bradeal', offers: 'offers', inStock: 'in-stock', recycled: 'recycled' };
+            document.querySelectorAll('.filters-toggles .vat-checkbox').forEach(input => {
+                input.checked = (currentState.filters.quickFilters || []).includes(reverseMap[input.dataset.filter]);
+            });
+        }
+
+        async function clearAllProductFilters() {
+            Object.keys(currentState.filters).forEach(key => {
+                currentState.filters[key] = [];
+            });
+            currentState.search = '';
+            currentState.priceMin = null;
+            currentState.priceMax = null;
+            mobileFilterUiState.search = {};
+            mobileFilterUiState.showAll.clear();
+            const searchInput = document.getElementById('filterSearchInput');
+            if (searchInput) searchInput.value = '';
+            syncQuickFilterControls();
+            await refreshProductsForFilterChange();
+        }
+
+        function updateFiltersShowResults(loading = false) {
+            const button = document.getElementById('filtersShowResultsBtn');
+            if (!button) return;
+            button.disabled = !!loading;
+            button.textContent = loading ? 'Updating products…' : `Show ${Number(currentState.total || 0).toLocaleString()} product${Number(currentState.total || 0) === 1 ? '' : 's'}`;
         }
 
         function updateMobilePagination() {
@@ -3875,7 +4200,7 @@
                     if (inputMax) inputMax.value = '\u00A3' + maxVal;
                 }
 
-                function handlePriceSliderChange() {
+                async function handlePriceSliderChange() {
                     let minVal = parseInt(sliderMin.value);
                     let maxVal = parseInt(sliderMax.value);
 
@@ -3898,10 +4223,7 @@
                     }
 
                     updatePriceSliderUI();
-                    currentState.page = 1;
-                    updateURL();
-                    renderProducts();
-                    fetchFilterCounts();
+                    await refreshProductsForFilterChange();
                 }
 
                 // Only attach event listeners once
@@ -4029,10 +4351,7 @@
                     clearTimeout(t);
                     t = setTimeout(() => {
                         currentState.search = e.target.value.trim();
-                        currentState.page = 1;
-                        updateURL();
-                        renderProducts();
-                        fetchFilterCounts();
+                        refreshProductsForFilterChange();
                     }, 500);
                 });
             }
@@ -4043,10 +4362,7 @@
                     if (e.key === 'Enter') {
                         closeAutocomplete();
                         currentState.search = el.value.trim();
-                        currentState.page = 1;
-                        updateURL();
-                        await renderProducts();
-                        await fetchFilterCounts();
+                        await refreshProductsForFilterChange();
                     }
                 });
             });
@@ -4153,10 +4469,7 @@
                     closeAutocomplete();
                     if (headerSearch) headerSearch.value = label;
                     currentState.search = label;
-                    currentState.page = 1;
-                    updateURL();
-                    await renderProducts();
-                    await fetchFilterCounts();
+                    await refreshProductsForFilterChange();
                 });
             });
         }
@@ -4203,11 +4516,8 @@
                     cb.addEventListener('change', async () => {
                         const checked = Array.from(content.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
                         currentState.filters[stateKey] = checked;
-                        currentState.page = 1;
-                        updateURL();
                         if (typeof updateBreadcrumbCategory === 'function') updateBreadcrumbCategory(currentState.category);
-                        await renderProducts();
-                        await fetchFilterCounts();
+                        await refreshProductsForFilterChange();
                     });
                 });
             });
@@ -4244,10 +4554,7 @@
                         currentState.filters.quickFilters = currentState.filters.quickFilters.filter(v => v !== filterValue);
                     }
 
-                    currentState.page = 1;
-                    updateURL();
-                    await renderProducts();
-                    await fetchFilterCounts();
+                    await refreshProductsForFilterChange();
                 });
             });
         }
@@ -4336,7 +4643,15 @@
                 brown: ['brown','chocolate','tan','camel'],
                 neutral: ['neutral','natural','sand','stone','beige','oatmeal']
             };
-            const needles = [target, ...(synonyms[target] || [])].map(slugifyColor).filter(Boolean);
+            const targetParts = target.split('-').filter(part => part.length > 2);
+            const shadeName = targetParts.length > 1 ? targetParts[targetParts.length - 1] : '';
+            const needles = Array.from(new Set([
+                target,
+                shadeName,
+                ...targetParts,
+                ...(synonyms[target] || []),
+                ...(synonyms[shadeName] || [])
+            ].map(slugifyColor).filter(Boolean)));
             let best = null, bestScore = -1;
             for (const v of variants) {
                 const nameSlug = slugifyColor(v && v.name);
@@ -4584,9 +4899,26 @@
             filterKeys.forEach(key => {
                 const val = urlParams.get(key);
                 if (val) {
-                    currentState.filters[key] = val.split(',').map(v => v.trim()).filter(Boolean);
+                    currentState.filters[key] = val.split(',').map(v => {
+                        const value = v.trim();
+                        if (key === 'fabric') {
+                            if (/^cotton-100(?:-\d+)?$/.test(value)) return 'cotton100';
+                            if (/^poly(?:ester)?-100(?:-\d+)?$/.test(value)) return 'polyester100';
+                        }
+                        if (key === 'primaryColour') {
+                            return normalizePrimaryColour({ slug: value, name: value })?.slug || value;
+                        }
+                        if (key === 'style' || key === 'feature') return value.replace(/-\d+$/, '');
+                        return value;
+                    }).filter(Boolean);
                 }
             });
+            const quickFiltersParam = urlParams.get('quickFilters');
+            if (quickFiltersParam) {
+                currentState.filters.quickFilters = quickFiltersParam.split(',').map(v => v.trim()).filter(Boolean);
+            } else if (urlParams.get('accreditation') === 'recycled') {
+                currentState.filters.quickFilters = ['recycled'];
+            }
 
             // Sync checkbox UI with restored filter state
             filterKeys.forEach(key => {
@@ -4652,6 +4984,26 @@
             setupFilterCheckboxes();
             setupQuickFilterToggles();
             setupSearchInput();
+            syncQuickFilterControls();
+            renderActiveFilterChips();
+
+            const clearAllButton = document.getElementById('filtersClearAll');
+            if (clearAllButton) {
+                clearAllButton.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    clearAllProductFilters();
+                }, true);
+            }
+
+            const showResultsButton = document.getElementById('filtersShowResultsBtn');
+            if (showResultsButton) {
+                showResultsButton.addEventListener('click', () => {
+                    document.getElementById('filtersDropup')?.classList.remove('active');
+                    document.getElementById('filtersOverlay')?.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
 
             // Sync hamburger active button + label with URL category
             if (currentState.category && currentState.category !== 'all') {
@@ -4735,6 +5087,7 @@
             }
 
             await renderProducts();
+            updateFiltersShowResults(false);
             await fetchFilterCounts();
             await initPriceRangeSlider();
             updateMobilePagination();

@@ -147,6 +147,7 @@ const positionDesignPanel = document.getElementById("positionDesignPanel");
 const positionDesignTitle = document.getElementById("positionDesignTitle");
 const positionDesignCount = document.getElementById("positionDesignCount");
 const positionDesignStatusText = document.getElementById("positionDesignStatusText");
+const positionDesignPrice = document.getElementById("positionDesignPrice");
 const positionReuseLogoBtn = document.getElementById("positionReuseLogoBtn");
 const positionAddLogoBtn = document.getElementById("positionAddLogoBtn");
 const positionRemoveLogoBtn = document.getElementById("positionRemoveLogoBtn");
@@ -1608,6 +1609,32 @@ function updatePositionDesignUi() {
         : hasText
           ? `Text saved for ${getDesignAreaLabel(currentArea)}.`
           : `No decoration added to ${getDesignAreaLabel(currentArea)} yet.`;
+  }
+  if (positionDesignPrice) {
+    const quantity = Math.max(1, parseInt(state.totalQty || mainQtyInput?.value || 1, 10) || 1);
+    const method = normalizeDecorationMethod(currentDesign?.method || state.decorationType);
+    const currentUnitPrice = hasLogo ? getLogoUnitPrice(method) : (hasText ? 1.5 : 0);
+    let totalDecorationUnitPrice = 0;
+    Object.values(designs).forEach((design) => {
+      if (design?.logo) totalDecorationUnitPrice += getLogoUnitPrice(design.method);
+    });
+    Object.values(textDesigns).forEach((design) => {
+      if (String(design?.text || "").trim()) totalDecorationUnitPrice += 1.5;
+    });
+    const methodLabel = hasText && !hasLogo
+      ? "Text"
+      : method === "dtf"
+        ? "DTF print"
+        : method === "screen"
+          ? "Screen print"
+          : method.charAt(0).toUpperCase() + method.slice(1);
+    positionDesignPrice.hidden = !hasDesign;
+    if (hasDesign) {
+      const currentTotal = currentUnitPrice * quantity;
+      const overallTotal = totalDecorationUnitPrice * quantity;
+      positionDesignPrice.textContent = `${methodLabel}: £${currentUnitPrice.toFixed(2)} × ${quantity} = £${currentTotal.toFixed(2)}`
+        + (designCount > 1 ? ` · Decoration total: £${overallTotal.toFixed(2)}` : "");
+    }
   }
   if (positionReuseLogoBtn) {
     positionReuseLogoBtn.hidden = hasLogo || reusableLogos.length === 0;
@@ -3379,6 +3406,7 @@ document.getElementById("applyProductBtn").addEventListener("click", () => {
 mainQtyInput.addEventListener("input", () => {
   state.totalQty = parseInt(mainQtyInput.value) || 1;
   calculatePrice();
+  updatePositionDesignUi();
 });
 
 document.querySelectorAll("[data-text-type]").forEach(card => {

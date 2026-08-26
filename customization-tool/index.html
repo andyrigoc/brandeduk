@@ -37,7 +37,7 @@
       // runs when Vercel serves the extensionless /customization-tool URL.
       var toolStyles = document.createElement("link");
       toolStyles.rel = "stylesheet";
-      toolStyles.href = folderPath + "style.css?v=20260730d";
+      toolStyles.href = folderPath + "style.css?v=20260826a";
       document.head.appendChild(toolStyles);
 
       // Desktop is a responsive presentation of this same customisation
@@ -320,6 +320,7 @@
         <span class="position-design-status-icon" aria-hidden="true"></span>
         <span id="positionDesignStatusText">Choose a logo for this position.</span>
       </div>
+      <div id="positionDesignPrice" class="position-design-price" hidden></div>
       <div id="positionDesignActions" class="position-design-actions">
         <button id="positionReuseLogoBtn" class="position-design-btn position-design-btn-secondary" type="button" hidden>Use existing logo</button>
         <button id="positionAddLogoBtn" class="position-design-btn position-design-btn-primary" type="button">Add logo here</button>
@@ -332,7 +333,7 @@
     <!-- Logo quality bar -->
     <div class="main-quality-bar" id="mainQualityBar">
       <div class="main-quality-header">
-        <span class="main-quality-title">LOGO QUALITY</span>
+        <span class="main-quality-title">PRINT QUALITY</span>
         <span class="main-quality-pct" id="mainQualityPct" style="color:#9098a3">0%</span>
       </div>
       <div class="main-quality-meter">
@@ -345,7 +346,7 @@
     <!-- Quality warning -->
     <div class="quality-warning" id="qualityWarning" style="display:none">
       <span class="quality-warning-icon">&#9888;</span>
-      <span class="quality-warning-text">If you have any concerns about the quality of your image, please contact us. Our team will be happy to guide you and help you identify the most suitable file for printing.</span>
+      <span class="quality-warning-text">We check every artwork file before production and will contact you if anything needs attention.</span>
     </div>
     </aside>
 
@@ -1036,7 +1037,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260811c", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260826a", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
