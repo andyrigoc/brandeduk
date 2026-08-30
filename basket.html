@@ -1499,7 +1499,7 @@
                     <span class="summary-val" id="summaryLogoCosts">&#163;0.00</span>
                 </div>
                 <div class="summary-row" id="digitizingFeeRow" style="display: none;">
-                    <span>£25 Digitizing and test (ONE OFF)</span>
+                    <span id="summaryDigitizingLabel">Embroidery digitising (£25 per design)</span>
                     <span class="summary-val" id="summaryDigitizingFee">&#163;25.00</span>
                 </div>
                 <div class="summary-row">
@@ -3328,28 +3328,65 @@
 
     const MIN_ORDER_EX_VAT = 50;
     const BASKET_VAT_RATE = 0.20;
+    const DIGITIZING_FEE_PER_DESIGN = 25;
+
+    function getEmbroideryDesignKey(logo) {
+        if (!logo || typeof logo !== 'object') return 'embroidery-design';
+
+        const source = String(
+            logo.originalLogo || logo.logo || logo.logoData || logo.dataUrl ||
+            logo.fileData || logo.url || logo.image || ''
+        ).trim();
+        if (source) {
+            // Data URLs can be large. A length plus both ends is stable for reused
+            // artwork without retaining another full copy in the Set.
+            return `source:${source.length}:${source.slice(0, 96)}:${source.slice(-96)}`;
+        }
+
+        const identity = String(
+            logo.designId || logo.logoId || logo.fileName || logo.filename ||
+            logo.originalName || logo.name || ''
+        ).trim().toLowerCase();
+        return identity ? `identity:${identity}` : 'embroidery-design';
+    }
+
+    function getEmbroideryTextDesignKey(textDesign) {
+        const text = String(textDesign?.text || '').trim().toLowerCase();
+        const font = String(textDesign?.font || textDesign?.fontFamily || 'default').trim().toLowerCase();
+        const weight = String(textDesign?.fontWeight || '400').trim().toLowerCase();
+        const style = String(textDesign?.fontStyle || 'normal').trim().toLowerCase();
+        return `text:${text}:${font}:${weight}:${style}`;
+    }
 
     function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
-        const uniqueEmbLogos = new Set();
+        const uniqueEmbroideryDesigns = new Set();
 
         (basket || []).forEach(item => {
             const qty = item.qty || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
             productCosts += unitPrice * qty;
 
-            if (item.logos) {
-                item.logos.forEach(logo => {
-                    logoCosts += (logo.unitPrice || 0) * qty;
-                    if (logo.method === 'embroidery' && logo.logo) {
-                        uniqueEmbLogos.add(logo.logo);
-                    }
-                });
-            }
+            _extractLogos(item).forEach(logo => {
+                logoCosts += (parseFloat(logo.unitPrice) || 0) * qty;
+                if (String(logo.method || '').toLowerCase() === 'embroidery') {
+                    uniqueEmbroideryDesigns.add(getEmbroideryDesignKey(logo));
+                }
+            });
+
+            (Array.isArray(item.texts) ? item.texts : []).forEach(textDesign => {
+                if (
+                    String(textDesign?.method || '').toLowerCase() === 'embroidery'
+                    && String(textDesign?.text || '').trim()
+                ) {
+                    uniqueEmbroideryDesigns.add(getEmbroideryTextDesignKey(textDesign));
+                }
+            });
         });
 
-        const digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
+        const embroideryDesignCount = uniqueEmbroideryDesigns.size;
+        const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
         const subtotalExVat = productCosts + logoCosts + digitizingFee;
         const vatAmount = subtotalExVat * BASKET_VAT_RATE;
         const grandTotalIncVat = subtotalExVat + vatAmount;
@@ -3358,6 +3395,7 @@
             productCosts,
             logoCosts,
             digitizingFee,
+            embroideryDesignCount,
             subtotalExVat,
             vatAmount,
             grandTotalIncVat,
@@ -3392,6 +3430,7 @@
             productCosts,
             logoCosts,
             digitizingFee,
+            embroideryDesignCount,
             subtotalExVat,
             vatAmount,
             grandTotalIncVat: grandTotal
@@ -3407,6 +3446,10 @@
         if (digitizingRow) {
             if (digitizingFee > 0) {
                 digitizingRow.style.display = 'flex';
+                const designWord = embroideryDesignCount === 1 ? 'design' : 'designs';
+                if (el('summaryDigitizingLabel')) {
+                    el('summaryDigitizingLabel').textContent = `Embroidery digitising (£25 × ${embroideryDesignCount} ${designWord})`;
+                }
                 if (el('summaryDigitizingFee')) el('summaryDigitizingFee').textContent = '\u00A3' + digitizingFee.toFixed(2);
             } else {
                 digitizingRow.style.display = 'none';
@@ -4155,7 +4198,6 @@
                     let totalGarmentCost = 0, totalQuantity = 0, customizationTotal = 0, digitizingFee = 0;
                     const basketItems = [];
                     const customizationsList = [];
-                    const uniqueEmbLogos = new Set();
                     const renderedPreviewEntries = await renderAllQuotePreviewImages(basket);
 
                     basket.forEach(item => {
@@ -4191,7 +4233,6 @@
                                 const logoUp = logo.unitPrice || 0;
                                 const lineTotal = logoUp * qty;
                                 customizationTotal += lineTotal;
-                                if (logo.method === 'embroidery' && logo.logo) uniqueEmbLogos.add(logo.logo);
                                 customizationsList.push({
                                     position: logo.positionLabel || logo.position,
                                     method: logo.method === 'embroidery' ? 'Embroidery' : 'Print',
@@ -4205,10 +4246,11 @@
                         itemTexts.forEach(textDesign => {
                             const textUp = parseFloat(textDesign.unitPrice || 1.5) || 1.5;
                             const lineTotal = textUp * qty;
+                            const textMethod = String(textDesign.method || '').toLowerCase();
                             customizationTotal += lineTotal;
                             customizationsList.push({
                                 position: textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area),
-                                method: 'Text',
+                                method: textMethod === 'embroidery' ? 'Embroidery' : 'Text',
                                 type: 'text',
                                 text: textDesign.text || '',
                                 textColour: textDesign.textColour || '',
@@ -4221,7 +4263,8 @@
                         });
                     });
 
-                    digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
+                    const basketTotals = computeBasketTotals(basket);
+                    digitizingFee = basketTotals.digitizingFee;
                     const totalExVat = totalGarmentCost + customizationTotal + digitizingFee;
                     const vatAmount = totalExVat * 0.20;
 
@@ -4239,7 +4282,10 @@
                         customer: { fullName: name, phone: phone, email: emailVal },
                         summary: {
                             totalQuantity, totalItems: basket.length, garmentCost: totalGarmentCost,
-                            customizationCost: customizationTotal, digitizingFee, subtotal: totalExVat,
+                            customizationCost: customizationTotal,
+                            digitizingFee,
+                            embroideryDesignCount: basketTotals.embroideryDesignCount,
+                            subtotal: totalExVat,
                             vatRate: 0.20, vatAmount, totalExVat, totalIncVat,
                             displayTotal, vatMode: includeVAT ? 'inc' : 'ex',
                             belowMinimumOrder: !computeBasketTotals(basket).meetsMinOrder

@@ -1445,6 +1445,7 @@ function captureCurrentTextDesign() {
   const computed = window.getComputedStyle(textContent);
   const design = {
     area,
+    method: normalizeDecorationMethod(state.textType || existing.method || "print"),
     text: value,
     textColour: state.textColour || "#000000",
     font: state.font || "Arial",
@@ -1539,6 +1540,7 @@ function getDraftTextDesigns() {
     designs[area] = {
       ...(designs[area] || {}),
       area,
+      method: normalizeDecorationMethod(state.textType || designs[area]?.method || "print"),
       text,
       textColour: state.textColour,
       font: state.font,
@@ -1721,6 +1723,7 @@ async function restoreAreaTextDesign(area = state.selectedArea) {
   }
 
   state.text = String(design.text);
+  state.textType = normalizeDecorationMethod(design.method || state.textType || "print");
   state.textColour = design.textColour || "#000000";
   state.font = design.font || "Arial";
   state.textAlign = design.textAlign || "center";
@@ -1849,6 +1852,7 @@ function hydrateAreaDesignsFromBasketContext() {
     const area = getDesignAreaKey(textDesign.position || textDesign.area);
     hydratedTexts[area] = {
       area,
+      method: normalizeDecorationMethod(textDesign.method || "print"),
       text: value,
       textColour: textDesign.textColour || textDesign.color || "#000000",
       font: textDesign.font || "Arial",
@@ -2832,6 +2836,7 @@ function compactBasketItemForStorage(item) {
         : null;
       const compactText = {
         type: "text",
+        method: normalizeDecorationMethod(textDesign.method || "print"),
         area: textDesign.area || textDesign.position || "",
         position: textDesign.position || textDesign.area || "",
         positionLabel: textDesign.positionLabel || "",
@@ -3186,6 +3191,7 @@ function buildBasketItemFromState() {
     : allTextDesigns;
   const texts = orderedTextDesigns.map((design) => ({
     type: "text",
+    method: normalizeDecorationMethod(design.method || "print"),
     area: design.area,
     position: design.area,
     positionLabel: getDesignAreaLabel(design.area),

@@ -1014,7 +1014,7 @@
                                 <span id="coCustomizationCost">£0.00</span>
                             </div>
                             <div class="co-summary-row" id="coDigitizingRow" style="display:none">
-                                <span>Digitizing and test (ONE OFF)</span>
+                                <span id="coDigitizingLabel">Embroidery digitising (£25 per design)</span>
                                 <span id="coDigitizingFee">£0.00</span>
                             </div>
                             <div class="co-summary-row">
@@ -1743,6 +1743,7 @@
                     var garmentCost = _num(totals.garmentCost, total);
                     var customizationCost = _num(totals.customizationCost, 0);
                     var digitizingFee = _num(totals.digitizingFee, 0);
+                    var embroideryDesignCount = _num(totals.embroideryDesignCount, 0);
                     var totalExFromBasket = _num(totals.totalExVat, total);
                     var vatFromBasket = _num(totals.vatAmount, totalExFromBasket * 0.20);
                     var totalIncFromBasket = _num(totals.totalIncVat, totalExFromBasket + vatFromBasket);
@@ -1758,8 +1759,12 @@
                     document.getElementById('coSubtotal').textContent = subtotalFmtFromBasket;
 
                     var digitizingRow = document.getElementById('coDigitizingRow');
+                    var digitizingLabel = document.getElementById('coDigitizingLabel');
                     var digitizingEl = document.getElementById('coDigitizingFee');
                     if (digitizingRow) digitizingRow.style.display = digitizingFee > 0 ? '' : 'none';
+                    if (digitizingLabel && embroideryDesignCount > 0) {
+                        digitizingLabel.textContent = 'Embroidery digitising (£25 × ' + embroideryDesignCount + ' ' + (embroideryDesignCount === 1 ? 'design' : 'designs') + ')';
+                    }
                     if (digitizingEl) digitizingEl.textContent = '\u00A3' + digitizingFee.toFixed(2);
 
                     var vatRowFromBasket = document.getElementById('coVatRow');
@@ -1912,7 +1917,7 @@
 
     <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
     <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
-    <script src="mobile/js/checkout.js?v=20260826a"></script>
+    <script src="mobile/js/checkout.js?v=20260830a"></script>
 
 </body>
 </html>

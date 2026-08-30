@@ -11,6 +11,7 @@ const QUOTES_ENDPOINT = `${API_BASE_URL}/api/quotes`;
 const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-session`;
 const CREATE_ORDER_ENDPOINT = `${API_BASE_URL}/api/checkout/create-order`;
 const VAT_RATE = 0.20;
+const DIGITIZING_FEE_PER_DESIGN = 25;
 
 function isLocalApiBase() {
     try {
@@ -305,6 +306,7 @@ function buildQuoteData(basket) {
             garmentCost: roundMoney(totals.garmentCost),
             customizationCost: roundMoney(totals.customizationCost),
             digitizingFee: roundMoney(totals.digitizingFee),
+            embroideryDesignCount: totals.embroideryDesignCount,
             subtotal: roundMoney(totals.totalExVat),
             vatRate: VAT_RATE,
             vatAmount: roundMoney(totals.vatAmount),
@@ -383,7 +385,10 @@ function calculateBasketTotals(basket) {
             const lineTotal = number(customization.lineTotal || (unit * qty), 0);
             customizationCost += lineTotal;
 
-            if (String(customization.method || '').toLowerCase() === 'embroidery' && (customization.logo || customization.logoData)) {
+            if (
+                String(customization.method || '').toLowerCase() === 'embroidery'
+                && (customization.logo || customization.logoData || customization.hasLogo)
+            ) {
                 uniqueEmbLogos.add(getLogoKey(customization));
             }
 
@@ -399,9 +404,19 @@ function calculateBasketTotals(basket) {
                 quantity: qty,
             });
         });
+
+        (Array.isArray(item.texts) ? item.texts : []).forEach(textDesign => {
+            if (
+                String(textDesign?.method || '').toLowerCase() === 'embroidery'
+                && String(textDesign?.text || '').trim()
+            ) {
+                uniqueEmbLogos.add(getEmbroideryTextKey(textDesign));
+            }
+        });
     });
 
-    const digitizingFee = uniqueEmbLogos.size > 0 ? 25 : 0;
+    const embroideryDesignCount = uniqueEmbLogos.size;
+    const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
     const totalExVat = garmentCost + customizationCost + digitizingFee;
     const vatAmount = totalExVat * VAT_RATE;
 
@@ -409,6 +424,7 @@ function calculateBasketTotals(basket) {
         garmentCost,
         customizationCost,
         digitizingFee,
+        embroideryDesignCount,
         totalQuantity,
         totalExVat,
         vatAmount,
@@ -540,8 +556,28 @@ function safeLogoRef(value) {
 }
 
 function getLogoKey(customization) {
-    const ref = safeLogoRef(customization.logo || customization.logoData);
-    return ref || `${customization.positionLabel || customization.position || 'logo'}-${customization.method || 'method'}`;
+    const source = String(
+        customization.originalLogo || customization.logo || customization.logoData ||
+        customization.dataUrl || customization.fileData || customization.url ||
+        customization.image || ''
+    ).trim();
+    if (source) {
+        return `source:${source.length}:${source.slice(0, 96)}:${source.slice(-96)}`;
+    }
+
+    const identity = String(
+        customization.designId || customization.logoId || customization.fileName ||
+        customization.filename || customization.originalName || customization.name || ''
+    ).trim().toLowerCase();
+    return identity ? `identity:${identity}` : 'embroidery-design';
+}
+
+function getEmbroideryTextKey(textDesign) {
+    const text = String(textDesign?.text || '').trim().toLowerCase();
+    const font = String(textDesign?.font || textDesign?.fontFamily || 'default').trim().toLowerCase();
+    const weight = String(textDesign?.fontWeight || '400').trim().toLowerCase();
+    const style = String(textDesign?.fontStyle || 'normal').trim().toLowerCase();
+    return `text:${text}:${font}:${weight}:${style}`;
 }
 
 function mapPositionToBackendSlug(position) {
