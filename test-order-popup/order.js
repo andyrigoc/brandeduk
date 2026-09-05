@@ -88,6 +88,11 @@ window.goToPage = function(index) {
     }
     
     const target = -(index * 100) + "%";
+
+    var closeButton = document.querySelector('#orderPopup .order_close_btn');
+    var backToColourButton = document.getElementById('p3BackToColour');
+    if (closeButton) closeButton.style.display = '';
+    if (backToColourButton) backToColourButton.style.display = index === 2 ? 'inline-flex' : 'none';
     
     // When going to page 3, populate it
     if (index === 2) {
@@ -246,13 +251,50 @@ window.setProductData = function(data) {
     window.productData = data;
 };
 
-// Populate page 3 with selected colour info and sizes
+// Populate page 3 with the selected product, prices, sizes and quantities.
 function populatePage3() {
     var product = window.productData;
     if (!product) return;
-    
-    // Update colour bar
+
     var selectedItem = document.querySelector('.colour-swatch-item.selected');
+    var productColours = (product.colors || product.colours || []).filter(function(colour) {
+        return String(colour && colour.name || '').trim().toLowerCase() !== 'model';
+    });
+
+    $('#p3ProductTitle').text(product.name || 'Product');
+    $('#p3ProductBrand').text(product.brand || '');
+    $('#p3ProductDescription').text(product.description || product.features || 'Classic garment with a soft feel and reliable everyday comfort.');
+
+    var galleryImages = productColours.map(function(colour) {
+        return colour.main || colour.image || colour.thumb || product.image || '';
+    }).filter(Boolean);
+    var selectedImage = selectedItem ? selectedItem.dataset.img : '';
+    galleryImages = [selectedImage].concat(galleryImages).filter(function(image, index, images) {
+        return image && images.indexOf(image) === index;
+    }).slice(0, 4);
+    if (!galleryImages.length && product.image) galleryImages = [product.image];
+    var galleryIndex = 0;
+    var galleryImage = galleryImages[galleryIndex] || product.image || product.mainImage || '';
+    $('#p3ProductImage').attr({ src: galleryImage, alt: (product.name || 'Selected product') + ' in ' + (window.selectedColour || '') });
+
+    var dots = $('#p3GalleryDots').empty();
+    galleryImages.forEach(function(image, index) {
+        $('<span class="p3-gallery-dot"></span>').toggleClass('active', index === galleryIndex).appendTo(dots);
+    });
+    $('#p3GalleryPrev').off('click').on('click', function() {
+        if (galleryImages.length < 2) return;
+        galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+        $('#p3ProductImage').attr('src', galleryImages[galleryIndex]);
+        dots.children().removeClass('active').eq(galleryIndex).addClass('active');
+    });
+    $('#p3GalleryNext').off('click').on('click', function() {
+        if (galleryImages.length < 2) return;
+        galleryIndex = (galleryIndex + 1) % galleryImages.length;
+        $('#p3ProductImage').attr('src', galleryImages[galleryIndex]);
+        dots.children().removeClass('active').eq(galleryIndex).addClass('active');
+    });
+
+    // Keep the existing selected-colour hooks available for the rest of the flow.
     if (selectedItem) {
         var imgUrl = selectedItem.dataset.img;
         var colourName = selectedItem.dataset.name || selectedItem.dataset.colour;
@@ -270,21 +312,30 @@ function populatePage3() {
     var tiersContainer = $('#p3DiscountTiers');
     tiersContainer.empty();
 
-    // Build tier card data (skip base tier min≤1)
+    // Build complete quantity ranges with prices for the PC reference cards.
     var tierData = [];
     if (tiers.length > 0) {
-        tiers.forEach(function(tier) {
+        tiers.forEach(function(tier, index) {
             var min = tier.min || tier.qty || 1;
-            if (min <= 1) return;
+            var nextTier = tiers[index + 1];
+            var nextMin = nextTier ? (nextTier.min || nextTier.qty) : null;
+            var max = tier.max || (nextMin ? nextMin - 1 : 99999);
             var pct = tier.percentage || tier.discount || tier.pct || 0;
-            if (!pct) return;
-            tierData.push({ min: min, pct: parseFloat(pct).toFixed(2).replace(/\.00$/, '') });
+            var price = parseFloat(tier.price || tier.unitPrice || product.price || product.basePrice) || 0;
+            tierData.push({
+                min: min,
+                max: max,
+                price: price,
+                pct: parseFloat(pct).toFixed(2).replace(/\.00$/, '')
+            });
         });
     } else {
         tierData = [
-            { min: 10, pct: '5' },
-            { min: 25, pct: '10' },
-            { min: 50, pct: '20' }
+            { min: 1, max: 9, price: parseFloat(product.price || product.basePrice) || 0, pct: '0' },
+            { min: 10, max: 24, price: parseFloat(product.price || product.basePrice) || 0, pct: '5' },
+            { min: 25, max: 49, price: parseFloat(product.price || product.basePrice) || 0, pct: '10' },
+            { min: 50, max: 99, price: parseFloat(product.price || product.basePrice) || 0, pct: '15' },
+            { min: 100, max: 249, price: parseFloat(product.price || product.basePrice) || 0, pct: '20' }
         ];
     }
 
@@ -292,11 +343,14 @@ function populatePage3() {
     window._p3TierData = tierData;
 
     tierData.forEach(function(t) {
+                var range = t.max && t.max < 99999 ? t.min + '-' + t.max : t.min + '+';
+                var save = parseFloat(t.pct) || 0;
         tiersContainer.append(
-            '<div class="discount-tier-card" data-min="' + t.min + '">' +
-              '<div class="tier-qty">' + t.min + '+</div>' +
-              '<div class="tier-pct">-' + t.pct + '%</div>' +
-              '<div class="tier-label">off</div>' +
+            '<div class="discount-tier-card" data-min="' + t.min + '" data-max="' + t.max + '">' +
+                            '<div class="tier-qty">' + range + '</div>' +
+                            '<div class="tier-price">£' + Number(t.price || 0).toFixed(2) + '</div>' +
+                            '<div class="tier-label">ex. VAT</div>' +
+                            (save > 0 ? '<div class="tier-save">SAVE ' + save + '%</div>' : '') +
             '</div>'
         );
     });
@@ -395,7 +449,7 @@ $(document).on("click", "#btnAddToQuote", function(e) {
     // Show success state
     var sizeList = Object.entries(sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
     $('#successSubtitle').text(item.colour + ' · ' + totalQty + ' items (' + sizeList + ')');
-    $('#btnAddToQuote').hide();
+    $('#p3InitialActions').hide();
     $('#addQuoteSuccess').fadeIn(300);
 });
 
@@ -492,7 +546,7 @@ function finalSaveToBasket(redirectUrl) {
 // Continue Shopping - close popup and reset
 $(document).on("click", "#btnContinueShopping", function() {
     $('#addQuoteSuccess').hide();
-    $('#btnAddToQuote').show();
+    $('#p3InitialActions').show();
     window.goToPage(0);
     // Close popup
     if (typeof window.closeOrderPopup === 'function') {
@@ -506,7 +560,7 @@ $(document).on("click", "#btnContinueShopping", function() {
 // shared backend-driven customizer inside this same PC order window.
 $(document).on("click", "#btnAddLogo", function() {
     $('#addQuoteSuccess').hide();
-    $('#btnAddToQuote').show();
+    $('#p3InitialActions').hide();
 
     // Re-sync window.quantities from the P3 grid to pass validation
     window.quantities = {};
@@ -523,6 +577,35 @@ $(document).on("click", "#btnAddLogo", function() {
 
     // Safe fallback if the embedded tool module ever fails to load.
     window.goToPage(3);
+});
+
+// The initial PC action bar uses the same quote/customizer flow.
+$(document).on("click", "#btnAddLogoInitial", function() {
+    var beforeCount = 0;
+    try {
+        beforeCount = JSON.parse(localStorage.getItem('quoteBasket') || '[]').length;
+    } catch (error) {}
+
+    $('#btnAddToQuote').trigger('click');
+    window.setTimeout(function() {
+        var afterCount = 0;
+        try {
+            afterCount = JSON.parse(localStorage.getItem('quoteBasket') || '[]').length;
+        } catch (error) {}
+        if (afterCount > beforeCount) $('#btnAddLogo').trigger('click');
+    }, 40);
+});
+
+$(document).on("click", "#btnContinueShoppingInitial", function() {
+    $('#btnContinueShopping').trigger('click');
+});
+
+$(document).on("click", "#p3BackToColour", function() {
+    window.goToPage(1);
+});
+
+$(document).on("click", ".pc-step-back:not(#p3BackToColour)", function() {
+    window.goToPage(parseInt($(this).data('target-page'), 10) || 0);
 });
 
 // PAGE 4: Helper — reset badge back to original EMBROIDERY/PRINT label
@@ -756,6 +839,9 @@ $(document).on("click", ".colour-swatch-item", function(e) {
         window.selectedColour = colourName;
         $("#selectedColourName").text(colourName);
         if (imgUrl) $("#productMainImage").attr("src", imgUrl);
+        if (typeof window.preloadPcOrderCustomizer === 'function' && window.productData) {
+            window.preloadPcOrderCustomizer(window.productData, colourName, imgUrl, $(this).data("hex") || '');
+        }
     } else {
         // Deselect completely
         window.selectedColour = null;
@@ -838,7 +924,7 @@ function updateP3TierHighlight() {
     }
     var tierData = window._p3TierData || [];
     // Find highest tier reached
-    var reached = -1;
+    var reached = tierData.length ? 0 : -1;
     tierData.forEach(function(t, i) {
         if (total >= t.min) reached = i;
     });

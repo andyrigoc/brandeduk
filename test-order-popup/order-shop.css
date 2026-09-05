@@ -722,6 +722,12 @@
     flex-shrink: 0;
 }
 
+/* Page 2 has a back control above the identity bar. Keep the product header
+   below it instead of letting the legacy negative margin cover the button. */
+.page-2 .p2-identity-bar {
+    margin-top: 8px;
+}
+
 .p2-code-name {
     display: flex;
     flex-direction: column;
@@ -790,10 +796,36 @@
 }
 
 .colour-swatches-wrapper {
-    max-height: 200px;
+    max-height: none;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     margin-bottom: 12px;
     padding-right: 8px;
+}
+
+.page-2 .colour-section {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.page-2 .colour-swatches-wrapper {
+    flex: 1;
+    min-height: 0;
+}
+
+.page-2 .page-content-wrapper {
+    overflow: hidden;
+}
+
+.page-2 .page-nav-buttons {
+    position: relative;
+    bottom: auto;
+    flex: 0 0 auto;
+    margin-top: 12px;
 }
 
 .colour-swatches-wrapper::-webkit-scrollbar {
@@ -2435,6 +2467,461 @@
     color: #374151;
     text-align: center;
     line-height: 1.7;
+}
+
+/* =========================================================
+   PC PAGE 3 - Product preview and size selection
+   ========================================================= */
+.page-3 .p3-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    min-height: 0;
+    padding: 0 14px 8px;
+    overflow: hidden;
+}
+
+.pc-step-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    width: fit-content;
+    margin: 0 0 8px;
+    padding: 7px 12px;
+    border: 1px solid #dce2eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #273469;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.pc-step-back:hover {
+    border-color: #b8c2d2;
+    background: #f8fafc;
+}
+
+.p3-back-colour {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    width: fit-content;
+    margin: 0 0 2px;
+    padding: 7px 12px;
+    border: 1px solid #dce2eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #273469;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.p3-back-colour:hover {
+    border-color: #b8c2d2;
+    background: #f8fafc;
+}
+
+.p3-product-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 350px) minmax(520px, 1fr);
+    gap: 28px;
+    padding-right: 40px;
+    flex: 1;
+    min-height: 0;
+}
+
+.p3-page-wrapper .selected-colour-bar {
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 1px solid #f0f1f3;
+    border-radius: 0;
+    background: #fff;
+}
+
+.p3-page-wrapper .selected-colour-check {
+    color: #374151;
+}
+
+.p3-page-wrapper .selected-colour-change {
+    display: none;
+}
+
+.p3-product-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 18px 16px 12px;
+    background: #f8f9fb;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.p3-product-heading h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+.p3-product-heading p {
+    margin: 5px 0 12px;
+    color: #8b93a3;
+    font-size: 13px;
+}
+
+.p3-image-frame {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 230px;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+}
+
+#p3ProductImage {
+    width: 100%;
+    height: 100%;
+    max-height: 345px;
+    object-fit: contain;
+}
+
+.p3-gallery-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 2px 10px rgba(31, 41, 55, 0.12);
+    cursor: pointer;
+    font-size: 25px;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+.p3-gallery-arrow:hover { background: #f3f4f6; }
+.p3-gallery-prev { left: 10px; }
+.p3-gallery-next { right: 10px; }
+
+.p3-gallery-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    min-height: 12px;
+    margin: 12px 0 8px;
+}
+
+.p3-gallery-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #d9dce2;
+}
+
+.p3-gallery-dot.active { background: #374151; }
+
+.p3-product-description {
+    max-width: 280px;
+    margin: 0 auto;
+    color: #727b8b;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.p3-quantity-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 22px 0 0;
+}
+
+.p3-sizes-header { flex-shrink: 0; }
+.p3-quantity-panel .sizes-title { font-size: 18px; margin-bottom: 8px; }
+.p3-quantity-panel .sizes-meta { margin-bottom: 14px; }
+
+.p3-quantity-panel .discount-tiers {
+    gap: 10px;
+    margin-bottom: 14px;
+    overflow: visible;
+}
+
+.p3-quantity-panel .discount-tier-card {
+    min-width: 0;
+    min-height: 132px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #eceef2;
+    box-shadow: 0 2px 3px rgba(31, 41, 55, 0.04);
+}
+
+.p3-quantity-panel .discount-tier-card.tier-active {
+    background: rgba(124, 58, 237, 0.08);
+    border-color: rgba(124, 58, 237, 0.18);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.06);
+    transform: none;
+}
+
+.p3-quantity-panel .discount-tier-card.tier-active .tier-qty,
+.p3-quantity-panel .discount-tier-card.tier-active .tier-price,
+.p3-quantity-panel .discount-tier-card.tier-active .tier-label { color: #5b21b6; }
+
+.p3-quantity-panel .discount-tier-card.tier-active::after { display: none; }
+
+.p3-quantity-panel .discount-tier-card .tier-qty {
+    color: #7655e8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.p3-quantity-panel .discount-tier-card .tier-price {
+    margin-top: 8px;
+    color: #1f2937;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.p3-quantity-panel .discount-tier-card .tier-label {
+    margin-top: 7px;
+    color: #7655e8;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.p3-quantity-panel .discount-tier-card .tier-save {
+    display: inline-block;
+    margin-top: auto;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #fff1bc;
+    border: 1px solid #ffe49a;
+    color: #f59e0b;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(245, 158, 11, 0.08);
+}
+
+.p3-quantity-panel #sizeQtyGridP3 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 0;
+    flex: 1;
+    min-height: 0;
+    grid-auto-rows: minmax(96px, 1fr);
+}
+
+.p3-quantity-panel .size-qty-box-p3 {
+    min-height: 112px;
+    padding: 12px 8px;
+    justify-content: space-between;
+}
+
+.p3-quantity-panel .qty-controls { gap: 6px; }
+.p3-quantity-panel .qty-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    font-size: 17px;
+}
+
+.p3-quantity-panel .qty-input {
+    width: 56px;
+    height: 30px;
+    text-align: center;
+}
+
+.p3-page-wrapper > .btn-add-quote {
+    width: 100%;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.p3-initial-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.p3-initial-actions .btn-add-quote,
+.p3-initial-actions .btn-add-logo,
+.p3-initial-actions .btn-keep-shopping {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: auto !important;
+    min-width: 0;
+    min-height: 52px;
+    margin: 0 !important;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    position: static;
+    transform: none;
+    box-shadow: none;
+}
+
+.p3-initial-actions .btn-add-quote {
+    background: #e8f6f0;
+    color: #14866f;
+    border: 1px solid #d2eee4;
+}
+
+.p3-initial-actions .btn-add-quote:hover {
+    background: #def1e9;
+    color: #107461;
+    box-shadow: none;
+}
+
+.p3-initial-actions .btn-add-logo {
+    background: #e8e0ff;
+    color: #7655e8;
+    border: 1px solid #ded3ff;
+}
+
+.p3-initial-actions .btn-add-logo:hover {
+    background: #ded3ff;
+    color: #6744dc;
+    box-shadow: none;
+}
+
+.p3-initial-actions .btn-keep-shopping {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #dfe3e8;
+}
+
+.p3-initial-actions .btn-keep-shopping:hover {
+    background: #f8fafc;
+    border-color: #cfd5dc;
+}
+
+.p3-action-icon {
+    display: block;
+    flex: 0 0 18px;
+}
+
+.p3-page-wrapper > .add-quote-success {
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+@media (max-width: 1050px) {
+    .p3-product-layout {
+        grid-template-columns: minmax(260px, 0.85fr) minmax(480px, 1fr);
+        gap: 20px;
+        padding-right: 20px;
+    }
+
+    .p3-quantity-panel #sizeQtyGridP3 { gap: 8px; }
+}
+
+/* Quantity control treatment from the PC design reference. */
+.p3-quantity-panel .size-qty-box-p3 {
+    min-height: 96px;
+    padding: 8px 6px 10px;
+    gap: 5px;
+}
+
+.p3-quantity-panel .size-name-p3 {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.p3-quantity-panel .size-price-p3 {
+    font-size: 12px;
+    color: #7b8492;
+    line-height: 1.2;
+}
+
+.p3-quantity-panel .qty-controls {
+    width: 92px;
+    height: 26px;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #e2e5e9;
+    border-radius: 8px;
+    background: #f7f8fa;
+}
+
+.p3-quantity-panel .qty-btn {
+    width: 26px;
+    height: 24px;
+    flex: 0 0 26px;
+    border: 0;
+    border-radius: 0;
+    background: #f1f3f5;
+    color: #68717d;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+    transform: none;
+}
+
+.p3-quantity-panel .qty-btn:hover,
+.p3-quantity-panel .qty-btn:active {
+    background: #e6e9ed;
+    color: #374151;
+    transform: none;
+}
+
+.p3-quantity-panel .qty-input {
+    width: 40px;
+    height: 24px;
+    flex: 0 0 40px;
+    min-width: 40px;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid #e2e5e9;
+    border-left: 1px solid #e2e5e9;
+    border-radius: 0;
+    background: #fff;
+    color: #303640;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    text-align: center;
+    text-indent: 0;
+    appearance: textfield;
+}
+
+.p3-quantity-panel .qty-input::-webkit-outer-spin-button,
+.p3-quantity-panel .qty-input::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+}
+
+.p3-quantity-panel .qty-input:focus {
+    border-color: #d9dde2;
+    box-shadow: none;
+    outline: none;
 }
 
 /* Cloud button: logo uploaded state */

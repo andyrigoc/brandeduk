@@ -9,6 +9,8 @@ const state = {
   brandName: "GILDAN",
   brandLogo: "",
   selectedColorImage: "",
+  explicitColourHex: "",
+  sampledColourCmyk: "",
   colourName: "White",
   colourHex: "#ffffff",
   sizes: [{ size: "Medium", qty: 1 }],
@@ -279,7 +281,11 @@ function isWhiteColourName(name) {
 function applyGarmentTintHex(hex) {
   const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
   const BCH = brandedColour();
-  let tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
+  let tintHex = state.explicitColourHex || "";
+
+  if (!tintHex) {
+    tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
+  }
 
   if (!tintHex) {
     tintHex = resolveGarmentDisplayHex(hex, state.colourName, state.productCode, thumbUrl);
@@ -297,6 +303,19 @@ function applyGarmentTintHex(hex) {
   state.colourHex = tintHex;
   if (colourLayer) colourLayer.style.backgroundColor = tintHex;
   syncViewThumbTint();
+}
+
+function rgbHexToCmyk(hex) {
+  const value = normalizeHex(hex);
+  if (!value) return "";
+  const channels = [1, 3, 5].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
+  const [r, g, b] = channels;
+  const k = 1 - Math.max(r, g, b);
+  if (k >= 0.999) return "0%, 0%, 0%, 100%";
+  return [r, g, b].map((channel) => Math.round(((1 - channel - k) / (1 - k)) * 100))
+    .concat(Math.round(k * 100))
+    .map((channel) => channel + "%")
+    .join(", ");
 }
 
 /** Eyedropper RGB dal thumbnail API — mai dal nome colore. */
@@ -337,7 +356,11 @@ async function refreshColourHexFromProductThumb(options) {
     return state.colourHex || "";
   }
 
-  state.colourHex = sampled;
+  if (!state.explicitColourHex) {
+    state.colourHex = sampled;
+    state.explicitColourHex = sampled;
+    state.sampledColourCmyk = rgbHexToCmyk(sampled);
+  }
   const colourIdx = colours.findIndex(
     ([name]) => normalizeColorKey(name) === normalizeColorKey(state.colourName)
   );
@@ -345,7 +368,7 @@ async function refreshColourHexFromProductThumb(options) {
   if (BCH && typeof BCH.register === "function") {
     BCH.register(state.colourName, sampled, state.productCode);
   }
-  applyGarmentTintHex(sampled);
+  applyGarmentTintHex(state.explicitColourHex || sampled);
   renderColours();
   renderMiniColours();
   return sampled;
@@ -909,6 +932,12 @@ function getColourImageForName(name) {
 }
 
 function syncCurrentColourHexFromPalette() {
+  if (state.explicitColourHex) {
+    state.colourHex = state.explicitColourHex;
+    if (colourLayer) colourLayer.style.backgroundColor = state.explicitColourHex;
+    syncViewThumbTint();
+    return;
+  }
   if (!Array.isArray(colours) || colours.length === 0) return;
   const currentName = normalizeColorKey(state.colourName || "");
   if (!currentName) return;
@@ -1051,6 +1080,10 @@ function applySelectedProductContext() {
 
   const params = new URLSearchParams(window.location.search);
   const urlCode = String(params.get("code") || "").trim();
+  const urlColour = String(params.get("color") || "").trim();
+  const urlColourImage = String(params.get("colorImage") || "").trim();
+  const urlColourHex = String(params.get("colorHex") || "").trim();
+  const urlProductType = String(params.get("productType") || "").trim();
 
   // Never let product data left in the session by a previously viewed item
   // choose the garment/configuration for a different code in the URL.
@@ -1091,6 +1124,35 @@ function applySelectedProductContext() {
     } catch (error) {
       // no-op
     }
+  }
+
+  // The order flow passes the customer's current colour explicitly. It must
+  // override stale session or basket state from a previous product run.
+  if (selectedProductData && urlColour) {
+    selectedProductData = {
+      ...selectedProductData,
+      color: urlColour,
+      selectedColorName: urlColour,
+      colorImage: urlColourImage || selectedProductData.colorImage,
+      selectedColorImage: urlColourImage || selectedProductData.selectedColorImage
+    };
+  }
+
+  if (urlColourHex) {
+    const normalizedUrlHex = normalizeHex(urlColourHex) || "";
+    const isWhitePlaceholder = normalizedUrlHex === "#ffffff" || normalizedUrlHex === "#fff";
+    state.explicitColourHex = normalizedUrlHex && (!isWhitePlaceholder || isWhiteColourName(urlColour))
+      ? normalizedUrlHex
+      : "";
+  }
+
+  if (selectedProductData && urlProductType) {
+    selectedProductData = {
+      ...selectedProductData,
+      productType: urlProductType,
+      category: urlProductType,
+      type: urlProductType
+    };
   }
 
   state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
@@ -1150,13 +1212,14 @@ function applySelectedProductContext() {
 
   state.colourName = activeColour[0];
   const mappedColourImage = getColourImageForName(state.colourName);
-  if (mappedColourImage) {
+  if (mappedColourImage && !urlColourImage) {
     state.selectedColorImage = mappedColourImage;
   }
   applyGarmentTintHex(activeColour[1] || "");
   updateSelectedColourLabels(state.colourName);
 
   refreshColourHexFromProductThumb({
+    thumbUrl: urlColourImage || state.selectedColorImage,
     apiHex: normalizeHex(activeColour[1] || "")
   }).then(() => {
     applyArea();
@@ -1226,10 +1289,11 @@ async function hydrateSelectedProductFromApi() {
       const activeColour = currentMatch || (incomingName ? [incomingName, ""] : colours[0]);
       state.colourName = activeColour[0];
       const mappedColourImage = getColourImageForName(state.colourName);
-      if (mappedColourImage) {
+      const explicitImageUrl = new URLSearchParams(window.location.search).get("colorImage");
+      if (mappedColourImage && !explicitImageUrl) {
         state.selectedColorImage = mappedColourImage;
       }
-      state.colourHex = resolveGarmentDisplayHex(
+      state.colourHex = state.explicitColourHex || resolveGarmentDisplayHex(
         state.colourHex || activeColour[1],
         state.colourName,
         productCode,

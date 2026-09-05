@@ -8,6 +8,8 @@
     var summary = document.getElementById('pcCustomizerSummary');
     var orderCard = document.querySelector('#orderPopup .order_card');
     var orderPopup = document.getElementById('orderPopup');
+    var preloadFrame = null;
+    var preloadedCode = '';
 
     if (!panel || !frame || !orderCard) return;
 
@@ -36,6 +38,43 @@
             .map(function(entry) { return entry[0] + ' x ' + entry[1]; })
             .join(', ');
     }
+
+    // Warm the Design Studio document while the customer is still choosing
+    // colour and quantities. The visible iframe is still opened only on click.
+    window.preloadPcOrderCustomizer = function preloadPcOrderCustomizer(product, colour, colourImage, colourHex) {
+        var code = product && (product.code || product.sku || '');
+        var preloadKey = code + '::' + String(colour || '').trim().toLowerCase();
+        if (!code || preloadKey === preloadedCode) return;
+
+        if (!preloadFrame) {
+            preloadFrame = document.createElement('iframe');
+            preloadFrame.setAttribute('aria-hidden', 'true');
+            preloadFrame.tabIndex = -1;
+            preloadFrame.style.position = 'fixed';
+            preloadFrame.style.width = '1px';
+            preloadFrame.style.height = '1px';
+            preloadFrame.style.opacity = '0';
+            preloadFrame.style.pointerEvents = 'none';
+            preloadFrame.style.border = '0';
+            preloadFrame.style.left = '-10000px';
+            preloadFrame.style.top = '0';
+            document.body.appendChild(preloadFrame);
+        }
+
+        var target = new URL('customization-tool/index.html', window.location.href);
+        target.searchParams.set('code', code);
+        target.searchParams.set('from', 'basket');
+        target.searchParams.set('logoOnly', '1');
+        target.searchParams.set('embedded', 'pc-order-preload');
+        target.searchParams.set('_cb', 'pc-preload');
+        var preloadType = product.productType || product.category || product.type || product.name || '';
+        if (preloadType) target.searchParams.set('productType', preloadType);
+        if (colour) target.searchParams.set('color', colour);
+        if (colourImage) target.searchParams.set('colorImage', colourImage);
+        if (colourHex) target.searchParams.set('colorHex', colourHex);
+        preloadedCode = preloadKey;
+        preloadFrame.src = target.toString();
+    };
 
     function closeCustomizer(saved) {
         panel.hidden = true;
@@ -68,27 +107,49 @@
             return;
         }
 
-        // The established flow has just added this line, so the last entry is
-        // the exact colour and size combination the customer selected.
-        var basketIndex = basket.length - 1;
-        var item = basket[basketIndex] || {};
         var product = window.productData || window.currentOrderProduct || {};
+        var selectedSwatch = document.querySelector('.colour-swatch-item.selected');
+        var selectedUiColour = selectedSwatch
+            ? (selectedSwatch.dataset.name || selectedSwatch.dataset.colour || '')
+            : (window.selectedColour || '');
+        var productCode = product.code || product.sku || '';
+        var basketIndex = basket.length - 1;
+        if (selectedUiColour || productCode) {
+            for (var candidateIndex = basket.length - 1; candidateIndex >= 0; candidateIndex -= 1) {
+                var candidate = basket[candidateIndex] || {};
+                var candidateCode = candidate.productCode || candidate.code || '';
+                var candidateColour = candidate.color || candidate.colour || '';
+                var sameProduct = !productCode || candidateCode === productCode;
+                var sameColour = !selectedUiColour || candidateColour === selectedUiColour;
+                if (sameProduct && sameColour) {
+                    basketIndex = candidateIndex;
+                    break;
+                }
+            }
+        }
+        var item = basket[basketIndex] || {};
         var sizes = item.sizes || item.quantities || {};
         var totalQty = quantityTotal(sizes);
-        var colour = item.color || item.colour || window.selectedColour || '';
-        var colourImage = item.colorImage || item.colourImg || item.image || '';
+        var colour = selectedUiColour || item.color || item.colour || '';
+        var colourImage = selectedSwatch
+            ? (selectedSwatch.dataset.img || '')
+            : (item.colorImage || item.colourImg || item.image || '');
+        var colourHex = selectedSwatch
+            ? (selectedSwatch.dataset.hex || '')
+            : (item.colorHex || '');
 
         // Normalise the legacy PC line before the shared tool edits it. This
         // makes quantity and price preservation explicit and prevents the
         // editor's display quantity from replacing the selected size matrix.
         basket[basketIndex] = Object.assign({}, item, {
-            code: item.code || product.code || product.sku || '',
-            productCode: item.productCode || item.code || product.code || product.sku || '',
-            name: item.name || product.name || '',
-            productName: item.productName || item.name || product.name || '',
-            brand: item.brand || product.brand || '',
-            productType: item.productType || product.productType || product.category || product.type || '',
+            code: product.code || product.sku || item.code || '',
+            productCode: product.code || product.sku || item.productCode || item.code || '',
+            name: product.name || item.name || '',
+            productName: product.name || item.productName || item.name || '',
+            brand: product.brand || item.brand || '',
+            productType: product.productType || product.category || product.type || item.productType || '',
             color: colour,
+            colorHex: colourHex || item.colorHex || product.colorHex || '',
             colorImage: colourImage,
             image: colourImage || item.image || product.image || '',
             quantities: Object.assign({}, sizes),
@@ -128,7 +189,12 @@
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order');
-        target.searchParams.set('_cb', String(Date.now()));
+        target.searchParams.set('_cb', 'pc-preload');
+        target.searchParams.set('color', colour);
+        if (colourImage) target.searchParams.set('colorImage', colourImage);
+        if (colourHex) target.searchParams.set('colorHex', colourHex);
+        var currentProductType = product.productType || product.category || product.type || product.name || '';
+        if (currentProductType) target.searchParams.set('productType', currentProductType);
 
         panel.hidden = false;
         panel.classList.remove('is-loaded');

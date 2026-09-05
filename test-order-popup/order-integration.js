@@ -101,6 +101,10 @@
     // Load product data into popup
     function loadProductIntoPopup(product) {
         console.log('Loading product into popup:', product);
+
+        $('#p3InitialActions').show();
+        $('#addQuoteSuccess').hide();
+        $('#btnAddToQuote').show();
         
         // Set global product data
         if (typeof window.setProductData === 'function') {
@@ -232,7 +236,9 @@
         colourGrid.empty();
         
         // API uses 'colors' not 'colours'
-        const colors = product.colors || product.colours || [];
+        const colors = (product.colors || product.colours || []).filter(function(colour) {
+            return String(colour && colour.name || '').trim().toLowerCase() !== 'model';
+        });
         
         if (colors.length > 0) {
             console.log('Loading', colors.length, 'colors for product');
@@ -245,8 +251,7 @@
             const grid = $('<div class="colour-swatches-grid"></div>');
             
             let visibleCount = 0;
-            const initialShow = 12; // Show first 12 colors
-            const showMoreIncrement = 10; // Show 10 more at a time
+            const initialShow = colors.length; // Render every available colour immediately
             
             colors.forEach(function(colour, index) {
                 // Use the color variant image as background
@@ -283,45 +288,6 @@
                 });
             });
             
-            // Add "Show more" button if there are hidden colors
-            if (colors.length > initialShow) {
-                const showMoreBtn = $(`
-                    <button class="show-more-btn" type="button">
-                        Show more ↓
-                    </button>
-                `);
-                
-                showMoreBtn.click(function() {
-                    const hiddenItems = grid.find('.colour-swatch-item.hidden');
-                    const toShow = hiddenItems.slice(0, showMoreIncrement);
-                    
-                    toShow.removeClass('hidden');
-                    visibleCount += toShow.length;
-                    
-                    const remaining = colors.length - visibleCount;
-                    if (remaining === 0) {
-                        // Hide button when all are visible
-                        $(this).hide();
-                    }
-                });
-                
-                colourGrid.append(showMoreBtn);
-            }
-            
-            // Add "View all X colours" button
-            const viewAllBtn = $(`
-                <button class="view-all-colours-btn" type="button">
-                    View all ${colors.length} colours
-                </button>
-            `);
-            
-            viewAllBtn.click(function() {
-                grid.find('.colour-swatch-item.hidden').removeClass('hidden');
-                $('.show-more-btn').hide();
-                $(this).hide();
-            });
-            
-            colourGrid.append(viewAllBtn);
         } else {
             // Default colours
             const defaultColours = [
