@@ -23,7 +23,7 @@
   },
 
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+    { "source": "/", "destination": "/home-pc.html" },
 
     { "source": "/m", "destination": "/index-mobile.html" },
     { "source": "/home", "destination": "/home-pc.html" },
