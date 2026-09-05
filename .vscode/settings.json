@@ -9,5 +9,11 @@
     "**/*.scss",
     "**/*.sass",
     "**/*.ts"
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "/^rg -n -i \"model\\|choose colour\\|choose color\\|View all \\.\\*colou\\|colour\" index\\.html brandedukv15-child mobile \\| Select-Object -First 160$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
 }

@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Desktop experience gate: keep this first so desktop visitors never see the live site. -->
-    <script data-desktop-experience-gate>
-        (function (d) {
-            var path = window.location.pathname.replace(/\\/g, '/');
-            var mountAt = path.toLowerCase().indexOf('/brandeduk/');
-            var localHost = /^(?:localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname);
-            var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
-                ? path.slice(0, mountAt + '/brandeduk'.length)
-                : '';
-            d.write('<script src="' + base + '/desktop-gate.js?v=20260803a"><\/script>');
-        }(document));
-    </script>
     <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://www.brandeduk.com/track-order">
     <meta charset="UTF-8">
