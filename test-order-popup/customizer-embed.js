@@ -87,11 +87,18 @@
         }, 220);
 
         var success = document.getElementById('addQuoteSuccess');
+        var initialActions = document.getElementById('p3InitialActions');
         var addButton = document.getElementById('btnAddToQuote');
         var logoButton = document.getElementById('btnAddLogo');
-        if (success) success.style.display = '';
-        if (addButton) addButton.style.display = 'none';
-        if (saved && logoButton) logoButton.textContent = 'Edit customization';
+        if (saved) {
+            if (success) success.style.display = 'none';
+            if (initialActions) initialActions.style.display = '';
+            if (addButton) addButton.style.display = '';
+            if (logoButton) logoButton.textContent = 'Add Your Logo';
+        } else {
+            if (success) success.style.display = '';
+            if (addButton) addButton.style.display = 'none';
+        }
 
         if (saved) {
             window.dispatchEvent(new Event('basketUpdated'));
