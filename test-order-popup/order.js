@@ -449,7 +449,7 @@ $(document).on("click", "#btnAddToQuote", function(e) {
     // Show success state
     var sizeList = Object.entries(sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
     $('#successSubtitle').text(item.colour + ' · ' + totalQty + ' items (' + sizeList + ')');
-    $('#p3InitialActions').hide();
+    $('#btnAddToQuote').hide();
     $('#addQuoteSuccess').fadeIn(300);
 });
 
@@ -546,7 +546,7 @@ function finalSaveToBasket(redirectUrl) {
 // Continue Shopping - close popup and reset
 $(document).on("click", "#btnContinueShopping", function() {
     $('#addQuoteSuccess').hide();
-    $('#p3InitialActions').show();
+    $('#btnAddToQuote').show();
     window.goToPage(0);
     // Close popup
     if (typeof window.closeOrderPopup === 'function') {
@@ -560,7 +560,7 @@ $(document).on("click", "#btnContinueShopping", function() {
 // shared backend-driven customizer inside this same PC order window.
 $(document).on("click", "#btnAddLogo", function() {
     $('#addQuoteSuccess').hide();
-    $('#p3InitialActions').hide();
+    $('#btnAddToQuote').show();
 
     // Re-sync window.quantities from the P3 grid to pass validation
     window.quantities = {};

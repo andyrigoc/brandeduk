@@ -8359,60 +8359,27 @@
                                     <button class="selected-colour-change back">Change</button>
                                 </div>
 
-                                <div class="p3-product-layout">
-                                    <section class="p3-product-preview" aria-label="Selected product preview">
-                                        <div class="p3-product-heading">
-                                            <h2 id="p3ProductTitle">Product</h2>
-                                            <p id="p3ProductBrand">Brand</p>
+                                <!-- Size & Quantity Grid -->
+                                <div class="sizes-section-p3" tabindex="0"
+                                    aria-label="Available sizes and quantities. Scroll for more sizes.">
+                                    <div class="sizes-header">
+                                        <h3 class="sizes-title">Select Sizes &amp; Quantities</h3>
+                                        <div class="sizes-meta">
+                                            <span>From <strong id="p3BasePrice">&pound;0.00</strong> per unit excl.
+                                                VAT</span>
+                                            <span class="sizes-delivery">Dispatched in 1&ndash;2 working days &middot;
+                                                Free delivery over &pound;150</span>
                                         </div>
-                                        <div class="p3-image-frame">
-                                            <button type="button" class="p3-gallery-arrow p3-gallery-prev" id="p3GalleryPrev" aria-label="Previous product image">&#8249;</button>
-                                            <img id="p3ProductImage" src="" alt="Selected product">
-                                            <button type="button" class="p3-gallery-arrow p3-gallery-next" id="p3GalleryNext" aria-label="Next product image">&#8250;</button>
-                                        </div>
-                                        <div class="p3-gallery-dots" id="p3GalleryDots" aria-label="Product images"></div>
-                                        <p class="p3-product-description" id="p3ProductDescription"></p>
-                                    </section>
-
-                                    <section class="p3-quantity-panel" aria-label="Select sizes and quantities">
-                                        <div class="sizes-header p3-sizes-header">
-                                            <h3 class="sizes-title">Select Sizes &amp; Quantities</h3>
-                                            <div class="sizes-meta">
-                                                <span>From <strong id="p3BasePrice">£0.00</strong> per unit excl. VAT &nbsp;·&nbsp; <a href="#" class="size-guide-link">Size Guide</a></span>
-                                                <span class="sizes-delivery">🚚 Dispatched in 1–2 working days. &nbsp; Free delivery over £150</span>
-                                            </div>
-                                            <div class="discount-tiers" id="p3DiscountTiers"></div>
-                                        </div>
-                                        <div class="size-qty-grid" id="sizeQtyGridP3">
-                                            <!-- Populated by JS -->
-                                        </div>
-                                        <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
-                                    </section>
+                                        <div class="discount-tiers" id="p3DiscountTiers"></div>
+                                    </div>
+                                    <div class="size-qty-grid" id="sizeQtyGridP3">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                    <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
                                 </div>
 
-                                <div class="p3-initial-actions" id="p3InitialActions">
-                                    <button class="btn-add-quote" id="btnAddToQuote">
-                                        <svg class="p3-action-icon p3-bookmark-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M6 3.5h12v17l-6-3.5-6 3.5v-17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                        </svg>
-                                        <span>Add to Quote</span>
-                                    </button>
-                                    <button class="btn-add-logo" id="btnAddLogoInitial">
-                                        <svg class="p3-action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                                            <circle cx="8" cy="9" r="1.4" stroke="currentColor" stroke-width="1.5"/>
-                                            <path d="m4.5 17 4.5-4 3 2.5 2.5-2 5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <span>Add Your Logo</span>
-                                    </button>
-                                    <button class="btn-keep-shopping" id="btnContinueShoppingInitial">
-                                        <svg class="p3-action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M20.8 8.8c0 5.2-8.8 10.2-8.8 10.2S3.2 14 3.2 8.8A4.2 4.2 0 0 1 11 6.2a4.2 4.2 0 0 1 7.8 2.6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                            <path d="M16 12h5m0 0-2.2-2.2M21 12l-2.2 2.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <span>Keep Shopping</span>
-                                    </button>
-                                </div>
+                                <!-- Add to Quote Button -->
+                                <button class="btn-add-quote" id="btnAddToQuote">Add to Quote</button>
 
                                 <div class="add-quote-success" id="addQuoteSuccess" style="display:none;">
                                     <span id="successSubtitle" style="display:none;"></span>
