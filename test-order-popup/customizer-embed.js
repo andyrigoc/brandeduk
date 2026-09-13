@@ -10,6 +10,8 @@
     var orderPopup = document.getElementById('orderPopup');
     var preloadFrame = null;
     var preloadedCode = '';
+    var frameReadyPoll = null;
+    var pendingFrameUrl = '';
 
     if (!panel || !frame || !orderCard) return;
 
@@ -76,7 +78,46 @@
         preloadFrame.src = target.toString();
     };
 
+    function stopFrameReadyWatch() {
+        if (frameReadyPoll) {
+            window.clearInterval(frameReadyPoll);
+            frameReadyPoll = null;
+        }
+    }
+
+    function showCustomizerFrame() {
+        if (!frame.getAttribute('src')) return;
+        stopFrameReadyWatch();
+        panel.classList.add('is-loaded');
+    }
+
+    function watchForFrameDocument() {
+        stopFrameReadyWatch();
+
+        // The customizer has its own progress screen. Reveal it once its HTML
+        // is interactive instead of waiting for every image/font request to
+        // finish, which can otherwise leave Live Server behind this spinner.
+        frameReadyPoll = window.setInterval(function() {
+            try {
+                var frameDocument = frame.contentDocument;
+                var frameLocation = frame.contentWindow && frame.contentWindow.location.href;
+                var documentReady = frameDocument
+                    && frameDocument.body
+                    && (frameDocument.readyState === 'interactive' || frameDocument.readyState === 'complete');
+
+                if (documentReady && frameLocation === pendingFrameUrl) {
+                    showCustomizerFrame();
+                }
+            } catch (error) {
+                // Same-origin is expected here. Keep the native load listener
+                // as the fallback if the hosting arrangement ever differs.
+            }
+        }, 100);
+    }
+
     function closeCustomizer(saved) {
+        stopFrameReadyWatch();
+        pendingFrameUrl = '';
         panel.hidden = true;
         panel.classList.remove('is-loaded');
         orderCard.classList.remove('customizer-open');
@@ -207,11 +248,13 @@
         panel.classList.remove('is-loaded');
         orderCard.classList.add('customizer-open');
         if (orderPopup) orderPopup.classList.add('pc-customizer-active');
-        frame.src = target.toString();
+        pendingFrameUrl = target.toString();
+        frame.src = pendingFrameUrl;
+        watchForFrameDocument();
     };
 
     frame.addEventListener('load', function() {
-        if (frame.getAttribute('src')) panel.classList.add('is-loaded');
+        showCustomizerFrame();
     });
 
     if (backButton) {
@@ -224,6 +267,7 @@
         if (event.origin !== window.location.origin) return;
         if (!event.data || event.data.type !== 'brandeduk:customization-saved') return;
         closeCustomizer(true);
+        window.location.assign(new URL('basket.html', window.location.href).href);
     });
 
     var originalCloseOrderPopup = window.closeOrderPopup;

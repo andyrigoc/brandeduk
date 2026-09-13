@@ -4,6 +4,10 @@
 
     const BASE_URL = 'https://api.brandeduk.com';
     const API_BASE = `${BASE_URL}/api/filters/product-types`;
+    const scriptElement = document.currentScript;
+    const SHOP_PAGE_URL = scriptElement && scriptElement.src
+        ? new URL('../../shop-pc.html', scriptElement.src).href
+        : 'shop-pc.html';
     
     // Cache for product types
     let productTypesCache = null;
@@ -121,15 +125,7 @@
      * Get the correct shop page URL based on current page location
      */
     function getShopPageUrl() {
-        const currentPath = window.location.pathname;
-        
-        // If we're in brandeduk.com directory, use relative path
-        if (currentPath.includes('/brandeduk.com/')) {
-            return 'shop-pc.html';
-        }
-        
-        // If we're in root or other directories, use absolute path
-        return '../shop-pc.html';
+        return SHOP_PAGE_URL;
     }
     
     /**
@@ -156,9 +152,11 @@
      * Populate the dropdown menu
      */
     async function populateProductTypesMenu() {
-        const menuContainer = document.querySelector('.nav-megamenu.brand-grid');
+        // Product categories and brands are separate menus. The previous generic
+        // selector matched the Brands panel and replaced its contents.
+        const menuContainer = document.querySelector('[data-product-types-menu]');
         if (!menuContainer) {
-            console.warn('⚠️ Product types menu container not found (.nav-megamenu.brand-grid)');
+            console.warn('⚠️ Product types menu container not found ([data-product-types-menu])');
             return;
         }
         

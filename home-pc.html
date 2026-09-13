@@ -1272,6 +1272,9 @@
         .main-nav .menu > li.has-megamenu.is-open > .nav-megamenu.allprod-megamenu {
             display: flex !important;
         }
+        .main-nav .menu > li.has-megamenu:not(.is-open) > .nav-megamenu {
+            display: none !important;
+        }
         .allprod-list {
             flex: 1;
             min-width: 0;
@@ -1334,6 +1337,7 @@
         .allprod-desc-panel.has-content .allprod-desc-text { display: block; }
         
     </style>
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-search.css?v=20260913a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1729,7 +1733,7 @@
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
                         <div class="nav-megamenu allprod-megamenu">
-                            <ul class="allprod-list">
+                            <ul class="allprod-list" data-product-types-menu aria-label="Product categories">
                                 <li class="brand-heading">A</li>
                                 <li data-catdesc="Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use."><a href="shop-pc.html?productType=accessories">Accessories</a></li>
                                 <li><a href="shop-pc.html?productType=anti-static">Anti Static / ESD</a></li>
@@ -1839,7 +1843,7 @@
                             Brands
                             <span class="nav-caret" aria-hidden="true"></span>
                         </a>
-                        <ul class="nav-megamenu brand-grid" aria-label="Brands list">
+                        <ul class="nav-megamenu brand-grid" data-brands-menu aria-label="Brands list">
                             <li class="brand-heading">0 - 9</li>
                             <li><a href="shop-pc.html?brand=2786">2786</a></li>
                             <li class="brand-heading">A</li>
@@ -3304,7 +3308,8 @@
 <script src="brandeduk.com/js/main.js?v=20260730a"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
-<script src="brandeduk.com/js/product-types-menu.js?v=20260110"></script>
+<script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
+<script src="brandedukv15-child/assets/js/pc-search.js?v=20260913c"></script>
 <script>
 // Header Top Basket functionality
 (function() {
@@ -3518,6 +3523,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Search Autocomplete (isolated script - same as tablet/mobile) -->
 <script>
 (function() {
+    if (window.BrandedPcSearchInitialized) return;
     var HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];
     var debounceTimer = null;
     var currentRequest = null;
@@ -3686,7 +3692,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             var safeImg = img.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 
-            return '<a class="ac-prod" href="product-detail.html?code=' + encodeURIComponent(code) + '" data-code="' + encodeURIComponent(code) + '" data-name="' + safeName + '">' +
+            return '<a class="ac-prod" href="shop-pc.html?product=' + encodeURIComponent(code) + '" data-code="' + encodeURIComponent(code) + '" data-name="' + safeName + '">' +
                 '<img class="ac-prod-img" src="' + safeImg + '" alt="" onerror="this.src=\'brandedukv15-child/assets/images/ui/no-image.png\'">' +
                 '<div class="ac-prod-info">' +
                     '<div class="ac-prod-name">' + highlightMatch(name, query) + '</div>' +
@@ -3875,7 +3881,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     '<span class="fc-price-value">' + displayPrice + '</span>' +
                     '<span class="fc-price-suffix">' + _vatSuffix() + '</span>' +
                 '</div>' +
-                '<a class="fc-cta" href="product-detail.html?code=' + encodeURIComponent(item.style_code||'') + '">View Product</a>' +
+                '<a class="fc-cta" href="shop-pc.html?product=' + encodeURIComponent(item.style_code||'') + '">View Product</a>' +
             '</div>';
 
         // Helper: store correct product data before navigating
@@ -3906,7 +3912,7 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', function(e) {
             if (e.target.closest('.fc-cta')) return;
             storeProductData();
-            window.location.href = 'product-detail.html?code=' + encodeURIComponent(item.style_code);
+            window.location.href = 'shop-pc.html?product=' + encodeURIComponent(item.style_code);
         });
 
         return card;
