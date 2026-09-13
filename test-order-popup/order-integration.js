@@ -3,6 +3,76 @@
 
 (function() {
     'use strict';
+
+    const PRODUCT_IMAGE_FALLBACK = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">' +
+        '<rect width="800" height="800" fill="#f5f7fa"/>' +
+        '<path d="M278 315h244v190H278z" fill="none" stroke="#c7cfdb" stroke-width="12"/>' +
+        '<circle cx="345" cy="375" r="24" fill="#c7cfdb"/>' +
+        '<path d="m300 476 72-72 55 52 38-36 57 56" fill="none" stroke="#c7cfdb" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<text x="400" y="570" text-anchor="middle" fill="#667085" font-family="Arial,sans-serif" font-size="28">Image coming soon</text>' +
+        '</svg>'
+    );
+
+    function getProductImageCandidates(product) {
+        const candidates = [];
+
+        function add(value) {
+            const url = String(value || '').trim();
+            if (url && !candidates.includes(url)) candidates.push(url);
+        }
+
+        add(product.image);
+        add(product.mainImage);
+        add(product.main_image);
+        add(product.imageUrl);
+        add(product.image_url);
+
+        const images = Array.isArray(product.images) ? product.images : [];
+        images.filter(image => String(image && image.type || '').toLowerCase() === 'main')
+            .forEach(image => add(image && (image.url || image.src)));
+
+        const colours = Array.isArray(product.colors)
+            ? product.colors
+            : (Array.isArray(product.colours) ? product.colours : []);
+        colours.filter(colour => String(colour && colour.name || '').trim().toLowerCase() === 'model')
+            .forEach(colour => add(colour && (colour.main || colour.image || colour.thumb)));
+
+        images.forEach(image => add(image && (image.url || image.src)));
+        colours.forEach(colour => add(colour && (colour.main || colour.image || colour.thumb)));
+
+        return candidates;
+    }
+
+    function setProductMainImage(product, candidates) {
+        const image = document.getElementById('productMainImage');
+        if (!image) return;
+
+        const urls = candidates && candidates.length ? candidates.slice() : getProductImageCandidates(product);
+        let candidateIndex = 0;
+
+        image.onload = function() {
+            image.classList.remove('is-image-fallback');
+        };
+        image.onerror = function() {
+            if (candidateIndex < urls.length) {
+                image.src = urls[candidateIndex++];
+                return;
+            }
+
+            image.onerror = null;
+            image.classList.add('is-image-fallback');
+            image.src = PRODUCT_IMAGE_FALLBACK;
+        };
+
+        image.removeAttribute('src');
+        if (urls.length) {
+            image.src = urls[candidateIndex++];
+        } else {
+            image.classList.add('is-image-fallback');
+            image.src = PRODUCT_IMAGE_FALLBACK;
+        }
+    }
     
     // Check if popup HTML is already in DOM
     if (!document.getElementById('orderPopup')) {
@@ -101,6 +171,11 @@
     // Load product data into popup
     function loadProductIntoPopup(product) {
         console.log('Loading product into popup:', product);
+
+        const imageCandidates = getProductImageCandidates(product);
+        if (!product.image && imageCandidates.length) {
+            product.image = imageCandidates[0];
+        }
 
         $('#p3InitialActions').show();
         $('#addQuoteSuccess').hide();
@@ -209,14 +284,7 @@
         // p3BasePrice shown on page 3
         $("#p3BasePrice").text("£" + basePrice.toFixed(2));
         
-        // Set main image (use product.image which is the lifestyle/model image)
-        if (product.image) {
-            $("#productMainImage").attr("src", product.image);
-        } else if (product.mainImage) {
-            $("#productMainImage").attr("src", product.mainImage);
-        } else {
-            $("#productMainImage").attr("src", "https://via.placeholder.com/500x500?text=No+Image");
-        }
+        setProductMainImage(product, imageCandidates);
         
         // Load colours using product data (API uses 'colors' not 'colours')
         loadProductColours(product);
