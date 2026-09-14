@@ -474,8 +474,23 @@ const resizeProportionallyCheck = document.getElementById("resizeProportionallyC
 const applyImagePropertiesBtn = document.getElementById("applyImagePropertiesBtn");
 const propertySizeLabel = document.getElementById("propertySizeLabel");
 const rotateInput = document.getElementById("rotateInput");
+const logoWidthInput = document.getElementById("logoWidthInput");
+const logoHeightInput = document.getElementById("logoHeightInput");
+const logoScaleRange = document.getElementById("logoScaleRange");
+const logoPositionXInput = document.getElementById("logoPositionXInput");
+const logoPositionYInput = document.getElementById("logoPositionYInput");
+const logoSizeLockBtn = document.getElementById("logoSizeLockBtn");
+const resetLogoRotationBtn = document.getElementById("resetLogoRotationBtn");
+const rotateLogoDecreaseBtn = document.getElementById("rotateLogoDecreaseBtn");
+const rotateLogoIncreaseBtn = document.getElementById("rotateLogoIncreaseBtn");
+const resetLogoPositionBtn = document.getElementById("resetLogoPositionBtn");
+const inlineRemoveLogoBtn = document.getElementById("inlineRemoveLogoBtn");
 const logoColoursCard = document.getElementById("logoColoursCard");
 const inlineLogoSettings = document.getElementById("inlineLogoSettings");
+const inlineLogoUpload = document.getElementById("inlineLogoUpload");
+const inlineUploadLibrary = document.getElementById("inlineUploadLibrary");
+const inlineUploadLibraryItems = document.getElementById("inlineUploadLibraryItems");
+const inlineViewSavedLogosBtn = document.getElementById("inlineViewSavedLogosBtn");
 const logoColourList = document.getElementById("logoColourList");
 const logoReplacementColour = document.getElementById("logoReplacementColour");
 const applyLogoColourBtn = document.getElementById("applyLogoColourBtn");
@@ -1569,6 +1584,8 @@ function clearCanvasLogoState() {
 
   state.uploadedLogo = null;
   state.originalUploadedLogo = null;
+  syncPositionCardLogoPreviews();
+  syncInlineLogoPanels();
   state.copyrightConfirmed = false;
   state.logoRotation = 0;
   resetLogoQualityUi();
@@ -3902,11 +3919,34 @@ function getSessionLogoLibrary() {
   return out;
 }
 
+function syncInlineLogoPanels() {
+  const hasLogo = Boolean(state.uploadedLogo);
+  if (inlineLogoUpload) inlineLogoUpload.hidden = hasLogo;
+  if (inlineLogoSettings) inlineLogoSettings.hidden = !hasLogo;
+
+  if (!inlineUploadLibrary || !inlineUploadLibraryItems) return;
+  const library = getSessionLogoLibrary().filter((entry) => entry.logo !== state.uploadedLogo);
+  inlineUploadLibrary.hidden = library.length === 0;
+  inlineUploadLibraryItems.innerHTML = "";
+  library.slice(0, 3).forEach((entry) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.title = "Use this logo";
+    const image = document.createElement("img");
+    image.src = entry.logo;
+    image.alt = "Saved logo";
+    button.appendChild(image);
+    button.addEventListener("click", () => reuseLibraryLogo(entry.logo));
+    inlineUploadLibraryItems.appendChild(button);
+  });
+}
+
 function rememberUploadedLogo(src, method) {
   const key = String(src || "").trim();
   if (!key) return;
   if (sessionLogoLibrary.some((entry) => entry.logo === key)) return;
   sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
+  syncInlineLogoPanels();
 }
 
 function reuseLibraryLogo(src) {
@@ -4160,6 +4200,26 @@ function syncPositionSelectionCards() {
   });
 }
 
+function syncPositionCardLogoPreviews() {
+  document.querySelectorAll(".position-card").forEach((card) => {
+    let preview = card.querySelector(".position-logo-preview");
+    if (!state.uploadedLogo) {
+      preview?.remove();
+      return;
+    }
+
+    if (!preview) {
+      preview = document.createElement("img");
+      preview.className = "position-logo-preview";
+      preview.alt = "";
+      preview.setAttribute("aria-hidden", "true");
+      card.querySelector(".position-thumb-wrap")?.appendChild(preview);
+    }
+
+    preview.src = state.uploadedLogo;
+  });
+}
+
 function syncPositionCardImages() {
   document.querySelectorAll(".position-card").forEach((card) => {
     const area = normalizeAreaForPicker(card.dataset.area) || "front";
@@ -4376,6 +4436,7 @@ async function replaceLogoColour() {
     state.uploadedLogo = canvas.toDataURL("image/png");
     uploadedLogo.src = state.uploadedLogo;
     await waitForLogoImage(uploadedLogo);
+    syncPositionCardLogoPreviews();
     captureCurrentAreaDesign();
     await renderLogoColourEditor();
     setLogoColourStatus("Colour updated.");
@@ -4435,6 +4496,14 @@ async function optimizeLogoDataUrlForBasket(originalDataUrl) {
 async function optimizeLogoFileForBasket(file) {
   return optimizeLogoDataUrlForBasket(await readLogoFileAsDataUrl(file));
 }
+
+document.getElementById("logoUploadPageChooseBtn")?.addEventListener("click", () => {
+  document.getElementById("logoFileInput")?.click();
+});
+
+inlineViewSavedLogosBtn?.addEventListener("click", () => {
+  showLogoLibraryPicker(getSessionLogoLibrary());
+});
 
 document.getElementById("logoFileInput").addEventListener("change", async event => {
   const file = event.target.files[0];
@@ -4541,8 +4610,9 @@ document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((bu
 
 function showLogoOnCanvas(imageSrc) {
   state.uploadedLogo = imageSrc;
-  if (inlineLogoSettings) inlineLogoSettings.hidden = false;
+  syncInlineLogoPanels();
   renderLogoColourEditor();
+  syncPositionCardLogoPreviews();
 
   uploadedLogo.src = imageSrc;
   uploadedLogo.style.display = "block";
@@ -4667,9 +4737,29 @@ function updateLogoSizeLabels() {
   const heightCm = (renderedSize.height / pxPerCm).toFixed(2);
   const label = `${widthCm}cm x ${heightCm}cm`;
 
-  logoSizeLabel.textContent = label;
-  propertySizeLabel.textContent = label;
+  if (logoSizeLabel) logoSizeLabel.textContent = label;
+  if (propertySizeLabel) propertySizeLabel.textContent = label;
   updateQualityBar(parseFloat(widthCm));
+  syncInlineLogoControls();
+}
+
+function syncInlineLogoControls() {
+  const logoFrame = getLogoFrameEl();
+  const pxPerCm = getEffectivePxPerCm();
+  if (!logoFrame || !customArea || !pxPerCm) return;
+
+  const renderedSize = getRenderedLogoSizePx();
+  if (logoWidthInput) logoWidthInput.value = (renderedSize.width / pxPerCm).toFixed(2);
+  if (logoHeightInput) logoHeightInput.value = (renderedSize.height / pxPerCm).toFixed(2);
+  if (logoScaleRange) {
+    const maxWidth = Math.max(1, getPrintAreaConfig().areaCm.w);
+    logoScaleRange.value = String(Math.max(10, Math.min(100, Math.round((renderedSize.width / pxPerCm) / maxWidth * 100))));
+  }
+
+  const centreX = designLayer.offsetLeft + logoFrame.offsetWidth / 2;
+  const centreY = designLayer.offsetTop + logoFrame.offsetHeight / 2;
+  if (logoPositionXInput) logoPositionXInput.value = ((centreX - customArea.offsetWidth / 2) / pxPerCm).toFixed(2);
+  if (logoPositionYInput) logoPositionYInput.value = ((centreY - customArea.offsetHeight / 2) / pxPerCm).toFixed(2);
 }
 
 function updateQualityBar(widthCm) {
@@ -5470,11 +5560,94 @@ document.querySelectorAll("[data-move]").forEach(button => {
     activateLogo();
     updateLogoSizeLabels();
     updateVisibilityByPrintArea(designLayer);
+    syncInlineLogoControls();
   });
 });
 
-document.getElementById("sizeUpBtn").addEventListener("click", () => resizeLogoBy(10));
-document.getElementById("sizeDownBtn").addEventListener("click", () => resizeLogoBy(-10));
+document.getElementById("sizeUpBtn")?.addEventListener("click", () => resizeLogoBy(10));
+document.getElementById("sizeDownBtn")?.addEventListener("click", () => resizeLogoBy(-10));
+
+function setLogoSizeFromCentimetres(dimension, value) {
+  const logoFrame = getLogoFrameEl();
+  const centimetres = parseFloat(value);
+  const pxPerCm = getEffectivePxPerCm();
+  if (!logoFrame || !Number.isFinite(centimetres) || centimetres <= 0 || !pxPerCm) return;
+
+  const ratio = getLogoAspectRatio();
+  if (dimension === "width") {
+    logoFrame.style.width = `${centimetres * pxPerCm}px`;
+    logoFrame.style.height = `${(centimetres * pxPerCm) / ratio}px`;
+  } else {
+    logoFrame.style.height = `${centimetres * pxPerCm}px`;
+    logoFrame.style.width = `${centimetres * pxPerCm * ratio}px`;
+  }
+  updateLogoSizeLabels();
+  updateVisibilityByPrintArea(designLayer);
+}
+
+function setLogoPositionFromCentimetres(axis, value) {
+  const logoFrame = getLogoFrameEl();
+  const centimetres = parseFloat(value);
+  const pxPerCm = getEffectivePxPerCm();
+  if (!logoFrame || !Number.isFinite(centimetres) || !pxPerCm) return;
+
+  if (axis === "x") {
+    designLayer.style.left = `${customArea.offsetWidth / 2 + centimetres * pxPerCm - logoFrame.offsetWidth / 2}px`;
+  } else {
+    designLayer.style.top = `${customArea.offsetHeight / 2 + centimetres * pxPerCm - logoFrame.offsetHeight / 2}px`;
+  }
+  updateVisibilityByPrintArea(designLayer);
+  syncInlineLogoControls();
+}
+
+function applyInlineNumberField(input, applyValue) {
+  if (!input) return;
+  input.addEventListener("change", () => applyValue(input.value));
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    input.blur();
+    applyValue(input.value);
+  });
+}
+
+applyInlineNumberField(logoWidthInput, (value) => setLogoSizeFromCentimetres("width", value));
+applyInlineNumberField(logoHeightInput, (value) => setLogoSizeFromCentimetres("height", value));
+applyInlineNumberField(logoPositionXInput, (value) => setLogoPositionFromCentimetres("x", value));
+applyInlineNumberField(logoPositionYInput, (value) => setLogoPositionFromCentimetres("y", value));
+logoScaleRange?.addEventListener("input", () => {
+  const maxWidth = getPrintAreaConfig().areaCm.w;
+  setLogoSizeFromCentimetres("width", Math.max(0.1, maxWidth * (parseInt(logoScaleRange.value, 10) || 10) / 100));
+});
+
+logoSizeLockBtn?.addEventListener("click", () => {
+  logoSizeLockBtn.classList.toggle("is-locked");
+  logoSizeLockBtn.setAttribute("aria-pressed", String(logoSizeLockBtn.classList.contains("is-locked")));
+});
+
+resetLogoRotationBtn?.addEventListener("click", () => {
+  state.logoRotation = 0;
+  rotateInput.value = "0";
+  designLayer.style.rotate = "0deg";
+  activateLogo();
+});
+
+function adjustLogoRotation(delta) {
+  state.logoRotation = (parseFloat(rotateInput.value) || 0) + delta;
+  rotateInput.value = String(state.logoRotation);
+  designLayer.style.rotate = `${state.logoRotation}deg`;
+  activateLogo();
+}
+
+rotateLogoDecreaseBtn?.addEventListener("click", () => adjustLogoRotation(-5));
+rotateLogoIncreaseBtn?.addEventListener("click", () => adjustLogoRotation(5));
+
+resetLogoPositionBtn?.addEventListener("click", () => {
+  centerLogo();
+  syncInlineLogoControls();
+});
+
+inlineRemoveLogoBtn?.addEventListener("click", clearLogo);
 
 document.getElementById("applyTextPropertiesBtn").addEventListener("click", () => {
   state.text = textPropertyInput.value.trim() || "TEXT";

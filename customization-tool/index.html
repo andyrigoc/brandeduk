@@ -216,57 +216,67 @@
         </button>
       </div>
 
+      <aside id="inlineLogoUpload" class="inline-logo-upload" aria-label="Add your logo">
+        <h2>Add your logo</h2>
+        <p>Upload your artwork and we'll place it on your garment.</p>
+        <label class="inline-upload-dropzone" for="logoFileInput">
+          <span class="inline-upload-icon" aria-hidden="true">⇧</span>
+          <strong>Drag &amp; drop your logo here</strong>
+          <small>or</small>
+          <span class="inline-upload-button">CHOOSE FILE</span>
+          <input id="logoFileInput" type="file" accept="image/*" hidden>
+        </label>
+        <div class="inline-upload-formats">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</div>
+        <div class="inline-upload-tip">✓&nbsp; For best results, use a high-resolution or vector file.</div>
+        <div class="inline-upload-library" id="inlineUploadLibrary" hidden>
+          <span>Use a previous logo</span>
+          <div id="inlineUploadLibraryItems" class="inline-upload-library-items"></div>
+          <button id="inlineViewSavedLogosBtn" type="button">View all saved logos →</button>
+        </div>
+        <div class="inline-upload-notice"><strong>◈&nbsp; Not sure about your artwork?</strong><span>Upload what you have. Our team checks every file before production.</span></div>
+      </aside>
+
       <aside id="inlineLogoSettings" class="inline-logo-settings" hidden aria-label="Logo settings">
-        <div class="inline-logo-settings-heading">LOGO SETTINGS</div>
+        <div class="inline-logo-settings-heading">Edit your logo</div>
+        <p class="inline-logo-settings-subtitle">Adjust how your logo appears on the polo.</p>
+        <div class="inline-logo-controls">
+          <input id="removeBackgroundCheck" type="checkbox" checked hidden>
+          <input id="resizeProportionallyCheck" type="checkbox" checked hidden>
+          <span id="qualityPct" hidden></span><span id="qualityMask" hidden></span>
 
-        <div class="img-props-card inline-logo-card">
-          <div class="img-props-quality-header">
-            <span class="img-props-row-label">Print Quality</span>
-            <span class="img-props-quality-pct" id="qualityPct">—</span>
+          <div class="inline-logo-step"><span>1</span><div><strong>Logo size</strong><small>Keep proportions</small></div><button id="logoSizeLockBtn" class="inline-logo-lock is-locked" type="button" aria-label="Lock proportional resizing">&#128274;</button></div>
+          <input id="logoScaleRange" class="inline-logo-scale-range" type="range" min="10" max="100" value="50" aria-label="Logo size">
+          <div class="inline-logo-size-labels"><span>Width</span><span></span><span>Height</span></div>
+          <div class="inline-logo-size-row">
+            <input id="logoWidthInput" type="number" min="0.1" step="0.01" aria-label="Logo width in centimetres">
+            <span class="inline-logo-unit">cm</span>
+            <span class="inline-logo-size-lock">&#128274;</span>
+            <input id="logoHeightInput" type="number" min="0.1" step="0.01" aria-label="Logo height in centimetres">
+            <span class="inline-logo-unit">cm</span>
           </div>
-          <div class="img-props-quality-meter"><div class="img-props-quality-mask" id="qualityMask"></div></div>
-          <div class="img-props-quality-hint">Smaller logo = sharper print</div>
-        </div>
 
-        <div class="img-props-card inline-logo-card">
-          <label class="img-props-toggle-row">
-            <span class="img-props-toggle-label">Remove background</span>
-            <div class="img-props-toggle"><input id="removeBackgroundCheck" type="checkbox" checked><span class="img-props-toggle-track"></span></div>
-          </label>
-          <div class="img-props-divider"></div>
-          <label class="img-props-toggle-row">
-            <span class="img-props-toggle-label">Resize proportionally</span>
-            <div class="img-props-toggle"><input id="resizeProportionallyCheck" type="checkbox" checked><span class="img-props-toggle-track"></span></div>
-          </label>
-        </div>
-
-        <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
-          <div class="img-props-section-header">LOGO COLOURS</div>
-          <p class="logo-colours-copy">Choose a colour from your design, then select its replacement.</p>
-          <div class="logo-colour-list" id="logoColourList" aria-label="Colours used in logo"></div>
-          <label class="logo-colour-picker-label" for="logoReplacementColour">Replacement colour<input id="logoReplacementColour" type="color" value="#000000"></label>
-          <div class="logo-colour-actions">
-            <button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button>
-            <button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button>
+          <div class="inline-logo-step"><span>2</span><div><strong>Move logo</strong><small>Use the arrows to position your logo on the polo.</small></div></div>
+          <div class="inline-logo-move-row">
+            <div class="inline-logo-arrow-pad"><span></span><button data-move="up" type="button">⌃</button><span></span><button data-move="left" type="button">‹</button><span></span><button data-move="right" type="button">›</button><span></span><button data-move="down" type="button">⌄</button><span></span></div>
+            <button class="inline-centre-logo" data-move="center" type="button">⌘&nbsp; Centre logo</button>
           </div>
-          <p class="logo-colour-status" id="logoColourStatus" aria-live="polite"></p>
-        </section>
+          <button class="inline-advanced-position" type="button">⌄&nbsp; Advanced positioning</button>
 
-        <div class="img-props-card inline-logo-card">
-          <div class="img-props-section-header">POSITION &amp; SIZE</div>
-          <div class="img-props-controls">
-            <div class="img-props-control-group">
-              <div class="img-props-control-label">Position</div>
-              <div class="img-props-position-pad">
-                <button data-move="up-left">◤</button><button data-move="up">▲</button><button data-move="up-right">◥</button>
-                <button data-move="left">◀</button><button data-move="center">●</button><button data-move="right">▶</button>
-                <button data-move="down-left">◣</button><button data-move="down">▼</button><button data-move="down-right">◢</button>
-              </div>
-            </div>
-            <div class="img-props-control-group"><div class="img-props-control-label">Size</div><div class="img-props-size-btns"><button id="sizeUpBtn">▲</button><button id="sizeDownBtn">▼</button></div></div>
-            <div class="img-props-control-group"><div class="img-props-control-label">Rotate</div><input id="rotateInput" class="img-props-rotate-input" type="number" value="0"></div>
+          <div class="inline-logo-step"><span>3</span><div><strong>Rotate</strong><small>Rotate your logo to the desired angle.</small></div></div>
+          <div class="inline-logo-rotate-controls"><button id="rotateLogoDecreaseBtn" type="button">−</button><input id="rotateInput" class="img-props-rotate-input" type="number" value="0" aria-label="Logo rotation"><span>°</span><button id="rotateLogoIncreaseBtn" type="button">+</button></div>
+
+          <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
+            <div class="inline-logo-step"><span>4</span><div><strong>Change logo colours</strong><small>Replace colours from your logo design.</small></div></div>
+            <div class="logo-colour-list" id="logoColourList" aria-label="Colours used in logo"></div>
+            <div class="inline-logo-colour-picker"><span>→</span><label for="logoReplacementColour"><input id="logoReplacementColour" type="color" value="#000000"></label></div>
+            <div class="logo-colour-actions"><button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button><button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button></div>
+            <p class="logo-colour-status" id="logoColourStatus" aria-live="polite"></p>
+          </section>
+
+          <div class="inline-logo-footer-actions">
+            <button id="resetLogoPositionBtn" type="button">↻&nbsp; Reset logo</button>
+            <button id="inlineRemoveLogoBtn" type="button">⌫&nbsp; Remove logo</button>
           </div>
-          <div class="img-props-size-display"><span id="propertySizeLabel">0.00cm × 0.00cm</span></div>
         </div>
       </aside>
 
@@ -824,10 +834,7 @@
     <div class="black-header">Upload Design</div>
 
     <div class="page-body">
-      <label class="upload-box" for="logoFileInput">
-        Click here to upload your logo or graphic
-        <input id="logoFileInput" type="file" accept="image/*" hidden>
-      </label>
+      <button id="logoUploadPageChooseBtn" class="upload-box" type="button">Click here to upload your logo or graphic</button>
     </div>
 
     <div class="fixed-action-bar">
@@ -1090,7 +1097,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260830a", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260914c", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
