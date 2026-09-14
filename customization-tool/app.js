@@ -16,6 +16,8 @@ const state = {
   sizes: [{ size: "Medium", qty: 1 }],
   totalQty: 1,
   selectedArea: "front",
+  selectedPosition: "",
+  logoColourBase: null,
   decorationType: null,
   textType: null,
   uploadedLogo: null,
@@ -472,6 +474,13 @@ const resizeProportionallyCheck = document.getElementById("resizeProportionallyC
 const applyImagePropertiesBtn = document.getElementById("applyImagePropertiesBtn");
 const propertySizeLabel = document.getElementById("propertySizeLabel");
 const rotateInput = document.getElementById("rotateInput");
+const logoColoursCard = document.getElementById("logoColoursCard");
+const inlineLogoSettings = document.getElementById("inlineLogoSettings");
+const logoColourList = document.getElementById("logoColourList");
+const logoReplacementColour = document.getElementById("logoReplacementColour");
+const applyLogoColourBtn = document.getElementById("applyLogoColourBtn");
+const resetLogoColoursBtn = document.getElementById("resetLogoColoursBtn");
+const logoColourStatus = document.getElementById("logoColourStatus");
 
 const textPropertyInput = document.getElementById("textPropertyInput");
 const textPropertyColour = document.getElementById("textPropertyColour");
@@ -1541,6 +1550,7 @@ function resetLogoQualityUi() {
 }
 
 function clearCanvasLogoState() {
+  if (inlineLogoSettings) inlineLogoSettings.hidden = true;
   uploadedLogo.onload = null;
   uploadedLogo.src = "";
   uploadedLogo.style.display = "none";
@@ -1848,6 +1858,10 @@ async function switchToDesignArea(nextArea, options = {}) {
   clearCanvasLogoState();
   clearCanvasTextState();
   state.selectedArea = next;
+  if (!state.selectedPosition) {
+    state.selectedPosition = "";
+  }
+  syncPositionSelectionCards();
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
     tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
   });
@@ -2538,6 +2552,7 @@ function configureViewTabsForProduct() {
   }
 
   configureDesignTypesForProduct(isBeanie);
+  syncPositionCardImages();
 }
 
 /**
@@ -4129,6 +4144,33 @@ function setSelectedAreaFromPicker(area) {
   return switchToDesignArea(normalized);
 }
 
+function syncPositionSelectionCards() {
+  const activePosition = String(state.selectedPosition || "").trim();
+
+  document.querySelectorAll(".position-card").forEach((card) => {
+    const input = card.querySelector('input[type="checkbox"]');
+    const positionKey = String(card.dataset.position || "").trim();
+    const isActive = Boolean(positionKey) && positionKey === activePosition;
+
+    if (input) {
+      input.checked = isActive;
+    }
+
+    card.classList.toggle("is-selected", isActive);
+  });
+}
+
+function syncPositionCardImages() {
+  document.querySelectorAll(".position-card").forEach((card) => {
+    const area = normalizeAreaForPicker(card.dataset.area) || "front";
+    const image = card.querySelector(".position-thumb-wrap img");
+    if (!image) return;
+
+    const source = resolveNeutralGarmentPngForArea(area);
+    if (source) image.src = source;
+  });
+}
+
 function showPositionPickerModal(options = {}) {
   const {
     title = "Pick your new position",
@@ -4216,6 +4258,132 @@ function loadLogoImage(dataUrl) {
   });
 }
 
+let selectedLogoPaletteColour = null;
+
+function hexFromRgb(red, green, blue) {
+  return `#${[red, green, blue].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function rgbFromHex(hex) {
+  const value = String(hex || "").replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(value)) return null;
+  return [
+    parseInt(value.slice(0, 2), 16),
+    parseInt(value.slice(2, 4), 16),
+    parseInt(value.slice(4, 6), 16)
+  ];
+}
+
+async function getLogoCanvas(source) {
+  const image = await loadLogoImage(source);
+  const longestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
+  const scale = Math.min(1, 900 / Math.max(1, longestSide));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
+  canvas.height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("Canvas is unavailable");
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return { canvas, context };
+}
+
+async function extractLogoPalette(source) {
+  const { canvas, context } = await getLogoCanvas(source);
+  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+  const colours = new Map();
+  const step = Math.max(1, Math.floor(Math.sqrt((canvas.width * canvas.height) / 30000)));
+
+  for (let index = 0; index < data.length; index += 4 * step) {
+    if (data[index + 3] < 80) continue;
+    const red = Math.round(data[index] / 24) * 24;
+    const green = Math.round(data[index + 1] / 24) * 24;
+    const blue = Math.round(data[index + 2] / 24) * 24;
+    const hex = hexFromRgb(Math.min(255, red), Math.min(255, green), Math.min(255, blue));
+    colours.set(hex, (colours.get(hex) || 0) + 1);
+  }
+
+  return [...colours.entries()]
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 8)
+    .map(([hex]) => hex);
+}
+
+function setLogoColourStatus(message = "", isError = false) {
+  if (!logoColourStatus) return;
+  logoColourStatus.textContent = message;
+  logoColourStatus.classList.toggle("is-error", isError);
+}
+
+async function renderLogoColourEditor() {
+  if (!logoColoursCard || !logoColourList || !state.uploadedLogo) return;
+  logoColoursCard.hidden = false;
+  logoColourList.innerHTML = "";
+  selectedLogoPaletteColour = null;
+  applyLogoColourBtn.disabled = true;
+  setLogoColourStatus("Reading logo colours...");
+
+  try {
+    const palette = await extractLogoPalette(state.uploadedLogo);
+    if (!palette.length) throw new Error("No opaque colours found");
+    palette.forEach((colour) => {
+      const swatch = document.createElement("button");
+      swatch.type = "button";
+      swatch.className = "logo-colour-swatch";
+      swatch.style.backgroundColor = colour;
+      swatch.title = colour.toUpperCase();
+      swatch.setAttribute("aria-label", `Use ${colour.toUpperCase()} as the colour to replace`);
+      swatch.addEventListener("click", () => {
+        selectedLogoPaletteColour = colour;
+        logoReplacementColour.value = colour;
+        logoColourList.querySelectorAll(".logo-colour-swatch").forEach((item) => {
+          item.classList.toggle("is-selected", item === swatch);
+        });
+        applyLogoColourBtn.disabled = false;
+        setLogoColourStatus(`Replacing ${colour.toUpperCase()}.`);
+      });
+      logoColourList.appendChild(swatch);
+    });
+    setLogoColourStatus("Choose a colour to edit.");
+  } catch (error) {
+    logoColoursCard.hidden = false;
+    setLogoColourStatus("This logo cannot be read for colour editing. Upload a PNG, JPG, WEBP or local SVG file.", true);
+  }
+}
+
+async function replaceLogoColour() {
+  const target = rgbFromHex(selectedLogoPaletteColour);
+  const replacement = rgbFromHex(logoReplacementColour?.value);
+  if (!target || !replacement || !state.uploadedLogo) return;
+
+  try {
+    const { canvas, context } = await getLogoCanvas(state.uploadedLogo);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const tolerance = 62;
+    const toleranceSquared = tolerance * tolerance;
+
+    for (let index = 0; index < imageData.data.length; index += 4) {
+      if (imageData.data[index + 3] < 16) continue;
+      const distanceSquared = (imageData.data[index] - target[0]) ** 2
+        + (imageData.data[index + 1] - target[1]) ** 2
+        + (imageData.data[index + 2] - target[2]) ** 2;
+      if (distanceSquared > toleranceSquared) continue;
+      imageData.data[index] = replacement[0];
+      imageData.data[index + 1] = replacement[1];
+      imageData.data[index + 2] = replacement[2];
+    }
+
+    context.putImageData(imageData, 0, 0);
+    state.uploadedLogo = canvas.toDataURL("image/png");
+    uploadedLogo.src = state.uploadedLogo;
+    await waitForLogoImage(uploadedLogo);
+    captureCurrentAreaDesign();
+    await renderLogoColourEditor();
+    setLogoColourStatus("Colour updated.");
+  } catch (error) {
+    setLogoColourStatus("The colour change could not be applied to this logo.", true);
+  }
+}
+
 async function optimizeLogoDataUrlForBasket(originalDataUrl) {
   if (
     !originalDataUrl.startsWith("data:image/")
@@ -4281,6 +4449,7 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
     state.pendingDecorationType = null;
     state.uploadedLogo = preparedLogo;
     state.originalUploadedLogo = optimizedLogo;
+    state.logoColourBase = preparedLogo;
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -4372,6 +4541,8 @@ document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((bu
 
 function showLogoOnCanvas(imageSrc) {
   state.uploadedLogo = imageSrc;
+  if (inlineLogoSettings) inlineLogoSettings.hidden = false;
+  renderLogoColourEditor();
 
   uploadedLogo.src = imageSrc;
   uploadedLogo.style.display = "block";
@@ -4537,8 +4708,9 @@ function updateQualityBar(widthCm) {
 logoSettingsBtn.addEventListener("click", e => {
   e.stopPropagation();
   updateLogoSizeLabels();
-  rotateInput.value = Math.round(state.logoRotation || 0);
-  openScreen("imagePropertiesPage");
+  if (inlineLogoSettings) inlineLogoSettings.hidden = false;
+  renderLogoColourEditor();
+  inlineLogoSettings?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
 deleteLogoBtn.addEventListener("click", e => {
@@ -5141,6 +5313,22 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
     updateVisibilityByPrintArea(designLayer);
   });
 });
+
+if (applyLogoColourBtn) {
+  applyLogoColourBtn.addEventListener("click", replaceLogoColour);
+}
+
+if (resetLogoColoursBtn) {
+  resetLogoColoursBtn.addEventListener("click", async () => {
+    if (!state.logoColourBase) return;
+    state.uploadedLogo = state.logoColourBase;
+    uploadedLogo.src = state.uploadedLogo;
+    await waitForLogoImage(uploadedLogo);
+    captureCurrentAreaDesign();
+    await renderLogoColourEditor();
+    setLogoColourStatus("Original logo colours restored.");
+  });
+}
 
 async function removeImageBackground(imageSrc, tolerance = 45) {
   return new Promise(resolve => {
@@ -5956,6 +6144,28 @@ document.querySelectorAll(".view-tab").forEach(btn => {
     await switchToDesignArea(btn.dataset.area);
   });
 });
+
+document.querySelectorAll(".position-card").forEach((card) => {
+  const input = card.querySelector('input[type="checkbox"]');
+  if (!input) return;
+
+  input.addEventListener("change", async () => {
+    const area = normalizeAreaForPicker(card.dataset.area) || "front";
+    const positionKey = String(card.dataset.position || "").trim() || area;
+
+    if (!input.checked) {
+      state.selectedPosition = "";
+      syncPositionSelectionCards();
+      return;
+    }
+
+    state.selectedPosition = positionKey;
+    syncPositionSelectionCards();
+    await switchToDesignArea(area);
+  });
+});
+
+syncPositionSelectionCards();
 
 function syncProductSpecificTabs() {
   configureViewTabsForProduct();

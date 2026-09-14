@@ -216,6 +216,59 @@
         </button>
       </div>
 
+      <aside id="inlineLogoSettings" class="inline-logo-settings" hidden aria-label="Logo settings">
+        <div class="inline-logo-settings-heading">LOGO SETTINGS</div>
+
+        <div class="img-props-card inline-logo-card">
+          <div class="img-props-quality-header">
+            <span class="img-props-row-label">Print Quality</span>
+            <span class="img-props-quality-pct" id="qualityPct">—</span>
+          </div>
+          <div class="img-props-quality-meter"><div class="img-props-quality-mask" id="qualityMask"></div></div>
+          <div class="img-props-quality-hint">Smaller logo = sharper print</div>
+        </div>
+
+        <div class="img-props-card inline-logo-card">
+          <label class="img-props-toggle-row">
+            <span class="img-props-toggle-label">Remove background</span>
+            <div class="img-props-toggle"><input id="removeBackgroundCheck" type="checkbox" checked><span class="img-props-toggle-track"></span></div>
+          </label>
+          <div class="img-props-divider"></div>
+          <label class="img-props-toggle-row">
+            <span class="img-props-toggle-label">Resize proportionally</span>
+            <div class="img-props-toggle"><input id="resizeProportionallyCheck" type="checkbox" checked><span class="img-props-toggle-track"></span></div>
+          </label>
+        </div>
+
+        <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
+          <div class="img-props-section-header">LOGO COLOURS</div>
+          <p class="logo-colours-copy">Choose a colour from your design, then select its replacement.</p>
+          <div class="logo-colour-list" id="logoColourList" aria-label="Colours used in logo"></div>
+          <label class="logo-colour-picker-label" for="logoReplacementColour">Replacement colour<input id="logoReplacementColour" type="color" value="#000000"></label>
+          <div class="logo-colour-actions">
+            <button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button>
+            <button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button>
+          </div>
+          <p class="logo-colour-status" id="logoColourStatus" aria-live="polite"></p>
+        </section>
+
+        <div class="img-props-card inline-logo-card">
+          <div class="img-props-section-header">POSITION &amp; SIZE</div>
+          <div class="img-props-controls">
+            <div class="img-props-control-group">
+              <div class="img-props-control-label">Position</div>
+              <div class="img-props-position-pad">
+                <button data-move="up-left">◤</button><button data-move="up">▲</button><button data-move="up-right">◥</button>
+                <button data-move="left">◀</button><button data-move="center">●</button><button data-move="right">▶</button>
+                <button data-move="down-left">◣</button><button data-move="down">▼</button><button data-move="down-right">◢</button>
+              </div>
+            </div>
+            <div class="img-props-control-group"><div class="img-props-control-label">Size</div><div class="img-props-size-btns"><button id="sizeUpBtn">▲</button><button id="sizeDownBtn">▼</button></div></div>
+            <div class="img-props-control-group"><div class="img-props-control-label">Rotate</div><input id="rotateInput" class="img-props-rotate-input" type="number" value="0"></div>
+          </div>
+          <div class="img-props-size-display"><span id="propertySizeLabel">0.00cm × 0.00cm</span></div>
+        </div>
+      </aside>
 
       <div id="productPreview" class="product-preview area-front">
         <div class="polo-colour-wrap">
@@ -240,7 +293,7 @@
               </div>
               <div class="logo-toolbar">
                 <button id="deleteLogoBtn" class="logo-delete-btn" type="button" aria-label="Delete logo">×</button>
-                <button id="logoSettingsBtn" class="logo-settings-btn" type="button">settings</button>
+                <button id="logoSettingsBtn" class="logo-settings-btn" type="button" aria-label="Logo settings">settings</button>
                 <button id="rotateHandle" class="rotate-handle" type="button" aria-label="Rotate logo">↻</button>
               </div>
             </div>
@@ -294,6 +347,81 @@
     <div class="canvas-selected-colour" aria-live="polite">
       <span class="canvas-selected-colour-label">COLOUR</span>
       <span id="selectedCanvasColourName" class="canvas-selected-colour-value">White</span>
+    </div>
+
+    <div class="position-selection-box" aria-label="Logo positions">
+      <div class="position-selection-header">
+        <span class="position-selection-title">LOGO POSITION &amp; SIZE</span>
+        <span class="position-selection-info" aria-label="Information">i</span>
+      </div>
+
+      <p class="position-selection-copy">Select one or more positions</p>
+
+      <div class="position-grid">
+        <label class="position-card" data-position="left-chest" data-area="front">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Left chest" />
+          </span>
+          <span class="position-name">Left Chest</span>
+        </label>
+
+        <label class="position-card" data-position="right-chest" data-area="front">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Right chest" />
+          </span>
+          <span class="position-name">Right Chest</span>
+        </label>
+
+        <label class="position-card" data-position="centre-front" data-area="front">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Centre front" />
+          </span>
+          <span class="position-name">Centre Front</span>
+        </label>
+
+        <label class="position-card" data-position="large-front" data-area="front">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Large front" />
+          </span>
+          <span class="position-name">Large Front</span>
+        </label>
+
+        <label class="position-card" data-position="name-of-neck" data-area="back">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png" alt="Name on neck" />
+          </span>
+          <span class="position-name">Name of Neck</span>
+        </label>
+
+        <label class="position-card" data-position="large-back" data-area="back">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png" alt="Large back" />
+          </span>
+          <span class="position-name">Large Back</span>
+        </label>
+
+        <label class="position-card" data-position="left-sleeve" data-area="left">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Left sleeve" />
+          </span>
+          <span class="position-name">Left Sleeve</span>
+        </label>
+
+        <label class="position-card" data-position="right-sleeve" data-area="right">
+          <input type="checkbox" />
+          <span class="position-thumb-wrap">
+            <img src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Right sleeve" />
+          </span>
+          <span class="position-name">Right Sleeve</span>
+        </label>
+      </div>
     </div>
 
     <section id="positionDesignPanel" class="position-design-panel" aria-labelledby="positionDesignTitle">
@@ -776,74 +904,11 @@
       <button class="img-props-back-btn" data-open="mainEditor">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <span class="img-props-title">Image Properties</span>
+      <span class="img-props-title">Logo Settings</span>
       <div style="width:36px"></div>
     </div>
 
-    <div class="img-props-body">
-      <div class="img-props-card">
-        <div class="img-props-quality-header">
-          <span class="img-props-row-label">Print Quality</span>
-          <span class="img-props-quality-pct" id="qualityPct">—</span>
-        </div>
-        <div class="img-props-quality-meter">
-          <div class="img-props-quality-mask" id="qualityMask"></div>
-        </div>
-        <div class="img-props-quality-hint">Smaller logo = sharper print</div>
-      </div>
-
-      <div class="img-props-card">
-        <label class="img-props-toggle-row">
-          <span class="img-props-toggle-label">Remove background</span>
-          <div class="img-props-toggle">
-            <input id="removeBackgroundCheck" type="checkbox" checked>
-            <span class="img-props-toggle-track"></span>
-          </div>
-        </label>
-        <div class="img-props-divider"></div>
-        <label class="img-props-toggle-row">
-          <span class="img-props-toggle-label">Resize proportionally</span>
-          <div class="img-props-toggle">
-            <input id="resizeProportionallyCheck" type="checkbox" checked>
-            <span class="img-props-toggle-track"></span>
-          </div>
-        </label>
-      </div>
-
-      <div class="img-props-card">
-        <div class="img-props-section-header">Position &amp; Size</div>
-        <div class="img-props-controls">
-          <div class="img-props-control-group">
-            <div class="img-props-control-label">Position</div>
-            <div class="img-props-position-pad">
-              <button data-move="up-left">◤</button>
-              <button data-move="up">▲</button>
-              <button data-move="up-right">◥</button>
-              <button data-move="left">◀</button>
-              <button data-move="center">●</button>
-              <button data-move="right">▶</button>
-              <button data-move="down-left">◣</button>
-              <button data-move="down">▼</button>
-              <button data-move="down-right">◢</button>
-            </div>
-          </div>
-          <div class="img-props-control-group">
-            <div class="img-props-control-label">Size</div>
-            <div class="img-props-size-btns">
-              <button id="sizeUpBtn">▲</button>
-              <button id="sizeDownBtn">▼</button>
-            </div>
-          </div>
-          <div class="img-props-control-group">
-            <div class="img-props-control-label">Rotate</div>
-            <input id="rotateInput" class="img-props-rotate-input" type="number" value="0">
-          </div>
-        </div>
-        <div class="img-props-size-display">
-          <span id="propertySizeLabel">0.00cm × 0.00cm</span>
-        </div>
-      </div>
-    </div>
+    <div class="img-props-body"></div>
 
     <div class="copyright-actions">
       <button class="btn-black" id="applyImagePropertiesBtn">Apply</button>

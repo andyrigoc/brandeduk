@@ -2221,6 +2221,97 @@ textarea {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
+.logo-colours-card[hidden] {
+  display: none;
+}
+
+.logo-colours-copy,
+.logo-colour-status {
+  margin: 7px 0 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.logo-colour-status.is-error {
+  color: #b42318;
+}
+
+.logo-colour-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.logo-colour-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid #e4e7ec;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.logo-colour-swatch.is-selected {
+  border-color: #111827;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6d5ae6;
+}
+
+.logo-colour-picker-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.logo-colour-picker-label input {
+  width: 38px;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.logo-colour-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.logo-colour-apply-btn,
+.logo-colour-reset-btn {
+  min-height: 38px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logo-colour-apply-btn {
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+}
+
+.logo-colour-apply-btn:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.logo-colour-reset-btn {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+}
+
 .img-props-size-display {
   margin-top: 14px;
   text-align: center;
