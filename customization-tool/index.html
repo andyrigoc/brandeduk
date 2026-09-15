@@ -262,8 +262,8 @@
           </div>
           <button class="inline-advanced-position" type="button">⌄&nbsp; Advanced positioning</button>
 
-          <div class="inline-logo-step"><span>3</span><div><strong>Rotate</strong><small>Rotate your logo to the desired angle.</small></div></div>
-          <div class="inline-logo-rotate-controls"><button id="rotateLogoDecreaseBtn" type="button">−</button><input id="rotateInput" class="img-props-rotate-input" type="number" value="0" aria-label="Logo rotation"><span>°</span><button id="rotateLogoIncreaseBtn" type="button">+</button></div>
+          <div class="inline-logo-step inline-logo-rotate-step"><span>3</span><div><strong>Rotate</strong><small>Rotate your logo to the desired angle.</small></div></div>
+          <div class="inline-logo-rotate-controls inline-logo-rotate-step"><button id="rotateLogoDecreaseBtn" type="button">−</button><input id="rotateInput" class="img-props-rotate-input" type="number" value="0" aria-label="Logo rotation"><span>°</span><button id="rotateLogoIncreaseBtn" type="button">+</button></div>
 
           <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
             <div class="inline-logo-step"><span>4</span><div><strong>Change logo colours</strong><small>Replace colours from your logo design.</small></div></div>
@@ -273,11 +273,17 @@
               <button id="logoColourPickerToggle" class="logo-colour-picker-toggle" type="button" aria-expanded="false" aria-label="Choose replacement colour"><span></span></button>
               <input id="logoReplacementColour" type="hidden" value="#000000">
               <div id="logoColourPopover" class="logo-colour-popover" hidden>
+                <div class="logo-colour-search-wrap">
+                  <input id="logoColourSearch" type="search" placeholder="Search for color" aria-label="Search for color">
+                  <button id="closeLogoColourPopoverBtn" type="button" aria-label="Close colour palette">×</button>
+                </div>
+                <div class="logo-colour-in-use"><span>Colors in use</span><span id="logoColourInUseSwatch" aria-hidden="true"></span></div>
+                <div class="logo-colour-palette-heading">Imperial</div>
                 <div class="logo-colour-preset-grid">
                   <button type="button" data-replacement-colour="#101828" style="background:#101828" aria-label="Black"></button><button type="button" data-replacement-colour="#ffffff" style="background:#ffffff" aria-label="White"></button><button type="button" data-replacement-colour="#ef5226" style="background:#ef5226" aria-label="Orange"></button><button type="button" data-replacement-colour="#e8384f" style="background:#e8384f" aria-label="Red"></button><button type="button" data-replacement-colour="#f6c445" style="background:#f6c445" aria-label="Yellow"></button><button type="button" data-replacement-colour="#20a96b" style="background:#20a96b" aria-label="Green"></button><button type="button" data-replacement-colour="#2563eb" style="background:#2563eb" aria-label="Blue"></button><button type="button" data-replacement-colour="#7c3aed" style="background:#7c3aed" aria-label="Purple"></button>
                 </div>
-                <label>HEX <input id="logoReplacementHex" type="text" value="#000000" maxlength="7" spellcheck="false"></label>
-                <button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button>
+                <button id="removeLogoColourBtn" class="logo-colour-remove-btn" type="button">Remove Color</button>
+                <button id="confirmLogoColourBtn" class="logo-colour-confirm-btn" type="button">OK</button>
               </div>
             </div>
             <div class="logo-colour-actions"><button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button></div>
@@ -302,6 +308,8 @@
           <div id="colourLayer" class="colour-layer"></div>
 
           <div id="customArea" class="custom-area">
+
+            <div id="printAreaGuide" class="print-area-guide" aria-hidden="true"></div>
 
             <div id="designLayer" class="design-layer">
               <span id="logoSizeLabel" class="logo-size-label">0.00cm x 0.00cm</span>

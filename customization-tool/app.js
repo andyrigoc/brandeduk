@@ -71,12 +71,17 @@ const PRODUCT_PRINT_AREAS = {
     left:  { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } },
     right: { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } }
   },
-  beanie: {
-    // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
-    // logo fills the cuff (the agreed visual) while reading a true 6cm.
-    front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } }
+    beanie: {
+      // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
+      // logo fills the cuff (the agreed visual) while reading a true 6cm.
+      front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } },
+    },
+    cap: {
+      // Front panel embroidery/print area. Keep the guide inside the crown, above the brim.
+      front: { areaCm: { w: 12, h: 6.5 }, box: { w: 0.46, h: 0.25, top: 0.23 }, defaultLogo: { w: 12 } }
   }
 };
+  document.body.classList.toggle("product-cap", state.product === "cap");
 
 // Optional per-SKU overrides. Keyed by product code (UPPERCASE); same shape as a
 // product entry. Lets specific catalogue items declare their exact print area
@@ -115,6 +120,14 @@ function getPrintableReferenceWidthPx() {
 
 function getPrintableReferenceHeightPx() {
   return Math.max(120, getMockupSizePx().h * getPrintAreaConfig().box.h);
+}
+
+function syncPrintAreaGuide() {
+  const guide = document.getElementById("printAreaGuide");
+  if (!guide) return;
+
+  // The main garment stays clean. Placement hints belong only to the thumbnails.
+  guide.hidden = true;
 }
 
 // Real centimetres → pixels, calibrated per product/view.
@@ -467,6 +480,27 @@ function syncViewThumbTint() {
     colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
     colourLayer.style.maskImage = `url("${thumbSrc}")`;
   });
+
+  document.querySelectorAll(".position-card").forEach((card) => {
+    const thumbImg = card.querySelector(".position-thumb-wrap > img");
+    const thumbWrap = card.querySelector(".position-thumb-wrap");
+    if (!thumbImg || !thumbWrap) return;
+
+    let colourLayer = thumbWrap.querySelector(".position-thumb-colour-layer");
+    if (!colourLayer) {
+      colourLayer = document.createElement("span");
+      colourLayer.className = "position-thumb-colour-layer";
+      thumbWrap.appendChild(colourLayer);
+    }
+
+    const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
+    colourLayer.style.opacity = safeHex && thumbSrc ? "1" : "0";
+    if (safeHex && thumbSrc) {
+      colourLayer.style.backgroundColor = safeHex;
+      colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
+      colourLayer.style.maskImage = `url("${thumbSrc}")`;
+    }
+  });
 }
 
 const removeBackgroundCheck = document.getElementById("removeBackgroundCheck");
@@ -495,8 +529,11 @@ const logoColourList = document.getElementById("logoColourList");
 const logoReplacementColour = document.getElementById("logoReplacementColour");
 const logoColourPickerToggle = document.getElementById("logoColourPickerToggle");
 const logoColourPopover = document.getElementById("logoColourPopover");
-const logoReplacementHex = document.getElementById("logoReplacementHex");
-const applyLogoColourBtn = document.getElementById("applyLogoColourBtn");
+const logoColourSearch = document.getElementById("logoColourSearch");
+const closeLogoColourPopoverBtn = document.getElementById("closeLogoColourPopoverBtn");
+const logoColourInUseSwatch = document.getElementById("logoColourInUseSwatch");
+const removeLogoColourBtn = document.getElementById("removeLogoColourBtn");
+const confirmLogoColourBtn = document.getElementById("confirmLogoColourBtn");
 const resetLogoColoursBtn = document.getElementById("resetLogoColoursBtn");
 const logoColourStatus = document.getElementById("logoColourStatus");
 
@@ -2537,9 +2574,11 @@ function configureViewTabsForProduct() {
   if (appRoot) {
     appRoot.classList.toggle("product-beanie", isBeanie);
     appRoot.classList.toggle("product-tshirt", state.product === "tshirt");
+    appRoot.classList.toggle("product-cap", state.product === "cap");
   }
   if (productPreview) {
     productPreview.classList.toggle("product-beanie", isBeanie);
+    productPreview.classList.toggle("product-cap", state.product === "cap");
   }
 
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
@@ -2574,6 +2613,7 @@ function configureViewTabsForProduct() {
   configureDesignTypesForProduct(isBeanie);
   syncPositionCardImages();
   configurePositionCardsForProduct();
+  syncPrintAreaGuide();
 }
 
 /**
@@ -2635,7 +2675,9 @@ async function applyArea() {
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
   document.querySelector(".customiser-app")?.classList.toggle("product-beanie", state.product === "beanie");
+  document.querySelector(".customiser-app")?.classList.toggle("product-cap", state.product === "cap");
   productPreview.classList.toggle("product-beanie", state.product === "beanie");
+  productPreview.classList.toggle("product-cap", state.product === "cap");
   productPreview.classList.toggle("mirror-right", state.selectedArea === "right" && state.product !== "beanie");
 
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
@@ -2708,6 +2750,7 @@ async function applyArea() {
       if (shouldCenterText && state.text) centerText();
     }, 0);
   }
+  syncPrintAreaGuide();
 }
 
 function collectSizes() {
@@ -4252,6 +4295,12 @@ function syncPositionCardImages() {
 
     const source = resolveNeutralGarmentPngForArea(area);
     if (source) image.src = source;
+
+    const guide = card.querySelector(".position-print-area-guide");
+    if (guide) {
+      guide.hidden = false;
+      guide.dataset.position = card.dataset.position || "centre-front";
+    }
   });
 }
 
@@ -4327,7 +4376,7 @@ function configurePositionCardsForProduct() {
     card.className = "position-card";
     card.dataset.position = key;
     card.dataset.area = area;
-    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"></span><span class="position-name"></span>`;
+    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>`;
     card.querySelector(".position-name").textContent = label;
     grid.appendChild(card);
   });
@@ -4337,6 +4386,7 @@ function configurePositionCardsForProduct() {
     state.selectedArea = "front";
   }
   syncPositionCardImages();
+  syncViewThumbTint();
   syncPositionSelectionCards();
   syncPositionCardLogoPreviews();
 }
@@ -4448,9 +4498,9 @@ function setReplacementLogoColour(hex) {
   const value = String(hex || "").toUpperCase();
   if (!rgbFromHex(value)) return false;
   if (logoReplacementColour) logoReplacementColour.value = value;
-  if (logoReplacementHex) logoReplacementHex.value = value;
   const chip = logoColourPickerToggle?.querySelector("span");
   if (chip) chip.style.backgroundColor = value;
+  if (logoColourInUseSwatch) logoColourInUseSwatch.style.backgroundColor = value;
   return true;
 }
 
@@ -4534,7 +4584,6 @@ async function renderLogoColourEditor() {
   logoColoursCard.hidden = false;
   logoColourList.innerHTML = "";
   selectedLogoPaletteColour = null;
-  applyLogoColourBtn.disabled = true;
   setLogoColourStatus("Reading logo colours...");
 
   try {
@@ -4553,8 +4602,8 @@ async function renderLogoColourEditor() {
         logoColourList.querySelectorAll(".logo-colour-swatch").forEach((item) => {
           item.classList.toggle("is-selected", item === swatch);
         });
-        applyLogoColourBtn.disabled = false;
-        setLogoColourStatus(`Selected ${colour.toUpperCase()}. Choose a replacement, then apply.`);
+        setReplacementLogoColour(colour);
+        setLogoColourStatus(`Selected ${colour.toUpperCase()}. Choose a replacement colour.`);
       });
       logoColourList.appendChild(swatch);
     });
@@ -5567,30 +5616,65 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
   });
 });
 
-if (applyLogoColourBtn) {
-  applyLogoColourBtn.addEventListener("click", replaceLogoColour);
-}
-
 logoColourPickerToggle?.addEventListener("click", () => {
   const willOpen = Boolean(logoColourPopover?.hidden);
   if (logoColourPopover) logoColourPopover.hidden = !willOpen;
   logoColourPickerToggle.setAttribute("aria-expanded", String(willOpen));
+  if (willOpen) positionLogoColourPopover();
 });
 
+function positionLogoColourPopover() {
+  if (!logoColourPopover || logoColourPopover.hidden || !logoColourPickerToggle) return;
+  const selectedSwatch = logoColourList?.querySelector(".logo-colour-swatch.is-selected");
+  const anchor = selectedSwatch || logoColourPickerToggle;
+  const anchorRect = anchor.getBoundingClientRect();
+  const viewportPadding = 12;
+  const popoverWidth = Math.min(495, window.innerWidth - viewportPadding * 2);
+  const left = Math.max(
+    viewportPadding,
+    Math.min(anchorRect.left, window.innerWidth - popoverWidth - viewportPadding)
+  );
+  const popoverHeight = logoColourPopover.getBoundingClientRect().height;
+  const belowTop = anchorRect.bottom + 8;
+  const aboveTop = anchorRect.top - popoverHeight - 8;
+  const top = belowTop + popoverHeight <= window.innerHeight - viewportPadding
+    ? belowTop
+    : Math.max(viewportPadding, aboveTop);
+  logoColourPopover.style.left = `${left}px`;
+  logoColourPopover.style.top = `${top}px`;
+}
+
+window.addEventListener("resize", positionLogoColourPopover);
+window.addEventListener("scroll", positionLogoColourPopover, true);
+
 document.querySelectorAll("[data-replacement-colour]").forEach((button) => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", async () => {
     if (!setReplacementLogoColour(button.dataset.replacementColour)) return;
-    if (selectedLogoPaletteColour) {
-      applyLogoColourBtn.disabled = false;
-      setLogoColourStatus(`Replace ${selectedLogoPaletteColour.toUpperCase()} with ${logoReplacementColour.value.toUpperCase()}.`);
-    }
+    if (selectedLogoPaletteColour) await replaceLogoColour();
   });
 });
 
-logoReplacementHex?.addEventListener("change", () => {
-  if (!setReplacementLogoColour(logoReplacementHex.value)) {
-    logoReplacementHex.value = logoReplacementColour?.value || "#000000";
-  }
+logoColourSearch?.addEventListener("input", () => {
+  const query = logoColourSearch.value.trim().toLowerCase();
+  document.querySelectorAll("#logoColourPopover [data-replacement-colour]").forEach((button) => {
+    button.hidden = query && !button.getAttribute("aria-label").toLowerCase().includes(query);
+  });
+});
+
+closeLogoColourPopoverBtn?.addEventListener("click", () => {
+  logoColourPopover.hidden = true;
+  logoColourPickerToggle?.setAttribute("aria-expanded", "false");
+});
+
+confirmLogoColourBtn?.addEventListener("click", () => {
+  logoColourPopover.hidden = true;
+  logoColourPickerToggle?.setAttribute("aria-expanded", "false");
+});
+
+removeLogoColourBtn?.addEventListener("click", async () => {
+  if (!selectedLogoPaletteColour || !state.uploadedLogo) return;
+  await replaceLogoColour();
+  setLogoColourStatus("Colour removed from the logo.");
 });
 
 if (resetLogoColoursBtn) {

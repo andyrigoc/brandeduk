@@ -1004,6 +1004,24 @@ textarea {
   transition: none;
 }
 
+.print-area-guide {
+  position: absolute;
+  z-index: 25;
+  left: var(--print-area-left, 27%);
+  top: var(--print-area-top, 23%);
+  width: var(--print-area-position-width, 46%);
+  height: var(--print-area-position-height, 25%);
+  border: 1px solid rgba(14, 165, 233, 0.9);
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.24);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.42), 0 3px 10px rgba(14, 165, 233, 0.14);
+  pointer-events: none;
+}
+
+.print-area-guide[hidden] {
+  display: none;
+}
+
 .custom-area:has(.active-logo),
 .custom-area:has(.active-text) {
   border-color: transparent;
