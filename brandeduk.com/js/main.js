@@ -273,7 +273,6 @@ function initHeroBanners() {
     if (!banners.length) return;
     
     let currentBanner = 0;
-    let autoRotateInterval;
     
     // Initialize: first banner active, others waiting on right
     banners.forEach((banner, i) => {
@@ -300,9 +299,10 @@ function initHeroBanners() {
         nextEl.classList.remove('hero-banner--exit');
         nextEl.classList.add('hero-banner--active');
         
-        // Update dots
+        // Update gallery thumbnails
         dots.forEach((dot, i) => {
             dot.classList.toggle('banner-dot--active', i === index);
+            dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
         });
         
         // Reset exited banner after transition
@@ -313,20 +313,10 @@ function initHeroBanners() {
         currentBanner = index;
     }
     
-    // Auto-rotate every 10 seconds
-    function startAutoRotate() {
-        autoRotateInterval = setInterval(() => {
-            const nextIndex = (currentBanner + 1) % banners.length;
-            switchBanner(nextIndex);
-        }, 10000);
-    }
-    
-    // Dot click handler
+    // Thumbnail click handler. The customer controls the banner selection.
     dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
-            clearInterval(autoRotateInterval);
             switchBanner(index);
-            startAutoRotate();
         });
     });
     
@@ -346,6 +336,4 @@ function initHeroBanners() {
         });
     }
     
-    // Start auto-rotate
-    startAutoRotate();
 }
