@@ -2011,6 +2011,79 @@ body.popup-open {
     text-align: right;
 }
 
+/* Elegant quantity control: soft pill, circular +/- buttons, restrained focus ring. */
+#orderPopup .page-3 .size-qty-box-p3 .qty-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 42px;
+    padding: 3px 5px;
+    border: 1px solid #e1e7f0;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fff, #f8fafc);
+    box-shadow: 0 3px 10px rgba(35, 52, 80, .08), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+
+#orderPopup .page-3 .size-qty-box-p3 .qty-btn {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #dce4ef;
+    border-radius: 50%;
+    background: #fff;
+    color: #1764c0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+    box-shadow: 0 2px 5px rgba(35, 52, 80, .08);
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+#orderPopup .page-3 .size-qty-box-p3 .qty-btn:hover {
+    border-color: #1764c0;
+    background: #1764c0;
+    color: #fff;
+    box-shadow: 0 4px 9px rgba(23, 100, 192, .22);
+    transform: translateY(-1px);
+}
+
+#orderPopup .page-3 .size-qty-box-p3 .qty-btn:active {
+    transform: scale(.95);
+}
+
+#orderPopup .page-3 #sizeQtyGridP3 .qty-input {
+    width: 42px;
+    min-width: 42px;
+    height: 34px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #152238 !important;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 34px;
+    text-align: center;
+    box-shadow: none;
+}
+
+#orderPopup .page-3 #sizeQtyGridP3 .qty-input:focus {
+    outline: 2px solid rgba(23, 100, 192, .22);
+    outline-offset: 1px;
+}
+
+#orderPopup .page-3 .size-qty-box-p3.has-qty .qty-controls {
+    border-color: #78aef0;
+    box-shadow: 0 0 0 3px rgba(23, 100, 192, .1), 0 3px 10px rgba(35, 52, 80, .08);
+}
+
+#orderPopup .page-3 .size-price-p3 {
+    display: none !important;
+}
+
 #orderPopup .page-3 .p3-action-row {
     grid-column: 2;
     grid-row: 4;

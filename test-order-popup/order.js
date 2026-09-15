@@ -361,15 +361,15 @@ function populatePage3() {
     
     // Populate size grid
     var sizes = product.sizes || ['S','M','L','XL','2XL','3XL'];
-    var prices = product.prices || {};
-    var basePrice = product.price || 0;
+    var basePrice = tierData.length
+        ? Number(tierData[0].price) || 0
+        : Number(product.price || product.basePrice) || 0;
     var grid = $('#sizeQtyGridP3');
     grid.empty();
     
     $('#p3BasePrice').text('£' + parseFloat(basePrice).toFixed(2));
     
     sizes.forEach(function(size) {
-        var sizePrice = (prices[size] || basePrice);
         var stock = '';
         if (product.colors || product.colours) {
             var colours = product.colors || product.colours;
@@ -379,7 +379,6 @@ function populatePage3() {
         
         var box = $('<div class="size-qty-box-p3"></div>');
         box.html('<div class="size-name-p3">' + size + '</div>' +
-            '<div class="size-price-p3">£' + parseFloat(sizePrice).toFixed(2) + '<small> ex VAT</small></div>' +
             (stock ? '<div class="size-stock-p3">Stock: <strong>' + stock + '</strong></div>' : '') +
             '<div class="qty-controls">' +
             '<button class="qty-btn minus" data-size="' + size + '">-</button>' +
