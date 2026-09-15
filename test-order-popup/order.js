@@ -461,7 +461,13 @@ $(document).on("click", "#btnCustomize", function() {
     $('#btnAddToQuote').trigger('click');
     window.setTimeout(function() {
         if ($('#addQuoteSuccess').is(':visible')) {
-            $('#btnAddLogo').trigger('click');
+            $('#addQuoteSuccess').hide();
+            $('#btnAddToQuote').show();
+            if (typeof window.openPcOrderCustomizer === 'function') {
+                window.openPcOrderCustomizer();
+            } else {
+                window.goToPage(3);
+            }
         }
     }, 80);
 });
