@@ -2420,9 +2420,9 @@
                 <label for="mobileViewSelect">View:</label>
                 <select id="mobileViewSelect" class="shop-control-select">
                     <option value="12">12 per page</option>
-                    <option value="24" selected>24 per page</option>
                     <option value="36">36 per page</option>
                     <option value="48">48 per page</option>
+                    <option value="100" selected>100 per page</option>
                 </select>
             </div>
         </div>
@@ -3361,7 +3361,7 @@
         function buildApiParams() {
             const params = {};
             params.page = currentState.page || 1;
-            params.limit = currentState.limit || 24;
+            params.limit = currentState.limit || 100;
 
             // Sort parameter
             if (currentState.sort) {
@@ -3901,7 +3901,7 @@
             const url = new URL(window.location);
             url.searchParams.set('category', currentState.category);
             url.searchParams.set('page', currentState.page);
-            if (currentState.limit && currentState.limit !== 24) {
+            if (currentState.limit && currentState.limit !== 100) {
                 url.searchParams.set('limit', currentState.limit);
             } else {
                 url.searchParams.delete('limit');
@@ -4875,7 +4875,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             currentState.category = normalizeCategory(urlParams.get('category')) || 'all';
             currentState.page = parseInt(urlParams.get('page')) || 1;
-            currentState.limit = parseInt(urlParams.get('limit')) || 24;
+            currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
             currentState.search = urlParams.get('q') || '';
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
@@ -5022,7 +5022,7 @@
             }
 
             if (viewSelect) {
-                viewSelect.value = currentState.limit || 24;
+                viewSelect.value = currentState.limit || 100;
                 viewSelect.addEventListener('change', async (e) => {
                     currentState.limit = parseInt(e.target.value);
                     currentState.page = 1;

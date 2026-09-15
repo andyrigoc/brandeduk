@@ -330,6 +330,10 @@
     white-space: nowrap;
   }
 
+  #customizationContextLabel {
+    display: inline-flex;
+  }
+
   .customization-context-label strong {
     color: #172554;
     font-size: 11px;
@@ -1141,6 +1145,22 @@
 
   .product-preview.product-cap .polo-colour-wrap {
     width: min(370px, calc(100% - 70px), calc(100vh - 280px));
+  }
+
+  /* T-shirt front and back share one PC frame so the garment scale and print
+     coordinates do not jump when the customer switches views. */
+  .product-preview.product-tshirt.area-front .polo-colour-wrap,
+  .product-preview.product-tshirt.area-back .polo-colour-wrap {
+    width: min(460px, 100%, calc(100vh - 210px));
+    aspect-ratio: 281 / 333;
+  }
+
+  .product-preview.product-tshirt.area-front .product-image,
+  .product-preview.product-tshirt.area-back .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
   }
 
   .view-tabs-side {

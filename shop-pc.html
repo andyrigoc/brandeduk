@@ -3499,6 +3499,15 @@
                 <h2 id="cat-desc-title"></h2>
                 <p id="cat-desc-text"></p>
             </div>
+            <section id="brand-editorial" class="brand-editorial" hidden aria-labelledby="brand-editorial-title">
+                <div class="brand-editorial-banner" id="brand-editorial-banner">
+                    <img id="brand-editorial-logo" src="" alt="" loading="lazy">
+                </div>
+                <div class="brand-editorial-copy">
+                    <h2 id="brand-editorial-title"></h2>
+                    <p id="brand-editorial-description"></p>
+                </div>
+            </section>
             <div id="categoryBrandLogoWrap" class="category-brand-logo-wrap">
                 <img id="categoryBrandLogo" class="category-brand-logo" alt="" loading="lazy">
             </div>
@@ -3533,10 +3542,9 @@
                             <label for="viewSelect">View:</label>
                             <select id="viewSelect" class="control-select">
                                 <option value="24">24 per page</option>
-                                <option value="28" selected>28 per page</option>
                                 <option value="32">32 per page</option>
                                 <option value="48">48 per page</option>
-                                <option value="100">100 per page</option>
+                                <option value="100" selected>100 per page</option>
                             </select>
                         </div>
                     </div>
@@ -3901,7 +3909,7 @@
             currentState.productType = productTypeParam || null; // Store productType from URL
             currentState.brand = brandParam || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
-            currentState.limit = parseInt(urlParams.get('limit')) || 28;
+            currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
             currentState.search = '';
             currentState.priceMin = null;
@@ -3937,7 +3945,7 @@
             let categoryFilter = normalizeCategory(urlParams.get('category')) || 'all';
             currentState.category = categoryFilter;
             currentState.page = parseInt(urlParams.get('page')) || 1;
-            currentState.limit = parseInt(urlParams.get('limit')) || 28;
+            currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
             currentState.search = urlParams.get('q') || '';;
             currentState.priceMin = urlParams.get('priceMin') ? parseFloat(urlParams.get('priceMin')) : null;
@@ -4539,7 +4547,7 @@
 
             // Pagination (always included)
             params.page = currentState.page || 1;
-            params.limit = currentState.limit || 28;
+            params.limit = currentState.limit || 100;
 
             // Debug: Log pagination params
             console.log('ðŸ“„ API Params - Pagination:', {
@@ -5461,14 +5469,14 @@
                 else url.searchParams.delete('priceMax');
                 if (currentState.search) url.searchParams.set('q', currentState.search);
                 else url.searchParams.delete('q');
-                if (currentState.limit === 28) url.searchParams.delete('limit');
+                if (currentState.limit === 100) url.searchParams.delete('limit');
             } else {
                 // Normal category-based navigation - include all params
                 url.searchParams.delete('productType');
                 url.searchParams.delete('brand');
                 url.searchParams.set('category', currentState.category);
                 url.searchParams.set('page', currentState.page);
-                if (currentState.limit && currentState.limit !== 28) {
+                if (currentState.limit && currentState.limit !== 100) {
                     url.searchParams.set('limit', currentState.limit);
                 } else {
                     url.searchParams.delete('limit');
@@ -5789,6 +5797,43 @@
 
             logoWrapEl.style.display = 'flex';
             logoWrapEl.style.opacity = '1';
+        }
+
+        const BRAND_EDITORIAL = {
+            nimbus: { logo: 'brandedukv15-child/assets/images/brands/nimbus2020.webp', description: 'Meet Nimbus, a Copenhagen-based corporate-fashion brand offering retail-inspired outerwear and refined wardrobe pieces. Created for businesses seeking an elevated Scandinavian uniform aesthetic, the range places a clear emphasis on timeless design, premium craftsmanship and careful attention to detail. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional. It is a confident option when consistent presentation matters across different roles, projects or repeat orders. Customers can choose it for a polished result that remains comfortable, practical and easy to wear in real settings. This makes the collection especially useful for organisations that want branded products to feel considered rather than simply promotional.', accent: '#000000' },
+            rhino: { logo: 'brandedukv15-child/assets/images/brands/rhino2020.jpg', description: 'Meet Rhino, a rugged sports and teamwear brand offering training and competition garments built for repeated use. Created for schools, clubs and coordinated athletic programmes, the range places a clear emphasis on strength, comfort and reliable customisation. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional.', accent: '#000000' },
+            gildan: { logo: 'brandedukv15-child/assets/images/brands/gildan2020.webp', description: 'Meet Gildan, a large-scale printwear specialist offering cotton, polyester and blended apparel across classic and contemporary fits. Created for decorators requiring dependable value, broad choice and repeatable results, the range places a clear emphasis on vertically integrated production, consistent sizing and fabric innovation. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional. It is a confident option when consistent presentation matters across different roles, projects or repeat orders. Customers can choose it for a polished result that remains comfortable, practical and easy to wear in real settings. This makes the collection especially useful for organisations that want branded products to feel considered rather than simply promotional. Across the range, thoughtful details support both the wearer experience and the quality of the finished decoration.', accent: '#000000' },
+            awdis: { logo: 'brandedukv15-child/assets/images/brands/awdis.webp', description: 'Meet AWDis, a trusted UK blank-clothing specialist offering reliable tees and versatile everyday apparel in an extensive colour choice. Created for schools, teams, businesses, events and growing clothing brands, the range places a clear emphasis on consistent quality, comfortable fabrics and decoration-friendly construction. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional. It is a confident option when consistent presentation matters across different roles, projects or repeat orders.', accent: '#000000' },
+            fruitoftheloom: { logo: 'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg', description: 'Meet Fruit of the Loom, a established garment-decoration brand offering widely trusted T-shirts, sweats and dependable everyday blanks. Created for printers, teams, businesses and high-volume promotional requirements, the range places a clear emphasis on consistent production, responsible improvement and reliable European supply. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional. It is a confident option when consistent presentation matters across different roles, projects or repeat orders. Customers can choose it for a polished result that remains comfortable, practical and easy to wear in real settings. This makes the collection especially useful for organisations that want branded products to feel considered rather than simply promotional.', accent: '#000000' }
+        };
+
+        function updateBrandEditorial(brandParam, brandDisplayName) {
+            const section = document.getElementById('brand-editorial');
+            const logo = document.getElementById('brand-editorial-logo');
+            const title = document.getElementById('brand-editorial-title');
+            const description = document.getElementById('brand-editorial-description');
+            const banner = document.getElementById('brand-editorial-banner');
+            if (!section || !logo || !title || !description || !banner) return;
+
+            const key = String(brandParam || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            const copy = BRAND_EDITORIAL[key] || {
+                description: `${brandDisplayName} clothing selected for workwear, uniforms, teamwear and promotional use. Browse styles ready for professional print or embroidery.`,
+                accent: '#273469'
+            };
+            const logoPath = copy.logo || getBrandLogo(brandDisplayName) || getBrandLogo(brandParam) || '';
+
+            title.textContent = brandDisplayName;
+            description.textContent = copy.description;
+            logo.src = logoPath;
+            logo.alt = logoPath ? `${brandDisplayName} logo` : '';
+            logo.hidden = !logoPath;
+            banner.style.setProperty('--brand-accent', copy.accent);
+            const legacyLogo = document.getElementById('categoryBrandLogoWrap');
+            if (legacyLogo) {
+                legacyLogo.style.display = 'none';
+                legacyLogo.style.opacity = '0';
+            }
+            section.hidden = false;
         }
 
         /* Accidental duplicate block retained temporarily for recovery reference.
@@ -6210,9 +6255,11 @@
                         .join(' ');
                     categoryTitleEl.textContent = brandDisplayName;
                     updateCategoryBrandLogo(brandParam, brandDisplayName);
+                    updateBrandEditorial(brandParam, brandDisplayName);
                     categoryTitleEl.style.opacity = '1';
                     console.log('ðŸ ·ï¸  Showing brand title:', brandDisplayName);
                 } else if (accreditationParam) {
+                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
                     // Fetch accreditation name
                     getAccreditationName(accreditationParam).then(name => {
@@ -6227,6 +6274,7 @@
                         categoryTitleEl.style.opacity = '1';
                     });
                 } else if (productTypeParam) {
+                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
                     // Fetch product type name from API
                     getProductTypeName(productTypeParam).then(name => {
@@ -6249,6 +6297,7 @@
                         categoryTitleEl.style.opacity = '1';
                     });
                 } else {
+                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
                     categoryTitleEl.textContent = categoryTitles[currentState.category] || 'Products';
                     categoryTitleEl.style.opacity = '1';
@@ -7576,7 +7625,7 @@
             const viewSelect = document.getElementById('viewSelect');
             if (viewSelect) {
                 // Initialize from currentState
-                viewSelect.value = currentState.limit || 28;
+                viewSelect.value = currentState.limit || 100;
 
                 viewSelect.addEventListener('change', async (e) => {
                     const newLimit = parseInt(e.target.value);

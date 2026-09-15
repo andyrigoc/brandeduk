@@ -11399,7 +11399,7 @@
             if (productCode) queryParts.unshift('code=' + productCode);
             if (toolProduct) queryParts.push('product=' + encodeURIComponent(toolProduct));
             const query = '?' + queryParts.join('&');
-            window.location.href = '../customization-tool/index.html' + query;
+            window.location.href = '../customization-tool-mobile/index.html' + query;
         });
 
         // View Basket — basket quick-logo popup if item still needs logo

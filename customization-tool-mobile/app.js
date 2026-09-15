@@ -9,15 +9,11 @@ const state = {
   brandName: "GILDAN",
   brandLogo: "",
   selectedColorImage: "",
-  explicitColourHex: "",
-  sampledColourCmyk: "",
   colourName: "White",
   colourHex: "#ffffff",
   sizes: [{ size: "Medium", qty: 1 }],
   totalQty: 1,
   selectedArea: "front",
-  selectedPosition: "",
-  logoColourBase: null,
   decorationType: null,
   textType: null,
   uploadedLogo: null,
@@ -71,17 +67,12 @@ const PRODUCT_PRINT_AREAS = {
     left:  { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } },
     right: { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } }
   },
-    beanie: {
-      // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
-      // logo fills the cuff (the agreed visual) while reading a true 6cm.
-      front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } },
-    },
-    cap: {
-      // Front panel embroidery/print area. Keep the guide inside the crown, above the brim.
-      front: { areaCm: { w: 12, h: 6.5 }, box: { w: 0.46, h: 0.25, top: 0.23 }, defaultLogo: { w: 12 } }
+  beanie: {
+    // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
+    // logo fills the cuff (the agreed visual) while reading a true 6cm.
+    front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } }
   }
 };
-  document.body.classList.toggle("product-cap", state.product === "cap");
 
 // Optional per-SKU overrides. Keyed by product code (UPPERCASE); same shape as a
 // product entry. Lets specific catalogue items declare their exact print area
@@ -122,14 +113,6 @@ function getPrintableReferenceHeightPx() {
   return Math.max(120, getMockupSizePx().h * getPrintAreaConfig().box.h);
 }
 
-function syncPrintAreaGuide() {
-  const guide = document.getElementById("printAreaGuide");
-  if (!guide) return;
-
-  // The main garment stays clean. Placement hints belong only to the thumbnails.
-  guide.hidden = true;
-}
-
 // Real centimetres → pixels, calibrated per product/view.
 function getPxPerCm() {
   const cfg = getPrintAreaConfig();
@@ -146,7 +129,6 @@ const screens = document.querySelectorAll(".screen");
 const productPreview = document.getElementById("productPreview");
 const customArea = document.getElementById("customArea");
 const productShape = document.getElementById("productShape");
-const customizationContextLabel = document.getElementById("customizationContextLabel");
 const colourGrid = document.getElementById("colourGrid");
 const selectedColourName = document.getElementById("selectedColourName");
 const selectedCanvasColourName = document.getElementById("selectedCanvasColourName");
@@ -297,11 +279,7 @@ function isWhiteColourName(name) {
 function applyGarmentTintHex(hex) {
   const thumbUrl = state.selectedColorImage || getColourImageForName(state.colourName);
   const BCH = brandedColour();
-  let tintHex = state.explicitColourHex || "";
-
-  if (!tintHex) {
-    tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
-  }
+  let tintHex = BCH && typeof BCH.getImageHexSync === "function" ? BCH.getImageHexSync(thumbUrl) : "";
 
   if (!tintHex) {
     tintHex = resolveGarmentDisplayHex(hex, state.colourName, state.productCode, thumbUrl);
@@ -319,19 +297,6 @@ function applyGarmentTintHex(hex) {
   state.colourHex = tintHex;
   if (colourLayer) colourLayer.style.backgroundColor = tintHex;
   syncViewThumbTint();
-}
-
-function rgbHexToCmyk(hex) {
-  const value = normalizeHex(hex);
-  if (!value) return "";
-  const channels = [1, 3, 5].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
-  const [r, g, b] = channels;
-  const k = 1 - Math.max(r, g, b);
-  if (k >= 0.999) return "0%, 0%, 0%, 100%";
-  return [r, g, b].map((channel) => Math.round(((1 - channel - k) / (1 - k)) * 100))
-    .concat(Math.round(k * 100))
-    .map((channel) => channel + "%")
-    .join(", ");
 }
 
 /** Eyedropper RGB dal thumbnail API — mai dal nome colore. */
@@ -372,11 +337,7 @@ async function refreshColourHexFromProductThumb(options) {
     return state.colourHex || "";
   }
 
-  if (!state.explicitColourHex) {
-    state.colourHex = sampled;
-    state.explicitColourHex = sampled;
-    state.sampledColourCmyk = rgbHexToCmyk(sampled);
-  }
+  state.colourHex = sampled;
   const colourIdx = colours.findIndex(
     ([name]) => normalizeColorKey(name) === normalizeColorKey(state.colourName)
   );
@@ -384,7 +345,7 @@ async function refreshColourHexFromProductThumb(options) {
   if (BCH && typeof BCH.register === "function") {
     BCH.register(state.colourName, sampled, state.productCode);
   }
-  applyGarmentTintHex(state.explicitColourHex || sampled);
+  applyGarmentTintHex(sampled);
   renderColours();
   renderMiniColours();
   return sampled;
@@ -481,27 +442,6 @@ function syncViewThumbTint() {
     colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
     colourLayer.style.maskImage = `url("${thumbSrc}")`;
   });
-
-  document.querySelectorAll(".position-card").forEach((card) => {
-    const thumbImg = card.querySelector(".position-thumb-wrap > img");
-    const thumbWrap = card.querySelector(".position-thumb-wrap");
-    if (!thumbImg || !thumbWrap) return;
-
-    let colourLayer = thumbWrap.querySelector(".position-thumb-colour-layer");
-    if (!colourLayer) {
-      colourLayer = document.createElement("span");
-      colourLayer.className = "position-thumb-colour-layer";
-      thumbWrap.appendChild(colourLayer);
-    }
-
-    const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
-    colourLayer.style.opacity = safeHex && thumbSrc ? "1" : "0";
-    if (safeHex && thumbSrc) {
-      colourLayer.style.backgroundColor = safeHex;
-      colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
-      colourLayer.style.maskImage = `url("${thumbSrc}")`;
-    }
-  });
 }
 
 const removeBackgroundCheck = document.getElementById("removeBackgroundCheck");
@@ -509,36 +449,6 @@ const resizeProportionallyCheck = document.getElementById("resizeProportionallyC
 const applyImagePropertiesBtn = document.getElementById("applyImagePropertiesBtn");
 const propertySizeLabel = document.getElementById("propertySizeLabel");
 const rotateInput = document.getElementById("rotateInput");
-const logoWidthInput = document.getElementById("logoWidthInput");
-const logoHeightInput = document.getElementById("logoHeightInput");
-const logoScaleRange = document.getElementById("logoScaleRange");
-const logoPositionXInput = document.getElementById("logoPositionXInput");
-const logoPositionYInput = document.getElementById("logoPositionYInput");
-const logoSizeLockBtn = document.getElementById("logoSizeLockBtn");
-const resetLogoRotationBtn = document.getElementById("resetLogoRotationBtn");
-const rotateLogoDecreaseBtn = document.getElementById("rotateLogoDecreaseBtn");
-const rotateLogoIncreaseBtn = document.getElementById("rotateLogoIncreaseBtn");
-const resetLogoPositionBtn = document.getElementById("resetLogoPositionBtn");
-const inlineRemoveLogoBtn = document.getElementById("inlineRemoveLogoBtn");
-const logoColoursCard = document.getElementById("logoColoursCard");
-const inlineLogoSettings = document.getElementById("inlineLogoSettings");
-const inlineLogoUpload = document.getElementById("inlineLogoUpload");
-const inlineUploadLibrary = document.getElementById("inlineUploadLibrary");
-const inlineUploadLibraryItems = document.getElementById("inlineUploadLibraryItems");
-const inlineViewSavedLogosBtn = document.getElementById("inlineViewSavedLogosBtn");
-const logoColourList = document.getElementById("logoColourList");
-const logoReplacementColour = document.getElementById("logoReplacementColour");
-const logoColourPickerToggle = document.getElementById("logoColourPickerToggle");
-const logoColourPopover = document.getElementById("logoColourPopover");
-const logoColourSearch = document.getElementById("logoColourSearch");
-const closeLogoColourPopoverBtn = document.getElementById("closeLogoColourPopoverBtn");
-const logoColourInUseSwatch = document.getElementById("logoColourInUseSwatch");
-const removeLogoColourBtn = document.getElementById("removeLogoColourBtn");
-const confirmLogoColourBtn = document.getElementById("confirmLogoColourBtn");
-const resetLogoColoursBtn = document.getElementById("resetLogoColoursBtn");
-const logoColourStatus = document.getElementById("logoColourStatus");
-const logoColourPresetGrid = document.getElementById("logoColourPresetGrid");
-const logoColourPaletteHeading = document.getElementById("logoColourPaletteHeading");
 
 const textPropertyInput = document.getElementById("textPropertyInput");
 const textPropertyColour = document.getElementById("textPropertyColour");
@@ -999,12 +909,6 @@ function getColourImageForName(name) {
 }
 
 function syncCurrentColourHexFromPalette() {
-  if (state.explicitColourHex) {
-    state.colourHex = state.explicitColourHex;
-    if (colourLayer) colourLayer.style.backgroundColor = state.explicitColourHex;
-    syncViewThumbTint();
-    return;
-  }
   if (!Array.isArray(colours) || colours.length === 0) return;
   const currentName = normalizeColorKey(state.colourName || "");
   if (!currentName) return;
@@ -1029,9 +933,8 @@ function syncCurrentColourHexFromPalette() {
 
 function isDesktopToolExperience() {
   const params = new URLSearchParams(window.location.search);
-  if (String(params.get("from") || "").toLowerCase() === "customize-mobile") return false;
   if (String(params.get("from") || "").toLowerCase() === "customize-pc") return true;
-  return Boolean(window.matchMedia && window.matchMedia("(min-width: 1024px)").matches);
+  return Boolean(window.matchMedia && window.matchMedia("(min-width: 800px)").matches);
 }
 
 function notifyEmbeddedOrderSaved(result) {
@@ -1148,10 +1051,6 @@ function applySelectedProductContext() {
 
   const params = new URLSearchParams(window.location.search);
   const urlCode = String(params.get("code") || "").trim();
-  const urlColour = String(params.get("color") || "").trim();
-  const urlColourImage = String(params.get("colorImage") || "").trim();
-  const urlColourHex = String(params.get("colorHex") || "").trim();
-  const urlProductType = String(params.get("productType") || "").trim();
 
   // Never let product data left in the session by a previously viewed item
   // choose the garment/configuration for a different code in the URL.
@@ -1192,35 +1091,6 @@ function applySelectedProductContext() {
     } catch (error) {
       // no-op
     }
-  }
-
-  // The order flow passes the customer's current colour explicitly. It must
-  // override stale session or basket state from a previous product run.
-  if (selectedProductData && urlColour) {
-    selectedProductData = {
-      ...selectedProductData,
-      color: urlColour,
-      selectedColorName: urlColour,
-      colorImage: urlColourImage || selectedProductData.colorImage,
-      selectedColorImage: urlColourImage || selectedProductData.selectedColorImage
-    };
-  }
-
-  if (urlColourHex) {
-    const normalizedUrlHex = normalizeHex(urlColourHex) || "";
-    const isWhitePlaceholder = normalizedUrlHex === "#ffffff" || normalizedUrlHex === "#fff";
-    state.explicitColourHex = normalizedUrlHex && (!isWhitePlaceholder || isWhiteColourName(urlColour))
-      ? normalizedUrlHex
-      : "";
-  }
-
-  if (selectedProductData && urlProductType) {
-    selectedProductData = {
-      ...selectedProductData,
-      productType: urlProductType,
-      category: urlProductType,
-      type: urlProductType
-    };
   }
 
   state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
@@ -1280,14 +1150,13 @@ function applySelectedProductContext() {
 
   state.colourName = activeColour[0];
   const mappedColourImage = getColourImageForName(state.colourName);
-  if (mappedColourImage && !urlColourImage) {
+  if (mappedColourImage) {
     state.selectedColorImage = mappedColourImage;
   }
   applyGarmentTintHex(activeColour[1] || "");
   updateSelectedColourLabels(state.colourName);
 
   refreshColourHexFromProductThumb({
-    thumbUrl: urlColourImage || state.selectedColorImage,
     apiHex: normalizeHex(activeColour[1] || "")
   }).then(() => {
     applyArea();
@@ -1357,11 +1226,10 @@ async function hydrateSelectedProductFromApi() {
       const activeColour = currentMatch || (incomingName ? [incomingName, ""] : colours[0]);
       state.colourName = activeColour[0];
       const mappedColourImage = getColourImageForName(state.colourName);
-      const explicitImageUrl = new URLSearchParams(window.location.search).get("colorImage");
-      if (mappedColourImage && !explicitImageUrl) {
+      if (mappedColourImage) {
         state.selectedColorImage = mappedColourImage;
       }
-      state.colourHex = state.explicitColourHex || resolveGarmentDisplayHex(
+      state.colourHex = resolveGarmentDisplayHex(
         state.colourHex || activeColour[1],
         state.colourName,
         productCode,
@@ -1433,19 +1301,6 @@ function getDesignAreaKey(area = state.selectedArea) {
 
 function getDesignAreaLabel(area = state.selectedArea) {
   return areaLabelForPicker(getDesignAreaKey(area));
-}
-
-function updateCustomizationContextLabel() {
-  if (!customizationContextLabel) return;
-  if (!isDesktopToolExperience()) return;
-  customizationContextLabel.hidden = false;
-  const selectedCard = state.selectedPosition
-    ? document.querySelector(`.position-card[data-position="${CSS.escape(state.selectedPosition)}"]`)
-    : null;
-  const label = selectedCard?.querySelector(".position-name")?.textContent?.trim()
-    || (state.product === "cap" ? "Centre Front" : getDesignAreaLabel());
-  const value = customizationContextLabel.querySelector("strong");
-  if (value) value.textContent = label;
 }
 
 function getCurrentLogoQualityPct() {
@@ -1622,7 +1477,6 @@ function resetLogoQualityUi() {
 }
 
 function clearCanvasLogoState() {
-  if (inlineLogoSettings) inlineLogoSettings.hidden = true;
   uploadedLogo.onload = null;
   uploadedLogo.src = "";
   uploadedLogo.style.display = "none";
@@ -1641,8 +1495,6 @@ function clearCanvasLogoState() {
 
   state.uploadedLogo = null;
   state.originalUploadedLogo = null;
-  syncPositionCardLogoPreviews();
-  syncInlineLogoPanels();
   state.copyrightConfirmed = false;
   state.logoRotation = 0;
   resetLogoQualityUi();
@@ -1932,10 +1784,6 @@ async function switchToDesignArea(nextArea, options = {}) {
   clearCanvasLogoState();
   clearCanvasTextState();
   state.selectedArea = next;
-  if (!state.selectedPosition) {
-    state.selectedPosition = "";
-  }
-  syncPositionSelectionCards();
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
     tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
   });
@@ -2591,11 +2439,9 @@ function configureViewTabsForProduct() {
   if (appRoot) {
     appRoot.classList.toggle("product-beanie", isBeanie);
     appRoot.classList.toggle("product-tshirt", state.product === "tshirt");
-    appRoot.classList.toggle("product-cap", state.product === "cap");
   }
   if (productPreview) {
     productPreview.classList.toggle("product-beanie", isBeanie);
-    productPreview.classList.toggle("product-cap", state.product === "cap");
   }
 
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
@@ -2628,9 +2474,6 @@ function configureViewTabsForProduct() {
   }
 
   configureDesignTypesForProduct(isBeanie);
-  syncPositionCardImages();
-  configurePositionCardsForProduct();
-  syncPrintAreaGuide();
 }
 
 /**
@@ -2692,9 +2535,7 @@ async function applyArea() {
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
   document.querySelector(".customiser-app")?.classList.toggle("product-beanie", state.product === "beanie");
-  document.querySelector(".customiser-app")?.classList.toggle("product-cap", state.product === "cap");
   productPreview.classList.toggle("product-beanie", state.product === "beanie");
-  productPreview.classList.toggle("product-cap", state.product === "cap");
   productPreview.classList.toggle("mirror-right", state.selectedArea === "right" && state.product !== "beanie");
 
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
@@ -2767,7 +2608,6 @@ async function applyArea() {
       if (shouldCenterText && state.text) centerText();
     }, 0);
   }
-  syncPrintAreaGuide();
 }
 
 function collectSizes() {
@@ -3837,19 +3677,13 @@ function setTextAlignment(align) {
   });
 }
 
-function formatCentimetres(value) {
-  if (!isDesktopToolExperience()) return (Number(value) || 0).toFixed(2);
-  const rounded = Math.round((Number(value) || 0) * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-}
-
 function updateTextSizeLabels() {
   const textRect = textContent.getBoundingClientRect();
   const widthPx = Math.max(1, Math.ceil(textRect.width));
   const heightPx = Math.max(1, Math.ceil(textRect.height));
   const pxPerCm = getEffectivePxPerCm();
-  const widthCm = formatCentimetres(widthPx / pxPerCm);
-  const heightCm = formatCentimetres(heightPx / pxPerCm);
+  const widthCm = (widthPx / pxPerCm).toFixed(2);
+  const heightCm = (heightPx / pxPerCm).toFixed(2);
   const label = `${widthCm}cm x ${heightCm}cm`;
 
   textSizeLabel.textContent = label;
@@ -3958,7 +3792,6 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("is-disabled")) return;
     state.pendingDecorationType = card.dataset.designType;
-    document.body.dataset.decorationType = normalizeDecorationMethod(card.dataset.designType);
     const library = getSessionLogoLibrary();
     if (library.length > 0) {
       showLogoLibraryPicker(library);
@@ -3990,54 +3823,11 @@ function getSessionLogoLibrary() {
   return out;
 }
 
-function syncInlineLogoPanels() {
-  const hasLogo = Boolean(state.uploadedLogo);
-  if (inlineLogoUpload) inlineLogoUpload.hidden = hasLogo;
-  if (inlineLogoSettings) inlineLogoSettings.hidden = !hasLogo;
-
-  if (!inlineUploadLibrary || !inlineUploadLibraryItems) return;
-  const library = getSessionLogoLibrary().filter((entry) => entry.logo !== state.uploadedLogo);
-  inlineUploadLibrary.hidden = library.length === 0;
-  inlineUploadLibraryItems.innerHTML = "";
-  library.slice(0, 3).forEach((entry) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.title = "Use this logo";
-    button.className = "inline-upload-library-logo";
-    button.setAttribute("role", "radio");
-    button.setAttribute("aria-checked", "false");
-    const selectionDot = document.createElement("span");
-    selectionDot.className = "inline-upload-library-selection";
-    selectionDot.setAttribute("aria-hidden", "true");
-    const image = document.createElement("img");
-    image.src = entry.logo;
-    image.alt = "Saved logo";
-    button.appendChild(selectionDot);
-    button.appendChild(image);
-    button.addEventListener("click", () => {
-      inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
-        item.classList.toggle("is-selected", item === button);
-        item.setAttribute("aria-checked", String(item === button));
-      });
-      reuseLibraryLogo(entry.logo);
-    });
-    inlineUploadLibraryItems.appendChild(button);
-  });
-}
-
 function rememberUploadedLogo(src, method) {
   const key = String(src || "").trim();
   if (!key) return;
-  if (!sessionLogoLibrary.some((entry) => entry.logo === key)) {
-    sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
-  }
-  try {
-    const entries = sessionLogoLibrary.slice(-6);
-    sessionStorage.setItem("toolReusableLogos", JSON.stringify(entries));
-  } catch (error) {
-    // The current customisation still works if the browser cannot persist previews.
-  }
-  syncInlineLogoPanels();
+  if (sessionLogoLibrary.some((entry) => entry.logo === key)) return;
+  sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
 }
 
 function reuseLibraryLogo(src) {
@@ -4078,7 +3868,6 @@ function showLogoLibraryPicker(library) {
     cell.addEventListener("click", () => {
       overlay.remove();
       state.decorationType = state.pendingDecorationType || entry.method || state.decorationType || "logo";
-      document.body.dataset.decorationType = normalizeDecorationMethod(state.decorationType);
       reuseLibraryLogo(entry.logo);
     });
     grid.appendChild(cell);
@@ -4276,133 +4065,6 @@ function setSelectedAreaFromPicker(area) {
   return switchToDesignArea(normalized);
 }
 
-function syncPositionSelectionCards() {
-  const activePosition = String(state.selectedPosition || "").trim();
-
-  document.querySelectorAll(".position-card").forEach((card) => {
-    const input = card.querySelector('input[type="checkbox"]');
-    const positionKey = String(card.dataset.position || "").trim();
-    const isActive = Boolean(positionKey) && positionKey === activePosition;
-
-    if (input) {
-      input.checked = isActive;
-    }
-
-    card.classList.toggle("is-selected", isActive);
-  });
-}
-
-function syncPositionCardLogoPreviews() {
-  document.querySelectorAll(".position-card").forEach((card) => {
-    card.querySelector(".position-logo-preview")?.remove();
-  });
-}
-
-function syncPositionCardImages() {
-  document.querySelectorAll(".position-card").forEach((card) => {
-    const area = normalizeAreaForPicker(card.dataset.area) || "front";
-    const image = card.querySelector(".position-thumb-wrap img");
-    if (!image) return;
-
-    const source = resolveNeutralGarmentPngForArea(area);
-    if (source) image.src = source;
-
-    const guide = card.querySelector(".position-print-area-guide");
-    if (guide) {
-      guide.hidden = false;
-      guide.dataset.position = card.dataset.position || "centre-front";
-    }
-  });
-}
-
-const GENERIC_LOGO_POSITIONS = {
-  tshirts: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  polos: ["Left Chest", "Right Chest", "Centre Chest", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  sweatshirts: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  hoodies: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  jackets: ["Left Chest", "Right Chest", "Left Front", "Right Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  fleece: ["Left Chest", "Right Chest", "Left Front", "Right Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
-  "gilets-body-warmers": ["Left Chest", "Right Chest", "Upper Back", "Large Back"],
-  shirts: ["Left Chest", "Right Chest", "Upper Back", "Left Sleeve", "Right Sleeve", "Left Cuff", "Right Cuff"],
-  "safety-vests": ["Left Chest", "Right Chest", "Large Back"],
-  aprons: ["Centre Chest", "Large Front", "Left Chest", "Right Chest"],
-  bags: ["Centre Front", "Large Front", "Centre Back", "Large Back"],
-  caps: ["Centre Front", "Front Left Panel", "Front Right Panel", "Left Side", "Right Side", "Back"],
-  beanies: ["Centre Front", "Front Left", "Front Right"],
-  hats: ["Centre Front", "Left Side", "Right Side"],
-  trousers: ["Left Thigh", "Right Thigh", "Left Pocket", "Right Pocket"],
-  shorts: ["Left Thigh", "Right Thigh", "Left Pocket", "Right Pocket"],
-  sweatpants: ["Left Thigh", "Right Thigh", "Left Leg", "Right Leg"]
-};
-
-const PRODUCT_POSITION_OVERRIDES = {
-  // Example: "WM412": ["Centre Front", "Large Front", "Centre Back", "Large Back"]
-};
-
-function positionAreaForLabel(label) {
-  const value = String(label).toLowerCase();
-  if (/back|rear/.test(value)) return "back";
-  if (/left sleeve|left cuff|left side/.test(value)) return "left";
-  if (/right sleeve|right cuff|right side/.test(value)) return "right";
-  return "front";
-}
-
-function positionKeyForLabel(label) {
-  return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
-function getProductPositionLabels() {
-  const code = String(state.productCode || "").trim().toUpperCase();
-  const title = String(state.productName || "").toLowerCase();
-  const category = state.customizationProductTypeSlug || "tshirts";
-  let positions = [...(PRODUCT_POSITION_OVERRIDES[code] || GENERIC_LOGO_POSITIONS[category] || GENERIC_LOGO_POSITIONS.tshirts)];
-  const hasZip = /full[\s-]?zip|quarter[\s-]?zip|half[\s-]?zip|zip[\s-]?through|zipped/.test(title);
-  const hasFrontPocket = /front pocket|kangaroo pocket/.test(title);
-  const hasChestPocket = /chest pocket|breast pocket/.test(title);
-
-  if (hasZip) {
-    positions = positions.filter((label) => !["Centre Chest", "Large Front"].includes(label));
-    if (!positions.includes("Left Front")) positions.splice(2, 0, "Left Front", "Right Front");
-  } else if (hasFrontPocket) {
-    positions = positions.map((label) => label === "Large Front" ? "Large Front Above Pocket" : label);
-  }
-  if (hasChestPocket) positions.splice(2, 0, "Above Pocket");
-  return [...new Set(positions)];
-}
-
-function configurePositionCardsForProduct() {
-  const grid = document.getElementById("positionGrid");
-  if (!grid) return;
-  const views = getConfiguredViewAreas();
-  const labels = getProductPositionLabels().filter((label) => {
-    const area = positionAreaForLabel(label);
-    return !views || area === "front" || Boolean(views[area]);
-  });
-
-  grid.innerHTML = "";
-  labels.forEach((label) => {
-    const area = positionAreaForLabel(label);
-    const key = positionKeyForLabel(label);
-    const card = document.createElement("label");
-    card.className = "position-card";
-    card.dataset.position = key;
-    card.dataset.area = area;
-    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>`;
-    card.querySelector(".position-name").textContent = label;
-    grid.appendChild(card);
-  });
-
-  if (state.selectedPosition && !labels.some((label) => positionKeyForLabel(label) === state.selectedPosition)) {
-    state.selectedPosition = "";
-    state.selectedArea = "front";
-  }
-  syncPositionCardImages();
-  syncViewThumbTint();
-  syncPositionSelectionCards();
-  syncPositionCardLogoPreviews();
-  updateCustomizationContextLabel();
-}
-
 function showPositionPickerModal(options = {}) {
   const {
     title = "Pick your new position",
@@ -4490,247 +4152,6 @@ function loadLogoImage(dataUrl) {
   });
 }
 
-let selectedLogoPaletteColour = null;
-
-function hexFromRgb(red, green, blue) {
-  return `#${[red, green, blue].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function rgbFromHex(hex) {
-  const value = String(hex || "").replace("#", "");
-  if (!/^[0-9a-f]{6}$/i.test(value)) return null;
-  return [
-    parseInt(value.slice(0, 2), 16),
-    parseInt(value.slice(2, 4), 16),
-    parseInt(value.slice(4, 6), 16)
-  ];
-}
-
-function setReplacementLogoColour(hex) {
-  const value = String(hex || "").toUpperCase();
-  if (!rgbFromHex(value)) return false;
-  if (logoReplacementColour) logoReplacementColour.value = value;
-  const chip = logoColourPickerToggle?.querySelector("span");
-  if (chip) chip.style.backgroundColor = value;
-  if (logoColourInUseSwatch) logoColourInUseSwatch.style.backgroundColor = value;
-  return true;
-}
-
-async function getLogoCanvas(source) {
-  const image = await loadLogoImage(source);
-  const longestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
-  const scale = Math.min(1, 900 / Math.max(1, longestSide));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
-  canvas.height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
-  const context = canvas.getContext("2d", { willReadFrequently: true });
-  if (!context) throw new Error("Canvas is unavailable");
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  return { canvas, context };
-}
-
-async function extractLogoPalette(source) {
-  const { canvas, context } = await getLogoCanvas(source);
-  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-  const colourBins = new Map();
-  const step = Math.max(1, Math.floor(Math.sqrt((canvas.width * canvas.height) / 30000)));
-
-  for (let index = 0; index < data.length; index += 4 * step) {
-    // Ignore semi-transparent antialiasing pixels; they are edge artefacts,
-    // not colours the customer intentionally put in the logo.
-    if (data[index + 3] < 220) continue;
-    const red = data[index];
-    const green = data[index + 1];
-    const blue = data[index + 2];
-    const brightness = (red + green + blue) / 3;
-    const spread = Math.max(red, green, blue) - Math.min(red, green, blue);
-    // JPEG/PNG edges create many nearly-grey shades. Treat neutral artwork as
-    // the intended black or white rather than separate grey swatches.
-    const key = spread < 26
-      ? (brightness < 128 ? "0-0-0" : "255-255-255")
-      : `${Math.round(red / 24)}-${Math.round(green / 24)}-${Math.round(blue / 24)}`;
-    const bin = colourBins.get(key) || { red: 0, green: 0, blue: 0, count: 0 };
-    bin.red += spread < 26 ? (brightness < 128 ? 0 : 255) : red;
-    bin.green += spread < 26 ? (brightness < 128 ? 0 : 255) : green;
-    bin.blue += spread < 26 ? (brightness < 128 ? 0 : 255) : blue;
-    bin.count += 1;
-    colourBins.set(key, bin);
-  }
-
-  const clusters = [];
-  [...colourBins.values()]
-    .sort((left, right) => right.count - left.count)
-    .forEach((bin) => {
-      const red = bin.red / bin.count;
-      const green = bin.green / bin.count;
-      const blue = bin.blue / bin.count;
-      const cluster = clusters.find((item) => (
-        (item.red - red) ** 2 + (item.green - green) ** 2 + (item.blue - blue) ** 2
-      ) <= 85 ** 2);
-
-      if (cluster) {
-        const total = cluster.count + bin.count;
-        cluster.red = (cluster.red * cluster.count + red * bin.count) / total;
-        cluster.green = (cluster.green * cluster.count + green * bin.count) / total;
-        cluster.blue = (cluster.blue * cluster.count + blue * bin.count) / total;
-        cluster.count = total;
-      } else {
-        clusters.push({ red, green, blue, count: bin.count });
-      }
-    });
-
-  return clusters
-    .sort((left, right) => right.count - left.count)
-    .slice(0, 6)
-    .map((colour) => hexFromRgb(Math.round(colour.red), Math.round(colour.green), Math.round(colour.blue)));
-}
-
-function setLogoColourStatus(message = "", isError = false) {
-  if (!logoColourStatus) return;
-  logoColourStatus.textContent = message;
-  logoColourStatus.classList.toggle("is-error", isError);
-}
-
-const DTF_PALETTE_FAMILIES = [
-  ["Red", "#ef4444"],
-  ["Orange", "#f97316"],
-  ["Yellow", "#facc15"],
-  ["Green", "#22c55e"],
-  ["Teal", "#14b8a6"],
-  ["Blue", "#3b82f6"],
-  ["Violet", "#8b5cf6"],
-  ["Pink", "#ec4899"],
-  ["Brown", "#a16207"]
-];
-
-const BASE_LOGO_PALETTE = [
-  ["Black", "#101828"],
-  ["White", "#ffffff"],
-  ["Orange", "#ef5226"],
-  ["Red", "#e8384f"],
-  ["Yellow", "#f6c445"],
-  ["Green", "#20a96b"],
-  ["Blue", "#2563eb"],
-  ["Purple", "#7c3aed"]
-];
-
-function mixPaletteColour(hex, target, amount) {
-  const rgb = rgbFromHex(hex);
-  const destination = target === "white" ? [255, 255, 255] : [0, 0, 0];
-  if (!rgb) return hex;
-  return hexFromRgb(...rgb.map((channel, index) => Math.round(channel + (destination[index] - channel) * amount)));
-}
-
-function getDtfPalette() {
-  const shades = [0.72, 0.5, 0.28, 0, 0.18, 0.36, 0.54];
-  return DTF_PALETTE_FAMILIES.flatMap(([name, base]) => shades.map((amount, index) => {
-    const colour = index < 4
-      ? mixPaletteColour(base, "white", amount)
-      : mixPaletteColour(base, "black", amount);
-    return [`${name} ${index + 1}`, colour];
-  }));
-}
-
-function renderReplacementColourPalette() {
-  if (!logoColourPresetGrid) return;
-  if (!isDesktopToolExperience()) return;
-  const method = document.body.dataset.decorationType || state.decorationType || state.pendingDecorationType;
-  const isDtf = normalizeDecorationMethod(method) === "dtf";
-  const palette = isDtf ? getDtfPalette() : BASE_LOGO_PALETTE;
-  logoColourPresetGrid.innerHTML = "";
-  if (logoColourPaletteHeading) {
-    logoColourPaletteHeading.textContent = isDtf ? "DTF colour shades" : "Imperial";
-  }
-
-  palette.forEach(([label, colour]) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.replacementColour = colour;
-    button.style.backgroundColor = colour;
-    button.setAttribute("aria-label", label);
-    button.title = `${label} ${colour.toUpperCase()}`;
-    logoColourPresetGrid.appendChild(button);
-  });
-}
-
-async function renderLogoColourEditor() {
-  renderReplacementColourPalette();
-  if (!logoColoursCard || !logoColourList || !state.uploadedLogo) return;
-  logoColoursCard.hidden = false;
-  logoColourList.innerHTML = "";
-  selectedLogoPaletteColour = null;
-  setLogoColourStatus("Reading logo colours...");
-
-  try {
-    const palette = await extractLogoPalette(state.uploadedLogo);
-    if (!palette.length) throw new Error("No opaque colours found");
-    palette.forEach((colour) => {
-      const swatch = document.createElement("button");
-      swatch.type = "button";
-      swatch.className = "logo-colour-swatch";
-      swatch.style.backgroundColor = colour;
-      swatch.title = colour.toUpperCase();
-      swatch.setAttribute("aria-label", `Use ${colour.toUpperCase()} as the colour to replace`);
-      swatch.addEventListener("click", () => {
-        selectedLogoPaletteColour = colour;
-        setReplacementLogoColour(colour);
-        logoColourList.querySelectorAll(".logo-colour-swatch").forEach((item) => {
-          item.classList.toggle("is-selected", item === swatch);
-        });
-        setReplacementLogoColour(colour);
-        setLogoColourStatus(`Selected ${colour.toUpperCase()}. Choose a replacement colour.`);
-      });
-      logoColourList.appendChild(swatch);
-    });
-    const firstSwatch = logoColourList.querySelector(".logo-colour-swatch");
-    if (firstSwatch) {
-      firstSwatch.click();
-    } else {
-      setLogoColourStatus("Choose a colour to edit.");
-    }
-  } catch (error) {
-    logoColoursCard.hidden = false;
-    setLogoColourStatus("This logo cannot be read for colour editing. Upload a PNG, JPG, WEBP or local SVG file.", true);
-  }
-}
-
-async function replaceLogoColour() {
-  const target = rgbFromHex(selectedLogoPaletteColour);
-  const replacement = rgbFromHex(logoReplacementColour?.value);
-  if (!target || !replacement || !state.uploadedLogo) return;
-
-  try {
-    const { canvas, context } = await getLogoCanvas(state.uploadedLogo);
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const tolerance = 62;
-    const toleranceSquared = tolerance * tolerance;
-
-    for (let index = 0; index < imageData.data.length; index += 4) {
-      if (imageData.data[index + 3] < 16) continue;
-      const distanceSquared = (imageData.data[index] - target[0]) ** 2
-        + (imageData.data[index + 1] - target[1]) ** 2
-        + (imageData.data[index + 2] - target[2]) ** 2;
-      if (distanceSquared > toleranceSquared) continue;
-      imageData.data[index] = replacement[0];
-      imageData.data[index + 1] = replacement[1];
-      imageData.data[index + 2] = replacement[2];
-    }
-
-    context.putImageData(imageData, 0, 0);
-    state.uploadedLogo = canvas.toDataURL("image/png");
-    uploadedLogo.src = state.uploadedLogo;
-    await waitForLogoImage(uploadedLogo);
-    syncPositionCardLogoPreviews();
-    captureCurrentAreaDesign();
-    await renderLogoColourEditor();
-    if (logoColourPopover) logoColourPopover.hidden = true;
-    logoColourPickerToggle?.setAttribute("aria-expanded", "false");
-    setLogoColourStatus("Colour updated.");
-  } catch (error) {
-    setLogoColourStatus("The colour change could not be applied to this logo.", true);
-  }
-}
-
 async function optimizeLogoDataUrlForBasket(originalDataUrl) {
   if (
     !originalDataUrl.startsWith("data:image/")
@@ -4783,14 +4204,6 @@ async function optimizeLogoFileForBasket(file) {
   return optimizeLogoDataUrlForBasket(await readLogoFileAsDataUrl(file));
 }
 
-document.getElementById("logoUploadPageChooseBtn")?.addEventListener("click", () => {
-  document.getElementById("logoFileInput")?.click();
-});
-
-inlineViewSavedLogosBtn?.addEventListener("click", () => {
-  showLogoLibraryPicker(getSessionLogoLibrary());
-});
-
 document.getElementById("logoFileInput").addEventListener("change", async event => {
   const file = event.target.files[0];
   if (!file) return;
@@ -4804,8 +4217,6 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
     state.pendingDecorationType = null;
     state.uploadedLogo = preparedLogo;
     state.originalUploadedLogo = optimizedLogo;
-    state.logoColourBase = preparedLogo;
-    rememberUploadedLogo(preparedLogo, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -4897,9 +4308,6 @@ document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((bu
 
 function showLogoOnCanvas(imageSrc) {
   state.uploadedLogo = imageSrc;
-  syncInlineLogoPanels();
-  renderLogoColourEditor();
-  syncPositionCardLogoPreviews();
 
   uploadedLogo.src = imageSrc;
   uploadedLogo.style.display = "block";
@@ -4987,9 +4395,8 @@ function getLogoAspectRatio() {
 
 function getRenderedLogoSizePx() {
   const logoFrame = getLogoFrameEl();
-  const frameRect = logoFrame.getBoundingClientRect();
-  const containerWidth = Math.max(1, frameRect.width);
-  const containerHeight = Math.max(1, frameRect.height);
+  const containerWidth = Math.max(1, logoFrame.offsetWidth);
+  const containerHeight = Math.max(1, logoFrame.offsetHeight);
   const logoRatio = getLogoAspectRatio();
   const containerRatio = containerWidth / containerHeight;
 
@@ -5021,48 +4428,13 @@ function activateLogo() {
 function updateLogoSizeLabels() {
   const renderedSize = getRenderedLogoSizePx();
   const pxPerCm = getEffectivePxPerCm();
-  const widthCm = formatCentimetres(renderedSize.width / pxPerCm);
-  const heightCm = formatCentimetres(renderedSize.height / pxPerCm);
+  const widthCm = (renderedSize.width / pxPerCm).toFixed(2);
+  const heightCm = (renderedSize.height / pxPerCm).toFixed(2);
   const label = `${widthCm}cm x ${heightCm}cm`;
 
-  if (logoSizeLabel) logoSizeLabel.textContent = label;
-  if (propertySizeLabel) propertySizeLabel.textContent = label;
+  logoSizeLabel.textContent = label;
+  propertySizeLabel.textContent = label;
   updateQualityBar(parseFloat(widthCm));
-  syncInlineLogoControls();
-}
-
-function syncInlineLogoControls() {
-  const logoFrame = getLogoFrameEl();
-  const pxPerCm = getEffectivePxPerCm();
-  if (!logoFrame || !customArea || !pxPerCm) return;
-
-  const renderedSize = getRenderedLogoSizePx();
-  const limits = getPrintAreaConfig().areaCm;
-  if (isDesktopToolExperience()) {
-    logoWidthInput?.setAttribute("step", "0.1");
-    logoHeightInput?.setAttribute("step", "0.1");
-  }
-  const editingWidth = document.activeElement === logoWidthInput;
-  const editingHeight = document.activeElement === logoHeightInput;
-  if (logoWidthInput && !editingWidth) {
-    logoWidthInput.max = String(limits.w);
-    logoWidthInput.value = formatCentimetres(renderedSize.width / pxPerCm);
-  }
-  if (logoHeightInput && !editingHeight) {
-    logoHeightInput.max = String(limits.h);
-    logoHeightInput.value = formatCentimetres(renderedSize.height / pxPerCm);
-  }
-  logoWidthInput?.setAttribute("max", String(limits.w));
-  logoHeightInput?.setAttribute("max", String(limits.h));
-  if (logoScaleRange) {
-    const maxWidth = Math.max(1, getPrintAreaConfig().areaCm.w);
-    logoScaleRange.value = String(Math.max(10, Math.min(100, Math.round((renderedSize.width / pxPerCm) / maxWidth * 100))));
-  }
-
-  const centreX = designLayer.offsetLeft + logoFrame.offsetWidth / 2;
-  const centreY = designLayer.offsetTop + logoFrame.offsetHeight / 2;
-  if (logoPositionXInput) logoPositionXInput.value = ((centreX - customArea.offsetWidth / 2) / pxPerCm).toFixed(2);
-  if (logoPositionYInput) logoPositionYInput.value = ((centreY - customArea.offsetHeight / 2) / pxPerCm).toFixed(2);
 }
 
 function updateQualityBar(widthCm) {
@@ -5101,9 +4473,8 @@ function updateQualityBar(widthCm) {
 logoSettingsBtn.addEventListener("click", e => {
   e.stopPropagation();
   updateLogoSizeLabels();
-  if (inlineLogoSettings) inlineLogoSettings.hidden = false;
-  renderLogoColourEditor();
-  inlineLogoSettings?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  rotateInput.value = Math.round(state.logoRotation || 0);
+  openScreen("imagePropertiesPage");
 });
 
 deleteLogoBtn.addEventListener("click", e => {
@@ -5707,79 +5078,6 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
   });
 });
 
-logoColourPickerToggle?.addEventListener("click", () => {
-  const willOpen = Boolean(logoColourPopover?.hidden);
-  if (logoColourPopover) logoColourPopover.hidden = !willOpen;
-  logoColourPickerToggle.setAttribute("aria-expanded", String(willOpen));
-  if (willOpen) positionLogoColourPopover();
-});
-
-function positionLogoColourPopover() {
-  if (!logoColourPopover || logoColourPopover.hidden || !logoColourPickerToggle) return;
-  const selectedSwatch = logoColourList?.querySelector(".logo-colour-swatch.is-selected");
-  const anchor = selectedSwatch || logoColourPickerToggle;
-  const anchorRect = anchor.getBoundingClientRect();
-  const viewportPadding = 12;
-  const popoverWidth = Math.min(495, window.innerWidth - viewportPadding * 2);
-  const left = Math.max(
-    viewportPadding,
-    Math.min(anchorRect.left, window.innerWidth - popoverWidth - viewportPadding)
-  );
-  const popoverHeight = logoColourPopover.getBoundingClientRect().height;
-  const belowTop = anchorRect.bottom + 8;
-  const aboveTop = anchorRect.top - popoverHeight - 8;
-  const top = belowTop + popoverHeight <= window.innerHeight - viewportPadding
-    ? belowTop
-    : Math.max(viewportPadding, aboveTop);
-  logoColourPopover.style.left = `${left}px`;
-  logoColourPopover.style.top = `${top}px`;
-}
-
-window.addEventListener("resize", positionLogoColourPopover);
-window.addEventListener("scroll", positionLogoColourPopover, true);
-
-logoColourPresetGrid?.addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-replacement-colour]");
-  if (!button) return;
-  if (!setReplacementLogoColour(button.dataset.replacementColour)) return;
-  if (selectedLogoPaletteColour) await replaceLogoColour();
-});
-
-logoColourSearch?.addEventListener("input", () => {
-  const query = logoColourSearch.value.trim().toLowerCase();
-  logoColourPresetGrid?.querySelectorAll("[data-replacement-colour]").forEach((button) => {
-    button.hidden = query && !button.getAttribute("aria-label").toLowerCase().includes(query);
-  });
-});
-
-closeLogoColourPopoverBtn?.addEventListener("click", () => {
-  logoColourPopover.hidden = true;
-  logoColourPickerToggle?.setAttribute("aria-expanded", "false");
-});
-
-confirmLogoColourBtn?.addEventListener("click", () => {
-  logoColourPopover.hidden = true;
-  logoColourPickerToggle?.setAttribute("aria-expanded", "false");
-});
-
-removeLogoColourBtn?.addEventListener("click", async () => {
-  if (!selectedLogoPaletteColour || !state.uploadedLogo) return;
-  await replaceLogoColour();
-  setLogoColourStatus("Colour removed from the logo.");
-});
-
-if (resetLogoColoursBtn) {
-  resetLogoColoursBtn.addEventListener("click", async () => {
-    if (!state.logoColourBase) return;
-    state.uploadedLogo = state.logoColourBase;
-    uploadedLogo.src = state.uploadedLogo;
-    await waitForLogoImage(uploadedLogo);
-    captureCurrentAreaDesign();
-    await renderLogoColourEditor();
-    setLogoColourStatus("Original logo colours restored.");
-  });
-}
-
 async function removeImageBackground(imageSrc, tolerance = 45) {
   return new Promise(resolve => {
     const img = new Image();
@@ -5920,119 +5218,11 @@ document.querySelectorAll("[data-move]").forEach(button => {
     activateLogo();
     updateLogoSizeLabels();
     updateVisibilityByPrintArea(designLayer);
-    syncInlineLogoControls();
   });
 });
 
-document.getElementById("sizeUpBtn")?.addEventListener("click", () => resizeLogoBy(10));
-document.getElementById("sizeDownBtn")?.addEventListener("click", () => resizeLogoBy(-10));
-
-function setLogoSizeFromCentimetres(dimension, value) {
-  const logoFrame = getLogoFrameEl();
-  const centimetres = parseFloat(value);
-  const pxPerCm = getEffectivePxPerCm();
-  if (!logoFrame || !Number.isFinite(centimetres) || centimetres <= 0 || !pxPerCm) return;
-
-  const preserveCentre = isDesktopToolExperience();
-  const designRect = preserveCentre ? designLayer.getBoundingClientRect() : null;
-  const areaRect = preserveCentre ? customArea.getBoundingClientRect() : null;
-  const previousCentreX = preserveCentre ? designRect.left - areaRect.left + designRect.width / 2 : 0;
-  const previousCentreY = preserveCentre ? designRect.top - areaRect.top + designRect.height / 2 : 0;
-  const ratio = getLogoAspectRatio();
-  const limits = getPrintAreaConfig().areaCm;
-  let widthCm;
-  let heightCm;
-  if (dimension === "width") {
-    widthCm = Math.min(centimetres, limits.w);
-    heightCm = widthCm / ratio;
-  } else {
-    heightCm = Math.min(centimetres, limits.h);
-    widthCm = heightCm * ratio;
-  }
-
-  if (widthCm > limits.w) {
-    widthCm = limits.w;
-    heightCm = widthCm / ratio;
-  }
-  if (heightCm > limits.h) {
-    heightCm = limits.h;
-    widthCm = heightCm * ratio;
-  }
-
-  logoFrame.style.width = `${widthCm * pxPerCm}px`;
-  logoFrame.style.height = `${heightCm * pxPerCm}px`;
-  if (preserveCentre) {
-    const resizedFrameRect = logoFrame.getBoundingClientRect();
-    designLayer.style.left = `${previousCentreX - resizedFrameRect.width / 2}px`;
-    designLayer.style.top = `${previousCentreY - resizedFrameRect.height / 2}px`;
-  }
-  updateLogoSizeLabels();
-  updateVisibilityByPrintArea(designLayer);
-}
-
-function setLogoPositionFromCentimetres(axis, value) {
-  const logoFrame = getLogoFrameEl();
-  const centimetres = parseFloat(value);
-  const pxPerCm = getEffectivePxPerCm();
-  if (!logoFrame || !Number.isFinite(centimetres) || !pxPerCm) return;
-
-  if (axis === "x") {
-    designLayer.style.left = `${customArea.offsetWidth / 2 + centimetres * pxPerCm - logoFrame.offsetWidth / 2}px`;
-  } else {
-    designLayer.style.top = `${customArea.offsetHeight / 2 + centimetres * pxPerCm - logoFrame.offsetHeight / 2}px`;
-  }
-  updateVisibilityByPrintArea(designLayer);
-  syncInlineLogoControls();
-}
-
-function applyInlineNumberField(input, applyValue) {
-  if (!input) return;
-  input.addEventListener("change", () => applyValue(input.value));
-  input.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    input.blur();
-    applyValue(input.value);
-  });
-}
-
-applyInlineNumberField(logoWidthInput, (value) => setLogoSizeFromCentimetres("width", value));
-applyInlineNumberField(logoHeightInput, (value) => setLogoSizeFromCentimetres("height", value));
-applyInlineNumberField(logoPositionXInput, (value) => setLogoPositionFromCentimetres("x", value));
-applyInlineNumberField(logoPositionYInput, (value) => setLogoPositionFromCentimetres("y", value));
-logoScaleRange?.addEventListener("input", () => {
-  const maxWidth = getPrintAreaConfig().areaCm.w;
-  setLogoSizeFromCentimetres("width", Math.max(0.1, maxWidth * (parseInt(logoScaleRange.value, 10) || 10) / 100));
-});
-
-logoSizeLockBtn?.addEventListener("click", () => {
-  logoSizeLockBtn.classList.toggle("is-locked");
-  logoSizeLockBtn.setAttribute("aria-pressed", String(logoSizeLockBtn.classList.contains("is-locked")));
-});
-
-resetLogoRotationBtn?.addEventListener("click", () => {
-  state.logoRotation = 0;
-  rotateInput.value = "0";
-  designLayer.style.rotate = "0deg";
-  activateLogo();
-});
-
-function adjustLogoRotation(delta) {
-  state.logoRotation = (parseFloat(rotateInput.value) || 0) + delta;
-  rotateInput.value = String(state.logoRotation);
-  designLayer.style.rotate = `${state.logoRotation}deg`;
-  activateLogo();
-}
-
-rotateLogoDecreaseBtn?.addEventListener("click", () => adjustLogoRotation(-5));
-rotateLogoIncreaseBtn?.addEventListener("click", () => adjustLogoRotation(5));
-
-resetLogoPositionBtn?.addEventListener("click", () => {
-  centerLogo();
-  syncInlineLogoControls();
-});
-
-inlineRemoveLogoBtn?.addEventListener("click", clearLogo);
+document.getElementById("sizeUpBtn").addEventListener("click", () => resizeLogoBy(10));
+document.getElementById("sizeDownBtn").addEventListener("click", () => resizeLogoBy(-10));
 
 document.getElementById("applyTextPropertiesBtn").addEventListener("click", () => {
   state.text = textPropertyInput.value.trim() || "TEXT";
@@ -6702,27 +5892,6 @@ document.querySelectorAll(".view-tab").forEach(btn => {
     await switchToDesignArea(btn.dataset.area);
   });
 });
-
-document.getElementById("positionGrid")?.addEventListener("change", async (event) => {
-  const input = event.target.closest('input[type="checkbox"]');
-  const card = input?.closest(".position-card");
-  if (!input || !card) return;
-    const area = normalizeAreaForPicker(card.dataset.area) || "front";
-    const positionKey = String(card.dataset.position || "").trim() || area;
-
-    if (!input.checked) {
-      state.selectedPosition = "";
-      syncPositionSelectionCards();
-      return;
-    }
-
-    state.selectedPosition = positionKey;
-    syncPositionSelectionCards();
-    updateCustomizationContextLabel();
-    await switchToDesignArea(area);
-});
-
-syncPositionSelectionCards();
 
 function syncProductSpecificTabs() {
   configureViewTabsForProduct();

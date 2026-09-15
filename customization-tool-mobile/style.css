@@ -1004,24 +1004,6 @@ textarea {
   transition: none;
 }
 
-.print-area-guide {
-  position: absolute;
-  z-index: 25;
-  left: var(--print-area-left, 27%);
-  top: var(--print-area-top, 23%);
-  width: var(--print-area-position-width, 46%);
-  height: var(--print-area-position-height, 25%);
-  border: 1px solid rgba(14, 165, 233, 0.9);
-  border-radius: 5px;
-  background: rgba(56, 189, 248, 0.24);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.42), 0 3px 10px rgba(14, 165, 233, 0.14);
-  pointer-events: none;
-}
-
-.print-area-guide[hidden] {
-  display: none;
-}
-
 .custom-area:has(.active-logo),
 .custom-area:has(.active-text) {
   border-color: transparent;
@@ -2239,97 +2221,6 @@ textarea {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-.logo-colours-card[hidden] {
-  display: none;
-}
-
-.logo-colours-copy,
-.logo-colour-status {
-  margin: 7px 0 0;
-  color: #667085;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.logo-colour-status.is-error {
-  color: #b42318;
-}
-
-.logo-colour-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.logo-colour-swatch {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 2px solid #e4e7ec;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.logo-colour-swatch.is-selected {
-  border-color: #111827;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6d5ae6;
-}
-
-.logo-colour-picker-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-  color: #344054;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.logo-colour-picker-label input {
-  width: 38px;
-  height: 30px;
-  padding: 2px;
-  border: 1px solid #d0d5dd;
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-}
-
-.logo-colour-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.logo-colour-apply-btn,
-.logo-colour-reset-btn {
-  min-height: 38px;
-  border-radius: 7px;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.logo-colour-apply-btn {
-  border: 1px solid #111827;
-  background: #111827;
-  color: #fff;
-}
-
-.logo-colour-apply-btn:disabled {
-  cursor: not-allowed;
-  opacity: .45;
-}
-
-.logo-colour-reset-btn {
-  border: 1px solid #d0d5dd;
-  background: #fff;
-  color: #344054;
-}
-
 .img-props-size-display {
   margin-top: 14px;
   text-align: center;
@@ -2342,7 +2233,7 @@ textarea {
   padding: 10px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .copyright-shell {
     width: min(640px, calc(100% - 24px));
     margin: 12px auto;
@@ -2363,43 +2254,6 @@ textarea {
     border-radius: 0 0 28px 28px;
     overflow: hidden;
   }
-}
-
-/* A mobile-origin route stays mobile even if opened in a wide browser. */
-html.force-mobile-customizer .tool-site-header {
-  display: block;
-}
-
-html.force-mobile-customizer body.tool-with-site-header {
-  padding-top: var(--tool-site-header-height);
-  padding-bottom: calc(var(--tool-bottom-nav-height) + env(safe-area-inset-bottom));
-}
-
-html.force-mobile-customizer .tool-bottom-nav {
-  display: grid;
-}
-
-html.force-mobile-customizer .customiser-app {
-  height: auto;
-  display: block;
-  overflow: visible;
-}
-
-html.force-mobile-customizer #mainEditor.active-screen {
-  display: block;
-  max-width: 600px;
-  margin: 0 auto;
-  border-radius: 0;
-  border: 0;
-  box-shadow: none;
-}
-
-html.force-mobile-customizer .desktop-inspector {
-  display: none;
-}
-
-html.force-mobile-customizer .customization-context-label {
-  display: none;
 }
 
 .quality-row {
@@ -2946,7 +2800,7 @@ html.force-mobile-customizer .customization-context-label {
   z-index: 190;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 799px) {
   body.tool-with-site-header {
     padding-top: var(--tool-site-header-height);
     padding-bottom: calc(var(--tool-bottom-nav-height) + env(safe-area-inset-bottom));
@@ -2961,7 +2815,7 @@ html.force-mobile-customizer .customization-context-label {
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 800px) {
   .tool-bottom-nav {
     display: none;
   }
@@ -4189,7 +4043,7 @@ html.force-mobile-customizer .customization-context-label {
 /* ================================================================
    DESKTOP LAYOUT  ≥ 800px
    ================================================================ */
-@media (min-width: 1024px) {
+@media (min-width: 800px) {
   .tool-site-header {
     display: none;
   }

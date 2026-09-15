@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <!-- Desktop experience gate: keep this first so desktop visitors never see the live site. -->
+    <script data-desktop-experience-gate>
+        (function (d) {
+            var path = window.location.pathname.replace(/\\/g, '/');
+            var mountAt = path.toLowerCase().indexOf('/brandeduk/');
+            var localHost = /^(?:localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname);
+            var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
+                ? path.slice(0, mountAt + '/brandeduk'.length)
+                : '';
+            d.write('<script src="' + base + '/desktop-gate.js?v=20260811a"><\/script>');
+        }(document));
+    </script>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Branded UK Customiser</title>
   <script>
@@ -10,7 +22,7 @@
     // navigation and image paths are resolved. This also preserves local paths
     // such as `/brandeduk/customization-tool/index.html`.
     (function setCustomizationToolBasePath() {
-      var marker = "/customization-tool";
+      var marker = "/customization-tool-mobile";
       var pathname = window.location.pathname || "";
       var markerIndex = pathname.toLowerCase().lastIndexOf(marker);
       if (markerIndex < 0) return;
@@ -28,20 +40,13 @@
       toolStyles.href = folderPath + "style.css?v=20260826a";
       document.head.appendChild(toolStyles);
 
-      // PC overrides are loaded only for the desktop customizer. Mobile keeps
-      // its original stylesheet and presentation completely independent.
-      var customizationSource = new URLSearchParams(window.location.search).get("from");
-      if (customizationSource === "customize-mobile") {
-        document.documentElement.classList.add("force-mobile-customizer");
-      }
-      var isPcCustomization = customizationSource !== "customize-mobile"
-        && (window.innerWidth >= 1024 || customizationSource === "customize-pc");
-      if (isPcCustomization) {
-        var desktopStyles = document.createElement("link");
-        desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260915pc";
-        document.head.appendChild(desktopStyles);
-      }
+      // Desktop is a responsive presentation of this same customisation
+      // engine. Keeping its overrides separate prevents PC layout work from
+      // changing the proven mobile flow or its API/basket contracts.
+      var desktopStyles = document.createElement("link");
+      desktopStyles.rel = "stylesheet";
+      desktopStyles.href = folderPath + "desktop.css?v=20260811c";
+      document.head.appendChild(desktopStyles);
     })();
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -201,11 +206,6 @@
     <!-- Canvas area -->
     <div class="canvas-wrap">
 
-      <div id="customizationContextLabel" class="customization-context-label" hidden aria-live="polite">
-        <span>CUSTOMISING</span>
-        <strong>Centre Front</strong>
-      </div>
-
       <!-- view name hidden, kept for JS -->
       <span id="viewNameLabel" style="display:none"></span>
 
@@ -228,93 +228,6 @@
         </button>
       </div>
 
-      <aside id="inlineLogoUpload" class="inline-logo-upload" aria-label="Add your logo">
-        <h2>Add your logo</h2>
-        <p>Upload your artwork and we'll place it on your garment.</p>
-        <label class="inline-upload-dropzone" for="logoFileInput">
-          <span class="inline-upload-icon" aria-hidden="true">⇧</span>
-          <strong>Drag &amp; drop your logo here</strong>
-          <small>or</small>
-          <span class="inline-upload-button">CHOOSE FILE</span>
-          <input id="logoFileInput" type="file" accept="image/*" hidden>
-        </label>
-        <div class="inline-upload-formats">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</div>
-        <div class="inline-upload-tip">✓&nbsp; For best results, use a high-resolution or vector file.</div>
-        <div class="inline-upload-library" id="inlineUploadLibrary" hidden>
-          <span>Use a previous logo</span>
-          <div id="inlineUploadLibraryItems" class="inline-upload-library-items"></div>
-          <button id="inlineViewSavedLogosBtn" type="button">View all saved logos →</button>
-        </div>
-        <div class="inline-upload-notice"><strong>◈&nbsp; Not sure about your artwork?</strong><span>Upload what you have. Our team checks every file before production.</span></div>
-      </aside>
-
-      <aside id="inlineLogoSettings" class="inline-logo-settings" hidden aria-label="Logo settings">
-        <div class="inline-logo-settings-heading">Edit your logo</div>
-        <p class="inline-logo-settings-subtitle">Adjust how your logo appears on the polo.</p>
-        <div class="inline-logo-controls">
-          <input id="removeBackgroundCheck" type="checkbox" checked hidden>
-          <input id="resizeProportionallyCheck" type="checkbox" checked hidden>
-          <span id="qualityPct" hidden></span><span id="qualityMask" hidden></span>
-
-          <div class="inline-logo-step"><span>1</span><div><strong>Logo size</strong><small>Keep proportions</small></div><button id="logoSizeLockBtn" class="inline-logo-lock is-locked" type="button" aria-label="Lock proportional resizing">&#128274;</button></div>
-          <input id="logoScaleRange" class="inline-logo-scale-range" type="range" min="10" max="100" value="50" aria-label="Logo size">
-          <div class="inline-logo-size-labels"><span>Width</span><span></span><span>Height</span></div>
-          <div class="inline-logo-size-row">
-            <input id="logoWidthInput" type="number" min="0.1" step="0.01" aria-label="Logo width in centimetres">
-            <span class="inline-logo-unit">cm</span>
-            <span class="inline-logo-size-lock">&#128274;</span>
-            <input id="logoHeightInput" type="number" min="0.1" step="0.01" aria-label="Logo height in centimetres">
-            <span class="inline-logo-unit">cm</span>
-          </div>
-
-          <div class="inline-logo-step"><span>2</span><div><strong>Move logo</strong><small>Use the arrows to position your logo on the polo.</small></div></div>
-          <div class="inline-logo-move-row">
-            <div class="inline-logo-arrow-pad"><span></span><button data-move="up" type="button">⌃</button><span></span><button data-move="left" type="button">‹</button><span></span><button data-move="right" type="button">›</button><span></span><button data-move="down" type="button">⌄</button><span></span></div>
-            <button class="inline-centre-logo" data-move="center" type="button">⌘&nbsp; Centre logo</button>
-          </div>
-          <button class="inline-advanced-position" type="button">⌄&nbsp; Advanced positioning</button>
-
-          <div class="inline-logo-step inline-logo-rotate-step"><span>3</span><div><strong>Rotate</strong><small>Rotate your logo to the desired angle.</small></div></div>
-          <div class="inline-logo-rotate-controls inline-logo-rotate-step"><button id="rotateLogoDecreaseBtn" type="button">−</button><input id="rotateInput" class="img-props-rotate-input" type="number" value="0" aria-label="Logo rotation"><span>°</span><button id="rotateLogoIncreaseBtn" type="button">+</button></div>
-
-          <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
-            <div class="inline-logo-step"><span>4</span><div><strong>Change logo colours</strong><small>Replace colours from your logo design.</small></div></div>
-            <div class="logo-colour-list" id="logoColourList" aria-label="Colours used in logo"></div>
-            <div class="inline-logo-colour-picker">
-              <span>→</span>
-              <button id="logoColourPickerToggle" class="logo-colour-picker-toggle" type="button" aria-expanded="false" aria-label="Choose replacement colour"><span></span></button>
-              <input id="logoReplacementColour" type="hidden" value="#000000">
-              <div id="logoColourPopover" class="logo-colour-popover" hidden>
-                <div class="logo-colour-search-wrap">
-                  <input id="logoColourSearch" type="search" placeholder="Search for color" aria-label="Search for color">
-                  <button id="closeLogoColourPopoverBtn" type="button" aria-label="Close colour palette">×</button>
-                </div>
-                <div class="logo-colour-in-use"><span>Colors in use</span><span id="logoColourInUseSwatch" aria-hidden="true"></span></div>
-                <div class="logo-colour-palette-heading" id="logoColourPaletteHeading">Imperial</div>
-                <div class="logo-colour-preset-grid" id="logoColourPresetGrid">
-                  <button type="button" data-replacement-colour="#101828" style="background:#101828" aria-label="Black"></button>
-                  <button type="button" data-replacement-colour="#ffffff" style="background:#ffffff" aria-label="White"></button>
-                  <button type="button" data-replacement-colour="#ef5226" style="background:#ef5226" aria-label="Orange"></button>
-                  <button type="button" data-replacement-colour="#e8384f" style="background:#e8384f" aria-label="Red"></button>
-                  <button type="button" data-replacement-colour="#f6c445" style="background:#f6c445" aria-label="Yellow"></button>
-                  <button type="button" data-replacement-colour="#20a96b" style="background:#20a96b" aria-label="Green"></button>
-                  <button type="button" data-replacement-colour="#2563eb" style="background:#2563eb" aria-label="Blue"></button>
-                  <button type="button" data-replacement-colour="#7c3aed" style="background:#7c3aed" aria-label="Purple"></button>
-                </div>
-                <button id="removeLogoColourBtn" class="logo-colour-remove-btn" type="button">Remove Color</button>
-                <button id="confirmLogoColourBtn" class="logo-colour-confirm-btn" type="button">OK</button>
-              </div>
-            </div>
-            <div class="logo-colour-actions"><button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button></div>
-            <p class="logo-colour-status" id="logoColourStatus" aria-live="polite"></p>
-          </section>
-
-          <div class="inline-logo-footer-actions">
-            <button id="resetLogoPositionBtn" type="button">↻&nbsp; Reset logo</button>
-            <button id="inlineRemoveLogoBtn" type="button">⌫&nbsp; Remove logo</button>
-          </div>
-        </div>
-      </aside>
 
       <div id="productPreview" class="product-preview area-front">
         <div class="polo-colour-wrap">
@@ -328,8 +241,6 @@
 
           <div id="customArea" class="custom-area">
 
-            <div id="printAreaGuide" class="print-area-guide" aria-hidden="true"></div>
-
             <div id="designLayer" class="design-layer">
               <span id="logoSizeLabel" class="logo-size-label">0.00cm x 0.00cm</span>
               <div class="logo-frame">
@@ -341,7 +252,7 @@
               </div>
               <div class="logo-toolbar">
                 <button id="deleteLogoBtn" class="logo-delete-btn" type="button" aria-label="Delete logo">×</button>
-                <button id="logoSettingsBtn" class="logo-settings-btn" type="button" aria-label="Logo settings">settings</button>
+                <button id="logoSettingsBtn" class="logo-settings-btn" type="button">settings</button>
                 <button id="rotateHandle" class="rotate-handle" type="button" aria-label="Rotate logo">↻</button>
               </div>
             </div>
@@ -395,81 +306,6 @@
     <div class="canvas-selected-colour" aria-live="polite">
       <span class="canvas-selected-colour-label">COLOUR</span>
       <span id="selectedCanvasColourName" class="canvas-selected-colour-value">White</span>
-    </div>
-
-    <div class="position-selection-box" aria-label="Logo positions">
-      <div class="position-selection-header">
-        <span class="position-selection-title">LOGO POSITION &amp; SIZE</span>
-        <span class="position-selection-info" aria-label="Information">i</span>
-      </div>
-
-      <p class="position-selection-copy">Select one or more positions</p>
-
-      <div id="positionGrid" class="position-grid">
-        <label class="position-card" data-position="left-chest" data-area="front">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Left chest" />
-          </span>
-          <span class="position-name">Left Chest</span>
-        </label>
-
-        <label class="position-card" data-position="right-chest" data-area="front">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Right chest" />
-          </span>
-          <span class="position-name">Right Chest</span>
-        </label>
-
-        <label class="position-card" data-position="centre-front" data-area="front">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Centre front" />
-          </span>
-          <span class="position-name">Centre Front</span>
-        </label>
-
-        <label class="position-card" data-position="large-front" data-area="front">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png" alt="Large front" />
-          </span>
-          <span class="position-name">Large Front</span>
-        </label>
-
-        <label class="position-card" data-position="name-of-neck" data-area="back">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png" alt="Name on neck" />
-          </span>
-          <span class="position-name">Name of Neck</span>
-        </label>
-
-        <label class="position-card" data-position="large-back" data-area="back">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png" alt="Large back" />
-          </span>
-          <span class="position-name">Large Back</span>
-        </label>
-
-        <label class="position-card" data-position="left-sleeve" data-area="left">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Left sleeve" />
-          </span>
-          <span class="position-name">Left Sleeve</span>
-        </label>
-
-        <label class="position-card" data-position="right-sleeve" data-area="right">
-          <input type="checkbox" />
-          <span class="position-thumb-wrap">
-            <img src="https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png" alt="Right sleeve" />
-          </span>
-          <span class="position-name">Right Sleeve</span>
-        </label>
-      </div>
     </div>
 
     <section id="positionDesignPanel" class="position-design-panel" aria-labelledby="positionDesignTitle">
@@ -872,7 +708,10 @@
     <div class="black-header">Upload Design</div>
 
     <div class="page-body">
-      <button id="logoUploadPageChooseBtn" class="upload-box" type="button">Click here to upload your logo or graphic</button>
+      <label class="upload-box" for="logoFileInput">
+        Click here to upload your logo or graphic
+        <input id="logoFileInput" type="file" accept="image/*" hidden>
+      </label>
     </div>
 
     <div class="fixed-action-bar">
@@ -949,11 +788,74 @@
       <button class="img-props-back-btn" data-open="mainEditor">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <span class="img-props-title">Logo Settings</span>
+      <span class="img-props-title">Image Properties</span>
       <div style="width:36px"></div>
     </div>
 
-    <div class="img-props-body"></div>
+    <div class="img-props-body">
+      <div class="img-props-card">
+        <div class="img-props-quality-header">
+          <span class="img-props-row-label">Print Quality</span>
+          <span class="img-props-quality-pct" id="qualityPct">—</span>
+        </div>
+        <div class="img-props-quality-meter">
+          <div class="img-props-quality-mask" id="qualityMask"></div>
+        </div>
+        <div class="img-props-quality-hint">Smaller logo = sharper print</div>
+      </div>
+
+      <div class="img-props-card">
+        <label class="img-props-toggle-row">
+          <span class="img-props-toggle-label">Remove background</span>
+          <div class="img-props-toggle">
+            <input id="removeBackgroundCheck" type="checkbox" checked>
+            <span class="img-props-toggle-track"></span>
+          </div>
+        </label>
+        <div class="img-props-divider"></div>
+        <label class="img-props-toggle-row">
+          <span class="img-props-toggle-label">Resize proportionally</span>
+          <div class="img-props-toggle">
+            <input id="resizeProportionallyCheck" type="checkbox" checked>
+            <span class="img-props-toggle-track"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="img-props-card">
+        <div class="img-props-section-header">Position &amp; Size</div>
+        <div class="img-props-controls">
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Position</div>
+            <div class="img-props-position-pad">
+              <button data-move="up-left">◤</button>
+              <button data-move="up">▲</button>
+              <button data-move="up-right">◥</button>
+              <button data-move="left">◀</button>
+              <button data-move="center">●</button>
+              <button data-move="right">▶</button>
+              <button data-move="down-left">◣</button>
+              <button data-move="down">▼</button>
+              <button data-move="down-right">◢</button>
+            </div>
+          </div>
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Size</div>
+            <div class="img-props-size-btns">
+              <button id="sizeUpBtn">▲</button>
+              <button id="sizeDownBtn">▼</button>
+            </div>
+          </div>
+          <div class="img-props-control-group">
+            <div class="img-props-control-label">Rotate</div>
+            <input id="rotateInput" class="img-props-rotate-input" type="number" value="0">
+          </div>
+        </div>
+        <div class="img-props-size-display">
+          <span id="propertySizeLabel">0.00cm × 0.00cm</span>
+        </div>
+      </div>
+    </div>
 
     <div class="copyright-actions">
       <button class="btn-black" id="applyImagePropertiesBtn">Apply</button>
@@ -1135,7 +1037,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260915a", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260830a", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();
