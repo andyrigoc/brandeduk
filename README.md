@@ -2,7 +2,7 @@
 
 Complete workwear e-commerce solution with custom product customization features for brandeduk.com.
 
-## 📁 Project Structure
+## 📁 Project StructureS
 
 ```
 brandedukv15-child/      # ✅ WordPress child theme (PRODUCTION-READY)
