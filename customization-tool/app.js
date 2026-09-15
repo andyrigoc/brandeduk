@@ -146,6 +146,7 @@ const screens = document.querySelectorAll(".screen");
 const productPreview = document.getElementById("productPreview");
 const customArea = document.getElementById("customArea");
 const productShape = document.getElementById("productShape");
+const customizationContextLabel = document.getElementById("customizationContextLabel");
 const colourGrid = document.getElementById("colourGrid");
 const selectedColourName = document.getElementById("selectedColourName");
 const selectedCanvasColourName = document.getElementById("selectedCanvasColourName");
@@ -536,6 +537,8 @@ const removeLogoColourBtn = document.getElementById("removeLogoColourBtn");
 const confirmLogoColourBtn = document.getElementById("confirmLogoColourBtn");
 const resetLogoColoursBtn = document.getElementById("resetLogoColoursBtn");
 const logoColourStatus = document.getElementById("logoColourStatus");
+const logoColourPresetGrid = document.getElementById("logoColourPresetGrid");
+const logoColourPaletteHeading = document.getElementById("logoColourPaletteHeading");
 
 const textPropertyInput = document.getElementById("textPropertyInput");
 const textPropertyColour = document.getElementById("textPropertyColour");
@@ -1429,6 +1432,17 @@ function getDesignAreaKey(area = state.selectedArea) {
 
 function getDesignAreaLabel(area = state.selectedArea) {
   return areaLabelForPicker(getDesignAreaKey(area));
+}
+
+function updateCustomizationContextLabel() {
+  if (!customizationContextLabel) return;
+  const selectedCard = state.selectedPosition
+    ? document.querySelector(`.position-card[data-position="${CSS.escape(state.selectedPosition)}"]`)
+    : null;
+  const label = selectedCard?.querySelector(".position-name")?.textContent?.trim()
+    || (state.product === "cap" ? "Centre Front" : getDesignAreaLabel());
+  const value = customizationContextLabel.querySelector("strong");
+  if (value) value.textContent = label;
 }
 
 function getCurrentLogoQualityPct() {
@@ -3820,13 +3834,18 @@ function setTextAlignment(align) {
   });
 }
 
+function formatCentimetres(value) {
+  const rounded = Math.round((Number(value) || 0) * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
 function updateTextSizeLabels() {
   const textRect = textContent.getBoundingClientRect();
   const widthPx = Math.max(1, Math.ceil(textRect.width));
   const heightPx = Math.max(1, Math.ceil(textRect.height));
   const pxPerCm = getEffectivePxPerCm();
-  const widthCm = (widthPx / pxPerCm).toFixed(2);
-  const heightCm = (heightPx / pxPerCm).toFixed(2);
+  const widthCm = formatCentimetres(widthPx / pxPerCm);
+  const heightCm = formatCentimetres(heightPx / pxPerCm);
   const label = `${widthCm}cm x ${heightCm}cm`;
 
   textSizeLabel.textContent = label;
@@ -3935,6 +3954,7 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("is-disabled")) return;
     state.pendingDecorationType = card.dataset.designType;
+    document.body.dataset.decorationType = normalizeDecorationMethod(card.dataset.designType);
     const library = getSessionLogoLibrary();
     if (library.length > 0) {
       showLogoLibraryPicker(library);
@@ -4054,6 +4074,7 @@ function showLogoLibraryPicker(library) {
     cell.addEventListener("click", () => {
       overlay.remove();
       state.decorationType = state.pendingDecorationType || entry.method || state.decorationType || "logo";
+      document.body.dataset.decorationType = normalizeDecorationMethod(state.decorationType);
       reuseLibraryLogo(entry.logo);
     });
     grid.appendChild(cell);
@@ -4269,21 +4290,7 @@ function syncPositionSelectionCards() {
 
 function syncPositionCardLogoPreviews() {
   document.querySelectorAll(".position-card").forEach((card) => {
-    let preview = card.querySelector(".position-logo-preview");
-    if (!state.uploadedLogo) {
-      preview?.remove();
-      return;
-    }
-
-    if (!preview) {
-      preview = document.createElement("img");
-      preview.className = "position-logo-preview";
-      preview.alt = "";
-      preview.setAttribute("aria-hidden", "true");
-      card.querySelector(".position-thumb-wrap")?.appendChild(preview);
-    }
-
-    preview.src = state.uploadedLogo;
+    card.querySelector(".position-logo-preview")?.remove();
   });
 }
 
@@ -4389,6 +4396,7 @@ function configurePositionCardsForProduct() {
   syncViewThumbTint();
   syncPositionSelectionCards();
   syncPositionCardLogoPreviews();
+  updateCustomizationContextLabel();
 }
 
 function showPositionPickerModal(options = {}) {
@@ -4579,7 +4587,69 @@ function setLogoColourStatus(message = "", isError = false) {
   logoColourStatus.classList.toggle("is-error", isError);
 }
 
+const DTF_PALETTE_FAMILIES = [
+  ["Red", "#ef4444"],
+  ["Orange", "#f97316"],
+  ["Yellow", "#facc15"],
+  ["Green", "#22c55e"],
+  ["Teal", "#14b8a6"],
+  ["Blue", "#3b82f6"],
+  ["Violet", "#8b5cf6"],
+  ["Pink", "#ec4899"],
+  ["Brown", "#a16207"]
+];
+
+const BASE_LOGO_PALETTE = [
+  ["Black", "#101828"],
+  ["White", "#ffffff"],
+  ["Orange", "#ef5226"],
+  ["Red", "#e8384f"],
+  ["Yellow", "#f6c445"],
+  ["Green", "#20a96b"],
+  ["Blue", "#2563eb"],
+  ["Purple", "#7c3aed"]
+];
+
+function mixPaletteColour(hex, target, amount) {
+  const rgb = rgbFromHex(hex);
+  const destination = target === "white" ? [255, 255, 255] : [0, 0, 0];
+  if (!rgb) return hex;
+  return hexFromRgb(...rgb.map((channel, index) => Math.round(channel + (destination[index] - channel) * amount)));
+}
+
+function getDtfPalette() {
+  const shades = [0.72, 0.5, 0.28, 0, 0.18, 0.36, 0.54];
+  return DTF_PALETTE_FAMILIES.flatMap(([name, base]) => shades.map((amount, index) => {
+    const colour = index < 4
+      ? mixPaletteColour(base, "white", amount)
+      : mixPaletteColour(base, "black", amount);
+    return [`${name} ${index + 1}`, colour];
+  }));
+}
+
+function renderReplacementColourPalette() {
+  if (!logoColourPresetGrid) return;
+  const method = document.body.dataset.decorationType || state.decorationType || state.pendingDecorationType;
+  const isDtf = normalizeDecorationMethod(method) === "dtf";
+  const palette = isDtf ? getDtfPalette() : BASE_LOGO_PALETTE;
+  logoColourPresetGrid.innerHTML = "";
+  if (logoColourPaletteHeading) {
+    logoColourPaletteHeading.textContent = isDtf ? "DTF colour shades" : "Imperial";
+  }
+
+  palette.forEach(([label, colour]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.replacementColour = colour;
+    button.style.backgroundColor = colour;
+    button.setAttribute("aria-label", label);
+    button.title = `${label} ${colour.toUpperCase()}`;
+    logoColourPresetGrid.appendChild(button);
+  });
+}
+
 async function renderLogoColourEditor() {
+  renderReplacementColourPalette();
   if (!logoColoursCard || !logoColourList || !state.uploadedLogo) return;
   logoColoursCard.hidden = false;
   logoColourList.innerHTML = "";
@@ -4912,8 +4982,9 @@ function getLogoAspectRatio() {
 
 function getRenderedLogoSizePx() {
   const logoFrame = getLogoFrameEl();
-  const containerWidth = Math.max(1, logoFrame.offsetWidth);
-  const containerHeight = Math.max(1, logoFrame.offsetHeight);
+  const frameRect = logoFrame.getBoundingClientRect();
+  const containerWidth = Math.max(1, frameRect.width);
+  const containerHeight = Math.max(1, frameRect.height);
   const logoRatio = getLogoAspectRatio();
   const containerRatio = containerWidth / containerHeight;
 
@@ -4945,8 +5016,8 @@ function activateLogo() {
 function updateLogoSizeLabels() {
   const renderedSize = getRenderedLogoSizePx();
   const pxPerCm = getEffectivePxPerCm();
-  const widthCm = (renderedSize.width / pxPerCm).toFixed(2);
-  const heightCm = (renderedSize.height / pxPerCm).toFixed(2);
+  const widthCm = formatCentimetres(renderedSize.width / pxPerCm);
+  const heightCm = formatCentimetres(renderedSize.height / pxPerCm);
   const label = `${widthCm}cm x ${heightCm}cm`;
 
   if (logoSizeLabel) logoSizeLabel.textContent = label;
@@ -4961,8 +5032,19 @@ function syncInlineLogoControls() {
   if (!logoFrame || !customArea || !pxPerCm) return;
 
   const renderedSize = getRenderedLogoSizePx();
-  if (logoWidthInput) logoWidthInput.value = (renderedSize.width / pxPerCm).toFixed(2);
-  if (logoHeightInput) logoHeightInput.value = (renderedSize.height / pxPerCm).toFixed(2);
+  const limits = getPrintAreaConfig().areaCm;
+  const editingWidth = document.activeElement === logoWidthInput;
+  const editingHeight = document.activeElement === logoHeightInput;
+  if (logoWidthInput && !editingWidth) {
+    logoWidthInput.max = String(limits.w);
+    logoWidthInput.value = formatCentimetres(renderedSize.width / pxPerCm);
+  }
+  if (logoHeightInput && !editingHeight) {
+    logoHeightInput.max = String(limits.h);
+    logoHeightInput.value = formatCentimetres(renderedSize.height / pxPerCm);
+  }
+  logoWidthInput?.setAttribute("max", String(limits.w));
+  logoHeightInput?.setAttribute("max", String(limits.h));
   if (logoScaleRange) {
     const maxWidth = Math.max(1, getPrintAreaConfig().areaCm.w);
     logoScaleRange.value = String(Math.max(10, Math.min(100, Math.round((renderedSize.width / pxPerCm) / maxWidth * 100))));
@@ -5647,16 +5729,16 @@ function positionLogoColourPopover() {
 window.addEventListener("resize", positionLogoColourPopover);
 window.addEventListener("scroll", positionLogoColourPopover, true);
 
-document.querySelectorAll("[data-replacement-colour]").forEach((button) => {
-  button.addEventListener("click", async () => {
-    if (!setReplacementLogoColour(button.dataset.replacementColour)) return;
-    if (selectedLogoPaletteColour) await replaceLogoColour();
-  });
+logoColourPresetGrid?.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-replacement-colour]");
+  if (!button) return;
+  if (!setReplacementLogoColour(button.dataset.replacementColour)) return;
+  if (selectedLogoPaletteColour) await replaceLogoColour();
 });
 
 logoColourSearch?.addEventListener("input", () => {
   const query = logoColourSearch.value.trim().toLowerCase();
-  document.querySelectorAll("#logoColourPopover [data-replacement-colour]").forEach((button) => {
+  logoColourPresetGrid?.querySelectorAll("[data-replacement-colour]").forEach((button) => {
     button.hidden = query && !button.getAttribute("aria-label").toLowerCase().includes(query);
   });
 });
@@ -5842,14 +5924,36 @@ function setLogoSizeFromCentimetres(dimension, value) {
   const pxPerCm = getEffectivePxPerCm();
   if (!logoFrame || !Number.isFinite(centimetres) || centimetres <= 0 || !pxPerCm) return;
 
+  const designRect = designLayer.getBoundingClientRect();
+  const areaRect = customArea.getBoundingClientRect();
+  const previousCentreX = designRect.left - areaRect.left + designRect.width / 2;
+  const previousCentreY = designRect.top - areaRect.top + designRect.height / 2;
   const ratio = getLogoAspectRatio();
+  const limits = getPrintAreaConfig().areaCm;
+  let widthCm;
+  let heightCm;
   if (dimension === "width") {
-    logoFrame.style.width = `${centimetres * pxPerCm}px`;
-    logoFrame.style.height = `${(centimetres * pxPerCm) / ratio}px`;
+    widthCm = Math.min(centimetres, limits.w);
+    heightCm = widthCm / ratio;
   } else {
-    logoFrame.style.height = `${centimetres * pxPerCm}px`;
-    logoFrame.style.width = `${centimetres * pxPerCm * ratio}px`;
+    heightCm = Math.min(centimetres, limits.h);
+    widthCm = heightCm * ratio;
   }
+
+  if (widthCm > limits.w) {
+    widthCm = limits.w;
+    heightCm = widthCm / ratio;
+  }
+  if (heightCm > limits.h) {
+    heightCm = limits.h;
+    widthCm = heightCm * ratio;
+  }
+
+  logoFrame.style.width = `${widthCm * pxPerCm}px`;
+  logoFrame.style.height = `${heightCm * pxPerCm}px`;
+  const resizedFrameRect = logoFrame.getBoundingClientRect();
+  designLayer.style.left = `${previousCentreX - resizedFrameRect.width / 2}px`;
+  designLayer.style.top = `${previousCentreY - resizedFrameRect.height / 2}px`;
   updateLogoSizeLabels();
   updateVisibilityByPrintArea(designLayer);
 }
@@ -6602,6 +6706,7 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
 
     state.selectedPosition = positionKey;
     syncPositionSelectionCards();
+    updateCustomizationContextLabel();
     await switchToDesignArea(area);
 });
 

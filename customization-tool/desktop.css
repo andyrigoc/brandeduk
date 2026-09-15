@@ -309,6 +309,33 @@
     border: 0;
   }
 
+  .customization-context-label {
+    position: absolute;
+    z-index: 12;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 6px 10px;
+    border: 1px solid rgba(125, 211, 252, 0.55);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .customization-context-label strong {
+    color: #172554;
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
   .inline-logo-settings {
     position: absolute;
     z-index: 20;

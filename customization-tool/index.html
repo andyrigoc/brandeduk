@@ -194,6 +194,11 @@
     <!-- Canvas area -->
     <div class="canvas-wrap">
 
+      <div id="customizationContextLabel" class="customization-context-label" aria-live="polite">
+        <span>CUSTOMISING</span>
+        <strong>Centre Front</strong>
+      </div>
+
       <!-- view name hidden, kept for JS -->
       <span id="viewNameLabel" style="display:none"></span>
 
@@ -248,10 +253,10 @@
           <input id="logoScaleRange" class="inline-logo-scale-range" type="range" min="10" max="100" value="50" aria-label="Logo size">
           <div class="inline-logo-size-labels"><span>Width</span><span></span><span>Height</span></div>
           <div class="inline-logo-size-row">
-            <input id="logoWidthInput" type="number" min="0.1" step="0.01" aria-label="Logo width in centimetres">
+            <input id="logoWidthInput" type="number" min="0.1" step="0.1" aria-label="Logo width in centimetres">
             <span class="inline-logo-unit">cm</span>
             <span class="inline-logo-size-lock">&#128274;</span>
-            <input id="logoHeightInput" type="number" min="0.1" step="0.01" aria-label="Logo height in centimetres">
+            <input id="logoHeightInput" type="number" min="0.1" step="0.1" aria-label="Logo height in centimetres">
             <span class="inline-logo-unit">cm</span>
           </div>
 
@@ -278,9 +283,16 @@
                   <button id="closeLogoColourPopoverBtn" type="button" aria-label="Close colour palette">×</button>
                 </div>
                 <div class="logo-colour-in-use"><span>Colors in use</span><span id="logoColourInUseSwatch" aria-hidden="true"></span></div>
-                <div class="logo-colour-palette-heading">Imperial</div>
-                <div class="logo-colour-preset-grid">
-                  <button type="button" data-replacement-colour="#101828" style="background:#101828" aria-label="Black"></button><button type="button" data-replacement-colour="#ffffff" style="background:#ffffff" aria-label="White"></button><button type="button" data-replacement-colour="#ef5226" style="background:#ef5226" aria-label="Orange"></button><button type="button" data-replacement-colour="#e8384f" style="background:#e8384f" aria-label="Red"></button><button type="button" data-replacement-colour="#f6c445" style="background:#f6c445" aria-label="Yellow"></button><button type="button" data-replacement-colour="#20a96b" style="background:#20a96b" aria-label="Green"></button><button type="button" data-replacement-colour="#2563eb" style="background:#2563eb" aria-label="Blue"></button><button type="button" data-replacement-colour="#7c3aed" style="background:#7c3aed" aria-label="Purple"></button>
+                <div class="logo-colour-palette-heading" id="logoColourPaletteHeading">Imperial</div>
+                <div class="logo-colour-preset-grid" id="logoColourPresetGrid">
+                  <button type="button" data-replacement-colour="#101828" style="background:#101828" aria-label="Black"></button>
+                  <button type="button" data-replacement-colour="#ffffff" style="background:#ffffff" aria-label="White"></button>
+                  <button type="button" data-replacement-colour="#ef5226" style="background:#ef5226" aria-label="Orange"></button>
+                  <button type="button" data-replacement-colour="#e8384f" style="background:#e8384f" aria-label="Red"></button>
+                  <button type="button" data-replacement-colour="#f6c445" style="background:#f6c445" aria-label="Yellow"></button>
+                  <button type="button" data-replacement-colour="#20a96b" style="background:#20a96b" aria-label="Green"></button>
+                  <button type="button" data-replacement-colour="#2563eb" style="background:#2563eb" aria-label="Blue"></button>
+                  <button type="button" data-replacement-colour="#7c3aed" style="background:#7c3aed" aria-label="Purple"></button>
                 </div>
                 <button id="removeLogoColourBtn" class="logo-colour-remove-btn" type="button">Remove Color</button>
                 <button id="confirmLogoColourBtn" class="logo-colour-confirm-btn" type="button">OK</button>
