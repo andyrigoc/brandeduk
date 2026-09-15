@@ -268,8 +268,19 @@
           <section class="logo-colours-card logo-colours-inline" id="logoColoursCard" hidden aria-label="Logo colour settings">
             <div class="inline-logo-step"><span>4</span><div><strong>Change logo colours</strong><small>Replace colours from your logo design.</small></div></div>
             <div class="logo-colour-list" id="logoColourList" aria-label="Colours used in logo"></div>
-            <div class="inline-logo-colour-picker"><span>→</span><label for="logoReplacementColour"><input id="logoReplacementColour" type="color" value="#000000"></label></div>
-            <div class="logo-colour-actions"><button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button><button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button></div>
+            <div class="inline-logo-colour-picker">
+              <span>→</span>
+              <button id="logoColourPickerToggle" class="logo-colour-picker-toggle" type="button" aria-expanded="false" aria-label="Choose replacement colour"><span></span></button>
+              <input id="logoReplacementColour" type="hidden" value="#000000">
+              <div id="logoColourPopover" class="logo-colour-popover" hidden>
+                <div class="logo-colour-preset-grid">
+                  <button type="button" data-replacement-colour="#101828" style="background:#101828" aria-label="Black"></button><button type="button" data-replacement-colour="#ffffff" style="background:#ffffff" aria-label="White"></button><button type="button" data-replacement-colour="#ef5226" style="background:#ef5226" aria-label="Orange"></button><button type="button" data-replacement-colour="#e8384f" style="background:#e8384f" aria-label="Red"></button><button type="button" data-replacement-colour="#f6c445" style="background:#f6c445" aria-label="Yellow"></button><button type="button" data-replacement-colour="#20a96b" style="background:#20a96b" aria-label="Green"></button><button type="button" data-replacement-colour="#2563eb" style="background:#2563eb" aria-label="Blue"></button><button type="button" data-replacement-colour="#7c3aed" style="background:#7c3aed" aria-label="Purple"></button>
+                </div>
+                <label>HEX <input id="logoReplacementHex" type="text" value="#000000" maxlength="7" spellcheck="false"></label>
+                <button id="applyLogoColourBtn" class="logo-colour-apply-btn" type="button" disabled>Apply colour</button>
+              </div>
+            </div>
+            <div class="logo-colour-actions"><button id="resetLogoColoursBtn" class="logo-colour-reset-btn" type="button">Reset colours</button></div>
             <p class="logo-colour-status" id="logoColourStatus" aria-live="polite"></p>
           </section>
 
@@ -367,7 +378,7 @@
 
       <p class="position-selection-copy">Select one or more positions</p>
 
-      <div class="position-grid">
+      <div id="positionGrid" class="position-grid">
         <label class="position-card" data-position="left-chest" data-area="front">
           <input type="checkbox" />
           <span class="position-thumb-wrap">
@@ -1097,7 +1108,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260914c", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260915a", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();

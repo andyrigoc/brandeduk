@@ -161,7 +161,7 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
-    <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260706a">
+    <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260915c">
     <style>
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
@@ -2328,6 +2328,11 @@
                 </div>
             </div>
 
+            <!-- Banner 2 - Only Boards partner promotion -->
+            <a class="hero-banner hero-banner-onlyboards" id="heroBannerOnlyBoards" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener" aria-label="Visit Only Boards">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2012_26_53%20PM.png" alt="Only Boards - Proud partners. Made to stand out. High-impact printed boards and signage for every project.">
+            </a>
+
             <!-- Banner 2 - Get in Touch Neon -->
             <div class="hero-banner" id="heroBanner2" onclick="openContactPopup()" style="cursor: pointer;">
                 <div class="neon-container">
@@ -2353,6 +2358,7 @@
         <!-- Banner Dots Navigation -->
         <div class="hero-banner-dots">
             <button class="banner-dot banner-dot--active" data-banner="4" aria-label="Banner Branded"></button>
+            <button class="banner-dot" data-banner="onlyboards" aria-label="Banner Only Boards"></button>
             <button class="banner-dot" data-banner="2" aria-label="Banner Get in Touch"></button>
             <button class="banner-dot" data-banner="3" aria-label="Banner Make Awesome"></button>
         </div>
@@ -2380,12 +2386,6 @@
 
     <!-- Categories Section -->
     <section class="categories-section">
-        <div class="section-container">
-            <div class="section-header">
-                <h2 class="section-title">Shop by Category</h2>
-                <a href="shop-pc.html" class="see-all-link">View All Categories &rarr;</a>
-            </div>
-        </div>
         <div class="categories-marquee">
             <div class="categories-track">
                 <a href="shop-pc.html?productType=t-shirts" class="category-card">
@@ -3006,6 +3006,18 @@
         </div>
     </section>
 
+    <script>
+        (function () {
+            const main = document.querySelector('.main-content');
+            const categories = main?.querySelector('.categories-section');
+            const heroOne = main?.querySelector('.hero-expanding-wrapper');
+            const heroTwo = main?.querySelector('.hero-banners-section');
+            if (!main || !categories || !heroOne || !heroTwo) return;
+
+            main.insertBefore(categories, heroOne);
+            main.insertBefore(heroTwo, heroOne);
+        })();
+    </script>
 </main>
 
 <!-- Footer -->

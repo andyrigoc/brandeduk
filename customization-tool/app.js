@@ -493,6 +493,9 @@ const inlineUploadLibraryItems = document.getElementById("inlineUploadLibraryIte
 const inlineViewSavedLogosBtn = document.getElementById("inlineViewSavedLogosBtn");
 const logoColourList = document.getElementById("logoColourList");
 const logoReplacementColour = document.getElementById("logoReplacementColour");
+const logoColourPickerToggle = document.getElementById("logoColourPickerToggle");
+const logoColourPopover = document.getElementById("logoColourPopover");
+const logoReplacementHex = document.getElementById("logoReplacementHex");
 const applyLogoColourBtn = document.getElementById("applyLogoColourBtn");
 const resetLogoColoursBtn = document.getElementById("resetLogoColoursBtn");
 const logoColourStatus = document.getElementById("logoColourStatus");
@@ -2570,6 +2573,7 @@ function configureViewTabsForProduct() {
 
   configureDesignTypesForProduct(isBeanie);
   syncPositionCardImages();
+  configurePositionCardsForProduct();
 }
 
 /**
@@ -3932,11 +3936,24 @@ function syncInlineLogoPanels() {
     const button = document.createElement("button");
     button.type = "button";
     button.title = "Use this logo";
+    button.className = "inline-upload-library-logo";
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", "false");
+    const selectionDot = document.createElement("span");
+    selectionDot.className = "inline-upload-library-selection";
+    selectionDot.setAttribute("aria-hidden", "true");
     const image = document.createElement("img");
     image.src = entry.logo;
     image.alt = "Saved logo";
+    button.appendChild(selectionDot);
     button.appendChild(image);
-    button.addEventListener("click", () => reuseLibraryLogo(entry.logo));
+    button.addEventListener("click", () => {
+      inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
+        item.classList.toggle("is-selected", item === button);
+        item.setAttribute("aria-checked", String(item === button));
+      });
+      reuseLibraryLogo(entry.logo);
+    });
     inlineUploadLibraryItems.appendChild(button);
   });
 }
@@ -3944,8 +3961,15 @@ function syncInlineLogoPanels() {
 function rememberUploadedLogo(src, method) {
   const key = String(src || "").trim();
   if (!key) return;
-  if (sessionLogoLibrary.some((entry) => entry.logo === key)) return;
-  sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
+  if (!sessionLogoLibrary.some((entry) => entry.logo === key)) {
+    sessionLogoLibrary.push({ logo: key, method: method || state.decorationType || "logo" });
+  }
+  try {
+    const entries = sessionLogoLibrary.slice(-6);
+    sessionStorage.setItem("toolReusableLogos", JSON.stringify(entries));
+  } catch (error) {
+    // The current customisation still works if the browser cannot persist previews.
+  }
   syncInlineLogoPanels();
 }
 
@@ -4231,6 +4255,92 @@ function syncPositionCardImages() {
   });
 }
 
+const GENERIC_LOGO_POSITIONS = {
+  tshirts: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  polos: ["Left Chest", "Right Chest", "Centre Chest", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  sweatshirts: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  hoodies: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  jackets: ["Left Chest", "Right Chest", "Left Front", "Right Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  fleece: ["Left Chest", "Right Chest", "Left Front", "Right Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
+  "gilets-body-warmers": ["Left Chest", "Right Chest", "Upper Back", "Large Back"],
+  shirts: ["Left Chest", "Right Chest", "Upper Back", "Left Sleeve", "Right Sleeve", "Left Cuff", "Right Cuff"],
+  "safety-vests": ["Left Chest", "Right Chest", "Large Back"],
+  aprons: ["Centre Chest", "Large Front", "Left Chest", "Right Chest"],
+  bags: ["Centre Front", "Large Front", "Centre Back", "Large Back"],
+  caps: ["Centre Front", "Front Left Panel", "Front Right Panel", "Left Side", "Right Side", "Back"],
+  beanies: ["Centre Front", "Front Left", "Front Right"],
+  hats: ["Centre Front", "Left Side", "Right Side"],
+  trousers: ["Left Thigh", "Right Thigh", "Left Pocket", "Right Pocket"],
+  shorts: ["Left Thigh", "Right Thigh", "Left Pocket", "Right Pocket"],
+  sweatpants: ["Left Thigh", "Right Thigh", "Left Leg", "Right Leg"]
+};
+
+const PRODUCT_POSITION_OVERRIDES = {
+  // Example: "WM412": ["Centre Front", "Large Front", "Centre Back", "Large Back"]
+};
+
+function positionAreaForLabel(label) {
+  const value = String(label).toLowerCase();
+  if (/back|rear/.test(value)) return "back";
+  if (/left sleeve|left cuff|left side/.test(value)) return "left";
+  if (/right sleeve|right cuff|right side/.test(value)) return "right";
+  return "front";
+}
+
+function positionKeyForLabel(label) {
+  return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function getProductPositionLabels() {
+  const code = String(state.productCode || "").trim().toUpperCase();
+  const title = String(state.productName || "").toLowerCase();
+  const category = state.customizationProductTypeSlug || "tshirts";
+  let positions = [...(PRODUCT_POSITION_OVERRIDES[code] || GENERIC_LOGO_POSITIONS[category] || GENERIC_LOGO_POSITIONS.tshirts)];
+  const hasZip = /full[\s-]?zip|quarter[\s-]?zip|half[\s-]?zip|zip[\s-]?through|zipped/.test(title);
+  const hasFrontPocket = /front pocket|kangaroo pocket/.test(title);
+  const hasChestPocket = /chest pocket|breast pocket/.test(title);
+
+  if (hasZip) {
+    positions = positions.filter((label) => !["Centre Chest", "Large Front"].includes(label));
+    if (!positions.includes("Left Front")) positions.splice(2, 0, "Left Front", "Right Front");
+  } else if (hasFrontPocket) {
+    positions = positions.map((label) => label === "Large Front" ? "Large Front Above Pocket" : label);
+  }
+  if (hasChestPocket) positions.splice(2, 0, "Above Pocket");
+  return [...new Set(positions)];
+}
+
+function configurePositionCardsForProduct() {
+  const grid = document.getElementById("positionGrid");
+  if (!grid) return;
+  const views = getConfiguredViewAreas();
+  const labels = getProductPositionLabels().filter((label) => {
+    const area = positionAreaForLabel(label);
+    return !views || area === "front" || Boolean(views[area]);
+  });
+
+  grid.innerHTML = "";
+  labels.forEach((label) => {
+    const area = positionAreaForLabel(label);
+    const key = positionKeyForLabel(label);
+    const card = document.createElement("label");
+    card.className = "position-card";
+    card.dataset.position = key;
+    card.dataset.area = area;
+    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"></span><span class="position-name"></span>`;
+    card.querySelector(".position-name").textContent = label;
+    grid.appendChild(card);
+  });
+
+  if (state.selectedPosition && !labels.some((label) => positionKeyForLabel(label) === state.selectedPosition)) {
+    state.selectedPosition = "";
+    state.selectedArea = "front";
+  }
+  syncPositionCardImages();
+  syncPositionSelectionCards();
+  syncPositionCardLogoPreviews();
+}
+
 function showPositionPickerModal(options = {}) {
   const {
     title = "Pick your new position",
@@ -4334,6 +4444,16 @@ function rgbFromHex(hex) {
   ];
 }
 
+function setReplacementLogoColour(hex) {
+  const value = String(hex || "").toUpperCase();
+  if (!rgbFromHex(value)) return false;
+  if (logoReplacementColour) logoReplacementColour.value = value;
+  if (logoReplacementHex) logoReplacementHex.value = value;
+  const chip = logoColourPickerToggle?.querySelector("span");
+  if (chip) chip.style.backgroundColor = value;
+  return true;
+}
+
 async function getLogoCanvas(source) {
   const image = await loadLogoImage(source);
   const longestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
@@ -4350,22 +4470,57 @@ async function getLogoCanvas(source) {
 async function extractLogoPalette(source) {
   const { canvas, context } = await getLogoCanvas(source);
   const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-  const colours = new Map();
+  const colourBins = new Map();
   const step = Math.max(1, Math.floor(Math.sqrt((canvas.width * canvas.height) / 30000)));
 
   for (let index = 0; index < data.length; index += 4 * step) {
-    if (data[index + 3] < 80) continue;
-    const red = Math.round(data[index] / 24) * 24;
-    const green = Math.round(data[index + 1] / 24) * 24;
-    const blue = Math.round(data[index + 2] / 24) * 24;
-    const hex = hexFromRgb(Math.min(255, red), Math.min(255, green), Math.min(255, blue));
-    colours.set(hex, (colours.get(hex) || 0) + 1);
+    // Ignore semi-transparent antialiasing pixels; they are edge artefacts,
+    // not colours the customer intentionally put in the logo.
+    if (data[index + 3] < 220) continue;
+    const red = data[index];
+    const green = data[index + 1];
+    const blue = data[index + 2];
+    const brightness = (red + green + blue) / 3;
+    const spread = Math.max(red, green, blue) - Math.min(red, green, blue);
+    // JPEG/PNG edges create many nearly-grey shades. Treat neutral artwork as
+    // the intended black or white rather than separate grey swatches.
+    const key = spread < 26
+      ? (brightness < 128 ? "0-0-0" : "255-255-255")
+      : `${Math.round(red / 24)}-${Math.round(green / 24)}-${Math.round(blue / 24)}`;
+    const bin = colourBins.get(key) || { red: 0, green: 0, blue: 0, count: 0 };
+    bin.red += spread < 26 ? (brightness < 128 ? 0 : 255) : red;
+    bin.green += spread < 26 ? (brightness < 128 ? 0 : 255) : green;
+    bin.blue += spread < 26 ? (brightness < 128 ? 0 : 255) : blue;
+    bin.count += 1;
+    colourBins.set(key, bin);
   }
 
-  return [...colours.entries()]
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 8)
-    .map(([hex]) => hex);
+  const clusters = [];
+  [...colourBins.values()]
+    .sort((left, right) => right.count - left.count)
+    .forEach((bin) => {
+      const red = bin.red / bin.count;
+      const green = bin.green / bin.count;
+      const blue = bin.blue / bin.count;
+      const cluster = clusters.find((item) => (
+        (item.red - red) ** 2 + (item.green - green) ** 2 + (item.blue - blue) ** 2
+      ) <= 85 ** 2);
+
+      if (cluster) {
+        const total = cluster.count + bin.count;
+        cluster.red = (cluster.red * cluster.count + red * bin.count) / total;
+        cluster.green = (cluster.green * cluster.count + green * bin.count) / total;
+        cluster.blue = (cluster.blue * cluster.count + blue * bin.count) / total;
+        cluster.count = total;
+      } else {
+        clusters.push({ red, green, blue, count: bin.count });
+      }
+    });
+
+  return clusters
+    .sort((left, right) => right.count - left.count)
+    .slice(0, 6)
+    .map((colour) => hexFromRgb(Math.round(colour.red), Math.round(colour.green), Math.round(colour.blue)));
 }
 
 function setLogoColourStatus(message = "", isError = false) {
@@ -4394,16 +4549,21 @@ async function renderLogoColourEditor() {
       swatch.setAttribute("aria-label", `Use ${colour.toUpperCase()} as the colour to replace`);
       swatch.addEventListener("click", () => {
         selectedLogoPaletteColour = colour;
-        logoReplacementColour.value = colour;
+        setReplacementLogoColour(colour);
         logoColourList.querySelectorAll(".logo-colour-swatch").forEach((item) => {
           item.classList.toggle("is-selected", item === swatch);
         });
         applyLogoColourBtn.disabled = false;
-        setLogoColourStatus(`Replacing ${colour.toUpperCase()}.`);
+        setLogoColourStatus(`Selected ${colour.toUpperCase()}. Choose a replacement, then apply.`);
       });
       logoColourList.appendChild(swatch);
     });
-    setLogoColourStatus("Choose a colour to edit.");
+    const firstSwatch = logoColourList.querySelector(".logo-colour-swatch");
+    if (firstSwatch) {
+      firstSwatch.click();
+    } else {
+      setLogoColourStatus("Choose a colour to edit.");
+    }
   } catch (error) {
     logoColoursCard.hidden = false;
     setLogoColourStatus("This logo cannot be read for colour editing. Upload a PNG, JPG, WEBP or local SVG file.", true);
@@ -4439,6 +4599,8 @@ async function replaceLogoColour() {
     syncPositionCardLogoPreviews();
     captureCurrentAreaDesign();
     await renderLogoColourEditor();
+    if (logoColourPopover) logoColourPopover.hidden = true;
+    logoColourPickerToggle?.setAttribute("aria-expanded", "false");
     setLogoColourStatus("Colour updated.");
   } catch (error) {
     setLogoColourStatus("The colour change could not be applied to this logo.", true);
@@ -4519,6 +4681,7 @@ document.getElementById("logoFileInput").addEventListener("change", async event 
     state.uploadedLogo = preparedLogo;
     state.originalUploadedLogo = optimizedLogo;
     state.logoColourBase = preparedLogo;
+    rememberUploadedLogo(preparedLogo, state.decorationType);
 
     const copyrightPreview = document.getElementById("copyrightImagePreview");
     if (copyrightPreview) {
@@ -5407,6 +5570,28 @@ applyImagePropertiesBtn.addEventListener("click", async () => {
 if (applyLogoColourBtn) {
   applyLogoColourBtn.addEventListener("click", replaceLogoColour);
 }
+
+logoColourPickerToggle?.addEventListener("click", () => {
+  const willOpen = Boolean(logoColourPopover?.hidden);
+  if (logoColourPopover) logoColourPopover.hidden = !willOpen;
+  logoColourPickerToggle.setAttribute("aria-expanded", String(willOpen));
+});
+
+document.querySelectorAll("[data-replacement-colour]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!setReplacementLogoColour(button.dataset.replacementColour)) return;
+    if (selectedLogoPaletteColour) {
+      applyLogoColourBtn.disabled = false;
+      setLogoColourStatus(`Replace ${selectedLogoPaletteColour.toUpperCase()} with ${logoReplacementColour.value.toUpperCase()}.`);
+    }
+  });
+});
+
+logoReplacementHex?.addEventListener("change", () => {
+  if (!setReplacementLogoColour(logoReplacementHex.value)) {
+    logoReplacementHex.value = logoReplacementColour?.value || "#000000";
+  }
+});
 
 if (resetLogoColoursBtn) {
   resetLogoColoursBtn.addEventListener("click", async () => {
@@ -6318,11 +6503,10 @@ document.querySelectorAll(".view-tab").forEach(btn => {
   });
 });
 
-document.querySelectorAll(".position-card").forEach((card) => {
-  const input = card.querySelector('input[type="checkbox"]');
-  if (!input) return;
-
-  input.addEventListener("change", async () => {
+document.getElementById("positionGrid")?.addEventListener("change", async (event) => {
+  const input = event.target.closest('input[type="checkbox"]');
+  const card = input?.closest(".position-card");
+  if (!input || !card) return;
     const area = normalizeAreaForPicker(card.dataset.area) || "front";
     const positionKey = String(card.dataset.position || "").trim() || area;
 
@@ -6335,7 +6519,6 @@ document.querySelectorAll(".position-card").forEach((card) => {
     state.selectedPosition = positionKey;
     syncPositionSelectionCards();
     await switchToDesignArea(area);
-  });
 });
 
 syncPositionSelectionCards();

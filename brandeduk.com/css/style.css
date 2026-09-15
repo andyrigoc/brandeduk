@@ -30,107 +30,7 @@
     
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
     --shadow: 0 1px 3px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-    
-    --radius-sm: 4px;
-    --radius: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-full: 9999px;
-    
-    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-heading: 'Poppins', sans-serif;
-}
-
-/* === Reset === */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    font-size: 16px;
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: var(--font-primary);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--gray-800);
-    background: var(--white);
-    -webkit-font-smoothing: antialiased;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-button {
-    font-family: inherit;
-    cursor: pointer;
-    border: none;
-    background: none;
-}
-
-ul, ol {
-    list-style: none;
-}
-
-img {
-    max-width: 100%;
-    display: block;
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* ============================================
-   MAIN CONTENT
-   ============================================ */
-
-.main-content {
-    min-height: 100vh;
-}
-
-/* ============================================
-   SECTION COMMON STYLES
-   ============================================ */
-
-.section-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 40px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-}
-
-.section-header.centered {
-    justify-content: center;
-}
-
-.section-title {
-    font-family: var(--font-heading);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gray-900);
 }
 
 .see-all-link {
@@ -201,6 +101,125 @@ img {
 /* Banner 4 - Branded Bouncing (Purple) */
 #heroBanner4 {
     background: #995BD5;
+}
+
+#heroBannerOnlyBoards {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 48px 56px;
+    box-sizing: border-box;
+    color: #1f1f1f;
+    text-decoration: none;
+    background:
+        linear-gradient(118deg, rgba(255, 230, 0, .92) 0 16%, transparent 16% 100%),
+        linear-gradient(45deg, #e6007e 0 13%, #44a9d9 13% 25%, #f5f5f2 25% 100%);
+}
+
+.hero-banner-onlyboards::after {
+    content: "";
+    position: absolute;
+    right: -8%;
+    top: -35%;
+    width: 58%;
+    height: 180%;
+    border: 26px solid rgba(31, 31, 31, .9);
+    transform: rotate(-18deg);
+    pointer-events: none;
+}
+
+.onlyboards-banner-copy {
+    position: relative;
+    z-index: 1;
+    width: min(56%, 610px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.onlyboards-eyebrow {
+    margin-bottom: 17px;
+    color: #1f1f1f;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .12em;
+}
+
+.onlyboards-banner-logo {
+    width: min(100%, 410px);
+    max-height: 142px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.onlyboards-banner-copy h2 {
+    margin: 20px 0 8px;
+    font-family: 'Lexend Deca', 'Inter', sans-serif;
+    font-size: clamp(30px, 3.4vw, 52px);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.onlyboards-banner-copy p {
+    max-width: 440px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.onlyboards-banner-cta {
+    margin-top: 24px;
+    padding: 12px 17px;
+    border-radius: 4px;
+    color: #fff;
+    background: #1f1f1f;
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.onlyboards-banner-materials {
+    position: relative;
+    z-index: 1;
+    align-self: flex-end;
+    width: 280px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.onlyboards-banner-materials span {
+    padding: 7px 10px;
+    border: 1px solid rgba(31, 31, 31, .75);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, .72);
+    color: #1f1f1f;
+    font-size: 11px;
+    font-weight: 850;
+}
+
+#heroBannerOnlyBoards:hover .onlyboards-banner-cta {
+    background: #e6007e;
+}
+
+/* Full pre-composed Only Boards banner artwork. */
+#heroBannerOnlyBoards {
+    display: block;
+    padding: 0;
+    background: #fff;
+}
+
+.hero-banner-onlyboards::after {
+    display: none;
+}
+
+.onlyboards-banner-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
 }
 
 .hero-bounce-container {

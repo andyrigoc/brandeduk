@@ -132,9 +132,17 @@
     height: 100%;
     left: 0;
     top: 0;
-    transform: scale(1.2);
-    background-size: cover;
-    background-position: center calc(50% - 180px); /* Spostata 30px più in alto */
+    transform: scale(1.08) !important;
+    background-size: cover !important;
+    background-position: 50% 18% !important;
+}
+
+/* Bags: the collapsed-card crop is offset to show the product. Reset it for
+   the expanded panel so the model and full tote bag remain centred. */
+#hero1 .hero-el[data-category="bags"].s--active .hero-el__bg:before {
+    transform: scale(1.05) !important;
+    background-size: cover !important;
+    background-position: 50% 8% !important;
 }
 
 /* Hi-Viz: hero1 expanded – fill the entire card */
