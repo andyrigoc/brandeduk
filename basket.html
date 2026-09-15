@@ -845,14 +845,6 @@
         }
         .btn-request-quote:hover { background: #f5f3ff; }
 
-        /* Trust badges (below summary) */
-        .basket-trust-badges { margin-top: 20px; font-size: 13px; color: #374151; }
-        .basket-trust-badges .trust-badge {
-            display: flex; align-items: center; gap: 10px; padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6; color: #374151;
-        }
-        .basket-trust-badges .trust-badge:last-child { border-bottom: none; }
-
         /* Discount code (collapsed) */
         .discount-code-section {
             margin-top: 16px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;
@@ -902,14 +894,46 @@
         .basket-action-bar .quote-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Order Notes */
-        .order-notes-section { padding: 16px 0; }
-        .order-notes-section h4 {
-            font-size: 14px; font-weight: 700; color: #1f2937; margin: 0 0 8px;
-            display: flex; align-items: center; gap: 6px;
+        .order-notes-section {
+            margin-top: 12px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
         }
+        .order-notes-section summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 13px 15px;
+            color: #1f2937;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+        }
+        .order-notes-section summary::-webkit-details-marker { display: none; }
+        .order-notes-title { display: inline-flex; align-items: center; gap: 7px; }
+        .order-notes-optional {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667085;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .order-notes-optional::after {
+            content: '+';
+            color: var(--basket-navy);
+            font-size: 17px;
+            line-height: 1;
+        }
+        .order-notes-section[open] .order-notes-optional::after { content: '\2212'; }
+        .order-notes-body { padding: 0 15px 14px; }
         .order-notes-textarea {
             width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px;
-            font-size: 14px; font-family: inherit; resize: vertical; min-height: 80px; max-height: 200px;
+            font-size: 13px; font-family: inherit; resize: vertical; min-height: 68px; max-height: 160px;
             color: #374151; transition: border-color 0.2s; box-sizing: border-box;
         }
         .order-notes-textarea:focus { outline: none; border-color: #273469; box-shadow: 0 0 0 3px rgba(39, 52, 105, 0.1); }
@@ -1281,10 +1305,10 @@
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) auto;
                 column-gap: 28px;
-                padding: 24px;
+                padding: 20px 22px;
                 border-bottom: 1px solid #eaecf0;
             }
-            .basket-item-row:first-child { padding-top: 24px; }
+            .basket-item-row:first-child { padding-top: 20px; }
             .basket-item-row:last-child { border-bottom: 0; }
             .item-row-header { grid-column: 1; grid-row: 1; }
             .item-row-qty-price {
@@ -1317,7 +1341,7 @@
             }
             .item-row-price .price-amount { font-size: 16px; }
             .item-logos-section {
-                margin-top: 18px;
+                margin-top: 14px;
                 border-top: 1px solid #eaecf0;
             }
             .logos-applied-header { padding-top: 15px; border-top: 0; color: #344054; }
@@ -1329,7 +1353,7 @@
             }
             .logo-row + .logo-row { margin-top: 8px; }
             .add-logo-btn {
-                margin-top: 14px;
+                margin-top: 12px;
                 padding: 10px 15px;
                 color: var(--basket-navy);
                 background: #fff;
@@ -1338,18 +1362,20 @@
             }
             .add-logo-btn:hover { background: #f7f8fc; }
             .item-row-total {
-                margin-top: 18px;
-                padding-top: 16px;
+                margin-top: 14px;
+                padding-top: 13px;
                 border-top: 1px solid #eaecf0;
             }
             .item-row-total .total-value { color: var(--basket-navy); font-size: 21px; }
             .order-notes-section {
-                margin-top: 16px;
-                padding: 20px 22px;
+                margin-top: 12px;
+                padding: 0;
                 background: #fff;
                 border: 1px solid #e4e7ec;
                 border-radius: 14px;
             }
+            .order-notes-section summary { padding: 14px 18px; }
+            .order-notes-body { padding: 0 18px 16px; }
             .order-summary-bottom {
                 position: sticky;
                 top: 24px;
@@ -1424,34 +1450,6 @@
                 color: #475467;
                 font-size: 13px;
             }
-            .basket-trust-badges {
-                margin-top: 16px;
-                padding: 8px 20px;
-                background: #fff;
-                border: 1px solid #e4e7ec;
-                border-radius: 14px;
-            }
-            .basket-trust-badges .trust-badge {
-                gap: 11px;
-                padding: 13px 0;
-                color: #475467;
-                border-bottom-color: #eaecf0;
-                line-height: 1.35;
-            }
-            .trust-badge-icon {
-                display: inline-flex;
-                flex: 0 0 24px;
-                width: 24px;
-                height: 24px;
-                align-items: center;
-                justify-content: center;
-                color: #16804a;
-                background: #ecfdf3;
-                border-radius: 50%;
-                font-size: 12px;
-            }
-            .basket-trust-badges-mobile { display: none; }
-            .basket-trust-badges-desktop { display: block !important; }
         }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
@@ -1739,6 +1737,26 @@
                 </div>
             </div>
 
+            <details class="order-notes-section" id="orderNotesDetails">
+                <summary>
+                    <span class="order-notes-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        Add order note
+                    </span>
+                    <span class="order-notes-optional">Optional</span>
+                </summary>
+                <div class="order-notes-body">
+                    <textarea class="order-notes-textarea" id="orderNotesTextarea"
+                              placeholder="Special instructions, delivery notes, or information for your quote..."
+                              oninput="saveOrderNotes()"></textarea>
+                    <p class="order-notes-hint">Included with your quote request</p>
+                </div>
+            </details>
             </section>
 
             <aside class="basket-summary-column" aria-label="Order summary">
@@ -1800,37 +1818,7 @@
                 </div>
             </div>
 
-            <div class="basket-trust-badges basket-trust-badges-desktop" style="display:none;">
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>Established in 1990</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>300 UK-based staff</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span>Trusted by over <strong>2 million customers</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>137,500+ positive reviews</strong></span></div>
-            </div>
             </aside>
-
-            <div class="order-notes-section">
-                <h4>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    Order notes
-                </h4>
-                <textarea class="order-notes-textarea" id="orderNotesTextarea"
-                          placeholder="Special instructions, delivery notes, or any additional information for your quote..."
-                          oninput="saveOrderNotes()"></textarea>
-                <p class="order-notes-hint">These notes will be included with your quote request</p>
-            </div>
-
-            <!-- Trust Badges -->
-            <div class="basket-trust-badges basket-trust-badges-mobile">
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>Established in 1990</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>300 UK-based staff</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span>Trusted by over <strong>2 million customers</strong></span></div>
-                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>137,500+ positive reviews</strong></span></div>
-            </div>
         </div>
     </main>
 
@@ -4657,7 +4645,9 @@
 
     function loadOrderNotes() {
         const textarea = document.getElementById('orderNotesTextarea');
-        if (textarea) textarea.value = localStorage.getItem('orderNotes') || '';
+        const savedNotes = localStorage.getItem('orderNotes') || '';
+        if (textarea) textarea.value = savedNotes;
+        if (savedNotes) document.getElementById('orderNotesDetails')?.setAttribute('open', '');
     }
 
     // ========================
