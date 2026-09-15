@@ -1019,6 +1019,24 @@
     <main class="mobile-main">
         <h1 class="visually-hidden">Custom Workwear, Uniforms, Embroidery &amp; Printing UK - BrandedUK</h1>
 
+        <!-- Shop by Categories -->
+        <section class="mobile-shop-categories" aria-labelledby="mobileShopCategoriesTitle">
+            <div class="mobile-section-heading">
+                <h2 id="mobileShopCategoriesTitle">Shop by Categories</h2>
+                <a href="shop.html" aria-label="View all categories">View all</a>
+            </div>
+            <div class="mobile-shop-categories-scroll">
+                <a href="shop.html?category=t-shirts"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-shirt-71%201.png" alt=""><span>T-Shirts</span></a>
+                <a href="shop.html?category=polos"><img src="brandedukv15-child/assets/images/ui/icons/categories/Polo.png" alt=""><span>Polos</span></a>
+                <a href="shop.html?category=hoodies"><img src="brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png" alt=""><span>Hoodies</span></a>
+                <a href="shop.html?category=jackets"><img src="brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""><span>Jackets</span></a>
+                <a href="shop.html?category=safety-vests"><img src="brandedukv15-child/assets/images/ui/icons/categories/Hi%20Vis.png" alt=""><span>Hi-Vis</span></a>
+                <a href="shop.html?category=fleece"><img src="brandedukv15-child/assets/images/ui/icons/categories/Fleece.png" alt=""><span>Fleeces</span></a>
+                <a href="shop.html?category=bags"><img src="brandedukv15-child/assets/images/ui/icons/categories/Bags.png" alt=""><span>Bags</span></a>
+                <a href="shop.html?category=caps"><img src="brandedukv15-child/assets/images/ui/icons/categories/Cap.png" alt=""><span>Caps</span></a>
+            </div>
+        </section>
+
         <!-- Hero 1 - Expanding Panels (Always visible) -->
         <div class="hero-expanding-wrapper">
             <!-- Loading placeholder: shown while hero panels load -->
@@ -1181,43 +1199,29 @@
             </div>
         </div>
 
-        <!-- Hero Banners Carousel (Separate section with dots) -->
+        <!-- Hero 2 - Same eight banners as the PC homepage -->
         <div class="hero-banners-wrapper">
             <div class="hero-banners-container">
-                <!-- Banner 1 - Branded Bouncing (20s) -->
-                <div class="hero-banner hero-banner--active" id="heroBanner1" data-duration="20000">
-                    <div class="hero-bounce-container">
-                        <div class="hero-bounce-headline" data-bounce-text>branded</div>
-                    </div>
-                </div>
-
-                <!-- Banner 2 - Get in Touch Neon (15s) -->
-                <div class="hero-banner hero-banner--clickable" id="heroBanner2" data-duration="15000" onclick="openContactPopup()">
-                    <div class="neon-container">
-                        <div class="neon-text">GET IN</div>
-                        <div class="flux-text">TOUCH</div>
-                    </div>
-                </div>
-
-                <!-- Banner 3 - Text Animation (10s) -->
-                <div class="hero-banner" id="heroBanner3" data-duration="10000">
-                    <div class="hero-text-container">
-                        <div class="hero-text-make">MAKE</div>
-                        <div class="hero-flip-wrapper">
-                            <div class="hero-flip-word flip-work">WORK</div>
-                            <div class="hero-flip-word flip-lifestyle">LIFESTYLE</div>
-                            <div class="hero-flip-word flip-everything">EVERYTHING</div>
-                        </div>
-                        <div class="hero-text-awesome">AWESOME!</div>
-                    </div>
-                </div>
+                <a class="hero-banner hero-banner--active" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener" aria-label="Visit Only Boards"><img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2001_39_25%20PM.png" alt="Only Boards partner banner"></a>
+                <a class="hero-banner" href="shop.html?brand=regatta-professional" aria-label="Shop Regatta Professional"><img src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt="Regatta Professional Dover jacket offer"></a>
+                <a class="hero-banner" href="shop.html?brand=awdis" aria-label="Shop AWDis"><img src="brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp" alt="AWDis College Hoodie 2.0"></a>
+                <a class="hero-banner" href="shop.html?brand=mumbles" aria-label="Shop Mumbles"><img src="brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp" alt="Mumbles Halloween plush collection"></a>
+                <a class="hero-banner" href="shop.html?brand=anthem" aria-label="Shop Anthem"><img src="brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp" alt="Anthem heavy bass hoodie collection"></a>
+                <a class="hero-banner" href="shop.html?category=t-shirts" aria-label="Shop branded T-shirts"><div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text>branded</div></div></a>
+                <a class="hero-banner hero-banner--clickable" href="quote-form.html" aria-label="Request a quote"><div class="neon-container"><div class="neon-text">GET IN</div><div class="flux-text">TOUCH</div></div></a>
+                <a class="hero-banner" href="shop.html" aria-label="Browse all products"><div class="hero-text-container"><div class="hero-text-make">MAKE</div><div class="hero-flip-wrapper"><div class="hero-flip-word flip-work">WORK</div><div class="hero-flip-word flip-lifestyle">LIFESTYLE</div><div class="hero-flip-word flip-everything">EVERYTHING</div></div><div class="hero-text-awesome">AWESOME!</div></div></a>
             </div>
 
             <!-- Banner Dots Navigation -->
             <div class="hero-banner-dots">
-                <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1"></button>
-                <button class="banner-dot" data-banner="2" aria-label="Banner 2"></button>
-                <button class="banner-dot" data-banner="3" aria-label="Banner 3"></button>
+                <button class="banner-dot banner-dot--active" data-banner="0" aria-label="Only Boards banner"></button>
+                <button class="banner-dot" data-banner="1" aria-label="Branded banner"></button>
+                <button class="banner-dot" data-banner="2" aria-label="Get in touch banner"></button>
+                <button class="banner-dot" data-banner="3" aria-label="Make awesome banner"></button>
+                <button class="banner-dot" data-banner="4" aria-label="Regatta banner"></button>
+                <button class="banner-dot" data-banner="5" aria-label="AWDis banner"></button>
+                <button class="banner-dot" data-banner="6" aria-label="Mumbles banner"></button>
+                <button class="banner-dot" data-banner="7" aria-label="Anthem banner"></button>
             </div>
         </div>
 

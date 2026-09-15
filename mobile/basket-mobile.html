@@ -1897,6 +1897,14 @@
             if (itemIndex < 0 || itemIndex >= basket.length) return;
             
             const item = basket[itemIndex];
+            const productCode = item.code || item.productCode || '';
+
+            // Product image/name opens the product detail flow. Logo editing
+            // remains available through the separate customization action.
+            if (productCode) {
+                window.location.href = `product-mobile.html?code=${encodeURIComponent(productCode)}`;
+                return;
+            }
             
             // Store the item info for customization
             sessionStorage.setItem('customizingFromBasket', 'true');

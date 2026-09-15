@@ -5913,6 +5913,66 @@ a {
     position: relative;
 }
 
+.mobile-shop-categories {
+    padding: 14px 0 12px;
+    background: #fff;
+}
+
+.mobile-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px 9px;
+}
+
+.mobile-section-heading h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.mobile-section-heading a {
+    color: #273469;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mobile-shop-categories-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 14px 4px;
+    scrollbar-width: none;
+}
+
+.mobile-shop-categories-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.mobile-shop-categories-scroll a {
+    flex: 0 0 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 4px 6px;
+    border: 1px solid #edf0f5;
+    background: #fafbfc;
+    color: #273469;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.mobile-shop-categories-scroll img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
 /* Hero Banners Carousel - Separate Section */
 .hero-banners-wrapper {
     margin: 0 0 16px;
@@ -5922,7 +5982,10 @@ a {
 .hero-banners-container {
     position: relative;
     overflow: hidden;
-    height: 280px;
+    width: 100%;
+    aspect-ratio: 490 / 570;
+    height: auto;
+    max-height: none;
 }
 
 .hero-banner {
@@ -5968,6 +6031,15 @@ a {
     align-items: center;
     justify-content: center;
     background: #f3f4f6;
+}
+
+.hero-banner > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #f4f5f7;
+    object-position: center;
 }
 
 /* Banner Dots Navigation */

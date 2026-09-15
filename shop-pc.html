@@ -2041,7 +2041,7 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260811a">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260811b">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260913g">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260915-quantity-actions-outline">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3499,12 +3499,11 @@
                 <h2 id="cat-desc-title"></h2>
                 <p id="cat-desc-text"></p>
             </div>
-            <section id="brand-editorial" class="brand-editorial" hidden aria-labelledby="brand-editorial-title">
-                <div class="brand-editorial-banner" id="brand-editorial-banner">
-                    <img id="brand-editorial-logo" src="" alt="" loading="lazy">
-                </div>
+            <section id="brand-editorial" class="brand-editorial" hidden aria-label="Brand information">
                 <div class="brand-editorial-copy">
-                    <h2 id="brand-editorial-title"></h2>
+                    <div class="brand-editorial-logo-card">
+                        <img id="brand-editorial-logo" src="" alt="" loading="lazy">
+                    </div>
                     <p id="brand-editorial-description"></p>
                 </div>
             </section>
@@ -3585,6 +3584,8 @@
     <!-- Footer -->
     <div data-mobile-footer></div>
 
+    <script src="brandedukv15-child/assets/data/brand-descriptions.js?v=20260915"></script>
+    <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="brandedukv15-child/assets/js/api.js?v=20260726b"></script>
@@ -5807,27 +5808,34 @@
             fruitoftheloom: { logo: 'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg', description: 'Meet Fruit of the Loom, a established garment-decoration brand offering widely trusted T-shirts, sweats and dependable everyday blanks. Created for printers, teams, businesses and high-volume promotional requirements, the range places a clear emphasis on consistent production, responsible improvement and reliable European supply. It gives customers an attractive, dependable starting point for personalised products, coordinated uniforms or memorable branded merchandise. The range is selected with personalisation in mind, helping printed and embroidered logos look clear, balanced and professional. It is a confident option when consistent presentation matters across different roles, projects or repeat orders. Customers can choose it for a polished result that remains comfortable, practical and easy to wear in real settings. This makes the collection especially useful for organisations that want branded products to feel considered rather than simply promotional.', accent: '#000000' }
         };
 
+        function getBrandHqLogo(brandParam, brandDisplayName) {
+            const logos = window.BrandedHQBrandLogos || {};
+            const key = String(brandDisplayName || brandParam || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (logos[key]) return logos[key];
+            const match = Object.keys(logos).find(candidate => candidate.startsWith(key) || key.startsWith(candidate));
+            return match ? logos[match] : '';
+        }
+
         function updateBrandEditorial(brandParam, brandDisplayName) {
             const section = document.getElementById('brand-editorial');
             const logo = document.getElementById('brand-editorial-logo');
-            const title = document.getElementById('brand-editorial-title');
             const description = document.getElementById('brand-editorial-description');
-            const banner = document.getElementById('brand-editorial-banner');
-            if (!section || !logo || !title || !description || !banner) return;
+            if (!section || !logo || !description) return;
 
             const key = String(brandParam || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-            const copy = BRAND_EDITORIAL[key] || {
+            const copy = window.BrandedBrandDescriptions?.[key] || BRAND_EDITORIAL[key] || {
                 description: `${brandDisplayName} clothing selected for workwear, uniforms, teamwear and promotional use. Browse styles ready for professional print or embroidery.`,
                 accent: '#273469'
             };
-            const logoPath = copy.logo || getBrandLogo(brandDisplayName) || getBrandLogo(brandParam) || '';
-
-            title.textContent = brandDisplayName;
             description.textContent = copy.description;
+            const logoPath = getBrandHqLogo(brandParam, brandDisplayName)
+                || copy.logo
+                || getBrandLogo(brandDisplayName)
+                || getBrandLogo(brandParam)
+                || '';
             logo.src = logoPath;
-            logo.alt = logoPath ? `${brandDisplayName} logo` : '';
+            logo.alt = `${brandDisplayName} logo`;
             logo.hidden = !logoPath;
-            banner.style.setProperty('--brand-accent', copy.accent);
             const legacyLogo = document.getElementById('categoryBrandLogoWrap');
             if (legacyLogo) {
                 legacyLogo.style.display = 'none';
@@ -8197,6 +8205,16 @@
                                             <span class="p1-divider"></span>
                                         </div>
                                         <h1 class="p1-name" id="productTitle"></h1>
+                                        <div class="p1-rating" aria-label="Product rating">
+                                            <span class="p1-rating-stars" aria-hidden="true">★★★★★</span>
+                                            <span id="productRatingValue">4.8</span>
+                                            <span class="p1-rating-reviews" id="productReviewCount">(124 reviews)</span>
+                                        </div>
+                                        <div class="p1-brand-block">
+                                            <img id="productBrandLogo" class="p1-brand-logo" src="" alt=""
+                                                style="display:none;">
+                                            <span id="productBrand" class="p1-brand-text"></span>
+                                        </div>
                                     </div>
 
                                     <!-- Price + Brand row -->
@@ -8206,11 +8224,16 @@
                                             <span class="p1-price" id="tier1Price"></span>
                                             <span class="p1-vat-label">each, ex. VAT</span>
                                         </div>
-                                        <div class="p1-brand-block">
-                                            <img id="productBrandLogo" class="p1-brand-logo" src="" alt=""
-                                                style="display:none;">
-                                            <span id="productBrand" class="p1-brand-text"></span>
-                                        </div>
+                                    </div>
+
+                                    <div class="p1-action-row" aria-label="Product actions">
+                                        <button type="button" class="p1-action p1-action-primary" id="p1AddToBasket">
+                                            Select Options
+                                        </button>
+                                        <button type="button" class="p1-action p1-action-secondary" id="p1QuickShop">
+                                            <span aria-hidden="true">&#9889;</span>
+                                            Quick Shop
+                                        </button>
                                     </div>
 
                                     <div class="pc-price-breaks-heading">
@@ -8235,9 +8258,9 @@
                                         </div>
                                     </div>
 
-                                    <!-- Key Info -->
+                                    <!-- Description -->
                                     <div class="p1-keyinfo">
-                                        <div class="p1-keyinfo-title">Key Info</div>
+                                        <div class="p1-keyinfo-title">Description</div>
                                         <div class="p1-keyinfo-divider"></div>
                                         <p class="p1-keyinfo-text" id="productKeyInfo"></p>
                                     </div>
@@ -8255,7 +8278,7 @@
                                         <span><strong>Artwork proof</strong> before production</span>
                                     </div>
 
-                                    <button class="btn-continue next">Choose colour <span
+                                    <button class="btn-continue next">NEXT <span
                                             aria-hidden="true">&rarr;</span></button>
                                 </div>
                             </div>
@@ -8265,6 +8288,30 @@
                         <div class="page page-2" style="width: 20%;">
                             <div class="page-content-wrapper">
                                 <button type="button" class="pc-step-back" data-target-page="0"><span aria-hidden="true">←</span> Back to Product</button>
+
+                                <div class="p2-colour-toolbar">
+                                    <div class="p2-filter-group">
+                                        <span class="p2-filter-title">Filter By Colour</span>
+                                        <div class="p2-filter-options" role="group" aria-label="Filter colours">
+                                            <button type="button" class="p2-filter-chip is-active" data-colour-filter="all">All</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="black"><span class="p2-filter-dot" style="background:#111827;"></span>Blacks</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="green"><span class="p2-filter-dot" style="background:#36a852;"></span>Greens</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="blue"><span class="p2-filter-dot" style="background:#2749a8;"></span>Blues</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="red"><span class="p2-filter-dot" style="background:#ef2f2f;"></span>Reds</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="brown"><span class="p2-filter-dot" style="background:#914915;"></span>Browns</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="grey"><span class="p2-filter-dot" style="background:#858585;"></span>Greys</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="pink"><span class="p2-filter-dot" style="background:#ef3c8d;"></span>Pinks</button>
+                                            <button type="button" class="p2-filter-chip" data-colour-filter="white"><span class="p2-filter-dot" style="background:#fff;"></span>Whites</button>
+                                            <button type="button" class="p2-filter-reset" data-colour-filter="all" aria-label="Reset colour filter">Reset <span aria-hidden="true">↶</span></button>
+                                        </div>
+                                    </div>
+                                    <label class="p2-select-wrap">
+                                        <span>Select Colour</span>
+                                        <select id="p2ColourSelect" aria-label="Select colour">
+                                            <option value="">Please select colour</option>
+                                        </select>
+                                    </label>
+                                </div>
 
                                 <!-- Product identity bar (code + brand) -->
                                 <div class="p2-identity-bar">
@@ -8396,16 +8443,29 @@
                                 <button type="button" class="pc-step-back p3-back-colour" id="p3BackToColour" data-target-page="1">
                                     <span aria-hidden="true">←</span> Back to Colour
                                 </button>
-                                <div class="selected-colour-bar" id="selectedColourBar">
-                                    <div class="selected-colour-bar-left">
-                                        <span class="selected-colour-check" aria-hidden="true">&#10003;</span>
-                                        <strong>Colour:</strong>
-                                        <div class="selected-colour-thumb" id="selectedColourThumb"></div>
-                                        <span id="selectedColourBarName">&mdash;</span>
-                                        <a href="#" class="selected-colour-view" id="selectedColourViewLink">View
-                                            Image</a>
+                                <div class="p3-product-preview">
+                                    <div class="p3-preview-header">
+                                        <div class="p3-preview-copy">
+                                            <span class="p3-preview-code" id="p3ProductCode"></span>
+                                            <strong class="p3-preview-name" id="p3ProductName"></strong>
+                                            <span class="p3-preview-colour" id="p3PreviewColour"></span>
+                                        </div>
+                                        <img class="p3-preview-brand-logo" id="p3BrandLogo" src="" alt="">
                                     </div>
-                                    <button class="selected-colour-change back">Change</button>
+                                    <div class="p3-product-image-frame">
+                                        <img id="p3ProductImage" src="" alt="Selected product">
+                                    </div>
+                                    <div class="selected-colour-bar" id="selectedColourBar">
+                                        <div class="selected-colour-bar-left">
+                                            <span class="selected-colour-check" aria-hidden="true">&#10003;</span>
+                                            <strong>Selected colour</strong>
+                                            <div class="selected-colour-thumb" id="selectedColourThumb"></div>
+                                            <span id="selectedColourBarName">&mdash;</span>
+                                            <a href="#" class="selected-colour-view" id="selectedColourViewLink">View
+                                                Image</a>
+                                        </div>
+                                        <button class="selected-colour-change back">Change</button>
+                                    </div>
                                 </div>
 
                                 <!-- Size & Quantity Grid -->
@@ -8428,7 +8488,16 @@
                                 </div>
 
                                 <!-- Add to Quote Button -->
-                                <button class="btn-add-quote" id="btnAddToQuote">Add to Quote</button>
+                                <div class="p3-total-summary" aria-live="polite">
+                                    <span><strong id="p3TotalPieces">0</strong> items</span>
+                                    <span>Unit: <strong id="p3CurrentUnitPrice">&pound;0.00</strong> ex VAT</span>
+                                    <span>Total: <strong id="p3TotalCost">&pound;0.00</strong> ex VAT</span>
+                                </div>
+                                <div class="p3-action-row">
+                                    <button type="button" class="p3-btn-plain" id="btnBuyPlain">Buy Plain</button>
+                                    <button type="button" class="p3-btn-customize" id="btnCustomize">Customize</button>
+                                    <button type="button" class="btn-add-quote" id="btnAddToQuote">Add to Quote</button>
+                                </div>
 
                                 <div class="add-quote-success" id="addQuoteSuccess" style="display:none;">
                                     <span id="successSubtitle" style="display:none;"></span>
@@ -8937,11 +9006,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20260913d"></script>
+    <script src="test-order-popup/order.js?v=20260915-quantity-actions"></script>
     <script src="test-order-popup/order-integration.js?v=20260913c"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260913b"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260913b"></script>
-    <script src="test-order-popup/pc-product-popup.js?v=20260913c"></script>
+    <script src="test-order-popup/pc-product-popup.js?v=20260915-quantity-summary"></script>
 
     <script>
         // Color Zoom Modal Functions

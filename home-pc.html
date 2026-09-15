@@ -2601,6 +2601,31 @@
         </div>
     </section>
 
+    <style>
+        .brands-section .brand-card {
+            width: 210px;
+            height: 82px;
+            padding: 10px 18px;
+            background: #eef0f3;
+            border: 1px solid #d9dde3;
+            cursor: pointer;
+        }
+        .brands-section .brand-card img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: grayscale(1);
+            opacity: .84;
+            transition: filter .2s ease, opacity .2s ease, transform .2s ease;
+        }
+        .brands-section .brand-card:hover img {
+            filter: grayscale(0);
+            opacity: 1;
+            transform: scale(1.04);
+        }
+    </style>
+
     <!-- Brands Marquee -->
     <section class="brands-section">
         <div class="section-container">
@@ -2760,12 +2785,52 @@
 
     <!-- Brand carousel click &rarr; shop filtered by brand -->
     <script>
-    document.querySelector('.brands-section').addEventListener('click', function(e) {
-        var card = e.target.closest('.brand-card');
-        if (!card) return;
-        var brand = card.textContent.trim();
-        if (brand) window.location.href = 'shop-pc.html?brand=' + encodeURIComponent(brand);
-    });
+    (function setupTrustedBrandLogoMarquee() {
+        const logoRoot = 'brandedukv15-child/assets/images/brands/';
+        const logos = {
+            '2786': '27862020.webp', 'Adidas': 'adidas.jpg', 'Anthem': 'anthem.jpg',
+            'Asquith & Fox': 'asquith-and-fox.jpg', 'AWDis': 'awdis.webp',
+            'B&C Collection': 'bandc-collection.png', 'BabyBugz': 'babybugz2020.jpg',
+            'BagBase': 'bagbase.jpeg', 'Beechfield': 'beechfield.jpeg',
+            'Bella+Canvas': 'bellapluscanvas.svg', 'Callaway': 'callaway2020.jpg',
+            'Colortone': 'colortone2020.webp', 'Comfort Colors': 'comfort-colors.webp',
+            'Craghoppers': 'craghoppers.jpg', 'Finden & Hales': 'finden-and-hales.png',
+            'Flexfit': 'flexfit.webp', 'Front Row': 'front-row.jpg',
+            'Fruit of the Loom': 'fruit-of-the-loom.jpg', 'Gamegear': 'gamegear.webp',
+            'Gildan': 'gildan2020.webp', 'Henbury': 'henbury2020.webp',
+            'Kariban': 'kariban2020.webp', 'KiMood': 'kimood2020.jpg',
+            'Kustom Kit': 'kustom-kit2020.webp', 'Nike': 'nike2020.jpg',
+            'Nimbus': 'nimbus2020.webp', 'Portwest': 'portwest.webp',
+            'Premier': 'premier2020.webp', 'Pro RTX': 'pro-rtx2020.jpg',
+            'Regatta': 'regatta-professional2020.webp', 'Result': 'result2020.webp',
+            'Russell': 'russell.webp', 'Scruffs': 'scruffs.jpg',
+            'Stanley/Stella': 'stanley-stella.webp', 'Stormtech': 'stormtech.webp',
+            'Tee Jays': 'tee-jays.jpg', 'TriDri': 'tridri.webp',
+            'Under Armour': 'under-armour.webp', 'Yoko': 'yoko.webp',
+            'Xpres': 'xpres2020.jpg', 'Wombat': 'wombat-logo.jpg',
+            'Westford Mill': 'westford-mill-2020.webp', 'Towel City': 'towel-city2020.jpg',
+            'Tombo': 'tombo2020.webp', 'Spiro': 'spiro.webp', 'SF Clothing': 'sf-clothing.webp',
+            'Rhino': 'rhino2020.jpg', 'Quadra': 'quadra-2020.webp', 'OGIO': 'ogio2020.webp',
+            'Mumbles': 'mumbles2020.webp', 'Larkwood': 'larkwood.jpeg', 'Maddins': 'maddins2020.jpg'
+        };
+        document.querySelectorAll('.brands-section .brand-card').forEach(card => {
+            const brand = card.textContent.trim();
+            const file = logos[brand];
+            if (!file) return;
+            card.dataset.brand = brand;
+            card.textContent = '';
+            const image = document.createElement('img');
+            image.src = logoRoot + file;
+            image.alt = brand;
+            image.loading = 'lazy';
+            card.appendChild(image);
+        });
+        document.querySelector('.brands-section').addEventListener('click', event => {
+            const card = event.target.closest('.brand-card');
+            const brand = card?.dataset.brand || card?.textContent.trim();
+            if (brand) window.location.href = 'shop-pc.html?brand=' + encodeURIComponent(brand);
+        });
+    })();
     </script>
 
     <!-- Services Section -->

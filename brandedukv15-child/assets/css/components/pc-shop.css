@@ -22,45 +22,60 @@ body {
     margin: 0 0 18px;
 }
 
-.brand-editorial-banner {
-    min-height: clamp(96px, 10vw, 150px);
+.brand-editorial-copy {
+    min-height: 132px;
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: minmax(170px, 25%) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 18px;
+    border: 1px solid #d9dde3;
+    border-radius: 10px;
+    background: #eef0f3;
+    text-align: left;
+}
+
+.brand-editorial-logo-card {
+    min-height: 106px;
     display: grid;
     place-items: center;
-    padding: 16px 28px;
-    overflow: hidden;
-    background: #000;
-    border-radius: 10px;
+    padding: 8px 14px;
+    border: 1px solid #d9dde3;
+    border-radius: 8px;
+    background: #e2e5e9;
 }
 
-.brand-editorial-banner img {
+.brand-editorial-logo-card img {
     display: block;
-    width: min(34%, 240px);
-    max-height: 86px;
+    width: min(240px, 100%);
+    height: 72px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
-}
-
-.brand-editorial-copy {
-    padding: 12px 18px 14px;
-    border: 1px solid var(--shop-line);
-    border-top: 0;
-    border-radius: 0 0 10px 10px;
-    background: #fff;
-    text-align: center;
-}
-
-.brand-editorial-copy h2 {
-    margin: 0 0 4px;
-    color: var(--shop-ink);
-    font-size: clamp(18px, 1.6vw, 24px);
 }
 
 .brand-editorial-copy p {
-    max-width: 920px;
-    margin: 0 auto;
-    color: var(--shop-muted);
-    font-size: clamp(12px, 1vw, 14px);
-    line-height: 1.55;
+    align-self: center;
+    max-width: none;
+    margin: 0;
+    color: #5f6b7a;
+    font-size: clamp(10px, .78vw, 12px);
+    line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+    .brand-editorial-copy {
+        grid-template-columns: minmax(120px, 30%) minmax(0, 1fr);
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .brand-editorial-logo-card {
+        min-height: 90px;
+    }
+
+    .brand-editorial-copy p {
+        font-size: 10px;
+        line-height: 1.32;
+    }
 }
 
 .shop-wrapper {
@@ -85,13 +100,6 @@ body {
         padding: 18px 14px 36px;
     }
 
-    .brand-editorial-banner {
-        min-height: 104px;
-    }
-
-    .brand-editorial-banner img {
-        width: min(42%, 210px);
-    }
 }
 
 .filters-sidebar,

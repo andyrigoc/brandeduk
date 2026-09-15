@@ -40,6 +40,27 @@
             var summary = item.querySelector('small');
             if (summary) summary.textContent = summaries[index];
         });
+
+        var tiers = window._p3TierData || [];
+        var unitPrice = tiers.length
+            ? Number(tiers[0].price) || 0
+            : Number(product.basePrice || product.price) || 0;
+        tiers.forEach(function (tier) {
+            if (qty >= Number(tier.min) && qty <= Number(tier.max || 999999)) {
+                unitPrice = Number(tier.price) || unitPrice;
+            }
+        });
+
+        var totalPieces = popup.querySelector('#p3TotalPieces');
+        var currentUnitPrice = popup.querySelector('#p3CurrentUnitPrice');
+        var totalCost = popup.querySelector('#p3TotalCost');
+        if (totalPieces) totalPieces.textContent = String(qty);
+        if (currentUnitPrice) currentUnitPrice.textContent = money(unitPrice);
+        if (totalCost) totalCost.textContent = money(unitPrice * qty);
+    }
+
+    if (typeof window.updateP3QuantitySummary === 'function') {
+        window.updateP3QuantitySummary();
     }
 
     function updateProgress(step) {
@@ -76,11 +97,12 @@
 
         source.forEach(function (tier) {
             var min = Number(tier.min || tier.minQty || tier.quantity || tier.qty || 1) || 1;
+            var max = Number(tier.max || tier.maxQty || 0) || 0;
             var price = Number(tier.price || tier.unitPrice || tier.value);
             var discount = Number(tier.percentage || tier.discount || tier.pct) || 0;
             if (!Number.isFinite(price) && basePrice && discount) price = basePrice * (1 - discount / 100);
             if (!Number.isFinite(price) || price <= 0) return;
-            tiers.push({ min: min, price: price });
+            tiers.push({ min: min, max: max, price: price, discount: discount });
         });
 
         var baseTier = tiers.find(function (tier) { return tier.min <= 1; });
@@ -89,13 +111,20 @@
             // presentation layer never changes the established pricing logic.
             baseTier.price = basePrice;
         } else if (basePrice) {
-            tiers.unshift({ min: 1, price: basePrice });
+            tiers.unshift({ min: 1, max: 0, price: basePrice, discount: 0 });
         }
 
         tiers.sort(function (a, b) { return a.min - b.min; });
         return tiers.filter(function (tier, index, list) {
             return list.findIndex(function (candidate) { return candidate.min === tier.min; }) === index;
-        }).slice(0, 6);
+        }).slice(0, 6).map(function (tier, index, list) {
+            if (!tier.max && list[index + 1]) tier.max = list[index + 1].min - 1;
+            if (tier.min <= 1) tier.discount = 0;
+            if (!tier.discount && basePrice > 0 && tier.price < basePrice) {
+                tier.discount = Math.round((1 - tier.price / basePrice) * 100);
+            }
+            return tier;
+        });
     }
 
     function renderPriceBreaks(product) {
@@ -111,8 +140,13 @@
 
         container.hidden = false;
         container.innerHTML = tiers.map(function (tier) {
-            var quantity = tier.min <= 1 ? '1 item' : tier.min + '+ items';
-            return '<div class="pc-price-tier"><span>' + quantity + '</span><strong>' + money(tier.price) + '</strong></div>';
+            var quantity = tier.max && tier.max < 99999
+                ? tier.min + '-' + tier.max
+                : tier.min + '+';
+            var saving = tier.discount > 0
+                ? '<em>SAVE ' + Math.round(tier.discount) + '%</em>'
+                : '<small>ex VAT</small>';
+            return '<div class="pc-price-tier"><span>' + quantity + '</span><strong>' + money(tier.price) + '</strong>' + saving + '</div>';
         }).join('');
     }
 
@@ -143,6 +177,14 @@
             if (requested <= current && requested <= 2 && typeof window.goToPage === 'function') {
                 window.goToPage(requested);
             }
+        });
+    });
+
+    ['p1AddToBasket', 'p1QuickShop'].forEach(function (id) {
+        var action = document.getElementById(id);
+        if (!action) return;
+        action.addEventListener('click', function () {
+            if (typeof window.goToPage === 'function') window.goToPage(1);
         });
     });
 

@@ -1387,8 +1387,8 @@
   .position-thumb-wrap .position-print-area-guide {
     position: absolute;
     z-index: 1;
-    left: 50%;
-    top: 30%;
+    left: var(--guide-left, 50%);
+    top: var(--guide-top, 48%);
     width: 20px;
     height: 16px;
     border: 0;
@@ -1449,13 +1449,6 @@
     display: none;
   }
 
-  .position-card[data-position="front-left-panel"] .position-print-area-guide { left: 32%; top: 43%; }
-  .position-card[data-position="front-right-panel"] .position-print-area-guide { left: 68%; top: 43%; }
-  .position-card[data-position="left-side"] .position-print-area-guide { left: 36%; top: 55%; }
-  .position-card[data-position="right-side"] .position-print-area-guide { left: 64%; top: 55%; }
-  .position-card[data-position="back"] .position-print-area-guide { left: 50%; top: 38%; }
-
-  .position-card[data-position="centre-front"] .position-print-area-guide { left: 50%; top: 42%; }
 
   .position-card[data-position="right-side"] .position-thumb-wrap > img,
   .position-card[data-position="right-side"] .position-thumb-colour-layer {

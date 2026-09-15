@@ -4311,8 +4311,45 @@ function syncPositionCardImages() {
     if (guide) {
       guide.hidden = false;
       guide.dataset.position = card.dataset.position || "centre-front";
+      const guidePosition = getPreviewGuidePosition(
+        state.customizationProductTypeSlug || state.product,
+        card.dataset.position || "centre-front"
+      );
+      guide.style.setProperty("--guide-left", `${guidePosition.left}%`);
+      guide.style.setProperty("--guide-top", `${guidePosition.top}%`);
     }
   });
+}
+
+function getPreviewGuidePosition(category, position) {
+  const key = String(category || "").toLowerCase();
+  const label = String(position || "").toLowerCase();
+  const defaults = { left: 50, top: 48 };
+  const maps = {
+    caps: {
+      "centre-front": { left: 50, top: 42 }, "front-left-panel": { left: 32, top: 43 },
+      "front-right-panel": { left: 68, top: 43 }, "left-side": { left: 36, top: 55 },
+      "right-side": { left: 64, top: 55 }, back: { left: 50, top: 38 }
+    },
+    bags: {
+      "centre-front": { left: 50, top: 68 }, "large-front": { left: 50, top: 68 },
+      "centre-back": { left: 50, top: 68 }, "large-back": { left: 50, top: 68 },
+      "left-side": { left: 35, top: 58 }, "right-side": { left: 65, top: 58 }
+    },
+    beanies: { "centre-front": { left: 50, top: 52 }, "front-left": { left: 35, top: 52 }, "front-right": { left: 65, top: 52 } },
+    "safety-vests": { "left-chest": { left: 40, top: 37 }, "right-chest": { left: 60, top: 37 }, "large-back": { left: 50, top: 48 } },
+    aprons: { "centre-chest": { left: 50, top: 38 }, "large-front": { left: 50, top: 55 }, "left-chest": { left: 40, top: 38 }, "right-chest": { left: 60, top: 38 } },
+    trousers: { "left-thigh": { left: 42, top: 57 }, "right-thigh": { left: 58, top: 57 }, "left-pocket": { left: 39, top: 43 }, "right-pocket": { left: 61, top: 43 } },
+    shorts: { "left-thigh": { left: 42, top: 56 }, "right-thigh": { left: 58, top: 56 }, "left-pocket": { left: 39, top: 42 }, "right-pocket": { left: 61, top: 42 } },
+    sweatpants: { "left-thigh": { left: 42, top: 54 }, "right-thigh": { left: 58, top: 54 }, "left-leg": { left: 42, top: 68 }, "right-leg": { left: 58, top: 68 } }
+  };
+  const group = maps[key] || maps[key.replace(/s$/, "")] || {};
+  if (group[label]) return group[label];
+  if (/left.*(chest|front|sleeve|side|cuff)/.test(label)) return { left: 38, top: 43 };
+  if (/right.*(chest|front|sleeve|side|cuff)/.test(label)) return { left: 62, top: 43 };
+  if (/back/.test(label)) return { left: 50, top: 48 };
+  if (/large|centre|center/.test(label)) return { left: 50, top: 50 };
+  return defaults;
 }
 
 const GENERIC_LOGO_POSITIONS = {

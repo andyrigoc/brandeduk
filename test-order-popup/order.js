@@ -300,6 +300,7 @@ function populatePage3() {
         var colourName = selectedItem.dataset.name || selectedItem.dataset.colour;
         
         $('#selectedColourBarName').text(colourName);
+        $('#p3PreviewColour').text('Colour: ' + colourName);
         $('#selectedColourThumb').css({'background-image': 'url(' + imgUrl + ')', 'background-size': 'cover', 'background-position': 'center', 'width': '32px', 'height': '32px', 'border-radius': '4px', 'display': 'inline-block', 'flex-shrink': '0'});
         $('#selectedColourViewLink').off('click').on('click', function(e) {
             e.preventDefault();
@@ -378,7 +379,7 @@ function populatePage3() {
         
         var box = $('<div class="size-qty-box-p3"></div>');
         box.html('<div class="size-name-p3">' + size + '</div>' +
-            '<div class="size-price-p3">£' + parseFloat(sizePrice).toFixed(2) + '</div>' +
+            '<div class="size-price-p3">£' + parseFloat(sizePrice).toFixed(2) + '<small> ex VAT</small></div>' +
             (stock ? '<div class="size-stock-p3">Stock: <strong>' + stock + '</strong></div>' : '') +
             '<div class="qty-controls">' +
             '<button class="qty-btn minus" data-size="' + size + '">-</button>' +
@@ -451,6 +452,19 @@ $(document).on("click", "#btnAddToQuote", function(e) {
     $('#successSubtitle').text(item.colour + ' · ' + totalQty + ' items (' + sizeList + ')');
     $('#btnAddToQuote').hide();
     $('#addQuoteSuccess').fadeIn(300);
+});
+
+$(document).on("click", "#btnBuyPlain", function() {
+    $('#btnAddToQuote').trigger('click');
+});
+
+$(document).on("click", "#btnCustomize", function() {
+    $('#btnAddToQuote').trigger('click');
+    window.setTimeout(function() {
+        if ($('#addQuoteSuccess').is(':visible')) {
+            $('#btnAddLogo').trigger('click');
+        }
+    }, 80);
 });
 
 // Final save — called after page 5
@@ -887,6 +901,10 @@ $(document).on("change", ".qty-input", function() {
     updateP3TierHighlight();
 });
 
+$(document).on("input change click", "#sizeQtyGridP3 .qty-input, #sizeQtyGridP3 .qty-btn", function() {
+    window.setTimeout(updateP3QuantitySummary, 0);
+});
+
 // Update summary totals
 function updatePage2Summary() {
     let totalItems = 0;
@@ -931,7 +949,32 @@ function updateP3TierHighlight() {
     $('#p3DiscountTiers .discount-tier-card').each(function(i) {
         $(this).toggleClass('tier-active', i === reached);
     });
+    updateP3QuantitySummary();
 }
+
+function updateP3QuantitySummary() {
+    var total = 0;
+    $('#sizeQtyGridP3 .qty-input').each(function() {
+        total += parseInt($(this).val(), 10) || 0;
+    });
+
+    var tiers = window._p3TierData || [];
+    var unitPrice = tiers.length
+        ? Number(tiers[0].price) || 0
+        : Number(window.productData && (window.productData.price || window.productData.basePrice)) || 0;
+
+    tiers.forEach(function(tier) {
+        if (total >= Number(tier.min) && total <= Number(tier.max || 999999)) {
+            unitPrice = Number(tier.price) || unitPrice;
+        }
+    });
+
+    $('#p3TotalPieces').text(total);
+    $('#p3CurrentUnitPrice').text('£' + unitPrice.toFixed(2));
+    $('#p3TotalCost').text('£' + (unitPrice * total).toFixed(2));
+}
+
+window.updateP3QuantitySummary = updateP3QuantitySummary;
 
 // Highlight box if has quantity
 function updateBoxHighlight(box) {
