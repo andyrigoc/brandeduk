@@ -541,10 +541,16 @@
         .item-row-remove:hover { color: #dc2626; text-decoration: underline; }
         .item-row-meta {
             margin: 2px 0 0 calc(52px + 12px);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
-        .item-row-meta .item-code { font-size: 11px; color: #9ca3af; margin: 0; }
-        .item-row-meta .item-color { font-size: 12px; color: #6b7280; margin: 0; }
-        .item-row-meta .item-size { font-size: 12px; color: #6b7280; margin: 0; }
+        .item-row-meta .item-code { font-size: 11px; color: #9ca3af; }
+        .item-row-meta .item-color,
+        .item-row-meta .item-size { font-size: 12px; color: #6b7280; }
+        .item-meta-separator { color: #c5c7cc; font-size: 11px; }
+        .item-row-meta .item-row-remove { margin-left: 2px; }
         .item-edit-hint {
             font-size: 11px;
             color: #2563eb;
@@ -689,6 +695,26 @@
         }
         .logo-row .logo-method-label .method-icons { font-size: 12px; }
         .logo-row .logo-position-label { font-size: 12px; color: #6b7280; margin-top: 1px; }
+        .logo-meta-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .logo-meta-actions .logo-position-label { margin: 0; }
+        .logo-meta-actions button {
+            padding: 0;
+            color: var(--basket-link-blue);
+            background: none;
+            border: 0;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .logo-meta-actions button:hover { text-decoration: underline; }
+        .logo-action-separator { color: #c5c7cc; font-size: 11px; }
         .logo-notes { font-size: 11px; color: #9ca3af; margin-top: 2px; font-style: italic; }
         .logos-applied-header {
             font-size: 13px; font-weight: 600; color: #374151;
@@ -1654,6 +1680,13 @@
             .item-row-title { color: #202124; font-size: 14px; }
             .item-row-meta,
             .item-edit-hint { margin-left: 76px; }
+            .item-row-meta {
+                flex-wrap: nowrap;
+                gap: 8px;
+                margin-top: 4px;
+                white-space: nowrap;
+            }
+            .item-row-meta .item-row-remove { font-size: 11px; }
             .item-edit-hint,
             .item-placement-preview-btn,
             body.basket-page .logo-row .logo-actions .edit-btn,
@@ -1693,6 +1726,7 @@
             .logo-row + .logo-row { margin-top: 0; }
             .logo-thumb-wrap { width: 58px; height: 58px; border-radius: 2px; }
             .logo-row .logo-method-label { color: #202124; }
+            .logo-meta-actions { flex-wrap: nowrap; white-space: nowrap; }
             .add-logo-btn {
                 margin-top: 10px;
                 padding: 10px 14px;
@@ -3945,17 +3979,18 @@
                             <div class="logo-info">
                                 <div class="logo-title-line">
                                     <div class="logo-method-label">${methodLabel}</div>
-                                    <button type="button" class="logo-row-remove" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
-                                </div>
-                                <div class="logo-position-label">Position: ${posLabel}</div>
-                                ${logo.notes ? `<div class="logo-notes">${logo.notes}</div>` : ''}
-                                <div class="logo-actions-row">
-                                    <div class="logo-actions">
-                                        <button class="edit-btn" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
-                                        <button class="copy-btn" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
-                                    </div>
                                     <div class="logo-price">${formatCurrency(logoTotal)}<small>exc. VAT</small></div>
                                 </div>
+                                <div class="logo-meta-actions">
+                                    <span class="logo-position-label">Position: ${posLabel}</span>
+                                    <span class="logo-action-separator" aria-hidden="true">&middot;</span>
+                                    <button class="edit-btn" onclick="editLogo(${index}, ${logoIdx})">Edit</button>
+                                    <span class="logo-action-separator" aria-hidden="true">&middot;</span>
+                                    <button class="copy-btn" onclick="copyLogo(${index}, ${logoIdx})">Replicate</button>
+                                    <span class="logo-action-separator" aria-hidden="true">&middot;</span>
+                                    <button type="button" class="logo-row-remove" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
+                                </div>
+                                ${logo.notes ? `<div class="logo-notes">${logo.notes}</div>` : ''}
                             </div>
                         </div>
                     `;
@@ -3969,9 +4004,12 @@
                         <div class="logo-info">
                             <div class="logo-title-line">
                                 <div class="logo-method-label">Text</div>
+                            </div>
+                            <div class="logo-meta-actions">
+                                <span class="logo-position-label">Position: ${escapeAttr(posLabel)}</span>
+                                <span class="logo-action-separator" aria-hidden="true">&middot;</span>
                                 <button type="button" class="logo-row-remove" onclick="removeTextDecoration(${index}, ${textIdx})">Remove</button>
                             </div>
-                            <div class="logo-position-label">Position: ${escapeAttr(posLabel)}</div>
                             <div class="logo-notes">${escapeAttr(textDesign.text || '')}</div>
                         </div>
                     </div>
@@ -3995,16 +4033,18 @@
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
                                     <h4 class="item-row-title">${item.name || 'Product'}</h4>
-                                    <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                                 </div>
                             </div>
                         </div>
                         <div class="item-row-meta">
-                            <p class="item-code">${item.code || ''}</p>
-                            <p class="item-color">${getItemColorLabel(item)}</p>
-                            <p class="item-size">${item.size || ''}</p>
+                            <span class="item-code">${item.code || ''}</span>
+                            <span class="item-meta-separator" aria-hidden="true">&middot;</span>
+                            <span class="item-color">${getItemColorLabel(item)}</span>
+                            <span class="item-meta-separator" aria-hidden="true">&middot;</span>
+                            <span class="item-size">${item.size || ''}</span>
+                            <span class="item-meta-separator" aria-hidden="true">&middot;</span>
+                            <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                         </div>
-                        <button type="button" class="item-edit-hint" onclick="event.stopPropagation(); editBasketItem(${index})">Tap to change colour or size</button>
                     </div>
 
                     <div class="item-row-qty-price">
