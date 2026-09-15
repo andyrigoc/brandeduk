@@ -1225,6 +1225,7 @@
         }
         @media (min-width: 1024px) {
             body.basket-page { background: #f5f7fb; }
+            body.basket-page .quote-footer { display: none !important; }
             body.basket-page .basket-content {
                 max-width: 1320px;
                 width: calc(100% - 64px);
@@ -1450,7 +1451,103 @@
                 color: #475467;
                 font-size: 13px;
             }
+
+            .basket-desktop-footer {
+                display: block !important;
+                color: #d0d5dd;
+                background: #101828;
+                border-top: 4px solid #8a249a;
+            }
+            .basket-footer-shell {
+                width: calc(100% - 64px);
+                max-width: 1320px;
+                margin: 0 auto;
+            }
+            .basket-footer-main {
+                display: grid;
+                grid-template-columns: 1.8fr 1fr 1fr 1.35fr;
+                gap: 54px;
+                padding: 46px 0 38px;
+            }
+            .basket-footer-brandmark {
+                display: inline-flex;
+                align-items: center;
+                padding: 7px 10px;
+                background: #fff;
+                border-radius: 9px;
+            }
+            .basket-footer-brandmark img {
+                display: block;
+                width: 150px;
+                height: auto;
+            }
+            .basket-footer-intro {
+                max-width: 340px;
+                margin: 18px 0 0;
+                color: #98a2b3;
+                font-size: 13px;
+                line-height: 1.65;
+            }
+            .basket-footer-heading {
+                margin: 3px 0 16px;
+                color: #fff;
+                font-size: 13px;
+                font-weight: 750;
+                letter-spacing: .025em;
+            }
+            .basket-footer-links {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            .basket-footer-links li + li { margin-top: 10px; }
+            .basket-footer-links a,
+            .basket-footer-contact a {
+                color: #98a2b3;
+                font-size: 13px;
+                text-decoration: none;
+                transition: color .16s ease;
+            }
+            .basket-footer-links a:hover,
+            .basket-footer-contact a:hover { color: #fff; }
+            .basket-footer-contact p {
+                margin: 0 0 10px;
+                color: #98a2b3;
+                font-size: 13px;
+                line-height: 1.45;
+            }
+            .basket-footer-contact strong {
+                display: block;
+                margin-bottom: 2px;
+                color: #d0d5dd;
+                font-size: 12px;
+                font-weight: 650;
+            }
+            .basket-footer-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+                padding: 18px 0 22px;
+                border-top: 1px solid #344054;
+            }
+            .basket-footer-bottom p {
+                margin: 0;
+                color: #667085;
+                font-size: 12px;
+            }
+            .basket-footer-legal {
+                display: flex;
+                gap: 22px;
+            }
+            .basket-footer-legal a {
+                color: #98a2b3;
+                font-size: 12px;
+                text-decoration: none;
+            }
+            .basket-footer-legal a:hover { color: #fff; }
         }
+        .basket-desktop-footer { display: none; }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -1821,6 +1918,51 @@
             </aside>
         </div>
     </main>
+
+    <footer class="basket-desktop-footer" aria-label="Site footer">
+        <div class="basket-footer-shell">
+            <div class="basket-footer-main">
+                <div>
+                    <a class="basket-footer-brandmark" href="/home-pc.html" aria-label="BrandedUK home">
+                        <img src="/brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                    </a>
+                    <p class="basket-footer-intro">Custom workwear, uniforms and promotional clothing for businesses across the UK, supported by in-house embroidery and print services.</p>
+                </div>
+                <nav aria-label="Footer shop links">
+                    <h2 class="basket-footer-heading">Shop</h2>
+                    <ul class="basket-footer-links">
+                        <li><a href="/shop-pc.html?category=all">All products</a></li>
+                        <li><a href="/shop-pc.html?productType=t-shirts">T-shirts</a></li>
+                        <li><a href="/shop-pc.html?productType=polos">Polo shirts</a></li>
+                        <li><a href="/shop-pc.html?productType=hoodies">Hoodies</a></li>
+                    </ul>
+                </nav>
+                <nav aria-label="Footer service links">
+                    <h2 class="basket-footer-heading">Services</h2>
+                    <ul class="basket-footer-links">
+                        <li><a href="/services.html">Customisation services</a></li>
+                        <li><a href="/bulk-orders.html">Bulk orders</a></li>
+                        <li><a href="/track-order.html">Track an order</a></li>
+                        <li><a href="/blog/">Advice and guides</a></li>
+                    </ul>
+                </nav>
+                <div class="basket-footer-contact">
+                    <h2 class="basket-footer-heading">Contact</h2>
+                    <p><strong>Speak with our team</strong><a href="tel:+442089742722">0208 974 2722</a></p>
+                    <p><strong>Email</strong><a href="mailto:info@brandeduk.com">info@brandeduk.com</a></p>
+                    <p><strong>Opening hours</strong>Monday to Friday, 9am&ndash;5pm</p>
+                </div>
+            </div>
+            <div class="basket-footer-bottom">
+                <p>&copy; <span data-current-year>2026</span> BrandedUK. All rights reserved.</p>
+                <nav class="basket-footer-legal" aria-label="Legal links">
+                    <a href="/privacy-policy/">Privacy policy</a>
+                    <a href="/terms-and-conditions/">Terms &amp; conditions</a>
+                    <a href="/cookie-policy/">Cookie policy</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
 
     <div class="share-basket-modal" id="shareBasketModal" role="dialog" aria-modal="true" aria-labelledby="shareBasketTitle" aria-hidden="true">
         <div class="share-basket-dialog">
