@@ -46,7 +46,7 @@
         /* Desktop: push content below the fixed header */
         @media (min-width: 1024px) {
             body.basket-page .basket-content {
-                padding-top: calc(var(--brandeduk-site-header-height, 175px) + 24px) !important;
+                padding-top: 32px !important;
             }
         }
 
@@ -1199,6 +1199,260 @@
             }
             .btn-continue-shopping:hover { color: #374151; }
         }
+        @media (min-width: 1024px) {
+            body.basket-page { background: #f5f7fb; }
+            body.basket-page .basket-content {
+                max-width: 1320px;
+                width: calc(100% - 64px);
+                margin: 0 auto;
+                padding: 32px 0 80px !important;
+                display: block;
+            }
+            .basket-desktop-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 22px;
+            }
+            .basket-desktop-title h2 {
+                margin: 0;
+                color: var(--basket-navy);
+                font-size: 30px;
+                font-weight: 800;
+                line-height: 1.15;
+                letter-spacing: -.025em;
+            }
+            .basket-page-kicker {
+                display: block;
+                margin-bottom: 5px;
+                color: #8a249a;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: .12em;
+            }
+            .basket-desktop-title .clear-desktop-btn {
+                padding: 9px 12px;
+                color: #b42318;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .basket-desktop-title .clear-desktop-btn:hover {
+                border-color: #fda29b;
+                background: #fff7f6;
+            }
+            #basketContent {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 390px;
+                align-items: start;
+                gap: 28px;
+            }
+            .basket-main-column,
+            .basket-summary-column { min-width: 0; }
+            .basket-list-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 17px 22px;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-bottom: 0;
+                border-radius: 14px 14px 0 0;
+            }
+            .basket-section-title {
+                margin: 0;
+                color: #101828;
+                font-size: 17px;
+                font-weight: 750;
+            }
+            .vat-toggle-row { color: #475467; font-size: 13px; }
+            .basket-items-panel {
+                overflow: hidden;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-radius: 0 0 14px 14px;
+                box-shadow: 0 8px 24px rgba(16, 24, 40, .045);
+            }
+            .basket-item-row {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                column-gap: 28px;
+                padding: 24px;
+                border-bottom: 1px solid #eaecf0;
+            }
+            .basket-item-row:first-child { padding-top: 24px; }
+            .basket-item-row:last-child { border-bottom: 0; }
+            .item-row-header { grid-column: 1; grid-row: 1; }
+            .item-row-qty-price {
+                grid-column: 2;
+                grid-row: 1;
+                align-self: start;
+                gap: 22px;
+                margin-top: 0;
+            }
+            .item-logos-section,
+            .add-logo-btn,
+            .item-row-total { grid-column: 1 / -1; }
+            .item-row-image {
+                width: 76px;
+                height: 76px;
+                border-color: #eaecf0;
+                border-radius: 9px;
+            }
+            .item-row-title { font-size: 15px; }
+            .item-row-meta,
+            .item-edit-hint { margin-left: 88px; }
+            .item-row-remove { font-size: 12px; }
+            .qty-controls { border-color: #d0d5dd; border-radius: 8px; }
+            .qty-controls .qty-btn { width: 34px; height: 34px; background: #fff; }
+            .qty-controls .qty-value {
+                width: 40px;
+                height: 34px;
+                line-height: 34px;
+                border-color: #d0d5dd;
+            }
+            .item-row-price .price-amount { font-size: 16px; }
+            .item-logos-section {
+                margin-top: 18px;
+                border-top: 1px solid #eaecf0;
+            }
+            .logos-applied-header { padding-top: 15px; border-top: 0; color: #344054; }
+            .logo-row {
+                padding: 12px;
+                border: 0;
+                border-radius: 10px;
+                background: #f8fafc;
+            }
+            .logo-row + .logo-row { margin-top: 8px; }
+            .add-logo-btn {
+                margin-top: 14px;
+                padding: 10px 15px;
+                color: var(--basket-navy);
+                background: #fff;
+                border: 1px solid #cfd4e6;
+                border-radius: 8px;
+            }
+            .add-logo-btn:hover { background: #f7f8fc; }
+            .item-row-total {
+                margin-top: 18px;
+                padding-top: 16px;
+                border-top: 1px solid #eaecf0;
+            }
+            .item-row-total .total-value { color: var(--basket-navy); font-size: 21px; }
+            .order-notes-section {
+                margin-top: 16px;
+                padding: 20px 22px;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-radius: 14px;
+            }
+            .order-summary-bottom {
+                position: sticky;
+                top: 24px;
+                max-width: none;
+                margin-top: 0;
+                padding: 24px;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-radius: 14px;
+                box-shadow: 0 12px 32px rgba(16, 24, 40, .07);
+            }
+            .order-summary-bottom h3 {
+                margin: 0 0 18px;
+                color: #101828;
+                font-size: 19px;
+                font-weight: 750;
+            }
+            .summary-row { padding: 6px 0; color: #667085; font-size: 13px; }
+            .summary-row .summary-val { color: #344054; }
+            .summary-grand-total {
+                margin-top: 12px;
+                padding-top: 17px;
+                border-top: 1px solid #d0d5dd;
+            }
+            .summary-grand-total span:first-child { color: #101828; }
+            .summary-grand-total .grand-total-val { color: #16804a; font-size: 25px; }
+            .summary-assurance {
+                display: flex;
+                gap: 11px;
+                margin-top: 20px;
+                padding: 14px;
+                color: #344054;
+                background: #f0fdf4;
+                border-radius: 10px;
+            }
+            .summary-assurance svg { flex: 0 0 auto; color: #16804a; }
+            .summary-assurance strong,
+            .summary-assurance small { display: block; }
+            .summary-assurance strong { font-size: 13px; }
+            .summary-assurance small {
+                margin-top: 2px;
+                color: #667085;
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            .summary-actions { margin-top: 18px; gap: 9px; }
+            .btn-checkout-primary {
+                padding: 15px;
+                background: var(--basket-navy);
+                border-radius: 9px;
+                font-size: 15px;
+            }
+            .btn-checkout-primary:hover { background: #18203d; }
+            .btn-request-quote {
+                padding: 13px;
+                color: var(--basket-navy);
+                border: 1px solid #b8c0d9;
+                border-radius: 9px;
+            }
+            .btn-request-quote:hover { background: #f7f8fc; }
+            .btn-share-basket {
+                padding: 12px;
+                background: #fff;
+                border: 1px solid #d0d5dd;
+                border-radius: 9px;
+                box-shadow: none;
+            }
+            .btn-share-basket:hover { background: #f9fafb; box-shadow: none; transform: none; }
+            .btn-continue-shopping {
+                padding: 8px 4px 0;
+                border: 0;
+                color: #475467;
+                font-size: 13px;
+            }
+            .basket-trust-badges {
+                margin-top: 16px;
+                padding: 8px 20px;
+                background: #fff;
+                border: 1px solid #e4e7ec;
+                border-radius: 14px;
+            }
+            .basket-trust-badges .trust-badge {
+                gap: 11px;
+                padding: 13px 0;
+                color: #475467;
+                border-bottom-color: #eaecf0;
+                line-height: 1.35;
+            }
+            .trust-badge-icon {
+                display: inline-flex;
+                flex: 0 0 24px;
+                width: 24px;
+                height: 24px;
+                align-items: center;
+                justify-content: center;
+                color: #16804a;
+                background: #ecfdf3;
+                border-radius: 50%;
+                font-size: 12px;
+            }
+            .basket-trust-badges-mobile { display: none; }
+            .basket-trust-badges-desktop { display: block !important; }
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -1429,7 +1683,11 @@
     <main class="basket-content">
         <!-- Desktop title row (hidden on mobile via CSS) -->
         <div class="basket-desktop-title">
-            <h2>Your Cart</h2>
+            <div>
+                <span class="basket-page-kicker">ORDER REVIEW</span>
+                <h2>Your quote basket</h2>
+            </div>
+            <button type="button" class="clear-desktop-btn" id="clearBasketBtnDesktop">Clear basket</button>
         </div>
 
         <!-- Empty State (hidden by default) -->
@@ -1453,8 +1711,9 @@
 
         <!-- Basket Content (visible when items exist) -->
         <div id="basketContent" style="display:none;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                <h2 class="basket-section-title">My Basket</h2>
+            <section class="basket-main-column" aria-label="Basket items">
+            <div class="basket-list-toolbar">
+                <h2 class="basket-section-title">Basket items</h2>
                 <!-- VAT Toggle -->
                 <div class="vat-toggle-row" style="margin:0; padding:0;">
                     <span>Show prices including VAT</span>
@@ -1466,7 +1725,9 @@
             </div>
 
             <!-- Item Rows (per-size, populated by JS) -->
-            <div id="basketItemsList"></div>
+            <div class="basket-items-panel">
+                <div id="basketItemsList"></div>
+            </div>
 
             <!-- Discount Code (collapsed) -->
             <div class="discount-code-section" id="discountCodeSection" style="display:none;">
@@ -1478,15 +1739,18 @@
                 </div>
             </div>
 
+            </section>
+
+            <aside class="basket-summary-column" aria-label="Order summary">
             <!-- Order Summary (bottom) -->
             <div class="order-summary-bottom" id="orderSummaryBottom">
-                <h3>Your order summary</h3>
+                <h3>Order summary</h3>
                 <div class="summary-row">
-                    <span>Product Costs</span>
+                    <span>Products</span>
                     <span class="summary-val" id="summaryProductCosts">&#163;0.00</span>
                 </div>
                 <div class="summary-row">
-                    <span>Costs To Add Logo</span>
+                    <span>Logo customisation</span>
                     <span class="summary-val" id="summaryLogoCosts">&#163;0.00</span>
                 </div>
                 <div class="summary-row" id="digitizingFeeRow" style="display: none;">
@@ -1498,12 +1762,17 @@
                     <span class="summary-val" id="summaryExcVat">&#163;0.00</span>
                 </div>
                 <div class="summary-row">
-                    <span>VAT (on Total)</span>
+                    <span>VAT</span>
                     <span class="summary-val" id="summaryVat">&#163;0.00</span>
                 </div>
                 <div class="summary-grand-total">
-                    <span>Your total (inc. VAT)</span>
+                    <span>Total (inc. VAT)</span>
                     <span class="grand-total-val" id="summaryGrandTotal">&#163;0.00</span>
+                </div>
+
+                <div class="summary-assurance">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span><strong>Artwork approval included</strong><small>We will send a proof for approval before production begins.</small></span>
                 </div>
 
                 <div class="summary-actions">
@@ -1512,26 +1781,33 @@
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
-                        Proceed to Checkout
+                        Proceed to checkout
                     </button>
                     <button class="btn-request-quote" id="requestQuoteBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
-                        Request a Quote
+                        Request a quote
                     </button>
                     <button type="button" class="btn-share-basket" id="shareBasketBtn">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/>
                         </svg>
-                        Share Basket
+                        Share basket
                     </button>
-                    <a href="/shop-pc.html?category=all" class="btn-continue-shopping" id="continueShoppingBtn">← Continue Shopping / Add another item</a>
+                    <a href="/shop-pc.html?category=all" class="btn-continue-shopping" id="continueShoppingBtn">&#8592; Continue shopping</a>
                 </div>
             </div>
 
-            <!-- Order Notes -->
+            <div class="basket-trust-badges basket-trust-badges-desktop" style="display:none;">
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>Established in 1990</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>300 UK-based staff</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span>Trusted by over <strong>2 million customers</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>137,500+ positive reviews</strong></span></div>
+            </div>
+            </aside>
+
             <div class="order-notes-section">
                 <h4>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1540,7 +1816,7 @@
                         <line x1="16" y1="13" x2="8" y2="13"/>
                         <line x1="16" y1="17" x2="8" y2="17"/>
                     </svg>
-                    Order Notes
+                    Order notes
                 </h4>
                 <textarea class="order-notes-textarea" id="orderNotesTextarea"
                           placeholder="Special instructions, delivery notes, or any additional information for your quote..."
@@ -1549,11 +1825,11 @@
             </div>
 
             <!-- Trust Badges -->
-            <div class="basket-trust-badges">
-                <div class="trust-badge">&#127970; <strong>In business since 1990</strong></div>
-                <div class="trust-badge">&#128101; <strong>300 staff</strong>, based in the UK</div>
-                <div class="trust-badge">&#127468;&#127463; Trusted by over <strong>2 million customers</strong></div>
-                <div class="trust-badge">&#11088; <strong>137,500+ positive reviews</strong> &#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <div class="basket-trust-badges basket-trust-badges-mobile">
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>Established in 1990</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>300 UK-based staff</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span>Trusted by over <strong>2 million customers</strong></span></div>
+                <div class="trust-badge"><span class="trust-badge-icon">&#10003;</span><span><strong>137,500+ positive reviews</strong></span></div>
             </div>
         </div>
     </main>
@@ -2644,19 +2920,22 @@
         const content = document.getElementById('basketContent');
         const actionBar = document.getElementById('actionBar');
         const clearBtn = document.getElementById('clearBasketBtn');
+        const clearBtnDesktop = document.getElementById('clearBasketBtnDesktop');
 
         if (basket.length === 0) {
             emptyState.style.display = 'block';
             content.style.display = 'none';
             if (actionBar) actionBar.style.display = 'none';
             if (clearBtn) clearBtn.style.display = 'none';
+            if (clearBtnDesktop) clearBtnDesktop.style.display = 'none';
             return;
         }
 
         emptyState.style.display = 'none';
-        content.style.display = 'block';
+        content.style.display = '';
         if (actionBar) actionBar.style.display = 'block';
         if (clearBtn) clearBtn.style.display = 'block';
+        if (clearBtnDesktop) clearBtnDesktop.style.display = '';
 
         renderItems(basket);
         renderSummary(basket);
@@ -4100,8 +4379,19 @@
         clearConfirmOk?.addEventListener('click', async () => {
             if (clearConfirmOk) clearConfirmOk.disabled = true;
             if (clearConfirmCancel) clearConfirmCancel.disabled = true;
-            try { localStorage.clear(); } catch (e) {}
-            try { sessionStorage.clear(); } catch (e) {}
+            try {
+                localStorage.removeItem('quoteBasket');
+                localStorage.removeItem('orderNotes');
+            } catch (e) {}
+            try {
+                [
+                    'reorderNotice', 'pendingLogoPromptId', 'pendingLogoPromptIndex',
+                    'customizingBasketIndex', 'editingLogoIndex', 'editingPosition',
+                    'returnAfterCustomize', 'basketEditNewColor', 'basketEditSingleItem',
+                    'basketEditItemId', 'occupiedPositions', 'toolReusableLogos',
+                    'toolAskLogoChoice'
+                ].forEach((key) => sessionStorage.removeItem(key));
+            } catch (e) {}
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             window.location.replace('index.html?reset=' + Date.now());
         });
