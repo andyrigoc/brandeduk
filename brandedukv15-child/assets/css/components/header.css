@@ -1706,9 +1706,9 @@ body {
 }
 
 .promotions-menu > a {
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #C952DE;
+    font-weight: 600;
+    letter-spacing: normal;
+    color: #1f2937;
 }
 
 .promotions-menu > a .nav-caret::before {

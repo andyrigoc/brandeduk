@@ -33,6 +33,14 @@
     --font-heading: 'Poppins', sans-serif;
 }
 
+body,
+button,
+input,
+select,
+textarea {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+
 .see-all-link {
     font-size: 14px;
     font-weight: 600;
