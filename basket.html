@@ -1600,7 +1600,8 @@
             }
             .basket-footer-legal a:hover { color: #fff; }
         }
-        .basket-desktop-footer { display: none; }
+        .basket-desktop-footer,
+        .basket-list-toolbar .clear-desktop-btn { display: none; }
 
         @media (min-width: 1024px) {
             body.basket-page {
@@ -1634,10 +1635,11 @@
             body.basket-page .basket-content {
                 width: calc(100% - 64px);
                 max-width: 1280px;
-                padding: 26px 0 56px !important;
+                padding: 16px 0 56px !important;
             }
+            body.basket-page .site-breadcrumbs { display: none !important; }
             .basket-desktop-title {
-                display: flex !important;
+                display: none !important;
                 margin-bottom: 18px;
             }
             .basket-page-kicker { display: none; }
@@ -1663,6 +1665,24 @@
                 border-color: #dededb;
                 border-radius: 3px 3px 0 0;
             }
+            .basket-toolbar-controls {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .basket-list-toolbar .clear-desktop-btn {
+                display: block;
+                padding: 0 0 0 16px;
+                color: #b42318;
+                background: transparent;
+                border: 0;
+                border-left: 1px solid #dededb;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .basket-list-toolbar .clear-desktop-btn:hover { color: #7a1710; }
             .basket-section-title { color: #202124; font-size: 16px; font-weight: 700; }
             .basket-items-panel {
                 border-color: #dededb;
@@ -2118,15 +2138,6 @@
 
     <!-- Main Content -->
     <main class="basket-content">
-        <!-- Desktop title row (hidden on mobile via CSS) -->
-        <div class="basket-desktop-title">
-            <div>
-                <span class="basket-page-kicker">ORDER REVIEW</span>
-                <h2>My basket</h2>
-            </div>
-            <button type="button" class="clear-desktop-btn" id="clearBasketBtnDesktop">Clear basket</button>
-        </div>
-
         <!-- Empty State (hidden by default) -->
         <div class="empty-basket" id="emptyBasket" style="display: none;">
             <div class="empty-basket-icon">
@@ -2151,13 +2162,15 @@
             <section class="basket-main-column" aria-label="Basket items">
             <div class="basket-list-toolbar">
                 <h2 class="basket-section-title">Basket items</h2>
-                <!-- VAT Toggle -->
-                <div class="vat-toggle-row" style="margin:0; padding:0;">
-                    <span>Show prices including VAT</span>
-                    <label class="vat-toggle-switch">
-                        <input type="checkbox" id="vatToggle">
-                        <span class="slider"></span>
-                    </label>
+                <div class="basket-toolbar-controls">
+                    <div class="vat-toggle-row" style="margin:0; padding:0;">
+                        <span>Show prices including VAT</span>
+                        <label class="vat-toggle-switch">
+                            <input type="checkbox" id="vatToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button type="button" class="clear-desktop-btn" id="clearBasketBtnDesktop">Clear basket</button>
                 </div>
             </div>
 
