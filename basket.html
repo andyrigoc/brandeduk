@@ -1472,22 +1472,49 @@
             .basket-footer-brandmark {
                 display: inline-flex;
                 align-items: center;
-                padding: 7px 10px;
-                background: #fff;
-                border-radius: 9px;
+                color: #fff;
+                font-size: 28px;
+                font-weight: 800;
+                line-height: 1;
+                letter-spacing: -.035em;
+                text-decoration: none;
             }
-            .basket-footer-brandmark img {
-                display: block;
-                width: 150px;
-                height: auto;
-            }
+            .basket-footer-brandmark span { color: #c12bd6; }
             .basket-footer-intro {
                 max-width: 340px;
-                margin: 18px 0 0;
+                margin: 16px 0 0;
                 color: #98a2b3;
                 font-size: 13px;
                 line-height: 1.65;
             }
+            .basket-footer-social {
+                display: flex;
+                gap: 9px;
+                margin-top: 18px;
+            }
+            .basket-footer-social a {
+                display: inline-flex;
+                width: 36px;
+                height: 36px;
+                align-items: center;
+                justify-content: center;
+                color: #d0d5dd;
+                background: #1d2939;
+                border: 1px solid #344054;
+                border-radius: 9px;
+                transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease;
+            }
+            .basket-footer-social a:hover {
+                color: #fff;
+                background: #8a249a;
+                border-color: #a52ab8;
+                transform: translateY(-1px);
+            }
+            .basket-footer-social a:focus-visible {
+                outline: 3px solid rgba(193, 43, 214, .35);
+                outline-offset: 2px;
+            }
+            .basket-footer-social svg { width: 17px; height: 17px; }
             .basket-footer-heading {
                 margin: 3px 0 16px;
                 color: #fff;
@@ -1923,10 +1950,19 @@
         <div class="basket-footer-shell">
             <div class="basket-footer-main">
                 <div>
-                    <a class="basket-footer-brandmark" href="/home-pc.html" aria-label="BrandedUK home">
-                        <img src="/brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
-                    </a>
+                    <a class="basket-footer-brandmark" href="/home-pc.html" aria-label="BrandedUK home">Branded<span>UK</span></a>
                     <p class="basket-footer-intro">Custom workwear, uniforms and promotional clothing for businesses across the UK, supported by in-house embroidery and print services.</p>
+                    <div class="basket-footer-social" aria-label="BrandedUK social media">
+                        <a href="https://www.facebook.com/profile.php?id=100083540654262" target="_blank" rel="noopener" aria-label="BrandedUK on Facebook">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/brandeduk_workwear/" target="_blank" rel="noopener" aria-label="BrandedUK on Instagram">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" target="_blank" rel="noopener" aria-label="BrandedUK on LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4V9h4v2a5 5 0 014-3zM2 9h4v12H2zM4 2a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                        </a>
+                    </div>
                 </div>
                 <nav aria-label="Footer shop links">
                     <h2 class="basket-footer-heading">Shop</h2>
