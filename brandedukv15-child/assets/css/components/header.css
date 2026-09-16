@@ -2310,6 +2310,55 @@ body {
    HEADER COMPONENTS - DESKTOP (CENTRALIZED)
    ============================================ */
 
+/* Compact PC navigation: keep the header easy to scan and closer to catalogue-style sites. */
+@media (min-width: 1024px) {
+    .header-with-promo {
+        zoom: 0.95;
+    }
+
+    .header-bottom .header-container {
+        gap: 18px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .category-toggle {
+        gap: 6px;
+        padding: 4px 0;
+        font-size: 14px;
+        letter-spacing: 0;
+    }
+
+    .category-toggle-icon::before {
+        font-size: 14px;
+    }
+
+    .main-nav .menu {
+        gap: 14px;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .main-nav .menu a {
+        gap: 4px;
+        padding-bottom: 3px;
+    }
+
+    .main-nav .menu > li.has-megamenu > a {
+        padding-right: 12px;
+    }
+
+    .main-nav .menu > li.has-megamenu > a .nav-caret {
+        width: 10px;
+        height: 10px;
+    }
+
+    .main-nav .menu > li.has-megamenu > a .nav-caret::before {
+        font-size: 10px;
+    }
+}
+
 /* === Back Button === */
 .back-btn {
     display: inline-flex;

@@ -2323,7 +2323,10 @@
         <div class="hero-banners-container">
             <!-- Original banner 1 - Only Boards partner promotion -->
             <a class="hero-banner hero-banner-onlyboards hero-banner--active" id="heroBannerOnlyBoards" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener" aria-label="Visit Only Boards">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2001_39_25%20PM.png" alt="Only Boards - Proud partners. Made to stand out. High-impact printed boards and signage for every project.">
+                <picture>
+                    <source media="(max-width: 767px)" srcset="brandeduk.com/assets/only-boards-mobile.webp">
+                    <img class="onlyboards-banner-image" src="brandeduk.com/assets/only-boards-desktop.webp" alt="Only Boards - Proud partners. Made to stand out. High-impact printed boards and signage for every project." width="1920" height="630" onerror="this.onerror=null;this.src='brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2001_39_25%20PM.png';">
+                </picture>
             </a>
 
             <!-- Original banner 2 - Branded -->
@@ -2356,16 +2359,16 @@
 
             <!-- New catalogue banners -->
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=regatta-professional" aria-label="Shop Regatta Professional">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt="Regatta Professional Dover jacket offer">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt="Regatta Professional Dover jacket offer" width="1920" height="630">
             </a>
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis" aria-label="Shop AWDis">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp" alt="AWDis College Hoodie 2.0">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp" alt="AWDis College Hoodie 2.0" width="1920" height="630">
             </a>
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=mumbles" aria-label="Shop Mumbles">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp" alt="Mumbles Halloween plush collection">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17790---mumbles-halloween_banner.webp" alt="Mumbles Halloween plush collection" width="1920" height="630">
             </a>
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=anthem" aria-label="Shop Anthem">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp" alt="Anthem heavy bass hoodie collection">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp" alt="Anthem heavy bass hoodie collection" width="1920" height="630">
             </a>
         </div>
 
@@ -3095,10 +3098,11 @@
             const categories = main?.querySelector('.categories-section');
             const heroOne = main?.querySelector('.hero-expanding-wrapper');
             const heroTwo = main?.querySelector('.hero-banners-section');
-            if (!main || !categories || !heroOne || !heroTwo) return;
+            const quickActions = main?.querySelector('.quick-actions-desktop');
+            if (!main || !categories || !heroOne || !heroTwo || !quickActions) return;
 
-            main.insertBefore(categories, heroOne);
             main.insertBefore(heroTwo, heroOne);
+            main.insertBefore(categories, quickActions);
         })();
     </script>
 </main>

@@ -269,10 +269,13 @@ function initHeroBanners() {
     const banners = document.querySelectorAll('.hero-banner');
     const dots = document.querySelectorAll('.banner-dot');
     const neonContainer = document.querySelector('.neon-container');
+    const bannerStage = document.querySelector('.hero-banners-container');
     
     if (!banners.length) return;
     
     let currentBanner = 0;
+    let rotationTimer = null;
+    const rotationDelay = 5000;
     
     // Initialize: first banner active, others waiting on right
     banners.forEach((banner, i) => {
@@ -317,8 +320,36 @@ function initHeroBanners() {
     dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             switchBanner(index);
+            restartRotation();
         });
     });
+
+    function startRotation() {
+        if (rotationTimer || banners.length < 2) return;
+        rotationTimer = window.setInterval(() => {
+            switchBanner((currentBanner + 1) % banners.length);
+        }, rotationDelay);
+    }
+
+    function stopRotation() {
+        if (!rotationTimer) return;
+        window.clearInterval(rotationTimer);
+        rotationTimer = null;
+    }
+
+    function restartRotation() {
+        stopRotation();
+        startRotation();
+    }
+
+    if (bannerStage) {
+        bannerStage.addEventListener('mouseenter', stopRotation);
+        bannerStage.addEventListener('mouseleave', startRotation);
+        bannerStage.addEventListener('focusin', stopRotation);
+        bannerStage.addEventListener('focusout', startRotation);
+    }
+
+    startRotation();
     
     // Click on neon container opens contact popup (if exists)
     if (neonContainer) {

@@ -6042,6 +6042,23 @@ a {
     object-position: center;
 }
 
+.hero-banner-regatta-mobile > img {
+    object-fit: contain;
+    background: #eeeae2;
+}
+
+.hero-banner-regatta-mobile > a,
+.hero-banner-regatta-mobile > a > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-banner-regatta-mobile > a > img {
+    object-fit: contain;
+    background: #eeeae2;
+}
+
 /* Banner Dots Navigation */
 .hero-banner-dots {
     display: flex;

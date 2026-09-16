@@ -86,7 +86,8 @@ main.main-content {
     max-width: none;
     margin: 0 auto;
     position: relative;
-    height: clamp(300px, 36vw, 520px);
+    aspect-ratio: 1920 / 630;
+    height: auto;
     border-radius: 0;
     overflow: hidden;
 }
@@ -253,16 +254,35 @@ main.main-content {
 
 .onlyboards-banner-image {
     width: 100%;
-    height: 100%;
+    height: auto;
     display: block;
     object-fit: contain;
     object-position: center;
     background: #f5f3ed;
 }
 
+.hero-banner-image .onlyboards-banner-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1920 / 630;
+    object-fit: contain;
+}
+
 #heroBannerOnlyBoards .onlyboards-banner-image {
     object-fit: cover;
     object-position: center center;
+}
+
+#heroBannerOnlyBoards picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#heroBannerOnlyBoards picture .onlyboards-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .hero-bounce-container {
@@ -582,7 +602,8 @@ main.main-content {
 
 .quick-actions-desktop {
     background: var(--gray-50);
-    padding: 24px 40px;
+    padding: 0 40px;
+    line-height: 0;
 }
 
 .quick-actions-inner {
@@ -673,7 +694,7 @@ main.main-content {
    ============================================ */
 
 .categories-section {
-    padding: 16px 40px 12px;
+    padding: 0 40px 10px;
     background: var(--white);
     overflow: hidden;
 }
@@ -688,7 +709,7 @@ main.main-content {
     max-width: 1400px;
     margin: 0 auto;
     overflow: visible;
-    padding: 8px 0;
+    padding: 0;
     border-radius: 16px;
 }
 
@@ -730,8 +751,8 @@ main.main-content {
 }
 
 .categories-section .category-icon {
-    width: 52px;
-    height: 52px;
+    width: 39px;
+    height: 39px;
     display: flex;
     align-items: center;
     justify-content: center;
