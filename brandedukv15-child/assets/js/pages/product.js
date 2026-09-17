@@ -274,18 +274,22 @@ async function loadProductData() {
                 }
             }
 
-            // Merge: use listing prices if available (they are more up-to-date)
+            // Merge: the listing endpoint is the canonical PC price source.
             if (productData && listingProduct) {
-                const detailPrice = Number(productData.price) || 0;
                 const listingPrice = Number(listingProduct.price) || 0;
-                if (listingPrice > 0 && listingPrice !== detailPrice) {
-                    console.log(`ðŸ’° Price correction: detail \u00A3${detailPrice} â†’ listing \u00A3${listingPrice}`);
+                if (listingPrice > 0) {
+                    const detailPrice = Number(productData.price) || 0;
+                    if (listingPrice !== detailPrice) {
+                        console.log(`ðŸ’° Price correction: detail \u00A3${detailPrice} â†’ listing \u00A3${listingPrice}`);
+                    }
                     productData.price = listingProduct.price;
                     productData.basePrice = listingProduct.price;
                     productData.sell_price = listingProduct.price;
                 }
                 if (listingProduct.priceBreaks && listingProduct.priceBreaks.length > 0) {
                     productData.priceBreaks = listingProduct.priceBreaks;
+                    productData.tiers = listingProduct.priceBreaks;
+                    productData.priceTiers = listingProduct.priceBreaks;
                 }
             } else if (!productData && listingProduct) {
                 // Detail failed, use listing data entirely

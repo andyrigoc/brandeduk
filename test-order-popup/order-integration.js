@@ -105,10 +105,41 @@
             .then(res => res.json())
             .then(fullData => {
                 if (!fullData || !fullData.code) throw new Error('empty');
-                // Merge with any existing data (full endpoint wins for detail fields)
-                const merged = Object.assign({}, productData || {}, fullData);
-                window.currentOrderProduct = merged;
-                loadProductIntoPopup(merged);
+                const useProduct = function (catalogueProduct) {
+                    // The detail endpoint can contain a different supplier price
+                    // list, so catalogue pricing always wins when available.
+                    const merged = Object.assign({}, productData || {}, fullData, catalogueProduct || {});
+                    const pricingSource = catalogueProduct || productData || fullData;
+                    ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
+                        if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
+                    });
+                    if (Number.isFinite(Number(pricingSource.price)) &&
+                        (!Number.isFinite(Number(pricingSource.basePrice)) ||
+                            Number(pricingSource.basePrice) <= 0)) {
+                        merged.basePrice = pricingSource.price;
+                    }
+                    if (catalogueProduct && Number.isFinite(Number(catalogueProduct.price))) {
+                        merged.basePrice = catalogueProduct.price;
+                    }
+                    window.currentOrderProduct = merged;
+                    loadProductIntoPopup(merged);
+                };
+
+                if (productData) {
+                    useProduct(productData);
+                    return;
+                }
+
+                // Direct PC URLs have no search result object, so load the same
+                // catalogue endpoint used by the PC search before rendering.
+                fetch('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(code) + '&limit=1')
+                    .then(res => res.json())
+                    .then(payload => {
+                        const items = Array.isArray(payload && payload.items) ? payload.items : [];
+                        const catalogueProduct = items.find(item => item && item.code === code) || items[0];
+                        useProduct(catalogueProduct);
+                    })
+                    .catch(() => useProduct(fullData));
             })
             .catch(() => {
                 // Full endpoint failed — try list endpoint as fallback
