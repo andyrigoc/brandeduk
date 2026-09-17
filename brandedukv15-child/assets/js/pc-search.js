@@ -107,7 +107,7 @@
     }
 
     function productUrl(code) {
-        return new URL('product-detail.html?code=' + encodeURIComponent(code), projectRoot).href;
+        return new URL('shop-pc.html?product=' + encodeURIComponent(code), projectRoot).href;
     }
 
     function shopUrl(query) {
