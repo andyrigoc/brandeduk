@@ -4099,8 +4099,27 @@ function syncInlineLogoPanels() {
     const image = document.createElement("img");
     image.src = entry.logo;
     image.alt = "Saved logo";
+    const removeButton = document.createElement("span");
+    removeButton.className = "inline-upload-library-remove";
+    removeButton.setAttribute("role", "button");
+    removeButton.setAttribute("aria-label", "Remove saved logo");
+    removeButton.title = "Remove saved logo";
+    removeButton.textContent = "×";
     button.appendChild(image);
-    button.addEventListener("click", () => {
+    button.appendChild(removeButton);
+    button.addEventListener("click", (event) => {
+      if (event.target.closest(".inline-upload-library-remove")) {
+        sessionLogoLibrary.splice(0, sessionLogoLibrary.length, ...sessionLogoLibrary.filter((item) => item.logo !== entry.logo));
+        try {
+          const stored = JSON.parse(sessionStorage.getItem("toolReusableLogos") || "[]");
+          const remaining = Array.isArray(stored) ? stored.filter((item) => item?.logo !== entry.logo) : [];
+          sessionStorage.setItem("toolReusableLogos", JSON.stringify(remaining));
+        } catch (error) {
+          // The in-memory library is still updated if session storage is unavailable.
+        }
+        syncInlineLogoPanels();
+        return;
+      }
       inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
         item.classList.toggle("is-selected", item === button);
       });

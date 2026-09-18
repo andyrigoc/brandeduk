@@ -502,8 +502,9 @@
   }
 
   .inline-upload-library-items {
-    display: flex;
-    gap: 7px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     margin-top: 8px;
   }
 
@@ -511,9 +512,10 @@
     position: relative;
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
-    padding: 5px;
+    width: 100%;
+    aspect-ratio: 1;
+    height: auto;
+    padding: 7px;
     border: 1px solid #dde5ef;
     border-radius: 6px;
     background: #fff;
@@ -546,6 +548,29 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  .inline-upload-library-remove {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: 3;
+    display: grid;
+    width: 16px;
+    height: 16px;
+    place-items: center;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .inline-upload-library-remove:hover {
+    background: #cbd5e1;
+    color: #334155;
   }
 
   .inline-upload-library > button {
@@ -1250,7 +1275,7 @@
     z-index: 5;
     top: 90px;
     left: 18px;
-    width: min(300px, calc(33.333vw - 36px));
+    width: min(190px, calc(33.333vw - 158px));
     padding: 0;
     border: 0;
   }
@@ -1258,9 +1283,10 @@
   body.is-pc-order-embed.is-sweatshirt-position-picker .canvas-selected-colour {
     position: fixed;
     z-index: 5;
-    top: 222px;
-    left: 18px;
-    width: min(300px, calc(33.333vw - 36px));
+    top: 90px;
+    left: auto;
+    right: calc(100vw - 312px);
+    width: 112px;
     box-sizing: border-box;
   }
 
@@ -1289,7 +1315,7 @@
   body.is-pc-order-embed.is-sweatshirt-position-picker .product-preview {
     width: min(300px, calc(100% - 32px), 55vh);
     height: min(540px, calc(100vh - 150px));
-    margin: 128px auto 0;
+    margin: 88px auto 0;
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .polo-colour-wrap {
