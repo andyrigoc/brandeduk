@@ -151,6 +151,7 @@
     }
 
     var baseSetProductData = window.setProductData;
+
     if (typeof baseSetProductData === 'function') {
         window.setProductData = function setProductDataWithPcPresentation(product) {
             var result = baseSetProductData.apply(this, arguments);

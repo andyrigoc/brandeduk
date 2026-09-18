@@ -201,6 +201,11 @@
     <!-- Canvas area -->
     <div class="canvas-wrap">
 
+      <div class="garment-preview-heading">
+        <strong>Garment Preview</strong>
+        <span>This is a preview of your chosen product.</span>
+      </div>
+
       <div id="customizationContextLabel" class="customization-context-label" hidden aria-live="polite">
         <span>CUSTOMISING</span>
         <strong>Centre Front</strong>
@@ -405,6 +410,19 @@
 
       <p class="position-selection-copy">Select one or more positions</p>
 
+      <div id="sweatshirtPositionPicker" class="sweatshirt-position-picker" hidden aria-label="Sweatshirt logo positions">
+        <img src="../brandedukv15-child/assets/images/logo-positions/White%20Sweatshirt%20Print%20Placement%20Guide.png" alt="Sweatshirt logo placement guide" />
+        <button type="button" class="sweatshirt-position-hotspot hotspot-left-chest" data-position="left-chest" aria-label="Select Left Chest" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-right-chest" data-position="right-chest" aria-label="Select Right Chest" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-centre-chest" data-position="centre-chest" aria-label="Select Centre Chest" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-large-front" data-position="large-front" aria-label="Select Large Front" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-upper-back" data-position="upper-back" aria-label="Select Upper Back" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-large-back" data-position="large-back" aria-label="Select Large Back" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-left-sleeve" data-position="left-sleeve" aria-label="Select Left Sleeve" aria-pressed="false"></button>
+        <button type="button" class="sweatshirt-position-hotspot hotspot-right-sleeve" data-position="right-sleeve" aria-label="Select Right Sleeve" aria-pressed="false"></button>
+        <span id="sweatshirtPositionCursor" class="sweatshirt-position-cursor" aria-hidden="true" hidden></span>
+      </div>
+
       <div id="positionGrid" class="position-grid">
         <label class="position-card" data-position="left-chest" data-area="front">
           <input type="checkbox" />
@@ -470,6 +488,7 @@
           <span class="position-name">Right Sleeve</span>
         </label>
       </div>
+
     </div>
 
     <section id="positionDesignPanel" class="position-design-panel" aria-labelledby="positionDesignTitle">
@@ -1135,7 +1154,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260915a", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260917-dog-catalog-image", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();

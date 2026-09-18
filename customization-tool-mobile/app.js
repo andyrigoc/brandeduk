@@ -25,6 +25,7 @@ const state = {
   textAlign: "center",
   names: [],
   basePrice: 11.99,
+  priceBreaks: [],
   price: 11.99,
   logoRotation: 0,
   textRotation: 0,
@@ -1171,11 +1172,33 @@ async function hydrateSelectedProductFromApi() {
 
   setColourLoading(true);
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`);
-    if (!response.ok) return;
+    const [detailResponse, listingResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/products/${encodeURIComponent(productCode)}`),
+      fetch(`${API_BASE_URL}/products?q=${encodeURIComponent(productCode)}&limit=1`)
+    ]);
+    if (!detailResponse.ok) return;
 
-    const productData = await response.json();
+    const productData = await detailResponse.json();
     if (!productData || typeof productData !== "object") return;
+
+    const listingData = listingResponse.ok ? await listingResponse.json() : null;
+    const listingItems = listingData?.items || listingData?.products || [];
+    const listingProduct = listingItems.find((item) =>
+      String(item?.code || item?.style_code || "").toUpperCase() === productCode.toUpperCase()
+    ) || listingItems[0];
+    const cataloguePriceBreaks = Array.isArray(listingProduct?.priceBreaks)
+      ? listingProduct.priceBreaks.filter((tier) => Number.isFinite(Number(tier?.price)))
+      : [];
+    const priceBreaks = cataloguePriceBreaks.length > 0
+      ? cataloguePriceBreaks
+      : (Array.isArray(productData.priceBreaks) ? productData.priceBreaks : []);
+    const firstTierPrice = Number(priceBreaks[0]?.price);
+    if (Number.isFinite(firstTierPrice)) {
+      state.basePrice = firstTierPrice;
+      state.priceBreaks = priceBreaks;
+      state.price = firstTierPrice;
+      calculatePrice();
+    }
 
     state.productName = productData.name || productData.title || state.productName;
     state.brandName = productData.brand || productData.brand_name || state.brandName;
@@ -2626,7 +2649,10 @@ function collectSizes() {
 
 function calculatePrice() {
   const qty = parseInt(mainQtyInput.value) || state.totalQty || 1;
-  let unit = state.basePrice;
+  const tier = state.priceBreaks.find((item) =>
+    qty >= Number(item.min || 1) && qty <= Number(item.max || Number.MAX_SAFE_INTEGER)
+  );
+  let unit = tier ? Number(tier.price) : state.basePrice;
 
   Object.values(getDraftAreaDesigns()).forEach((design) => {
     if (design?.logo) unit += getLogoUnitPrice(design.method);
