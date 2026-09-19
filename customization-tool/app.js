@@ -504,7 +504,7 @@ function syncViewThumbTint() {
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
     if (!thumbSrc) return;
 
-    if (!safeHex) {
+    if (!safeHex || isConfiguredTemplateImageUrl(thumbSrc)) {
       colourLayer.style.opacity = "0";
       return;
     }
@@ -528,8 +528,9 @@ function syncViewThumbTint() {
     }
 
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
-    colourLayer.style.opacity = safeHex && thumbSrc ? "1" : "0";
-    if (safeHex && thumbSrc) {
+    const shouldTint = Boolean(safeHex && thumbSrc && !isConfiguredTemplateImageUrl(thumbSrc));
+    colourLayer.style.opacity = shouldTint ? "1" : "0";
+    if (shouldTint) {
       colourLayer.style.backgroundColor = safeHex;
       colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
       colourLayer.style.maskImage = `url("${thumbSrc}")`;
@@ -2376,8 +2377,45 @@ const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
   "sweatshirts",
   "trousers",
   "tshirts",
-  "vests-t-shirt"
+  "vests-t-shirt",
+  "blouses",
+  "chef-jackets",
+  "tunics",
+  "tabards",
+  "laptop-cases",
+  "dungarees",
+  "coveralls",
+  "sports-overtops",
+  "rugby-shirts",
+  "bodysuits",
+  "bibs",
+  "towels",
+  "blankets",
+  "umbrellas",
+  "dog-t-shirts",
+  "dog-hoodies",
+  "dog-jackets"
 ]);
+
+const CUSTOMIZATION_EXACT_TEMPLATES = {
+  blouses: ["blouses", "blouse"],
+  "chef-jackets": ["chef-jackets", "chef-jacket"],
+  tunics: ["tunics", "tunic-scrub-top"],
+  tabards: ["tabards", "tabard"],
+  "laptop-cases": ["laptop-cases", "laptop-sleeve"],
+  dungarees: ["dungarees", "bib-brace"],
+  coveralls: ["coveralls", "coverall-overall"],
+  "sports-overtops": ["sports-overtops", "sports-jersey"],
+  "rugby-shirts": ["rugby-shirts", "rugby-shirt"],
+  bodysuits: ["bodysuits", "baby-bodysuit"],
+  bibs: ["bibs", "baby-bib"],
+  towels: ["towels", "towel"],
+  blankets: ["blankets", "blanket"],
+  umbrellas: ["umbrellas", "umbrella"],
+  "dog-t-shirts": ["dog-t-shirts", "dog-tshirt"],
+  "dog-hoodies": ["dog-hoodies", "dog-hoodie"],
+  "dog-jackets": ["dog-jackets", "dog-jacket"]
+};
 
 function normalizeProductTypeSlug(value) {
   return String(value || "")
@@ -2390,9 +2428,29 @@ function normalizeProductTypeSlug(value) {
 
 function resolveCustomizationProductTypeSlug(name, productType) {
   const explicit = normalizeProductTypeSlug(productType);
+  if (CUSTOMIZATION_EXACT_TEMPLATES[explicit]) {
+    return CUSTOMIZATION_EXACT_TEMPLATES[explicit][0];
+  }
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
+  if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
+  if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
+  if (/\bdog\b/.test(text)) return "dog-jackets";
+  if (/baby|toddler|infant/.test(text) && /\bbib\b/.test(text)) return "bibs";
+  if (/baby|toddler|infant/.test(text) && /bodysuit|body suit|onesie/.test(text)) return "bodysuits";
+  if (/umbrella/.test(text)) return "umbrellas";
+  if (/blanket/.test(text)) return "blankets";
+  if (/towel/.test(text)) return "towels";
+  if (/chef/.test(text) && /jacket|coat/.test(text)) return "chef-jackets";
+  if (/tunic|scrub/.test(text)) return "tunics";
+  if (/tabard/.test(text)) return "tabards";
+  if (/bib[\s&-]*(?:and[\s&-]*)?brace|dungaree/.test(text)) return "dungarees";
+  if (/coverall|overall|boilersuit|boiler suit/.test(text)) return "coveralls";
+  if (/rugby/.test(text)) return "rugby-shirts";
+  if (/sports? jersey|teamwear jersey|football jersey/.test(text)) return "sports-overtops";
+  if (/laptop sleeve|notebook sleeve/.test(text)) return "laptop-cases";
+  if (/\bblouse\b/.test(text)) return "blouses";
   if (/\bdog\b|\bpet\b/.test(text) && /hi[\s-]?vis|high[\s-]?vis|safety vest|\bvest\b/.test(text)) return "safety-vests";
   if (/hi[\s-]?vis|high[\s-]?vis|safety vest/.test(text)) return "safety-vests";
   if (/gilet|body[\s-]?warmer/.test(text)) return "gilets-body-warmers";
@@ -2440,9 +2498,28 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
+  const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
+  if (explicit) return explicit;
+  if (exactTemplate) return exactTemplate[1];
+  if (slug === "dog-hoodies") return "dog-hoodie";
+  if (slug === "dog-t-shirts") return "dog-tshirt";
+  if (slug === "dog-jackets") return "dog-jacket";
+  if (slug === "bibs") return "baby-bib";
+  if (slug === "bodysuits") return "baby-bodysuit";
+  if (slug === "umbrellas") return "umbrella";
+  if (slug === "blankets") return "blanket";
+  if (slug === "towels") return "towel";
+  if (slug === "chef-jackets") return "chef-jacket";
+  if (slug === "tunics") return "tunic-scrub-top";
+  if (slug === "tabards") return "tabard";
+  if (slug === "dungarees") return "bib-brace";
+  if (slug === "coveralls") return "coverall-overall";
+  if (slug === "rugby-shirts") return "rugby-shirt";
+  if (slug === "sports-overtops") return "sports-jersey";
+  if (slug === "laptop-cases") return "laptop-sleeve";
+  if (slug === "blouses") return "blouse";
   const allowed = CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE[slug];
   if (!allowed) return "";
-  if (allowed.has(explicit)) return explicit;
 
   if (slug === "bags") {
     if (
@@ -2505,10 +2582,45 @@ function getConfiguredPositionMap() {
   return map;
 }
 
-function resolveConfiguredGarmentImage(area) {
+function isConfiguredTemplateImageUrl(imageUrl) {
+  const target = String(imageUrl || "").trim();
+  if (!target) return false;
+  return Object.values(getConfiguredPositionMap()).some(configuredUrl =>
+    target === configuredUrl || target.startsWith(configuredUrl)
+  );
+}
+
+function configuredPositionArea(position) {
+  const value = `${position?.slug || ""} ${position?.label || ""}`.toLowerCase();
+  if (/back|rear|nape|neck/.test(value)) return "back";
+  if (/left.*(?:sleeve|cuff|side)/.test(value)) return "left";
+  if (/right.*(?:sleeve|cuff|side)/.test(value)) return "right";
+  return "front";
+}
+
+function resolveConfiguredGarmentImage(area, positionSlug = "") {
   const images = getConfiguredPositionMap();
   const normalizedArea = normalizeProductTypeSlug(area) || "front";
+  const normalizedPosition = normalizeProductTypeSlug(positionSlug);
+  if (normalizedPosition && images[normalizedPosition]) return images[normalizedPosition];
+  const selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+  if (selectedPosition && images[selectedPosition]) {
+    const selectedConfig = state.customizationConfig?.positions?.find(
+      position => normalizeProductTypeSlug(position?.slug) === selectedPosition
+    );
+    if (!selectedConfig || configuredPositionArea(selectedConfig) === normalizedArea) {
+      return images[selectedPosition];
+    }
+  }
   if (images[normalizedArea]) return images[normalizedArea];
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+    : [];
+  const areaMatch = positions.find(position =>
+    configuredPositionArea(position) === normalizedArea
+    && String(position?.imageUrl || position?.image_url || "").trim()
+  );
+  if (areaMatch) return String(areaMatch.imageUrl || areaMatch.image_url).trim();
   if (normalizedArea === "left") return images.left || images.sleeve || images.side || "";
   if (normalizedArea === "right") return images.right || images.sleeve || images.side || images.left || "";
   if (normalizedArea === "left-sleeve" || normalizedArea === "right-sleeve") {
@@ -2518,13 +2630,17 @@ function resolveConfiguredGarmentImage(area) {
 }
 
 function getConfiguredViewAreas() {
-  const images = getConfiguredPositionMap();
-  if (Object.keys(images).length === 0) return null;
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions.filter(position =>
+      String(position?.imageUrl || position?.image_url || "").trim()
+    )
+    : [];
+  if (positions.length === 0) return null;
   return {
-    front: Boolean(images.front),
-    back: Boolean(images.back),
-    left: Boolean(images.left || images.sleeve || images.side),
-    right: Boolean(images.right || images.sleeve || images.side || images.left)
+    front: positions.some(position => configuredPositionArea(position) === "front"),
+    back: positions.some(position => configuredPositionArea(position) === "back"),
+    left: positions.some(position => configuredPositionArea(position) === "left"),
+    right: positions.some(position => configuredPositionArea(position) === "right")
   };
 }
 
@@ -2795,7 +2911,9 @@ async function applyArea() {
   if (requestId !== areaRenderRequestId) return;
 
   productShapeEl.src = neutralPngSrc;
-  const useCatalogImageDirectly = isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage();
+  const useCatalogImageDirectly = (
+    isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage()
+  ) || isConfiguredTemplateImageUrl(neutralPngSrc);
 
   if (useCatalogImageDirectly) {
     colourLayerEl.style.opacity = "0";
@@ -4501,15 +4619,17 @@ function syncPositionCardImages() {
     const image = card.querySelector(".position-thumb-wrap img");
     if (!image) return;
 
-    const source = useSweatshirtPositionImages
-      ? sweatshirtPositionImages[card.dataset.position]
-      : resolveNeutralGarmentPngForArea(area);
+    const configuredSource = resolveConfiguredGarmentImage(area, card.dataset.position);
+    const source = configuredSource
+      || (useSweatshirtPositionImages
+        ? sweatshirtPositionImages[card.dataset.position]
+        : resolveNeutralGarmentPngForArea(area));
     if (source) image.src = source;
 
     const guide = card.querySelector(".position-print-area-guide");
     if (guide) {
-      guide.hidden = useSweatshirtPositionImages;
-      if (useSweatshirtPositionImages) return;
+      guide.hidden = Boolean(configuredSource) || useSweatshirtPositionImages;
+      if (guide.hidden) return;
       guide.dataset.position = card.dataset.position || "centre-front";
       const guidePosition = getPreviewGuidePosition(
         state.customizationProductTypeSlug || state.product,
@@ -4589,6 +4709,15 @@ function positionKeyForLabel(label) {
 }
 
 function getProductPositionLabels() {
+  const configuredPositions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+        .filter(position => position?.isActive !== false)
+        .sort((first, second) => Number(first?.sortOrder || 0) - Number(second?.sortOrder || 0))
+        .map(position => String(position?.label || "").trim())
+        .filter(Boolean)
+    : [];
+  if (configuredPositions.length > 0) return [...new Set(configuredPositions)];
+
   const code = String(state.productCode || "").trim().toUpperCase();
   const title = String(state.productName || "").toLowerCase();
   const category = state.customizationProductTypeSlug || "tshirts";
@@ -7064,7 +7193,12 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
     if (!input.checked) {
       state.selectedPositions = selectedPositions.filter((position) => position !== positionKey);
       state.selectedPosition = state.selectedPositions.at(-1) || "";
+      const activeCard = state.selectedPosition
+        ? document.querySelector(`.position-card[data-position="${CSS.escape(state.selectedPosition)}"]`)
+        : null;
+      state.selectedArea = normalizeAreaForPicker(activeCard?.dataset.area) || "front";
       syncPositionSelectionCards();
+      if (isPcOrderEmbed) await applyArea();
       return;
     }
 
@@ -7080,9 +7214,13 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
     if (!selectedPositions.includes(positionKey)) selectedPositions.push(positionKey);
     state.selectedPositions = selectedPositions;
     state.selectedPosition = positionKey;
+    state.selectedArea = area;
     syncPositionSelectionCards();
     updateCustomizationContextLabel();
-    if (isPcOrderEmbed) return;
+    if (isPcOrderEmbed) {
+      await applyArea();
+      return;
+    }
     await switchToDesignArea(area);
 });
 
