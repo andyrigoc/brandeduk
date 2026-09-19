@@ -4329,6 +4329,22 @@ function getSessionLogoLibrary() {
     out.push({ logo: key, method: method || "logo" });
   };
   sessionLogoLibrary.forEach((entry) => add(entry.logo, entry.method));
+  readQuoteBasket().forEach((item) => {
+    if (Array.isArray(item?.logos)) {
+      item.logos.forEach((entry) => add(entry?.logo, entry?.method));
+    }
+    if (Array.isArray(item?.positions)) {
+      item.positions.forEach((entry) => add(entry?.logo, entry?.method));
+    } else if (item?.positions && typeof item.positions === "object") {
+      Object.values(item.positions).forEach((entry) => add(entry?.logo, entry?.method));
+    }
+    if (item?.positionDesigns && typeof item.positionDesigns === "object") {
+      Object.values(item.positionDesigns).forEach((entry) => add(entry?.logo, entry?.method));
+    }
+    if (Array.isArray(item?.customizations)) {
+      item.customizations.forEach((entry) => add(entry?.logo, entry?.method));
+    }
+  });
   Object.values(state.areaDesigns || {}).forEach((entry) => add(entry?.logo, entry?.method));
   if (state.uploadedLogo) add(state.uploadedLogo, state.decorationType);
   try {
@@ -5602,7 +5618,6 @@ function preparePcUploadFile(file) {
     processLogoFile(file);
     return;
   }
-  ensurePendingPositionLogoTarget();
   pcPendingUploadFile = file;
   pcUploadModal.hidden = false;
   document.getElementById("pcUploadFileName").textContent = file.name;
@@ -5760,6 +5775,11 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
     return;
   }
   openScreen("mainEditor");
+  if (isPcOrderEmbed && hasConfiguredPositionPicker()) {
+    syncInlineLogoPanels();
+    updateConfirmButtonState();
+    return;
+  }
   showLogoOnCanvas(state.uploadedLogo);
   calculatePrice();
   updateConfirmButtonState();

@@ -423,6 +423,14 @@ function savePage3SelectionToBasket() {
     var selectedItem = document.querySelector('.colour-swatch-item.selected');
     var colourName = selectedItem ? (selectedItem.dataset.name || selectedItem.dataset.colour) : (window.selectedColour || '');
     var colourImg = selectedItem ? selectedItem.dataset.img : '';
+    var priceBreaks = product.priceBreaks || product.tiers || product.priceTiers || [];
+    var unitPrice = parseFloat(product.price || product.basePrice) || 0;
+    priceBreaks.forEach(function(tier) {
+        var min = Number(tier.min || tier.minQty || tier.qty || 0);
+        var max = Number(tier.max || tier.maxQty || 999999);
+        var tierPrice = Number(tier.price || tier.unitPrice);
+        if (totalQty >= min && totalQty <= max && tierPrice > 0) unitPrice = tierPrice;
+    });
 
     var item = {
         id: Date.now(),
@@ -433,6 +441,9 @@ function savePage3SelectionToBasket() {
         colourImg: colourImg,
         image: colourImg || product.image || '',
         price: parseFloat(product.price) || 0,
+        basePrice: parseFloat(product.basePrice || product.price) || 0,
+        unitPrice: unitPrice,
+        priceBreaks: priceBreaks.map(function(tier) { return Object.assign({}, tier); }),
         sizes: sizes
     };
 

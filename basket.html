@@ -2456,6 +2456,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         await restoreSharedBasketFromUrl();
         normalizeBasket();          // Single-pass: sync logos + convert to per-size rows
+        await hydrateMissingBasketPricing();
         recalcAllTierPricing();     // Ensure consistent prices across same-code items
         initVATToggle();
         renderBasket();
@@ -2471,6 +2472,47 @@
         clearPendingLogoPrompts();
         initShareBasketFlow();
     });
+
+    async function hydrateMissingBasketPricing() {
+        const basket = getBasket();
+        const missingCodes = [...new Set(basket
+            .filter(item => !Array.isArray(item.priceBreaks) || item.priceBreaks.length === 0)
+            .map(item => String(item.code || item.productCode || '').trim())
+            .filter(Boolean))];
+        if (missingCodes.length === 0) return;
+
+        const apiBase = (typeof window.resolveBrandedApiBase === 'function'
+            ? window.resolveBrandedApiBase()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+        let changed = false;
+
+        await Promise.all(missingCodes.map(async code => {
+            try {
+                const response = await fetch(`${apiBase}/api/products?q=${encodeURIComponent(code)}&limit=10`);
+                if (!response.ok) return;
+                const data = await response.json();
+                const products = data.items || data.products || [];
+                const product = products.find(candidate =>
+                    String(candidate.code || candidate.style_code || '').trim().toLowerCase() === code.toLowerCase()
+                );
+                const priceBreaks = product && (product.priceBreaks || product.price_breaks);
+                if (!Array.isArray(priceBreaks) || priceBreaks.length === 0) return;
+
+                basket.forEach(item => {
+                    if (String(item.code || item.productCode || '').trim().toLowerCase() !== code.toLowerCase()) return;
+                    item.priceBreaks = priceBreaks.map(tier => ({ ...tier }));
+                    if (!Number.isFinite(Number(item.basePrice)) || Number(item.basePrice) <= 0) {
+                        item.basePrice = Number(product.price) || Number(item.unitPrice) || 0;
+                    }
+                    changed = true;
+                });
+            } catch (error) {
+                console.warn(`Could not load volume pricing for ${code}:`, error);
+            }
+        }));
+
+        if (changed) saveBasket(basket);
+    }
 
     function basketShareApiBase() {
         const resolved = typeof window.resolveBrandedApiBase === 'function'
@@ -4555,6 +4597,13 @@
             return;
         }
 
+        const isMobile = window.innerWidth < 1024;
+        const code = item.code || item.productCode || '';
+        if (!isMobile) {
+            window.location.href = `shop-pc.html?product=${encodeURIComponent(code)}`;
+            return;
+        }
+
         _writeLogosAsOldFormat(itemIndex);
 
         sessionStorage.setItem('customizingBasketIndex', String(itemIndex));
@@ -4568,12 +4617,8 @@
 
         _setCustomizeSessionData(item);
 
-        const isMobile = window.innerWidth < 1024;
-        const code = item.code || item.productCode || '';
         const codeQ = code ? ('code=' + encodeURIComponent(code) + '&') : '';
-        const url = isMobile
-            ? 'mobile/customize-mobile.html?' + codeQ + 'editItem=1&_cb=' + Date.now()
-            : 'customization-tool/index.html?' + codeQ + 'from=basket&editItem=1&_cb=' + Date.now();
+        const url = 'mobile/customize-mobile.html?' + codeQ + 'editItem=1&_cb=' + Date.now();
         openCustomizePopup(url);
     };
 

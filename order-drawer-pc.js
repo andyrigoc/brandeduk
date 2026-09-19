@@ -445,9 +445,13 @@
             }
 
             .basket-item-img {
-                width: 80px;
-                height: 80px;
-                object-fit: cover;
+                width: 96px;
+                height: 96px;
+                flex: 0 0 96px;
+                box-sizing: border-box;
+                padding: 6px;
+                object-fit: contain;
+                object-position: center;
                 border-radius: 8px;
                 background: #fff;
             }
@@ -869,9 +873,96 @@
             backBtn.style.pointerEvents = step > 1 && step < 3 ? 'auto' : 'none';
         }
 
+        function getItemQuantityDetails(item) {
+            const rawSizes = item.sizes || item.quantities;
+            let entries = [];
+
+            if (Array.isArray(rawSizes)) {
+                entries = rawSizes.map(entry => [
+                    entry && (entry.size || entry.name) || '',
+                    Number(entry && (entry.qty ?? entry.quantity ?? entry.value)) || 0
+                ]);
+            } else if (rawSizes && typeof rawSizes === 'object') {
+                entries = Object.entries(rawSizes).map(([size, value]) => [
+                    size,
+                    Number(value && typeof value === 'object' ? (value.qty ?? value.quantity ?? value.value) : value) || 0
+                ]);
+            }
+
+            entries = entries.filter(([, quantity]) => quantity > 0);
+            const mappedTotal = entries.reduce((sum, [, quantity]) => sum + quantity, 0);
+            const fallbackTotal = Number(item.qty ?? item.quantity ?? item.totalQty ?? item.totalQuantity) || 0;
+            const total = mappedTotal || fallbackTotal;
+            const sizeText = entries.length > 0
+                ? entries.map(([size, quantity]) => `${size} x ${quantity}`).join(', ')
+                : (item.size && total > 0 ? `${item.size} x ${total}` : '');
+
+            return { total, sizeText };
+        }
+
+        function getBasketTotalQuantity(basket) {
+            return basket.reduce((sum, item) => sum + getItemQuantityDetails(item).total, 0);
+        }
+
+        function updateDesktopBasketBadge(basket) {
+            const items = Array.isArray(basket)
+                ? basket
+                : JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            const totalQuantity = getBasketTotalQuantity(items);
+            const badge = document.getElementById('headerBasketBadge');
+            if (!badge) return;
+            badge.textContent = String(totalQuantity);
+            badge.dataset.count = String(totalQuantity);
+            badge.style.display = totalQuantity > 0 ? 'flex' : 'none';
+        }
+
+        function getDrawerLogos(item) {
+            const logos = [];
+            const seenPositions = new Set();
+            const defaultUnitPrice = method => {
+                const normalized = String(method || '').toLowerCase();
+                if (normalized === 'embroidery') return 5.00;
+                if (normalized === 'dtf') return 3.95;
+                if (normalized === 'screen') return 2.95;
+                return 3.50;
+            };
+            const addLogo = (entry, fallbackPosition) => {
+                if (!entry || !entry.logo) return;
+                const position = String(entry.position || entry.posKey || fallbackPosition || '').trim();
+                if (!position || seenPositions.has(position)) return;
+                seenPositions.add(position);
+                const method = String(entry.method || 'embroidery').toLowerCase();
+                const parsedPrice = parseFloat(entry.unitPrice);
+                logos.push({
+                    position,
+                    method,
+                    logo: entry.logo,
+                    unitPrice: Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : defaultUnitPrice(method)
+                });
+            };
+
+            if (Array.isArray(item.positions)) {
+                item.positions.forEach(position => addLogo(position));
+            } else if (item.positions && typeof item.positions === 'object') {
+                Object.entries(item.positions).forEach(([position, design]) => addLogo(design, position));
+            }
+            if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                Object.entries(item.positionDesigns).forEach(([position, design]) => addLogo(design, position));
+            }
+            if (Array.isArray(item.logos)) {
+                item.logos.forEach(logo => addLogo(logo));
+            }
+            if (Array.isArray(item.customizations)) {
+                item.customizations.forEach(customization => addLogo(customization));
+            }
+
+            return logos;
+        }
+
         // Load basket data
         function loadBasketData() {
             const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
+            updateDesktopBasketBadge(basket);
             const container = document.getElementById('basketItemsContainer');
             const emptyMsg = document.getElementById('basketEmptyMessage');
             const nextBtn = document.getElementById('basketNextBtn');
@@ -895,24 +986,32 @@
             emptyMsg.style.display = 'none';
             nextBtn.disabled = false;
 
-            let total = 0;
+            let productCosts = 0;
+            let logoCosts = 0;
+            let totalQtyAll = 0;
+            const uniqueEmbroideryDesigns = new Set();
             let html = '';
 
-            basket.forEach((item, idx) => {
-                // Support both formats: item.quantity (old) and item.sizes (new multi-size)
-                const sizes = item.sizes || item.quantities || null;
-                let totalQty = 0;
-                let sizesText = '';
-                if (sizes && typeof sizes === 'object' && Object.keys(sizes).length > 0) {
-                    Object.entries(sizes).forEach(([s, q]) => { totalQty += Number(q) || 0; });
-                    sizesText = Object.entries(sizes).filter(([s,q]) => Number(q) > 0).map(([s,q]) => `${s}×${q}`).join(', ');
-                } else {
-                    totalQty = Number(item.quantity || item.totalQty || 0);
-                    sizesText = '';
-                }
-                const unitPrice = parseFloat(item.price) || 0;
-                const itemTotal = unitPrice * totalQty;
-                total += itemTotal;
+            basket.forEach(item => {
+                const quantityDetails = getItemQuantityDetails(item);
+                const totalQty = quantityDetails.total;
+                const sizesText = quantityDetails.sizeText;
+                const unitPrice = parseFloat(item.unitPrice ?? item.price) || 0;
+                const garmentTotal = unitPrice * totalQty;
+                const itemLogos = getDrawerLogos(item);
+                const itemLogoTotal = itemLogos.reduce((sum, logo) => sum + (logo.unitPrice * totalQty), 0);
+                const itemTotal = garmentTotal + itemLogoTotal;
+                productCosts += garmentTotal;
+                logoCosts += itemLogoTotal;
+                totalQtyAll += totalQty;
+                itemLogos.forEach(logo => {
+                    if (logo.method === 'embroidery') uniqueEmbroideryDesigns.add(logo.logo);
+                });
+                (Array.isArray(item.texts) ? item.texts : []).forEach(textDesign => {
+                    if (String(textDesign?.method || '').toLowerCase() !== 'embroidery') return;
+                    const text = String(textDesign?.text || '').trim().toLowerCase();
+                    if (text) uniqueEmbroideryDesigns.add(`text:${text}:${textDesign.font || textDesign.fontFamily || 'default'}`);
+                });
                 const colourLabel = item.colour || item.color || '';
 
                 html += `
@@ -929,32 +1028,13 @@
                 `;
             });
 
-            // Calculate logo costs (same logic as basket.html)
-            let logoCosts = 0;
-            let digitizingFee = 0;
-            const uniqueEmbLogos = new Set();
-            let totalQtyAll = 0;
-            basket.forEach(item => {
-                const sizes = item.sizes || item.quantities || null;
-                let qty = 0;
-                if (sizes && typeof sizes === 'object' && Object.keys(sizes).length > 0) {
-                    Object.values(sizes).forEach(q => { qty += Number(q) || 0; });
-                } else { qty = Number(item.quantity || item.totalQty || 0); }
-                totalQtyAll += qty;
-                if (item.logos) {
-                    item.logos.forEach(logo => {
-                        logoCosts += (logo.unitPrice || 0) * qty;
-                        if (logo.method === 'embroidery' && logo.logo) uniqueEmbLogos.add(logo.logo);
-                    });
-                }
-            });
-            digitizingFee = uniqueEmbLogos.size > 0 ? 25.00 : 0;
-            const subtotalExVat = total + logoCosts + digitizingFee;
+            const digitizingFee = uniqueEmbroideryDesigns.size * 25.00;
+            const subtotalExVat = productCosts + logoCosts + digitizingFee;
             const vatAmount = subtotalExVat * 0.20;
             const grandTotal = subtotalExVat + vatAmount;
 
             container.innerHTML = html;
-            setEl('drProductCosts', `£${total.toFixed(2)}`);
+            setEl('drProductCosts', `\u00a3${productCosts.toFixed(2)}`);
             setEl('drLogoCosts', `£${logoCosts.toFixed(2)}`);
             setEl('drExcVat', `£${subtotalExVat.toFixed(2)}`);
             setEl('drVat', `£${vatAmount.toFixed(2)}`);
@@ -964,6 +1044,7 @@
             const sb = document.getElementById('drawerStatsBar'); if (sb) sb.style.display = 'flex';
             const drRow = document.getElementById('drDigitizingRow');
             if (drRow) drRow.style.display = digitizingFee > 0 ? 'flex' : 'none';
+            setEl('drDigitizingFee', `\u00a3${digitizingFee.toFixed(2)}`);
         }
 
         // Submit quote
@@ -976,7 +1057,7 @@
             const ref = 'ORD-' + Date.now().toString().slice(-8);
             document.getElementById('orderRefNumber').textContent = '#' + ref;
             document.getElementById('confirmEmail').textContent = formData.get('email');
-            document.getElementById('confirmItems').textContent = basket.length + ' item(s)';
+            document.getElementById('confirmItems').textContent = getBasketTotalQuantity(basket) + ' item(s)';
             
             const total = basket.reduce((sum, item) => {
                 const sizes = item.sizes || item.quantities || null;
@@ -1001,6 +1082,12 @@
             // You can add API call here
             // fetch('/api/submit-quote', { method: 'POST', body: JSON.stringify(...) })
         }
+
+        updateDesktopBasketBadge();
+        window.addEventListener('basketUpdated', () => updateDesktopBasketBadge());
+        window.addEventListener('storage', event => {
+            if (event.key === 'quoteBasket') updateDesktopBasketBadge();
+        });
     }
 
     // Auto-initialize when DOM is ready
