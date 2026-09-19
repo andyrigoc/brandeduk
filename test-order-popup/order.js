@@ -377,13 +377,13 @@ function populatePage3() {
             if (sel && sel.sizes && sel.sizes[size]) stock = sel.sizes[size].stock || '';
         }
         
-        var box = $('<div class="size-qty-box-p3"></div>');
-        box.html('<div class="size-name-p3">' + size + '</div>' +
+        var box = $('<div class="size-quantity__row size-qty-box-p3" data-size="' + size + '" data-selected="false"></div>');
+        box.html('<label class="size-quantity__label size-name-p3" for="quantity-' + size + '">' + size + '</label>' +
             (stock ? '<div class="size-stock-p3">Stock: <strong>' + stock + '</strong></div>' : '') +
-            '<div class="qty-controls">' +
-            '<button class="qty-btn minus" data-size="' + size + '">-</button>' +
-            '<input type="number" class="qty-input" data-size="' + size + '" value="0" min="0" max="9999">' +
-            '<button class="qty-btn plus" data-size="' + size + '">+</button>' +
+            '<div class="size-quantity__counter qty-controls">' +
+            '<button type="button" class="size-quantity__button qty-btn minus" data-action="decrease" data-size="' + size + '" aria-label="Remove one ' + size + '" disabled>−</button>' +
+            '<input type="number" class="size-quantity__input qty-input" id="quantity-' + size + '" data-size="' + size + '" value="0" min="0" max="9999" step="1" inputmode="numeric" aria-label="Quantity for size ' + size + '">' +
+            '<button type="button" class="size-quantity__button qty-btn plus" data-action="increase" data-size="' + size + '" aria-label="Add one ' + size + '">+</button>' +
             '</div>');
         grid.append(box);
     });
@@ -401,12 +401,10 @@ $(".back").click(function(){
     }
 });
 
-// Add to Quote handler — page 3 button → go to Page 4 (logo)
-$(document).on("click", "#btnAddToQuote", function(e) {
+function savePage3SelectionToBasket() {
     var product = window.productData;
-    if (!product) return;
+    if (!product) return false;
 
-    // Collect quantities from page 3 grid
     var sizes = {};
     var totalQty = 0;
     $('#sizeQtyGridP3 .qty-input').each(function() {
@@ -419,10 +417,9 @@ $(document).on("click", "#btnAddToQuote", function(e) {
 
     if (totalQty === 0) {
         window.showAlert('Please select at least one size/quantity', 'Select Sizes');
-        return;
+        return false;
     }
 
-    // Store pending basket item globally (finalised on page 5)
     var selectedItem = document.querySelector('.colour-swatch-item.selected');
     var colourName = selectedItem ? (selectedItem.dataset.name || selectedItem.dataset.colour) : (window.selectedColour || '');
     var colourImg = selectedItem ? selectedItem.dataset.img : '';
@@ -439,37 +436,48 @@ $(document).on("click", "#btnAddToQuote", function(e) {
         sizes: sizes
     };
 
-    // Save directly to basket
     var basket = [];
     try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
     basket.push(item);
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
     window.dispatchEvent(new Event('basketUpdated'));
 
-    // Show success state
-    var sizeList = Object.entries(sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
-    $('#successSubtitle').text(item.colour + ' · ' + totalQty + ' items (' + sizeList + ')');
+    return {
+        item: item,
+        sizes: sizes,
+        totalQty: totalQty
+    };
+}
+
+// Add to Quote handler — page 3 button → go to Page 4 (logo)
+$(document).on("click", "#btnAddToQuote", function() {
+    var savedSelection = savePage3SelectionToBasket();
+    if (!savedSelection) return;
+
+    var sizeList = Object.entries(savedSelection.sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
+    $('#successSubtitle').text(savedSelection.item.colour + ' · ' + savedSelection.totalQty + ' items (' + sizeList + ')');
     $('#btnAddToQuote').hide();
     $('#addQuoteSuccess').fadeIn(300);
 });
 
 $(document).on("click", "#btnBuyPlain", function() {
-    $('#btnAddToQuote').trigger('click');
+    var savedSelection = savePage3SelectionToBasket();
+    if (!savedSelection) return;
+
+    var sizeList = Object.entries(savedSelection.sizes).map(function(e){ return e[0]+' × '+e[1]; }).join(', ');
+    $('#successSubtitle').text(savedSelection.item.colour + ' · ' + savedSelection.totalQty + ' items (' + sizeList + ')');
+    $('#addQuoteSuccess').fadeIn(300);
 });
 
 $(document).on("click", "#btnCustomize", function() {
-    $('#btnAddToQuote').trigger('click');
-    window.setTimeout(function() {
-        if ($('#addQuoteSuccess').is(':visible')) {
-            $('#addQuoteSuccess').hide();
-            $('#btnAddToQuote').show();
-            if (typeof window.openPcOrderCustomizer === 'function') {
-                window.openPcOrderCustomizer();
-            } else {
-                window.goToPage(3);
-            }
-        }
-    }, 80);
+    if (!savePage3SelectionToBasket()) return;
+
+    $('#addQuoteSuccess').hide();
+    if (typeof window.openPcOrderCustomizer === 'function') {
+        window.openPcOrderCustomizer();
+    } else {
+        window.goToPage(3);
+    }
 });
 
 // Final save — called after page 5
@@ -623,7 +631,13 @@ $(document).on("click", "#p3BackToColour", function() {
     window.goToPage(1);
 });
 
-$(document).on("click", ".pc-step-back:not(#p3BackToColour)", function() {
+$(document).on("click", "#p1BackToCatalog, #p2BackToCatalog", function() {
+    if (typeof window.closeOrderPopup === 'function') {
+        window.closeOrderPopup();
+    }
+});
+
+$(document).on("click", ".pc-step-back:not(#p1BackToCatalog):not(#p2BackToCatalog):not(#p3BackToColour)", function() {
     window.goToPage(parseInt($(this).data('target-page'), 10) || 0);
 });
 
@@ -844,28 +858,24 @@ $(document).on("click", ".colour-swatch-item", function(e) {
     if ($(e.target).hasClass('swatch-view-btn') || $(e.target).closest('.swatch-view-btn').length > 0) {
         return;
     }
-    
-    const wasSelected = $(this).hasClass("selected");
-    
+
     // Remove selection from all swatches
     $(".colour-swatch-item").removeClass("selected");
-    
-    if (!wasSelected) {
-        // Select this one
-        $(this).addClass("selected");
-        const colourName = $(this).data("colour") || $(this).data("name");
-        const imgUrl = $(this).data("img");
-        window.selectedColour = colourName;
-        $("#selectedColourName").text(colourName);
-        if (imgUrl) $("#productMainImage").attr("src", imgUrl);
-        if (typeof window.preloadPcOrderCustomizer === 'function' && window.productData) {
-            window.preloadPcOrderCustomizer(window.productData, colourName, imgUrl, $(this).data("hex") || '');
-        }
-    } else {
-        // Deselect completely
-        window.selectedColour = null;
-        $("#selectedColourName").text("None");
+
+    $(this).addClass("selected");
+    const colourName = $(this).data("colour") || $(this).data("name");
+    const imgUrl = $(this).data("img");
+    const colourHex = $(this).data("hex") || '#64748b';
+    window.selectedColour = colourName;
+    $("#selectedColourName").text(colourName);
+    $("#p2ColourSelect").val(colourName);
+    $("#orderPopup").css("--pc-selected-colour", colourHex);
+    if (imgUrl) $("#productMainImage").attr("src", imgUrl);
+    if (typeof window.preloadPcOrderCustomizer === 'function' && window.productData) {
+        window.preloadPcOrderCustomizer(window.productData, colourName, imgUrl, colourHex);
     }
+
+    window.goToPage(2);
 });
 
 // Handle quantity controls (PAGE 2)
@@ -877,7 +887,7 @@ $(document).on("click", ".qty-btn.minus", function() {
         currentValue--;
         input.val(currentValue);
         updatePage2Summary();
-        updateBoxHighlight($(this).closest(".size-qty-box"));
+        updateBoxHighlight($(this).closest(".size-qty-box-p3, .size-qty-box"));
         updateP3TierHighlight();
     }
 });
@@ -889,7 +899,7 @@ $(document).on("click", ".qty-btn.plus", function() {
     currentValue++;
     input.val(currentValue);
     updatePage2Summary();
-    updateBoxHighlight($(this).closest(".size-qty-box"));
+    updateBoxHighlight($(this).closest(".size-qty-box-p3, .size-qty-box"));
     updateP3TierHighlight();
 });
 
@@ -902,7 +912,7 @@ $(document).on("change", ".qty-input", function() {
     
     $(this).val(value);
     updatePage2Summary();
-    updateBoxHighlight($(this).closest(".size-qty-box"));
+    updateBoxHighlight($(this).closest(".size-qty-box-p3, .size-qty-box"));
     updateP3TierHighlight();
 });
 
@@ -984,12 +994,17 @@ window.updateP3QuantitySummary = updateP3QuantitySummary;
 // Highlight box if has quantity
 function updateBoxHighlight(box) {
     const qty = parseInt(box.find(".qty-input").val()) || 0;
+    const minusButton = box.find(".qty-btn.minus");
     
     if (qty > 0) {
         box.addClass("has-qty");
+        box.attr("data-selected", "true");
     } else {
         box.removeClass("has-qty");
+        box.attr("data-selected", "false");
     }
+
+    minusButton.prop("disabled", qty === 0);
 }
 
 /* ============================================================

@@ -109,6 +109,9 @@
                     // The detail endpoint can contain a different supplier price
                     // list, so catalogue pricing always wins when available.
                     const merged = Object.assign({}, productData || {}, fullData, catalogueProduct || {});
+                    if (String(fullData.description || '').trim()) {
+                        merged.description = fullData.description;
+                    }
                     const pricingSource = catalogueProduct || productData || fullData;
                     ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
                         if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
