@@ -205,11 +205,11 @@
         if (has(/\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[ -]?pocket apron\b|\bpocket apron\b/)) return { slug: 'aprons', subtype: 'waist' };
         if (has(/apron/)) return { slug: 'aprons', subtype: 'bib' };
         if (has(/jogger|sweatpant|jogging bottom/)) return { slug: 'sweatpants', subtype: 'joggers' };
-        if (has(/\bshorts?\b/) && !has(/shirt/)) return { slug: 'shorts', subtype: 'shorts' };
+        if (has(/\bshorts\b/) && !has(/shirt/)) return { slug: 'shorts', subtype: 'shorts' };
         if (has(/trouser|work pant|workwear pant/)) return { slug: 'trousers', subtype: 'work-trousers' };
 
-        if (hiVis && has(/bodywarmer|body warmer|gilet|waistcoat/)) return { slug: 'gilets-body-warmers', subtype: 'hi-vis-bodywarmer' };
-        if (hiVis && has(/jacket|coat|bomber/)) return { slug: 'jackets', subtype: 'hi-vis-jacket' };
+        if (hiVis && has(/bodywarmer|body warmer|gilet/)) return { slug: 'gilets-body-warmers', subtype: 'hi-vis-bodywarmer' };
+        if (hiVis && has(/\b(?:jacket|coat|bomber)\b/)) return { slug: 'jackets', subtype: 'hi-vis-jacket' };
         if (hiVis && has(/hood/)) return { slug: 'hoodies', subtype: 'hi-vis-hoodie' };
         if (hiVis && has(/sweatshirt|sweater/)) return { slug: 'sweatshirts', subtype: 'hi-vis-sweatshirt' };
         if (hiVis && has(/polo/)) return { slug: 'polos', subtype: 'hi-vis-polo' };
@@ -232,7 +232,7 @@
         if (has(/long[ -]?sleeve/) && has(/polo/)) return { slug: 'polos', subtype: 'long-sleeve' };
         if (has(/polo/)) return { slug: 'polos', subtype: 'short-sleeve' };
         if (has(/blouse/)) return { slug: 'blouses', subtype: 'blouse' };
-        if (has(/long[ -]?sleeve/) && has(/shirt/)) return { slug: 'shirts', subtype: 'long-sleeve' };
+        if (has(/long[ -]?sleeve/) && has(/shirt/) && !has(/t[ -]?shirts?/)) return { slug: 'shirts', subtype: 'long-sleeve' };
         if (has(/shirt/) && !has(/t[ -]?shirt/)) return { slug: 'shirts', subtype: 'short-sleeve' };
         if (has(/long[ -]?sleeve/)) return { slug: 'tshirts', subtype: 'long-sleeve' };
         if (has(/t[ -]?shirt|\btee\b/)) return { slug: 'tshirts', subtype: 'short-sleeve' };

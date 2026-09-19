@@ -2455,11 +2455,13 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
   if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
   if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
   if (/\bdog\b/.test(text)) return "dog-jackets";
   if (/baby|toddler|infant/.test(text) && /\bbib\b/.test(text)) return "bibs";
   if (/baby|toddler|infant/.test(text) && /bodysuit|body suit|onesie/.test(text)) return "bodysuits";
+  if (/baby|toddler|infant/.test(text)) return "tshirts";
   if (/umbrella/.test(text)) return "umbrellas";
   if (/blanket/.test(text)) return "blankets";
   if (/towel/.test(text)) return "towels";
@@ -2470,10 +2472,16 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (/coverall|overall|boilersuit|boiler suit/.test(text)) return "coveralls";
   if (/rugby/.test(text)) return "rugby-shirts";
   if (/sports? jersey|teamwear jersey|football jersey/.test(text)) return "sports-overtops";
+  if (/sports? vest|running vest|racerback/.test(text)) return "vests-t-shirt";
   if (/laptop sleeve|notebook sleeve/.test(text)) return "laptop-cases";
   if (/\bblouse\b/.test(text)) return "blouses";
-  if (/\bdog\b|\bpet\b/.test(text) && /hi[\s-]?vis|high[\s-]?vis|safety vest|\bvest\b/.test(text)) return "safety-vests";
-  if (/hi[\s-]?vis|high[\s-]?vis|safety vest/.test(text)) return "safety-vests";
+  if (hiVis && /body[\s-]?warmer|gilet/.test(text)) return "gilets-body-warmers";
+  if (hiVis && /jacket|coat|bomber/.test(text)) return "jackets";
+  if (hiVis && /hood/.test(text)) return "hoodies";
+  if (hiVis && /sweatshirt|sweater/.test(text)) return "sweatshirts";
+  if (hiVis && /polo/.test(text)) return "polos";
+  if (hiVis && /t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
+  if (hiVis) return "safety-vests";
   if (/gilet|body[\s-]?warmer/.test(text)) return "gilets-body-warmers";
   if (/soft[\s-]?shell/.test(text)) return "softshells";
   if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text)) return "sweatpants";
@@ -2499,32 +2507,36 @@ function resolveCustomizationProductTypeSlug(name, productType) {
 
 const CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE = {
   aprons: new Set(["bib", "waist"]),
-  bags: new Set(["backpack", "tote", "holdall", "laptop-document"]),
+  bags: new Set(["tote", "drawstring-gymsac", "book-bag", "laptop-document", "backpack", "messenger", "holdall", "boot-bag"]),
   beanies: new Set(["cuffed", "bobble"]),
+  caps: new Set(["baseball", "trucker"]),
   fleece: new Set(["full-zip", "quarter-zip"]),
-  "gilets-body-warmers": new Set(["padded", "fleece"]),
-  hats: new Set(["bucket", "wide-brim"]),
-  "safety-vests": new Set(["waistcoat", "jacket-bomber", "dog"]),
-  hoodies: new Set(["pullover", "full-zip"]),
-  jackets: new Set(["lightweight", "padded-puffer", "waterproof-parka"]),
-  polos: new Set(["short-sleeve", "long-sleeve"]),
+  "gilets-body-warmers": new Set(["standard", "padded", "hi-vis-bodywarmer"]),
+  hats: new Set(["bucket"]),
+  "safety-vests": new Set(["waistcoat"]),
+  hoodies: new Set(["pullover", "full-zip", "hi-vis-hoodie"]),
+  jackets: new Set(["waterproof-parka", "bomber", "padded-puffer", "workwear", "hi-vis-jacket"]),
+  polos: new Set(["short-sleeve", "long-sleeve", "hi-vis-polo"]),
   shirts: new Set(["short-sleeve", "long-sleeve"]),
-  shorts: new Set(["sports", "cargo-workwear"]),
-  sweatshirts: new Set(["crewneck", "quarter-zip"]),
-  tshirts: new Set(["short-sleeve", "long-sleeve"]),
-  "vests-t-shirt": new Set(["standard", "racerback"])
+  shorts: new Set(["shorts"]),
+  softshells: new Set(["softshell-jacket"]),
+  sweatpants: new Set(["joggers"]),
+  sweatshirts: new Set(["crewneck", "quarter-zip", "hi-vis-sweatshirt"]),
+  trousers: new Set(["work-trousers"]),
+  tshirts: new Set(["short-sleeve", "long-sleeve", "hi-vis-tshirt", "baby-toddler"]),
+  "vests-t-shirt": new Set(["sports-vest"])
 };
 
 function resolveCustomizationVariantKey(name, productType, explicitVariantKey = "") {
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
   const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
   if (exactTemplate) return exactTemplate[1];
   if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {
     return "waist";
   }
-  if (explicit) return explicit;
   if (slug === "dog-hoodies") return "dog-hoodie";
   if (slug === "dog-t-shirts") return "dog-tshirt";
   if (slug === "dog-jackets") return "dog-jacket";
@@ -2544,52 +2556,62 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
   if (slug === "blouses") return "blouse";
   const allowed = CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE[slug];
   if (!allowed) return "";
+  if (explicit && allowed.has(explicit)) return explicit;
 
   if (slug === "bags") {
-    if (
-      /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
-      || /gymsac/.test(text)
-      || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
-    ) return "backpack";
-    if (
-      /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
-      || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
-    ) return "holdall";
-    if (
-      /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
-      || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
-    ) return "laptop-document";
-    if (
-      /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
-      || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
-      || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
-    ) return "tote";
+    if (/boot bag|shoe bag/.test(text)) return "boot-bag";
+    if (/messenger|shoulder bag|reporter|courier/.test(text)) return "messenger";
+    if (/back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|roll[\s-]?top|\b(?:commuter|sonic|pulse|access) pack\b/.test(text)) return "backpack";
+    if (/holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)) return "holdall";
+    if (/book bag/.test(text)) return "book-bag";
+    if (/draw[\s-]?(?:string|cord)|gymsac|gym[\s-]?sac|drytube/.test(text)) return "drawstring-gymsac";
+    if (/laptop|document|briefcase|portfolio|conference|computer|tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)) return "laptop-document";
+    if (/tote|shopper|shopping|bag for life|gift bag|beach bag|cotton (?:mesh |stuff )?bag|jute (?:mini |petite |stuff )?bag|canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)) return "tote";
     return "";
   }
 
   if (slug === "aprons") return "bib";
+  if (slug === "caps") return /trucker/.test(text) ? "trucker" : "baseball";
   if (slug === "beanies") return /bobble|pom[\s-]?pom|pom beanie/.test(text) ? "bobble" : "cuffed";
   if (slug === "fleece") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "full-zip";
-  if (slug === "gilets-body-warmers") return /\bfleece\b|microfleece/.test(text) ? "fleece" : "padded";
-  if (slug === "hats") return /wide[\s-]?brim|sun hat|safari|bush hat|legionnaire|fedora|trilby/.test(text) ? "wide-brim" : "bucket";
-  if (slug === "safety-vests") {
-    if (/\bdog\b|\bpet\b/.test(text)) return "dog";
-    return /\bjacket\b|bomber|\bcoat\b|parka|long[\s-]?sleeve/.test(text)
-      ? "jacket-bomber"
-      : "waistcoat";
+  if (slug === "gilets-body-warmers") {
+    if (hiVis) return "hi-vis-bodywarmer";
+    return /padded|puffer|quilted|insulated/.test(text) ? "padded" : "standard";
   }
-  if (slug === "hoodies") return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  if (slug === "hats") return "bucket";
+  if (slug === "safety-vests") return "waistcoat";
+  if (slug === "hoodies") {
+    if (hiVis) return "hi-vis-hoodie";
+    return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  }
   if (slug === "jackets") {
+    if (hiVis) return "hi-vis-jacket";
     if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return "padded-puffer";
     if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return "waterproof-parka";
-    return "lightweight";
+    if (/bomber/.test(text)) return "bomber";
+    return "workwear";
   }
-  if (slug === "polos" || slug === "shirts" || slug === "tshirts") {
+  if (slug === "polos") {
+    if (hiVis) return "hi-vis-polo";
     return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
   }
-  if (slug === "shorts") return /cargo|workwear|work short|combat|utility/.test(text) ? "cargo-workwear" : "sports";
-  if (slug === "sweatshirts") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
-  if (slug === "vests-t-shirt") return /racer[\s-]?back|sports vest|athletic vest/.test(text) ? "racerback" : "standard";
+  if (slug === "shirts") {
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  }
+  if (slug === "shorts") return "shorts";
+  if (slug === "softshells") return "softshell-jacket";
+  if (slug === "sweatpants") return "joggers";
+  if (slug === "sweatshirts") {
+    if (hiVis) return "hi-vis-sweatshirt";
+    return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
+  }
+  if (slug === "trousers") return "work-trousers";
+  if (slug === "tshirts") {
+    if (/baby|toddler|infant/.test(text)) return "baby-toddler";
+    if (hiVis) return "hi-vis-tshirt";
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  }
+  if (slug === "vests-t-shirt") return "sports-vest";
   return "";
 }
 
