@@ -673,11 +673,11 @@
 
   .pc-upload-modal[hidden] { display: none; }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-upload-modal[hidden] {
+  body.is-pc-order-embed .pc-upload-modal[hidden] {
     display: none !important;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-upload-modal {
+  body.is-pc-order-embed .pc-upload-modal {
     position: fixed;
     z-index: 500;
     inset: 0;
@@ -1829,16 +1829,16 @@
     background: #1d4ed8;
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-logo-drop-ready .position-logo-preview-box {
+  body.has-configured-position-picker .position-card.is-logo-drop-ready .position-logo-preview-box {
     border-color: #2563eb;
     background: #eff6ff;
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-logo-drop-blocked {
+  body.has-configured-position-picker .position-card.is-logo-drop-blocked {
     cursor: not-allowed;
   }
 
-  body.is-sweatshirt-position-picker .position-logo-preview-box.is-logo-arriving img {
+  body.has-configured-position-picker .position-logo-preview-box.is-logo-arriving img {
     animation: sweatshirt-logo-arrive .3s ease-out;
     transform-origin: center;
   }
@@ -2737,5 +2737,110 @@
   body.is-pc-order-embed .print-type-list,
   body.is-pc-order-embed #designTypePage .print-type-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .customiser-app > #copyrightPage.screen.copyright-modal-screen.active-screen,
+  body.is-pc-order-embed .customiser-app > #copyrightPage.screen.copyright-modal-screen.active-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: rgba(33, 42, 61, 0.42);
+    box-shadow: none;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-shell,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-shell {
+    width: min(430px, calc(100vw - 40px));
+    height: auto;
+    max-height: calc(100vh - 40px);
+    min-height: 0;
+    margin: 0;
+    padding: 16px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    border: 1px solid #e2e6ef;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(16, 24, 40, 0.24);
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-topbar,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-topbar {
+    height: auto;
+    padding: 0 0 12px;
+    border: 0;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-title,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-title {
+    font-size: 19px;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-content,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-content {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0 3px 4px;
+    gap: 8px;
+    overflow-y: auto;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-preview,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-preview {
+    min-height: 118px;
+    margin: 0 0 2px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-preview img,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-preview img {
+    max-width: 190px;
+    max-height: 112px;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-info-card,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-info-card {
+    padding: 9px 10px;
+    border-radius: 9px;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-info-card p,
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-check,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-info-card p,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-check {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-actions,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-actions {
+    width: 100%;
+    height: auto;
+    margin: 8px 0 0;
+    padding: 10px 0 0;
+    border-radius: 0;
+  }
+
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-actions .btn-black,
+  #copyrightPage.copyright-modal-screen.active-screen .copyright-actions .btn-grey,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-actions .btn-black,
+  body.is-pc-order-embed #copyrightPage.copyright-modal-screen .copyright-actions .btn-grey {
+    height: 40px !important;
+    font-size: 12px;
   }
 }

@@ -788,14 +788,15 @@
             if (e.target === overlay) closeDrawer();
         });
 
-        // Clear All button
+        // Clear All button — clearing restarts the shopping flow from the home page
         const clearAllBtn = document.getElementById('orderDrawerClearAll');
         if (clearAllBtn) {
             clearAllBtn.addEventListener('click', function() {
                 if (confirm('Remove all items from your basket?')) {
                     localStorage.setItem('quoteBasket', '[]');
                     window.dispatchEvent(new Event('basketUpdated'));
-                    loadBasketData();
+                    closeDrawer();
+                    window.location.href = 'home-pc.html';
                 }
             });
         }

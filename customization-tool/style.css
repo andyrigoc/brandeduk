@@ -1814,6 +1814,144 @@ textarea {
   border: 1px solid #e4e8f0;
 }
 
+body.copyright-modal-open {
+  overflow: hidden;
+}
+
+#copyrightPage.copyright-modal-screen.active-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  width: 100%;
+  min-height: 100%;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(33, 42, 61, 0.42);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+#copyrightPage.copyright-modal-screen .copyright-shell {
+  width: min(100%, 430px);
+  max-height: min(760px, calc(100vh - 36px));
+  min-height: 0;
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid #e2e6ef;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(16, 24, 40, 0.24);
+}
+
+#copyrightPage.copyright-modal-screen .copyright-topbar {
+  padding: 0 0 12px;
+  align-items: center;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-title {
+  max-width: none;
+  display: block;
+  font-size: 19px;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-content {
+  min-height: 0;
+  margin: 0;
+  padding: 0 3px 4px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-preview {
+  min-height: 118px;
+  margin: 0 0 2px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e1e6ef;
+  border-radius: 10px;
+  background: #fff;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-preview img {
+  max-width: 190px;
+  max-height: 112px;
+  box-shadow: none;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-info-card {
+  padding: 9px 10px;
+  border-radius: 9px;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-info-card p,
+#copyrightPage.copyright-modal-screen .copyright-check {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-card-list {
+  gap: 6px;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-intro-card,
+#copyrightPage.copyright-modal-screen .copyright-card-list .copyright-info-card {
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-info-icon {
+  width: 28px;
+  height: 28px;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-actions {
+  position: static;
+  width: 100%;
+  margin: 8px 0 0;
+  padding: 10px 0 0;
+  background: #fff;
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-actions .btn-black,
+#copyrightPage.copyright-modal-screen .copyright-actions .btn-grey {
+  height: 40px !important;
+}
+
+#copyrightPage.copyright-modal-screen .copyright-actions .btn-black:disabled {
+  color: #fff;
+  background: #c8c4d2;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  #copyrightPage.copyright-modal-screen {
+    padding: 10px;
+    align-items: flex-end;
+  }
+
+  #copyrightPage.copyright-modal-screen .copyright-shell {
+    max-height: calc(100dvh - 20px);
+    padding: 14px;
+  }
+
+  #copyrightPage.copyright-modal-screen .copyright-preview {
+    min-height: 92px;
+  }
+
+  #copyrightPage.copyright-modal-screen .copyright-preview img {
+    max-height: 88px;
+  }
+}
+
 .image-properties-body,
 .text-properties-body {
   padding: 14px 12px 110px;

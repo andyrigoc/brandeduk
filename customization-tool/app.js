@@ -301,6 +301,11 @@ function resolveNeutralGarmentPngForArea(area) {
     return beanieFrontImage;
   }
 
+  const categoryFallback = resolveCategoryFallbackGarmentImage(normalizedArea);
+  if (categoryFallback) {
+    return categoryFallback;
+  }
+
   const tabThumb = document.querySelector(
     `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
   );
@@ -512,7 +517,7 @@ function syncViewThumbTint() {
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
     if (!thumbSrc) return;
 
-    if (!safeHex) {
+    if (!safeHex || isConfiguredTemplateImageUrl(thumbSrc)) {
       colourLayer.style.opacity = "0";
       return;
     }
@@ -536,8 +541,9 @@ function syncViewThumbTint() {
     }
 
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
-    colourLayer.style.opacity = safeHex && thumbSrc ? "1" : "0";
-    if (safeHex && thumbSrc) {
+    const shouldTint = Boolean(safeHex && thumbSrc && !isConfiguredTemplateImageUrl(thumbSrc));
+    colourLayer.style.opacity = shouldTint ? "1" : "0";
+    if (shouldTint) {
       colourLayer.style.backgroundColor = safeHex;
       colourLayer.style.webkitMaskImage = `url("${thumbSrc}")`;
       colourLayer.style.maskImage = `url("${thumbSrc}")`;
@@ -1272,13 +1278,19 @@ function applySelectedProductContext() {
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
   const selectedProductType =
     selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type;
+  const selectedProductContext = [
+    state.productName,
+    selectedProductData?.description,
+    selectedProductData?.details,
+    selectedProductData?.features
+  ].filter(Boolean).join(" ");
   // With only a URL code, wait for the product API to identify the type. Using
   // the hard-coded initial "Polo" context here starts the wrong mockup request.
   const selectedCustomizationSlug = selectedProductData
     ? resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
     : (urlCode ? "" : resolveCustomizationProductTypeSlug(state.productName, selectedProductType));
   const selectedCustomizationVariant = resolveCustomizationVariantKey(
-    state.productName,
+    selectedProductContext || state.productName,
     selectedProductType,
     selectedProductData?.customizationVariantKey
   );
@@ -1389,7 +1401,9 @@ async function hydrateSelectedProductFromApi() {
     const apiCustomizationSlug =
       resolveCustomizationProductTypeSlug(state.productName, apiProductType);
     const apiCustomizationVariant = resolveCustomizationVariantKey(
-      state.productName,
+      [state.productName, productData.description, productData.details, productData.features]
+        .filter(Boolean)
+        .join(" "),
       apiProductType
     );
     if (
@@ -2046,8 +2060,11 @@ function hydrateAreaDesignsFromBasketContext() {
   }
 
   const hydrated = {};
+  const hydratedPositionAssignments = {};
+  const hydratedPositionKeys = [];
   dedupeLogos(logoCandidates).forEach((logo) => {
     const area = getDesignAreaKey(logo?.position || logo?.area);
+    const position = normalizeProductTypeSlug(logo?.position);
     const source = getLogoSource(logo);
     if (!source) return;
     const preview = logo.designPreview
@@ -2063,6 +2080,13 @@ function hydrateAreaDesignsFromBasketContext() {
       qualityPct: parseInt(logo.qualityPct || 0, 10) || 0,
       preview
     };
+    if (position && !["front", "back", "left", "right"].includes(position)) {
+      hydratedPositionAssignments[position] = {
+        logo: source,
+        method: normalizeDecorationMethod(logo.method)
+      };
+      hydratedPositionKeys.push(position);
+    }
     rememberUploadedLogo(source, logo.method);
   });
 
@@ -2098,6 +2122,9 @@ function hydrateAreaDesignsFromBasketContext() {
   if (decoratedAreas.length === 0) return false;
   state.areaDesigns = hydrated;
   state.areaTextDesigns = hydratedTexts;
+  state.positionLogoAssignments = hydratedPositionAssignments;
+  state.selectedPositions = [...new Set(hydratedPositionKeys)];
+  state.selectedPosition = state.selectedPositions.at(-1) || "";
 
   const requestedArea = sessionStorage.getItem("editingPosition");
   const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || decoratedAreas[0]);
@@ -2312,6 +2339,24 @@ const tshirtImages = {
 const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png";
 const beanieFrontImage = "https://i.postimg.cc/xdX8y8Mr/beanie-folding.png";
 
+// Plain sweatshirt mockups, used whenever the API hasn't supplied a configured
+// garment photo — without this a sweatshirt silently falls back to the t-shirt PNG.
+const sweatshirtImages = {
+  front: "../customization_templates/sweatshirts/sweatshirt-front.png",
+  back: "../customization_templates/sweatshirts/sweatshirt-back.jpg",
+  left: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  right: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  "left-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  "right-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png"
+};
+
+function resolveCategoryFallbackGarmentImage(area) {
+  if (state.customizationProductTypeSlug === "sweatshirts") {
+    return sweatshirtImages[area] || sweatshirtImages.front;
+  }
+  return "";
+}
+
 const garmentImageLoadCache = new Map();
 const customizationConfigCache = new Map();
 let customizationConfigRequestId = 0;
@@ -2384,8 +2429,45 @@ const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
   "sweatshirts",
   "trousers",
   "tshirts",
-  "vests-t-shirt"
+  "vests-t-shirt",
+  "blouses",
+  "chef-jackets",
+  "tunics",
+  "tabards",
+  "laptop-cases",
+  "dungarees",
+  "coveralls",
+  "sports-overtops",
+  "rugby-shirts",
+  "bodysuits",
+  "bibs",
+  "towels",
+  "blankets",
+  "umbrellas",
+  "dog-t-shirts",
+  "dog-hoodies",
+  "dog-jackets"
 ]);
+
+const CUSTOMIZATION_EXACT_TEMPLATES = {
+  blouses: ["blouses", "blouse"],
+  "chef-jackets": ["chef-jackets", "chef-jacket"],
+  tunics: ["tunics", "tunic-scrub-top"],
+  tabards: ["tabards", "tabard"],
+  "laptop-cases": ["laptop-cases", "laptop-sleeve"],
+  dungarees: ["dungarees", "bib-brace"],
+  coveralls: ["coveralls", "coverall-overall"],
+  "sports-overtops": ["sports-overtops", "sports-jersey"],
+  "rugby-shirts": ["rugby-shirts", "rugby-shirt"],
+  bodysuits: ["bodysuits", "baby-bodysuit"],
+  bibs: ["bibs", "baby-bib"],
+  towels: ["towels", "towel"],
+  blankets: ["blankets", "blanket"],
+  umbrellas: ["umbrellas", "umbrella"],
+  "dog-t-shirts": ["dog-t-shirts", "dog-tshirt"],
+  "dog-hoodies": ["dog-hoodies", "dog-hoodie"],
+  "dog-jackets": ["dog-jackets", "dog-jacket"]
+};
 
 function normalizeProductTypeSlug(value) {
   return String(value || "")
@@ -2398,11 +2480,39 @@ function normalizeProductTypeSlug(value) {
 
 function resolveCustomizationProductTypeSlug(name, productType) {
   const explicit = normalizeProductTypeSlug(productType);
+  if (CUSTOMIZATION_EXACT_TEMPLATES[explicit]) {
+    return CUSTOMIZATION_EXACT_TEMPLATES[explicit][0];
+  }
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
-  if (/\bdog\b|\bpet\b/.test(text) && /hi[\s-]?vis|high[\s-]?vis|safety vest|\bvest\b/.test(text)) return "safety-vests";
-  if (/hi[\s-]?vis|high[\s-]?vis|safety vest/.test(text)) return "safety-vests";
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
+  if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
+  if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
+  if (/\bdog\b/.test(text)) return "dog-jackets";
+  if (/baby|toddler|infant/.test(text) && /\bbib\b/.test(text)) return "bibs";
+  if (/baby|toddler|infant/.test(text) && /bodysuit|body suit|onesie/.test(text)) return "bodysuits";
+  if (/baby|toddler|infant/.test(text)) return "tshirts";
+  if (/umbrella/.test(text)) return "umbrellas";
+  if (/blanket/.test(text)) return "blankets";
+  if (/towel/.test(text)) return "towels";
+  if (/chef/.test(text) && /jacket|coat/.test(text)) return "chef-jackets";
+  if (/tunic|scrub/.test(text)) return "tunics";
+  if (/tabard/.test(text)) return "tabards";
+  if (/bib[\s&-]*(?:and[\s&-]*)?brace|dungaree/.test(text)) return "dungarees";
+  if (/coverall|overall|boilersuit|boiler suit/.test(text)) return "coveralls";
+  if (/rugby/.test(text)) return "rugby-shirts";
+  if (/sports? jersey|teamwear jersey|football jersey/.test(text)) return "sports-overtops";
+  if (/sports? vest|running vest|racerback/.test(text)) return "vests-t-shirt";
+  if (/laptop sleeve|notebook sleeve/.test(text)) return "laptop-cases";
+  if (/\bblouse\b/.test(text)) return "blouses";
+  if (hiVis && /body[\s-]?warmer|gilet/.test(text)) return "gilets-body-warmers";
+  if (hiVis && /jacket|coat|bomber/.test(text)) return "jackets";
+  if (hiVis && /hood/.test(text)) return "hoodies";
+  if (hiVis && /sweatshirt|sweater/.test(text)) return "sweatshirts";
+  if (hiVis && /polo/.test(text)) return "polos";
+  if (hiVis && /t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
+  if (hiVis) return "safety-vests";
   if (/gilet|body[\s-]?warmer/.test(text)) return "gilets-body-warmers";
   if (/soft[\s-]?shell/.test(text)) return "softshells";
   if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text)) return "sweatpants";
@@ -2428,75 +2538,111 @@ function resolveCustomizationProductTypeSlug(name, productType) {
 
 const CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE = {
   aprons: new Set(["bib", "waist"]),
-  bags: new Set(["backpack", "tote", "holdall", "laptop-document"]),
+  bags: new Set(["tote", "drawstring-gymsac", "book-bag", "laptop-document", "backpack", "messenger", "holdall", "boot-bag"]),
   beanies: new Set(["cuffed", "bobble"]),
+  caps: new Set(["baseball", "trucker"]),
   fleece: new Set(["full-zip", "quarter-zip"]),
-  "gilets-body-warmers": new Set(["padded", "fleece"]),
-  hats: new Set(["bucket", "wide-brim"]),
-  "safety-vests": new Set(["waistcoat", "jacket-bomber", "dog"]),
-  hoodies: new Set(["pullover", "full-zip"]),
-  jackets: new Set(["lightweight", "padded-puffer", "waterproof-parka"]),
-  polos: new Set(["short-sleeve", "long-sleeve"]),
+  "gilets-body-warmers": new Set(["standard", "padded", "hi-vis-bodywarmer"]),
+  hats: new Set(["bucket"]),
+  "safety-vests": new Set(["waistcoat"]),
+  hoodies: new Set(["pullover", "full-zip", "hi-vis-hoodie"]),
+  jackets: new Set(["waterproof-parka", "bomber", "padded-puffer", "workwear", "hi-vis-jacket"]),
+  polos: new Set(["short-sleeve", "long-sleeve", "hi-vis-polo"]),
   shirts: new Set(["short-sleeve", "long-sleeve"]),
-  shorts: new Set(["sports", "cargo-workwear"]),
-  sweatshirts: new Set(["crewneck", "quarter-zip"]),
-  tshirts: new Set(["short-sleeve", "long-sleeve"]),
-  "vests-t-shirt": new Set(["standard", "racerback"])
+  shorts: new Set(["shorts"]),
+  softshells: new Set(["softshell-jacket"]),
+  sweatpants: new Set(["joggers"]),
+  sweatshirts: new Set(["crewneck", "quarter-zip", "hi-vis-sweatshirt"]),
+  trousers: new Set(["work-trousers"]),
+  tshirts: new Set(["short-sleeve", "long-sleeve", "hi-vis-tshirt", "baby-toddler"]),
+  "vests-t-shirt": new Set(["sports-vest"])
 };
 
 function resolveCustomizationVariantKey(name, productType, explicitVariantKey = "") {
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
+  const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
+  if (exactTemplate) return exactTemplate[1];
+  if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {
+    return "waist";
+  }
+  if (slug === "dog-hoodies") return "dog-hoodie";
+  if (slug === "dog-t-shirts") return "dog-tshirt";
+  if (slug === "dog-jackets") return "dog-jacket";
+  if (slug === "bibs") return "baby-bib";
+  if (slug === "bodysuits") return "baby-bodysuit";
+  if (slug === "umbrellas") return "umbrella";
+  if (slug === "blankets") return "blanket";
+  if (slug === "towels") return "towel";
+  if (slug === "chef-jackets") return "chef-jacket";
+  if (slug === "tunics") return "tunic-scrub-top";
+  if (slug === "tabards") return "tabard";
+  if (slug === "dungarees") return "bib-brace";
+  if (slug === "coveralls") return "coverall-overall";
+  if (slug === "rugby-shirts") return "rugby-shirt";
+  if (slug === "sports-overtops") return "sports-jersey";
+  if (slug === "laptop-cases") return "laptop-sleeve";
+  if (slug === "blouses") return "blouse";
   const allowed = CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE[slug];
   if (!allowed) return "";
-  if (allowed.has(explicit)) return explicit;
+  if (explicit && allowed.has(explicit)) return explicit;
 
   if (slug === "bags") {
-    if (
-      /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
-      || /gymsac/.test(text)
-      || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
-    ) return "backpack";
-    if (
-      /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
-      || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
-    ) return "holdall";
-    if (
-      /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
-      || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
-    ) return "laptop-document";
-    if (
-      /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
-      || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
-      || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
-    ) return "tote";
+    if (/boot bag|shoe bag/.test(text)) return "boot-bag";
+    if (/messenger|shoulder bag|reporter|courier/.test(text)) return "messenger";
+    if (/back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|roll[\s-]?top|\b(?:commuter|sonic|pulse|access) pack\b/.test(text)) return "backpack";
+    if (/holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)) return "holdall";
+    if (/book bag/.test(text)) return "book-bag";
+    if (/draw[\s-]?(?:string|cord)|gymsac|gym[\s-]?sac|drytube/.test(text)) return "drawstring-gymsac";
+    if (/laptop|document|briefcase|portfolio|conference|computer|tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)) return "laptop-document";
+    if (/tote|shopper|shopping|bag for life|gift bag|beach bag|cotton (?:mesh |stuff )?bag|jute (?:mini |petite |stuff )?bag|canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)) return "tote";
     return "";
   }
 
-  if (slug === "aprons") return /\bwaist(?:er)?\b|waist apron|server apron/.test(text) ? "waist" : "bib";
+  if (slug === "aprons") return "bib";
+  if (slug === "caps") return /trucker/.test(text) ? "trucker" : "baseball";
   if (slug === "beanies") return /bobble|pom[\s-]?pom|pom beanie/.test(text) ? "bobble" : "cuffed";
   if (slug === "fleece") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "full-zip";
-  if (slug === "gilets-body-warmers") return /\bfleece\b|microfleece/.test(text) ? "fleece" : "padded";
-  if (slug === "hats") return /wide[\s-]?brim|sun hat|safari|bush hat|legionnaire|fedora|trilby/.test(text) ? "wide-brim" : "bucket";
-  if (slug === "safety-vests") {
-    if (/\bdog\b|\bpet\b/.test(text)) return "dog";
-    return /\bjacket\b|bomber|\bcoat\b|parka|long[\s-]?sleeve/.test(text)
-      ? "jacket-bomber"
-      : "waistcoat";
+  if (slug === "gilets-body-warmers") {
+    if (hiVis) return "hi-vis-bodywarmer";
+    return /padded|puffer|quilted|insulated/.test(text) ? "padded" : "standard";
   }
-  if (slug === "hoodies") return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  if (slug === "hats") return "bucket";
+  if (slug === "safety-vests") return "waistcoat";
+  if (slug === "hoodies") {
+    if (hiVis) return "hi-vis-hoodie";
+    return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  }
   if (slug === "jackets") {
+    if (hiVis) return "hi-vis-jacket";
     if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return "padded-puffer";
     if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return "waterproof-parka";
-    return "lightweight";
+    if (/bomber/.test(text)) return "bomber";
+    return "workwear";
   }
-  if (slug === "polos" || slug === "shirts" || slug === "tshirts") {
+  if (slug === "polos") {
+    if (hiVis) return "hi-vis-polo";
     return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
   }
-  if (slug === "shorts") return /cargo|workwear|work short|combat|utility/.test(text) ? "cargo-workwear" : "sports";
-  if (slug === "sweatshirts") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
-  if (slug === "vests-t-shirt") return /racer[\s-]?back|sports vest|athletic vest/.test(text) ? "racerback" : "standard";
+  if (slug === "shirts") {
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  }
+  if (slug === "shorts") return "shorts";
+  if (slug === "softshells") return "softshell-jacket";
+  if (slug === "sweatpants") return "joggers";
+  if (slug === "sweatshirts") {
+    if (hiVis) return "hi-vis-sweatshirt";
+    return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
+  }
+  if (slug === "trousers") return "work-trousers";
+  if (slug === "tshirts") {
+    if (/baby|toddler|infant/.test(text)) return "baby-toddler";
+    if (hiVis) return "hi-vis-tshirt";
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  }
+  if (slug === "vests-t-shirt") return "sports-vest";
   return "";
 }
 
@@ -2513,10 +2659,52 @@ function getConfiguredPositionMap() {
   return map;
 }
 
-function resolveConfiguredGarmentImage(area) {
+function hasConfiguredPositionPicker() {
+  return Array.isArray(state.customizationConfig?.positions)
+    && state.customizationConfig.positions.some(position =>
+      position?.isActive !== false && String(position?.slug || "").trim()
+    );
+}
+
+function isConfiguredTemplateImageUrl(imageUrl) {
+  const target = String(imageUrl || "").trim();
+  if (!target) return false;
+  return Object.values(getConfiguredPositionMap()).some(configuredUrl =>
+    target === configuredUrl || target.startsWith(configuredUrl)
+  );
+}
+
+function configuredPositionArea(position) {
+  const value = `${position?.slug || ""} ${position?.label || ""}`.toLowerCase();
+  if (/back|rear|nape|neck/.test(value)) return "back";
+  if (/left.*(?:sleeve|cuff|side)/.test(value)) return "left";
+  if (/right.*(?:sleeve|cuff|side)/.test(value)) return "right";
+  return "front";
+}
+
+function resolveConfiguredGarmentImage(area, positionSlug = "") {
   const images = getConfiguredPositionMap();
   const normalizedArea = normalizeProductTypeSlug(area) || "front";
+  const normalizedPosition = normalizeProductTypeSlug(positionSlug);
+  if (normalizedPosition && images[normalizedPosition]) return images[normalizedPosition];
+  const selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+  if (selectedPosition && images[selectedPosition]) {
+    const selectedConfig = state.customizationConfig?.positions?.find(
+      position => normalizeProductTypeSlug(position?.slug) === selectedPosition
+    );
+    if (!selectedConfig || configuredPositionArea(selectedConfig) === normalizedArea) {
+      return images[selectedPosition];
+    }
+  }
   if (images[normalizedArea]) return images[normalizedArea];
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+    : [];
+  const areaMatch = positions.find(position =>
+    configuredPositionArea(position) === normalizedArea
+    && String(position?.imageUrl || position?.image_url || "").trim()
+  );
+  if (areaMatch) return String(areaMatch.imageUrl || areaMatch.image_url).trim();
   if (normalizedArea === "left") return images.left || images.sleeve || images.side || "";
   if (normalizedArea === "right") return images.right || images.sleeve || images.side || images.left || "";
   if (normalizedArea === "left-sleeve" || normalizedArea === "right-sleeve") {
@@ -2526,13 +2714,17 @@ function resolveConfiguredGarmentImage(area) {
 }
 
 function getConfiguredViewAreas() {
-  const images = getConfiguredPositionMap();
-  if (Object.keys(images).length === 0) return null;
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions.filter(position =>
+      String(position?.imageUrl || position?.image_url || "").trim()
+    )
+    : [];
+  if (positions.length === 0) return null;
   return {
-    front: Boolean(images.front),
-    back: Boolean(images.back),
-    left: Boolean(images.left || images.sleeve || images.side),
-    right: Boolean(images.right || images.sleeve || images.side || images.left)
+    front: positions.some(position => configuredPositionArea(position) === "front"),
+    back: positions.some(position => configuredPositionArea(position) === "back"),
+    left: positions.some(position => configuredPositionArea(position) === "left"),
+    right: positions.some(position => configuredPositionArea(position) === "right")
   };
 }
 
@@ -2657,10 +2849,10 @@ function inferProductTypeFromCatalog(name, productType) {
 
 function restoreDefaultViewTabThumbs() {
   const thumbMap = {
-    front: resolveConfiguredGarmentImage("front") || tshirtImages.front,
-    back: resolveConfiguredGarmentImage("back") || tshirtImages.back,
-    left: resolveConfiguredGarmentImage("left") || tshirtImages.left,
-    right: resolveConfiguredGarmentImage("right") || tshirtImages.right
+    front: resolveConfiguredGarmentImage("front") || resolveCategoryFallbackGarmentImage("front") || tshirtImages.front,
+    back: resolveConfiguredGarmentImage("back") || resolveCategoryFallbackGarmentImage("back") || tshirtImages.back,
+    left: resolveConfiguredGarmentImage("left") || resolveCategoryFallbackGarmentImage("left") || tshirtImages.left,
+    right: resolveConfiguredGarmentImage("right") || resolveCategoryFallbackGarmentImage("right") || tshirtImages.right
   };
   Object.entries(thumbMap).forEach(([area, src]) => {
     const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
@@ -2789,8 +2981,9 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  // Vista utente: sempre PNG neutro (box laterale). Il thumb API serve solo al campionamento colore.
   const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const selectedProductImage = state.selectedColorImage || getColourImageForName(state.colourName);
+  const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -2799,11 +2992,22 @@ async function applyArea() {
     wrapEl.classList.add("is-switching-area");
   }
 
-  await ensureGarmentImageLoaded(neutralPngSrc);
+  await ensureGarmentImageLoaded(garmentPreviewSrc);
   if (requestId !== areaRenderRequestId) return;
 
-  productShapeEl.src = neutralPngSrc;
-  const useCatalogImageDirectly = isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage();
+  // Prefer the customer's actual selected product image (same source as the QTY
+  // page). Fall back to the neutral/template mockup only when no product image
+  // is available.
+  productShapeEl.src = garmentPreviewSrc;
+  productShapeEl.alt = `${state.productName || "Product"} - ${state.colourName || "selected colour"}`;
+  // Opaque photos (category fallback mockups like sweatshirts, or configured
+  // template images) have no cutout alpha, so using them as a colour-tint mask
+  // would paint a solid rectangle over the preview instead of the garment.
+  const usesUntintableFallback =
+    neutralPngSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
+    || isConfiguredTemplateImageUrl(neutralPngSrc);
+  const useCatalogImageDirectly = Boolean(selectedProductImage) || usesUntintableFallback
+    || (isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage());
 
   if (useCatalogImageDirectly) {
     colourLayerEl.style.opacity = "0";
@@ -3006,7 +3210,7 @@ function dedupeLogos(logos) {
   if (!Array.isArray(logos)) return [];
   const seen = new Set();
   return logos.filter((logo) => {
-    const key = `${logo?.area || logo?.position || ""}::${getLogoSource(logo)}`;
+    const key = `${logo?.position || logo?.area || ""}::${getLogoSource(logo)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -3437,8 +3641,12 @@ function buildBasketItemFromState() {
   const designs = currentDesign?.logo
     ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
     : allDesigns;
-  const positionLogos = state.customizationProductTypeSlug === "sweatshirts"
-    ? state.selectedPositions
+  const assignedPositionKeys = [...new Set([
+    ...(state.selectedPositions || []),
+    ...Object.keys(state.positionLogoAssignments || {})
+  ])].filter(position => state.positionLogoAssignments?.[position]?.logo);
+  const positionLogos = assignedPositionKeys.length > 0
+    ? assignedPositionKeys
       .map((position) => {
         const assignment = state.positionLogoAssignments?.[position];
         if (!assignment?.logo) return null;
@@ -3659,6 +3867,10 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 productSelect.addEventListener("change", async () => {
   state.areaDesigns = {};
   state.areaTextDesigns = {};
+  state.positionLogoAssignments = {};
+  state.selectedPositions = [];
+  state.selectedPosition = "";
+  state.pendingPositionLogoTarget = "";
   clearCanvasLogoState();
   clearCanvasTextState();
   state.product = productSelect.value;
@@ -4128,7 +4340,7 @@ function getSessionLogoLibrary() {
 
 function syncInlineLogoPanels() {
   const hasLogo = Boolean(state.uploadedLogo);
-  const keepUploadPanel = isPcOrderEmbed && state.customizationProductTypeSlug === "sweatshirts";
+  const keepUploadPanel = isPcOrderEmbed && hasConfiguredPositionPicker();
   if (inlineLogoUpload) inlineLogoUpload.hidden = keepUploadPanel ? false : hasLogo;
   if (inlineLogoSettings) inlineLogoSettings.hidden = keepUploadPanel ? true : !hasLogo;
 
@@ -4210,6 +4422,14 @@ function rememberUploadedLogo(src, method) {
 function reuseLibraryLogo(src) {
   state.copyrightConfirmed = true;
   state.pendingDecorationType = null;
+  const targetPosition = ensurePendingPositionLogoTarget();
+  if (targetPosition) {
+    assignLogoToPosition(targetPosition, src, state.decorationType || "print");
+    state.pendingPositionLogoTarget = "";
+    openScreen("mainEditor");
+    updateConfirmButtonState();
+    return;
+  }
   openScreen("mainEditor");
   showLogoOnCanvas(src);
   calculatePrice();
@@ -4497,6 +4717,37 @@ function assignLogoToPosition(position, logo, method = state.decorationType || "
   return true;
 }
 
+function ensurePendingPositionLogoTarget() {
+  if (!isPcOrderEmbed || !hasConfiguredPositionPicker()) return "";
+
+  const cards = [...document.querySelectorAll(".position-card[data-position]")];
+  if (cards.length === 0) return "";
+
+  const existingTarget = normalizeProductTypeSlug(state.pendingPositionLogoTarget);
+  const selectedTarget = normalizeProductTypeSlug(state.selectedPosition);
+  const latestSelected = [...(state.selectedPositions || [])]
+    .reverse()
+    .map(normalizeProductTypeSlug)
+    .find(position => cards.some(card => card.dataset.position === position));
+  const target = [existingTarget, selectedTarget, latestSelected]
+    .find(position => position && cards.some(card => card.dataset.position === position))
+    || cards[0].dataset.position;
+  const card = cards.find(item => item.dataset.position === target);
+  if (!card) return "";
+
+  if (!state.selectedPositions.includes(target)) {
+    state.selectedPositions.push(target);
+  }
+  state.selectedPosition = target;
+  state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
+  state.pendingPositionLogoTarget = target;
+  const checkbox = card.querySelector('input[type="checkbox"]');
+  if (checkbox) checkbox.checked = true;
+  syncPositionSelectionCards();
+  updateCustomizationContextLabel();
+  return target;
+}
+
 function syncPositionCardImages() {
   const sweatshirtPositionImages = {
     "left-chest": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_left_chest.png",
@@ -4516,15 +4767,17 @@ function syncPositionCardImages() {
     const image = card.querySelector(".position-thumb-wrap img");
     if (!image) return;
 
-    const source = useSweatshirtPositionImages
-      ? sweatshirtPositionImages[card.dataset.position]
-      : resolveNeutralGarmentPngForArea(area);
+    const configuredSource = resolveConfiguredGarmentImage(area, card.dataset.position);
+    const source = configuredSource
+      || (useSweatshirtPositionImages
+        ? sweatshirtPositionImages[card.dataset.position]
+        : resolveNeutralGarmentPngForArea(area));
     if (source) image.src = source;
 
     const guide = card.querySelector(".position-print-area-guide");
     if (guide) {
-      guide.hidden = useSweatshirtPositionImages;
-      if (useSweatshirtPositionImages) return;
+      guide.hidden = Boolean(configuredSource) || useSweatshirtPositionImages;
+      if (guide.hidden) return;
       guide.dataset.position = card.dataset.position || "centre-front";
       const guidePosition = getPreviewGuideGeometry(
         state.customizationProductTypeSlug || state.product,
@@ -4722,6 +4975,15 @@ function positionKeyForLabel(label) {
 }
 
 function getProductPositionLabels() {
+  const configuredPositions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+        .filter(position => position?.isActive !== false)
+        .sort((first, second) => Number(first?.sortOrder || 0) - Number(second?.sortOrder || 0))
+        .map(position => String(position?.label || "").trim())
+        .filter(Boolean)
+    : [];
+  if (configuredPositions.length > 0) return [...new Set(configuredPositions)];
+
   const code = String(state.productCode || "").trim().toUpperCase();
   const title = String(state.productName || "").toLowerCase();
   const category = state.customizationProductTypeSlug || "tshirts";
@@ -4746,9 +5008,14 @@ function configurePositionCardsForProduct() {
   if (!grid) return;
   const isSweatshirt = state.customizationProductTypeSlug === "sweatshirts";
   document.body.classList.toggle("is-sweatshirt-position-picker", isSweatshirt);
+  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositionPicker());
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
+  // Sweatshirts always expose their full canonical position set; the
+  // per-view API config only gates products whose mockups genuinely lack
+  // a back/sleeve photo, not sweatshirts (which always have all views).
   const labels = getProductPositionLabels().filter((label) => {
+    if (isSweatshirt) return true;
     const area = positionAreaForLabel(label);
     return !views || area === "front" || Boolean(views[area]);
   });
@@ -4767,7 +5034,13 @@ function configurePositionCardsForProduct() {
   });
 
   const availablePositionKeys = labels.map(positionKeyForLabel);
-  state.selectedPositions = (state.selectedPositions || []).filter((position) => availablePositionKeys.includes(position));
+  const restoredAssignedPositions = Object.keys(state.positionLogoAssignments || {})
+    .filter(position => state.positionLogoAssignments?.[position]?.logo)
+    .filter(position => availablePositionKeys.includes(position));
+  state.selectedPositions = [...new Set([
+    ...(state.selectedPositions || []).filter(position => availablePositionKeys.includes(position)),
+    ...restoredAssignedPositions
+  ])];
   if (state.selectedPosition && !availablePositionKeys.includes(state.selectedPosition)) {
     state.selectedPosition = state.selectedPositions.at(-1) || "";
     state.selectedArea = state.selectedPosition
@@ -5298,7 +5571,7 @@ async function processLogoFile(file) {
 
     state.copyrightConfirmed = false;
     updateConfirmButtonState();
-    openScreen("copyrightPage");
+    openCopyrightModal();
   } catch (error) {
     console.error("Logo upload failed", error);
     alert("We couldn't read that logo file. Please try another PNG, JPG, WEBP or SVG image.");
@@ -5329,6 +5602,7 @@ function preparePcUploadFile(file) {
     processLogoFile(file);
     return;
   }
+  ensurePendingPositionLogoTarget();
   pcPendingUploadFile = file;
   pcUploadModal.hidden = false;
   document.getElementById("pcUploadFileName").textContent = file.name;
@@ -5415,15 +5689,37 @@ document.getElementById("continueLogoBtn").addEventListener("click", () => {
 
   state.copyrightConfirmed = false;
   updateConfirmButtonState();
-  openScreen("copyrightPage");
+  openScreen("mainEditor");
+  openCopyrightModal();
 });
 
 const copyrightCheckbox = document.getElementById("copyrightCheckbox");
 const copyrightCheckCard = document.querySelector(".copyright-check");
+const copyrightModal = document.getElementById("copyrightPage");
+const copyrightConfirmButton = document.getElementById("copyrightOkBtn");
+
+function openCopyrightModal() {
+  if (!copyrightModal) return;
+  if (isDesktopToolExperience()) openScreen("mainEditor");
+  copyrightModal.classList.add("active-screen");
+  copyrightModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("copyright-modal-open");
+  copyrightModal.querySelector(".copyright-close-btn")?.focus();
+}
+
+function closeCopyrightModal({ restoreDesign = true } = {}) {
+  if (!copyrightModal) return;
+  copyrightModal.classList.remove("active-screen");
+  copyrightModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("copyright-modal-open");
+  state.pendingDecorationType = null;
+  if (restoreDesign) restoreAreaDesign(state.selectedArea);
+}
 
 if (copyrightCheckbox && copyrightCheckCard) {
   const syncCopyrightCheckState = () => {
     copyrightCheckCard.classList.toggle("is-checked", copyrightCheckbox.checked);
+    if (copyrightConfirmButton) copyrightConfirmButton.disabled = !copyrightCheckbox.checked;
   };
 
   copyrightCheckbox.addEventListener("change", syncCopyrightCheckState);
@@ -5449,6 +5745,7 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   state.copyrightConfirmed = true;
   state.pendingDecorationType = null;
   rememberUploadedLogo(state.uploadedLogo, state.decorationType);
+  closeCopyrightModal({ restoreDesign: false });
   if (state.pendingPositionLogoTarget) {
     const position = state.pendingPositionLogoTarget;
     if (!state.selectedPositions.includes(position)) {
@@ -5468,11 +5765,20 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   updateConfirmButtonState();
 });
 
-document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((button) => {
+document.querySelectorAll("[data-copyright-close]").forEach((button) => {
   button.addEventListener("click", () => {
-    state.pendingDecorationType = null;
-    restoreAreaDesign(state.selectedArea);
+    closeCopyrightModal();
   });
+});
+
+copyrightModal?.addEventListener("click", (event) => {
+  if (event.target === copyrightModal) closeCopyrightModal();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && copyrightModal?.classList.contains("active-screen")) {
+    closeCopyrightModal();
+  }
 });
 
 function showLogoOnCanvas(imageSrc) {
@@ -7301,7 +7607,12 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
     if (!input.checked) {
       state.selectedPositions = selectedPositions.filter((position) => position !== positionKey);
       state.selectedPosition = state.selectedPositions.at(-1) || "";
+      const activeCard = state.selectedPosition
+        ? document.querySelector(`.position-card[data-position="${CSS.escape(state.selectedPosition)}"]`)
+        : null;
+      state.selectedArea = normalizeAreaForPicker(activeCard?.dataset.area) || "front";
       syncPositionSelectionCards();
+      if (isPcOrderEmbed) await applyArea();
       return;
     }
 
@@ -7317,9 +7628,13 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
     if (!selectedPositions.includes(positionKey)) selectedPositions.push(positionKey);
     state.selectedPositions = selectedPositions;
     state.selectedPosition = positionKey;
+    state.selectedArea = area;
     syncPositionSelectionCards();
     updateCustomizationContextLabel();
-    if (isPcOrderEmbed) return;
+    if (isPcOrderEmbed) {
+      await applyArea();
+      return;
+    }
     await switchToDesignArea(area);
 });
 
@@ -7347,7 +7662,7 @@ if (positionGrid) {
 
   positionGrid.addEventListener("dragover", (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
+    if (!card || !hasConfiguredPositionPicker()) return;
     clearPositionDropState();
     event.preventDefault();
     const position = card.dataset.position;
@@ -7366,7 +7681,7 @@ if (positionGrid) {
 
   positionGrid.addEventListener("drop", async (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
+    if (!card || !hasConfiguredPositionPicker()) return;
     event.preventDefault();
     clearPositionDropState();
 
