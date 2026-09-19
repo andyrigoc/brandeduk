@@ -206,6 +206,12 @@
         <span>This is a preview of your chosen product.</span>
       </div>
 
+      <div class="left-selected-colour-bar" aria-live="polite">
+        <span aria-hidden="true">&#10003;</span>
+        <span>Selected colour</span>
+        <span id="leftSelectedColourName" class="left-selected-colour-name">White</span>
+      </div>
+
       <div id="customizationContextLabel" class="customization-context-label" hidden aria-live="polite">
         <span>CUSTOMISING</span>
         <strong>Centre Front</strong>
@@ -236,11 +242,10 @@
       <aside id="inlineLogoUpload" class="inline-logo-upload" aria-label="Add your logo">
         <h2>Add your logo</h2>
         <p>Upload your artwork and we'll place it on your garment.</p>
-        <label class="inline-upload-dropzone" for="logoFileInput">
+        <label class="inline-upload-dropzone inline-upload-dropzone--dark" for="logoFileInput">
           <span class="inline-upload-icon" aria-hidden="true">⇧</span>
-          <strong>Drag &amp; drop your logo here</strong>
-          <small>or</small>
-          <span class="inline-upload-button">CHOOSE FILE</span>
+          <span class="inline-upload-copy"><strong>Upload a File</strong><small>Select a file to upload from your computer or device.</small></span>
+          <span class="inline-upload-button">Choose File</span>
           <input id="logoFileInput" type="file" accept="image/*" hidden>
         </label>
         <div class="inline-upload-formats">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</div>
@@ -251,6 +256,7 @@
           <button id="inlineViewSavedLogosBtn" type="button">View all saved logos →</button>
         </div>
         <div class="inline-upload-notice"><strong>◈&nbsp; Not sure about your artwork?</strong><span>Upload what you have. Our team checks every file before production.</span></div>
+        <button class="confirm-quality-btn" id="confirmQualityBtn" type="button" disabled>CONFIRM &amp; UPDATE BASKET</button>
       </aside>
 
       <aside id="inlineLogoSettings" class="inline-logo-settings" hidden aria-label="Logo settings">
@@ -395,6 +401,7 @@
       <span class="desktop-summary-eyebrow">CUSTOMISING</span>
       <h1 id="desktopProductName">Polo Shirt</h1>
       <p><span id="desktopProductCode">SKU-2024</span><span aria-hidden="true"> &middot; </span><span id="desktopBrandName">BRANDED</span></p>
+      <span id="desktopProductColourLine" class="desktop-product-colour-line">Colour: White</span>
     </div>
 
     <div class="canvas-selected-colour" aria-live="polite">
@@ -523,8 +530,6 @@
         <div class="main-quality-mask" id="mainQualityMask" style="width:100%;border-radius:0 6px 6px 0"></div>
       </div>
     </div>
-
-    <button class="confirm-quality-btn" id="confirmQualityBtn" type="button" disabled>CONFIRM &amp; UPDATE BASKET</button>
 
     <!-- Quality warning -->
     <div class="quality-warning" id="qualityWarning" style="display:none">
@@ -1122,6 +1127,31 @@
     <span>Chat</span>
   </a>
 </nav>
+
+<div id="pcUploadModal" class="pc-upload-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pcUploadTitle">
+  <div class="pc-upload-modal__panel">
+    <button id="pcUploadClose" class="pc-upload-modal__close" type="button" aria-label="Close upload">&times;</button>
+    <svg class="pc-upload-modal__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7 12l5-5 5 5"></path><path d="M12 7v10"></path></svg>
+    <div class="pc-upload-modal__content">
+      <h2 id="pcUploadTitle">Upload a File</h2>
+      <p id="pcUploadMessage">Select a file to upload from your computer or device.</p>
+      <div id="pcUploadReady" class="pc-upload-modal__ready" hidden>
+        <span aria-hidden="true">&#128196;</span><strong id="pcUploadFileName"></strong>
+        <button id="pcUploadReset" type="button" aria-label="Remove selected file">&times;</button>
+        <button id="pcUploadStart" type="button">Upload</button>
+      </div>
+      <div id="pcUploadProgress" class="pc-upload-modal__progress" hidden>
+        <div><span id="pcUploadPercent">0%</span><div class="pc-upload-modal__track"><span id="pcUploadFill"></span></div></div>
+        <button id="pcUploadCancel" type="button">Cancel</button>
+      </div>
+      <div id="pcUploadSuccess" class="pc-upload-modal__success" hidden>
+        <strong>Upload Successful!</strong>
+        <p>Your file is ready to be added to your selected position.</p>
+        <button id="pcUploadDone" type="button">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Preview Modal -->
 <div id="previewModal" class="preview-modal" role="dialog" aria-modal="true">
