@@ -2041,7 +2041,7 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260811a">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260811b">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260915-hide-size-price">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260919-top-navigation">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8184,6 +8184,10 @@
                     <div class="track" style="width: 500%;">
                         <!-- PAGE 1: Product Shop View -->
                         <div class="page" style="width: 20%;">
+                            <div class="pc-flow-page-nav">
+                                <button type="button" class="pc-step-back" id="p1BackToCatalog"><span aria-hidden="true">←</span> BACK</button>
+                                <button class="btn-continue next">NEXT <span aria-hidden="true">→</span></button>
+                            </div>
                             <div class="product-shop-layout">
                                 <!-- Left: Gallery -->
                                 <div class="product-gallery">
@@ -8278,8 +8282,6 @@
                                         <span><strong>Artwork proof</strong> before production</span>
                                     </div>
 
-                                    <button class="btn-continue next">NEXT <span
-                                            aria-hidden="true">&rarr;</span></button>
                                 </div>
                             </div>
                         </div>
@@ -8287,7 +8289,10 @@
                         <!-- PAGE 2: Colours -->
                         <div class="page page-2" style="width: 20%;">
                             <div class="page-content-wrapper">
-                                <button type="button" class="pc-step-back" data-target-page="0"><span aria-hidden="true">←</span> Back to Product</button>
+                                <div class="pc-flow-page-nav">
+                                    <button type="button" class="pc-step-back" id="p2BackToCatalog"><span aria-hidden="true">←</span> BACK</button>
+                                    <button class="btn-nav btn-next next">NEXT <span aria-hidden="true">→</span></button>
+                                </div>
 
                                 <div class="p2-colour-toolbar">
                                     <div class="p2-filter-group">
@@ -8429,11 +8434,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Navigation Buttons -->
-                                <div class="page-nav-buttons">
-                                    <button class="btn-nav btn-back back">&larr; Back</button>
-                                    <button class="btn-nav btn-next next">Continue &rarr;</button>
-                                </div>
                             </div>
                         </div>
 
@@ -8441,7 +8441,7 @@
                         <div class="page page-3" style="width: 20%;">
                             <div class="page-content-wrapper p3-page-wrapper">
                                 <button type="button" class="pc-step-back p3-back-colour" id="p3BackToColour" data-target-page="1">
-                                    <span aria-hidden="true">←</span> Back to Colour
+                                    <span aria-hidden="true">←</span> BACK
                                 </button>
                                 <div class="p3-product-preview">
                                     <div class="p3-preview-header">
@@ -8479,24 +8479,24 @@
                                             <span class="sizes-delivery">Dispatched in 1&ndash;2 working days &middot;
                                                 Free delivery over &pound;150</span>
                                         </div>
-                                        <div class="discount-tiers" id="p3DiscountTiers"></div>
                                     </div>
                                     <div class="size-qty-grid" id="sizeQtyGridP3">
                                         <!-- Populated by JS -->
                                     </div>
+                                    <div class="discount-tiers" id="p3DiscountTiers"></div>
                                     <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
                                 </div>
 
-                                <!-- Add to Quote Button -->
-                                <div class="p3-total-summary" aria-live="polite">
-                                    <span><strong id="p3TotalPieces">0</strong> items</span>
-                                    <span>Unit: <strong id="p3CurrentUnitPrice">&pound;0.00</strong> ex VAT</span>
-                                    <span>Total: <strong id="p3TotalCost">&pound;0.00</strong> ex VAT</span>
-                                </div>
-                                <div class="p3-action-row">
-                                    <button type="button" class="p3-btn-plain" id="btnBuyPlain">Buy Plain</button>
-                                    <button type="button" class="p3-btn-customize" id="btnCustomize">Customize</button>
-                                    <button type="button" class="btn-add-quote" id="btnAddToQuote">Add to Quote</button>
+                                <div class="p3-bottom-bar">
+                                    <div class="p3-total-summary" aria-live="polite">
+                                        <span><strong id="p3TotalPieces">0</strong> items</span>
+                                        <span>Unit: <strong id="p3CurrentUnitPrice">&pound;0.00</strong> ex VAT</span>
+                                        <span>Total: <strong id="p3TotalCost">&pound;0.00</strong> ex VAT</span>
+                                    </div>
+                                    <div class="p3-action-row">
+                                        <button type="button" class="p3-btn-plain" id="btnBuyPlain">Buy Plain</button>
+                                        <button type="button" class="p3-btn-customize" id="btnCustomize">Customize</button>
+                                    </div>
                                 </div>
 
                                 <div class="add-quote-success" id="addQuoteSuccess" style="display:none;">
@@ -8508,7 +8508,13 @@
                         <!-- PAGE 4: Logo Positions -->
                         <div class="page page-4" style="width: 20%;">
                             <div class="page-content-wrapper">
-                                <button type="button" class="pc-step-back" data-target-page="2"><span aria-hidden="true">←</span> Back to Sizes &amp; Quantities</button>
+                                <div class="pc-flow-page-nav">
+                                    <button type="button" class="pc-step-back back-btn-p4"><span aria-hidden="true">←</span> BACK</button>
+                                    <div class="pc-flow-page-nav-actions">
+                                        <button class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
+                                        <button class="p4-btn-next" id="btnP4Next">NEXT <span aria-hidden="true">→</span></button>
+                                    </div>
+                                </div>
 
                                 <!-- Identity bar (populated by JS) -->
                                 <div class="p2-identity-bar">
@@ -8791,21 +8797,16 @@
 
                                 </div>
 
-                                <!-- Nav buttons -->
-                                <div class="p4-nav"
-                                    style="position:sticky;bottom:0;background:white;z-index:2;padding:10px 0 4px;">
-                                    <button class="p4-btn-back back-btn-p4">&larr; Back</button>
-                                    <button class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
-                                    <button class="p4-btn-next" id="btnP4Next">Next Step &rarr;</button>
-                                </div>
-
                             </div>
                         </div>
 
                         <!-- PAGE 5: Logo Method + Summary Cards -->
                         <div class="page page-5" style="width: 20%;">
                             <div class="page-content-wrapper">
-                                <button type="button" class="pc-step-back" data-target-page="3"><span aria-hidden="true">←</span> Back to Customization</button>
+                                <div class="pc-flow-page-nav">
+                                    <button type="button" class="pc-step-back back-btn-p5"><span aria-hidden="true">←</span> BACK</button>
+                                    <button class="p4-btn-next" id="btnP5Next">NEXT <span aria-hidden="true">→</span></button>
+                                </div>
 
                                 <!-- Identity bar -->
                                 <div class="p2-identity-bar">
@@ -8874,12 +8875,6 @@
                                                 logo.</div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Nav buttons -->
-                                <div class="p4-nav">
-                                    <button class="p4-btn-back back-btn-p5">&larr; Back</button>
-                                    <button class="p4-btn-next" id="btnP5Next">Upload &rarr;</button>
                                 </div>
 
                             </div>
@@ -9002,7 +8997,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20260915-quantity-actions"></script>
+    <script src="test-order-popup/order.js?v=20260919-top-navigation"></script>
     <script src="test-order-popup/order-integration.js?v=20260917-price-catalogue-base-price"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260913b"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260913b"></script>
