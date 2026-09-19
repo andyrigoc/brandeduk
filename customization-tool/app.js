@@ -1265,13 +1265,19 @@ function applySelectedProductContext() {
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
   const selectedProductType =
     selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type;
+  const selectedProductContext = [
+    state.productName,
+    selectedProductData?.description,
+    selectedProductData?.details,
+    selectedProductData?.features
+  ].filter(Boolean).join(" ");
   // With only a URL code, wait for the product API to identify the type. Using
   // the hard-coded initial "Polo" context here starts the wrong mockup request.
   const selectedCustomizationSlug = selectedProductData
     ? resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
     : (urlCode ? "" : resolveCustomizationProductTypeSlug(state.productName, selectedProductType));
   const selectedCustomizationVariant = resolveCustomizationVariantKey(
-    state.productName,
+    selectedProductContext || state.productName,
     selectedProductType,
     selectedProductData?.customizationVariantKey
   );
@@ -1382,7 +1388,9 @@ async function hydrateSelectedProductFromApi() {
     const apiCustomizationSlug =
       resolveCustomizationProductTypeSlug(state.productName, apiProductType);
     const apiCustomizationVariant = resolveCustomizationVariantKey(
-      state.productName,
+      [state.productName, productData.description, productData.details, productData.features]
+        .filter(Boolean)
+        .join(" "),
       apiProductType
     );
     if (
@@ -2039,8 +2047,11 @@ function hydrateAreaDesignsFromBasketContext() {
   }
 
   const hydrated = {};
+  const hydratedPositionAssignments = {};
+  const hydratedPositionKeys = [];
   dedupeLogos(logoCandidates).forEach((logo) => {
     const area = getDesignAreaKey(logo?.position || logo?.area);
+    const position = normalizeProductTypeSlug(logo?.position);
     const source = getLogoSource(logo);
     if (!source) return;
     const preview = logo.designPreview
@@ -2056,6 +2067,13 @@ function hydrateAreaDesignsFromBasketContext() {
       qualityPct: parseInt(logo.qualityPct || 0, 10) || 0,
       preview
     };
+    if (position && !["front", "back", "left", "right"].includes(position)) {
+      hydratedPositionAssignments[position] = {
+        logo: source,
+        method: normalizeDecorationMethod(logo.method)
+      };
+      hydratedPositionKeys.push(position);
+    }
     rememberUploadedLogo(source, logo.method);
   });
 
@@ -2091,6 +2109,9 @@ function hydrateAreaDesignsFromBasketContext() {
   if (decoratedAreas.length === 0) return false;
   state.areaDesigns = hydrated;
   state.areaTextDesigns = hydratedTexts;
+  state.positionLogoAssignments = hydratedPositionAssignments;
+  state.selectedPositions = [...new Set(hydratedPositionKeys)];
+  state.selectedPosition = state.selectedPositions.at(-1) || "";
 
   const requestedArea = sessionStorage.getItem("editingPosition");
   const initialArea = getDesignAreaKey(requestedArea || item.designPreview?.area || decoratedAreas[0]);
@@ -2499,8 +2520,11 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
   const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
-  if (explicit) return explicit;
   if (exactTemplate) return exactTemplate[1];
+  if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {
+    return "waist";
+  }
+  if (explicit) return explicit;
   if (slug === "dog-hoodies") return "dog-hoodie";
   if (slug === "dog-t-shirts") return "dog-tshirt";
   if (slug === "dog-jackets") return "dog-jacket";
@@ -2543,7 +2567,7 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
     return "";
   }
 
-  if (slug === "aprons") return /\bwaist(?:er)?\b|waist apron|server apron/.test(text) ? "waist" : "bib";
+  if (slug === "aprons") return "bib";
   if (slug === "beanies") return /bobble|pom[\s-]?pom|pom beanie/.test(text) ? "bobble" : "cuffed";
   if (slug === "fleece") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "full-zip";
   if (slug === "gilets-body-warmers") return /\bfleece\b|microfleece/.test(text) ? "fleece" : "padded";
@@ -2580,6 +2604,13 @@ function getConfiguredPositionMap() {
     if (slug && imageUrl) map[slug] = imageUrl;
   });
   return map;
+}
+
+function hasConfiguredPositionPicker() {
+  return Array.isArray(state.customizationConfig?.positions)
+    && state.customizationConfig.positions.some(position =>
+      position?.isActive !== false && String(position?.slug || "").trim()
+    );
 }
 
 function isConfiguredTemplateImageUrl(imageUrl) {
@@ -3109,7 +3140,7 @@ function dedupeLogos(logos) {
   if (!Array.isArray(logos)) return [];
   const seen = new Set();
   return logos.filter((logo) => {
-    const key = `${logo?.area || logo?.position || ""}::${getLogoSource(logo)}`;
+    const key = `${logo?.position || logo?.area || ""}::${getLogoSource(logo)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -3540,8 +3571,12 @@ function buildBasketItemFromState() {
   const designs = currentDesign?.logo
     ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
     : allDesigns;
-  const positionLogos = state.customizationProductTypeSlug === "sweatshirts"
-    ? state.selectedPositions
+  const assignedPositionKeys = [...new Set([
+    ...(state.selectedPositions || []),
+    ...Object.keys(state.positionLogoAssignments || {})
+  ])].filter(position => state.positionLogoAssignments?.[position]?.logo);
+  const positionLogos = assignedPositionKeys.length > 0
+    ? assignedPositionKeys
       .map((position) => {
         const assignment = state.positionLogoAssignments?.[position];
         if (!assignment?.logo) return null;
@@ -3762,6 +3797,10 @@ document.getElementById("changeProductBtn").addEventListener("click", () => {
 productSelect.addEventListener("change", async () => {
   state.areaDesigns = {};
   state.areaTextDesigns = {};
+  state.positionLogoAssignments = {};
+  state.selectedPositions = [];
+  state.selectedPosition = "";
+  state.pendingPositionLogoTarget = "";
   clearCanvasLogoState();
   clearCanvasTextState();
   state.product = productSelect.value;
@@ -4231,7 +4270,7 @@ function getSessionLogoLibrary() {
 
 function syncInlineLogoPanels() {
   const hasLogo = Boolean(state.uploadedLogo);
-  const keepUploadPanel = isPcOrderEmbed && state.customizationProductTypeSlug === "sweatshirts";
+  const keepUploadPanel = isPcOrderEmbed && hasConfiguredPositionPicker();
   if (inlineLogoUpload) inlineLogoUpload.hidden = keepUploadPanel ? false : hasLogo;
   if (inlineLogoSettings) inlineLogoSettings.hidden = keepUploadPanel ? true : !hasLogo;
 
@@ -4313,6 +4352,14 @@ function rememberUploadedLogo(src, method) {
 function reuseLibraryLogo(src) {
   state.copyrightConfirmed = true;
   state.pendingDecorationType = null;
+  const targetPosition = ensurePendingPositionLogoTarget();
+  if (targetPosition) {
+    assignLogoToPosition(targetPosition, src, state.decorationType || "print");
+    state.pendingPositionLogoTarget = "";
+    openScreen("mainEditor");
+    updateConfirmButtonState();
+    return;
+  }
   openScreen("mainEditor");
   showLogoOnCanvas(src);
   calculatePrice();
@@ -4600,6 +4647,37 @@ function assignLogoToPosition(position, logo, method = state.decorationType || "
   return true;
 }
 
+function ensurePendingPositionLogoTarget() {
+  if (!isPcOrderEmbed || !hasConfiguredPositionPicker()) return "";
+
+  const cards = [...document.querySelectorAll(".position-card[data-position]")];
+  if (cards.length === 0) return "";
+
+  const existingTarget = normalizeProductTypeSlug(state.pendingPositionLogoTarget);
+  const selectedTarget = normalizeProductTypeSlug(state.selectedPosition);
+  const latestSelected = [...(state.selectedPositions || [])]
+    .reverse()
+    .map(normalizeProductTypeSlug)
+    .find(position => cards.some(card => card.dataset.position === position));
+  const target = [existingTarget, selectedTarget, latestSelected]
+    .find(position => position && cards.some(card => card.dataset.position === position))
+    || cards[0].dataset.position;
+  const card = cards.find(item => item.dataset.position === target);
+  if (!card) return "";
+
+  if (!state.selectedPositions.includes(target)) {
+    state.selectedPositions.push(target);
+  }
+  state.selectedPosition = target;
+  state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
+  state.pendingPositionLogoTarget = target;
+  const checkbox = card.querySelector('input[type="checkbox"]');
+  if (checkbox) checkbox.checked = true;
+  syncPositionSelectionCards();
+  updateCustomizationContextLabel();
+  return target;
+}
+
 function syncPositionCardImages() {
   const sweatshirtPositionImages = {
     "left-chest": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_left_chest.png",
@@ -4742,6 +4820,7 @@ function configurePositionCardsForProduct() {
   if (!grid) return;
   const isSweatshirt = state.customizationProductTypeSlug === "sweatshirts";
   document.body.classList.toggle("is-sweatshirt-position-picker", isSweatshirt);
+  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositionPicker());
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
   const labels = getProductPositionLabels().filter((label) => {
@@ -4763,7 +4842,13 @@ function configurePositionCardsForProduct() {
   });
 
   const availablePositionKeys = labels.map(positionKeyForLabel);
-  state.selectedPositions = (state.selectedPositions || []).filter((position) => availablePositionKeys.includes(position));
+  const restoredAssignedPositions = Object.keys(state.positionLogoAssignments || {})
+    .filter(position => state.positionLogoAssignments?.[position]?.logo)
+    .filter(position => availablePositionKeys.includes(position));
+  state.selectedPositions = [...new Set([
+    ...(state.selectedPositions || []).filter(position => availablePositionKeys.includes(position)),
+    ...restoredAssignedPositions
+  ])];
   if (state.selectedPosition && !availablePositionKeys.includes(state.selectedPosition)) {
     state.selectedPosition = state.selectedPositions.at(-1) || "";
     state.selectedArea = state.selectedPosition
@@ -5225,6 +5310,7 @@ function preparePcUploadFile(file) {
     processLogoFile(file);
     return;
   }
+  ensurePendingPositionLogoTarget();
   pcPendingUploadFile = file;
   pcUploadModal.hidden = false;
   document.getElementById("pcUploadFileName").textContent = file.name;
@@ -7248,7 +7334,7 @@ if (positionGrid) {
 
   positionGrid.addEventListener("dragover", (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
+    if (!card || !hasConfiguredPositionPicker()) return;
     clearPositionDropState();
     event.preventDefault();
     const position = card.dataset.position;
@@ -7267,7 +7353,7 @@ if (positionGrid) {
 
   positionGrid.addEventListener("drop", async (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
+    if (!card || !hasConfiguredPositionPicker()) return;
     event.preventDefault();
     clearPositionDropState();
 

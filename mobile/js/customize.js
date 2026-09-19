@@ -202,7 +202,7 @@
         if (has(/beanie|knit hat|knitted hat/)) return { slug: 'beanies', subtype: 'cuffed' };
         if (has(/bucket hat/)) return { slug: 'hats', subtype: 'bucket' };
 
-        if (has(/waist apron/)) return { slug: 'aprons', subtype: 'waist' };
+        if (has(/\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[ -]?pocket apron\b|\bpocket apron\b/)) return { slug: 'aprons', subtype: 'waist' };
         if (has(/apron/)) return { slug: 'aprons', subtype: 'bib' };
         if (has(/jogger|sweatpant|jogging bottom/)) return { slug: 'sweatpants', subtype: 'joggers' };
         if (has(/\bshorts?\b/) && !has(/shirt/)) return { slug: 'shorts', subtype: 'shorts' };

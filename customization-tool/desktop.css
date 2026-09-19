@@ -673,11 +673,11 @@
 
   .pc-upload-modal[hidden] { display: none; }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-upload-modal[hidden] {
+  body.is-pc-order-embed .pc-upload-modal[hidden] {
     display: none !important;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-upload-modal {
+  body.is-pc-order-embed .pc-upload-modal {
     position: fixed;
     z-index: 500;
     inset: 0;
@@ -1828,16 +1828,16 @@
     background: #1d4ed8;
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-logo-drop-ready .position-logo-preview-box {
+  body.has-configured-position-picker .position-card.is-logo-drop-ready .position-logo-preview-box {
     border-color: #2563eb;
     background: #eff6ff;
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-logo-drop-blocked {
+  body.has-configured-position-picker .position-card.is-logo-drop-blocked {
     cursor: not-allowed;
   }
 
-  body.is-sweatshirt-position-picker .position-logo-preview-box.is-logo-arriving img {
+  body.has-configured-position-picker .position-logo-preview-box.is-logo-arriving img {
     animation: sweatshirt-logo-arrive .3s ease-out;
     transform-origin: center;
   }
