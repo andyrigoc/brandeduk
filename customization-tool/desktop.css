@@ -66,7 +66,7 @@
     height: 100vh;
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-columns: minmax(0, 1fr) 420px;
     grid-template-rows: 72px minmax(0, 1fr);
     grid-template-areas:
       "header header"
@@ -1179,10 +1179,10 @@
   .product-preview {
     position: relative;
     z-index: 2;
-    width: min(500px, calc(100% - 104px), 67vh);
+    width: min(400px, calc(100% - 120px), 54vh);
     max-width: 100%;
-    height: min(540px, calc(100vh - 150px));
-    max-height: calc(100vh - 150px);
+    height: min(432px, calc(100vh - 180px));
+    max-height: calc(100vh - 180px);
     margin-left: 300px;
     display: flex;
     align-items: center;
@@ -1196,21 +1196,21 @@
   }
 
   .polo-colour-wrap {
-    width: min(460px, 100%, calc(100vh - 210px));
+    width: min(368px, 100%, calc(100vh - 260px));
     max-width: 100%;
     max-height: calc(100% - 18px);
     margin: 0 auto;
   }
 
   .product-preview.product-cap .polo-colour-wrap {
-    width: min(370px, calc(100% - 70px), calc(100vh - 280px));
+    width: min(296px, calc(100% - 70px), calc(100vh - 320px));
   }
 
   /* T-shirt front and back share one PC frame so the garment scale and print
      coordinates do not jump when the customer switches views. */
   .product-preview.product-tshirt.area-front .polo-colour-wrap,
   .product-preview.product-tshirt.area-back .polo-colour-wrap {
-    width: min(460px, 100%, calc(100vh - 210px));
+    width: min(368px, 100%, calc(100vh - 260px));
     aspect-ratio: 281 / 333;
   }
 
@@ -1404,7 +1404,7 @@
   }
 
   .position-selection-header {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
@@ -1432,6 +1432,7 @@
   }
 
   .position-selection-copy {
+    display: none;
     margin: 0 2px 10px;
     color: #6b7280;
     font-size: 12px;
@@ -1440,8 +1441,8 @@
 
   .position-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 8px;
   }
 
   body.is-sweatshirt-position-picker .position-grid {
@@ -1766,11 +1767,20 @@
   }
 
   .position-thumb-wrap img {
+    position: absolute;
+    inset: 0;
     display: block;
-    width: 58px;
-    height: 58px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    object-position: center;
     filter: drop-shadow(0 12px 12px rgba(15, 23, 42, 0.10));
+  }
+
+  .position-thumb-wrap .position-thumb-coords {
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
   }
 
   .position-thumb-wrap .position-print-area-guide {
@@ -1778,8 +1788,8 @@
     z-index: 1;
     left: var(--guide-left, 50%);
     top: var(--guide-top, 48%);
-    width: 20px;
-    height: 16px;
+    width: var(--guide-width, 20%);
+    height: var(--guide-height, 15%);
     border: 0;
     border-radius: 2px;
     background:
@@ -1822,7 +1832,7 @@
   .position-thumb-wrap .position-thumb-colour-layer {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
     mix-blend-mode: multiply;
     opacity: 0;
@@ -1840,7 +1850,9 @@
 
 
   .position-card[data-position="right-side"] .position-thumb-wrap > img,
-  .position-card[data-position="right-side"] .position-thumb-colour-layer {
+  .position-card[data-position="right-side"] .position-thumb-colour-layer,
+  .position-card[data-position="right-sleeve"] .position-thumb-wrap > img,
+  .position-card[data-position="right-sleeve"] .position-thumb-colour-layer {
     transform: scaleX(-1);
   }
 
@@ -1854,8 +1866,8 @@
     pointer-events: none;
   }
 
-  .position-card[data-position="left-chest"] .position-logo-preview { left: 39%; top: 34%; }
-  .position-card[data-position="right-chest"] .position-logo-preview { left: 54%; top: 34%; }
+  .position-card[data-position="left-chest"] .position-logo-preview { left: 61%; top: 34%; }
+  .position-card[data-position="right-chest"] .position-logo-preview { left: 46%; top: 34%; }
   .position-card[data-position="centre-front"] .position-logo-preview { left: 45%; top: 40%; width: 20px; height: 15px; }
   .position-card[data-position="large-front"] .position-logo-preview { left: 37%; top: 42%; width: 28px; height: 18px; }
   .position-card[data-position="name-of-neck"] .position-logo-preview { left: 45%; top: 23%; width: 16px; height: 10px; }
@@ -2126,9 +2138,71 @@
  * the parent order flow, so the studio focuses purely on visual decoration.
  */
 @media (min-width: 800px) {
+  body.is-pc-order-embed #mainEditor.active-screen {
+    grid-template-columns: minmax(420px, 1fr) 460px;
+    grid-template-rows: 64px minmax(0, 1fr);
+    grid-template-areas:
+      "header header"
+      "canvas inspector";
+  }
+
+  body.is-pc-order-embed .editor-top {
+    height: 64px;
+    grid-template-columns: 1fr;
+  }
+
+  body.is-pc-order-embed .customizer-breadcrumb,
+  body.is-pc-order-embed .top-nav,
+  body.is-pc-order-embed .nav-actions,
+  body.is-pc-order-embed .bottom-sheet {
+    display: none !important;
+  }
+
+  body.is-pc-order-embed .tab-bar {
+    grid-column: 1;
+    width: 100%;
+    height: 64px;
+    padding: 0 22px;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  body.is-pc-order-embed .tab-btn {
+    min-width: 120px;
+    max-width: 170px;
+    height: 64px;
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+
+  body.is-pc-order-embed .canvas-wrap {
+    padding: 16px 48px 16px 48px;
+  }
+
+  body.is-pc-order-embed .desktop-inspector {
+    padding: 16px;
+  }
+
+  body.is-pc-order-embed .customiser-app > .screen.active-screen:not(#mainEditor) {
+    height: calc(100vh - 36px);
+    margin: 18px auto;
+  }
 }
 
 @media (min-width: 800px) and (max-width: 1080px) {
+  body.is-pc-order-embed #mainEditor.active-screen {
+    grid-template-columns: minmax(360px, 1fr) 360px;
+  }
+
+  body.is-pc-order-embed .canvas-wrap {
+    padding-left: 34px;
+    padding-right: 34px;
+  }
+
+  body.is-pc-order-embed .tab-btn {
+    min-width: 92px;
+    font-size: 11px;
+  }
 }
 
 @media (min-width: 800px) {

@@ -90,6 +90,13 @@ body.popup-open {
     border-right: 1px solid var(--pc-flow-line);
 }
 
+.pc-product-flow-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 .pc-product-flow-logo {
     width: 142px;
     height: 39px;
@@ -228,7 +235,7 @@ body.popup-open {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    gap: 6px;
 }
 
 .pc-product-flow-help a {
@@ -236,6 +243,25 @@ body.popup-open {
     font-size: 13px;
     font-weight: 800;
     text-decoration: none;
+}
+
+.pc-popup-return-btn {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--pc-flow-line);
+    border-radius: 9px;
+    background: #fff;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pc-popup-return-btn:hover {
+    background: #f8fafc;
+    border-color: #cfd8e3;
+    color: #0f172a;
 }
 
 #orderPopup .viewport {
@@ -821,8 +847,8 @@ body.popup-open {
 #orderPopup .page-2 .colour-swatch-item:hover,
 #orderPopup .page-2 .colour-swatch-item.selected {
     min-width: 0;
-    min-height: 112px;
-    padding: 0 2px;
+    min-height: 120px;
+    padding: 8px 2px 4px;
     display: flex !important;
     flex-direction: column;
     align-items: center;

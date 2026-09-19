@@ -4,6 +4,7 @@
     var panel = document.getElementById('pcCustomizerPanel');
     var frame = document.getElementById('pcCustomizerFrame');
     var backButton = document.getElementById('pcCustomizerBack');
+    var closeButton = document.getElementById('pcCustomizerClose');
     var title = document.getElementById('pcCustomizerTitle');
     var summary = document.getElementById('pcCustomizerSummary');
     var orderCard = document.querySelector('#orderPopup .order_card');
@@ -259,6 +260,16 @@
 
     if (backButton) {
         backButton.addEventListener('click', function() {
+            closeCustomizer(false);
+        });
+    }
+
+    if (closeButton) {
+        closeButton.addEventListener('click', function() {
+            if (typeof window.closeOrderPopup === 'function') {
+                window.closeOrderPopup();
+                return;
+            }
             closeCustomizer(false);
         });
     }

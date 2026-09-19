@@ -856,8 +856,9 @@
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
-    padding: 6px 8px;
+    padding: 8px 10px;
     background: #fff;
     border: 2px solid #e5e7eb;
     border-radius: 6px;
@@ -954,7 +955,7 @@
     height: 32px;
     border-radius: 4px;
     background-size: cover;
-    background-position: center;
+    background-position: center 42%;
     background-repeat: no-repeat;
     flex-shrink: 0;
 }

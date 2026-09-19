@@ -8039,6 +8039,9 @@
                 return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
             }
 
+            // Shared with catalogue filter rendering logic outside this IIFE.
+            window.dedupeBrandsByName = dedupeBrandsByName;
+
             async function loadBrands() {
                 if (fetched) return;
                 fetched = true;
@@ -8150,8 +8153,10 @@
 
                 <header class="pc-product-flow-header">
                     <div class="pc-product-flow-brand">
-                        <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png"
-                            alt="BrandedUK">
+                        <a class="pc-product-flow-logo-link" href="index.html" aria-label="BrandedUK home">
+                            <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png"
+                                alt="BrandedUK">
+                        </a>
                         <span class="pc-product-flow-brand-copy">
                             <strong>Build your order</strong>
                         </span>
@@ -8177,6 +8182,8 @@
                     <div class="pc-product-flow-help">
                         <span>Need help?</span>
                         <a href="tel:02089742722">0208 974 2722</a>
+                        <button type="button" class="pc-popup-return-btn" onclick="window.closeOrderPopup()"
+                            aria-label="Close popup and return to site">Close &amp; return</button>
                     </div>
                 </header>
 
@@ -8893,19 +8900,29 @@
                      established PC order flow above. -->
                 <section id="pcCustomizerPanel" class="pc-customizer-panel" hidden aria-label="Customize your product">
                     <header class="pc-customizer-header">
-                        <button type="button" id="pcCustomizerBack" class="pc-customizer-back"
-                            aria-label="Back to order">
-                            <span aria-hidden="true">&larr;</span>
-                            <span>Back to order</span>
-                        </button>
+                        <div class="pc-customizer-left">
+                            <a class="pc-customizer-logo-link" href="index.html" aria-label="BrandedUK home">
+                                <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png"
+                                    alt="BrandedUK">
+                            </a>
+                            <button type="button" id="pcCustomizerBack" class="pc-customizer-back"
+                                aria-label="Back to order">
+                                <span aria-hidden="true">&larr;</span>
+                                <span>Back to order</span>
+                            </button>
+                        </div>
                         <div class="pc-customizer-heading">
                             <span class="pc-customizer-kicker">BRANDEDUK DESIGN STUDIO</span>
                             <strong id="pcCustomizerTitle">Customize your product</strong>
                             <span id="pcCustomizerSummary">Your colour and quantities are preserved</span>
                         </div>
-                        <div class="pc-customizer-secure" aria-label="Your selections are saved">
-                            <span aria-hidden="true">&#10003;</span>
-                            Selections saved
+                        <div class="pc-customizer-actions">
+                            <div class="pc-customizer-secure" aria-label="Your selections are saved">
+                                <span aria-hidden="true">&#10003;</span>
+                                Selections saved
+                            </div>
+                            <button type="button" id="pcCustomizerClose" class="pc-customizer-close"
+                                aria-label="Close popup and return to site">Close &amp; return</button>
                         </div>
                     </header>
                     <div class="pc-customizer-frame-wrap">

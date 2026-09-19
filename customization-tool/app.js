@@ -346,7 +346,15 @@ function applyGarmentTintHex(hex) {
   }
 
   state.colourHex = tintHex;
-  if (colourLayer) colourLayer.style.backgroundColor = tintHex;
+  if (colourLayer) {
+    colourLayer.style.backgroundColor = tintHex;
+    // Keep a single visual garment in the editor. Using catalogue photos here
+    // creates a second misaligned shirt layer on some products (e.g. T-shirt).
+    colourLayer.style.backgroundImage = "none";
+    colourLayer.style.backgroundSize = "auto";
+    colourLayer.style.backgroundRepeat = "no-repeat";
+    colourLayer.style.backgroundPosition = "center center";
+  }
   syncViewThumbTint();
 }
 
@@ -2810,8 +2818,15 @@ async function applyArea() {
     if (state.colourHex && !isPlaceholderSwatchHex(state.colourHex)) return state.colourHex;
     return isWhiteColourName(state.colourName) ? "#ffffff" : "#ffffff";
   })();
+  colourLayerEl.style.backgroundColor = areaTintHex;
+  // Apply tint only on the neutral garment silhouette in the main canvas.
+  // This avoids the "shirt behind" ghost layer caused by mixed image frames.
+  colourLayerEl.style.backgroundImage = "none";
+  colourLayerEl.style.backgroundSize = "auto";
+  colourLayerEl.style.backgroundRepeat = "no-repeat";
+  colourLayerEl.style.backgroundPosition = "center center";
+
   if (!useCatalogImageDirectly) {
-    colourLayerEl.style.backgroundColor = areaTintHex;
 
     // Maschera tint sul PNG neutro, non sulla foto catalogo.
     colourLayerEl.style.webkitMaskImage = `url("${neutralPngSrc}")`;
@@ -4479,46 +4494,164 @@ function syncPositionCardImages() {
       guide.hidden = useSweatshirtPositionImages;
       if (useSweatshirtPositionImages) return;
       guide.dataset.position = card.dataset.position || "centre-front";
-      const guidePosition = getPreviewGuidePosition(
+      const guidePosition = getPreviewGuideGeometry(
         state.customizationProductTypeSlug || state.product,
         card.dataset.position || "centre-front"
       );
-      guide.style.setProperty("--guide-left", `${guidePosition.left}%`);
-      guide.style.setProperty("--guide-top", `${guidePosition.top}%`);
+      guide.style.setProperty("--guide-left", `${guidePosition.x}%`);
+      guide.style.setProperty("--guide-top", `${guidePosition.y}%`);
+      guide.style.setProperty("--guide-width", `${guidePosition.width}%`);
+      guide.style.setProperty("--guide-height", `${guidePosition.height}%`);
     }
+
+    ensurePositionThumbCoordinateSystem(card);
+  });
+
+  updatePositionThumbCoordinateSystems();
+}
+
+function getPreviewGuideGeometry(category, position) {
+  const key = String(category || "").toLowerCase();
+  const label = String(position || "").toLowerCase();
+  const defaults = { x: 50, y: 48, width: 26, height: 20 };
+  const byPositionSize = {
+    "left-chest": { width: 18, height: 14 },
+    "right-chest": { width: 18, height: 14 },
+    "centre-chest": { width: 20, height: 15 },
+    "center-chest": { width: 20, height: 15 },
+    "centre-front": { width: 20, height: 15 },
+    "center-front": { width: 20, height: 15 },
+    "left-front": { width: 18, height: 14 },
+    "right-front": { width: 18, height: 14 },
+    "large-front": { width: 30, height: 24 },
+    "large-front-above-pocket": { width: 30, height: 18 },
+    "upper-back": { width: 24, height: 14 },
+    "name-of-neck": { width: 18, height: 10 },
+    "centre-back": { width: 20, height: 14 },
+    "center-back": { width: 20, height: 14 },
+    "large-back": { width: 30, height: 24 },
+    "left-sleeve": { width: 14, height: 12 },
+    "right-sleeve": { width: 14, height: 12 },
+    "left-side": { width: 14, height: 12 },
+    "right-side": { width: 14, height: 12 },
+    "left-cuff": { width: 12, height: 10 },
+    "right-cuff": { width: 12, height: 10 },
+    "left-thigh": { width: 16, height: 14 },
+    "right-thigh": { width: 16, height: 14 },
+    "left-pocket": { width: 14, height: 12 },
+    "right-pocket": { width: 14, height: 12 },
+    "left-leg": { width: 16, height: 16 },
+    "right-leg": { width: 16, height: 16 },
+    "above-pocket": { width: 17, height: 12 },
+    back: { width: 18, height: 12 }
+  };
+  const maps = {
+    caps: {
+      "centre-front": { x: 50, y: 42 }, "front-left-panel": { x: 32, y: 43 },
+      "front-right-panel": { x: 68, y: 43 }, "left-side": { x: 36, y: 55 },
+      "right-side": { x: 64, y: 55 }, back: { x: 50, y: 38 }
+    },
+    bags: {
+      "centre-front": { x: 50, y: 68 }, "large-front": { x: 50, y: 68 },
+      "centre-back": { x: 50, y: 68 }, "large-back": { x: 50, y: 68 },
+      "left-side": { x: 35, y: 58 }, "right-side": { x: 65, y: 58 }
+    },
+    beanies: { "centre-front": { x: 50, y: 52 }, "front-left": { x: 35, y: 52 }, "front-right": { x: 65, y: 52 } },
+    "safety-vests": { "left-chest": { x: 60, y: 37 }, "right-chest": { x: 40, y: 37 }, "large-back": { x: 50, y: 48 } },
+    aprons: { "centre-chest": { x: 50, y: 38 }, "large-front": { x: 50, y: 55 }, "left-chest": { x: 60, y: 38 }, "right-chest": { x: 40, y: 38 } },
+    trousers: { "left-thigh": { x: 42, y: 57 }, "right-thigh": { x: 58, y: 57 }, "left-pocket": { x: 39, y: 43 }, "right-pocket": { x: 61, y: 43 } },
+    shorts: { "left-thigh": { x: 42, y: 56 }, "right-thigh": { x: 58, y: 56 }, "left-pocket": { x: 39, y: 42 }, "right-pocket": { x: 61, y: 42 } },
+    sweatpants: { "left-thigh": { x: 42, y: 54 }, "right-thigh": { x: 58, y: 54 }, "left-leg": { x: 42, y: 68 }, "right-leg": { x: 58, y: 68 } }
+  };
+  const group = maps[key] || maps[key.replace(/s$/, "")] || {};
+  const isLeftChest = /(^|-)left-chest$|left chest/.test(label);
+  const isRightChest = /(^|-)right-chest$|right chest/.test(label);
+
+  const anchor = group[label]
+    || (isLeftChest ? { x: 62, y: 43 } : null)
+    || (isRightChest ? { x: 38, y: 43 } : null)
+    || (/left.*(front|sleeve|side|cuff)/.test(label) ? { x: 38, y: 43 } : null)
+    || (/right.*(front|sleeve|side|cuff)/.test(label) ? { x: 62, y: 43 } : null)
+    || (/back/.test(label) ? { x: 50, y: 48 } : null)
+    || (/large|centre|center/.test(label) ? { x: 50, y: 50 } : null)
+    || defaults;
+  const size = byPositionSize[label]
+    || (/large/.test(label) ? { width: 30, height: 24 } : null)
+    || (/sleeve|side|cuff/.test(label) ? { width: 14, height: 12 } : null)
+    || (/chest|front|back/.test(label) ? { width: 20, height: 15 } : null)
+    || { width: defaults.width, height: defaults.height };
+
+  return {
+    x: anchor.x,
+    y: anchor.y,
+    width: size.width,
+    height: size.height
+  };
+}
+
+function ensurePositionThumbCoordinateSystem(card) {
+  const thumbWrap = card.querySelector(".position-thumb-wrap");
+  const thumbImage = card.querySelector(".position-thumb-wrap > img");
+  const guide = card.querySelector(".position-print-area-guide");
+  if (!thumbWrap || !thumbImage || !guide) return;
+
+  let coords = thumbWrap.querySelector(".position-thumb-coords");
+  if (!coords) {
+    coords = document.createElement("span");
+    coords.className = "position-thumb-coords";
+    thumbWrap.appendChild(coords);
+  }
+
+  if (guide.parentElement !== coords) {
+    coords.appendChild(guide);
+  }
+
+  if (!thumbImage.dataset.thumbCoordsBound) {
+    thumbImage.dataset.thumbCoordsBound = "1";
+    thumbImage.addEventListener("load", () => updatePositionThumbCoordinateSystems());
+  }
+}
+
+function updatePositionThumbCoordinateSystems() {
+  document.querySelectorAll(".position-card .position-thumb-wrap").forEach((thumbWrap) => {
+    const thumbImage = thumbWrap.querySelector(":scope > img");
+    const coords = thumbWrap.querySelector(".position-thumb-coords");
+    if (!thumbImage || !coords) return;
+
+    const wrapRect = thumbWrap.getBoundingClientRect();
+    const wrapWidth = Math.max(1, wrapRect.width);
+    const wrapHeight = Math.max(1, wrapRect.height);
+    const naturalWidth = thumbImage.naturalWidth || wrapWidth;
+    const naturalHeight = thumbImage.naturalHeight || wrapHeight;
+
+    let drawWidth = wrapWidth;
+    let drawHeight = wrapHeight;
+    let offsetLeft = 0;
+    let offsetTop = 0;
+
+    if (naturalWidth > 0 && naturalHeight > 0) {
+      const imageRatio = naturalWidth / naturalHeight;
+      const wrapRatio = wrapWidth / wrapHeight;
+
+      if (imageRatio > wrapRatio) {
+        drawWidth = wrapWidth;
+        drawHeight = wrapWidth / imageRatio;
+        offsetTop = (wrapHeight - drawHeight) / 2;
+      } else {
+        drawHeight = wrapHeight;
+        drawWidth = wrapHeight * imageRatio;
+        offsetLeft = (wrapWidth - drawWidth) / 2;
+      }
+    }
+
+    coords.style.left = `${offsetLeft}px`;
+    coords.style.top = `${offsetTop}px`;
+    coords.style.width = `${drawWidth}px`;
+    coords.style.height = `${drawHeight}px`;
   });
 }
 
-function getPreviewGuidePosition(category, position) {
-  const key = String(category || "").toLowerCase();
-  const label = String(position || "").toLowerCase();
-  const defaults = { left: 50, top: 48 };
-  const maps = {
-    caps: {
-      "centre-front": { left: 50, top: 42 }, "front-left-panel": { left: 32, top: 43 },
-      "front-right-panel": { left: 68, top: 43 }, "left-side": { left: 36, top: 55 },
-      "right-side": { left: 64, top: 55 }, back: { left: 50, top: 38 }
-    },
-    bags: {
-      "centre-front": { left: 50, top: 68 }, "large-front": { left: 50, top: 68 },
-      "centre-back": { left: 50, top: 68 }, "large-back": { left: 50, top: 68 },
-      "left-side": { left: 35, top: 58 }, "right-side": { left: 65, top: 58 }
-    },
-    beanies: { "centre-front": { left: 50, top: 52 }, "front-left": { left: 35, top: 52 }, "front-right": { left: 65, top: 52 } },
-    "safety-vests": { "left-chest": { left: 40, top: 37 }, "right-chest": { left: 60, top: 37 }, "large-back": { left: 50, top: 48 } },
-    aprons: { "centre-chest": { left: 50, top: 38 }, "large-front": { left: 50, top: 55 }, "left-chest": { left: 40, top: 38 }, "right-chest": { left: 60, top: 38 } },
-    trousers: { "left-thigh": { left: 42, top: 57 }, "right-thigh": { left: 58, top: 57 }, "left-pocket": { left: 39, top: 43 }, "right-pocket": { left: 61, top: 43 } },
-    shorts: { "left-thigh": { left: 42, top: 56 }, "right-thigh": { left: 58, top: 56 }, "left-pocket": { left: 39, top: 42 }, "right-pocket": { left: 61, top: 42 } },
-    sweatpants: { "left-thigh": { left: 42, top: 54 }, "right-thigh": { left: 58, top: 54 }, "left-leg": { left: 42, top: 68 }, "right-leg": { left: 58, top: 68 } }
-  };
-  const group = maps[key] || maps[key.replace(/s$/, "")] || {};
-  if (group[label]) return group[label];
-  if (/left.*(chest|front|sleeve|side|cuff)/.test(label)) return { left: 38, top: 43 };
-  if (/right.*(chest|front|sleeve|side|cuff)/.test(label)) return { left: 62, top: 43 };
-  if (/back/.test(label)) return { left: 50, top: 48 };
-  if (/large|centre|center/.test(label)) return { left: 50, top: 50 };
-  return defaults;
-}
+window.addEventListener("resize", updatePositionThumbCoordinateSystems);
 
 const GENERIC_LOGO_POSITIONS = {
   tshirts: ["Left Chest", "Right Chest", "Centre Chest", "Large Front", "Upper Back", "Large Back", "Left Sleeve", "Right Sleeve"],
@@ -4697,6 +4830,7 @@ function readLogoFileAsDataUrl(file) {
 function loadLogoImage(dataUrl) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error("Unable to decode logo image"));
     image.src = dataUrl;
@@ -4717,6 +4851,76 @@ function rgbFromHex(hex) {
     parseInt(value.slice(2, 4), 16),
     parseInt(value.slice(4, 6), 16)
   ];
+}
+
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function toShortHexIfPossible(hex) {
+  const value = String(hex || "").toLowerCase();
+  if (!/^#[0-9a-f]{6}$/.test(value)) return "";
+  if (value[1] !== value[2] || value[3] !== value[4] || value[5] !== value[6]) return "";
+  return `#${value[1]}${value[3]}${value[5]}`;
+}
+
+function decodeSvgDataUrl(dataUrl) {
+  const source = String(dataUrl || "");
+  if (!source.startsWith("data:image/svg+xml")) return null;
+  const commaIndex = source.indexOf(",");
+  if (commaIndex < 0) return null;
+  const header = source.slice(0, commaIndex);
+  const payload = source.slice(commaIndex + 1);
+  const isBase64 = /;base64/i.test(header);
+  try {
+    const svg = isBase64
+      ? atob(payload)
+      : decodeURIComponent(payload);
+    return { svg, isBase64 };
+  } catch (error) {
+    return null;
+  }
+}
+
+function encodeSvgDataUrl(svg) {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(String(svg || ""))}`;
+}
+
+function recolorSvgDataUrl(source, targetHex, replacementHex) {
+  const parsed = decodeSvgDataUrl(source);
+  const target = String(targetHex || "").toLowerCase();
+  const replacement = String(replacementHex || "").toLowerCase();
+  const targetRgb = rgbFromHex(target);
+  if (!parsed || !targetRgb || !/^#[0-9a-f]{6}$/i.test(replacement)) return null;
+
+  const targetShort = toShortHexIfPossible(target);
+  const rgbCsvPattern = new RegExp(
+    `rgb\\(\\s*${targetRgb[0]}\\s*,\\s*${targetRgb[1]}\\s*,\\s*${targetRgb[2]}\\s*\\)`,
+    "gi"
+  );
+  const rgbSpacePattern = new RegExp(
+    `rgb\\(\\s*${targetRgb[0]}\\s+${targetRgb[1]}\\s+${targetRgb[2]}\\s*\\)`,
+    "gi"
+  );
+
+  let nextSvg = parsed.svg;
+  let replacements = 0;
+  const applyReplace = (pattern, value) => {
+    nextSvg = nextSvg.replace(pattern, () => {
+      replacements += 1;
+      return value;
+    });
+  };
+
+  applyReplace(new RegExp(escapeRegExp(target), "gi"), replacement);
+  if (targetShort) {
+    applyReplace(new RegExp(escapeRegExp(targetShort), "gi"), replacement);
+  }
+  applyReplace(rgbCsvPattern, replacement);
+  applyReplace(rgbSpacePattern, replacement);
+
+  if (replacements === 0) return null;
+  return encodeSvgDataUrl(nextSvg);
 }
 
 function setReplacementLogoColour(hex) {
@@ -4908,12 +5112,41 @@ async function renderLogoColourEditor() {
 }
 
 async function replaceLogoColour() {
+  if (!selectedLogoPaletteColour) {
+    const fallbackSwatch = logoColourList?.querySelector(".logo-colour-swatch.is-selected")
+      || logoColourList?.querySelector(".logo-colour-swatch");
+    fallbackSwatch?.click();
+  }
+
   const target = rgbFromHex(selectedLogoPaletteColour);
   const replacement = rgbFromHex(logoReplacementColour?.value);
-  if (!target || !replacement || !state.uploadedLogo) return;
+  const source = String(state.uploadedLogo || uploadedLogo?.currentSrc || uploadedLogo?.src || "").trim();
+  if (!target || !replacement || !source) {
+    setLogoColourStatus("Select a logo colour and a replacement colour first.", true);
+    return;
+  }
+
+  if (target[0] === replacement[0] && target[1] === replacement[1] && target[2] === replacement[2]) {
+    setLogoColourStatus("Choose a different replacement colour.", true);
+    return;
+  }
 
   try {
-    const { canvas, context } = await getLogoCanvas(state.uploadedLogo);
+    const svgReplacement = recolorSvgDataUrl(source, selectedLogoPaletteColour, logoReplacementColour?.value);
+    if (svgReplacement) {
+      state.uploadedLogo = svgReplacement;
+      uploadedLogo.src = state.uploadedLogo;
+      await waitForLogoImage(uploadedLogo);
+      syncPositionCardLogoPreviews();
+      captureCurrentAreaDesign();
+      await renderLogoColourEditor();
+      if (logoColourPopover) logoColourPopover.hidden = true;
+      logoColourPickerToggle?.setAttribute("aria-expanded", "false");
+      setLogoColourStatus("Colour updated.");
+      return;
+    }
+
+    const { canvas, context } = await getLogoCanvas(source);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const tolerance = 62;
     const toleranceSquared = tolerance * tolerance;
@@ -6007,7 +6240,11 @@ closeLogoColourPopoverBtn?.addEventListener("click", () => {
   logoColourPickerToggle?.setAttribute("aria-expanded", "false");
 });
 
-confirmLogoColourBtn?.addEventListener("click", () => {
+confirmLogoColourBtn?.addEventListener("click", async () => {
+  if (selectedLogoPaletteColour) {
+    await replaceLogoColour();
+    return;
+  }
   logoColourPopover.hidden = true;
   logoColourPickerToggle?.setAttribute("aria-expanded", "false");
 });

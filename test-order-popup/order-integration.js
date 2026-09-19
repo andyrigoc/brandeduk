@@ -187,8 +187,34 @@
                 image: "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/fc1e389e/6748416615b286ee281f13ae/GD002_LS00_2025.jpg"
             }
         };
-        
-        const product = fallbackProducts[productCode] || fallbackProducts['GD002'];
+
+        // Keep the requested code visible when a product endpoint is missing,
+        // so the UI does not silently jump to a different SKU.
+        const requestedCode = String(productCode || '').trim().toUpperCase();
+        const genericFallback = {
+            code: requestedCode || 'UNKNOWN',
+            name: requestedCode ? ('Product ' + requestedCode) : 'Selected product',
+            brand: '',
+            price: 0,
+            basePrice: 0,
+            description: 'We could not load full product details for this code right now. Please return to the catalogue and open the item from the product card.',
+            details: {
+                fabric: '',
+                weight: '',
+                sizeDescription: ''
+            },
+            sizes: ["S", "M", "L", "XL", "2XL"],
+            colors: [
+                { name: 'Black', hex: '#000000' },
+                { name: 'White', hex: '#FFFFFF' },
+                { name: 'Navy', hex: '#001F3F' },
+                { name: 'Red', hex: '#FF4136' }
+            ],
+            priceBreaks: [{ min: 1, max: 99999, price: 0, percentage: 0 }],
+            image: "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/fc1e389e/6748416615b286ee281f13ae/GD002_LS00_2025.jpg"
+        };
+
+        const product = fallbackProducts[requestedCode] || genericFallback;
         window.currentOrderProduct = product;
         loadProductIntoPopup(product);
     }

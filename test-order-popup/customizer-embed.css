@@ -45,7 +45,7 @@
 
 .pc-customizer-header {
     display: grid;
-    grid-template-columns: 190px minmax(0, 1fr) 190px;
+    grid-template-columns: minmax(310px, 360px) minmax(0, 1fr) minmax(210px, 280px);
     align-items: center;
     gap: 18px;
     padding: 0 24px;
@@ -53,6 +53,26 @@
     background: #fff;
     border-bottom: 1px solid #e3e8f1;
     box-shadow: 0 1px 10px rgba(20, 36, 86, .05);
+}
+
+.pc-customizer-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.pc-customizer-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.pc-customizer-logo {
+    width: 126px;
+    height: 34px;
+    object-fit: contain;
 }
 
 .pc-customizer-back {
@@ -76,6 +96,13 @@
     border-color: #aeb8cb;
     background: #f8fafc;
     transform: translateY(-1px);
+}
+
+.pc-customizer-actions {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .pc-customizer-heading {
@@ -116,7 +143,6 @@
 }
 
 .pc-customizer-secure {
-    justify-self: end;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -134,6 +160,25 @@
     color: #fff;
     background: #20a66a;
     font-size: 12px;
+}
+
+.pc-customizer-close {
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #d6deea;
+    border-radius: 9px;
+    background: #fff;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pc-customizer-close:hover {
+    background: #f8fafc;
+    border-color: #c5cfdd;
+    color: #0f172a;
 }
 
 .pc-customizer-frame-wrap {
@@ -198,8 +243,18 @@
     }
 
     .pc-customizer-header {
-        grid-template-columns: 150px minmax(0, 1fr) 150px;
+        grid-template-columns: minmax(220px, 250px) minmax(0, 1fr) auto;
         padding: 0 14px;
+    }
+
+    .pc-customizer-logo {
+        width: 100px;
+        height: 28px;
+    }
+
+    .pc-customizer-close {
+        padding: 0 10px;
+        font-size: 11px;
     }
 
     .pc-customizer-secure {
