@@ -301,6 +301,11 @@ function resolveNeutralGarmentPngForArea(area) {
     return beanieFrontImage;
   }
 
+  const categoryFallback = resolveCategoryFallbackGarmentImage(normalizedArea);
+  if (categoryFallback) {
+    return categoryFallback;
+  }
+
   const tabThumb = document.querySelector(
     `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
   );
@@ -2326,6 +2331,24 @@ const tshirtImages = {
 const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png";
 const beanieFrontImage = "https://i.postimg.cc/xdX8y8Mr/beanie-folding.png";
 
+// Plain sweatshirt mockups, used whenever the API hasn't supplied a configured
+// garment photo — without this a sweatshirt silently falls back to the t-shirt PNG.
+const sweatshirtImages = {
+  front: "../customization_templates/sweatshirts/sweatshirt-front.png",
+  back: "../customization_templates/sweatshirts/sweatshirt-back.jpg",
+  left: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  right: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  "left-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
+  "right-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png"
+};
+
+function resolveCategoryFallbackGarmentImage(area) {
+  if (state.customizationProductTypeSlug === "sweatshirts") {
+    return sweatshirtImages[area] || sweatshirtImages.front;
+  }
+  return "";
+}
+
 const garmentImageLoadCache = new Map();
 const customizationConfigCache = new Map();
 let customizationConfigRequestId = 0;
@@ -2818,10 +2841,10 @@ function inferProductTypeFromCatalog(name, productType) {
 
 function restoreDefaultViewTabThumbs() {
   const thumbMap = {
-    front: resolveConfiguredGarmentImage("front") || tshirtImages.front,
-    back: resolveConfiguredGarmentImage("back") || tshirtImages.back,
-    left: resolveConfiguredGarmentImage("left") || tshirtImages.left,
-    right: resolveConfiguredGarmentImage("right") || tshirtImages.right
+    front: resolveConfiguredGarmentImage("front") || resolveCategoryFallbackGarmentImage("front") || tshirtImages.front,
+    back: resolveConfiguredGarmentImage("back") || resolveCategoryFallbackGarmentImage("back") || tshirtImages.back,
+    left: resolveConfiguredGarmentImage("left") || resolveCategoryFallbackGarmentImage("left") || tshirtImages.left,
+    right: resolveConfiguredGarmentImage("right") || resolveCategoryFallbackGarmentImage("right") || tshirtImages.right
   };
   Object.entries(thumbMap).forEach(([area, src]) => {
     const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
@@ -2950,8 +2973,9 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  // Vista utente: sempre PNG neutro (box laterale). Il thumb API serve solo al campionamento colore.
   const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const selectedProductImage = state.selectedColorImage || getColourImageForName(state.colourName);
+  const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -2960,13 +2984,22 @@ async function applyArea() {
     wrapEl.classList.add("is-switching-area");
   }
 
-  await ensureGarmentImageLoaded(neutralPngSrc);
+  await ensureGarmentImageLoaded(garmentPreviewSrc);
   if (requestId !== areaRenderRequestId) return;
 
-  productShapeEl.src = neutralPngSrc;
-  const useCatalogImageDirectly = (
-    isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage()
-  ) || isConfiguredTemplateImageUrl(neutralPngSrc);
+  // Prefer the customer's actual selected product image (same source as the QTY
+  // page). Fall back to the neutral/template mockup only when no product image
+  // is available.
+  productShapeEl.src = garmentPreviewSrc;
+  productShapeEl.alt = `${state.productName || "Product"} - ${state.colourName || "selected colour"}`;
+  // Opaque photos (category fallback mockups like sweatshirts, or configured
+  // template images) have no cutout alpha, so using them as a colour-tint mask
+  // would paint a solid rectangle over the preview instead of the garment.
+  const usesUntintableFallback =
+    neutralPngSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
+    || isConfiguredTemplateImageUrl(neutralPngSrc);
+  const useCatalogImageDirectly = Boolean(selectedProductImage) || usesUntintableFallback
+    || (isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage());
 
   if (useCatalogImageDirectly) {
     colourLayerEl.style.opacity = "0";
@@ -4845,7 +4878,11 @@ function configurePositionCardsForProduct() {
   document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositionPicker());
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
+  // Sweatshirts always expose their full canonical position set; the
+  // per-view API config only gates products whose mockups genuinely lack
+  // a back/sleeve photo, not sweatshirts (which always have all views).
   const labels = getProductPositionLabels().filter((label) => {
+    if (isSweatshirt) return true;
     const area = positionAreaForLabel(label);
     return !views || area === "front" || Boolean(views[area]);
   });
@@ -5301,7 +5338,7 @@ async function processLogoFile(file) {
 
     state.copyrightConfirmed = false;
     updateConfirmButtonState();
-    openScreen("copyrightPage");
+    openCopyrightModal();
   } catch (error) {
     console.error("Logo upload failed", error);
     alert("We couldn't read that logo file. Please try another PNG, JPG, WEBP or SVG image.");
@@ -5419,15 +5456,37 @@ document.getElementById("continueLogoBtn").addEventListener("click", () => {
 
   state.copyrightConfirmed = false;
   updateConfirmButtonState();
-  openScreen("copyrightPage");
+  openScreen("mainEditor");
+  openCopyrightModal();
 });
 
 const copyrightCheckbox = document.getElementById("copyrightCheckbox");
 const copyrightCheckCard = document.querySelector(".copyright-check");
+const copyrightModal = document.getElementById("copyrightPage");
+const copyrightConfirmButton = document.getElementById("copyrightOkBtn");
+
+function openCopyrightModal() {
+  if (!copyrightModal) return;
+  if (isDesktopToolExperience()) openScreen("mainEditor");
+  copyrightModal.classList.add("active-screen");
+  copyrightModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("copyright-modal-open");
+  copyrightModal.querySelector(".copyright-close-btn")?.focus();
+}
+
+function closeCopyrightModal({ restoreDesign = true } = {}) {
+  if (!copyrightModal) return;
+  copyrightModal.classList.remove("active-screen");
+  copyrightModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("copyright-modal-open");
+  state.pendingDecorationType = null;
+  if (restoreDesign) restoreAreaDesign(state.selectedArea);
+}
 
 if (copyrightCheckbox && copyrightCheckCard) {
   const syncCopyrightCheckState = () => {
     copyrightCheckCard.classList.toggle("is-checked", copyrightCheckbox.checked);
+    if (copyrightConfirmButton) copyrightConfirmButton.disabled = !copyrightCheckbox.checked;
   };
 
   copyrightCheckbox.addEventListener("change", syncCopyrightCheckState);
@@ -5453,6 +5512,7 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   state.copyrightConfirmed = true;
   state.pendingDecorationType = null;
   rememberUploadedLogo(state.uploadedLogo, state.decorationType);
+  closeCopyrightModal({ restoreDesign: false });
   if (state.pendingPositionLogoTarget) {
     const position = state.pendingPositionLogoTarget;
     if (!state.selectedPositions.includes(position)) {
@@ -5472,11 +5532,20 @@ document.getElementById("copyrightOkBtn").addEventListener("click", () => {
   updateConfirmButtonState();
 });
 
-document.querySelectorAll('#copyrightPage [data-open="mainEditor"]').forEach((button) => {
+document.querySelectorAll("[data-copyright-close]").forEach((button) => {
   button.addEventListener("click", () => {
-    state.pendingDecorationType = null;
-    restoreAreaDesign(state.selectedArea);
+    closeCopyrightModal();
   });
+});
+
+copyrightModal?.addEventListener("click", (event) => {
+  if (event.target === copyrightModal) closeCopyrightModal();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && copyrightModal?.classList.contains("active-screen")) {
+    closeCopyrightModal();
+  }
 });
 
 function showLogoOnCanvas(imageSrc) {
