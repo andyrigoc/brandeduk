@@ -3977,8 +3977,13 @@
             if (item.logos && item.logos.length > 0) {
                 item.logos.forEach((logo, logoIdx) => {
                     const methodNorm = (logo.method || 'embroidery').toLowerCase();
-                    const isEmb = methodNorm === 'embroidery';
-                    const methodLabel = isEmb ? 'Embroidery' : 'Print';
+                    const methodLabel = methodNorm === 'embroidery'
+                        ? 'Embroidery'
+                        : methodNorm === 'dtf'
+                            ? 'DTF Print'
+                            : methodNorm === 'screen'
+                                ? 'Screen Print'
+                                : 'Print';
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
@@ -4073,7 +4078,6 @@
 
                     <div class="item-logos-section">
                         ${logosHtml}
-                        ${renderAllPlacementPreviews(item, item.name || 'Product', index)}
                     </div>
 
                     <button type="button" class="add-logo-btn" onclick="addLogoToItem(${index})">
@@ -4578,8 +4582,6 @@
         const basket = getBasket();
         const item = basket[itemIndex];
 
-        _writeLogosAsOldFormat(itemIndex);
-
         sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
         sessionStorage.removeItem('basketEditSingleItem');
         sessionStorage.removeItem('basketEditItemId');
@@ -4595,32 +4597,11 @@
         }
 
         _setCustomizeSessionData(item);
-
-        try {
-            const reusableLogos = _collectAllLogos(basket, itemIndex)
-                .filter(function (logo) { return !!(logo && logo.logo); })
-                .map(function (logo) {
-                    return {
-                        logo: logo.logo,
-                        method: logo.method || 'logo',
-                        position: logo.position || 'front',
-                        positionLabel: logo.positionLabel || logo.position || 'Front'
-                    };
-                });
-
-            if (reusableLogos.length > 0) {
-                sessionStorage.setItem('toolReusableLogos', JSON.stringify(reusableLogos));
-                sessionStorage.setItem('toolAskLogoChoice', '1');
-            } else {
-                sessionStorage.removeItem('toolReusableLogos');
-                sessionStorage.removeItem('toolAskLogoChoice');
-            }
-        } catch (e) {
-            sessionStorage.removeItem('toolReusableLogos');
-            sessionStorage.removeItem('toolAskLogoChoice');
-        }
+        sessionStorage.removeItem('toolAskLogoChoice');
         const code = encodeURIComponent(item.code || item.productCode || '');
-        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&askLogoChoice=1&_cb=${Date.now()}`;
+        const productType = encodeURIComponent(item.productType || 'Sweatshirts');
+        const color = encodeURIComponent(item.color || item.selectedColorName || '');
+        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&embedded=pc-order&productType=${productType}&color=${color}&_cb=${Date.now()}`;
     }
 
     function _setCustomizeSessionData(item) {

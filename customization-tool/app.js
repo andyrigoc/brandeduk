@@ -272,6 +272,10 @@ function updateSelectedColourLabels(colourName) {
   const safeName = String(colourName || "").trim() || "White";
   if (selectedColourName) selectedColourName.textContent = safeName;
   if (selectedCanvasColourName) selectedCanvasColourName.textContent = safeName;
+  const desktopProductColourLine = document.getElementById("desktopProductColourLine");
+  if (desktopProductColourLine) desktopProductColourLine.textContent = `Colour: ${safeName}`;
+  const leftSelectedColourName = document.getElementById("leftSelectedColourName");
+  if (leftSelectedColourName) leftSelectedColourName.textContent = safeName;
 }
 
 function updateAvailableColoursLabel() {
@@ -1489,11 +1493,14 @@ function updateConfirmButtonState() {
   const hasSavedPosition = Object.values(state.areaDesigns || {}).some(
     (design) => Boolean(design?.logo && design?.copyrightConfirmed !== false)
   );
+  const hasAssignedPositionLogo = Object.values(state.positionLogoAssignments || {}).some(
+    (assignment) => Boolean(assignment?.logo)
+  );
   const hasCurrentText = Boolean(String(state.text || "").trim());
   const hasSavedText = Object.values(state.areaTextDesigns || {}).some(
     (design) => Boolean(String(design?.text || "").trim())
   );
-  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText);
+  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasAssignedPositionLogo || hasCurrentText || hasSavedText);
 }
 
 function getDesignAreaKey(area = state.selectedArea) {
@@ -2643,7 +2650,6 @@ function inferProductTypeFromCatalog(name, productType) {
   if (/hoodie|sweatshirt|fleece|jacket|softshell|gilet|body warmer/.test(label) || /hoodie|sweatshirt|fleece|jacket|softshell|gilet/.test(type)) return "hoodie";
   if (/bucket hat|wide[\s-]?brim|sun hat|safari hat|bush hat|legionnaire/.test(label) || /bucket|wide[\s-]?brim|hats?/.test(type)) return "hat";
   if (/\bcap\b|baseball cap/.test(label) || /\bcap\b|headwear/.test(type)) return "cap";
-    appRoot.classList.toggle("product-hat", state.product === "hat");
   if (/polo/.test(label) || /polo/.test(type)) return "polo";
   if (/shirt|vest|apron|bag|trouser|short|pant/.test(label) || /shirt|vest|apron|bag|trouser|short|pant/.test(type)) return "tshirt";
   return "";
@@ -3431,7 +3437,32 @@ function buildBasketItemFromState() {
   const designs = currentDesign?.logo
     ? [currentDesign, ...allDesigns.filter((design) => design !== currentDesign)]
     : allDesigns;
-  const logos = designs.map((design) => {
+  const positionLogos = state.customizationProductTypeSlug === "sweatshirts"
+    ? state.selectedPositions
+      .map((position) => {
+        const assignment = state.positionLogoAssignments?.[position];
+        if (!assignment?.logo) return null;
+        const card = document.querySelector(`.position-card[data-position="${CSS.escape(position)}"]`);
+        const positionLabel = card?.querySelector(".position-name")?.textContent?.trim()
+          || position.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+        const method = normalizeDecorationMethod(assignment.method || state.decorationType || "print");
+        return {
+          type: "logo",
+          method,
+          area: positionAreaForLabel(positionLabel),
+          position,
+          positionLabel,
+          logo: assignment.logo,
+          unitPrice: getLogoUnitPrice(method),
+          qualityPct: 0,
+          logoRotation: 0,
+          placement: null,
+          designPreview: null
+        };
+      })
+      .filter(Boolean)
+    : null;
+  const logos = positionLogos || designs.map((design) => {
     const method = normalizeDecorationMethod(design.method);
     return {
       type: "logo",
@@ -4456,6 +4487,7 @@ function assignLogoToPosition(position, logo, method = state.decorationType || "
   if (!position || !logo || !state.selectedPositions.includes(position)) return false;
   state.positionLogoAssignments[position] = { logo, method };
   syncPositionCardLogoPreviews();
+  updateConfirmButtonState();
   const preview = document.querySelector(`.position-card[data-position="${CSS.escape(position)}"] .position-logo-preview-box`);
   if (preview) {
     preview.classList.remove("is-logo-arriving");
@@ -4746,6 +4778,7 @@ function configurePositionCardsForProduct() {
   syncViewThumbTint();
   syncPositionSelectionCards();
   syncPositionCardLogoPreviews();
+  syncInlineLogoPanels();
   updateCustomizationContextLabel();
 }
 
@@ -5272,9 +5305,73 @@ async function processLogoFile(file) {
   }
 }
 
-document.getElementById("logoFileInput").addEventListener("change", async event => {
-  await processLogoFile(event.target.files[0]);
+const logoFileInput = document.getElementById("logoFileInput");
+const pcUploadModal = document.getElementById("pcUploadModal");
+let pcPendingUploadFile = null;
+let pcUploadTimer = null;
+
+function resetPcUploadModal() {
+  if (!pcUploadModal) return;
+  if (pcUploadTimer) clearInterval(pcUploadTimer);
+  pcUploadTimer = null;
+  pcPendingUploadFile = null;
+  pcUploadModal.hidden = true;
+  document.getElementById("pcUploadReady").hidden = true;
+  document.getElementById("pcUploadProgress").hidden = true;
+  document.getElementById("pcUploadSuccess").hidden = true;
+  document.getElementById("pcUploadPercent").textContent = "0%";
+  document.getElementById("pcUploadFill").style.width = "0%";
+}
+
+function preparePcUploadFile(file) {
+  if (!file) return;
+  if (!isPcOrderEmbed || !pcUploadModal) {
+    processLogoFile(file);
+    return;
+  }
+  pcPendingUploadFile = file;
+  pcUploadModal.hidden = false;
+  document.getElementById("pcUploadFileName").textContent = file.name;
+  document.getElementById("pcUploadReady").hidden = false;
+  document.getElementById("pcUploadProgress").hidden = true;
+  document.getElementById("pcUploadSuccess").hidden = true;
+}
+
+function startPcUpload() {
+  if (!pcPendingUploadFile || pcUploadTimer) return;
+  let progress = 0;
+  document.getElementById("pcUploadReady").hidden = true;
+  document.getElementById("pcUploadProgress").hidden = false;
+  document.getElementById("pcUploadMessage").textContent = "Just give us a moment to process your file.";
+  pcUploadTimer = setInterval(() => {
+    progress = Math.min(100, progress + 5);
+    document.getElementById("pcUploadPercent").textContent = `${progress}%`;
+    document.getElementById("pcUploadFill").style.width = `${progress}%`;
+    if (progress < 100) return;
+    clearInterval(pcUploadTimer);
+    pcUploadTimer = null;
+    document.getElementById("pcUploadProgress").hidden = true;
+    document.getElementById("pcUploadSuccess").hidden = false;
+  }, 150);
+}
+
+logoFileInput?.addEventListener("change", event => {
+  preparePcUploadFile(event.target.files[0]);
   event.target.value = "";
+});
+
+document.getElementById("pcUploadStart")?.addEventListener("click", startPcUpload);
+document.getElementById("pcUploadDone")?.addEventListener("click", async () => {
+  const file = pcPendingUploadFile;
+  resetPcUploadModal();
+  if (file) await processLogoFile(file);
+});
+document.getElementById("pcUploadClose")?.addEventListener("click", resetPcUploadModal);
+document.getElementById("pcUploadCancel")?.addEventListener("click", resetPcUploadModal);
+document.getElementById("pcUploadReset")?.addEventListener("click", () => {
+  pcPendingUploadFile = null;
+  document.getElementById("pcUploadReady").hidden = true;
+  logoFileInput?.click();
 });
 
 const inlineLogoDropzone = document.querySelector(".inline-upload-dropzone");
@@ -5295,7 +5392,7 @@ if (inlineLogoDropzone) {
 
   inlineLogoDropzone.addEventListener("drop", async (event) => {
     const file = event.dataTransfer?.files?.[0];
-    if (file) await processLogoFile(file);
+    if (file) preparePcUploadFile(file);
   });
 }
 
@@ -5611,7 +5708,10 @@ if (confirmQualityBtn) {
     const textDesigns = Object.values(state.areaTextDesigns || {}).filter(
       (design) => Boolean(String(design?.text || "").trim())
     );
-    if (designs.length === 0 && textDesigns.length === 0) {
+    const assignedPositionLogos = Object.values(state.positionLogoAssignments || {}).filter(
+      (assignment) => Boolean(assignment?.logo)
+    );
+    if (designs.length === 0 && assignedPositionLogos.length === 0 && textDesigns.length === 0) {
       alert("Please add a logo or text before confirming.");
       return;
     }
@@ -7230,12 +7330,28 @@ if (positionGrid) {
       .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
   };
 
+  const activateDroppedPosition = (position) => {
+    if (state.selectedPositions.includes(position)) return true;
+    if (state.selectedPositions.length >= 5) {
+      if (typeof window.showToast === "function") {
+        window.showToast("You can select up to five logo positions.");
+      }
+      return false;
+    }
+    state.selectedPositions.push(position);
+    state.selectedPosition = position;
+    syncPositionSelectionCards();
+    updateCustomizationContextLabel();
+    return true;
+  };
+
   positionGrid.addEventListener("dragover", (event) => {
     const card = event.target.closest(".position-card");
     if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
     clearPositionDropState();
     event.preventDefault();
-    if (!card.classList.contains("is-selected")) {
+    const position = card.dataset.position;
+    if (!card.classList.contains("is-selected") && state.selectedPositions.length >= 5) {
       event.dataTransfer.dropEffect = "none";
       card.classList.add("is-logo-drop-blocked");
       return;
@@ -7253,9 +7369,9 @@ if (positionGrid) {
     if (!card || state.customizationProductTypeSlug !== "sweatshirts") return;
     event.preventDefault();
     clearPositionDropState();
-    if (!card.classList.contains("is-selected")) return;
 
     const position = card.dataset.position;
+    if (!activateDroppedPosition(position)) return;
     const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo");
     if (savedLogo) {
       assignLogoToPosition(position, savedLogo);
@@ -7294,6 +7410,7 @@ if (positionGrid) {
       state.selectedPosition = state.selectedPositions.at(-1) || "";
     }
     syncPositionSelectionCards();
+    updateConfirmButtonState();
   });
 }
 
