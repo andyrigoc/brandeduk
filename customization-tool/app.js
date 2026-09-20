@@ -3006,6 +3006,14 @@ async function applyArea() {
 
   productShapeEl.src = garmentPreviewSrc;
   productShapeEl.alt = `${state.productName || "Product"} - ${state.colourName || "selected colour"}`;
+  if (typeof productShapeEl.decode === "function" && (!productShapeEl.complete || productShapeEl.naturalWidth < 1)) {
+    try {
+      await productShapeEl.decode();
+    } catch (error) {
+      void error;
+    }
+    if (requestId !== areaRenderRequestId) return;
+  }
   // Opaque photos (category fallback mockups like sweatshirts, or configured
   // template images) have no cutout alpha, so using them as a colour-tint mask
   // would paint a solid rectangle over the preview instead of the garment.
