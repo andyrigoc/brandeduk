@@ -122,33 +122,6 @@
             image.src = PRODUCT_IMAGE_FALLBACK;
         }
     }
-
-    function preloadCustomizerForProduct(product) {
-        if (!product || !(product.productType || product.category || product.type)) return;
-        const productColours = Array.isArray(product.colors)
-            ? product.colors
-            : (Array.isArray(product.colours) ? product.colours : []);
-        const usableColours = productColours.filter(function(colour) {
-            return String(colour && colour.name || '').trim().toLowerCase() !== 'model';
-        });
-        const savedColour = String(sessionStorage.getItem('selectedColorName') || '').trim().toLowerCase();
-        const selectedColour = usableColours.find(function(colour) {
-            return String(colour && colour.name || '').trim().toLowerCase() === savedColour;
-        }) || usableColours[0] || {};
-        const colourName = selectedColour.name || '';
-        const colourImage = selectedColour.main || selectedColour.image || selectedColour.thumb || '';
-        const colourHex = selectedColour.hex || selectedColour.hexCode || '';
-
-        const startPreload = function() {
-            if (typeof window.preloadPcOrderCustomizer === 'function') {
-                window.preloadPcOrderCustomizer(product, colourName, colourImage, colourHex);
-            }
-        };
-        startPreload();
-        if (typeof window.preloadPcOrderCustomizer !== 'function') {
-            window.setTimeout(startPreload, 0);
-        }
-    }
     
     // Check if popup HTML is already in DOM
     if (!document.getElementById('orderPopup')) {
@@ -391,7 +364,6 @@
         if (typeof window.setupUploadBox === 'function') {
             window.setupUploadBox();
         }
-        preloadCustomizerForProduct(product);
     }
     
     // Load colours for product

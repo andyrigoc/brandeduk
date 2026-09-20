@@ -10,11 +10,8 @@
     var orderPopup = document.getElementById('orderPopup');
     var preloadFrame = null;
     var preloadedCode = '';
-    var preloadReady = false;
     var frameReadyPoll = null;
     var pendingFrameUrl = '';
-    var pendingCustomizerContext = null;
-    var activeFrameKey = '';
 
     if (!panel || !frame || !orderCard) return;
 
@@ -44,47 +41,26 @@
             .join(', ');
     }
 
-    function buildPreloadKey(code) {
-        return String(code || '').trim().toLowerCase();
-    }
-
-    function persistPreloadProduct(product, colour, colourImage, colourHex) {
-        if (!product || typeof product !== 'object') return;
-        try {
-            sessionStorage.setItem('selectedProductData', JSON.stringify(Object.assign({}, product, {
-                color: colour || product.color || product.colour || '',
-                selectedColorName: colour || product.selectedColorName || '',
-                colorImage: colourImage || product.colorImage || product.colourImg || product.image || '',
-                selectedColorImage: colourImage || product.selectedColorImage || product.colorImage || product.image || '',
-                colorHex: colourHex || product.colorHex || ''
-            })));
-        } catch (error) {}
-    }
-
     // Warm the Design Studio document while the customer is still choosing
     // colour and quantities. The visible iframe is still opened only on click.
     window.preloadPcOrderCustomizer = function preloadPcOrderCustomizer(product, colour, colourImage, colourHex) {
         var code = product && (product.code || product.sku || '');
-        var productType = product && (product.productType || product.category || product.type || product.name || '');
-        persistPreloadProduct(product, colour, colourImage, colourHex);
-        var preloadKey = buildPreloadKey(code);
+        var preloadKey = code + '::' + String(colour || '').trim().toLowerCase();
         if (!code || preloadKey === preloadedCode) return;
-        preloadReady = false;
 
         if (!preloadFrame) {
             preloadFrame = document.createElement('iframe');
             preloadFrame.setAttribute('aria-hidden', 'true');
             preloadFrame.tabIndex = -1;
-            preloadFrame.style.position = 'absolute';
-            preloadFrame.style.width = 'min(1680px, calc(100vw - 48px))';
-            preloadFrame.style.height = 'min(826px, calc(100vh - 98px))';
+            preloadFrame.style.position = 'fixed';
+            preloadFrame.style.width = '1px';
+            preloadFrame.style.height = '1px';
             preloadFrame.style.opacity = '0';
-            preloadFrame.style.visibility = 'hidden';
             preloadFrame.style.pointerEvents = 'none';
             preloadFrame.style.border = '0';
-            preloadFrame.style.left = '0';
+            preloadFrame.style.left = '-10000px';
             preloadFrame.style.top = '0';
-            frame.parentNode.appendChild(preloadFrame);
+            document.body.appendChild(preloadFrame);
         }
 
         var target = new URL('customization-tool/index.html', window.location.href);
@@ -93,46 +69,14 @@
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order-preload');
         target.searchParams.set('_cb', 'pc-preload');
-        if (productType) target.searchParams.set('productType', productType);
+        var preloadType = product.productType || product.category || product.type || product.name || '';
+        if (preloadType) target.searchParams.set('productType', preloadType);
         if (colour) target.searchParams.set('color', colour);
         if (colourImage) target.searchParams.set('colorImage', colourImage);
         if (colourHex) target.searchParams.set('colorHex', colourHex);
         preloadedCode = preloadKey;
         preloadFrame.src = target.toString();
     };
-
-    function sendCustomizerContext() {
-        if (!pendingCustomizerContext || !frame.contentWindow) return;
-        frame.contentWindow.postMessage(pendingCustomizerContext, window.location.origin);
-    }
-
-    function adoptPreloadedFrame(preloadKey) {
-        if (!preloadFrame || preloadKey !== preloadedCode) return false;
-        stopFrameReadyWatch();
-        frame.remove();
-        frame = preloadFrame;
-        preloadFrame = null;
-        preloadedCode = '';
-        activeFrameKey = preloadKey;
-        frame.id = 'pcCustomizerFrame';
-        frame.className = 'pc-customizer-frame';
-        frame.title = 'BrandedUK desktop customization tool';
-        frame.setAttribute('allow', 'clipboard-read; clipboard-write');
-        frame.removeAttribute('aria-hidden');
-        frame.removeAttribute('style');
-        frame.tabIndex = 0;
-        frame.addEventListener('load', function() {
-            showCustomizerFrame();
-            sendCustomizerContext();
-        });
-
-        try {
-            if (frame.contentDocument && frame.contentDocument.body) showCustomizerFrame();
-        } catch (error) {}
-        if (preloadReady) showCustomizerFrame();
-        window.setTimeout(sendCustomizerContext, 0);
-        return true;
-    }
 
     function stopFrameReadyWatch() {
         if (frameReadyPoll) {
@@ -174,11 +118,14 @@
     function closeCustomizer(saved) {
         stopFrameReadyWatch();
         pendingFrameUrl = '';
-        pendingCustomizerContext = null;
         panel.hidden = true;
         panel.classList.remove('is-loaded');
         orderCard.classList.remove('customizer-open');
         if (orderPopup) orderPopup.classList.remove('pc-customizer-active');
+
+        window.setTimeout(function() {
+            if (panel.hidden) frame.removeAttribute('src');
+        }, 220);
 
         var success = document.getElementById('addQuoteSuccess');
         var initialActions = document.getElementById('p3InitialActions');
@@ -297,29 +244,13 @@
         var currentProductType = product.productType || product.category || product.type || product.name || '';
         if (currentProductType) target.searchParams.set('productType', currentProductType);
 
-        var preloadKey = buildPreloadKey(item.productCode || item.code || '');
-        pendingCustomizerContext = {
-            type: 'brandeduk:customization-context',
-            code: item.productCode || item.code || '',
-            basketIndex: basketIndex,
-            item: item
-        };
-
         panel.hidden = false;
         panel.classList.remove('is-loaded');
         orderCard.classList.add('customizer-open');
         if (orderPopup) orderPopup.classList.add('pc-customizer-active');
         pendingFrameUrl = target.toString();
-        if (activeFrameKey === preloadKey && frame.getAttribute('src')) {
-            try {
-                if (frame.contentDocument && frame.contentDocument.body) showCustomizerFrame();
-            } catch (error) {}
-            sendCustomizerContext();
-        } else if (!adoptPreloadedFrame(preloadKey)) {
-            activeFrameKey = preloadKey;
-            frame.src = pendingFrameUrl;
-            watchForFrameDocument();
-        }
+        frame.src = pendingFrameUrl;
+        watchForFrameDocument();
     };
 
     frame.addEventListener('load', function() {
@@ -334,18 +265,6 @@
 
     window.addEventListener('message', function(event) {
         if (event.origin !== window.location.origin) return;
-        if (event.data && event.data.type === 'brandeduk:customizer-ready') {
-            if (preloadFrame && event.source === preloadFrame.contentWindow) preloadReady = true;
-            if (event.source === frame.contentWindow) {
-                showCustomizerFrame();
-                sendCustomizerContext();
-            }
-            return;
-        }
-        if (event.data && event.data.type === 'brandeduk:customizer-context-ready') {
-            if (event.source === frame.contentWindow) pendingCustomizerContext = null;
-            return;
-        }
         if (!event.data || event.data.type !== 'brandeduk:customization-saved') return;
         closeCustomizer(true);
         window.location.assign(new URL('basket.html', window.location.href).href);
