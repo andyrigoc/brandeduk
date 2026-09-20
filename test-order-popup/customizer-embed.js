@@ -63,7 +63,7 @@
             document.body.appendChild(preloadFrame);
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('customization-tool', window.location.href);
         target.searchParams.set('code', code);
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
@@ -104,15 +104,24 @@
                 var documentReady = frameDocument
                     && frameDocument.body
                     && (frameDocument.readyState === 'interactive' || frameDocument.readyState === 'complete');
+                var currentUrl = new URL(frameLocation);
+                var expectedUrl = new URL(pendingFrameUrl);
+                var normalizePath = function(pathname) {
+                    return pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
+                };
+                var correctDocument = currentUrl.origin === expectedUrl.origin
+                    && normalizePath(currentUrl.pathname) === normalizePath(expectedUrl.pathname)
+                    && currentUrl.search === expectedUrl.search
+                    && frameDocument.getElementById('customizerLoadingOverlay');
 
-                if (documentReady && frameLocation === pendingFrameUrl) {
+                if (documentReady && correctDocument) {
                     showCustomizerFrame();
                 }
             } catch (error) {
                 // Same-origin is expected here. Keep the native load listener
                 // as the fallback if the hosting arrangement ever differs.
             }
-        }, 100);
+        }, 50);
     }
 
     function closeCustomizer(saved) {
@@ -232,7 +241,7 @@
             summary.textContent = parts.join('  |  ') || 'Your order selections are preserved';
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('customization-tool', window.location.href);
         target.searchParams.set('code', item.productCode || item.code || '');
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
