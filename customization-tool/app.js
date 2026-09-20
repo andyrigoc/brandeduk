@@ -287,14 +287,15 @@ function updateAvailableColoursLabel() {
 /** PNG neutro per area (sidebar / mockup) — mai il thumbnail API. */
 function resolveNeutralGarmentPngForArea(area) {
   const normalizedArea = String(area || "front").trim() || "front";
-  if (isDogOrPetProduct()) {
-    const catalogImage = resolveDogOrPetCatalogImage();
-    if (catalogImage) return catalogImage;
-  }
 
   const configuredImage = resolveConfiguredGarmentImage(normalizedArea);
   if (configuredImage) {
     return configuredImage;
+  }
+
+  if (isDogOrPetProduct()) {
+    const catalogImage = resolveDogOrPetCatalogImage();
+    if (catalogImage) return catalogImage;
   }
 
   if (state.product === "beanie") {
@@ -2957,6 +2958,21 @@ function preloadCurrentColourSet() {
 async function applyArea() {
   const requestId = ++areaRenderRequestId;
 
+  const expectedConfigKey = buildCustomizationConfigKey(
+    state.customizationProductTypeSlug,
+    state.customizationVariantKey || ""
+  );
+  if (
+    state.customizationProductTypeSlug
+    && (
+      state.customizationConfigKey !== expectedConfigKey
+      || !Array.isArray(state.customizationConfig?.positions)
+    )
+  ) {
+    await loadCustomizationConfigForCurrentProduct();
+    if (requestId !== areaRenderRequestId) return;
+  }
+
   productPreview.className = "product-preview";
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
@@ -2973,9 +2989,10 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const configuredTemplateSrc = resolveConfiguredGarmentImage(state.selectedArea);
+  const neutralPngSrc = configuredTemplateSrc || resolveNeutralGarmentPngForArea(state.selectedArea);
   const selectedProductImage = state.selectedColorImage || getColourImageForName(state.colourName);
-  const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
+  const garmentPreviewSrc = configuredTemplateSrc || selectedProductImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -2987,18 +3004,15 @@ async function applyArea() {
   await ensureGarmentImageLoaded(garmentPreviewSrc);
   if (requestId !== areaRenderRequestId) return;
 
-  // Prefer the customer's actual selected product image (same source as the QTY
-  // page). Fall back to the neutral/template mockup only when no product image
-  // is available.
   productShapeEl.src = garmentPreviewSrc;
   productShapeEl.alt = `${state.productName || "Product"} - ${state.colourName || "selected colour"}`;
   // Opaque photos (category fallback mockups like sweatshirts, or configured
   // template images) have no cutout alpha, so using them as a colour-tint mask
   // would paint a solid rectangle over the preview instead of the garment.
   const usesUntintableFallback =
-    neutralPngSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
-    || isConfiguredTemplateImageUrl(neutralPngSrc);
-  const useCatalogImageDirectly = Boolean(selectedProductImage) || usesUntintableFallback
+    garmentPreviewSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
+    || isConfiguredTemplateImageUrl(garmentPreviewSrc);
+  const useCatalogImageDirectly = Boolean(configuredTemplateSrc || selectedProductImage) || usesUntintableFallback
     || (isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage());
 
   if (useCatalogImageDirectly) {
