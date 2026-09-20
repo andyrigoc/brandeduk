@@ -43,7 +43,9 @@ const state = {
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
-const isPcOrderEmbed = customizationRouteParams.get("embedded") === "pc-order";
+const pcOrderEmbedMode = customizationRouteParams.get("embedded");
+const isPcOrderPreload = pcOrderEmbedMode === "pc-order-preload";
+const isPcOrderEmbed = pcOrderEmbedMode === "pc-order" || isPcOrderPreload;
 if (isPcOrderEmbed) {
   document.body.classList.add("is-pc-order-embed");
 }
@@ -215,6 +217,8 @@ const customizerLoadingProgressBar = document.getElementById("customizerLoadingP
 let customizerLoadingValue = 12;
 let customizerLoadingTimer = null;
 let customizerLoadingFinished = false;
+let embeddedOrderContextSignature = "";
+let embeddedOrderContextPromise = null;
 
 function updateCustomizerLoadingProgress(nextValue) {
   const value = Math.max(0, Math.min(100, Number(nextValue) || 0));
@@ -258,6 +262,14 @@ function finishCustomizerLoading() {
   window.setTimeout(() => {
     customizerLoadingOverlay.classList.add("is-hidden");
     customizerLoadingOverlay.setAttribute("aria-busy", "false");
+    if (isPcOrderEmbed && window.parent !== window) {
+      window.parent.postMessage({
+        type: "brandeduk:customizer-ready",
+        code: state.productCode || "",
+        configKey: state.customizationConfigKey || "",
+        preload: isPcOrderPreload
+      }, window.location.origin);
+    }
   }, 220);
 }
 
@@ -1346,7 +1358,7 @@ function applySelectedProductContext() {
     thumbUrl: urlColourImage || state.selectedColorImage,
     apiHex: normalizeHex(activeColour[1] || "")
   }).then(() => {
-    applyArea();
+    if (customizerLoadingFinished) applyArea();
   });
 
   applyProductHeaderUI();
@@ -2125,6 +2137,82 @@ function hydrateAreaDesignsFromBasketContext() {
   return true;
 }
 
+async function applyEmbeddedOrderContext(payload) {
+  if (!isPcOrderEmbed || !payload || typeof payload !== "object") return;
+  const expectedCode = String(payload.code || "").trim().toLowerCase();
+  if (expectedCode && expectedCode !== String(state.productCode || "").trim().toLowerCase()) return;
+
+  const basketIndex = parseInt(payload.basketIndex, 10);
+  if (Number.isInteger(basketIndex) && basketIndex >= 0) {
+    sessionStorage.setItem("customizingBasketIndex", String(basketIndex));
+  }
+
+  const item = payload.item && typeof payload.item === "object" ? payload.item : null;
+  if (item) {
+    const nextColour = String(item.color || item.colour || state.colourName || "").trim();
+    const nextColourImage = String(item.colorImage || item.colourImg || item.image || "").trim();
+    const nextColourHex = normalizeHex(item.colorHex || "") || "";
+    if (nextColour) state.colourName = nextColour;
+    if (nextColourImage) state.selectedColorImage = nextColourImage;
+    state.explicitColourHex = nextColourHex;
+    applyGarmentTintHex(nextColourHex);
+    updateSelectedColourLabels(state.colourName);
+  }
+  const quantities = item?.quantities || item?.sizes || {};
+  const sizeEntries = Object.entries(quantities)
+    .map(([size, qty]) => ({ size, qty: parseInt(qty, 10) || 0 }))
+    .filter(({ qty }) => qty > 0);
+  if (sizeEntries.length > 0) {
+    state.sizes = sizeEntries;
+    state.totalQty = sizeEntries.reduce((total, entry) => total + entry.qty, 0);
+    if (mainQtyInput) mainQtyInput.value = state.totalQty;
+  }
+
+  state.areaDesigns = {};
+  state.areaTextDesigns = {};
+  state.positionLogoAssignments = {};
+  state.selectedPositions = [];
+  state.selectedPosition = "";
+  hydrateAreaDesignsFromBasketContext();
+  await applyArea();
+  await Promise.all([
+    restoreAreaDesign(state.selectedArea),
+    restoreAreaTextDesign(state.selectedArea)
+  ]);
+  calculatePrice();
+  updatePositionDesignUi();
+  updateConfirmButtonState();
+  maybeHandleBasketLogoChoice();
+
+  window.parent.postMessage({
+    type: "brandeduk:customizer-context-ready",
+    code: state.productCode || "",
+    basketIndex
+  }, window.location.origin);
+}
+
+function queueEmbeddedOrderContext(payload) {
+  const item = payload?.item || {};
+  const quantities = item.quantities || item.sizes || {};
+  const signature = JSON.stringify([
+    payload?.code || "",
+    payload?.basketIndex,
+    item.id || "",
+    item.color || item.colour || "",
+    quantities
+  ]);
+  if (signature === embeddedOrderContextSignature && embeddedOrderContextPromise) {
+    return embeddedOrderContextPromise;
+  }
+  if (signature === embeddedOrderContextSignature) return Promise.resolve();
+
+  embeddedOrderContextSignature = signature;
+  embeddedOrderContextPromise = applyEmbeddedOrderContext(payload).finally(() => {
+    embeddedOrderContextPromise = null;
+  });
+  return embeddedOrderContextPromise;
+}
+
 const BASE_FONT_OPTIONS = [
   { name: "Arial", cssFamily: "Arial, Helvetica, sans-serif" },
   { name: "Impact", cssFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" },
@@ -2352,6 +2440,8 @@ function resolveCategoryFallbackGarmentImage(area) {
 
 const garmentImageLoadCache = new Map();
 const customizationConfigCache = new Map();
+const CUSTOMIZATION_CONFIG_SESSION_PREFIX = "brandeduk:customization-config:v1:";
+const CUSTOMIZATION_CONFIG_SESSION_TTL = 15 * 60 * 1000;
 let customizationConfigRequestId = 0;
 let customizationConfigActivationSlug = "";
 let customizationConfigActivationPromise = null;
@@ -2727,10 +2817,45 @@ function buildCustomizationConfigKey(productTypeSlug, variantKey = "") {
   return subtype ? `${slug}::${subtype}` : slug;
 }
 
+function readSessionCustomizationConfig(cacheKey) {
+  if (!cacheKey) return null;
+  try {
+    const raw = sessionStorage.getItem(`${CUSTOMIZATION_CONFIG_SESSION_PREFIX}${cacheKey}`);
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    const config = entry?.config;
+    const cachedAt = Number(entry?.cachedAt || 0);
+    const isFresh = cachedAt > 0 && (Date.now() - cachedAt) < CUSTOMIZATION_CONFIG_SESSION_TTL;
+    if (!isFresh || !config || !Array.isArray(config.positions) || config.positions.length === 0) {
+      sessionStorage.removeItem(`${CUSTOMIZATION_CONFIG_SESSION_PREFIX}${cacheKey}`);
+      return null;
+    }
+    return config;
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeSessionCustomizationConfig(cacheKey, config) {
+  if (!cacheKey || !config || !Array.isArray(config.positions) || config.positions.length === 0) return;
+  try {
+    sessionStorage.setItem(`${CUSTOMIZATION_CONFIG_SESSION_PREFIX}${cacheKey}`, JSON.stringify({
+      cachedAt: Date.now(),
+      config
+    }));
+  } catch (error) {}
+}
+
 async function fetchCustomizationConfig(productTypeSlug, variantKey = "") {
   if (!productTypeSlug) return null;
   const cacheKey = buildCustomizationConfigKey(productTypeSlug, variantKey);
   if (!customizationConfigCache.has(cacheKey)) {
+    const sessionConfig = readSessionCustomizationConfig(cacheKey);
+    if (sessionConfig) {
+      customizationConfigCache.set(cacheKey, Promise.resolve(sessionConfig));
+      return sessionConfig;
+    }
+
     const url = new URL(
       `${API_BASE_URL}/customization-config/${encodeURIComponent(productTypeSlug)}`
     );
@@ -2747,6 +2872,7 @@ async function fetchCustomizationConfig(productTypeSlug, variantKey = "") {
         if (!config || !Array.isArray(config.positions) || config.positions.length === 0) {
           throw new Error("Customization config has no positions");
         }
+        writeSessionCustomizationConfig(cacheKey, config);
         return config;
       })
       .catch((error) => {
@@ -7305,21 +7431,18 @@ startCustomizerLoadingProgress();
 setCustomizerLoadingStatus("Loading colours and mockups...");
 
 applySelectedProductContext();
-hydrateAreaDesignsFromBasketContext();
+if (!isPcOrderPreload) hydrateAreaDesignsFromBasketContext();
 
 setupVatToggle();
 setupCustomizerBreadcrumb();
 renderColours();
 const initialAreaPromise = applyArea();
-const customizationConfigPromise = withTimeout(loadCustomizationConfigForCurrentProduct(), 3000)
-  .then(() => applyArea());
 calculatePrice();
 updateBasketUIFromStorage();
 setupToolHeaderSearch();
 updateConfirmButtonState();
-const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 
-Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
+Promise.allSettled([initialAreaPromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
   .then(() => Promise.all([
     restoreAreaDesign(state.selectedArea),
@@ -7328,8 +7451,17 @@ Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromi
   .finally(() => {
     updatePositionDesignUi();
     finishCustomizerLoading();
-    maybeHandleBasketLogoChoice();
+    if (!isPcOrderPreload) maybeHandleBasketLogoChoice();
+    window.setTimeout(() => {
+      hydrateSelectedProductFromApi().catch(() => {});
+    }, 0);
   });
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin) return;
+  if (event.data?.type !== "brandeduk:customization-context") return;
+  queueEmbeddedOrderContext(event.data).catch(() => {});
+});
 
 /* =====================================================
    REDESIGNED MAIN EDITOR — new interactions
