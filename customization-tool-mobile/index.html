@@ -37,7 +37,7 @@
       // runs when Vercel serves the extensionless /customization-tool URL.
       var toolStyles = document.createElement("link");
       toolStyles.rel = "stylesheet";
-      toolStyles.href = folderPath + "style.css?v=20260826a";
+      toolStyles.href = folderPath + "style.css?v=20260921-mobile-position-parity";
       document.head.appendChild(toolStyles);
 
       // Desktop is a responsive presentation of this same customisation
@@ -1037,7 +1037,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260921-template-resolution", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260921-mobile-position-parity", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();

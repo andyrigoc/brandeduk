@@ -14,6 +14,7 @@ const state = {
   sizes: [{ size: "Medium", qty: 1 }],
   totalQty: 1,
   selectedArea: "front",
+  selectedPosition: "",
   decorationType: null,
   textType: null,
   uploadedLogo: null,
@@ -1318,12 +1319,30 @@ function updateConfirmButtonState() {
   confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText);
 }
 
-function getDesignAreaKey(area = state.selectedArea) {
+function getConfiguredPosition(positionSlug) {
+  const slug = normalizeProductTypeSlug(positionSlug);
+  if (!slug) return null;
+  return (state.customizationConfig?.positions || []).find(
+    (position) => normalizeProductTypeSlug(position?.slug) === slug
+  ) || null;
+}
+
+function getDesignAreaKey(area) {
+  if (area === undefined || area === null || area === "") {
+    const selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+    if (selectedPosition && getConfiguredPosition(selectedPosition)) return selectedPosition;
+    return normalizeAreaForPicker(state.selectedArea) || "front";
+  }
+
+  const position = getConfiguredPosition(area);
+  if (position) return normalizeProductTypeSlug(position.slug);
   return normalizeAreaForPicker(area) || "front";
 }
 
-function getDesignAreaLabel(area = state.selectedArea) {
-  return areaLabelForPicker(getDesignAreaKey(area));
+function getDesignAreaLabel(area) {
+  const key = getDesignAreaKey(area);
+  const position = getConfiguredPosition(key);
+  return position?.label || areaLabelForPicker(key);
 }
 
 function getCurrentLogoQualityPct() {
@@ -1438,7 +1457,7 @@ function buildTextDesignPreviewFromState() {
   return {
     type: "garment-text-preview",
     version: 1,
-    area: state.selectedArea || "front",
+    area: getDesignAreaKey(),
     garmentImage: garmentSource,
     garmentBox: cleanPctBox(garmentBox),
     text: textValue,
@@ -1576,7 +1595,7 @@ function getDraftTextDesigns() {
 
 function updateViewTabDesignStatus(designs = getDraftAreaDesigns(), textDesigns = getDraftTextDesigns()) {
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    const area = getDesignAreaKey(tab.dataset.area);
+    const area = getDesignAreaKey(tab.dataset.position || tab.dataset.area);
     const hasLogo = Boolean(designs[area]?.logo);
     const hasText = Boolean(String(textDesigns[area]?.text || "").trim());
     const hasDesign = hasLogo || hasText;
@@ -1684,7 +1703,7 @@ function waitForLogoImage(image) {
   });
 }
 
-async function restoreAreaDesign(area = state.selectedArea) {
+async function restoreAreaDesign(area) {
   const key = getDesignAreaKey(area);
   const design = state.areaDesigns?.[key];
   clearCanvasLogoState();
@@ -1733,7 +1752,7 @@ async function restoreAreaDesign(area = state.selectedArea) {
   return true;
 }
 
-async function restoreAreaTextDesign(area = state.selectedArea) {
+async function restoreAreaTextDesign(area) {
   const key = getDesignAreaKey(area);
   const design = state.areaTextDesigns?.[key];
   clearCanvasTextState();
@@ -1788,7 +1807,10 @@ async function restoreAreaTextDesign(area = state.selectedArea) {
 let designAreaSwitchRequest = 0;
 
 async function switchToDesignArea(nextArea, options = {}) {
-  const next = getDesignAreaKey(nextArea);
+  const requestedPosition = normalizeProductTypeSlug(options.position || nextArea);
+  const position = getConfiguredPosition(requestedPosition);
+  const nextPosition = position ? normalizeProductTypeSlug(position.slug) : "";
+  const next = nextPosition || getDesignAreaKey(nextArea);
   const previous = getDesignAreaKey();
   const requestId = ++designAreaSwitchRequest;
 
@@ -1806,9 +1828,15 @@ async function switchToDesignArea(nextArea, options = {}) {
 
   clearCanvasLogoState();
   clearCanvasTextState();
-  state.selectedArea = next;
+  state.selectedPosition = nextPosition;
+  state.selectedArea = position
+    ? configuredPositionArea(position)
+    : (normalizeAreaForPicker(nextArea) || "front");
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
+    tab.classList.toggle(
+      "active-view",
+      getDesignAreaKey(tab.dataset.position || tab.dataset.area) === next
+    );
   });
 
   const viewLabel = document.getElementById("viewNameLabel");
@@ -2452,19 +2480,13 @@ function resolveConfiguredGarmentImage(area, positionSlug = "") {
   return "";
 }
 
-function getConfiguredViewAreas() {
-  const positions = Array.isArray(state.customizationConfig?.positions)
-    ? state.customizationConfig.positions.filter(position =>
-      String(position?.imageUrl || position?.image_url || "").trim()
-    )
+function getConfiguredViewPositions() {
+  return Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions.filter((position) => (
+      normalizeProductTypeSlug(position?.slug)
+      && String(position?.imageUrl || position?.image_url || "").trim()
+    ))
     : [];
-  if (positions.length === 0) return null;
-  return {
-    front: positions.some(position => configuredPositionArea(position) === "front"),
-    back: positions.some(position => configuredPositionArea(position) === "back"),
-    left: positions.some(position => configuredPositionArea(position) === "left"),
-    right: positions.some(position => configuredPositionArea(position) === "right")
-  };
 }
 
 function buildCustomizationConfigKey(productTypeSlug, variantKey = "") {
@@ -2585,10 +2607,10 @@ function inferProductTypeFromCatalog(name, productType) {
 
 function restoreDefaultViewTabThumbs() {
   const thumbMap = {
-    front: resolveConfiguredGarmentImage("front") || tshirtImages.front,
-    back: resolveConfiguredGarmentImage("back") || tshirtImages.back,
-    left: resolveConfiguredGarmentImage("left") || tshirtImages.left,
-    right: resolveConfiguredGarmentImage("right") || tshirtImages.right
+    front: tshirtImages.front,
+    back: tshirtImages.back,
+    left: tshirtImages.left,
+    right: tshirtImages.right
   };
   Object.entries(thumbMap).forEach(([area, src]) => {
     const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
@@ -2596,9 +2618,98 @@ function restoreDefaultViewTabThumbs() {
   });
 }
 
+function createViewTab({ area, position = "", label, imageUrl, active = false }) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `view-tab${active ? " active-view" : ""}`;
+  button.dataset.area = area;
+  if (position) button.dataset.position = position;
+
+  const image = document.createElement("img");
+  image.className = "view-thumb";
+  image.src = imageUrl;
+  image.alt = label;
+
+  const text = document.createElement("span");
+  text.className = "view-thumb-label";
+  text.textContent = label;
+
+  button.append(image, text);
+  return button;
+}
+
+function renderLegacyViewTabs(isBeanie) {
+  const container = document.querySelector(".view-tabs-side");
+  if (!container) return;
+  const renderKey = `legacy:${isBeanie ? "beanie" : state.product}`;
+  if (container.dataset.renderKey !== renderKey) {
+    const images = {
+      front: isBeanie ? beanieFrontImage : tshirtImages.front,
+      back: tshirtImages.back,
+      left: tshirtImages.left,
+      right: tshirtImages.right
+    };
+    container.replaceChildren(...Object.entries(images).map(([area, imageUrl]) => (
+      createViewTab({
+        area,
+        label: area.charAt(0).toUpperCase() + area.slice(1),
+        imageUrl,
+        active: area === state.selectedArea
+      })
+    )));
+    container.dataset.renderKey = renderKey;
+  }
+
+  state.selectedPosition = "";
+  container.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
+    tab.hidden = isBeanie && tab.dataset.area !== "front";
+    tab.classList.toggle("active-view", tab.dataset.area === state.selectedArea);
+  });
+}
+
+function renderConfiguredViewTabs(positions) {
+  const container = document.querySelector(".view-tabs-side");
+  if (!container || positions.length === 0) return false;
+
+  const positionSlugs = positions.map((position) => normalizeProductTypeSlug(position.slug));
+  let selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+  if (!positionSlugs.includes(selectedPosition)) {
+    const matchingArea = positions.find(
+      (position) => configuredPositionArea(position) === state.selectedArea
+    );
+    selectedPosition = normalizeProductTypeSlug((matchingArea || positions[0]).slug);
+  }
+
+  const renderKey = `configured:${state.customizationConfigKey}:${positionSlugs.join("|")}`;
+  if (container.dataset.renderKey !== renderKey) {
+    container.replaceChildren(...positions.map((position) => {
+      const slug = normalizeProductTypeSlug(position.slug);
+      return createViewTab({
+        area: configuredPositionArea(position),
+        position: slug,
+        label: String(position.label || position.name || slug).trim(),
+        imageUrl: String(position.imageUrl || position.image_url).trim(),
+        active: slug === selectedPosition
+      });
+    }));
+    container.dataset.renderKey = renderKey;
+  }
+
+  const selectedConfig = positions.find(
+    (position) => normalizeProductTypeSlug(position.slug) === selectedPosition
+  ) || positions[0];
+  state.selectedPosition = normalizeProductTypeSlug(selectedConfig.slug);
+  state.selectedArea = configuredPositionArea(selectedConfig);
+  container.querySelectorAll(".view-tab").forEach((tab) => {
+    tab.hidden = false;
+    tab.classList.toggle("active-view", tab.dataset.position === state.selectedPosition);
+  });
+  return true;
+}
+
 function configureViewTabsForProduct() {
   const isBeanie = state.product === "beanie";
-  const configuredAreas = getConfiguredViewAreas();
+  const configuredPositions = getConfiguredViewPositions();
   const appRoot = document.querySelector(".customiser-app");
   if (appRoot) {
     appRoot.classList.toggle("product-beanie", isBeanie);
@@ -2608,33 +2719,20 @@ function configureViewTabsForProduct() {
     productPreview.classList.toggle("product-beanie", isBeanie);
   }
 
-  document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    const area = tab.dataset.area;
-    tab.hidden = configuredAreas
-      ? !configuredAreas[area]
-      : (isBeanie && area !== "front");
-  });
-
-  const frontTab = document.querySelector('.view-tab[data-area="front"]');
-  if (frontTab) frontTab.hidden = false;
-
-  if (configuredAreas) {
-    restoreDefaultViewTabThumbs();
-    if (!configuredAreas[state.selectedArea]) {
-      state.selectedArea = configuredAreas.front
-        ? "front"
-        : Object.keys(configuredAreas).find(area => configuredAreas[area]) || "front";
-      document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
-      document.querySelector(`.view-tab[data-area="${state.selectedArea}"]`)?.classList.add("active-view");
-    }
-  } else if (isBeanie) {
-    const frontThumb = frontTab?.querySelector(".view-thumb");
-    if (frontThumb) frontThumb.src = beanieFrontImage;
-    state.selectedArea = "front";
-    document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
-    frontTab?.classList.add("active-view");
+  if (renderConfiguredViewTabs(configuredPositions)) {
+    syncViewThumbTint();
   } else {
-    restoreDefaultViewTabThumbs();
+    renderLegacyViewTabs(isBeanie);
+    const frontTab = document.querySelector('.view-tab[data-area="front"]');
+    if (isBeanie) {
+      const frontThumb = frontTab?.querySelector(".view-thumb");
+      if (frontThumb) frontThumb.src = beanieFrontImage;
+      state.selectedArea = "front";
+      document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
+      frontTab?.classList.add("active-view");
+    } else {
+      restoreDefaultViewTabThumbs();
+    }
   }
 
   configureDesignTypesForProduct(isBeanie);
@@ -2700,7 +2798,6 @@ async function applyArea() {
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
   document.querySelector(".customiser-app")?.classList.toggle("product-beanie", state.product === "beanie");
   productPreview.classList.toggle("product-beanie", state.product === "beanie");
-  productPreview.classList.toggle("mirror-right", state.selectedArea === "right" && state.product !== "beanie");
 
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
   if (isTshirtFront) {
@@ -2722,6 +2819,10 @@ async function applyArea() {
 
   productShapeEl.src = neutralPngSrc;
   const useConfiguredTemplateDirectly = isConfiguredTemplateImageUrl(neutralPngSrc);
+  const shouldMirrorRight = state.selectedArea === "right"
+    && state.product !== "beanie"
+    && !useConfiguredTemplateDirectly;
+  productPreview.classList.toggle("mirror-right", shouldMirrorRight);
   colourLayerEl.style.opacity = useConfiguredTemplateDirectly ? "0" : "1";
   const areaTintHex = (() => {
     const thumb = state.selectedColorImage || getColourImageForName(state.colourName);
@@ -2758,7 +2859,7 @@ async function applyArea() {
   if (state.product === "tshirt") wrapWidth = tshirtWidth;
   else if (state.product === "beanie") wrapWidth = beanieWidth;
   wrapEl.style.setProperty("--wrap-width", wrapWidth);
-  wrapEl.style.setProperty("--wrap-mirror", state.selectedArea === "right" && state.product !== "beanie" ? "-1" : "1");
+  wrapEl.style.setProperty("--wrap-mirror", shouldMirrorRight ? "-1" : "1");
 
   requestAnimationFrame(() => {
     if (requestId !== areaRenderRequestId) return;
@@ -2767,8 +2868,9 @@ async function applyArea() {
 
   // Only re-centre when the print AREA actually changed. A colour change keeps
   // the logo exactly where the user left it.
-  const areaChanged = lastCenteredArea !== state.selectedArea;
-  lastCenteredArea = state.selectedArea;
+  const currentViewKey = getDesignAreaKey();
+  const areaChanged = lastCenteredArea !== currentViewKey;
+  lastCenteredArea = currentViewKey;
   if (areaChanged) {
     const shouldCenterLogo = Boolean(state.uploadedLogo);
     const shouldCenterText = Boolean(state.text);
@@ -3204,7 +3306,7 @@ function buildDesignPreviewFromState() {
   return {
     type: "garment-logo-preview",
     version: 1,
-    area: state.selectedArea || "front",
+    area: getDesignAreaKey(),
     garmentImage: garmentSource,
     garmentBox: cleanPctBox(garmentBox),
     logoImage: logoSource,
@@ -4184,6 +4286,8 @@ function normalizeAreaForPicker(area) {
 }
 
 function areaLabelForPicker(area) {
+  const position = getConfiguredPosition(area);
+  if (position) return String(position.label || position.name || position.slug).trim();
   const normalized = normalizeAreaForPicker(area);
   if (normalized === "front") return "Front";
   if (normalized === "back") return "Back";
@@ -4195,15 +4299,15 @@ function areaLabelForPicker(area) {
 
 function getPickerAreas() {
   // Beanies are front-only — never offer Back/Left/Right.
-  if (state.product === "beanie") return ["front"];
   const areas = [];
   document.querySelectorAll(".view-tab[data-area]").forEach((btn) => {
     if (btn.hidden) return;
-    const normalized = normalizeAreaForPicker(btn.dataset.area);
-    if (normalized && !areas.includes(normalized)) {
-      areas.push(normalized);
+    const key = getDesignAreaKey(btn.dataset.position || btn.dataset.area);
+    if (key && !areas.includes(key)) {
+      areas.push(key);
     }
   });
+  if (state.product === "beanie" && areas.length === 0) return ["front"];
   if (areas.length === 0) return ["front", "back", "left", "right"];
   return areas;
 }
@@ -4225,7 +4329,7 @@ function getUsedLogoAreasForCurrentProduct() {
 
     const logos = Array.isArray(item?.logos) ? item.logos : [];
     logos.forEach((logo) => {
-      const area = normalizeAreaForPicker(logo?.position || logo?.area);
+      const area = getDesignAreaKey(logo?.position || logo?.area);
       if (area) used.add(area);
     });
   });
@@ -4234,6 +4338,10 @@ function getUsedLogoAreasForCurrentProduct() {
 }
 
 function setSelectedAreaFromPicker(area) {
+  const position = getConfiguredPosition(area);
+  if (position) {
+    return switchToDesignArea(configuredPositionArea(position), { position: position.slug });
+  }
   const normalized = normalizeAreaForPicker(area) || "front";
   return switchToDesignArea(normalized);
 }
@@ -5987,8 +6095,8 @@ const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
   .then(() => Promise.all([
-    restoreAreaDesign(state.selectedArea),
-    restoreAreaTextDesign(state.selectedArea)
+    restoreAreaDesign(),
+    restoreAreaTextDesign()
   ]))
   .finally(() => {
     updatePositionDesignUi();
@@ -6060,10 +6168,10 @@ renderMiniColours();
 // View tabs (Front / Back / Left / Right)
 const viewNameLabel = document.getElementById("viewNameLabel");
 
-document.querySelectorAll(".view-tab").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    await switchToDesignArea(btn.dataset.area);
-  });
+document.querySelector(".view-tabs-side")?.addEventListener("click", async (event) => {
+  const button = event.target.closest(".view-tab");
+  if (!button) return;
+  await switchToDesignArea(button.dataset.area, { position: button.dataset.position || "" });
 });
 
 function syncProductSpecificTabs() {
