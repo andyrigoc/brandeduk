@@ -284,14 +284,9 @@ function updateAvailableColoursLabel() {
   sheetColourLabel.textContent = count > 0 ? `Colour (${count})` : "Colour";
 }
 
-/** PNG neutro per area (sidebar / mockup) — mai il thumbnail API. */
+/** Clean garment image for the main preview; position templates stay in cards. */
 function resolveNeutralGarmentPngForArea(area) {
   const normalizedArea = String(area || "front").trim() || "front";
-
-  const configuredImage = resolveConfiguredGarmentImage(normalizedArea);
-  if (configuredImage) {
-    return configuredImage;
-  }
 
   if (isDogOrPetProduct()) {
     const catalogImage = resolveDogOrPetCatalogImage();
@@ -311,7 +306,7 @@ function resolveNeutralGarmentPngForArea(area) {
     `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
   );
   const tabSrc = tabThumb?.getAttribute("src") || tabThumb?.currentSrc || "";
-  if (tabSrc) return tabSrc;
+  if (tabSrc && !isConfiguredTemplateImageUrl(tabSrc)) return tabSrc;
 
   if (state.product === "tshirt" && normalizedArea === "front") {
     return tshirtFrontCustomImage;
@@ -2989,10 +2984,12 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  const configuredTemplateSrc = resolveConfiguredGarmentImage(state.selectedArea);
-  const neutralPngSrc = configuredTemplateSrc || resolveNeutralGarmentPngForArea(state.selectedArea);
-  const selectedProductImage = state.selectedColorImage || getColourImageForName(state.colourName);
-  const garmentPreviewSrc = configuredTemplateSrc || selectedProductImage || neutralPngSrc;
+  const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const selectedProductImageCandidate = state.selectedColorImage || getColourImageForName(state.colourName);
+  const selectedProductImage = isConfiguredTemplateImageUrl(selectedProductImageCandidate)
+    ? ""
+    : selectedProductImageCandidate;
+  const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
   const wrapEl         = document.querySelector(".polo-colour-wrap");
@@ -4912,8 +4909,12 @@ function configurePositionCardsForProduct() {
   const sweatshirtPicker = document.getElementById("sweatshirtPositionPicker");
   if (!grid) return;
   const isSweatshirt = state.customizationProductTypeSlug === "sweatshirts";
-  document.body.classList.toggle("is-sweatshirt-position-picker", isSweatshirt);
-  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositionPicker());
+  const hasConfiguredPositions = hasConfiguredPositionPicker();
+  document.body.classList.toggle(
+    "is-sweatshirt-position-picker",
+    isSweatshirt || hasConfiguredPositions
+  );
+  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositions);
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
   // Sweatshirts always expose their full canonical position set; the
