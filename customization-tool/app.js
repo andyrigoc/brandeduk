@@ -255,6 +255,10 @@ function finishCustomizerLoading() {
   if (!customizerLoadingOverlay || customizerLoadingFinished) return;
   customizerLoadingFinished = true;
 
+  if (customizerLoadingWatchdog) {
+    clearTimeout(customizerLoadingWatchdog);
+    customizerLoadingWatchdog = null;
+  }
   if (customizerLoadingTimer) {
     clearInterval(customizerLoadingTimer);
     customizerLoadingTimer = null;
@@ -268,6 +272,12 @@ function finishCustomizerLoading() {
     customizerLoadingOverlay.setAttribute("aria-busy", "false");
   }, 220);
 }
+
+// Safety net: a stalled request, cold cache or runtime error must never trap
+// the customer on the loader — reveal the editor no matter what.
+let customizerLoadingWatchdog = window.setTimeout(finishCustomizerLoading, 9000);
+window.addEventListener("error", finishCustomizerLoading);
+window.addEventListener("unhandledrejection", finishCustomizerLoading);
 
 function withTimeout(promise, timeoutMs) {
   return Promise.race([

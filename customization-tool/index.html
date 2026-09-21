@@ -44,7 +44,7 @@
       if (isPcCustomization) {
         var desktopStyles = document.createElement("link");
         desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260921-smooth-upload";
+        desktopStyles.href = folderPath + "desktop.css?v=20260921-boot-watchdog";
         document.head.appendChild(desktopStyles);
       }
     })();
@@ -1189,7 +1189,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260921-smooth-upload", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260921-boot-watchdog", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();

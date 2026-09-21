@@ -253,7 +253,7 @@ window.setProductData = function(data) {
 
 // Populate page 3 with the selected product, prices, sizes and quantities.
 function populatePage3() {
-    var product = window.productData;
+    var product = window.productData || window.currentOrderProduct;
     if (!product) return;
 
     var selectedItem = document.querySelector('.colour-swatch-item.selected');

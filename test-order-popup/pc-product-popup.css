@@ -2486,3 +2486,14 @@ body.popup-open {
     line-height: 18px;
     text-align: center;
 }
+
+/* Volume discount always sits at the bottom of the quantity panel, filling
+   the empty space below short size lists (One Size items like beanies and
+   aprons) instead of hugging the size grid. */
+#orderPopup .page-3 .discount-tiers {
+    margin-top: auto;
+}
+
+#orderPopup .page-3 .sizes-hint {
+    margin-top: 8px;
+}
