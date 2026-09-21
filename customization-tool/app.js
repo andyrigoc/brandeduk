@@ -1495,8 +1495,13 @@ async function hydrateSelectedProductFromApi() {
 
 function updateConfirmButtonState() {
   if (!confirmQualityBtn) return;
+  const syncPcNext = () => {
+    const pcNext = document.getElementById("pcEditorNextBtn");
+    if (pcNext) pcNext.disabled = confirmQualityBtn.disabled;
+  };
   if (state.uploadedLogo && !state.copyrightConfirmed) {
     confirmQualityBtn.disabled = true;
+    syncPcNext();
     return;
   }
   const hasConfirmedCurrentLogo = Boolean(state.uploadedLogo && state.copyrightConfirmed);
@@ -1511,6 +1516,7 @@ function updateConfirmButtonState() {
     (design) => Boolean(String(design?.text || "").trim())
   );
   confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasAssignedPositionLogo || hasCurrentText || hasSavedText);
+  syncPcNext();
 }
 
 function getDesignAreaKey(area = state.selectedArea) {
@@ -4725,6 +4731,7 @@ function syncPositionCardLogoPreviews() {
     if (!preview || !image) return;
     const logo = state.positionLogoAssignments?.[card.dataset.position]?.logo || "";
     preview.classList.toggle("has-logo", Boolean(logo));
+    card.classList.toggle("has-assigned-logo", Boolean(logo));
     if (removeButton) removeButton.hidden = !logo;
     if (logo) image.src = logo;
     else image.removeAttribute("src");
@@ -4884,6 +4891,73 @@ function positionKeyForLabel(label) {
   return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+// Decoration methods allowed per position. Large Back/Large Front never offer
+// direct embroidery (POA → contact us); embroidery-only garments hide print.
+function isEmbroideryOnlyProduct() {
+  return state.customizationProductTypeSlug === "beanies"
+    || /\bbeanie\b/i.test(String(state.productName || ""));
+}
+
+function getAllowedMethodsForPositionKey(positionKey) {
+  if (isEmbroideryOnlyProduct()) return { embroidery: true, print: false, embroideryPoa: false };
+  if (/large-back|large-front/.test(String(positionKey || "").toLowerCase())) {
+    return { embroidery: false, print: true, embroideryPoa: true };
+  }
+  return { embroidery: true, print: true, embroideryPoa: false };
+}
+
+function openPoaContact() {
+  try {
+    const parentTawk = window.parent !== window && window.parent.Tawk_API;
+    if (parentTawk && typeof parentTawk.maximize === "function") {
+      parentTawk.maximize();
+      return;
+    }
+  } catch (error) {
+    void error;
+  }
+  window.location.href = "tel:02089742722";
+}
+
+// One method allowed → assign immediately; both → small EMB/PRINT popup.
+function chooseMethodForPosition(card, positionKey, onChoose) {
+  const allowed = getAllowedMethodsForPositionKey(positionKey);
+  const options = [allowed.embroidery && "embroidery", allowed.print && "print"].filter(Boolean);
+  if (options.length <= 1) {
+    onChoose(options[0] || "print");
+    return;
+  }
+  document.getElementById("positionMethodChoice")?.remove();
+  const rect = card.getBoundingClientRect();
+  const popup = document.createElement("div");
+  popup.id = "positionMethodChoice";
+  popup.className = "position-method-choice";
+  popup.setAttribute("role", "dialog");
+  popup.innerHTML = '<strong>Embroidery or Print?</strong>'
+    + '<div class="position-method-choice-actions">'
+    + '<button type="button" class="position-method-btn method-embroidery" data-choice="embroidery">EMBROIDERY</button>'
+    + '<button type="button" class="position-method-btn method-print" data-choice="print">PRINT</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+  const popupWidth = 216;
+  popup.style.left = `${Math.max(8, Math.min(window.innerWidth - popupWidth - 8, rect.left + rect.width / 2 - popupWidth / 2))}px`;
+  popup.style.top = `${Math.max(8, Math.min(window.innerHeight - 110, rect.top + rect.height / 2 - 48))}px`;
+  const dismiss = (event) => {
+    if (popup.contains(event.target)) return;
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  };
+  document.addEventListener("pointerdown", dismiss, true);
+  popup.querySelectorAll("[data-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const method = button.dataset.choice;
+      popup.remove();
+      document.removeEventListener("pointerdown", dismiss, true);
+      onChoose(method);
+    });
+  });
+}
+
 function getProductPositionLabels() {
   const configuredPositions = Array.isArray(state.customizationConfig?.positions)
     ? state.customizationConfig.positions
@@ -4935,6 +5009,7 @@ function configurePositionCardsForProduct() {
   });
 
   grid.innerHTML = "";
+  const showMethodButtons = isPcOrderEmbed && hasConfiguredPositions;
   labels.forEach((label) => {
     const area = positionAreaForLabel(label);
     const key = positionKeyForLabel(label);
@@ -4942,7 +5017,20 @@ function configurePositionCardsForProduct() {
     card.className = "position-card";
     card.dataset.position = key;
     card.dataset.area = area;
-    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span><span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
+    let methodButtons = "";
+    if (showMethodButtons) {
+      const methods = getAllowedMethodsForPositionKey(key);
+      const embroideryButton = methods.embroidery
+        ? `<button type="button" class="position-method-btn method-embroidery" data-method="embroidery">EMBROIDERY</button>`
+        : (methods.embroideryPoa
+          ? `<button type="button" class="position-method-btn method-poa" data-method="poa" title="Embroidery on request — contact us">EMBROIDERY · POA</button>`
+          : "");
+      const printButton = methods.print
+        ? `<button type="button" class="position-method-btn method-print" data-method="print">PRINT</button>`
+        : "";
+      methodButtons = `<span class="position-method-buttons">${embroideryButton}${printButton}</span>`;
+    }
+    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>${methodButtons}<span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
     card.querySelector(".position-name").textContent = label;
     grid.appendChild(card);
   });
@@ -5419,27 +5507,36 @@ function preparePcUploadFile(file) {
   pcPendingUploadFile = file;
   pcUploadModal.hidden = false;
   document.getElementById("pcUploadFileName").textContent = file.name;
-  document.getElementById("pcUploadReady").hidden = false;
+  document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = true;
   document.getElementById("pcUploadSuccess").hidden = true;
+  startPcUpload();
 }
 
 function startPcUpload() {
   if (!pcPendingUploadFile || pcUploadTimer) return;
-  let progress = 0;
   document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = false;
   document.getElementById("pcUploadMessage").textContent = "Just give us a moment to process your file.";
+  const percentLabel = document.getElementById("pcUploadPercent");
+  const fill = document.getElementById("pcUploadFill");
+  // Per-frame updates: the CSS width transition would lag behind and stutter.
+  fill.style.transition = "none";
+  const durationMs = 1600;
+  const startedAt = performance.now();
+  // Elapsed-time interval instead of rAF: keeps progressing (and completes)
+  // even if the tab is backgrounded mid-upload, where rAF freezes entirely.
   pcUploadTimer = setInterval(() => {
-    progress = Math.min(100, progress + 5);
-    document.getElementById("pcUploadPercent").textContent = `${progress}%`;
-    document.getElementById("pcUploadFill").style.width = `${progress}%`;
-    if (progress < 100) return;
+    const linear = Math.min(1, (performance.now() - startedAt) / durationMs);
+    const eased = 1 - Math.pow(1 - linear, 3);
+    percentLabel.textContent = `${Math.round(eased * 100)}%`;
+    fill.style.width = `${(eased * 100).toFixed(2)}%`;
+    if (linear < 1) return;
     clearInterval(pcUploadTimer);
     pcUploadTimer = null;
     document.getElementById("pcUploadProgress").hidden = true;
     document.getElementById("pcUploadSuccess").hidden = false;
-  }, 150);
+  }, 16);
 }
 
 logoFileInput?.addEventListener("change", event => {
@@ -5463,6 +5560,14 @@ document.getElementById("pcUploadReset")?.addEventListener("click", () => {
 
 const inlineLogoDropzone = document.querySelector(".inline-upload-dropzone");
 if (inlineLogoDropzone) {
+  // Right-rail uploads land in the saved-logo library only: clear any stale
+  // position target so the file is never silently assigned to a card.
+  inlineLogoDropzone.addEventListener("click", (event) => {
+    if (event.target === logoFileInput) return;
+    state.pendingPositionLogoTarget = "";
+    state.pendingDecorationType = null;
+  });
+
   ["dragenter", "dragover"].forEach((eventName) => {
     inlineLogoDropzone.addEventListener(eventName, (event) => {
       event.preventDefault();
@@ -5479,7 +5584,10 @@ if (inlineLogoDropzone) {
 
   inlineLogoDropzone.addEventListener("drop", async (event) => {
     const file = event.dataTransfer?.files?.[0];
-    if (file) preparePcUploadFile(file);
+    if (!file) return;
+    state.pendingPositionLogoTarget = "";
+    state.pendingDecorationType = null;
+    preparePcUploadFile(file);
   });
 }
 
@@ -7502,15 +7610,40 @@ if (positionGrid) {
     const position = card.dataset.position;
     if (!activateDroppedPosition(position)) return;
     const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo");
-    if (savedLogo) {
-      assignLogoToPosition(position, savedLogo);
+    const file = event.dataTransfer?.files?.[0];
+    if (!savedLogo && !file) return;
+    chooseMethodForPosition(card, position, async (method) => {
+      if (savedLogo) {
+        state.decorationType = method;
+        assignLogoToPosition(position, savedLogo, method);
+        return;
+      }
+      state.pendingPositionLogoTarget = position;
+      state.pendingDecorationType = method;
+      document.body.dataset.decorationType = normalizeDecorationMethod(method);
+      await processLogoFile(file);
+    });
+  });
+
+  // EMB / PRINT buttons: pick the method, then upload straight into this card.
+  positionGrid.addEventListener("click", (event) => {
+    const methodButton = event.target.closest(".position-method-btn");
+    if (!methodButton) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const card = methodButton.closest(".position-card");
+    const position = card?.dataset.position;
+    if (!position) return;
+    if (methodButton.dataset.method === "poa") {
+      openPoaContact();
       return;
     }
-
-    const file = event.dataTransfer?.files?.[0];
-    if (!file) return;
+    if (!activateDroppedPosition(position)) return;
+    state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
     state.pendingPositionLogoTarget = position;
-    await processLogoFile(file);
+    state.pendingDecorationType = methodButton.dataset.method;
+    document.body.dataset.decorationType = normalizeDecorationMethod(methodButton.dataset.method);
+    document.getElementById("logoFileInput")?.click();
   });
 
   positionGrid.addEventListener("click", (event) => {
@@ -7529,8 +7662,12 @@ if (positionGrid) {
         }
         return;
       }
-      state.pendingPositionLogoTarget = position;
-      document.getElementById("logoFileInput")?.click();
+      chooseMethodForPosition(card, position, (method) => {
+        state.pendingPositionLogoTarget = position;
+        state.pendingDecorationType = method;
+        document.body.dataset.decorationType = normalizeDecorationMethod(method);
+        document.getElementById("logoFileInput")?.click();
+      });
       return;
     }
     delete state.positionLogoAssignments[position];
@@ -7690,4 +7827,46 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
     resetLayerRotationToStraight("text");
   }
 });
+
+// PC embed toolbar: the tab bar is replaced by BACK (one step back in the
+// order flow) and NEXT (same action as CONFIRM & UPDATE BASKET). The basket
+// icon stays visible between them.
+(function setupPcEditorToolbar() {
+  if (!isPcOrderEmbed) return;
+  const editorTop = document.querySelector("#mainEditor .editor-top");
+  if (!editorTop || document.getElementById("pcEditorNextBtn")) return;
+  document.body.classList.add("has-pc-editor-toolbar");
+
+  const backBtn = document.createElement("button");
+  backBtn.type = "button";
+  backBtn.id = "pcEditorBackBtn";
+  backBtn.className = "pc-editor-nav-btn pc-editor-back";
+  backBtn.innerHTML = '<span aria-hidden="true">\u2190</span> BACK';
+  backBtn.addEventListener("click", () => {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "brandeduk:customizer-back" }, window.location.origin);
+      return;
+    }
+    if (document.referrer) history.back();
+    else window.location.href = "../shop-pc.html";
+  });
+
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.id = "pcEditorNextBtn";
+  nextBtn.className = "pc-editor-nav-btn pc-editor-next";
+  nextBtn.innerHTML = 'NEXT <span aria-hidden="true">\u2192</span>';
+  nextBtn.disabled = true;
+  nextBtn.addEventListener("click", () => confirmQualityBtn?.click());
+
+  const rightWrap = document.createElement("div");
+  rightWrap.className = "pc-editor-toolbar-right";
+  const basketBtn = document.getElementById("basketBtn");
+  if (basketBtn) rightWrap.appendChild(basketBtn);
+  rightWrap.appendChild(nextBtn);
+
+  editorTop.prepend(backBtn);
+  editorTop.appendChild(rightWrap);
+  updateConfirmButtonState();
+})();
 

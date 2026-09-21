@@ -215,5 +215,25 @@
         updateProgress(popup.classList.contains('pc-customizer-active') ? 3 : window.current);
     }).observe(popup, { attributes: true, attributeFilter: ['class'] });
 
+    // Basket icon in the popup header stays in sync on every flow page.
+    function updateFlowBasketBadge() {
+        var badge = document.getElementById('pcFlowBasketBadge');
+        if (!badge) return;
+        var totalQty = 0;
+        try {
+            JSON.parse(localStorage.getItem('quoteBasket') || '[]').forEach(function (row) {
+                totalQty += parseInt(row && row.qty, 10) || 0;
+            });
+        } catch (error) { /* basket unreadable: keep badge hidden */ }
+        badge.textContent = String(totalQty);
+        badge.hidden = totalQty === 0;
+    }
+
+    window.addEventListener('basketUpdated', updateFlowBasketBadge);
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'quoteBasket') updateFlowBasketBadge();
+    });
+    updateFlowBasketBadge();
+
     updateProgress(0);
 }());

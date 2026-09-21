@@ -68,7 +68,7 @@
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order-preload');
-        target.searchParams.set('_cb', '20260921-pc-universal');
+        target.searchParams.set('_cb', '20260921-smooth-upload');
         var preloadType = product.productType || product.category || product.type || product.name || '';
         if (preloadType) target.searchParams.set('productType', preloadType);
         if (colour) target.searchParams.set('color', colour);
@@ -246,7 +246,7 @@
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order');
-        target.searchParams.set('_cb', '20260921-pc-universal');
+        target.searchParams.set('_cb', '20260921-smooth-upload');
         target.searchParams.set('color', colour);
         if (colourImage) target.searchParams.set('colorImage', colourImage);
         if (colourHex) target.searchParams.set('colorHex', colourHex);
@@ -274,7 +274,12 @@
 
     window.addEventListener('message', function(event) {
         if (event.origin !== window.location.origin) return;
-        if (!event.data || event.data.type !== 'brandeduk:customization-saved') return;
+        if (!event.data) return;
+        if (event.data.type === 'brandeduk:customizer-back') {
+            closeCustomizer(false);
+            return;
+        }
+        if (event.data.type !== 'brandeduk:customization-saved') return;
         closeCustomizer(true);
         window.location.assign(new URL('basket.html', window.location.href).href);
     });
