@@ -30,16 +30,21 @@
 
       // PC overrides are loaded only for the desktop customizer. Mobile keeps
       // its original stylesheet and presentation completely independent.
-      var customizationSource = new URLSearchParams(window.location.search).get("from");
+      var customizationParams = new URLSearchParams(window.location.search);
+      var customizationSource = customizationParams.get("from");
+      var embeddedMode = customizationParams.get("embedded");
       if (customizationSource === "customize-mobile") {
         document.documentElement.classList.add("force-mobile-customizer");
       }
       var isPcCustomization = customizationSource !== "customize-mobile"
-        && (window.innerWidth >= 1024 || customizationSource === "customize-pc");
+        && (window.innerWidth >= 1024
+          || customizationSource === "customize-pc"
+          || embeddedMode === "pc-order"
+          || embeddedMode === "pc-order-preload");
       if (isPcCustomization) {
         var desktopStyles = document.createElement("link");
         desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260919-sweatshirt-cards";
+        desktopStyles.href = folderPath + "desktop.css?v=20260921-pc-universal";
         document.head.appendChild(desktopStyles);
       }
     })();
@@ -1184,7 +1189,7 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260921-clean-product-preview-2", document.baseURI).href;
+    appScript.src = new URL("app.js?v=20260921-pc-universal", document.baseURI).href;
     appScript.async = false;
     document.body.appendChild(appScript);
   })();

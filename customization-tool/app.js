@@ -43,7 +43,15 @@ const state = {
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
-const isPcOrderEmbed = customizationRouteParams.get("embedded") === "pc-order";
+// PC layout is universal on desktop: the embedded order popup, explicit
+// customize-pc entries and plain full-page desktop visits all share it.
+const customizationEmbedParam = customizationRouteParams.get("embedded") || "";
+const customizationFromParam = String(customizationRouteParams.get("from") || "").toLowerCase();
+const isPcOrderEmbed = customizationFromParam !== "customize-mobile"
+  && (customizationEmbedParam === "pc-order"
+    || customizationEmbedParam === "pc-order-preload"
+    || customizationFromParam === "customize-pc"
+    || Boolean(window.matchMedia && window.matchMedia("(min-width: 1024px)").matches));
 if (isPcOrderEmbed) {
   document.body.classList.add("is-pc-order-embed");
 }
@@ -3017,7 +3025,7 @@ async function applyArea() {
   const usesUntintableFallback =
     garmentPreviewSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
     || isConfiguredTemplateImageUrl(garmentPreviewSrc);
-  const useCatalogImageDirectly = Boolean(configuredTemplateSrc || selectedProductImage) || usesUntintableFallback
+  const useCatalogImageDirectly = Boolean(selectedProductImage) || usesUntintableFallback
     || (isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage());
 
   if (useCatalogImageDirectly) {

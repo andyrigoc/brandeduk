@@ -76,7 +76,7 @@
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker #mainEditor.active-screen {
-    grid-template-columns: minmax(270px, .65fr) minmax(570px, 1.25fr) minmax(340px, .72fr);
+    grid-template-columns: minmax(240px, .65fr) minmax(0, 1.25fr) minmax(300px, .72fr);
     grid-template-areas:
       "header header header"
       "canvas inspector uploader";
@@ -1560,7 +1560,7 @@
     right: 16px;
     bottom: 16px;
     left: auto;
-    width: min(356px, calc(33.333vw - 32px));
+    width: min(356px, calc(27vw - 16px));
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .design-layer,
