@@ -455,7 +455,7 @@
 .hero-el:nth-child(4) .hero-el__inner { transition-delay: 0.18s; }
 .hero-el:nth-child(4) .hero-el__bg:before {
     transition-delay: 0.18s;
-    background-position: calc(50% + 145px) center;
+    background-position: 28% center;
 }
 .hero-el:nth-child(4).is-bg-ready .hero-el__bg:before {
     background-image: url('../../hero/images/desktop/bag-desktop.webp');
@@ -468,7 +468,7 @@
 .hero-el:nth-child(5) .hero-el__inner { transition-delay: 0.24s; }
 .hero-el:nth-child(5) .hero-el__bg:before {
     transition-delay: 0.24s;
-    background-position: calc(50% + 250px) center;
+    background-position: 18% center;
 }
 .hero-el:nth-child(5).is-bg-ready .hero-el__bg:before {
     background-image: url('../../hero/images/desktop/apron-desktop.webp');
