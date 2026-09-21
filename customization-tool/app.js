@@ -2927,9 +2927,10 @@ function configureViewTabsForProduct() {
  * show a folding-area height warning. Other products keep all methods enabled.
  */
 function configureDesignTypesForProduct(isBeanie) {
+  const rules = getCategoryMethodRules();
   document.querySelectorAll("#designTypePage [data-design-type]").forEach((card) => {
-    const type = card.dataset.designType;
-    const disabled = isBeanie && type !== "embroidery";
+    const rule = rules[card.dataset.designType] || "yes";
+    const disabled = rule === "no";
     card.classList.toggle("is-disabled", disabled);
     card.setAttribute("aria-disabled", disabled ? "true" : "false");
   });
@@ -4901,31 +4902,132 @@ function positionKeyForLabel(label) {
   return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-// Decoration methods allowed per position. Large Back/Large Front never offer
-// direct embroidery (POA → contact us); embroidery-only garments hide print.
-function isEmbroideryOnlyProduct() {
-  return state.customizationProductTypeSlug === "beanies"
-    || /\bbeanie\b/i.test(String(state.productName || ""));
+// ---------------------------------------------------------------------------
+// Uniform-site decoration matrix — yes | poa | no per technique.
+// Effective rule = worst of (category rule, position rule); the PRINT button
+// aggregates DTF + Screen (best of the two, since either can serve the job).
+const POA_NOTICE_COPY = "POA – This option may be available depending on the garment, artwork and quantity. Please contact us for confirmation.";
+
+const METHOD_RULE_RANK = { yes: 0, poa: 1, no: 2 };
+
+function worstMethodRule(first, second) {
+  return METHOD_RULE_RANK[second] > METHOD_RULE_RANK[first] ? second : first;
 }
+
+function bestMethodRule(first, second) {
+  return METHOD_RULE_RANK[second] < METHOD_RULE_RANK[first] ? second : first;
+}
+
+const CATEGORY_METHOD_RULES = {
+  tshirts: { dtf: "yes", screen: "yes", embroidery: "poa" },
+  polos: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  sweatshirts: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  hoodies: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  shirts: { dtf: "yes", screen: "poa", embroidery: "yes" },
+  fleece: { dtf: "poa", screen: "no", embroidery: "yes" },
+  jackets: { dtf: "poa", screen: "no", embroidery: "yes" },
+  "gilets-body-warmers": { dtf: "poa", screen: "no", embroidery: "yes" },
+  "safety-vests": { dtf: "yes", screen: "yes", embroidery: "poa" },
+  trousers: { dtf: "poa", screen: "no", embroidery: "yes" },
+  shorts: { dtf: "poa", screen: "no", embroidery: "yes" },
+  sweatpants: { dtf: "poa", screen: "no", embroidery: "poa" },
+  aprons: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  bags: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  caps: { dtf: "poa", screen: "no", embroidery: "yes" },
+  hats: { dtf: "poa", screen: "no", embroidery: "yes" },
+  beanies: { dtf: "no", screen: "no", embroidery: "yes" }
+};
+
+// Garment-name refinements from the uniform-site matrix (premium tees,
+// technical fabrics, waterproof shells, knitwear, accessories…).
+const PRODUCT_NAME_METHOD_OVERRIDES = [
+  { pattern: /premium|heavy|ultra|ring ?spun/i, rules: { embroidery: "yes" } },
+  { pattern: /performance|technical|polyester|breathable|active|training/i, rules: { screen: "poa" } },
+  { pattern: /oxford|formal|dress shirt|blouse/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /\bknit|jumper|cardigan/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
+  { pattern: /\bwool\b/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /softshell|windbreaker|wind ?shirt|bomber/i, rules: { dtf: "yes" } },
+  { pattern: /waterproof|padded|puffer|parka|quilted|insulated|down\b/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /laptop|messenger|cooler|tool bag|holdall|kit bag/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /umbrella/i, rules: { dtf: "poa", screen: "yes", embroidery: "no" } },
+  { pattern: /towel|blanket|robe|gown/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
+  { pattern: /legging/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
+  { pattern: /baby|bodysuit/i, rules: { embroidery: "no" } },
+  { pattern: /basketball|football shirt|sports vest/i, rules: { embroidery: "poa" } },
+  { pattern: /glove/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /helmet|hard hat/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
+  { pattern: /balaclava/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /\bsocks?\b/i, rules: { dtf: "poa", screen: "no", embroidery: "poa" } }
+];
+
+function getCategoryMethodRules() {
+  const slug = state.customizationProductTypeSlug || "tshirts";
+  const rules = { ...(CATEGORY_METHOD_RULES[slug] || { dtf: "yes", screen: "yes", embroidery: "yes" }) };
+  const name = String(state.productName || "");
+  PRODUCT_NAME_METHOD_OVERRIDES.forEach(({ pattern, rules: overrides }) => {
+    if (pattern.test(name)) Object.assign(rules, overrides);
+  });
+  return rules;
+}
+
+// Position rules: large/lower placements never offer direct embroidery.
+const POSITION_METHOD_RULES = {
+  "large-front": { embroidery: "poa" },
+  "large-front-above-pocket": { embroidery: "poa" },
+  "large-back": { embroidery: "poa" },
+  "lower-front": { embroidery: "poa" },
+  "lower-back": { embroidery: "poa" },
+  "left-leg": { embroidery: "poa" },
+  "right-leg": { embroidery: "poa" }
+};
 
 function getAllowedMethodsForPositionKey(positionKey) {
-  if (isEmbroideryOnlyProduct()) return { embroidery: true, print: false, embroideryPoa: false };
-  if (/large-back|large-front/.test(String(positionKey || "").toLowerCase())) {
-    return { embroidery: false, print: true, embroideryPoa: true };
-  }
-  return { embroidery: true, print: true, embroideryPoa: false };
+  const category = getCategoryMethodRules();
+  const position = POSITION_METHOD_RULES[String(positionKey || "").toLowerCase()] || {};
+  return {
+    embroidery: worstMethodRule(category.embroidery, position.embroidery || "yes"),
+    print: worstMethodRule(bestMethodRule(category.dtf, category.screen), position.print || "yes")
+  };
 }
 
-function openPoaContact() {
-  window.location.href = "tel:02089742722";
+function showPoaNotice() {
+  document.getElementById("positionMethodChoice")?.remove();
+  const popup = document.createElement("div");
+  popup.id = "positionMethodChoice";
+  popup.className = "position-method-choice";
+  popup.setAttribute("role", "dialog");
+  popup.innerHTML = '<strong>POA – Please contact us</strong>'
+    + `<p class="poa-notice-copy">${POA_NOTICE_COPY.replace("POA – ", "")}</p>`
+    + '<div class="position-method-choice-actions">'
+    + '<a class="position-method-btn method-embroidery" href="tel:02089742722">CALL 0208 974 2722</a>'
+    + '<button type="button" class="position-method-btn poa-notice-close" data-poa-close>CLOSE</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+  popup.style.left = `${Math.max(8, Math.round(window.innerWidth / 2 - 128))}px`;
+  popup.style.top = `${Math.max(8, Math.round(window.innerHeight / 2 - 100))}px`;
+  const dismiss = (event) => {
+    if (popup.contains(event.target)) return;
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  };
+  document.addEventListener("pointerdown", dismiss, true);
+  popup.querySelector("[data-poa-close]")?.addEventListener("click", () => {
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  });
 }
 
-// One method allowed → assign immediately; both → small EMB/PRINT popup.
+// Only "yes" methods are directly assignable; POA-only positions show the
+// contact notice instead of silently accepting the artwork.
 function chooseMethodForPosition(card, positionKey, onChoose) {
   const allowed = getAllowedMethodsForPositionKey(positionKey);
-  const options = [allowed.embroidery && "embroidery", allowed.print && "print"].filter(Boolean);
-  if (options.length <= 1) {
-    onChoose(options[0] || "print");
+  const options = ["embroidery", "print"].filter((method) => allowed[method] === "yes");
+  if (options.length === 0) {
+    showPoaNotice();
+    return;
+  }
+  if (options.length === 1) {
+    onChoose(options[0]);
     return;
   }
   document.getElementById("positionMethodChoice")?.remove();
@@ -5021,14 +5123,16 @@ function configurePositionCardsForProduct() {
     let methodButtons = "";
     if (showMethodButtons) {
       const methods = getAllowedMethodsForPositionKey(key);
-      const embroideryButton = methods.embroidery
+      const embroideryButton = methods.embroidery === "yes"
         ? `<button type="button" class="position-method-btn method-embroidery" data-method="embroidery">EMBROIDERY</button>`
-        : (methods.embroideryPoa
-          ? `<button type="button" class="position-method-btn method-poa" data-method="poa" title="Embroidery on request — contact us">EMBROIDERY · POA</button>`
+        : (methods.embroidery === "poa"
+          ? `<button type="button" class="position-method-btn method-poa" data-method="poa-embroidery" title="${POA_NOTICE_COPY}">EMBROIDERY · POA</button>`
           : "");
-      const printButton = methods.print
+      const printButton = methods.print === "yes"
         ? `<button type="button" class="position-method-btn method-print" data-method="print">PRINT</button>`
-        : "";
+        : (methods.print === "poa"
+          ? `<button type="button" class="position-method-btn method-poa" data-method="poa-print" title="${POA_NOTICE_COPY}">PRINT · POA</button>`
+          : "");
       methodButtons = `<span class="position-method-buttons">${embroideryButton}${printButton}</span>`;
     }
     card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>${methodButtons}<span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
@@ -7635,8 +7739,8 @@ if (positionGrid) {
     const card = methodButton.closest(".position-card");
     const position = card?.dataset.position;
     if (!position) return;
-    if (methodButton.dataset.method === "poa") {
-      openPoaContact();
+    if (String(methodButton.dataset.method).startsWith("poa")) {
+      showPoaNotice();
       return;
     }
     if (!activateDroppedPosition(position)) return;

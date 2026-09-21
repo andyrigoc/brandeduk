@@ -2848,6 +2848,25 @@ body.is-pc-order-embed.is-sweatshirt-position-picker .position-card:not(.has-ass
   text-align: center;
 }
 
+.position-method-choice .poa-notice-copy {
+  margin: 0 0 10px;
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.position-method-choice a.position-method-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.position-method-choice .poa-notice-close {
+  background: #eef2f7;
+  color: #334155;
+}
+
 .position-method-choice .position-method-choice-actions {
   display: flex;
   flex-direction: column;
