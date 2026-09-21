@@ -11615,6 +11615,10 @@
                 const mergedData = Object.assign({}, existingData, {
                     code: existingData.code || (state.product && state.product.code) || item.productCode || item.code || '',
                     name: existingData.name || (state.product && state.product.name) || item.productName || item.name || '',
+                    productType: existingData.productType || (state.product && state.product.productType) || item.productType || item.category || '',
+                    customizationVariantKey: existingData.customizationVariantKey || item.customizationVariantKey || '',
+                    description: existingData.description || (state.product && state.product.description) || item.description || '',
+                    image: existingData.image || item.colorImage || item.image || '',
                     color: chosenColorName || existingData.color || '',
                     selectedColorName: chosenColorName || existingData.selectedColorName || '',
                     colorHex: chosenColorHex || existingData.colorHex || '',
