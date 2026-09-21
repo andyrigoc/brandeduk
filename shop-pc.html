@@ -2041,7 +2041,7 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260811a">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260811b">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260919-top-navigation">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260921-flow-basket">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8127,21 +8127,6 @@
 
     <script src="../brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
 
-    <script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
-    <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-        (function () {
-            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/69628dafb346e51985794182/1jekfitse';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-    </script>
-    <!--End of Tawk.to Script-->
-
     <script src="mobile/footer/footer.js?v=20260210" defer></script>
 
     <!-- Order Popup HTML -->
@@ -8180,6 +8165,10 @@
                         </li>
                     </ol>
                     <div class="pc-product-flow-help">
+                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" hidden>0</span>
+                        </a>
                         <span>Need help?</span>
                         <a href="tel:02089742722">0208 974 2722</a>
                         <button type="button" class="pc-popup-return-btn" onclick="window.closeOrderPopup()"
@@ -9015,10 +9004,10 @@
 
     <!-- Order Popup Scripts -->
     <script src="test-order-popup/order.js?v=20260919-basket-tier-pricing"></script>
-    <script src="test-order-popup/order-integration.js?v=20260917-price-catalogue-base-price"></script>
-    <script src="test-order-popup/customizer-embed.js?v=20260913b"></script>
-    <script src="test-order-popup/pc-product-routing.js?v=20260913b"></script>
-    <script src="test-order-popup/pc-product-popup.js?v=20260915-quantity-summary"></script>
+    <script src="test-order-popup/order-integration.js?v=20260920-fast-product-open"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20260921-method-matrix"></script>
+    <script src="test-order-popup/pc-product-routing.js?v=20260920-product-cache"></script>
+    <script src="test-order-popup/pc-product-popup.js?v=20260921-flow-basket"></script>
 
     <script>
         // Color Zoom Modal Functions

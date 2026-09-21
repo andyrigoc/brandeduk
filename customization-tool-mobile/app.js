@@ -14,6 +14,7 @@ const state = {
   sizes: [{ size: "Medium", qty: 1 }],
   totalQty: 1,
   selectedArea: "front",
+  selectedPosition: "",
   decorationType: null,
   textType: null,
   uploadedLogo: null,
@@ -433,7 +434,7 @@ function syncViewThumbTint() {
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
     if (!thumbSrc) return;
 
-    if (!safeHex) {
+    if (!safeHex || isConfiguredTemplateImageUrl(thumbSrc)) {
       colourLayer.style.opacity = "0";
       return;
     }
@@ -1318,12 +1319,30 @@ function updateConfirmButtonState() {
   confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasCurrentText || hasSavedText);
 }
 
-function getDesignAreaKey(area = state.selectedArea) {
+function getConfiguredPosition(positionSlug) {
+  const slug = normalizeProductTypeSlug(positionSlug);
+  if (!slug) return null;
+  return (state.customizationConfig?.positions || []).find(
+    (position) => normalizeProductTypeSlug(position?.slug) === slug
+  ) || null;
+}
+
+function getDesignAreaKey(area) {
+  if (area === undefined || area === null || area === "") {
+    const selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+    if (selectedPosition && getConfiguredPosition(selectedPosition)) return selectedPosition;
+    return normalizeAreaForPicker(state.selectedArea) || "front";
+  }
+
+  const position = getConfiguredPosition(area);
+  if (position) return normalizeProductTypeSlug(position.slug);
   return normalizeAreaForPicker(area) || "front";
 }
 
-function getDesignAreaLabel(area = state.selectedArea) {
-  return areaLabelForPicker(getDesignAreaKey(area));
+function getDesignAreaLabel(area) {
+  const key = getDesignAreaKey(area);
+  const position = getConfiguredPosition(key);
+  return position?.label || areaLabelForPicker(key);
 }
 
 function getCurrentLogoQualityPct() {
@@ -1438,7 +1457,7 @@ function buildTextDesignPreviewFromState() {
   return {
     type: "garment-text-preview",
     version: 1,
-    area: state.selectedArea || "front",
+    area: getDesignAreaKey(),
     garmentImage: garmentSource,
     garmentBox: cleanPctBox(garmentBox),
     text: textValue,
@@ -1576,7 +1595,7 @@ function getDraftTextDesigns() {
 
 function updateViewTabDesignStatus(designs = getDraftAreaDesigns(), textDesigns = getDraftTextDesigns()) {
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    const area = getDesignAreaKey(tab.dataset.area);
+    const area = getDesignAreaKey(tab.dataset.position || tab.dataset.area);
     const hasLogo = Boolean(designs[area]?.logo);
     const hasText = Boolean(String(textDesigns[area]?.text || "").trim());
     const hasDesign = hasLogo || hasText;
@@ -1684,7 +1703,7 @@ function waitForLogoImage(image) {
   });
 }
 
-async function restoreAreaDesign(area = state.selectedArea) {
+async function restoreAreaDesign(area) {
   const key = getDesignAreaKey(area);
   const design = state.areaDesigns?.[key];
   clearCanvasLogoState();
@@ -1733,7 +1752,7 @@ async function restoreAreaDesign(area = state.selectedArea) {
   return true;
 }
 
-async function restoreAreaTextDesign(area = state.selectedArea) {
+async function restoreAreaTextDesign(area) {
   const key = getDesignAreaKey(area);
   const design = state.areaTextDesigns?.[key];
   clearCanvasTextState();
@@ -1788,7 +1807,10 @@ async function restoreAreaTextDesign(area = state.selectedArea) {
 let designAreaSwitchRequest = 0;
 
 async function switchToDesignArea(nextArea, options = {}) {
-  const next = getDesignAreaKey(nextArea);
+  const requestedPosition = normalizeProductTypeSlug(options.position || nextArea);
+  const position = getConfiguredPosition(requestedPosition);
+  const nextPosition = position ? normalizeProductTypeSlug(position.slug) : "";
+  const next = nextPosition || getDesignAreaKey(nextArea);
   const previous = getDesignAreaKey();
   const requestId = ++designAreaSwitchRequest;
 
@@ -1806,9 +1828,15 @@ async function switchToDesignArea(nextArea, options = {}) {
 
   clearCanvasLogoState();
   clearCanvasTextState();
-  state.selectedArea = next;
+  state.selectedPosition = nextPosition;
+  state.selectedArea = position
+    ? configuredPositionArea(position)
+    : (normalizeAreaForPicker(nextArea) || "front");
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    tab.classList.toggle("active-view", getDesignAreaKey(tab.dataset.area) === next);
+    tab.classList.toggle(
+      "active-view",
+      getDesignAreaKey(tab.dataset.position || tab.dataset.area) === next
+    );
   });
 
   const viewLabel = document.getElementById("viewNameLabel");
@@ -2179,8 +2207,45 @@ const CUSTOMIZATION_PRODUCT_TYPE_SLUGS = new Set([
   "sweatshirts",
   "trousers",
   "tshirts",
-  "vests-t-shirt"
+  "vests-t-shirt",
+  "blouses",
+  "chef-jackets",
+  "tunics",
+  "tabards",
+  "laptop-cases",
+  "dungarees",
+  "coveralls",
+  "sports-overtops",
+  "rugby-shirts",
+  "bodysuits",
+  "bibs",
+  "towels",
+  "blankets",
+  "umbrellas",
+  "dog-t-shirts",
+  "dog-hoodies",
+  "dog-jackets"
 ]);
+
+const CUSTOMIZATION_EXACT_TEMPLATES = {
+  blouses: ["blouses", "blouse"],
+  "chef-jackets": ["chef-jackets", "chef-jacket"],
+  tunics: ["tunics", "tunic-scrub-top"],
+  tabards: ["tabards", "tabard"],
+  "laptop-cases": ["laptop-cases", "laptop-sleeve"],
+  dungarees: ["dungarees", "bib-brace"],
+  coveralls: ["coveralls", "coverall-overall"],
+  "sports-overtops": ["sports-overtops", "sports-jersey"],
+  "rugby-shirts": ["rugby-shirts", "rugby-shirt"],
+  bodysuits: ["bodysuits", "baby-bodysuit"],
+  bibs: ["bibs", "baby-bib"],
+  towels: ["towels", "towel"],
+  blankets: ["blankets", "blanket"],
+  umbrellas: ["umbrellas", "umbrella"],
+  "dog-t-shirts": ["dog-t-shirts", "dog-tshirt"],
+  "dog-hoodies": ["dog-hoodies", "dog-hoodie"],
+  "dog-jackets": ["dog-jackets", "dog-jacket"]
+};
 
 function normalizeProductTypeSlug(value) {
   return String(value || "")
@@ -2193,10 +2258,39 @@ function normalizeProductTypeSlug(value) {
 
 function resolveCustomizationProductTypeSlug(name, productType) {
   const explicit = normalizeProductTypeSlug(productType);
+  if (CUSTOMIZATION_EXACT_TEMPLATES[explicit]) {
+    return CUSTOMIZATION_EXACT_TEMPLATES[explicit][0];
+  }
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
-  if (/hi[\s-]?vis|high[\s-]?vis|safety vest/.test(text)) return "safety-vests";
+  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b/.test(text);
+  if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
+  if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
+  if (/\bdog\b/.test(text)) return "dog-jackets";
+  if (/baby|toddler|infant/.test(text) && /\bbib\b/.test(text)) return "bibs";
+  if (/baby|toddler|infant/.test(text) && /bodysuit|body suit|onesie/.test(text)) return "bodysuits";
+  if (/baby|toddler|infant/.test(text)) return "tshirts";
+  if (/umbrella/.test(text)) return "umbrellas";
+  if (/blanket/.test(text)) return "blankets";
+  if (/towel/.test(text)) return "towels";
+  if (/chef/.test(text) && /jacket|coat/.test(text)) return "chef-jackets";
+  if (/tunic|scrub/.test(text)) return "tunics";
+  if (/tabard/.test(text)) return "tabards";
+  if (/bib[\s&-]*(?:and[\s&-]*)?brace|dungaree/.test(text)) return "dungarees";
+  if (/coverall|overall|boilersuit|boiler suit/.test(text)) return "coveralls";
+  if (/rugby/.test(text)) return "rugby-shirts";
+  if (/sports? jersey|teamwear jersey|football jersey/.test(text)) return "sports-overtops";
+  if (/sports? vest|running vest|racerback/.test(text)) return "vests-t-shirt";
+  if (/laptop sleeve|notebook sleeve/.test(text)) return "laptop-cases";
+  if (/\bblouse\b/.test(text)) return "blouses";
+  if (hiVis && /body[\s-]?warmer|gilet/.test(text)) return "gilets-body-warmers";
+  if (hiVis && /jacket|coat|bomber/.test(text)) return "jackets";
+  if (hiVis && /hood/.test(text)) return "hoodies";
+  if (hiVis && /sweatshirt|sweater/.test(text)) return "sweatshirts";
+  if (hiVis && /polo/.test(text)) return "polos";
+  if (hiVis && /t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
+  if (hiVis) return "safety-vests";
   if (/gilet|body[\s-]?warmer/.test(text)) return "gilets-body-warmers";
   if (/soft[\s-]?shell/.test(text)) return "softshells";
   if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text)) return "sweatpants";
@@ -2207,12 +2301,12 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (/\bhoodie|hooded/.test(text)) return "hoodies";
   if (/\bfleece/.test(text)) return "fleece";
   if (/\bpolo/.test(text)) return "polos";
-  if (/t[\s-]?shirt|\btee\b/.test(text)) return "tshirts";
+  if (/t[\s-]?shirt|\btee\b|\bcool t\b|valueweight t\b|heavy cotton t\b|original t\b|premium t\b|ringspun.* t\b|inspire e\d+/.test(text)) return "tshirts";
   if (/\bvest tops?\b|tank top|racer[\s-]?back|sleeveless t[\s-]?shirt/.test(text)) return "vests-t-shirt";
   if (/\bjacket|\bparka|\bcoat|\banorak|windbreaker/.test(text)) return "jackets";
   if (/\btrouser|\bchino|\bpants?\b/.test(text)) return "trousers";
   if (/\bshorts?\b/.test(text) && !/\bshirt/.test(text)) return "shorts";
-  if (/\bbag\b|rucksack|backpack|holdall|duffle|duffel|tote/.test(text)) return "bags";
+  if (/\bbag\b|rucksack|backpack|holdall|duffle|duffel|tote|shopper|shopping|gymsac|gym[\s-]?sac|drawstring/.test(text)) return "bags";
   if (/\bshirt|\bblouse/.test(text)) return "shirts";
   if (/\bhat\b|headwear/.test(text)) return "hats";
   return "";
@@ -2220,73 +2314,109 @@ function resolveCustomizationProductTypeSlug(name, productType) {
 
 const CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE = {
   aprons: new Set(["bib", "waist"]),
-  bags: new Set(["backpack", "tote", "holdall", "laptop-document"]),
+  bags: new Set(["tote", "drawstring-gymsac", "book-bag", "laptop-document", "backpack", "messenger", "holdall", "boot-bag"]),
   beanies: new Set(["cuffed", "bobble"]),
+  caps: new Set(["baseball", "trucker"]),
   fleece: new Set(["full-zip", "quarter-zip"]),
-  "gilets-body-warmers": new Set(["padded", "fleece"]),
-  hats: new Set(["bucket", "wide-brim"]),
-  "safety-vests": new Set(["waistcoat", "jacket-bomber"]),
-  hoodies: new Set(["pullover", "full-zip"]),
-  jackets: new Set(["lightweight", "padded-puffer", "waterproof-parka"]),
-  polos: new Set(["short-sleeve", "long-sleeve"]),
+  "gilets-body-warmers": new Set(["standard", "padded", "hi-vis-bodywarmer"]),
+  hats: new Set(["bucket"]),
+  "safety-vests": new Set(["waistcoat"]),
+  hoodies: new Set(["pullover", "full-zip", "hi-vis-hoodie"]),
+  jackets: new Set(["waterproof-parka", "bomber", "padded-puffer", "workwear", "hi-vis-jacket"]),
+  polos: new Set(["short-sleeve", "long-sleeve", "hi-vis-polo"]),
   shirts: new Set(["short-sleeve", "long-sleeve"]),
-  shorts: new Set(["sports", "cargo-workwear"]),
-  sweatshirts: new Set(["crewneck", "quarter-zip"]),
-  tshirts: new Set(["short-sleeve", "long-sleeve"]),
-  "vests-t-shirt": new Set(["standard", "racerback"])
+  shorts: new Set(["shorts"]),
+  softshells: new Set(["softshell-jacket"]),
+  sweatpants: new Set(["joggers"]),
+  sweatshirts: new Set(["crewneck", "quarter-zip", "hi-vis-sweatshirt"]),
+  trousers: new Set(["work-trousers"]),
+  tshirts: new Set(["short-sleeve", "long-sleeve", "hi-vis-tshirt", "baby-toddler"]),
+  "vests-t-shirt": new Set(["sports-vest"])
 };
 
 function resolveCustomizationVariantKey(name, productType, explicitVariantKey = "") {
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
+  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b/.test(text);
+  const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
+  if (exactTemplate) return exactTemplate[1];
+  if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {
+    return "waist";
+  }
+  if (slug === "dog-hoodies") return "dog-hoodie";
+  if (slug === "dog-t-shirts") return "dog-tshirt";
+  if (slug === "dog-jackets") return "dog-jacket";
+  if (slug === "bibs") return "baby-bib";
+  if (slug === "bodysuits") return "baby-bodysuit";
+  if (slug === "umbrellas") return "umbrella";
+  if (slug === "blankets") return "blanket";
+  if (slug === "towels") return "towel";
+  if (slug === "chef-jackets") return "chef-jacket";
+  if (slug === "tunics") return "tunic-scrub-top";
+  if (slug === "tabards") return "tabard";
+  if (slug === "dungarees") return "bib-brace";
+  if (slug === "coveralls") return "coverall-overall";
+  if (slug === "rugby-shirts") return "rugby-shirt";
+  if (slug === "sports-overtops") return "sports-jersey";
+  if (slug === "laptop-cases") return "laptop-sleeve";
+  if (slug === "blouses") return "blouse";
   const allowed = CUSTOMIZATION_VARIANTS_BY_PRODUCT_TYPE[slug];
   if (!allowed) return "";
   if (allowed.has(explicit)) return explicit;
 
   if (slug === "bags") {
-    if (
-      /back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|waistpack|roll[\s-]?top|drytube|gym[\s-]?sac|draw[\s-]?(?:string|cord)/.test(text)
-      || /\b(?:computer|business|commuter|travel|sonic|pulse|access) pack\b/.test(text)
-    ) return "backpack";
-    if (
-      /holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|boot bag|shoe bag/.test(text)
-      || /cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)
-    ) return "holdall";
-    if (
-      /laptop|document|messenger|briefcase|portfolio|conference|reporter|courier|computer/.test(text)
-      || /tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)
-    ) return "laptop-document";
-    if (
-      /tote|shopper|shopping|bag for life|book bag|gift bag|beach bag/.test(text)
-      || /cotton (?:mesh |stuff |drawcord )?bag|jute (?:mini |petite |stuff )?bag/.test(text)
-      || /canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)
-    ) return "tote";
+    if (/boot bag|shoe bag/.test(text)) return "boot-bag";
+    if (/messenger|shoulder bag|reporter|courier/.test(text)) return "messenger";
+    if (/back[\s-]?pack|ruck[\s-]?sack|sackpack|knapsack|daypack|haversack|roll[\s-]?top|\b(?:commuter|sonic|pulse|access) pack\b/.test(text)) return "backpack";
+    if (/holdall|duffle|duffel|barrel|roll bag|gym bag|sports bag|travel bag|weekend|kit bag|cargo bag|locker bag|haul bag|traveller|airporter|team bag/.test(text)) return "holdall";
+    if (/book bag/.test(text)) return "book-bag";
+    if (/draw[\s-]?(?:string|cord)|gymsac|gym[\s-]?sac|drytube/.test(text)) return "drawstring-gymsac";
+    if (/laptop|document|briefcase|portfolio|conference|computer|tech organiser|business bag|record bag|despatch bag|digital case|tablet case/.test(text)) return "laptop-document";
+    if (/tote|shopper|shopping|bag for life|gift bag|beach bag|cotton (?:mesh |stuff )?bag|jute (?:mini |petite |stuff )?bag|canvas (?:deck |boat )?bag|deck bag|boat bag|carrier bag|grocery bag/.test(text)) return "tote";
     return "";
   }
 
-  if (slug === "aprons") return /\bwaist(?:er)?\b|waist apron|server apron/.test(text) ? "waist" : "bib";
+  if (slug === "aprons") return "bib";
+  if (slug === "caps") return /trucker/.test(text) ? "trucker" : "baseball";
   if (slug === "beanies") return /bobble|pom[\s-]?pom|pom beanie/.test(text) ? "bobble" : "cuffed";
   if (slug === "fleece") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "full-zip";
-  if (slug === "gilets-body-warmers") return /\bfleece\b|microfleece/.test(text) ? "fleece" : "padded";
-  if (slug === "hats") return /wide[\s-]?brim|sun hat|safari|bush hat|legionnaire/.test(text) ? "wide-brim" : "bucket";
-  if (slug === "safety-vests") {
-    return /\bjacket\b|bomber|\bcoat\b|parka|long[\s-]?sleeve/.test(text)
-      ? "jacket-bomber"
-      : "waistcoat";
+  if (slug === "gilets-body-warmers") {
+    if (hiVis) return "hi-vis-bodywarmer";
+    return /padded|puffer|quilted|insulated/.test(text) ? "padded" : "standard";
   }
-  if (slug === "hoodies") return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  if (slug === "hats") return "bucket";
+  if (slug === "safety-vests") return "waistcoat";
+  if (slug === "hoodies") {
+    if (hiVis) return "hi-vis-hoodie";
+    return /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? "full-zip" : "pullover";
+  }
   if (slug === "jackets") {
+    if (hiVis) return "hi-vis-jacket";
     if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return "padded-puffer";
     if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return "waterproof-parka";
-    return "lightweight";
+    if (/bomber/.test(text)) return "bomber";
+    return "workwear";
   }
-  if (slug === "polos" || slug === "shirts" || slug === "tshirts") {
+  if (slug === "polos") {
+    if (hiVis) return "hi-vis-polo";
     return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
   }
-  if (slug === "shorts") return /cargo|workwear|work short|combat|utility/.test(text) ? "cargo-workwear" : "sports";
-  if (slug === "sweatshirts") return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
-  if (slug === "vests-t-shirt") return /racer[\s-]?back|sports vest|athletic vest/.test(text) ? "racerback" : "standard";
+  if (slug === "shirts") return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  if (slug === "shorts") return "shorts";
+  if (slug === "softshells") return "softshell-jacket";
+  if (slug === "sweatpants") return "joggers";
+  if (slug === "sweatshirts") {
+    if (hiVis) return "hi-vis-sweatshirt";
+    return /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? "quarter-zip" : "crewneck";
+  }
+  if (slug === "trousers") return "work-trousers";
+  if (slug === "tshirts") {
+    if (/baby|toddler|infant/.test(text)) return "baby-toddler";
+    if (hiVis) return "hi-vis-tshirt";
+    return /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? "long-sleeve" : "short-sleeve";
+  }
+  if (slug === "vests-t-shirt") return "sports-vest";
   return "";
 }
 
@@ -2303,10 +2433,45 @@ function getConfiguredPositionMap() {
   return map;
 }
 
-function resolveConfiguredGarmentImage(area) {
+function isConfiguredTemplateImageUrl(imageUrl) {
+  const target = String(imageUrl || "").trim();
+  if (!target) return false;
+  return Object.values(getConfiguredPositionMap()).some(configuredUrl =>
+    target === configuredUrl || target.startsWith(configuredUrl)
+  );
+}
+
+function configuredPositionArea(position) {
+  const value = `${position?.slug || ""} ${position?.label || ""}`.toLowerCase();
+  if (/back|rear|nape|neck/.test(value)) return "back";
+  if (/left.*(?:sleeve|cuff|side)/.test(value)) return "left";
+  if (/right.*(?:sleeve|cuff|side)/.test(value)) return "right";
+  return "front";
+}
+
+function resolveConfiguredGarmentImage(area, positionSlug = "") {
   const images = getConfiguredPositionMap();
   const normalizedArea = normalizeProductTypeSlug(area) || "front";
+  const normalizedPosition = normalizeProductTypeSlug(positionSlug);
+  if (normalizedPosition && images[normalizedPosition]) return images[normalizedPosition];
+  const selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+  if (selectedPosition && images[selectedPosition]) {
+    const selectedConfig = state.customizationConfig?.positions?.find(
+      position => normalizeProductTypeSlug(position?.slug) === selectedPosition
+    );
+    if (!selectedConfig || configuredPositionArea(selectedConfig) === normalizedArea) {
+      return images[selectedPosition];
+    }
+  }
   if (images[normalizedArea]) return images[normalizedArea];
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+    : [];
+  const areaMatch = positions.find(position =>
+    configuredPositionArea(position) === normalizedArea
+    && String(position?.imageUrl || position?.image_url || "").trim()
+  );
+  if (areaMatch) return String(areaMatch.imageUrl || areaMatch.image_url).trim();
   if (normalizedArea === "left") return images.left || images.sleeve || images.side || "";
   if (normalizedArea === "right") return images.right || images.sleeve || images.side || images.left || "";
   if (normalizedArea === "left-sleeve" || normalizedArea === "right-sleeve") {
@@ -2315,15 +2480,13 @@ function resolveConfiguredGarmentImage(area) {
   return "";
 }
 
-function getConfiguredViewAreas() {
-  const images = getConfiguredPositionMap();
-  if (Object.keys(images).length === 0) return null;
-  return {
-    front: Boolean(images.front),
-    back: Boolean(images.back),
-    left: Boolean(images.left || images.sleeve || images.side),
-    right: Boolean(images.right || images.sleeve || images.side || images.left)
-  };
+function getConfiguredViewPositions() {
+  return Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions.filter((position) => (
+      normalizeProductTypeSlug(position?.slug)
+      && String(position?.imageUrl || position?.image_url || "").trim()
+    ))
+    : [];
 }
 
 function buildCustomizationConfigKey(productTypeSlug, variantKey = "") {
@@ -2444,10 +2607,10 @@ function inferProductTypeFromCatalog(name, productType) {
 
 function restoreDefaultViewTabThumbs() {
   const thumbMap = {
-    front: resolveConfiguredGarmentImage("front") || tshirtImages.front,
-    back: resolveConfiguredGarmentImage("back") || tshirtImages.back,
-    left: resolveConfiguredGarmentImage("left") || tshirtImages.left,
-    right: resolveConfiguredGarmentImage("right") || tshirtImages.right
+    front: tshirtImages.front,
+    back: tshirtImages.back,
+    left: tshirtImages.left,
+    right: tshirtImages.right
   };
   Object.entries(thumbMap).forEach(([area, src]) => {
     const thumb = document.querySelector(`.view-tab[data-area="${area}"] .view-thumb`);
@@ -2455,9 +2618,98 @@ function restoreDefaultViewTabThumbs() {
   });
 }
 
+function createViewTab({ area, position = "", label, imageUrl, active = false }) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `view-tab${active ? " active-view" : ""}`;
+  button.dataset.area = area;
+  if (position) button.dataset.position = position;
+
+  const image = document.createElement("img");
+  image.className = "view-thumb";
+  image.src = imageUrl;
+  image.alt = label;
+
+  const text = document.createElement("span");
+  text.className = "view-thumb-label";
+  text.textContent = label;
+
+  button.append(image, text);
+  return button;
+}
+
+function renderLegacyViewTabs(isBeanie) {
+  const container = document.querySelector(".view-tabs-side");
+  if (!container) return;
+  const renderKey = `legacy:${isBeanie ? "beanie" : state.product}`;
+  if (container.dataset.renderKey !== renderKey) {
+    const images = {
+      front: isBeanie ? beanieFrontImage : tshirtImages.front,
+      back: tshirtImages.back,
+      left: tshirtImages.left,
+      right: tshirtImages.right
+    };
+    container.replaceChildren(...Object.entries(images).map(([area, imageUrl]) => (
+      createViewTab({
+        area,
+        label: area.charAt(0).toUpperCase() + area.slice(1),
+        imageUrl,
+        active: area === state.selectedArea
+      })
+    )));
+    container.dataset.renderKey = renderKey;
+  }
+
+  state.selectedPosition = "";
+  container.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
+    tab.hidden = isBeanie && tab.dataset.area !== "front";
+    tab.classList.toggle("active-view", tab.dataset.area === state.selectedArea);
+  });
+}
+
+function renderConfiguredViewTabs(positions) {
+  const container = document.querySelector(".view-tabs-side");
+  if (!container || positions.length === 0) return false;
+
+  const positionSlugs = positions.map((position) => normalizeProductTypeSlug(position.slug));
+  let selectedPosition = normalizeProductTypeSlug(state.selectedPosition);
+  if (!positionSlugs.includes(selectedPosition)) {
+    const matchingArea = positions.find(
+      (position) => configuredPositionArea(position) === state.selectedArea
+    );
+    selectedPosition = normalizeProductTypeSlug((matchingArea || positions[0]).slug);
+  }
+
+  const renderKey = `configured:${state.customizationConfigKey}:${positionSlugs.join("|")}`;
+  if (container.dataset.renderKey !== renderKey) {
+    container.replaceChildren(...positions.map((position) => {
+      const slug = normalizeProductTypeSlug(position.slug);
+      return createViewTab({
+        area: configuredPositionArea(position),
+        position: slug,
+        label: String(position.label || position.name || slug).trim(),
+        imageUrl: String(position.imageUrl || position.image_url).trim(),
+        active: slug === selectedPosition
+      });
+    }));
+    container.dataset.renderKey = renderKey;
+  }
+
+  const selectedConfig = positions.find(
+    (position) => normalizeProductTypeSlug(position.slug) === selectedPosition
+  ) || positions[0];
+  state.selectedPosition = normalizeProductTypeSlug(selectedConfig.slug);
+  state.selectedArea = configuredPositionArea(selectedConfig);
+  container.querySelectorAll(".view-tab").forEach((tab) => {
+    tab.hidden = false;
+    tab.classList.toggle("active-view", tab.dataset.position === state.selectedPosition);
+  });
+  return true;
+}
+
 function configureViewTabsForProduct() {
   const isBeanie = state.product === "beanie";
-  const configuredAreas = getConfiguredViewAreas();
+  const configuredPositions = getConfiguredViewPositions();
   const appRoot = document.querySelector(".customiser-app");
   if (appRoot) {
     appRoot.classList.toggle("product-beanie", isBeanie);
@@ -2467,33 +2719,20 @@ function configureViewTabsForProduct() {
     productPreview.classList.toggle("product-beanie", isBeanie);
   }
 
-  document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
-    const area = tab.dataset.area;
-    tab.hidden = configuredAreas
-      ? !configuredAreas[area]
-      : (isBeanie && area !== "front");
-  });
-
-  const frontTab = document.querySelector('.view-tab[data-area="front"]');
-  if (frontTab) frontTab.hidden = false;
-
-  if (configuredAreas) {
-    restoreDefaultViewTabThumbs();
-    if (!configuredAreas[state.selectedArea]) {
-      state.selectedArea = configuredAreas.front
-        ? "front"
-        : Object.keys(configuredAreas).find(area => configuredAreas[area]) || "front";
-      document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
-      document.querySelector(`.view-tab[data-area="${state.selectedArea}"]`)?.classList.add("active-view");
-    }
-  } else if (isBeanie) {
-    const frontThumb = frontTab?.querySelector(".view-thumb");
-    if (frontThumb) frontThumb.src = beanieFrontImage;
-    state.selectedArea = "front";
-    document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
-    frontTab?.classList.add("active-view");
+  if (renderConfiguredViewTabs(configuredPositions)) {
+    syncViewThumbTint();
   } else {
-    restoreDefaultViewTabThumbs();
+    renderLegacyViewTabs(isBeanie);
+    const frontTab = document.querySelector('.view-tab[data-area="front"]');
+    if (isBeanie) {
+      const frontThumb = frontTab?.querySelector(".view-thumb");
+      if (frontThumb) frontThumb.src = beanieFrontImage;
+      state.selectedArea = "front";
+      document.querySelectorAll(".view-tab").forEach((btn) => btn.classList.remove("active-view"));
+      frontTab?.classList.add("active-view");
+    } else {
+      restoreDefaultViewTabThumbs();
+    }
   }
 
   configureDesignTypesForProduct(isBeanie);
@@ -2559,7 +2798,6 @@ async function applyArea() {
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
   document.querySelector(".customiser-app")?.classList.toggle("product-beanie", state.product === "beanie");
   productPreview.classList.toggle("product-beanie", state.product === "beanie");
-  productPreview.classList.toggle("mirror-right", state.selectedArea === "right" && state.product !== "beanie");
 
   const isTshirtFront = state.product === "tshirt" && state.selectedArea === "front";
   if (isTshirtFront) {
@@ -2580,7 +2818,12 @@ async function applyArea() {
   if (requestId !== areaRenderRequestId) return;
 
   productShapeEl.src = neutralPngSrc;
-  colourLayerEl.style.opacity = "1";
+  const useConfiguredTemplateDirectly = isConfiguredTemplateImageUrl(neutralPngSrc);
+  const shouldMirrorRight = state.selectedArea === "right"
+    && state.product !== "beanie"
+    && !useConfiguredTemplateDirectly;
+  productPreview.classList.toggle("mirror-right", shouldMirrorRight);
+  colourLayerEl.style.opacity = useConfiguredTemplateDirectly ? "0" : "1";
   const areaTintHex = (() => {
     const thumb = state.selectedColorImage || getColourImageForName(state.colourName);
     const BCH = brandedColour();
@@ -2589,17 +2832,22 @@ async function applyArea() {
     if (state.colourHex && !isPlaceholderSwatchHex(state.colourHex)) return state.colourHex;
     return isWhiteColourName(state.colourName) ? "#ffffff" : "#ffffff";
   })();
-  colourLayerEl.style.backgroundColor = areaTintHex;
+  if (useConfiguredTemplateDirectly) {
+    colourLayerEl.style.webkitMaskImage = "none";
+    colourLayerEl.style.maskImage = "none";
+  } else {
+    colourLayerEl.style.backgroundColor = areaTintHex;
 
-  // Maschera tint sul PNG neutro, non sulla foto catalogo.
-  colourLayerEl.style.webkitMaskImage = `url("${neutralPngSrc}")`;
-  colourLayerEl.style.maskImage = `url("${neutralPngSrc}")`;
-  colourLayerEl.style.webkitMaskSize = "contain";
-  colourLayerEl.style.maskSize = "contain";
-  colourLayerEl.style.webkitMaskRepeat = "no-repeat";
-  colourLayerEl.style.maskRepeat = "no-repeat";
-  colourLayerEl.style.webkitMaskPosition = "center center";
-  colourLayerEl.style.maskPosition = "center center";
+    // Maschera tint sul PNG neutro, non sulla foto catalogo.
+    colourLayerEl.style.webkitMaskImage = `url("${neutralPngSrc}")`;
+    colourLayerEl.style.maskImage = `url("${neutralPngSrc}")`;
+    colourLayerEl.style.webkitMaskSize = "contain";
+    colourLayerEl.style.maskSize = "contain";
+    colourLayerEl.style.webkitMaskRepeat = "no-repeat";
+    colourLayerEl.style.maskRepeat = "no-repeat";
+    colourLayerEl.style.webkitMaskPosition = "center center";
+    colourLayerEl.style.maskPosition = "center center";
+  }
   syncViewThumbTint();
 
   // Size T-shirt views via layout width so the canvas collapses to the visible garment height.
@@ -2611,7 +2859,7 @@ async function applyArea() {
   if (state.product === "tshirt") wrapWidth = tshirtWidth;
   else if (state.product === "beanie") wrapWidth = beanieWidth;
   wrapEl.style.setProperty("--wrap-width", wrapWidth);
-  wrapEl.style.setProperty("--wrap-mirror", state.selectedArea === "right" && state.product !== "beanie" ? "-1" : "1");
+  wrapEl.style.setProperty("--wrap-mirror", shouldMirrorRight ? "-1" : "1");
 
   requestAnimationFrame(() => {
     if (requestId !== areaRenderRequestId) return;
@@ -2620,8 +2868,9 @@ async function applyArea() {
 
   // Only re-centre when the print AREA actually changed. A colour change keeps
   // the logo exactly where the user left it.
-  const areaChanged = lastCenteredArea !== state.selectedArea;
-  lastCenteredArea = state.selectedArea;
+  const currentViewKey = getDesignAreaKey();
+  const areaChanged = lastCenteredArea !== currentViewKey;
+  lastCenteredArea = currentViewKey;
   if (areaChanged) {
     const shouldCenterLogo = Boolean(state.uploadedLogo);
     const shouldCenterText = Boolean(state.text);
@@ -3057,7 +3306,7 @@ function buildDesignPreviewFromState() {
   return {
     type: "garment-logo-preview",
     version: 1,
-    area: state.selectedArea || "front",
+    area: getDesignAreaKey(),
     garmentImage: garmentSource,
     garmentBox: cleanPctBox(garmentBox),
     logoImage: logoSource,
@@ -4037,6 +4286,8 @@ function normalizeAreaForPicker(area) {
 }
 
 function areaLabelForPicker(area) {
+  const position = getConfiguredPosition(area);
+  if (position) return String(position.label || position.name || position.slug).trim();
   const normalized = normalizeAreaForPicker(area);
   if (normalized === "front") return "Front";
   if (normalized === "back") return "Back";
@@ -4048,15 +4299,15 @@ function areaLabelForPicker(area) {
 
 function getPickerAreas() {
   // Beanies are front-only — never offer Back/Left/Right.
-  if (state.product === "beanie") return ["front"];
   const areas = [];
   document.querySelectorAll(".view-tab[data-area]").forEach((btn) => {
     if (btn.hidden) return;
-    const normalized = normalizeAreaForPicker(btn.dataset.area);
-    if (normalized && !areas.includes(normalized)) {
-      areas.push(normalized);
+    const key = getDesignAreaKey(btn.dataset.position || btn.dataset.area);
+    if (key && !areas.includes(key)) {
+      areas.push(key);
     }
   });
+  if (state.product === "beanie" && areas.length === 0) return ["front"];
   if (areas.length === 0) return ["front", "back", "left", "right"];
   return areas;
 }
@@ -4078,7 +4329,7 @@ function getUsedLogoAreasForCurrentProduct() {
 
     const logos = Array.isArray(item?.logos) ? item.logos : [];
     logos.forEach((logo) => {
-      const area = normalizeAreaForPicker(logo?.position || logo?.area);
+      const area = getDesignAreaKey(logo?.position || logo?.area);
       if (area) used.add(area);
     });
   });
@@ -4087,6 +4338,10 @@ function getUsedLogoAreasForCurrentProduct() {
 }
 
 function setSelectedAreaFromPicker(area) {
+  const position = getConfiguredPosition(area);
+  if (position) {
+    return switchToDesignArea(configuredPositionArea(position), { position: position.slug });
+  }
   const normalized = normalizeAreaForPicker(area) || "front";
   return switchToDesignArea(normalized);
 }
@@ -5840,8 +6095,8 @@ const hydratePromise = withTimeout(hydrateSelectedProductFromApi(), 15000);
 Promise.allSettled([initialAreaPromise, customizationConfigPromise, hydratePromise])
   .then(() => withTimeout(preloadCurrentColourSet(), 800))
   .then(() => Promise.all([
-    restoreAreaDesign(state.selectedArea),
-    restoreAreaTextDesign(state.selectedArea)
+    restoreAreaDesign(),
+    restoreAreaTextDesign()
   ]))
   .finally(() => {
     updatePositionDesignUi();
@@ -5913,10 +6168,10 @@ renderMiniColours();
 // View tabs (Front / Back / Left / Right)
 const viewNameLabel = document.getElementById("viewNameLabel");
 
-document.querySelectorAll(".view-tab").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    await switchToDesignArea(btn.dataset.area);
-  });
+document.querySelector(".view-tabs-side")?.addEventListener("click", async (event) => {
+  const button = event.target.closest(".view-tab");
+  if (!button) return;
+  await switchToDesignArea(button.dataset.area, { position: button.dataset.position || "" });
 });
 
 function syncProductSpecificTabs() {

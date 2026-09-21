@@ -27,15 +27,15 @@ body.popup-open {
 }
 
 #orderPopup .order_wrapper {
-    width: min(1540px, 100%);
+    width: min(1400px, calc(100vw - 48px));
     max-width: none;
     padding: 0;
 }
 
 #orderPopup .order_card {
     width: 100%;
-    height: calc(100vh - 24px);
-    max-height: calc(100vh - 24px);
+    height: min(820px, calc(100dvh - 24px));
+    max-height: calc(100dvh - 24px);
     min-height: 0;
     padding: 0;
     display: flex;
@@ -394,7 +394,9 @@ body.popup-open {
     display: flex;
     flex-direction: column;
     padding: 20px 24px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 #orderPopup .p1-header {
@@ -2184,11 +2186,14 @@ body.popup-open {
 #orderPopup .page-3 .p3-page-wrapper {
     display: grid !important;
     grid-template-columns: minmax(290px, .74fr) minmax(0, 1.26fr) !important;
-    grid-template-rows: auto auto auto !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
     column-gap: 16px !important;
     row-gap: 10px !important;
-    align-items: start !important;
+    align-items: stretch !important;
     padding: 18px 20px 12px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
 }
 
 #orderPopup .page-3 .p3-back-colour {
@@ -2200,21 +2205,23 @@ body.popup-open {
 #orderPopup .page-3 .p3-product-preview {
     grid-column: 1 !important;
     grid-row: 2 !important;
-    min-height: 420px !important;
-    align-self: start !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    align-self: stretch !important;
 }
 
 #orderPopup .page-3 .sizes-section-p3 {
     grid-column: 2 !important;
     grid-row: 1 / span 2 !important;
-    align-self: start !important;
+    height: 100% !important;
+    align-self: stretch !important;
     margin: 0 !important;
 }
 
 #orderPopup .page-3 .p3-bottom-bar {
     grid-column: 1 / -1 !important;
     grid-row: 3 !important;
-    align-self: start !important;
+    align-self: end !important;
 }
 
 #orderPopup .page-3 .size-price-p3 {
@@ -2222,13 +2229,12 @@ body.popup-open {
 }
 
 #orderPopup .page-3 .p3-action-row {
-    grid-column: 2;
-    grid-row: 4;
     display: grid;
     grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
     gap: 12px;
-    justify-self: stretch;
-    width: 100%;
+    flex: 0 0 42%;
+    width: 42%;
+    max-width: 42%;
 }
 
 #orderPopup .page-3 .p3-action-row button {
@@ -2318,4 +2324,202 @@ body.popup-open {
     background: var(--pc-flow-brand);
     color: #fff;
     box-shadow: 0 5px 12px rgba(39, 52, 105, .2);
+}
+
+@media (max-height: 900px) and (min-width: 769px) {
+    #orderPopup .order_card {
+        height: calc(100dvh - 24px);
+    }
+
+    #orderPopup .pc-product-flow-header {
+        min-height: 68px;
+        padding-top: 9px;
+        padding-bottom: 9px;
+    }
+
+    #orderPopup .pc-product-flow-logo {
+        width: 120px;
+        height: 32px;
+    }
+
+    #orderPopup .pc-flow-page-nav {
+        min-height: 46px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    #orderPopup .product-shop-layout {
+        padding: 12px 16px 14px;
+        gap: 16px;
+    }
+
+    #orderPopup .product-gallery {
+        padding: 12px;
+    }
+
+    #orderPopup .product-main-image {
+        padding: 10px;
+    }
+
+    #orderPopup .product-shop-info {
+        padding: 13px 18px;
+    }
+
+    #orderPopup .p1-header {
+        min-height: 58px;
+        margin-bottom: 6px;
+    }
+
+    #orderPopup .p1-name {
+        font-size: clamp(19px, 1.35vw, 24px);
+    }
+
+    #orderPopup .p1-price-brand-row {
+        min-height: 42px;
+        padding: 4px 0;
+    }
+
+    #orderPopup .p1-action-row {
+        margin: 7px 0;
+    }
+
+    #orderPopup .pc-price-breaks-heading {
+        margin-top: 7px;
+    }
+
+    #orderPopup .pc-price-tier {
+        min-height: 64px;
+        padding: 4px 3px;
+    }
+
+    #orderPopup .p1-spec-row {
+        padding: 4px 0;
+    }
+
+    #orderPopup .pc-product-assurance {
+        display: none;
+    }
+
+    #orderPopup .page-3 .p3-page-wrapper {
+        padding: 10px 16px 12px !important;
+        row-gap: 8px !important;
+    }
+
+    #orderPopup .page-3 .p3-back-colour {
+        min-height: 32px;
+        padding: 4px 8px;
+    }
+
+    #orderPopup .page-3 .p3-preview-header {
+        min-height: 46px;
+        padding: 9px 12px 0;
+    }
+
+    #orderPopup .page-3 .selected-colour-bar {
+        min-height: 42px;
+        margin: 0 8px 8px;
+        padding: 6px 10px;
+    }
+
+    #orderPopup .page-3 .selected-colour-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    #orderPopup .page-3 .sizes-section-p3 {
+        padding: 12px 14px 10px;
+        gap: 8px;
+    }
+
+    #orderPopup .page-3 .sizes-meta,
+    #orderPopup .page-3 .discount-tiers {
+        margin-bottom: 8px;
+    }
+
+    #orderPopup .page-3 .discount-tier-card {
+        min-height: 62px;
+        padding: 5px 4px;
+    }
+
+    #orderPopup .page-3 .size-qty-box-p3,
+    #orderPopup .page-3 .size-quantity__row {
+        min-height: 58px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+
+    #orderPopup .page-3 .p3-bottom-bar {
+        min-height: 52px;
+        padding: 7px 12px;
+    }
+
+    #orderPopup .page-3 .p3-action-row button {
+        min-height: 38px;
+    }
+}
+
+@media (max-width: 1250px) and (min-width: 769px) {
+    #orderPopup .order_wrapper {
+        width: calc(100vw - 32px);
+    }
+
+    #orderPopup .pc-product-flow-header {
+        grid-template-columns: 170px minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    #orderPopup .pc-product-flow-help {
+        display: none;
+    }
+
+    #orderPopup .product-shop-layout {
+        grid-template-columns: minmax(300px, .82fr) minmax(430px, 1.18fr);
+    }
+}
+
+/* Basket icon in the popup flow header, visible on every page. */
+#orderPopup .pc-product-flow-help .pc-flow-basket {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    border: 1.5px solid #d4dae6;
+    border-radius: 10px;
+    background: #fff;
+    color: #273469;
+}
+
+#orderPopup .pc-product-flow-help .pc-flow-basket:hover {
+    border-color: #273469;
+    background: #f6f8fc;
+}
+
+#orderPopup .pc-flow-basket-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #7c3aed;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 18px;
+    text-align: center;
+}
+
+/* Volume discount always sits at the bottom of the quantity panel, filling
+   the empty space below short size lists (One Size items like beanies and
+   aprons) instead of hugging the size grid. */
+#orderPopup .page-3 .discount-tiers {
+    margin-top: auto;
+}
+
+#orderPopup .page-3 .sizes-hint {
+    margin-top: 8px;
 }

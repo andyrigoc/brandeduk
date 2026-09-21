@@ -15,6 +15,19 @@
         return String(value || '').trim();
     }
 
+    function getCachedProduct(code) {
+        var memoryProduct = window.BrandedPcProductCache && window.BrandedPcProductCache[code];
+        if (memoryProduct) return memoryProduct;
+
+        try {
+            var stored = JSON.parse(sessionStorage.getItem('selectedProductData') || 'null');
+            var storedCode = cleanCode(stored && (stored.code || stored.style_code));
+            return storedCode === code ? stored : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
     function codeFromProductLink(anchor) {
         if (!anchor) return '';
 
@@ -70,7 +83,7 @@
             setProductInUrl(code, settings.replaceHistory ? 'replace' : 'push');
         }
 
-        baseOpen(code, productData || null);
+        baseOpen(code, productData || getCachedProduct(code));
     };
 
     window.closeOrderPopup = function () {
@@ -103,7 +116,7 @@
         var isOpen = popup && window.getComputedStyle(popup).display !== 'none';
 
         if (code) {
-            baseOpen(code, null);
+            baseOpen(code, getCachedProduct(code));
         } else if (isOpen) {
             baseClose();
         }
@@ -114,7 +127,7 @@
         var code = cleanCode(url.searchParams.get('product'));
         if (!code) return;
 
-        window.openPcProductDetails(code, null, {
+        window.openPcProductDetails(code, getCachedProduct(code), {
             updateUrl: false,
             replaceHistory: true
         });

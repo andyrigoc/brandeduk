@@ -64,12 +64,12 @@
             document.body.appendChild(preloadFrame);
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('customization-tool', window.location.href);
         target.searchParams.set('code', code);
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order-preload');
-        target.searchParams.set('_cb', 'pc-preload');
+        target.searchParams.set('_cb', '20260921-method-matrix');
         var preloadType = product.productType || product.category || product.type || product.name || '';
         if (preloadType) target.searchParams.set('productType', preloadType);
         if (colour) target.searchParams.set('color', colour);
@@ -105,15 +105,24 @@
                 var documentReady = frameDocument
                     && frameDocument.body
                     && (frameDocument.readyState === 'interactive' || frameDocument.readyState === 'complete');
+                var currentUrl = new URL(frameLocation);
+                var expectedUrl = new URL(pendingFrameUrl);
+                var normalizePath = function(pathname) {
+                    return pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
+                };
+                var correctDocument = currentUrl.origin === expectedUrl.origin
+                    && normalizePath(currentUrl.pathname) === normalizePath(expectedUrl.pathname)
+                    && currentUrl.search === expectedUrl.search
+                    && frameDocument.getElementById('customizerLoadingOverlay');
 
-                if (documentReady && frameLocation === pendingFrameUrl) {
+                if (documentReady && correctDocument) {
                     showCustomizerFrame();
                 }
             } catch (error) {
                 // Same-origin is expected here. Keep the native load listener
                 // as the fallback if the hosting arrangement ever differs.
             }
-        }, 100);
+        }, 50);
     }
 
     function closeCustomizer(saved) {
@@ -233,12 +242,12 @@
             summary.textContent = parts.join('  |  ') || 'Your order selections are preserved';
         }
 
-        var target = new URL('customization-tool/index.html', window.location.href);
+        var target = new URL('customization-tool', window.location.href);
         target.searchParams.set('code', item.productCode || item.code || '');
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order');
-        target.searchParams.set('_cb', 'pc-preload');
+        target.searchParams.set('_cb', '20260921-method-matrix');
         target.searchParams.set('color', colour);
         if (colourImage) target.searchParams.set('colorImage', colourImage);
         if (colourHex) target.searchParams.set('colorHex', colourHex);
@@ -276,7 +285,12 @@
 
     window.addEventListener('message', function(event) {
         if (event.origin !== window.location.origin) return;
-        if (!event.data || event.data.type !== 'brandeduk:customization-saved') return;
+        if (!event.data) return;
+        if (event.data.type === 'brandeduk:customizer-back') {
+            closeCustomizer(false);
+            return;
+        }
+        if (event.data.type !== 'brandeduk:customization-saved') return;
         closeCustomizer(true);
         window.location.assign(new URL('basket.html', window.location.href).href);
     });

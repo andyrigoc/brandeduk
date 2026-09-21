@@ -13,6 +13,55 @@
         '<text x="400" y="570" text-anchor="middle" fill="#667085" font-family="Arial,sans-serif" font-size="28">Image coming soon</text>' +
         '</svg>'
     );
+    const productDetailRequests = new Map();
+    let activeProductRequest = 0;
+
+    function fetchJson(url) {
+        return fetch(url).then(function (response) {
+            if (!response.ok) throw new Error('Product request failed');
+            return response.json();
+        });
+    }
+
+    function getCatalogueProduct(code) {
+        const cached = window.BrandedPcProductCache && window.BrandedPcProductCache[code];
+        if (cached) return Promise.resolve(cached);
+
+        return fetchJson('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(code) + '&limit=1')
+            .then(function (payload) {
+                const items = Array.isArray(payload && payload.items)
+                    ? payload.items
+                    : (Array.isArray(payload) ? payload : []);
+                const product = items.find(function (item) {
+                    return item && String(item.code || item.style_code || '') === String(code);
+                }) || items[0] || null;
+                if (product) {
+                    window.BrandedPcProductCache = window.BrandedPcProductCache || {};
+                    window.BrandedPcProductCache[code] = product;
+                }
+                return product;
+            });
+    }
+
+    function requestProductData(code, includeCatalogue) {
+        const cacheKey = code + ':' + (includeCatalogue ? 'full' : 'detail');
+        if (productDetailRequests.has(cacheKey)) return productDetailRequests.get(cacheKey);
+
+        const request = Promise.allSettled([
+            fetchJson('https://api.brandeduk.com/api/products/' + encodeURIComponent(code)),
+            includeCatalogue ? getCatalogueProduct(code) : Promise.resolve(null)
+        ]).then(function (results) {
+            return {
+                fullData: results[0].status === 'fulfilled' ? results[0].value : null,
+                catalogueProduct: results[1].status === 'fulfilled' ? results[1].value : null
+            };
+        }).finally(function () {
+            productDetailRequests.delete(cacheKey);
+        });
+
+        productDetailRequests.set(cacheKey, request);
+        return request;
+    }
 
     function getProductImageCandidates(product) {
         const candidates = [];
@@ -82,6 +131,7 @@
     
     // Open popup function
     window.openOrderPopup = function(productCode, productData = null) {
+        const requestId = ++activeProductRequest;
         // Show popup immediately with whatever data we have
         $('#orderPopup').fadeIn(300);
         $('body').css('overflow', 'hidden').addClass('popup-open');
@@ -100,67 +150,40 @@
         // ALWAYS fetch the full single-product endpoint to get description, details.fabric, details.weight etc.
         const code = productCode || (productData && productData.code);
         if (!code) return;
-        
-        fetch('https://api.brandeduk.com/api/products/' + code)
-            .then(res => res.json())
-            .then(fullData => {
-                if (!fullData || !fullData.code) throw new Error('empty');
-                const useProduct = function (catalogueProduct) {
-                    // The detail endpoint can contain a different supplier price
-                    // list, so catalogue pricing always wins when available.
-                    const merged = Object.assign({}, productData || {}, fullData, catalogueProduct || {});
-                    if (String(fullData.description || '').trim()) {
-                        merged.description = fullData.description;
-                    }
-                    const pricingSource = catalogueProduct || productData || fullData;
-                    ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
-                        if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
-                    });
-                    if (Number.isFinite(Number(pricingSource.price)) &&
-                        (!Number.isFinite(Number(pricingSource.basePrice)) ||
-                            Number(pricingSource.basePrice) <= 0)) {
-                        merged.basePrice = pricingSource.price;
-                    }
-                    if (catalogueProduct && Number.isFinite(Number(catalogueProduct.price))) {
-                        merged.basePrice = catalogueProduct.price;
-                    }
-                    window.currentOrderProduct = merged;
-                    loadProductIntoPopup(merged);
-                };
 
-                if (productData) {
-                    useProduct(productData);
-                    return;
-                }
+        return requestProductData(code, !productData).then(function (result) {
+            if (requestId !== activeProductRequest) return;
 
-                // Direct PC URLs have no search result object, so load the same
-                // catalogue endpoint used by the PC search before rendering.
-                fetch('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(code) + '&limit=1')
-                    .then(res => res.json())
-                    .then(payload => {
-                        const items = Array.isArray(payload && payload.items) ? payload.items : [];
-                        const catalogueProduct = items.find(item => item && item.code === code) || items[0];
-                        useProduct(catalogueProduct);
-                    })
-                    .catch(() => useProduct(fullData));
-            })
-            .catch(() => {
-                // Full endpoint failed — try list endpoint as fallback
-                if (!productData) {
-                    fetch('https://api.brandeduk.com/api/products')
-                        .then(res => res.json())
-                        .then(data => {
-                            const product = data.find(p => p.code === code);
-                            if (product) {
-                                window.currentOrderProduct = product;
-                                loadProductIntoPopup(product);
-                            } else {
-                                loadFallbackProduct(code);
-                            }
-                        })
-                        .catch(() => loadFallbackProduct(code));
-                }
+            const fullData = result.fullData;
+            const catalogueProduct = productData || result.catalogueProduct;
+            if (!fullData && !catalogueProduct) {
+                loadFallbackProduct(code);
+                return;
+            }
+
+            const merged = Object.assign({}, productData || {}, fullData || {}, catalogueProduct || {});
+            if (fullData && String(fullData.description || '').trim()) {
+                merged.description = fullData.description;
+            }
+            const pricingSource = catalogueProduct || productData || fullData || merged;
+            ['price', 'basePrice', 'priceBreaks', 'tiers', 'priceTiers'].forEach(function (field) {
+                if (pricingSource[field] !== undefined) merged[field] = pricingSource[field];
             });
+            if (Number.isFinite(Number(pricingSource.price)) &&
+                (!Number.isFinite(Number(pricingSource.basePrice)) || Number(pricingSource.basePrice) <= 0)) {
+                merged.basePrice = pricingSource.price;
+            }
+            if (catalogueProduct && Number.isFinite(Number(catalogueProduct.price))) {
+                merged.basePrice = catalogueProduct.price;
+            }
+
+            window.currentOrderProduct = merged;
+            window.BrandedPcProductCache = window.BrandedPcProductCache || {};
+            window.BrandedPcProductCache[code] = merged;
+            sessionStorage.setItem('selectedProductData', JSON.stringify(merged));
+            loadProductIntoPopup(merged);
+        });
+
     };
     
     // Fallback product data (used only when API is fully unavailable)

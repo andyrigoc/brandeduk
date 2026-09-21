@@ -5916,6 +5916,7 @@ a {
 .mobile-shop-categories {
     padding: 14px 0 12px;
     background: #fff;
+    overflow: hidden;
 }
 
 .mobile-section-heading {
@@ -5939,16 +5940,30 @@ a {
     text-decoration: none;
 }
 
+/* Two identical .mobile-shop-categories-track sets sit side by side inside
+   this strip; translateX(-50%) always shifts exactly one full set, so the
+   loop never shows a seam regardless of how many categories are listed. */
 .mobile-shop-categories-scroll {
     display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 0 14px 4px;
-    scrollbar-width: none;
+    width: max-content;
+    animation: mobileCategoriesMarquee 34s linear infinite;
 }
 
-.mobile-shop-categories-scroll::-webkit-scrollbar {
-    display: none;
+.mobile-shop-categories-scroll:hover,
+.mobile-shop-categories-scroll:active {
+    animation-play-state: paused;
+}
+
+@keyframes mobileCategoriesMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.mobile-shop-categories-track {
+    display: flex;
+    gap: 8px;
+    padding: 0 14px 4px;
+    flex-shrink: 0;
 }
 
 .mobile-shop-categories-scroll a {

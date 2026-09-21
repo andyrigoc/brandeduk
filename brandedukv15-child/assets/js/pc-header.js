@@ -111,7 +111,7 @@
     function loadPcSearch() {
         if (window.BrandedPcSearchInitialized || document.querySelector('script[data-pc-search]')) return;
         var script = document.createElement('script');
-        script.src = new URL('js/pc-search.js?v=20260913c', assetsRoot).href;
+        script.src = new URL('js/pc-search.js?v=20260920-product-cache', assetsRoot).href;
         script.dataset.pcSearch = 'true';
         document.head.appendChild(script);
     }

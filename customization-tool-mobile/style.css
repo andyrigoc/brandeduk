@@ -3181,7 +3181,14 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  scrollbar-width: none;
   z-index: 50;
+}
+
+.view-tabs-side::-webkit-scrollbar {
+  display: none;
 }
 
 .view-tabs-side .view-tab[hidden] {
@@ -3334,11 +3341,11 @@ textarea {
   mask-position: center center;
 }
 
-.view-tabs-side .view-tab[data-area="right"] .view-thumb-colour-layer {
+.view-tabs-side .view-tab[data-area="right"]:not([data-position]) .view-thumb-colour-layer {
   transform: scaleX(-1);
 }
 
-.view-tabs-side .view-tab[data-area="right"] .view-thumb {
+.view-tabs-side .view-tab[data-area="right"]:not([data-position]) .view-thumb {
   transform: scaleX(-1);
 }
 

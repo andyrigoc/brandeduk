@@ -43,7 +43,15 @@ const state = {
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
-const isPcOrderEmbed = customizationRouteParams.get("embedded") === "pc-order";
+// PC layout is universal on desktop: the embedded order popup, explicit
+// customize-pc entries and plain full-page desktop visits all share it.
+const customizationEmbedParam = customizationRouteParams.get("embedded") || "";
+const customizationFromParam = String(customizationRouteParams.get("from") || "").toLowerCase();
+const isPcOrderEmbed = customizationFromParam !== "customize-mobile"
+  && (customizationEmbedParam === "pc-order"
+    || customizationEmbedParam === "pc-order-preload"
+    || customizationFromParam === "customize-pc"
+    || Boolean(window.matchMedia && window.matchMedia("(min-width: 1024px)").matches));
 if (isPcOrderEmbed) {
   document.body.classList.add("is-pc-order-embed");
 }
@@ -247,6 +255,10 @@ function finishCustomizerLoading() {
   if (!customizerLoadingOverlay || customizerLoadingFinished) return;
   customizerLoadingFinished = true;
 
+  if (customizerLoadingWatchdog) {
+    clearTimeout(customizerLoadingWatchdog);
+    customizerLoadingWatchdog = null;
+  }
   if (customizerLoadingTimer) {
     clearInterval(customizerLoadingTimer);
     customizerLoadingTimer = null;
@@ -260,6 +272,12 @@ function finishCustomizerLoading() {
     customizerLoadingOverlay.setAttribute("aria-busy", "false");
   }, 220);
 }
+
+// Safety net: a stalled request, cold cache or runtime error must never trap
+// the customer on the loader — reveal the editor no matter what.
+let customizerLoadingWatchdog = window.setTimeout(finishCustomizerLoading, 9000);
+window.addEventListener("error", finishCustomizerLoading);
+window.addEventListener("unhandledrejection", finishCustomizerLoading);
 
 function withTimeout(promise, timeoutMs) {
   return Promise.race([
@@ -284,17 +302,13 @@ function updateAvailableColoursLabel() {
   sheetColourLabel.textContent = count > 0 ? `Colour (${count})` : "Colour";
 }
 
-/** PNG neutro per area (sidebar / mockup) — mai il thumbnail API. */
+/** Clean garment image for the main preview; position templates stay in cards. */
 function resolveNeutralGarmentPngForArea(area) {
   const normalizedArea = String(area || "front").trim() || "front";
+
   if (isDogOrPetProduct()) {
     const catalogImage = resolveDogOrPetCatalogImage();
     if (catalogImage) return catalogImage;
-  }
-
-  const configuredImage = resolveConfiguredGarmentImage(normalizedArea);
-  if (configuredImage) {
-    return configuredImage;
   }
 
   if (state.product === "beanie") {
@@ -310,7 +324,7 @@ function resolveNeutralGarmentPngForArea(area) {
     `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
   );
   const tabSrc = tabThumb?.getAttribute("src") || tabThumb?.currentSrc || "";
-  if (tabSrc) return tabSrc;
+  if (tabSrc && !isConfiguredTemplateImageUrl(tabSrc)) return tabSrc;
 
   if (state.product === "tshirt" && normalizedArea === "front") {
     return tshirtFrontCustomImage;
@@ -1499,8 +1513,13 @@ async function hydrateSelectedProductFromApi() {
 
 function updateConfirmButtonState() {
   if (!confirmQualityBtn) return;
+  const syncPcNext = () => {
+    const pcNext = document.getElementById("pcEditorNextBtn");
+    if (pcNext) pcNext.disabled = confirmQualityBtn.disabled;
+  };
   if (state.uploadedLogo && !state.copyrightConfirmed) {
     confirmQualityBtn.disabled = true;
+    syncPcNext();
     return;
   }
   const hasConfirmedCurrentLogo = Boolean(state.uploadedLogo && state.copyrightConfirmed);
@@ -1515,6 +1534,7 @@ function updateConfirmButtonState() {
     (design) => Boolean(String(design?.text || "").trim())
   );
   confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasAssignedPositionLogo || hasCurrentText || hasSavedText);
+  syncPcNext();
 }
 
 function getDesignAreaKey(area = state.selectedArea) {
@@ -2915,9 +2935,10 @@ function configureViewTabsForProduct() {
  * show a folding-area height warning. Other products keep all methods enabled.
  */
 function configureDesignTypesForProduct(isBeanie) {
+  const rules = getCategoryMethodRules();
   document.querySelectorAll("#designTypePage [data-design-type]").forEach((card) => {
-    const type = card.dataset.designType;
-    const disabled = isBeanie && type !== "embroidery";
+    const rule = rules[card.dataset.designType] || "yes";
+    const disabled = rule === "no";
     card.classList.toggle("is-disabled", disabled);
     card.setAttribute("aria-disabled", disabled ? "true" : "false");
   });
@@ -2965,6 +2986,21 @@ function preloadCurrentColourSet() {
 async function applyArea() {
   const requestId = ++areaRenderRequestId;
 
+  const expectedConfigKey = buildCustomizationConfigKey(
+    state.customizationProductTypeSlug,
+    state.customizationVariantKey || ""
+  );
+  if (
+    state.customizationProductTypeSlug
+    && (
+      state.customizationConfigKey !== expectedConfigKey
+      || !Array.isArray(state.customizationConfig?.positions)
+    )
+  ) {
+    await loadCustomizationConfigForCurrentProduct();
+    if (requestId !== areaRenderRequestId) return;
+  }
+
   productPreview.className = "product-preview";
   productPreview.classList.add(`area-${state.selectedArea}`);
   document.querySelector(".customiser-app")?.classList.toggle("product-tshirt", state.product === "tshirt");
@@ -2982,7 +3018,10 @@ async function applyArea() {
   }
 
   const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
-  const selectedProductImage = state.selectedColorImage || getColourImageForName(state.colourName);
+  const selectedProductImageCandidate = state.selectedColorImage || getColourImageForName(state.colourName);
+  const selectedProductImage = isConfiguredTemplateImageUrl(selectedProductImageCandidate)
+    ? ""
+    : selectedProductImageCandidate;
   const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
   const productShapeEl = document.getElementById("productShape");
   const colourLayerEl  = document.getElementById("colourLayer");
@@ -2995,17 +3034,22 @@ async function applyArea() {
   await ensureGarmentImageLoaded(garmentPreviewSrc);
   if (requestId !== areaRenderRequestId) return;
 
-  // Prefer the customer's actual selected product image (same source as the QTY
-  // page). Fall back to the neutral/template mockup only when no product image
-  // is available.
   productShapeEl.src = garmentPreviewSrc;
   productShapeEl.alt = `${state.productName || "Product"} - ${state.colourName || "selected colour"}`;
+  if (typeof productShapeEl.decode === "function" && (!productShapeEl.complete || productShapeEl.naturalWidth < 1)) {
+    try {
+      await productShapeEl.decode();
+    } catch (error) {
+      void error;
+    }
+    if (requestId !== areaRenderRequestId) return;
+  }
   // Opaque photos (category fallback mockups like sweatshirts, or configured
   // template images) have no cutout alpha, so using them as a colour-tint mask
   // would paint a solid rectangle over the preview instead of the garment.
   const usesUntintableFallback =
-    neutralPngSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
-    || isConfiguredTemplateImageUrl(neutralPngSrc);
+    garmentPreviewSrc === resolveCategoryFallbackGarmentImage(state.selectedArea)
+    || isConfiguredTemplateImageUrl(garmentPreviewSrc);
   const useCatalogImageDirectly = Boolean(selectedProductImage) || usesUntintableFallback
     || (isDogOrPetProduct() && neutralPngSrc === resolveDogOrPetCatalogImage());
 
@@ -4713,6 +4757,7 @@ function syncPositionCardLogoPreviews() {
     if (!preview || !image) return;
     const logo = state.positionLogoAssignments?.[card.dataset.position]?.logo || "";
     preview.classList.toggle("has-logo", Boolean(logo));
+    card.classList.toggle("has-assigned-logo", Boolean(logo));
     if (removeButton) removeButton.hidden = !logo;
     if (logo) image.src = logo;
     else image.removeAttribute("src");
@@ -4990,6 +5035,165 @@ function positionKeyForLabel(label) {
   return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+// ---------------------------------------------------------------------------
+// Uniform-site decoration matrix — yes | poa | no per technique.
+// Effective rule = worst of (category rule, position rule); the PRINT button
+// aggregates DTF + Screen (best of the two, since either can serve the job).
+const POA_NOTICE_COPY = "POA – This option may be available depending on the garment, artwork and quantity. Please contact us for confirmation.";
+
+const METHOD_RULE_RANK = { yes: 0, poa: 1, no: 2 };
+
+function worstMethodRule(first, second) {
+  return METHOD_RULE_RANK[second] > METHOD_RULE_RANK[first] ? second : first;
+}
+
+function bestMethodRule(first, second) {
+  return METHOD_RULE_RANK[second] < METHOD_RULE_RANK[first] ? second : first;
+}
+
+const CATEGORY_METHOD_RULES = {
+  tshirts: { dtf: "yes", screen: "yes", embroidery: "poa" },
+  polos: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  sweatshirts: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  hoodies: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  shirts: { dtf: "yes", screen: "poa", embroidery: "yes" },
+  fleece: { dtf: "poa", screen: "no", embroidery: "yes" },
+  jackets: { dtf: "poa", screen: "no", embroidery: "yes" },
+  "gilets-body-warmers": { dtf: "poa", screen: "no", embroidery: "yes" },
+  "safety-vests": { dtf: "yes", screen: "yes", embroidery: "poa" },
+  trousers: { dtf: "poa", screen: "no", embroidery: "yes" },
+  shorts: { dtf: "poa", screen: "no", embroidery: "yes" },
+  sweatpants: { dtf: "poa", screen: "no", embroidery: "poa" },
+  aprons: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  bags: { dtf: "yes", screen: "yes", embroidery: "yes" },
+  caps: { dtf: "poa", screen: "no", embroidery: "yes" },
+  hats: { dtf: "poa", screen: "no", embroidery: "yes" },
+  beanies: { dtf: "no", screen: "no", embroidery: "yes" }
+};
+
+// Garment-name refinements from the uniform-site matrix (premium tees,
+// technical fabrics, waterproof shells, knitwear, accessories…).
+const PRODUCT_NAME_METHOD_OVERRIDES = [
+  { pattern: /premium|heavy|ultra|ring ?spun/i, rules: { embroidery: "yes" } },
+  { pattern: /performance|technical|polyester|breathable|active|training/i, rules: { screen: "poa" } },
+  { pattern: /oxford|formal|dress shirt|blouse/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /\bknit|jumper|cardigan/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
+  { pattern: /\bwool\b/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /softshell|windbreaker|wind ?shirt|bomber/i, rules: { dtf: "yes" } },
+  { pattern: /waterproof|padded|puffer|parka|quilted|insulated|down\b/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /laptop|messenger|cooler|tool bag|holdall|kit bag/i, rules: { dtf: "poa", screen: "no" } },
+  { pattern: /umbrella/i, rules: { dtf: "poa", screen: "yes", embroidery: "no" } },
+  { pattern: /towel|blanket|robe|gown/i, rules: { dtf: "poa", screen: "no", embroidery: "yes" } },
+  { pattern: /legging/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
+  { pattern: /baby|bodysuit/i, rules: { embroidery: "no" } },
+  { pattern: /basketball|football shirt|sports vest/i, rules: { embroidery: "poa" } },
+  { pattern: /glove/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /helmet|hard hat/i, rules: { dtf: "poa", screen: "no", embroidery: "no" } },
+  { pattern: /balaclava/i, rules: { dtf: "no", screen: "no", embroidery: "poa" } },
+  { pattern: /\bsocks?\b/i, rules: { dtf: "poa", screen: "no", embroidery: "poa" } }
+];
+
+function getCategoryMethodRules() {
+  const slug = state.customizationProductTypeSlug || "tshirts";
+  const rules = { ...(CATEGORY_METHOD_RULES[slug] || { dtf: "yes", screen: "yes", embroidery: "yes" }) };
+  const name = String(state.productName || "");
+  PRODUCT_NAME_METHOD_OVERRIDES.forEach(({ pattern, rules: overrides }) => {
+    if (pattern.test(name)) Object.assign(rules, overrides);
+  });
+  return rules;
+}
+
+// Position rules: large/lower placements never offer direct embroidery.
+const POSITION_METHOD_RULES = {
+  "large-front": { embroidery: "poa" },
+  "large-front-above-pocket": { embroidery: "poa" },
+  "large-back": { embroidery: "poa" },
+  "lower-front": { embroidery: "poa" },
+  "lower-back": { embroidery: "poa" },
+  "left-leg": { embroidery: "poa" },
+  "right-leg": { embroidery: "poa" }
+};
+
+function getAllowedMethodsForPositionKey(positionKey) {
+  const category = getCategoryMethodRules();
+  const position = POSITION_METHOD_RULES[String(positionKey || "").toLowerCase()] || {};
+  return {
+    embroidery: worstMethodRule(category.embroidery, position.embroidery || "yes"),
+    print: worstMethodRule(bestMethodRule(category.dtf, category.screen), position.print || "yes")
+  };
+}
+
+function showPoaNotice() {
+  document.getElementById("positionMethodChoice")?.remove();
+  const popup = document.createElement("div");
+  popup.id = "positionMethodChoice";
+  popup.className = "position-method-choice";
+  popup.setAttribute("role", "dialog");
+  popup.innerHTML = '<strong>POA – Please contact us</strong>'
+    + `<p class="poa-notice-copy">${POA_NOTICE_COPY.replace("POA – ", "")}</p>`
+    + '<div class="position-method-choice-actions">'
+    + '<a class="position-method-btn method-embroidery" href="tel:02089742722">CALL 0208 974 2722</a>'
+    + '<button type="button" class="position-method-btn poa-notice-close" data-poa-close>CLOSE</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+  popup.style.left = `${Math.max(8, Math.round(window.innerWidth / 2 - 128))}px`;
+  popup.style.top = `${Math.max(8, Math.round(window.innerHeight / 2 - 100))}px`;
+  const dismiss = (event) => {
+    if (popup.contains(event.target)) return;
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  };
+  document.addEventListener("pointerdown", dismiss, true);
+  popup.querySelector("[data-poa-close]")?.addEventListener("click", () => {
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  });
+}
+
+// Only "yes" methods are directly assignable; POA-only positions show the
+// contact notice instead of silently accepting the artwork.
+function chooseMethodForPosition(card, positionKey, onChoose) {
+  const allowed = getAllowedMethodsForPositionKey(positionKey);
+  const options = ["embroidery", "print"].filter((method) => allowed[method] === "yes");
+  if (options.length === 0) {
+    showPoaNotice();
+    return;
+  }
+  if (options.length === 1) {
+    onChoose(options[0]);
+    return;
+  }
+  document.getElementById("positionMethodChoice")?.remove();
+  const rect = card.getBoundingClientRect();
+  const popup = document.createElement("div");
+  popup.id = "positionMethodChoice";
+  popup.className = "position-method-choice";
+  popup.setAttribute("role", "dialog");
+  popup.innerHTML = '<strong>Embroidery or Print?</strong>'
+    + '<div class="position-method-choice-actions">'
+    + '<button type="button" class="position-method-btn method-embroidery" data-choice="embroidery">EMBROIDERY</button>'
+    + '<button type="button" class="position-method-btn method-print" data-choice="print">PRINT</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+  const popupWidth = 216;
+  popup.style.left = `${Math.max(8, Math.min(window.innerWidth - popupWidth - 8, rect.left + rect.width / 2 - popupWidth / 2))}px`;
+  popup.style.top = `${Math.max(8, Math.min(window.innerHeight - 110, rect.top + rect.height / 2 - 48))}px`;
+  const dismiss = (event) => {
+    if (popup.contains(event.target)) return;
+    popup.remove();
+    document.removeEventListener("pointerdown", dismiss, true);
+  };
+  document.addEventListener("pointerdown", dismiss, true);
+  popup.querySelectorAll("[data-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const method = button.dataset.choice;
+      popup.remove();
+      document.removeEventListener("pointerdown", dismiss, true);
+      onChoose(method);
+    });
+  });
+}
+
 function getProductPositionLabels() {
   const configuredPositions = Array.isArray(state.customizationConfig?.positions)
     ? state.customizationConfig.positions
@@ -5023,8 +5227,12 @@ function configurePositionCardsForProduct() {
   const sweatshirtPicker = document.getElementById("sweatshirtPositionPicker");
   if (!grid) return;
   const isSweatshirt = state.customizationProductTypeSlug === "sweatshirts";
-  document.body.classList.toggle("is-sweatshirt-position-picker", isSweatshirt);
-  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositionPicker());
+  const hasConfiguredPositions = hasConfiguredPositionPicker();
+  document.body.classList.toggle(
+    "is-sweatshirt-position-picker",
+    isSweatshirt || hasConfiguredPositions
+  );
+  document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositions);
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
   // Sweatshirts always expose their full canonical position set; the
@@ -5037,6 +5245,7 @@ function configurePositionCardsForProduct() {
   });
 
   grid.innerHTML = "";
+  const showMethodButtons = isPcOrderEmbed && hasConfiguredPositions;
   labels.forEach((label) => {
     const area = positionAreaForLabel(label);
     const key = positionKeyForLabel(label);
@@ -5044,7 +5253,22 @@ function configurePositionCardsForProduct() {
     card.className = "position-card";
     card.dataset.position = key;
     card.dataset.area = area;
-    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span><span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
+    let methodButtons = "";
+    if (showMethodButtons) {
+      const methods = getAllowedMethodsForPositionKey(key);
+      const embroideryButton = methods.embroidery === "yes"
+        ? `<button type="button" class="position-method-btn method-embroidery" data-method="embroidery">EMBROIDERY</button>`
+        : (methods.embroidery === "poa"
+          ? `<button type="button" class="position-method-btn method-poa" data-method="poa-embroidery" title="${POA_NOTICE_COPY}">EMBROIDERY · POA</button>`
+          : "");
+      const printButton = methods.print === "yes"
+        ? `<button type="button" class="position-method-btn method-print" data-method="print">PRINT</button>`
+        : (methods.print === "poa"
+          ? `<button type="button" class="position-method-btn method-poa" data-method="poa-print" title="${POA_NOTICE_COPY}">PRINT · POA</button>`
+          : "");
+      methodButtons = `<span class="position-method-buttons">${embroideryButton}${printButton}</span>`;
+    }
+    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>${methodButtons}<span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
     card.querySelector(".position-name").textContent = label;
     grid.appendChild(card);
   });
@@ -5621,27 +5845,36 @@ function preparePcUploadFile(file) {
   pcPendingUploadFile = file;
   pcUploadModal.hidden = false;
   document.getElementById("pcUploadFileName").textContent = file.name;
-  document.getElementById("pcUploadReady").hidden = false;
+  document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = true;
   document.getElementById("pcUploadSuccess").hidden = true;
+  startPcUpload();
 }
 
 function startPcUpload() {
   if (!pcPendingUploadFile || pcUploadTimer) return;
-  let progress = 0;
   document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = false;
   document.getElementById("pcUploadMessage").textContent = "Just give us a moment to process your file.";
+  const percentLabel = document.getElementById("pcUploadPercent");
+  const fill = document.getElementById("pcUploadFill");
+  // Per-frame updates: the CSS width transition would lag behind and stutter.
+  fill.style.transition = "none";
+  const durationMs = 1600;
+  const startedAt = performance.now();
+  // Elapsed-time interval instead of rAF: keeps progressing (and completes)
+  // even if the tab is backgrounded mid-upload, where rAF freezes entirely.
   pcUploadTimer = setInterval(() => {
-    progress = Math.min(100, progress + 5);
-    document.getElementById("pcUploadPercent").textContent = `${progress}%`;
-    document.getElementById("pcUploadFill").style.width = `${progress}%`;
-    if (progress < 100) return;
+    const linear = Math.min(1, (performance.now() - startedAt) / durationMs);
+    const eased = 1 - Math.pow(1 - linear, 3);
+    percentLabel.textContent = `${Math.round(eased * 100)}%`;
+    fill.style.width = `${(eased * 100).toFixed(2)}%`;
+    if (linear < 1) return;
     clearInterval(pcUploadTimer);
     pcUploadTimer = null;
     document.getElementById("pcUploadProgress").hidden = true;
     document.getElementById("pcUploadSuccess").hidden = false;
-  }, 150);
+  }, 16);
 }
 
 logoFileInput?.addEventListener("change", event => {
@@ -5665,6 +5898,14 @@ document.getElementById("pcUploadReset")?.addEventListener("click", () => {
 
 const inlineLogoDropzone = document.querySelector(".inline-upload-dropzone");
 if (inlineLogoDropzone) {
+  // Right-rail uploads land in the saved-logo library only: clear any stale
+  // position target so the file is never silently assigned to a card.
+  inlineLogoDropzone.addEventListener("click", (event) => {
+    if (event.target === logoFileInput) return;
+    state.pendingPositionLogoTarget = "";
+    state.pendingDecorationType = null;
+  });
+
   ["dragenter", "dragover"].forEach((eventName) => {
     inlineLogoDropzone.addEventListener(eventName, (event) => {
       event.preventDefault();
@@ -5681,7 +5922,10 @@ if (inlineLogoDropzone) {
 
   inlineLogoDropzone.addEventListener("drop", async (event) => {
     const file = event.dataTransfer?.files?.[0];
-    if (file) preparePcUploadFile(file);
+    if (!file) return;
+    state.pendingPositionLogoTarget = "";
+    state.pendingDecorationType = null;
+    preparePcUploadFile(file);
   });
 }
 
@@ -7708,15 +7952,40 @@ if (positionGrid) {
     const position = card.dataset.position;
     if (!activateDroppedPosition(position)) return;
     const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo");
-    if (savedLogo) {
-      assignLogoToPosition(position, savedLogo);
+    const file = event.dataTransfer?.files?.[0];
+    if (!savedLogo && !file) return;
+    chooseMethodForPosition(card, position, async (method) => {
+      if (savedLogo) {
+        state.decorationType = method;
+        assignLogoToPosition(position, savedLogo, method);
+        return;
+      }
+      state.pendingPositionLogoTarget = position;
+      state.pendingDecorationType = method;
+      document.body.dataset.decorationType = normalizeDecorationMethod(method);
+      await processLogoFile(file);
+    });
+  });
+
+  // EMB / PRINT buttons: pick the method, then upload straight into this card.
+  positionGrid.addEventListener("click", (event) => {
+    const methodButton = event.target.closest(".position-method-btn");
+    if (!methodButton) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const card = methodButton.closest(".position-card");
+    const position = card?.dataset.position;
+    if (!position) return;
+    if (String(methodButton.dataset.method).startsWith("poa")) {
+      showPoaNotice();
       return;
     }
-
-    const file = event.dataTransfer?.files?.[0];
-    if (!file) return;
+    if (!activateDroppedPosition(position)) return;
+    state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
     state.pendingPositionLogoTarget = position;
-    await processLogoFile(file);
+    state.pendingDecorationType = methodButton.dataset.method;
+    document.body.dataset.decorationType = normalizeDecorationMethod(methodButton.dataset.method);
+    document.getElementById("logoFileInput")?.click();
   });
 
   positionGrid.addEventListener("click", (event) => {
@@ -7735,8 +8004,12 @@ if (positionGrid) {
         }
         return;
       }
-      state.pendingPositionLogoTarget = position;
-      document.getElementById("logoFileInput")?.click();
+      chooseMethodForPosition(card, position, (method) => {
+        state.pendingPositionLogoTarget = position;
+        state.pendingDecorationType = method;
+        document.body.dataset.decorationType = normalizeDecorationMethod(method);
+        document.getElementById("logoFileInput")?.click();
+      });
       return;
     }
     delete state.positionLogoAssignments[position];
@@ -7896,4 +8169,46 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
     resetLayerRotationToStraight("text");
   }
 });
+
+// PC embed toolbar: the tab bar is replaced by BACK (one step back in the
+// order flow) and NEXT (same action as CONFIRM & UPDATE BASKET). The basket
+// icon stays visible between them.
+(function setupPcEditorToolbar() {
+  if (!isPcOrderEmbed) return;
+  const editorTop = document.querySelector("#mainEditor .editor-top");
+  if (!editorTop || document.getElementById("pcEditorNextBtn")) return;
+  document.body.classList.add("has-pc-editor-toolbar");
+
+  const backBtn = document.createElement("button");
+  backBtn.type = "button";
+  backBtn.id = "pcEditorBackBtn";
+  backBtn.className = "pc-editor-nav-btn pc-editor-back";
+  backBtn.innerHTML = '<span aria-hidden="true">\u2190</span> BACK';
+  backBtn.addEventListener("click", () => {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "brandeduk:customizer-back" }, window.location.origin);
+      return;
+    }
+    if (document.referrer) history.back();
+    else window.location.href = "../shop-pc.html";
+  });
+
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.id = "pcEditorNextBtn";
+  nextBtn.className = "pc-editor-nav-btn pc-editor-next";
+  nextBtn.innerHTML = 'NEXT <span aria-hidden="true">\u2192</span>';
+  nextBtn.disabled = true;
+  nextBtn.addEventListener("click", () => confirmQualityBtn?.click());
+
+  const rightWrap = document.createElement("div");
+  rightWrap.className = "pc-editor-toolbar-right";
+  const basketBtn = document.getElementById("basketBtn");
+  if (basketBtn) rightWrap.appendChild(basketBtn);
+  rightWrap.appendChild(nextBtn);
+
+  editorTop.prepend(backBtn);
+  editorTop.appendChild(rightWrap);
+  updateConfirmButtonState();
+})();
 

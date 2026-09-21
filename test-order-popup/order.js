@@ -253,7 +253,7 @@ window.setProductData = function(data) {
 
 // Populate page 3 with the selected product, prices, sizes and quantities.
 function populatePage3() {
-    var product = window.productData;
+    var product = window.productData || window.currentOrderProduct;
     if (!product) return;
 
     var selectedItem = document.querySelector('.colour-swatch-item.selected');
@@ -389,33 +389,56 @@ function populatePage3() {
     });
 }
 
-$(".next").click(function(){
+$(document).on("click", ".next", function(){
     if(window.current < total - 1){
         window.goToPage(window.current + 1);
     }
 });
 
-$(".back").click(function(){
+$(document).on("click", ".back", function(){
     if(window.current > 0){
         window.goToPage(window.current - 1);
     }
 });
 
+// Returning from bfcache (e.g. browser Back after the customizer redirects to
+// basket.html) can leave the sliding .track mid-animation with no visible
+// Next/Back button. Snap it back to whatever page window.current says is
+// active, with no animation, so navigation always works immediately.
+window.addEventListener("pageshow", function() {
+    if (typeof window.current !== "number") return;
+    var target = -(window.current * 100) + "%";
+    $(".track").stop(true, true).css("left", target);
+});
+
+// Existing basket rows are one-per-size (see basket.html normalizeBasket, the
+// canonical storage shape). Re-adding the same product/colour/size must top
+// up that row's qty instead of creating a duplicate line: e.g. 5 already in
+// the basket + 5 selected here = 10 in that single row. Editing quantity
+// directly on the basket page is unaffected — that still sets the value.
+function findExistingBasketRow(basket, code, colourName, size) {
+    return basket.findIndex(function(entry) {
+        var entryCode = entry.code || entry.productCode || '';
+        var entryColour = entry.color || entry.colour || entry.selectedColorName || '';
+        return entryCode === code && entryColour === colourName && String(entry.size || '') === String(size);
+    });
+}
+
 function savePage3SelectionToBasket() {
     var product = window.productData;
     if (!product) return false;
 
-    var sizes = {};
-    var totalQty = 0;
+    var sizeQuantities = {};
+    var newQty = 0;
     $('#sizeQtyGridP3 .qty-input').each(function() {
         var qty = parseInt($(this).val()) || 0;
         if (qty > 0) {
-            sizes[$(this).data('size')] = qty;
-            totalQty += qty;
+            sizeQuantities[$(this).data('size')] = qty;
+            newQty += qty;
         }
     });
 
-    if (totalQty === 0) {
+    if (newQty === 0) {
         window.showAlert('Please select at least one size/quantity', 'Select Sizes');
         return false;
     }
@@ -423,40 +446,67 @@ function savePage3SelectionToBasket() {
     var selectedItem = document.querySelector('.colour-swatch-item.selected');
     var colourName = selectedItem ? (selectedItem.dataset.name || selectedItem.dataset.colour) : (window.selectedColour || '');
     var colourImg = selectedItem ? selectedItem.dataset.img : '';
-    var priceBreaks = product.priceBreaks || product.tiers || product.priceTiers || [];
-    var unitPrice = parseFloat(product.price || product.basePrice) || 0;
+    var priceBreaks = (product.priceBreaks || product.tiers || product.priceTiers || []).map(function(tier) { return Object.assign({}, tier); });
+    var productCode = product.code || product.sku || '';
+    var basePrice = parseFloat(product.basePrice || product.price) || 0;
+
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
+
+    // Bulk price tier is based on the combined quantity for this product +
+    // colour across every size (existing rows plus this new selection).
+    var existingColourRows = basket.filter(function(entry) {
+        var entryCode = entry.code || entry.productCode || '';
+        var entryColour = entry.color || entry.colour || entry.selectedColorName || '';
+        return entryCode === productCode && entryColour === colourName;
+    });
+    var existingColourQty = existingColourRows.reduce(function(sum, entry) { return sum + (parseInt(entry.qty, 10) || 0); }, 0);
+    var combinedColourQty = existingColourQty + newQty;
+
+    var unitPrice = basePrice;
     priceBreaks.forEach(function(tier) {
         var min = Number(tier.min || tier.minQty || tier.qty || 0);
         var max = Number(tier.max || tier.maxQty || 999999);
         var tierPrice = Number(tier.price || tier.unitPrice);
-        if (totalQty >= min && totalQty <= max && tierPrice > 0) unitPrice = tierPrice;
+        if (combinedColourQty >= min && combinedColourQty <= max && tierPrice > 0) unitPrice = tierPrice;
+    });
+    existingColourRows.forEach(function(entry) { entry.unitPrice = unitPrice; });
+
+    Object.keys(sizeQuantities).forEach(function(size) {
+        var addQty = sizeQuantities[size];
+        var existingIndex = findExistingBasketRow(basket, productCode, colourName, size);
+
+        if (existingIndex !== -1) {
+            basket[existingIndex].qty = (parseInt(basket[existingIndex].qty, 10) || 0) + addQty;
+            basket[existingIndex].unitPrice = unitPrice;
+        } else {
+            basket.push({
+                id: (productCode + '-' + colourName + '-' + size).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                code: productCode,
+                name: product.name || '',
+                brand: product.brand || '',
+                color: colourName,
+                colour: colourName,
+                colorImage: colourImg,
+                colourImg: colourImg,
+                image: colourImg || product.image || '',
+                size: size,
+                qty: addQty,
+                price: parseFloat(product.price) || 0,
+                basePrice: basePrice,
+                unitPrice: unitPrice,
+                priceBreaks: priceBreaks
+            });
+        }
     });
 
-    var item = {
-        id: Date.now(),
-        code: product.code || product.sku || '',
-        name: product.name || '',
-        brand: product.brand || '',
-        colour: colourName,
-        colourImg: colourImg,
-        image: colourImg || product.image || '',
-        price: parseFloat(product.price) || 0,
-        basePrice: parseFloat(product.basePrice || product.price) || 0,
-        unitPrice: unitPrice,
-        priceBreaks: priceBreaks.map(function(tier) { return Object.assign({}, tier); }),
-        sizes: sizes
-    };
-
-    var basket = [];
-    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch(e) {}
-    basket.push(item);
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
     window.dispatchEvent(new Event('basketUpdated'));
 
     return {
-        item: item,
-        sizes: sizes,
-        totalQty: totalQty
+        item: { colour: colourName, code: productCode },
+        sizes: sizeQuantities,
+        totalQty: newQty
     };
 }
 
@@ -642,10 +692,16 @@ $(document).on("click", "#p3BackToColour", function() {
     window.goToPage(1);
 });
 
-$(document).on("click", "#p1BackToCatalog, #p2BackToCatalog", function() {
+$(document).on("click", "#p1BackToCatalog", function() {
     if (typeof window.closeOrderPopup === 'function') {
         window.closeOrderPopup();
     }
+});
+
+// Page 2 has a real previous step (Product overview): go back one page
+// instead of closing the whole popup, matching every other step's Back.
+$(document).on("click", "#p2BackToCatalog", function() {
+    window.goToPage(0);
 });
 
 $(document).on("click", ".pc-step-back:not(#p1BackToCatalog):not(#p2BackToCatalog):not(#p3BackToColour)", function() {

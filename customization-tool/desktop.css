@@ -76,7 +76,7 @@
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker #mainEditor.active-screen {
-    grid-template-columns: minmax(270px, .65fr) minmax(570px, 1.25fr) minmax(340px, .72fr);
+    grid-template-columns: minmax(240px, .65fr) minmax(0, 1.25fr) minmax(300px, .72fr);
     grid-template-areas:
       "header header header"
       "canvas inspector uploader";
@@ -761,7 +761,7 @@
   .pc-upload-modal__progress > div { flex: 1; }
   .pc-upload-modal__progress span { display: block; margin-bottom: 6px; color: #b8bfcd; font-weight: 700; text-align: right; }
   .pc-upload-modal__track { height: 10px; overflow: hidden; border-radius: 4px; background: #343a49; }
-  .pc-upload-modal__track #pcUploadFill { display: block; width: 0; height: 100%; margin: 0; background: #2e68ff; transition: width .12s ease; }
+  .pc-upload-modal__track #pcUploadFill { display: block; width: 0; height: 100%; margin: 0; background: #2e68ff; }
   .pc-upload-modal__progress button { padding: 12px 28px; }
   .pc-upload-modal__success { display: grid; gap: 10px; }
   .pc-upload-modal__success strong { font-size: 16px; color: #61d982; }
@@ -1560,7 +1560,7 @@
     right: 16px;
     bottom: 16px;
     left: auto;
-    width: min(356px, calc(33.333vw - 32px));
+    width: min(356px, calc(27vw - 16px));
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .design-layer,
@@ -2843,4 +2843,188 @@
     height: 40px !important;
     font-size: 12px;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* PC embed: EMB / PRINT buttons on position cards + BACK/NEXT toolbar */
+/* ------------------------------------------------------------------ */
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px 9px 11px;
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 6px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgb(15 23 42 / 20%);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgb(15 23 42 / 25%);
+  filter: brightness(1.05);
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .method-embroidery,
+.position-method-choice .method-embroidery {
+  background: linear-gradient(180deg, #3f83f8, #1d4ed8);
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .method-print,
+.position-method-choice .method-print {
+  background: linear-gradient(180deg, #fcc419, #f59f00);
+  color: #4a3400;
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .method-poa {
+  background: #eef2f7;
+  color: #334155;
+  border: 1px dashed #94a3b8;
+  box-shadow: none;
+}
+
+/* Once a logo is assigned the buttons give way to the logo preview. */
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-card.has-assigned-logo .position-method-buttons {
+  display: none;
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-card:not(.has-assigned-logo) .position-logo-preview-box {
+  display: none;
+}
+
+/* EMB-or-PRINT mini popup shown on drag & drop */
+.position-method-choice {
+  position: fixed;
+  z-index: 4000;
+  width: 216px;
+  padding: 12px;
+  border: 1px solid #dbe2ee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgb(15 23 42 / 25%);
+}
+
+.position-method-choice strong {
+  display: block;
+  margin-bottom: 9px;
+  color: #172554;
+  font-size: 12px;
+  text-align: center;
+}
+
+.position-method-choice .poa-notice-copy {
+  margin: 0 0 10px;
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.position-method-choice a.position-method-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.position-method-choice .poa-notice-close {
+  background: #eef2f7;
+  color: #334155;
+}
+
+.position-method-choice .position-method-choice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.position-method-choice .position-method-btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 6px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  cursor: pointer;
+}
+
+/* Simplified editor toolbar: BACK left, basket + NEXT right. */
+body.is-pc-order-embed.has-pc-editor-toolbar #mainEditor .editor-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+}
+
+body.is-pc-order-embed.has-pc-editor-toolbar #mainEditor .editor-top .top-nav,
+body.is-pc-order-embed.has-pc-editor-toolbar #mainEditor .editor-top .tab-bar {
+  display: none !important;
+}
+
+.pc-editor-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  cursor: pointer;
+}
+
+.pc-editor-back {
+  border: 1.5px solid #d4dae6;
+  background: #fff;
+  color: #273469;
+}
+
+.pc-editor-back:hover {
+  border-color: #273469;
+  background: #f6f8fc;
+}
+
+.pc-editor-next {
+  border: 0;
+  background: #273469;
+  color: #fff;
+}
+
+.pc-editor-next:hover:not(:disabled) {
+  background: #1e2a52;
+}
+
+.pc-editor-next:disabled {
+  background: #aeb6cd;
+  cursor: not-allowed;
+}
+
+.pc-editor-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.pc-editor-toolbar-right .nav-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid #d4dae6;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
 }

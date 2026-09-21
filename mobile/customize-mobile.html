@@ -970,7 +970,7 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="#" class="nav-item" id="chatNavBtn">
+        <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" target="_blank" rel="noopener" class="nav-item" id="chatNavBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
                 <g fill="none" stroke="currentColor" stroke-width="3">
                     <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
@@ -1025,7 +1025,7 @@
     <script src="../brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
     <script src="../brandedukv15-child/assets/js/garment-color-behind-scenes.js?v=20260610h"></script>
     <script src="js/basket-logos.js?v=20260519"></script>
-    <script src="js/customize.js?v=20260919-all-63-subtypes"></script>
+    <script src="js/customize.js?v=20260921-mobile-template-context"></script>
     <script src="js/marker-editor.js?v=20260531a"></script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260629a"></script>
@@ -2130,56 +2130,9 @@
 
 </script>
 
-    <!-- Tawk.to mini-chat iframe overlay -->
+    <!-- Basket badge sync (bottom nav) -->
     <script type="text/javascript">
         (function() {
-            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
-            var isOpen = false;
-
-            var overlay = document.createElement('div');
-            overlay.id = 'tawkOverlay';
-            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
-
-            var chatBox = document.createElement('div');
-            chatBox.id = 'tawkMiniChat';
-            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
-
-            var closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
-            chatBox.appendChild(closeBtn);
-
-            var iframe = document.createElement('iframe');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
-            chatBox.appendChild(iframe);
-
-            document.body.appendChild(overlay);
-            document.body.appendChild(chatBox);
-
-            function openChat() {
-                if (!iframe.src) iframe.src = TAWK_DIRECT;
-                overlay.style.display = 'block';
-                chatBox.style.display = 'block';
-                isOpen = true;
-            }
-            function closeChat() {
-                overlay.style.display = 'none';
-                chatBox.style.display = 'none';
-                isOpen = false;
-            }
-
-            overlay.addEventListener('click', closeChat);
-            closeBtn.addEventListener('click', closeChat);
-
-            var chatNavBtn = document.getElementById('chatNavBtn');
-            if (chatNavBtn) {
-                chatNavBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openChat();
-                });
-            }
-
-            // Update basket badge
             function _refreshBasketBadge() {
                 try {
                     var basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');

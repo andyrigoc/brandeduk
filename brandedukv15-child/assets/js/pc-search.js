@@ -16,6 +16,7 @@
     var requestController = null;
     var debounceTimer = null;
     var activeQuery = '';
+    window.BrandedPcProductCache = window.BrandedPcProductCache || {};
 
     // Exact category searches use productType so autocomplete, shop results,
     // filters and homepage category links all report the same catalogue total.
@@ -191,6 +192,11 @@
             return;
         }
 
+        products.forEach(function (product) {
+            var code = product && (product.code || product.style_code);
+            if (code) window.BrandedPcProductCache[String(code)] = product;
+        });
+
         dropdown.innerHTML =
             '<div class="pc-search-head"><span>Products</span><a href="' + escapeHtml(shopUrl(query)) + '">View all results</a></div>' +
             '<div class="pc-search-grid">' + products.map(productCard).join('') + '</div>' +
@@ -263,6 +269,10 @@
         var product = event.target.closest('.pc-search-product');
         if (product && product.dataset.code) {
             sessionStorage.setItem('selectedProduct', product.dataset.code);
+            var cachedProduct = window.BrandedPcProductCache[product.dataset.code];
+            if (cachedProduct) {
+                sessionStorage.setItem('selectedProductData', JSON.stringify(cachedProduct));
+            }
         }
     });
 
