@@ -4907,15 +4907,6 @@ function getAllowedMethodsForPositionKey(positionKey) {
 }
 
 function openPoaContact() {
-  try {
-    const parentTawk = window.parent !== window && window.parent.Tawk_API;
-    if (parentTawk && typeof parentTawk.maximize === "function") {
-      parentTawk.maximize();
-      return;
-    }
-  } catch (error) {
-    void error;
-  }
   window.location.href = "tel:02089742722";
 }
 

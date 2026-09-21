@@ -994,7 +994,7 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="#" class="nav-item" id="chatNavBtn">
+        <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" target="_blank" rel="noopener" class="nav-item" id="chatNavBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
                 <g fill="none" stroke="currentColor" stroke-width="3">
                     <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
@@ -1164,126 +1164,6 @@
     <script>
         // Basket link now navigates to basket.html directly
     </script>
-    <!-- Mini-chat popup (tawk iframe) -->
-    <script type="text/javascript">
-        (function() {
-            var TAWK_DIRECT = 'https://tawk.to/chat/69628dafb346e51985794182/1jekfitse';
-            var isOpen = false;
-
-            var overlay = document.createElement('div');
-            overlay.id = 'tawkOverlay';
-            overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:99998;';
-
-            var chatBox = document.createElement('div');
-            chatBox.id = 'tawkMiniChat';
-            chatBox.style.cssText = 'display:none;position:fixed;bottom:75px;right:10px;width:340px;height:480px;max-width:calc(100vw - 20px);max-height:calc(100vh - 140px);z-index:99999;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:#fff;';
-
-            var closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'position:absolute;top:6px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;';
-            chatBox.appendChild(closeBtn);
-
-            var iframe = document.createElement('iframe');
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:16px;';
-            chatBox.appendChild(iframe);
-
-            document.body.appendChild(overlay);
-            document.body.appendChild(chatBox);
-
-            function openChat() {
-                if (!iframe.src) iframe.src = TAWK_DIRECT;
-                overlay.style.display = 'block';
-                chatBox.style.display = 'block';
-                isOpen = true;
-            }
-            function closeChat() {
-                overlay.style.display = 'none';
-                chatBox.style.display = 'none';
-                isOpen = false;
-            }
-
-            overlay.addEventListener('click', closeChat);
-            closeBtn.addEventListener('click', closeChat);
-
-            var chatNavBtn = document.getElementById('chatNavBtn');
-            if (chatNavBtn) {
-                chatNavBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openChat();
-                });
-            }
-        })();
-    </script>
-
-<script src="brandedukv15-child/assets/js/tawk-inline.js"></script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-(function(){
-    var host = window.location.hostname;
-    // Tawk often blocks localhost; avoid noisy console errors during local dev.
-    // Use ?tawk=1 (or ?chat=1) to force-enable locally when needed.
-    var allowLocal = false;
-    try {
-        var params = new URLSearchParams(window.location.search);
-        allowLocal = params.has('tawk') || params.has('chat');
-    } catch (e) {
-        allowLocal = false;
-    }
-    if (!allowLocal && (host === 'localhost' || host === '127.0.0.1')) return;
-
-    var propertyId = '69628dafb346e51985794182';
-    var widgetId = '1jekfitse';
-
-    // If you create a separate Tawk property for staging, set it here:
-    // if (host.endsWith('.vercel.app')) { propertyId = '...'; widgetId = '...'; }
-
-    window.Tawk_API = window.Tawk_API || {};
-    // Hide default bubble; open only from our in-site trigger.
-    window.Tawk_API.onLoad = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_API.onChatMinimized = function () {
-        try { if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') window.Tawk_API.hideWidget(); } catch (e) {}
-    };
-    window.Tawk_LoadStart = new Date();
-
-    var s1 = document.createElement('script');
-    var s0 = document.getElementsByTagName('script')[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/' + propertyId + '/' + widgetId;
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1, s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
-
-<style>
-/* Hide the Tawk launcher bubble by default (only show when user opens chat). */
-body:not(.tawk-open) iframe[title="chat widget"],
-body:not(.tawk-open) .tawk-min-container,
-body:not(.tawk-open) #tawk-bubble-container {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translateY(120px) !important;
-}
-body.tawk-open iframe[title="chat widget"],
-body.tawk-open .tawk-min-container,
-body.tawk-open #tawk-bubble-container {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transform: none !important;
-}
-
-@media (max-width: 1023px) {
-    iframe[title="chat widget"],
-    .tawk-min-container,
-    #tawk-bubble-container {
-        bottom: 75px !important;
-    }
-}
-</style>
 
     <!-- WhatsApp Floating Button -->
     <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
