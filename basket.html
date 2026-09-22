@@ -4447,8 +4447,20 @@
         if (logo) sessionStorage.setItem('editingPosition', logo.position);
         sessionStorage.setItem('returnAfterCustomize', 'basket');
         _setCustomizeSessionData(item);
-        const code = encodeURIComponent(item.code || item.productCode || '');
-        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&editLogo=1&_cb=${Date.now()}`;
+        const isMobile = window.innerWidth < 1024;
+        const params = new URLSearchParams({
+            code: item.code || item.productCode || '',
+            from: 'basket',
+            logoOnly: '1',
+            editLogo: '1',
+            productType: item.productType || 'Sweatshirts',
+            color: item.color || item.selectedColorName || '',
+            _cb: Date.now().toString()
+        });
+        const customizerPath = isMobile
+            ? 'customization-tool-mobile/index.html'
+            : 'customization-tool/index.html';
+        window.location.href = `${customizerPath}?${params.toString()}`;
     }
 
     function copyLogo(itemIndex, logoIndex) {
@@ -4626,6 +4638,7 @@
     function _openFullCustomizeForItem(itemIndex) {
         const basket = getBasket();
         const item = basket[itemIndex];
+        if (!item) return;
 
         sessionStorage.setItem('customizingBasketIndex', itemIndex.toString());
         sessionStorage.removeItem('basketEditSingleItem');
@@ -4643,10 +4656,22 @@
 
         _setCustomizeSessionData(item);
         sessionStorage.removeItem('toolAskLogoChoice');
-        const code = encodeURIComponent(item.code || item.productCode || '');
-        const productType = encodeURIComponent(item.productType || 'Sweatshirts');
-        const color = encodeURIComponent(item.color || item.selectedColorName || '');
-        window.location.href = `customization-tool/index.html?code=${code}&from=basket&logoOnly=1&embedded=pc-order&productType=${productType}&color=${color}&_cb=${Date.now()}`;
+        const isMobile = window.innerWidth < 1024;
+        const params = new URLSearchParams({
+            code: item.code || item.productCode || '',
+            from: 'basket',
+            logoOnly: '1',
+            productType: item.productType || 'Sweatshirts',
+            color: item.color || item.selectedColorName || '',
+            _cb: Date.now().toString()
+        });
+        if (!isMobile) {
+            params.set('embedded', 'pc-order');
+        }
+        const customizerPath = isMobile
+            ? 'customization-tool-mobile/index.html'
+            : 'customization-tool/index.html';
+        window.location.href = `${customizerPath}?${params.toString()}`;
     }
 
     function _setCustomizeSessionData(item) {

@@ -70,10 +70,20 @@ const PRODUCT_PRINT_AREAS = {
     right: { areaCm: { w: 10, h: 14 }, box: { w: 0.26, h: 0.46 }, defaultLogo: { w: 10 } }
   },
   beanie: {
-    // Cuff embroidery: ~13cm wide × 6cm tall. The box is calibrated so a 6cm-tall
-    // logo fills the cuff (the agreed visual) while reading a true 6cm.
-    front: { areaCm: { w: 13, h: 6 }, box: { w: 0.315, h: 0.18 }, defaultLogo: { h: 6 } }
+    front: { areaCm: { w: 10, h: 5.5 }, box: { x: 0.32, y: 0.56, w: 0.36, h: 0.2 } }
   }
+};
+
+const POSITION_PRINT_AREAS = {
+  "left-chest": { areaCm: { w: 9, h: 9 }, box: { x: 0.57, y: 0.31, w: 0.1, h: 0.054 } },
+  "right-chest": { areaCm: { w: 9, h: 9 }, box: { x: 0.343, y: 0.296, w: 0.085, h: 0.043 } },
+  "centre-chest": { areaCm: { w: 20, h: 10 }, box: { x: 0.46, y: 0.294, w: 0.079, h: 0.043 } },
+  "large-front": { areaCm: { w: 29.7, h: 42 }, box: { x: 0.326, y: 0.287, w: 0.347, h: 0.194 } },
+  "upper-back": { areaCm: { w: 21, h: 29.7 }, box: { x: 0.385, y: 0.309, w: 0.235, h: 0.044 } },
+  back: { areaCm: { w: 21, h: 29.7 }, box: { x: 0.29, y: 0.25, w: 0.42, h: 0.52 } },
+  "large-back": { areaCm: { w: 29.7, h: 42 }, box: { x: 0.353, y: 0.302, w: 0.296, h: 0.307 } },
+  "left-sleeve": { areaCm: { w: 10, h: 30 }, box: { x: 0.679, y: 0.299, w: 0.075, h: 0.116 } },
+  "right-sleeve": { areaCm: { w: 10, h: 30 }, box: { x: 0.25, y: 0.278, w: 0.079, h: 0.118 } }
 };
 
 // Optional per-SKU overrides. Keyed by product code (UPPERCASE); same shape as a
@@ -91,6 +101,8 @@ function getProductAreaSet() {
 }
 
 function getPrintAreaConfig() {
+  const position = normalizeProductTypeSlug(state.selectedPosition);
+  if (position && POSITION_PRINT_AREAS[position]) return POSITION_PRINT_AREAS[position];
   const set = getProductAreaSet();
   return set[state.selectedArea] || set.front || Object.values(set)[0];
 }
@@ -106,13 +118,32 @@ function getMockupSizePx() {
   };
 }
 
-// On-screen print rectangle (px) used to clamp the logo to the printable area.
+function getPrintableAreaRectPx() {
+  const cfg = getPrintAreaConfig();
+  const box = cfg.box;
+  const mockupRect = productShape?.getBoundingClientRect?.();
+  const customAreaRect = customArea?.getBoundingClientRect?.();
+  const mockup = getMockupSizePx();
+  const width = Math.max(1, mockup.w * box.w);
+  const height = Math.max(1, mockup.h * box.h);
+  const centeredX = (1 - box.w) / 2;
+  const centeredY = (1 - box.h) / 2;
+
+  return {
+    x: (mockupRect?.left || 0) - (customAreaRect?.left || 0) + mockup.w * (box.x ?? centeredX),
+    y: (mockupRect?.top || 0) - (customAreaRect?.top || 0) + mockup.h * (box.y ?? centeredY),
+    width,
+    height
+  };
+}
+
+// On-screen print rectangle (px) used to fit and place the logo.
 function getPrintableReferenceWidthPx() {
-  return Math.max(96, getMockupSizePx().w * getPrintAreaConfig().box.w);
+  return getPrintableAreaRectPx().width;
 }
 
 function getPrintableReferenceHeightPx() {
-  return Math.max(120, getMockupSizePx().h * getPrintAreaConfig().box.h);
+  return getPrintableAreaRectPx().height;
 }
 
 // Real centimetres → pixels, calibrated per product/view.
@@ -477,14 +508,36 @@ let colours = [...FALLBACK_COLOURS];
 let colourImageByName = new Map();
 const API_BASE_URL = "https://api.brandeduk.com/api";
 
-const LOGO_METHOD_UNIT_PRICES = {
-  print: 3.50,
-  embroidery: 5.00,
-  dtf: 3.95,
-  screen: 2.95,
-  vinyl: 3.50,
-  logo: 3.50
+// Quantity-tiered application pricing (Consigliato column, VAT excluded).
+const APPLICATION_PRICE_TIERS = {
+  print: [
+    { min: 1, max: 8, price: 7.50 },
+    { min: 9, max: 24, price: 5.25 },
+    { min: 25, max: 99, price: 4.00 },
+    { min: 100, max: 249, price: 3.00 },
+    { min: 250, max: 499, price: 2.50 },
+    { min: 500, max: 749, price: 2.25 },
+    { min: 750, max: 999, price: 2.00 },
+    { min: 1000, max: Infinity, price: 1.75 }
+  ],
+  embroidery: [
+    { min: 1, max: 8, price: 8.00 },
+    { min: 9, max: 24, price: 6.00 },
+    { min: 25, max: 99, price: 4.75 },
+    { min: 100, max: 249, price: 3.75 },
+    { min: 250, max: 499, price: 2.50 },
+    { min: 500, max: 749, price: 2.25 },
+    { min: 750, max: 999, price: 2.00 },
+    { min: 1000, max: Infinity, price: 1.75 }
+  ]
 };
+
+function getApplicationUnitPrice(method, quantity) {
+  const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+  const qty = Math.max(1, Number(quantity) || 1);
+  const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
+  return tier.price;
+}
 
 const VAT_STORAGE_KEY = "brandeduk-vat-mode";
 const LEGACY_INCLUDE_VAT_KEY = "includeVAT";
@@ -1010,8 +1063,40 @@ function normalizeDecorationMethod(method) {
   return "print";
 }
 
-function getLogoUnitPrice(method) {
-  return LOGO_METHOD_UNIT_PRICES[normalizeDecorationMethod(method)] || LOGO_METHOD_UNIT_PRICES.print;
+function getCurrentBasketItemIndex(basket) {
+  const indexRaw = sessionStorage.getItem("customizingBasketIndex");
+  const sessionIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  if (Number.isInteger(sessionIndex) && sessionIndex >= 0 && basket[sessionIndex]) return sessionIndex;
+
+  const productCode = String(state.productCode || customizationRouteParams.get("code") || "").trim().toLowerCase();
+  const colour = String(state.colourName || customizationRouteParams.get("color") || "").trim().toLowerCase();
+  for (let index = basket.length - 1; index >= 0; index -= 1) {
+    const item = basket[index] || {};
+    const itemCode = String(item.productCode || item.code || "").trim().toLowerCase();
+    const itemColour = String(item.color || item.colour || "").trim().toLowerCase();
+    if (itemCode === productCode && (!colour || itemColour === colour)) return index;
+  }
+  return -1;
+}
+
+function getProductPricingQuantity(currentQty) {
+  const basket = readQuoteBasket();
+  const productCode = String(state.productCode || customizationRouteParams.get("code") || "").trim().toLowerCase();
+  if (!productCode) return currentQty;
+
+  const currentIndex = getCurrentBasketItemIndex(basket);
+  let total = 0;
+  basket.forEach((item, index) => {
+    const itemCode = String(item?.productCode || item?.code || "").trim().toLowerCase();
+    if (itemCode !== productCode) return;
+    total += index === currentIndex ? currentQty : getItemQty(item);
+  });
+  return Math.max(1, total + (currentIndex < 0 ? currentQty : 0));
+}
+
+function getLogoUnitPrice(method, quantity = getProductPricingQuantity(state.totalQty)) {
+  const bucket = normalizeDecorationMethod(method) === "embroidery" ? "embroidery" : "print";
+  return getApplicationUnitPrice(bucket, quantity);
 }
 
 function applyProductHeaderUI() {
@@ -2898,13 +2983,14 @@ function collectSizes() {
 
 function calculatePrice() {
   const qty = parseInt(mainQtyInput.value) || state.totalQty || 1;
+  const pricingQty = getProductPricingQuantity(qty);
   const tier = state.priceBreaks.find((item) =>
-    qty >= Number(item.min || 1) && qty <= Number(item.max || Number.MAX_SAFE_INTEGER)
+    pricingQty >= Number(item.min || 1) && pricingQty <= Number(item.max || Number.MAX_SAFE_INTEGER)
   );
   let unit = tier ? Number(tier.price) : state.basePrice;
 
   Object.values(getDraftAreaDesigns()).forEach((design) => {
-    if (design?.logo) unit += getLogoUnitPrice(design.method);
+    if (design?.logo) unit += getLogoUnitPrice(design.method, pricingQty);
   });
   Object.values(getDraftTextDesigns()).forEach((design) => {
     if (String(design?.text || "").trim()) unit += 1.5;
@@ -3330,6 +3416,49 @@ function getItemQty(item) {
   return Number.isFinite(item.quantity) ? item.quantity : 0;
 }
 
+function getTierUnitPrice(priceBreaks, quantity, fallbackPrice = 0) {
+  const sortedTiers = (Array.isArray(priceBreaks) ? priceBreaks : [])
+    .filter((tier) => Number.isFinite(Number(tier?.price)))
+    .slice()
+    .sort((left, right) => Number(right.min || 0) - Number(left.min || 0));
+  const tier = sortedTiers.find((item) => quantity >= Number(item.min || 0));
+  return tier ? Number(tier.price) : Number(fallbackPrice) || 0;
+}
+
+function repriceBasketProductCode(basket, productCode) {
+  const normalizedCode = String(productCode || "").trim().toLowerCase();
+  const related = basket.filter((item) => (
+    String(item?.productCode || item?.code || "").trim().toLowerCase() === normalizedCode
+  ));
+  if (!normalizedCode || related.length === 0) return;
+
+  const priceBreaks = related.find((item) => Array.isArray(item?.priceBreaks) && item.priceBreaks.length)?.priceBreaks
+    || state.priceBreaks;
+  const totalQty = related.reduce((sum, item) => sum + getItemQty(item), 0);
+  const garmentUnitPrice = getTierUnitPrice(priceBreaks, totalQty, state.basePrice);
+
+  related.forEach((item) => {
+    const textUnitPrice = (Array.isArray(item.texts) ? item.texts : []).reduce(
+      (sum, textDesign) => sum + (parseFloat(textDesign?.unitPrice || 1.5) || 1.5),
+      0
+    );
+    item.garmentUnitPrice = garmentUnitPrice;
+    item.unitPrice = parseFloat((garmentUnitPrice + textUnitPrice).toFixed(2));
+
+    const updateLogoPrice = (logo) => {
+      if (!logo || typeof logo !== "object" || !getLogoSource(logo)) return;
+      const bucket = normalizeDecorationMethod(logo.method) === "embroidery" ? "embroidery" : "print";
+      logo.unitPrice = getApplicationUnitPrice(bucket, totalQty);
+    };
+    if (Array.isArray(item.logos)) item.logos.forEach(updateLogoPrice);
+    if (Array.isArray(item.positions)) item.positions.forEach(updateLogoPrice);
+    else if (item.positions && typeof item.positions === "object") Object.values(item.positions).forEach(updateLogoPrice);
+    if (item.positionDesigns && typeof item.positionDesigns === "object") {
+      Object.values(item.positionDesigns).forEach(updateLogoPrice);
+    }
+  });
+}
+
 function getBasketEntryCount(basket) {
   const groups = new Set();
   (Array.isArray(basket) ? basket : []).forEach((item, index) => {
@@ -3436,6 +3565,7 @@ function buildBasketItemFromState() {
   });
 
   const productCode = state.productCode || new URLSearchParams(window.location.search).get("code") || "GD067";
+  const pricingQty = getProductPricingQuantity(state.totalQty);
   const allDesigns = Object.values(state.areaDesigns || {}).filter((design) => Boolean(design?.logo));
   const currentDesign = state.areaDesigns[getDesignAreaKey()];
   const designs = currentDesign?.logo
@@ -3450,7 +3580,7 @@ function buildBasketItemFromState() {
       position: design.area,
       positionLabel: getDesignAreaLabel(design.area),
       logo: design.logo,
-      unitPrice: getLogoUnitPrice(method),
+      unitPrice: getLogoUnitPrice(method, pricingQty),
       qualityPct: parseInt(design.qualityPct || 0, 10) || 0,
       logoRotation: parseFloat(design.rotation || 0) || 0,
       placement: design.placement || null,
@@ -3624,6 +3754,7 @@ function upsertBasketItemFromState() {
     basket.push(compactBasketItemForStorage(nextItem));
   }
 
+  repriceBasketProductCode(basket, nextItem.productCode || nextItem.code);
   const saved = writeQuoteBasket(basket);
   updateBasketUIFromStorage();
 
@@ -4627,33 +4758,10 @@ function showLogoOnCanvas(imageSrc) {
 
 function fitLogoToPrintArea() {
   const imageRatio = getLogoAspectRatio();
-  const pxPerCm = getPxPerCm();
-  const cfg = getPrintAreaConfig();
-  const def = cfg.defaultLogo || {};
-
-  // Size the freshly loaded logo from the product's default (in cm). A logo is
-  // either height-driven (e.g. beanie cuff) or width-driven (garments).
-  let width, height;
-  if (def.h && !def.w) {
-    height = def.h * pxPerCm;
-    width = height * imageRatio;
-  } else {
-    const targetWidth = (def.w || cfg.areaCm.w) * pxPerCm;
-    width = targetWidth;
-    height = width / imageRatio;
-  }
-
-  // Clamp to the printable rectangle on the mockup.
-  const maxWidth = Math.max(60, getPrintableReferenceWidthPx() * 1.04);
-  const maxHeight = Math.max(60, getPrintableReferenceHeightPx() * 0.98);
-  if (width > maxWidth) {
-    width = maxWidth;
-    height = width / imageRatio;
-  }
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = height * imageRatio;
-  }
+  const maxWidth = getPrintableReferenceWidthPx();
+  const maxHeight = getPrintableReferenceHeightPx();
+  const width = Math.min(maxWidth, maxHeight * imageRatio);
+  const height = width / imageRatio;
 
   const logoFrame = getLogoFrameEl();
   logoFrame.style.width = `${Math.round(width)}px`;
@@ -4694,8 +4802,9 @@ function getRenderedLogoSizePx() {
 
 function centerLogo() {
   const logoFrame = getLogoFrameEl();
-  designLayer.style.left = `${customArea.offsetWidth / 2 - logoFrame.offsetWidth / 2}px`;
-  designLayer.style.top = `${customArea.offsetHeight / 2 - logoFrame.offsetHeight / 2}px`;
+  const printableArea = getPrintableAreaRectPx();
+  designLayer.style.left = `${printableArea.x + printableArea.width / 2 - logoFrame.offsetWidth / 2}px`;
+  designLayer.style.top = `${printableArea.y + printableArea.height / 2 - logoFrame.offsetHeight / 2}px`;
   updateVisibilityByPrintArea(designLayer);
 }
 

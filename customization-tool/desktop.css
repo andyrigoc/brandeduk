@@ -75,11 +75,15 @@
     background: var(--desktop-canvas);
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker #mainEditor.active-screen {
-    grid-template-columns: minmax(240px, .65fr) minmax(0, 1.25fr) minmax(300px, .72fr);
+  body.is-pc-order-embed #mainEditor.active-screen {
+    grid-template-columns: minmax(270px, .65fr) minmax(570px, 1.25fr) minmax(340px, .72fr);
     grid-template-areas:
       "header header header"
       "canvas inspector uploader";
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker #mainEditor.active-screen {
+    grid-template-columns: minmax(240px, .65fr) minmax(0, 1.25fr) minmax(300px, .72fr);
   }
 
   /* Header */
@@ -440,7 +444,7 @@
     box-shadow: inset 0 0 0 1px #2563eb;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-upload-dropzone--dark {
+  body.is-pc-order-embed .inline-upload-dropzone--dark {
     min-height: 154px;
     padding: 18px;
     flex-direction: row;
@@ -453,7 +457,7 @@
     box-shadow: 0 10px 20px rgb(15 23 42 / 20%);
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-upload-dropzone--dark .inline-upload-icon {
+  body.is-pc-order-embed .inline-upload-dropzone--dark .inline-upload-icon {
     flex: 0 0 36px;
     width: 36px;
     height: 36px;
@@ -468,19 +472,19 @@
     min-width: 0;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-upload-copy strong {
+  body.is-pc-order-embed .inline-upload-copy strong {
     font-size: 15px;
     line-height: 1.15;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-upload-copy small {
+  body.is-pc-order-embed .inline-upload-copy small {
     color: #b8bfcd;
     font-size: 10px;
     font-weight: 600;
     line-height: 1.35;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-upload-dropzone--dark .inline-upload-button {
+  body.is-pc-order-embed .inline-upload-dropzone--dark .inline-upload-button {
     padding: 9px 13px;
     border: 1px dashed #667083;
     background: transparent;
@@ -648,7 +652,7 @@
     background: #f3efff;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-logo-upload .confirm-quality-btn {
+  body.is-pc-order-embed .inline-logo-upload .confirm-quality-btn {
     width: 100%;
     min-height: 42px;
     margin: 12px 0 0;
@@ -1441,14 +1445,14 @@
     border-left: 1px solid var(--desktop-border);
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-inspector {
+  body.is-pc-order-embed .desktop-inspector {
     grid-area: inspector;
     border-left: 1px solid var(--desktop-border);
     border-right: 1px solid var(--desktop-border);
     padding-top: 12px;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-product-summary {
+  body.is-pc-order-embed .desktop-product-summary {
     position: fixed;
     z-index: 5;
     top: 90px;
@@ -1460,28 +1464,28 @@
     border: 0;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .canvas-selected-colour {
+  body.is-pc-order-embed .canvas-selected-colour {
     display: none;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-summary-eyebrow {
+  body.is-pc-order-embed .desktop-summary-eyebrow {
     display: none;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-product-summary p {
+  body.is-pc-order-embed .desktop-product-summary p {
     order: 1;
     margin: 0 0 2px;
     font-size: 11px;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-product-summary h1 {
+  body.is-pc-order-embed .desktop-product-summary h1 {
     order: 2;
     margin: 0;
     font-size: 16px;
     line-height: 1.2;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-product-colour-line {
+  body.is-pc-order-embed .desktop-product-colour-line {
     order: 3;
     margin-top: 2px;
     color: #6b7280;
@@ -1489,13 +1493,13 @@
     font-weight: 600;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker #desktopProductCode {
+  body.is-pc-order-embed #desktopProductCode {
     display: block;
     color: var(--desktop-navy);
     font-weight: 800;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker #desktopBrandName {
+  body.is-pc-order-embed #desktopBrandName {
     position: absolute;
     top: 4px;
     right: 0;
@@ -1504,7 +1508,7 @@
     text-transform: uppercase;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .desktop-product-summary p > span[aria-hidden="true"] {
+  body.is-pc-order-embed .desktop-product-summary p > span[aria-hidden="true"] {
     display: none;
   }
 
@@ -1512,7 +1516,7 @@
     display: none;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .left-selected-colour-bar {
+  body.is-pc-order-embed .left-selected-colour-bar {
     position: absolute;
     z-index: 5;
     right: 14px;
@@ -1531,12 +1535,12 @@
     font-weight: 600;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .left-selected-colour-bar > :first-child {
+  body.is-pc-order-embed .left-selected-colour-bar > :first-child {
     color: #176b4b;
     font-size: 15px;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .left-selected-colour-name {
+  body.is-pc-order-embed .left-selected-colour-name {
     margin-left: auto;
     color: #172554;
     font-weight: 800;
@@ -1662,12 +1666,12 @@
     box-shadow: 0 -8px 12px #fff;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .garment-preview-heading {
+  body.is-pc-order-embed .garment-preview-heading {
     display: none;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-logo-upload,
-  body.is-pc-order-embed.is-sweatshirt-position-picker .inline-logo-settings {
+  body.is-pc-order-embed .inline-logo-upload,
+  body.is-pc-order-embed .inline-logo-settings {
     position: fixed;
     z-index: 30;
     top: 86px;
@@ -1677,11 +1681,17 @@
     width: min(356px, calc(27vw - 16px));
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .design-layer,
-  body.is-pc-order-embed.is-sweatshirt-position-picker .text-layer,
-  body.is-pc-order-embed.is-sweatshirt-position-picker .right-panel,
-  body.is-pc-order-embed.is-sweatshirt-position-picker .customization-context-label {
+  body.is-pc-order-embed .design-layer,
+  body.is-pc-order-embed .text-layer,
+  body.is-pc-order-embed .right-panel,
+  body.is-pc-order-embed .customization-context-label {
     display: none !important;
+  }
+
+  body.is-pc-order-embed .product-preview {
+    width: min(300px, calc(100% - 32px), 55vh);
+    height: min(540px, calc(100vh - 150px));
+    margin: 88px auto 0;
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .product-preview {
@@ -1697,7 +1707,7 @@
     margin: 0;
   }
 
-  body.is-pc-order-embed.is-sweatshirt-position-picker .polo-colour-wrap {
+  body.is-pc-order-embed .polo-colour-wrap {
     width: 100%;
     height: 100%;
     max-height: 100%;
@@ -1860,7 +1870,8 @@
     box-shadow: 0 0 0 3px rgb(109 90 230 / 12%);
   }
 
-  body.is-sweatshirt-position-picker .position-grid {
+  body.is-sweatshirt-position-picker .position-grid,
+  body.is-pc-order-embed .position-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 7px;
   }
@@ -1874,23 +1885,23 @@
     display: none;
   }
 
-  body.is-sweatshirt-position-picker .position-card {
+  body.is-pc-order-embed .position-card {
     min-height: 198px;
     padding: 6px 4px 7px;
   }
 
-  body.is-sweatshirt-position-picker .position-card input[type="checkbox"] {
+  body.is-pc-order-embed .position-card input[type="checkbox"] {
     display: none;
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-selected,
-  body.is-sweatshirt-position-picker .position-card:has(input:checked) {
+  body.is-pc-order-embed .position-card.is-selected,
+  body.is-pc-order-embed .position-card:has(input:checked) {
     border-color: #dfe6ef;
     background: #f8fafc;
     box-shadow: inset 0 0 0 1px rgb(22 163 74 / 14%);
   }
 
-  body.is-sweatshirt-position-picker .position-card::after {
+  body.is-pc-order-embed .position-card::after {
     position: absolute;
     z-index: 6;
     top: 9px;
@@ -1899,12 +1910,12 @@
     pointer-events: none;
   }
 
-  body.is-sweatshirt-position-picker .position-card:hover {
+  body.is-pc-order-embed .position-card:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 14px rgb(15 23 42 / 12%);
   }
 
-  body.is-sweatshirt-position-picker .position-card.is-selected::after {
+  body.is-pc-order-embed .position-card.is-selected::after {
     content: "✓";
     display: grid;
     width: 20px;
@@ -1917,7 +1928,7 @@
     box-shadow: 0 1px 3px rgb(15 23 42 / 25%);
   }
 
-  body.is-sweatshirt-position-picker .position-thumb-wrap {
+  body.is-pc-order-embed .position-thumb-wrap {
     height: auto;
     aspect-ratio: 368 / 465;
     margin-top: 0;
@@ -1925,18 +1936,18 @@
     background: #fff;
   }
 
-  body.is-sweatshirt-position-picker .position-thumb-wrap > img {
+  body.is-pc-order-embed .position-thumb-wrap > img {
     width: 100%;
     height: 100%;
     filter: none;
     object-fit: contain;
   }
 
-  body.is-sweatshirt-position-picker .position-thumb-colour-layer {
+  body.is-pc-order-embed .position-thumb-colour-layer {
     display: none !important;
   }
 
-  body.is-sweatshirt-position-picker .position-name {
+  body.is-pc-order-embed .position-name {
     display: none;
   }
 
@@ -2005,26 +2016,26 @@
     to { opacity: 1; transform: scale(1); }
   }
 
-  body.is-sweatshirt-position-picker .inline-upload-library-logo {
+  body.is-pc-order-embed .inline-upload-library-logo {
     cursor: grab;
     position: relative;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   }
 
-  body.is-sweatshirt-position-picker .inline-upload-library-logo.is-selected {
+  body.is-pc-order-embed .inline-upload-library-logo.is-selected {
     z-index: 2;
     transform: scale(1.14);
     border-color: #2563eb;
     box-shadow: 0 5px 14px rgb(37 99 235 / 28%);
   }
 
-  body.is-sweatshirt-position-picker .inline-upload-library-logo.is-dragging-logo {
+  body.is-pc-order-embed .inline-upload-library-logo.is-dragging-logo {
     opacity: .45;
     cursor: grabbing;
     transform: scale(1) !important;
   }
 
-  body.is-sweatshirt-position-picker .inline-upload-library-selection {
+  body.is-pc-order-embed .inline-upload-library-selection {
     display: none;
   }
 
@@ -2549,11 +2560,11 @@
  */
 @media (min-width: 800px) {
   body.is-pc-order-embed #mainEditor.active-screen {
-    grid-template-columns: minmax(420px, 1fr) 460px;
+    grid-template-columns: minmax(270px, .65fr) minmax(570px, 1.25fr) minmax(340px, .72fr);
     grid-template-rows: 64px minmax(0, 1fr);
     grid-template-areas:
-      "header header"
-      "canvas inspector";
+      "header header header"
+      "canvas inspector uploader";
   }
 
   body.is-pc-order-embed .editor-top {
@@ -2601,7 +2612,12 @@
 
 @media (min-width: 800px) and (max-width: 1080px) {
   body.is-pc-order-embed #mainEditor.active-screen {
-    grid-template-columns: minmax(360px, 1fr) 360px;
+    grid-template-columns: 220px minmax(360px, 1fr) 300px;
+  }
+
+  body.is-pc-order-embed .inline-logo-upload,
+  body.is-pc-order-embed .inline-logo-settings {
+    width: 268px;
   }
 
   body.is-pc-order-embed .canvas-wrap {

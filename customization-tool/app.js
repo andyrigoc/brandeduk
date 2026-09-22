@@ -4,6 +4,7 @@ const state = {
   customizationVariantKey: "",
   customizationConfig: null,
   customizationConfigKey: "",
+  productDecorationContext: "",
   productName: "Polo",
   productCode: "SKU-2024",
   brandName: "GILDAN",
@@ -1434,7 +1435,11 @@ function applySelectedProductContext() {
     selectedProductData?.description,
     selectedProductData?.details,
     selectedProductData?.features
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .map(value => typeof value === "string" ? value : JSON.stringify(value))
+    .join(" ");
+  state.productDecorationContext = selectedProductContext;
   // With only a URL code, wait for the product API to identify the type. Using
   // the hard-coded initial "Polo" context here starts the wrong mockup request.
   const selectedCustomizationSlug = selectedProductData
@@ -1556,10 +1561,13 @@ async function hydrateSelectedProductFromApi() {
     const apiProductType = productData.productType || productData.category || productData.type;
     const apiCustomizationSlug =
       resolveCustomizationProductTypeSlug(state.productName, apiProductType);
+    const apiProductContext = [state.productName, productData.description, productData.details, productData.features]
+      .filter(Boolean)
+      .map(value => typeof value === "string" ? value : JSON.stringify(value))
+      .join(" ");
+    state.productDecorationContext = apiProductContext;
     const apiCustomizationVariant = resolveCustomizationVariantKey(
-      [state.productName, productData.description, productData.details, productData.features]
-        .filter(Boolean)
-        .join(" "),
+      apiProductContext,
       apiProductType
     );
     if (
@@ -3129,21 +3137,46 @@ function configureViewTabsForProduct() {
     restoreDefaultViewTabThumbs();
   }
 
-  configureDesignTypesForProduct(isBeanie);
+  configureDesignTypesForProduct();
   syncPositionCardImages();
   configurePositionCardsForProduct();
   syncPrintAreaGuide();
 }
 
-/**
- * Beanies are embroidery-only: grey out DTF & Screen Printing logo options and
- * show a folding-area height warning. Other products keep all methods enabled.
- */
-function configureDesignTypesForProduct(isBeanie) {
+function isEmbroideryOnlyProduct() {
+  const category = String(state.customizationProductTypeSlug || "").trim().toLowerCase();
+  const context = [state.product, category, state.productName, state.productDecorationContext]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return state.product === "beanie"
+    || category === "beanie"
+    || category === "beanies"
+    || /\b(?:beanie|wool|woollen|woolen|lana|knit|knitted|knitwear)\b/.test(context);
+}
+
+function forceCurrentProductDesignsToEmbroidery() {
+  state.decorationType = "embroidery";
+  state.textType = "embroidery";
+  if (state.pendingDecorationType) state.pendingDecorationType = "embroidery";
+  document.body.dataset.decorationType = "embroidery";
+
+  [state.areaDesigns, state.areaTextDesigns, state.positionLogoAssignments].forEach((designs) => {
+    Object.values(designs || {}).forEach((design) => {
+      if (design && typeof design === "object") design.method = "embroidery";
+    });
+  });
+}
+
+function configureDesignTypesForProduct() {
+  const embroideryOnly = isEmbroideryOnlyProduct();
+  if (embroideryOnly) forceCurrentProductDesignsToEmbroidery();
   const rules = getCategoryMethodRules();
-  document.querySelectorAll("#designTypePage [data-design-type]").forEach((card) => {
-    const rule = rules[card.dataset.designType] || "yes";
-    const disabled = rule === "no";
+
+  document.querySelectorAll("#designTypePage [data-design-type], #textTypePage [data-text-type]").forEach((card) => {
+    const type = card.dataset.designType || card.dataset.textType;
+    const disabled = embroideryOnly ? type !== "embroidery" : (rules[type] || "yes") === "no";
     card.classList.toggle("is-disabled", disabled);
     card.setAttribute("aria-disabled", disabled ? "true" : "false");
   });
@@ -3151,15 +3184,21 @@ function configureDesignTypesForProduct(isBeanie) {
   const list = document.querySelector("#designTypePage .print-type-list");
   if (!list) return;
   let warning = document.getElementById("beanieEmbroideryWarning");
-  if (isBeanie) {
+  if (embroideryOnly) {
     if (!warning) {
       warning = document.createElement("div");
       warning.id = "beanieEmbroideryWarning";
       warning.className = "embroidery-warning";
       warning.innerHTML =
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>' +
-        '<span>Embroidery on folding area &mdash; max height 5.5cm</span>';
+        '<span></span>';
       list.insertBefore(warning, list.firstChild);
+    }
+    const warningText = warning.querySelector("span");
+    if (warningText) {
+      warningText.innerHTML = state.product === "beanie"
+        ? "Embroidery on folding area &mdash; max height 5.5cm"
+        : "This wool or knitted product supports embroidery only.";
     }
     warning.hidden = false;
   } else if (warning) {
@@ -4344,6 +4383,7 @@ productSelect.addEventListener("change", async () => {
   clearCanvasTextState();
   state.product = productSelect.value;
   state.productName = productSelect.options[productSelect.selectedIndex].text;
+  state.productDecorationContext = state.productName;
   state.customizationProductTypeSlug =
     resolveCustomizationProductTypeSlug(state.productName, productSelect.value)
     || state.customizationProductTypeSlug;
@@ -4394,6 +4434,7 @@ mainQtyInput.addEventListener("input", () => {
 
 document.querySelectorAll("[data-text-type]").forEach(card => {
   card.addEventListener("click", () => {
+    if (card.classList.contains("is-disabled")) return;
     state.textType = card.dataset.textType;
     syncTextEditorFieldsFromState();
     openScreen("textEditorPage");

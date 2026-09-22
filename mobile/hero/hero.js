@@ -71,18 +71,36 @@
   // Track the last touch interaction globally so the click handler knows
   // whether to let the event through.
   var lastTouchHandledAt = 0;
+  var panelNavigationPending = false;
 
   function handlePanelActivation($el) {
+    if (panelNavigationPending) return;
+
     var category = $el.getAttribute('data-category');
     if (!category) return;
+    panelNavigationPending = true;
     revealHeroBackground($el);
 
-    // Expand visually first, then navigate after animation completes
+    // Keep the fully expanded card visible before opening its products.
     $cont.classList.add('s--el-active');
     $el.classList.add('s--active');
-    setTimeout(function() {
+
+    var navigationTimer = setTimeout(openCategory, 2400);
+
+    function openCategory() {
+      clearTimeout(navigationTimer);
+      $el.removeEventListener('transitionend', handleExpansionEnd);
       window.location.href = 'shop.html?category=' + category;
-    }, 1400);
+    }
+
+    function handleExpansionEnd(e) {
+      if (e.target !== $el || e.propertyName !== 'width') return;
+      clearTimeout(navigationTimer);
+      $el.removeEventListener('transitionend', handleExpansionEnd);
+      navigationTimer = setTimeout(openCategory, 900);
+    }
+
+    $el.addEventListener('transitionend', handleExpansionEnd);
   }
 
   $elsArr.forEach(function($el) {
