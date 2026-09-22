@@ -43,6 +43,26 @@
     background: #f4f6fa;
 }
 
+body > .popup-overlay {
+    z-index: 20000;
+    transition: none;
+}
+
+body > .popup-contact {
+    z-index: 20001;
+    transition: none;
+}
+
+body > .popup-overlay.active,
+body > .popup-contact.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+body > .popup-contact.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
 .pc-customizer-header {
     display: grid;
     grid-template-columns: minmax(310px, 360px) minmax(0, 1fr) minmax(210px, 280px);

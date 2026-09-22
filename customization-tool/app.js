@@ -40,10 +40,30 @@ const state = {
   areaDesigns: {},
   areaTextDesigns: {},
   customizationNotes: "",
-  pendingDecorationType: null
+  pendingDecorationType: null,
+  customizationApiEnabled: false,
+  customizationCapabilityProductType: "",
+  customizationCapabilities: {},
+  customizationPricing: {},
+  customizationPricingError: "",
+  capabilityRulesetVersion: "",
+  requiresManualReview: false,
+  allowAutomaticCheckout: true
 };
 
 const customizationRouteParams = new URLSearchParams(window.location.search);
+const customizationApi = window.BrandedCustomizationApi;
+state.customizationApiEnabled = Boolean(customizationApi?.isEnabled());
+const CUSTOMISATION_ENGINE_VERSION = "1.0";
+const MAX_CUSTOMISATIONS_PER_PRODUCT = 5;
+const CUSTOMISATION_POSITION_RULES = Object.freeze({
+  "left-chest": { conflictsWith: ["centre-chest", "large-front"] },
+  "right-chest": { conflictsWith: ["centre-chest", "large-front"] },
+  "centre-chest": { conflictsWith: ["left-chest", "right-chest", "large-front"] },
+  "large-front": { conflictsWith: ["left-chest", "right-chest", "centre-chest"] },
+  "lower-front": { conflictsWith: [] },
+  "large-back": { conflictsWith: ["centre-back"] }
+});
 // PC layout is universal on desktop: the embedded order popup, explicit
 // customize-pc entries and plain full-page desktop visits all share it.
 const customizationEmbedParam = customizationRouteParams.get("embedded") || "";
@@ -1193,9 +1213,90 @@ function normalizeDecorationMethod(method) {
   return "print";
 }
 
-function getLogoUnitPrice(method) {
+function getCustomizationPricingRecord(method, quantity = getProductPricingQuantity(state.totalQty)) {
+  const canonicalMethod = customizationApi?.normalizeMethod(method) || normalizeDecorationMethod(method);
+  const record = state.customizationPricing[canonicalMethod];
+  if (!record) return null;
+  const min = Number(record.tier?.minQuantity || 1);
+  const max = Number(record.tier?.maxQuantity || Number.MAX_SAFE_INTEGER);
+  return quantity >= min && quantity <= max ? record : null;
+}
+
+let customizationPricingTimer = null;
+let customizationPricingRequestKey = "";
+
+function setCustomizationPricingStatus(message = "", isError = false) {
+  const status = document.getElementById("pcSummaryPricingStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.hidden = !message;
+  status.classList.toggle("is-error", Boolean(isError));
+}
+
+function scheduleCustomizationPricingRefresh(quantity) {
+  if (!state.customizationApiEnabled) return;
+  const methods = [...new Set(getBillableLogoDesigns()
+    .filter((design) => design?.logo)
+    .map((design) => customizationApi.normalizeMethod(design.method)))];
+  const cachedRecords = methods.map((method) => getCustomizationPricingRecord(method, quantity));
+  if (methods.length === 0 || cachedRecords.every(Boolean)) {
+    if (customizationPricingTimer) clearTimeout(customizationPricingTimer);
+    customizationPricingTimer = null;
+    state.customizationPricingError = "";
+    state.requiresManualReview = cachedRecords.some((record) => record?.requiresManualReview || record?.requiresArtworkAssessment);
+    state.allowAutomaticCheckout = cachedRecords.every((record) => record?.allowAutomaticCheckout !== false);
+    setCustomizationPricingStatus(
+      state.requiresManualReview ? "Estimated price. This quantity requires manual review before checkout." : ""
+    );
+    return;
+  }
+  if (customizationPricingTimer) clearTimeout(customizationPricingTimer);
+  setCustomizationPricingStatus("Checking current decoration pricing…");
+  customizationPricingTimer = setTimeout(async () => {
+    const requestKey = `${methods.sort().join(",")}|${quantity}`;
+    if (customizationPricingRequestKey === requestKey) return;
+    customizationPricingRequestKey = requestKey;
+    try {
+      const records = await Promise.all(methods.map((method) => (
+        customizationApi.getCustomizationPrice({ method, quantity, priceClass: "standard" })
+      )));
+      if (customizationPricingRequestKey !== requestKey) return;
+      records.forEach((record) => {
+        state.customizationPricing[record.method] = record;
+      });
+      state.customizationPricingError = "";
+      state.requiresManualReview = records.some((record) => record.requiresManualReview || record.requiresArtworkAssessment);
+      state.allowAutomaticCheckout = records.every((record) => record.allowAutomaticCheckout !== false);
+      setCustomizationPricingStatus(
+        state.requiresManualReview ? "Estimated price. This quantity requires manual review before checkout." : ""
+      );
+      customizationPricingRequestKey = "";
+      calculatePrice();
+    } catch (error) {
+      if (customizationPricingRequestKey !== requestKey) return;
+      state.customizationPricingError = error?.message || String(error);
+      state.requiresManualReview = true;
+      state.allowAutomaticCheckout = false;
+      setCustomizationPricingStatus("Pricing is temporarily unavailable. This item requires a manual quote.", true);
+      customizationPricingRequestKey = "";
+      console.error("Customization pricing request failed", {
+        endpoint: "customization-pricing",
+        sku: state.productCode,
+        productType: state.customizationCapabilityProductType,
+        methods,
+        quantity,
+        message: state.customizationPricingError
+      });
+    }
+  }, 250);
+}
+
+function getLogoUnitPrice(method, quantity = getProductPricingQuantity(state.totalQty)) {
   const bucket = normalizeDecorationMethod(method) === "embroidery" ? "embroidery" : "print";
-  return getApplicationUnitPrice(bucket, state.totalQty);
+  if (state.customizationApiEnabled) {
+    return Number(getCustomizationPricingRecord(method, quantity)?.unitPrice) || 0;
+  }
+  return getApplicationUnitPrice(bucket, quantity);
 }
 
 function applyProductHeaderUI() {
@@ -1259,9 +1360,17 @@ function applySelectedProductContext() {
   if (!selectedProductData && urlCode) {
     try {
       const basket = JSON.parse(localStorage.getItem("quoteBasket") || "[]");
-      const matched = Array.isArray(basket)
-        ? basket.find((item) => String(item?.productCode || item?.code || "").trim() === urlCode)
+      const indexRaw = sessionStorage.getItem("customizingBasketIndex");
+      const basketIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+      const indexedItem = Array.isArray(basket) && Number.isInteger(basketIndex)
+        ? basket[basketIndex]
         : null;
+      const indexedCode = String(indexedItem?.productCode || indexedItem?.code || "").trim();
+      const matched = indexedItem && indexedCode.toLowerCase() === urlCode.toLowerCase()
+        ? indexedItem
+        : (Array.isArray(basket)
+          ? basket.find((item) => String(item?.productCode || item?.code || "").trim().toLowerCase() === urlCode.toLowerCase())
+          : null);
 
       if (matched) {
         selectedProductData = {
@@ -1313,6 +1422,10 @@ function applySelectedProductContext() {
   }
 
   state.productCode = selectedProductData?.code || selectedProductData?.productCode || selectedProductData?.sku || urlCode || state.productCode || "GD067";
+  if (state.customizationApiEnabled) {
+    state.customizationCapabilityProductType = customizationApi.resolveProductType(selectedProductData, state.productCode);
+    if (!state.customizationCapabilityProductType) customizationApi.recordUnmappedSku(state.productCode);
+  }
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
   const selectedProductType =
     selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type;
@@ -1411,6 +1524,11 @@ async function hydrateSelectedProductFromApi() {
 
     const productData = await detailResponse.json();
     if (!productData || typeof productData !== "object") return;
+
+    if (state.customizationApiEnabled) {
+      state.customizationCapabilityProductType = customizationApi.resolveProductType(productData, productCode);
+      if (!state.customizationCapabilityProductType) customizationApi.recordUnmappedSku(productCode);
+    }
 
     const listingData = listingResponse.ok ? await listingResponse.json() : null;
     const listingItems = listingData?.items || listingData?.products || [];
@@ -1557,7 +1675,12 @@ function updateConfirmButtonState() {
   const hasSavedText = Object.values(state.areaTextDesigns || {}).some(
     (design) => Boolean(String(design?.text || "").trim())
   );
-  confirmQualityBtn.disabled = !(hasConfirmedCurrentLogo || hasSavedPosition || hasAssignedPositionLogo || hasCurrentText || hasSavedText);
+  const hasIncompletePosition = hasConfiguredPositionPicker() && state.selectedPositions.some((position) => {
+    const assignment = state.positionLogoAssignments[position];
+    return !assignment?.logo || !assignment?.method;
+  });
+  confirmQualityBtn.disabled = hasIncompletePosition
+    || !(hasConfirmedCurrentLogo || hasSavedPosition || hasAssignedPositionLogo || hasCurrentText || hasSavedText);
   syncPcNext();
 }
 
@@ -1833,6 +1956,11 @@ function getDraftTextDesigns() {
   return designs;
 }
 
+function getBillableLogoDesigns() {
+  const assignedPositions = Object.values(state.positionLogoAssignments || {}).filter((assignment) => assignment?.logo);
+  return assignedPositions.length > 0 ? assignedPositions : Object.values(getDraftAreaDesigns());
+}
+
 function updateViewTabDesignStatus(designs = getDraftAreaDesigns(), textDesigns = getDraftTextDesigns()) {
   document.querySelectorAll(".view-tab[data-area]").forEach((tab) => {
     const area = getDesignAreaKey(tab.dataset.area);
@@ -2086,13 +2214,41 @@ async function switchToDesignArea(nextArea, options = {}) {
 }
 
 function hydrateAreaDesignsFromBasketContext() {
+  const basket = readQuoteBasket();
   const indexRaw = sessionStorage.getItem("customizingBasketIndex");
-  const itemIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  let itemIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  if (!Number.isInteger(itemIndex) || itemIndex < 0 || !basket[itemIndex]) {
+    const routeCode = String(customizationRouteParams.get("code") || "").trim().toLowerCase();
+    const routeColour = String(customizationRouteParams.get("color") || "").trim().toLowerCase();
+    for (let candidateIndex = basket.length - 1; candidateIndex >= 0; candidateIndex -= 1) {
+      const candidate = basket[candidateIndex] || {};
+      const candidateCode = String(candidate.productCode || candidate.code || "").trim().toLowerCase();
+      const candidateColour = String(candidate.color || candidate.colour || "").trim().toLowerCase();
+      if (candidateCode === routeCode && (!routeColour || candidateColour === routeColour)) {
+        itemIndex = candidateIndex;
+        break;
+      }
+    }
+  }
   if (!Number.isInteger(itemIndex) || itemIndex < 0) return false;
 
-  const basket = readQuoteBasket();
   const item = basket[itemIndex];
   if (!item) return false;
+
+  if (state.customizationApiEnabled) {
+    state.customizationCapabilityProductType = String(item.customizationProductType || state.customizationCapabilityProductType || "");
+    state.capabilityRulesetVersion = String(item.capabilityRulesetVersion || state.capabilityRulesetVersion || "");
+    state.requiresManualReview = Boolean(item.requiresManualReview);
+    state.allowAutomaticCheckout = item.allowAutomaticCheckout !== false;
+  }
+
+  const basketQuantity = Math.max(1, parseInt(getItemQty(item), 10) || 1);
+  const basketQuantities = item.quantities || item.sizes;
+  state.totalQty = basketQuantity;
+  state.sizes = basketQuantities && typeof basketQuantities === "object" && Object.keys(basketQuantities).length > 0
+    ? Object.entries(basketQuantities).map(([size, qty]) => ({ size, qty: parseInt(qty, 10) || 0 })).filter((entry) => entry.qty > 0)
+    : [{ size: item.size || "One size", qty: basketQuantity }];
+  if (mainQtyInput) mainQtyInput.value = String(basketQuantity);
 
   state.customizationNotes = String(item.customizationNotes || "");
   const notesInput = document.getElementById("customizationNotes");
@@ -2104,6 +2260,27 @@ function hydrateAreaDesignsFromBasketContext() {
   if (item.positionDesigns && typeof item.positionDesigns === "object") {
     Object.entries(item.positionDesigns).forEach(([position, design]) => {
       if (design) logoCandidates.push({ ...design, position: design.position || position });
+    });
+  }
+
+  if (state.customizationApiEnabled) {
+    logoCandidates.forEach((logo) => {
+      const method = customizationApi.normalizeMethod(logo?.method);
+      const quantity = parseInt(logo?.quantity || basketQuantity, 10) || basketQuantity;
+      const unitPrice = Number(logo?.unitPrice);
+      if (!["dtf", "embroidery"].includes(method) || !Number.isFinite(unitPrice)) return;
+      state.customizationPricing[method] = {
+        method,
+        priceClass: "standard",
+        quantity,
+        unitPrice,
+        applicationTotal: unitPrice * quantity,
+        pricingVersion: logo.pricingVersion || "",
+        tier: { minQuantity: quantity, maxQuantity: quantity },
+        requiresManualReview: Boolean(logo.requiresManualReview),
+        allowAutomaticCheckout: logo.allowAutomaticCheckout !== false,
+        digitisingFeePerDesign: parseFloat(logo.digitisingFeePerDesign || 0) || 0
+      };
     });
   }
 
@@ -3168,15 +3345,147 @@ function collectSizes() {
   mainQtyInput.value = state.totalQty;
 }
 
+function getCurrentBasketItemIndex(basket) {
+  const indexRaw = sessionStorage.getItem("customizingBasketIndex");
+  const sessionIndex = indexRaw === null ? -1 : parseInt(indexRaw, 10);
+  if (Number.isInteger(sessionIndex) && sessionIndex >= 0 && basket[sessionIndex]) return sessionIndex;
+
+  const productCode = String(state.productCode || customizationRouteParams.get("code") || "").trim().toLowerCase();
+  const colour = String(state.colourName || customizationRouteParams.get("color") || "").trim().toLowerCase();
+  for (let index = basket.length - 1; index >= 0; index -= 1) {
+    const item = basket[index] || {};
+    const itemCode = String(item.productCode || item.code || "").trim().toLowerCase();
+    const itemColour = String(item.color || item.colour || "").trim().toLowerCase();
+    if (itemCode === productCode && (!colour || itemColour === colour)) return index;
+  }
+  return -1;
+}
+
+function getProductPricingQuantity(currentQty) {
+  const basket = readQuoteBasket();
+  const productCode = String(state.productCode || customizationRouteParams.get("code") || "").trim().toLowerCase();
+  if (!productCode) return currentQty;
+
+  const currentIndex = getCurrentBasketItemIndex(basket);
+  let total = 0;
+  basket.forEach((item, index) => {
+    const itemCode = String(item?.productCode || item?.code || "").trim().toLowerCase();
+    if (itemCode !== productCode) return;
+    total += index === currentIndex ? currentQty : getItemQty(item);
+  });
+  return Math.max(1, total + (currentIndex < 0 ? currentQty : 0));
+}
+
+function getChargeableEmbroideryLogoSources() {
+  const currentEmbroideryLogos = new Set(
+    getBillableLogoDesigns()
+      .filter((design) => design?.logo && normalizeDecorationMethod(design.method) === "embroidery")
+      .map((design) => String(design.logo).trim())
+      .filter(Boolean)
+  );
+  if (currentEmbroideryLogos.size === 0) return new Set();
+
+  const basket = readQuoteBasket();
+  const currentIndex = getCurrentBasketItemIndex(basket);
+  const existingLogos = new Set();
+  basket.forEach((item, index) => {
+    if (index === currentIndex) return;
+    getBasketLogoEntries(item).forEach((logo) => {
+      if (normalizeDecorationMethod(logo?.method) !== "embroidery") return;
+      const source = String(getLogoSource(logo)).trim();
+      if (source) existingLogos.add(source);
+    });
+  });
+
+  return new Set([...currentEmbroideryLogos].filter((source) => !existingLogos.has(source)));
+}
+
+function getEmbroiderySetupCost() {
+  const chargeableLogos = getChargeableEmbroideryLogoSources();
+  if (chargeableLogos.size === 0) return 0;
+  const apiDigitisingFee = Number(getCustomizationPricingRecord("embroidery")?.digitisingFeePerDesign);
+  const feePerDesign = state.customizationApiEnabled
+    ? (Number.isFinite(apiDigitisingFee) ? apiDigitisingFee : 0)
+    : 25;
+  return chargeableLogos.size * feePerDesign;
+}
+
+function getBasketLogoEntries(item) {
+  const logos = [];
+  if (Array.isArray(item?.logos)) logos.push(...item.logos);
+  if (Array.isArray(item?.positions)) logos.push(...item.positions);
+  else if (item?.positions && typeof item.positions === "object") logos.push(...Object.values(item.positions));
+  if (item?.positionDesigns && typeof item.positionDesigns === "object") {
+    logos.push(...Object.values(item.positionDesigns));
+  }
+  return logos.filter((logo) => Boolean(getLogoSource(logo)));
+}
+
+function getTierUnitPrice(priceBreaks, quantity, fallbackPrice = 0) {
+  const sortedTiers = (Array.isArray(priceBreaks) ? priceBreaks : [])
+    .filter((tier) => Number.isFinite(Number(tier?.price)))
+    .slice()
+    .sort((left, right) => Number(right.min || 0) - Number(left.min || 0));
+  const tier = sortedTiers.find((item) => quantity >= Number(item.min || 0));
+  return tier ? Number(tier.price) : Number(fallbackPrice) || 0;
+}
+
+function repriceBasketProductCode(basket, productCode) {
+  const normalizedCode = String(productCode || "").trim().toLowerCase();
+  const related = basket.filter((item) => (
+    String(item?.productCode || item?.code || "").trim().toLowerCase() === normalizedCode
+  ));
+  if (!normalizedCode || related.length === 0) return;
+
+  const priceBreaks = related.find((item) => Array.isArray(item?.priceBreaks) && item.priceBreaks.length)?.priceBreaks
+    || state.priceBreaks;
+  const totalQty = related.reduce((sum, item) => sum + getItemQty(item), 0);
+  const garmentUnitPrice = getTierUnitPrice(priceBreaks, totalQty, state.basePrice);
+
+  related.forEach((item) => {
+    const textUnitPrice = (Array.isArray(item.texts) ? item.texts : []).reduce(
+      (sum, textDesign) => sum + (parseFloat(textDesign?.unitPrice || 1.5) || 1.5),
+      0
+    );
+    item.garmentUnitPrice = garmentUnitPrice;
+    item.unitPrice = parseFloat((garmentUnitPrice + textUnitPrice).toFixed(2));
+
+    const updateLogoPrice = (logo) => {
+      if (!logo || typeof logo !== "object" || !getLogoSource(logo)) return;
+      if (state.customizationApiEnabled) {
+        const pricing = getCustomizationPricingRecord(logo.method, totalQty);
+        if (!pricing) return;
+        logo.unitPrice = pricing.unitPrice;
+        logo.quantity = totalQty;
+        logo.pricingVersion = pricing.pricingVersion || logo.pricingVersion || "";
+        logo.digitisingFeePerDesign = Number(pricing.digitisingFeePerDesign) || 0;
+        logo.requiresManualReview = Boolean(pricing.requiresManualReview || pricing.requiresArtworkAssessment);
+        logo.allowAutomaticCheckout = pricing.allowAutomaticCheckout !== false;
+        return;
+      }
+      logo.unitPrice = getApplicationUnitPrice(
+        normalizeDecorationMethod(logo.method) === "embroidery" ? "embroidery" : "print",
+        totalQty
+      );
+    };
+    if (Array.isArray(item.logos)) item.logos.forEach(updateLogoPrice);
+    if (Array.isArray(item.positions)) item.positions.forEach(updateLogoPrice);
+    else if (item.positions && typeof item.positions === "object") Object.values(item.positions).forEach(updateLogoPrice);
+    if (item.positionDesigns && typeof item.positionDesigns === "object") {
+      Object.values(item.positionDesigns).forEach(updateLogoPrice);
+    }
+  });
+}
+
 function calculatePrice() {
   const qty = parseInt(mainQtyInput.value) || state.totalQty || 1;
-  const tier = state.priceBreaks.find((item) =>
-    qty >= Number(item.min || 1) && qty <= Number(item.max || Number.MAX_SAFE_INTEGER)
-  );
-  let unit = tier ? Number(tier.price) : state.basePrice;
+  const pricingQty = getProductPricingQuantity(qty);
+  scheduleCustomizationPricingRefresh(pricingQty);
+  const garmentUnit = getTierUnitPrice(state.priceBreaks, pricingQty, state.basePrice);
+  let unit = garmentUnit;
 
-  Object.values(getDraftAreaDesigns()).forEach((design) => {
-    if (design?.logo) unit += getLogoUnitPrice(design.method);
+  getBillableLogoDesigns().forEach((design) => {
+    if (design?.logo) unit += getLogoUnitPrice(design.method, pricingQty);
   });
   Object.values(getDraftTextDesigns()).forEach((design) => {
     if (String(design?.text || "").trim()) unit += 1.5;
@@ -3184,6 +3493,36 @@ function calculatePrice() {
   if (state.names.length > 0) unit += 4;
 
   state.price = qty * unit;
+  updatePcOrderSummary(qty, garmentUnit, pricingQty);
+}
+
+function updatePcOrderSummary(qty, garmentUnit, pricingQty = qty) {
+  const summary = document.getElementById("pcOrderSummary");
+  if (!summary) return;
+
+  const logoUnit = getBillableLogoDesigns().reduce((total, design) => (
+    design?.logo ? total + getLogoUnitPrice(design.method, pricingQty) : total
+  ), 0);
+  const textUnit = Object.values(getDraftTextDesigns()).reduce((total, design) => (
+    String(design?.text || "").trim() ? total + 1.5 : total
+  ), 0);
+  const setup = getEmbroiderySetupCost();
+  const products = (Number(garmentUnit) || 0) * qty;
+  const customisation = (logoUnit + textUnit + (state.names.length > 0 ? 4 : 0)) * qty;
+  const totalExVat = products + customisation + setup;
+  const vat = totalExVat * VAT_RATE;
+  const format = (amount) => `£${amount.toFixed(2)}`;
+
+  const set = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = format(value);
+  };
+  set("pcSummaryProducts", products);
+  set("pcSummaryCustomisation", customisation);
+  set("pcSummarySetup", setup);
+  set("pcSummaryExVat", totalExVat);
+  set("pcSummaryVat", vat);
+  set("pcSummaryIncVat", totalExVat + vat);
 }
 
 function isVatOn() {
@@ -3300,6 +3639,12 @@ function compactLogoForStorage(logo) {
     positionLabel: logo.positionLabel || "",
     logo: source,
     unitPrice: parseFloat(logo.unitPrice || 0) || 0,
+    quantity: parseInt(logo.quantity || 0, 10) || 0,
+    pricingVersion: logo.pricingVersion || "",
+    capabilityRulesetVersion: logo.capabilityRulesetVersion || "",
+    digitisingFeePerDesign: parseFloat(logo.digitisingFeePerDesign || 0) || 0,
+    requiresManualReview: Boolean(logo.requiresManualReview),
+    allowAutomaticCheckout: logo.allowAutomaticCheckout !== false,
     qualityPct: parseInt(logo.qualityPct || 0, 10) || 0,
     logoRotation: parseFloat(logo.logoRotation ?? logo.rotation ?? 0) || 0,
     placement: logo.placement && typeof logo.placement === "object"
@@ -3726,6 +4071,7 @@ function buildBasketItemFromState() {
         const positionLabel = card?.querySelector(".position-name")?.textContent?.trim()
           || position.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
         const method = normalizeDecorationMethod(assignment.method || state.decorationType || "print");
+        const pricing = getCustomizationPricingRecord(method);
         return {
           type: "logo",
           method,
@@ -3734,6 +4080,12 @@ function buildBasketItemFromState() {
           positionLabel,
           logo: assignment.logo,
           unitPrice: getLogoUnitPrice(method),
+          quantity: getProductPricingQuantity(state.totalQty),
+          pricingVersion: pricing?.pricingVersion || "",
+          capabilityRulesetVersion: state.capabilityRulesetVersion || "",
+          digitisingFeePerDesign: Number(pricing?.digitisingFeePerDesign) || 0,
+          requiresManualReview: Boolean(pricing?.requiresManualReview || pricing?.requiresArtworkAssessment),
+          allowAutomaticCheckout: pricing ? pricing.allowAutomaticCheckout !== false : !state.customizationApiEnabled,
           qualityPct: 0,
           logoRotation: 0,
           placement: null,
@@ -3744,6 +4096,7 @@ function buildBasketItemFromState() {
     : null;
   const logos = positionLogos || designs.map((design) => {
     const method = normalizeDecorationMethod(design.method);
+    const pricing = getCustomizationPricingRecord(method);
     return {
       type: "logo",
       method,
@@ -3752,6 +4105,12 @@ function buildBasketItemFromState() {
       positionLabel: getDesignAreaLabel(design.area),
       logo: design.logo,
       unitPrice: getLogoUnitPrice(method),
+      quantity: getProductPricingQuantity(state.totalQty),
+      pricingVersion: pricing?.pricingVersion || "",
+      capabilityRulesetVersion: state.capabilityRulesetVersion || "",
+      digitisingFeePerDesign: Number(pricing?.digitisingFeePerDesign) || 0,
+      requiresManualReview: Boolean(pricing?.requiresManualReview || pricing?.requiresArtworkAssessment),
+      allowAutomaticCheckout: pricing ? pricing.allowAutomaticCheckout !== false : !state.customizationApiEnabled,
       qualityPct: parseInt(design.qualityPct || 0, 10) || 0,
       logoRotation: parseFloat(design.rotation || 0) || 0,
       placement: design.placement || null,
@@ -3820,6 +4179,32 @@ function buildBasketItemFromState() {
   const nonLogoUnitPrice = (state.basePrice || 0)
     + (texts.length * 1.5)
     + (state.names.length > 0 ? 4 : 0);
+  const chargeableEmbroideryLogos = getChargeableEmbroideryLogoSources();
+  const allocatedSetupArtwork = new Set();
+  const customisations = logos.map((logo) => {
+    const method = customizationApi?.normalizeMethod(logo.method) || (logo.method === "print" ? "dtf" : logo.method);
+    const artworkId = createArtworkId(logo.logo);
+    const positionId = customizationApi?.normalizePosition(logo.position) || String(logo.position || "").replace(/-/g, "_");
+    const chargeSetup = method === "embroidery"
+      && chargeableEmbroideryLogos.has(String(logo.logo || "").trim())
+      && !allocatedSetupArtwork.has(artworkId);
+    const setupCharge = state.customizationApiEnabled
+      ? (Number(logo.digitisingFeePerDesign) || 0)
+      : 25;
+    if (chargeSetup) allocatedSetupArtwork.add(artworkId);
+    return {
+      id: `custom_${createStableId([productCode, positionId, method, artworkId].join("|"))}`,
+      productId: productCode,
+      positionId,
+      method,
+      artworkId,
+      quantity: logo.quantity,
+      applicationUnitPrice: logo.unitPrice,
+      setupCharge: chargeSetup ? setupCharge : 0,
+      requiresQuote: logo.allowAutomaticCheckout === false,
+      status: logo.logo && method ? "complete" : "incomplete"
+    };
+  });
 
   return {
     id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -3838,13 +4223,22 @@ function buildBasketItemFromState() {
     image: basketColorImage,
     quantities,
     totalQty: state.totalQty,
+    basePrice: state.basePrice,
+    priceBreaks: state.priceBreaks.map((tier) => ({ ...tier })),
     unitPrice: parseFloat(nonLogoUnitPrice.toFixed(2)),
     positions: legacyPositions,
     positionDesigns: legacyPositionDesigns,
     logos,
+    customisations,
+    customisationEngineVersion: CUSTOMISATION_ENGINE_VERSION,
+    backendValidationRequired: true,
     texts,
     textDesigns: legacyTextDesigns,
     customizationNotes: String(state.customizationNotes || "").trim(),
+    customizationProductType: state.customizationCapabilityProductType || "",
+    capabilityRulesetVersion: state.capabilityRulesetVersion || "",
+    requiresManualReview: state.requiresManualReview || Boolean(state.customizationPricingError),
+    allowAutomaticCheckout: state.allowAutomaticCheckout && !state.customizationPricingError,
     designPreview
   };
 }
@@ -3925,6 +4319,8 @@ function upsertBasketItemFromState() {
   } else {
     basket.push(compactBasketItemForStorage(nextItem));
   }
+
+  repriceBasketProductCode(basket, nextItem.productCode || nextItem.code);
 
   const saved = writeQuoteBasket(basket);
   updateBasketUIFromStorage();
@@ -4797,6 +5193,7 @@ function assignLogoToPosition(position, logo, method = state.decorationType || "
   if (!position || !logo || !state.selectedPositions.includes(position)) return false;
   state.positionLogoAssignments[position] = { logo, method };
   syncPositionCardLogoPreviews();
+  calculatePrice();
   updateConfirmButtonState();
   const preview = document.querySelector(`.position-card[data-position="${CSS.escape(position)}"] .position-logo-preview-box`);
   if (preview) {
@@ -4804,6 +5201,41 @@ function assignLogoToPosition(position, logo, method = state.decorationType || "
     void preview.offsetWidth;
     preview.classList.add("is-logo-arriving");
   }
+  return true;
+}
+
+function getPositionLabel(position) {
+  const card = document.querySelector(`.position-card[data-position="${CSS.escape(position)}"]`);
+  return card?.querySelector(".position-name")?.textContent?.trim()
+    || String(position || "").replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function removePositionCustomisation(position) {
+  delete state.positionLogoAssignments[position];
+  state.selectedPositions = state.selectedPositions.filter((item) => item !== position);
+  if (state.selectedPosition === position) state.selectedPosition = state.selectedPositions.at(-1) || "";
+}
+
+function resolvePositionConflicts(newPosition) {
+  const conflicts = CUSTOMISATION_POSITION_RULES[newPosition]?.conflictsWith || [];
+  const activeConflicts = conflicts.filter((position) => (
+    state.selectedPositions.includes(position) || state.positionLogoAssignments[position]?.logo
+  ));
+  if (activeConflicts.length === 0) return true;
+
+  const completedConflicts = activeConflicts.filter((position) => state.positionLogoAssignments[position]?.logo);
+  if (completedConflicts.length > 0) {
+    const newLabel = getPositionLabel(newPosition);
+    const existingLabels = completedConflicts.map(getPositionLabel).join(", ");
+    const confirmed = window.confirm(
+      `${newLabel} cannot be used together with ${existingLabels}. Selecting it will remove the existing customisation.`
+    );
+    if (!confirmed) return false;
+  }
+
+  activeConflicts.forEach(removePositionCustomisation);
+  calculatePrice();
+  updateConfirmButtonState();
   return true;
 }
 
@@ -4824,6 +5256,7 @@ function ensurePendingPositionLogoTarget() {
     || cards[0].dataset.position;
   const card = cards.find(item => item.dataset.position === target);
   if (!card) return "";
+  if (!resolvePositionConflicts(target)) return "";
 
   if (!state.selectedPositions.includes(target)) {
     state.selectedPositions.push(target);
@@ -5064,6 +5497,20 @@ function positionKeyForLabel(label) {
   return String(label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function createStableId(value) {
+  let hash = 2166136261;
+  const source = String(value || "");
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+function createArtworkId(source) {
+  return `artwork_${createStableId(source)}`;
+}
+
 // ---------------------------------------------------------------------------
 // Uniform-site decoration matrix — yes | poa | no per technique.
 // Effective rule = worst of (category rule, position rule); the PRINT button
@@ -5134,9 +5581,9 @@ function getCategoryMethodRules() {
 
 // Position rules: large/lower placements never offer direct embroidery.
 const POSITION_METHOD_RULES = {
-  "large-front": { embroidery: "poa" },
+  "large-front": { embroidery: "no" },
   "large-front-above-pocket": { embroidery: "poa" },
-  "large-back": { embroidery: "poa" },
+  "large-back": { embroidery: "no" },
   "lower-front": { embroidery: "poa" },
   "lower-back": { embroidery: "poa" },
   "left-leg": { embroidery: "poa" },
@@ -5144,6 +5591,25 @@ const POSITION_METHOD_RULES = {
 };
 
 function getAllowedMethodsForPositionKey(positionKey) {
+  if (state.customizationApiEnabled) {
+    const capability = state.customizationCapabilities[customizationApi.normalizePosition(positionKey)];
+    const toRule = (method) => {
+      const status = String(method?.status || "POA").toUpperCase();
+      if (status === "AVAILABLE" && method?.buttonEnabled !== false && method?.allowAddToBasket !== false) return "yes";
+      if (status === "HIDDEN" || method?.visible === false) return "hidden";
+      if (status === "UNAVAILABLE") return "no";
+      return "poa";
+    };
+    const position = POSITION_METHOD_RULES[String(positionKey || "").toLowerCase()] || {};
+    const embroidery = toRule(capability?.methods?.embroidery);
+    return {
+      embroidery: position.embroidery === "no"
+        ? "no"
+        : worstMethodRule(embroidery, position.embroidery || "yes"),
+      print: toRule(capability?.methods?.dtf)
+    };
+  }
+
   const category = getCategoryMethodRules();
   const position = POSITION_METHOD_RULES[String(positionKey || "").toLowerCase()] || {};
   return {
@@ -5152,8 +5618,111 @@ function getAllowedMethodsForPositionKey(positionKey) {
   };
 }
 
-function showPoaNotice() {
+function capabilityMethodButton(method, fallbackMethod) {
+  const status = String(method?.status || "POA").toUpperCase();
+  if (status === "HIDDEN" || method?.visible === false) return "";
+  const canonicalMethod = customizationApi.normalizeMethod(method?.method || fallbackMethod);
+  const label = method?.methodLabel || (canonicalMethod === "dtf" ? "DTF Print" : "Embroidery");
+  const title = String(method?.message || "").replace(/"/g, "&quot;");
+  if (status === "AVAILABLE" && method?.buttonEnabled !== false && method?.allowAddToBasket !== false) {
+    return `<button type="button" class="position-method-btn method-${canonicalMethod === "dtf" ? "print" : "embroidery"}" data-method="${canonicalMethod}" title="${title}">${label.toUpperCase()}</button>`;
+  }
+  if (status === "UNAVAILABLE") {
+    return `<button type="button" class="position-method-btn is-disabled" disabled title="${title}">${label.toUpperCase()} · UNAVAILABLE</button>`;
+  }
+  return `<button type="button" class="position-method-btn method-poa" data-method="poa-${canonicalMethod}" title="${title || POA_NOTICE_COPY}">${label.toUpperCase()} · POA</button>`;
+}
+
+function renderCapabilityButtons(card, capability) {
+  const container = card?.querySelector(".position-method-buttons");
+  if (!container) return;
+  const positionRule = POSITION_METHOD_RULES[String(card.dataset.position || "").toLowerCase()] || {};
+  const embroidery = positionRule.embroidery === "no"
+    ? { method: "embroidery", methodLabel: "Embroidery", status: "UNAVAILABLE", message: "Embroidery is unavailable for large designs." }
+    : positionRule.embroidery === "poa"
+      ? { method: "embroidery", methodLabel: "Embroidery", status: "POA", message: "Embroidery on this position is available on request." }
+      : capability?.methods?.embroidery;
+  container.innerHTML = [
+    capabilityMethodButton(embroidery, "embroidery"),
+    capabilityMethodButton(capability?.methods?.dtf, "dtf")
+  ].join("");
+}
+
+async function refreshCustomizationCapabilities() {
+  if (!state.customizationApiEnabled) return;
+  const cards = [...document.querySelectorAll(".position-card[data-position]")];
+  await Promise.all(cards.map(async (card) => {
+    const position = customizationApi.normalizePosition(card.dataset.position);
+    try {
+      const capability = await customizationApi.getCustomizationCapabilities({
+        productType: state.customizationCapabilityProductType,
+        position,
+        sku: state.productCode
+      });
+      state.customizationCapabilities[position] = capability;
+      state.capabilityRulesetVersion = capability.rulesetVersion || state.capabilityRulesetVersion;
+      renderCapabilityButtons(card, capability);
+    } catch (error) {
+      console.error("Customization capability request failed", {
+        endpoint: "customization-capabilities",
+        sku: state.productCode,
+        productType: state.customizationCapabilityProductType,
+        position,
+        message: error?.message || String(error)
+      });
+      const fallback = await customizationApi.getCustomizationCapabilities({ productType: "", position, sku: state.productCode });
+      state.customizationCapabilities[position] = fallback;
+      renderCapabilityButtons(card, fallback);
+    }
+  }));
+}
+
+function openPoaContactForm(positionKey, method = "embroidery") {
+  try {
+    const hostWindow = window.parent && window.parent !== window ? window.parent : window;
+    if (typeof hostWindow.openContactPopup !== "function") return false;
+    const canonicalMethod = customizationApi?.normalizeMethod(method) || normalizeDecorationMethod(method);
+    const pricing = getCustomizationPricingRecord(canonicalMethod);
+    const assignment = state.positionLogoAssignments?.[positionKey];
+    const payload = {
+      sku: state.productCode,
+      productType: state.customizationCapabilityProductType || "",
+      colour: state.colourName,
+      quantity: getProductPricingQuantity(state.totalQty),
+      position: customizationApi?.normalizePosition(positionKey) || positionKey,
+      method: canonicalMethod,
+      artworkReference: assignment?.logo || state.uploadedLogo || "",
+      customerNotes: String(state.customizationNotes || "").trim(),
+      capabilityStatus: "POA",
+      estimatedUnitPrice: Number(pricing?.unitPrice) || null,
+      pricingVersion: pricing?.pricingVersion || "",
+      capabilityRulesetVersion: state.capabilityRulesetVersion || ""
+    };
+    sessionStorage.setItem("customizationPoaEnquiry", JSON.stringify(payload));
+    const interest = hostWindow.document.getElementById("contactInterest");
+    if (interest) interest.value = canonicalMethod === "embroidery" ? "embroidery" : "printing";
+    const positionLabel = String(positionKey || "").replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+    const message = hostWindow.document.getElementById("contactMessage");
+    if (message && !message.value.trim()) {
+      message.value = `Please advise on POA embroidery${positionLabel ? ` for ${positionLabel}` : ""} on ${state.productName || state.productCode}.`;
+    }
+    hostWindow.openContactPopup();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function showPoaNotice(positionKey = "", method = "embroidery") {
   document.getElementById("positionMethodChoice")?.remove();
+  const position = String(positionKey || "").trim();
+  if (position && !state.positionLogoAssignments?.[position]?.logo) {
+    state.selectedPositions = state.selectedPositions.filter((item) => item !== position);
+    if (state.selectedPosition === position) state.selectedPosition = state.selectedPositions.at(-1) || "";
+    syncPositionSelectionCards();
+  }
+  if (openPoaContactForm(position, method)) return;
+
   const popup = document.createElement("div");
   popup.id = "positionMethodChoice";
   popup.className = "position-method-choice";
@@ -5183,12 +5752,12 @@ function showPoaNotice() {
 // contact notice instead of silently accepting the artwork.
 function chooseMethodForPosition(card, positionKey, onChoose) {
   const allowed = getAllowedMethodsForPositionKey(positionKey);
-  const options = ["embroidery", "print"].filter((method) => allowed[method] === "yes");
+  const options = ["embroidery", "print"].filter((method) => allowed[method] !== "no");
   if (options.length === 0) {
-    showPoaNotice();
+    showPoaNotice(positionKey);
     return;
   }
-  if (options.length === 1) {
+  if (options.length === 1 && allowed[options[0]] === "yes") {
     onChoose(options[0]);
     return;
   }
@@ -5198,11 +5767,13 @@ function chooseMethodForPosition(card, positionKey, onChoose) {
   popup.id = "positionMethodChoice";
   popup.className = "position-method-choice";
   popup.setAttribute("role", "dialog");
-  popup.innerHTML = '<strong>Embroidery or Print?</strong>'
-    + '<div class="position-method-choice-actions">'
-    + '<button type="button" class="position-method-btn method-embroidery" data-choice="embroidery">EMBROIDERY</button>'
-    + '<button type="button" class="position-method-btn method-print" data-choice="print">PRINT</button>'
-    + '</div>';
+  const optionButtons = options.map((method) => {
+    const isPoa = allowed[method] === "poa";
+    const label = `${method.toUpperCase()}${isPoa ? " · POA" : ""}`;
+    return `<button type="button" class="position-method-btn method-${isPoa ? "poa" : method}" data-choice="${method}" data-status="${allowed[method]}">${label}</button>`;
+  }).join("");
+  popup.innerHTML = '<strong>Choose decoration method</strong>'
+    + `<div class="position-method-choice-actions">${optionButtons}</div>`;
   document.body.appendChild(popup);
   const popupWidth = 216;
   popup.style.left = `${Math.max(8, Math.min(window.innerWidth - popupWidth - 8, rect.left + rect.width / 2 - popupWidth / 2))}px`;
@@ -5218,6 +5789,10 @@ function chooseMethodForPosition(card, positionKey, onChoose) {
       const method = button.dataset.choice;
       popup.remove();
       document.removeEventListener("pointerdown", dismiss, true);
+      if (button.dataset.status === "poa") {
+        showPoaNotice(positionKey, method);
+        return;
+      }
       onChoose(method);
     });
   });
@@ -5262,6 +5837,12 @@ function configurePositionCardsForProduct() {
     isSweatshirt || hasConfiguredPositions
   );
   document.body.classList.toggle("has-configured-position-picker", hasConfiguredPositions);
+  const pcOrderSummary = document.getElementById("pcOrderSummary");
+  if (isPcOrderEmbed && (isSweatshirt || hasConfiguredPositions) && pcOrderSummary && confirmQualityBtn) {
+    pcOrderSummary.appendChild(confirmQualityBtn);
+  } else if (inlineLogoUpload && confirmQualityBtn && confirmQualityBtn.parentElement !== inlineLogoUpload) {
+    inlineLogoUpload.appendChild(confirmQualityBtn);
+  }
   if (sweatshirtPicker) sweatshirtPicker.hidden = !isSweatshirt;
   const views = getConfiguredViewAreas();
   // Sweatshirts always expose their full canonical position set; the
@@ -5322,6 +5903,7 @@ function configurePositionCardsForProduct() {
   syncPositionCardLogoPreviews();
   syncInlineLogoPanels();
   updateCustomizationContextLabel();
+  void refreshCustomizationCapabilities();
 }
 
 function showPositionPickerModal(options = {}) {
@@ -5860,7 +6442,6 @@ function resetPcUploadModal() {
   pcUploadModal.hidden = true;
   document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = true;
-  document.getElementById("pcUploadSuccess").hidden = true;
   document.getElementById("pcUploadPercent").textContent = "0%";
   document.getElementById("pcUploadFill").style.width = "0%";
 }
@@ -5876,8 +6457,13 @@ function preparePcUploadFile(file) {
   document.getElementById("pcUploadFileName").textContent = file.name;
   document.getElementById("pcUploadReady").hidden = true;
   document.getElementById("pcUploadProgress").hidden = true;
-  document.getElementById("pcUploadSuccess").hidden = true;
   startPcUpload();
+}
+
+async function completePcUpload() {
+  const file = pcPendingUploadFile;
+  resetPcUploadModal();
+  if (file) await processLogoFile(file);
 }
 
 function startPcUpload() {
@@ -5901,8 +6487,7 @@ function startPcUpload() {
     if (linear < 1) return;
     clearInterval(pcUploadTimer);
     pcUploadTimer = null;
-    document.getElementById("pcUploadProgress").hidden = true;
-    document.getElementById("pcUploadSuccess").hidden = false;
+    completePcUpload();
   }, 16);
 }
 
@@ -5912,11 +6497,6 @@ logoFileInput?.addEventListener("change", event => {
 });
 
 document.getElementById("pcUploadStart")?.addEventListener("click", startPcUpload);
-document.getElementById("pcUploadDone")?.addEventListener("click", async () => {
-  const file = pcPendingUploadFile;
-  resetPcUploadModal();
-  if (file) await processLogoFile(file);
-});
 document.getElementById("pcUploadClose")?.addEventListener("click", resetPcUploadModal);
 document.getElementById("pcUploadCancel")?.addEventListener("click", resetPcUploadModal);
 document.getElementById("pcUploadReset")?.addEventListener("click", () => {
@@ -7899,9 +8479,10 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
   if (!input || !card) return;
     const area = normalizeAreaForPicker(card.dataset.area) || "front";
     const positionKey = String(card.dataset.position || "").trim() || area;
-    const selectedPositions = Array.isArray(state.selectedPositions) ? state.selectedPositions : [];
+    let selectedPositions = Array.isArray(state.selectedPositions) ? state.selectedPositions : [];
 
     if (!input.checked) {
+      delete state.positionLogoAssignments[positionKey];
       state.selectedPositions = selectedPositions.filter((position) => position !== positionKey);
       state.selectedPosition = state.selectedPositions.at(-1) || "";
       const activeCard = state.selectedPosition
@@ -7909,11 +8490,13 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
         : null;
       state.selectedArea = normalizeAreaForPicker(activeCard?.dataset.area) || "front";
       syncPositionSelectionCards();
+      calculatePrice();
+      updateConfirmButtonState();
       if (isPcOrderEmbed) await applyArea();
       return;
     }
 
-    if (!selectedPositions.includes(positionKey) && selectedPositions.length >= 5) {
+    if (!selectedPositions.includes(positionKey) && selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
       input.checked = false;
       if (typeof window.showToast === "function") {
         window.showToast("You can select up to five logo positions.");
@@ -7922,11 +8505,19 @@ document.getElementById("positionGrid")?.addEventListener("change", async (event
       return;
     }
 
+    if (!resolvePositionConflicts(positionKey)) {
+      input.checked = false;
+      syncPositionSelectionCards();
+      return;
+    }
+
+    selectedPositions = state.selectedPositions;
     if (!selectedPositions.includes(positionKey)) selectedPositions.push(positionKey);
     state.selectedPositions = selectedPositions;
     state.selectedPosition = positionKey;
     state.selectedArea = area;
     syncPositionSelectionCards();
+    updateConfirmButtonState();
     updateCustomizationContextLabel();
     if (isPcOrderEmbed) {
       await applyArea();
@@ -7944,12 +8535,13 @@ if (positionGrid) {
 
   const activateDroppedPosition = (position) => {
     if (state.selectedPositions.includes(position)) return true;
-    if (state.selectedPositions.length >= 5) {
+    if (state.selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
       if (typeof window.showToast === "function") {
         window.showToast("You can select up to five logo positions.");
       }
       return false;
     }
+    if (!resolvePositionConflicts(position)) return false;
     state.selectedPositions.push(position);
     state.selectedPosition = position;
     syncPositionSelectionCards();
@@ -7963,7 +8555,7 @@ if (positionGrid) {
     clearPositionDropState();
     event.preventDefault();
     const position = card.dataset.position;
-    if (!card.classList.contains("is-selected") && state.selectedPositions.length >= 5) {
+    if (!card.classList.contains("is-selected") && state.selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
       event.dataTransfer.dropEffect = "none";
       card.classList.add("is-logo-drop-blocked");
       return;
@@ -8010,7 +8602,7 @@ if (positionGrid) {
     const position = card?.dataset.position;
     if (!position) return;
     if (String(methodButton.dataset.method).startsWith("poa")) {
-      showPoaNotice();
+      showPoaNotice(position, String(methodButton.dataset.method).replace(/^poa-/, ""));
       return;
     }
     if (!activateDroppedPosition(position)) return;
@@ -8031,12 +8623,7 @@ if (positionGrid) {
     const position = card?.dataset.position;
     if (!position) return;
     if (!removeButton) {
-      if (!card.classList.contains("is-selected") && state.selectedPositions.length >= 5) {
-        if (typeof window.showToast === "function") {
-          window.showToast("You can select up to five logo positions.");
-        }
-        return;
-      }
+      if (!activateDroppedPosition(position)) return;
       chooseMethodForPosition(card, position, (method) => {
         state.pendingPositionLogoTarget = position;
         state.pendingDecorationType = method;
@@ -8051,6 +8638,7 @@ if (positionGrid) {
       state.selectedPosition = state.selectedPositions.at(-1) || "";
     }
     syncPositionSelectionCards();
+    calculatePrice();
     updateConfirmButtonState();
   });
 }

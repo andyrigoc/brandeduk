@@ -44,7 +44,7 @@
       if (isPcCustomization) {
         var desktopStyles = document.createElement("link");
         desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260922-price-tiers";
+        desktopStyles.href = folderPath + "desktop.css?v=20260922-poa-contact";
         document.head.appendChild(desktopStyles);
       }
     })();
@@ -211,6 +211,20 @@
         <span>Selected colour</span>
         <span id="leftSelectedColourName" class="left-selected-colour-name">White</span>
       </div>
+
+      <section id="pcOrderSummary" class="pc-order-summary" aria-label="Order summary">
+        <h2>Order summary</h2>
+        <dl>
+          <div><dt>Products</dt><dd id="pcSummaryProducts">£0.00</dd></div>
+          <div><dt>Logo customisation</dt><dd id="pcSummaryCustomisation">£0.00</dd></div>
+          <div><dt>Setup</dt><dd id="pcSummarySetup">£0.00</dd></div>
+          <div><dt>Total (exc. VAT)</dt><dd id="pcSummaryExVat">£0.00</dd></div>
+          <div><dt>VAT</dt><dd id="pcSummaryVat">£0.00</dd></div>
+        </dl>
+        <div class="pc-order-summary-total"><span>Total (inc. VAT)</span><strong id="pcSummaryIncVat">£0.00</strong></div>
+        <div id="pcSummaryPricingStatus" class="pc-summary-pricing-status" role="status" hidden></div>
+        <p><span aria-hidden="true">✓</span><strong>Artwork approval included</strong><small>We will send a proof for approval before production begins.</small></p>
+      </section>
 
       <div id="customizationContextLabel" class="customization-context-label" hidden aria-live="polite">
         <span>CUSTOMISING</span>
@@ -1154,11 +1168,6 @@
         <div><span id="pcUploadPercent">0%</span><div class="pc-upload-modal__track"><span id="pcUploadFill"></span></div></div>
         <button id="pcUploadCancel" type="button">Cancel</button>
       </div>
-      <div id="pcUploadSuccess" class="pc-upload-modal__success" hidden>
-        <strong>Upload Successful!</strong>
-        <p>Your file is ready to be added to your selected position.</p>
-        <button id="pcUploadDone" type="button">Done</button>
-      </div>
     </div>
   </div>
 </div>
@@ -1193,10 +1202,15 @@
   // Resolve app.js from the established tool folder instead of from the
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
-    var appScript = document.createElement("script");
-    appScript.src = new URL("app.js?v=20260922-price-tiers", document.baseURI).href;
-    appScript.async = false;
-    document.body.appendChild(appScript);
+    var apiScript = document.createElement("script");
+    apiScript.src = new URL("customization-api.js?v=20260922-api-integration", document.baseURI).href;
+    apiScript.onload = function () {
+      var appScript = document.createElement("script");
+      appScript.src = new URL("app.js?v=20260922-engine-v1", document.baseURI).href;
+      appScript.async = false;
+      document.body.appendChild(appScript);
+    };
+    document.body.appendChild(apiScript);
   })();
 </script>
 </body>

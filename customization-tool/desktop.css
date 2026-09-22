@@ -751,8 +751,7 @@
   .pc-upload-modal__ready,
   .pc-upload-modal__progress { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .pc-upload-modal__ready[hidden],
-  .pc-upload-modal__progress[hidden],
-  .pc-upload-modal__success[hidden] { display: none !important; }
+  .pc-upload-modal__progress[hidden] { display: none !important; }
   .pc-upload-modal__ready { color: #f8fafc; }
   .pc-upload-modal__ready > span { color: #b8bfcd; font-size: 24px; }
   .pc-upload-modal__ready strong { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -763,14 +762,9 @@
   .pc-upload-modal__track { height: 10px; overflow: hidden; border-radius: 4px; background: #343a49; }
   .pc-upload-modal__track #pcUploadFill { display: block; width: 0; height: 100%; margin: 0; background: #2e68ff; }
   .pc-upload-modal__progress button { padding: 12px 28px; }
-  .pc-upload-modal__success { display: grid; gap: 10px; }
-  .pc-upload-modal__success strong { font-size: 16px; color: #61d982; }
-  .pc-upload-modal__success p { margin: 0; font-size: 12px; }
-  .pc-upload-modal__success button { padding: 10px 18px; border: 0; border-radius: 6px; background: #30374d; color: #fff; font: inherit; font-size: 12px; cursor: pointer; }
 
   .pc-upload-modal__ready:not([hidden]),
-  .pc-upload-modal__progress:not([hidden]),
-  .pc-upload-modal__success:not([hidden]) {
+  .pc-upload-modal__progress:not([hidden]) {
     animation: pc-upload-state-in .22s ease-out both;
   }
 
@@ -1548,6 +1542,126 @@
     font-weight: 800;
   }
 
+  .pc-order-summary {
+    display: none;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary {
+    position: absolute;
+    z-index: 5;
+    right: 14px;
+    bottom: 70px;
+    left: 14px;
+    display: block;
+    max-height: min(285px, 40vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px;
+    border: 1px solid #e1e7ef;
+    border-radius: 9px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgb(15 23 42 / 6%);
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary h2 {
+    margin: 0 0 10px;
+    color: #172554;
+    font-size: 16px;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary dl {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary dt,
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary dd {
+    margin: 0;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary dd {
+    color: #172554;
+    font-weight: 800;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid #dbe3ec;
+    color: #172554;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary-total strong {
+    color: #128355;
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-summary-pricing-status {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-left: 3px solid #d97706;
+    background: #fffbeb;
+    color: #78350f;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-summary-pricing-status.is-error {
+    border-left-color: #dc2626;
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary p {
+    display: grid;
+    grid-template-columns: 15px 1fr;
+    gap: 2px 7px;
+    margin: 12px 0 0;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary p > span {
+    grid-row: span 2;
+    color: #16a34a;
+    font-size: 16px;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary p strong {
+    color: #172554;
+    font-size: 11px;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .pc-order-summary .confirm-quality-btn {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    min-height: 42px;
+    margin: 12px 0 0;
+    box-shadow: 0 -8px 12px #fff;
+  }
+
   body.is-pc-order-embed.is-sweatshirt-position-picker .garment-preview-heading {
     display: none;
   }
@@ -1571,14 +1685,28 @@
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .product-preview {
-    width: min(300px, calc(100% - 32px), 55vh);
-    height: min(540px, calc(100vh - 150px));
-    margin: 88px auto 0;
+    position: absolute;
+    top: 82px;
+    right: 18px;
+    bottom: min(375px, 49vh);
+    left: 18px;
+    width: auto;
+    height: auto;
+    min-height: 120px;
+    max-height: none;
+    margin: 0;
   }
 
   body.is-pc-order-embed.is-sweatshirt-position-picker .polo-colour-wrap {
     width: 100%;
     height: 100%;
+    max-height: 100%;
+  }
+
+  body.is-pc-order-embed.is-sweatshirt-position-picker .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   .desktop-product-summary {

@@ -69,7 +69,7 @@
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order-preload');
-        target.searchParams.set('_cb', '20260922-price-tiers');
+        target.searchParams.set('_cb', '20260922-poa-contact');
         var preloadType = product.productType || product.category || product.type || product.name || '';
         if (preloadType) target.searchParams.set('productType', preloadType);
         if (colour) target.searchParams.set('color', colour);
@@ -247,7 +247,7 @@
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
         target.searchParams.set('embedded', 'pc-order');
-        target.searchParams.set('_cb', '20260922-price-tiers');
+        target.searchParams.set('_cb', '20260922-poa-contact');
         target.searchParams.set('color', colour);
         if (colourImage) target.searchParams.set('colorImage', colourImage);
         if (colourHex) target.searchParams.set('colorHex', colourHex);

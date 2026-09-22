@@ -16,9 +16,11 @@
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260912b"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260913c"></script>
-    <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
+    <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260922c">
+    <script src="footer-dev/pc-footer.js?v=20260922c" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
     <style>
         /* Reduce searchbar header gap - PC only */
@@ -1997,7 +1999,7 @@
         /* Blur effect when popup is open */
         body.popup-open .shop-wrapper,
         body.popup-open .site-header,
-        body.popup-open [data-mobile-footer] {
+        body.popup-open [data-pc-footer] {
             filter: blur(8px);
             transition: filter 0.3s ease;
         }
@@ -2040,7 +2042,7 @@
     <link rel="stylesheet" href="test-order-popup/order.css">
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260811a">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
-    <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260811b">
+    <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
     <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260921-flow-basket">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
@@ -3581,8 +3583,8 @@
         </section>
     </div>
 
-    <!-- Footer -->
-    <div data-mobile-footer></div>
+    <!-- PC Footer -->
+    <div data-pc-footer></div>
 
     <script src="brandedukv15-child/assets/data/brand-descriptions.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
@@ -8127,8 +8129,6 @@
 
     <script src="../brandedukv15-child/assets/js/call-modal.js?v=20260122"></script>
 
-    <script src="mobile/footer/footer.js?v=20260210" defer></script>
-
     <!-- Order Popup HTML -->
     <div id="orderPopup" class="order_overlay" style="display:none;">
         <div class="order_wrapper">
@@ -8989,6 +8989,42 @@
 
     </div>
 
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup-contact" id="popupContact">
+        <div class="popup-contact__header">
+            <h2 class="popup-contact__title">Get in touch</h2>
+            <button class="popup-contact__close" id="popupContactClose" aria-label="Close contact form" type="button">
+                <svg class="popup-contact__close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="popup-contact__body">
+            <form class="popup-contact__form" id="contactQuickForm">
+                <div class="form-group"><input type="text" id="contactName" placeholder="Name" required></div>
+                <div class="form-group"><input type="email" id="contactEmail" placeholder="Email address" required></div>
+                <div class="form-group">
+                    <select id="contactInterest" required>
+                        <option value="" disabled selected>Interested in</option>
+                        <option value="embroidery">Embroidery</option>
+                        <option value="printing">Printing</option>
+                        <option value="workwear">Workwear</option>
+                        <option value="uniforms">Uniforms</option>
+                        <option value="promotional">Promotional Items</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><input type="tel" id="contactPhone" placeholder="Phone number"></div>
+                <div class="form-row">
+                    <div class="form-group"><input type="text" id="contactAddress" placeholder="Address"></div>
+                    <div class="form-group"><input type="text" id="contactPostCode" placeholder="Post Code"></div>
+                </div>
+                <div class="form-group"><textarea id="contactMessage" placeholder="Message" required></textarea></div>
+                <button type="submit" class="popup-contact__submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Color Zoom Modal -->
     <div id="colorZoomModal">
         <div class="color-zoom-content">
@@ -9005,9 +9041,10 @@
     <!-- Order Popup Scripts -->
     <script src="test-order-popup/order.js?v=20260919-basket-tier-pricing"></script>
     <script src="test-order-popup/order-integration.js?v=20260920-fast-product-open"></script>
-    <script src="test-order-popup/customizer-embed.js?v=20260922-price-tiers"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20260922-poa-contact"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260920-product-cache"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20260921-flow-basket"></script>
+    <script src="mobile/js/popup-contact.js?v=20251230"></script>
 
     <script>
         // Color Zoom Modal Functions
