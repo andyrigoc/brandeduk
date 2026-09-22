@@ -136,9 +136,9 @@ main.main-content {
     background: #fff;
 }
 
-/* Banner 4 - Branded Bouncing (Purple) */
+/* Banner 4 - Branded Bouncing */
 #heroBanner4 {
-    background: #995BD5;
+    background: #ffeb00;
 }
 
 #heroBannerOnlyBoards {
@@ -291,7 +291,7 @@ main.main-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #995BD5;
+    background: #ffeb00;
 }
 
 .hero-bounce-headline {
@@ -299,7 +299,7 @@ main.main-content {
     font-weight: 700;
     font-size: clamp(56px, 10vw, 160px);
     line-height: 1;
-    color: #fff;
+    color: #000;
 }
 
 .hero-bounce-char {
@@ -535,7 +535,7 @@ main.main-content {
     text-align: center;
 }
 
-.banner-thumb-branded { background: #995bd5; font-size: 23px; }
+.banner-thumb-branded { background: #ffeb00; color: #000; font-size: 23px; }
 .banner-thumb-contact { background: #111; color: #dbff2a; text-transform: uppercase; }
 .banner-thumb-make { background: #fff; color: #111; text-transform: uppercase; }
 
