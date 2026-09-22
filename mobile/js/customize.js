@@ -395,17 +395,50 @@
         'right-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
     };
     
-    // Default prices per position type
-    const DEFAULT_POSITION_PRICES = {
-        'left-breast': { embroidery: '5.00', print: '3.50' },
-        'right-breast': { embroidery: '5.00', print: '3.50' },
-        'small-centre-front': { embroidery: '5.00', print: '6.50' },
-        'large-front-center': { embroidery: 'POA', print: '8.00' },
-        'large-centre-front': { embroidery: 'POA', print: '8.00' },
-        'large-back': { embroidery: 'POA', print: '8.00' },
-        'left-arm': { embroidery: '5.00', print: '3.50' },
-        'right-arm': { embroidery: '5.00', print: '3.50' }
+    // Quantity-tiered application pricing (Consigliato column, IVA esclusa).
+    const APPLICATION_PRICE_TIERS = {
+        print: [
+            { min: 1, max: 8, price: 7.50 },
+            { min: 9, max: 24, price: 5.25 },
+            { min: 25, max: 99, price: 4.00 },
+            { min: 100, max: 249, price: 3.00 },
+            { min: 250, max: 499, price: 2.50 },
+            { min: 500, max: 749, price: 2.25 },
+            { min: 750, max: 999, price: 2.00 },
+            { min: 1000, max: Infinity, price: 1.75 }
+        ],
+        embroidery: [
+            { min: 1, max: 8, price: 8.00 },
+            { min: 9, max: 24, price: 6.00 },
+            { min: 25, max: 99, price: 4.75 },
+            { min: 100, max: 249, price: 3.75 },
+            { min: 250, max: 499, price: 2.50 },
+            { min: 500, max: 749, price: 2.25 },
+            { min: 750, max: 999, price: 2.00 },
+            { min: 1000, max: Infinity, price: 1.75 }
+        ]
     };
+
+    function getApplicationUnitPrice(method, quantity) {
+        const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+        const qty = Math.max(1, Number(quantity) || 1);
+        const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
+        return tier.price.toFixed(2);
+    }
+
+    // Default prices per position type — now quantity-tiered, evaluated at current basket/customizer quantity.
+    function getDefaultPositionPrices(quantity) {
+        return {
+            'left-breast': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'right-breast': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'small-centre-front': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'large-front-center': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'large-centre-front': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'large-back': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'left-arm': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) },
+            'right-arm': { embroidery: getApplicationUnitPrice('embroidery', quantity), print: getApplicationUnitPrice('print', quantity) }
+        };
+    }
 
     // Apron tint: neutral PNG + luminance mask (see mobile/apron-tint-poc.html) — do not change apron path for hoodie experiments
     const APRON_GARMENT_TINT_POC = true;
@@ -945,7 +978,7 @@
     }
 
     function createApiPositionConfig(positionCode, label, image, normalizedProductType) {
-        const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+        const prices = getDefaultPositionPrices(1)[positionCode] || { embroidery: '5.00', print: '3.50' };
         const isEmbroideryOnly = ['Beanies', 'Fleece'].includes(normalizedProductType);
         const isPrintOnly = ['Safety Vests'].includes(normalizedProductType);
         return {
@@ -1080,7 +1113,7 @@
             const positionInfo = FILENAME_TO_POSITION[filename];
             if (positionInfo) {
                 const positionCode = positionInfo.code;
-                const prices = DEFAULT_POSITION_PRICES[positionCode] || { embroidery: '5.00', print: '3.50' };
+                const prices = getDefaultPositionPrices(1)[positionCode] || { embroidery: '5.00', print: '3.50' };
                 const apiImage = customizationImageForPosition(positionCode, apiImages);
                 
                 positions[positionCode] = {

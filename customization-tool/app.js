@@ -626,14 +626,36 @@ let colours = [...FALLBACK_COLOURS];
 let colourImageByName = new Map();
 const API_BASE_URL = "https://api.brandeduk.com/api";
 
-const LOGO_METHOD_UNIT_PRICES = {
-  print: 3.50,
-  embroidery: 5.00,
-  dtf: 3.95,
-  screen: 2.95,
-  vinyl: 3.50,
-  logo: 3.50
+// Quantity-tiered application pricing (Consigliato column, IVA esclusa).
+const APPLICATION_PRICE_TIERS = {
+  print: [
+    { min: 1, max: 8, price: 7.50 },
+    { min: 9, max: 24, price: 5.25 },
+    { min: 25, max: 99, price: 4.00 },
+    { min: 100, max: 249, price: 3.00 },
+    { min: 250, max: 499, price: 2.50 },
+    { min: 500, max: 749, price: 2.25 },
+    { min: 750, max: 999, price: 2.00 },
+    { min: 1000, max: Infinity, price: 1.75 }
+  ],
+  embroidery: [
+    { min: 1, max: 8, price: 8.00 },
+    { min: 9, max: 24, price: 6.00 },
+    { min: 25, max: 99, price: 4.75 },
+    { min: 100, max: 249, price: 3.75 },
+    { min: 250, max: 499, price: 2.50 },
+    { min: 500, max: 749, price: 2.25 },
+    { min: 750, max: 999, price: 2.00 },
+    { min: 1000, max: Infinity, price: 1.75 }
+  ]
 };
+
+function getApplicationUnitPrice(method, quantity) {
+  const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+  const qty = Math.max(1, Number(quantity) || 1);
+  const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
+  return tier.price;
+}
 
 const VAT_STORAGE_KEY = "brandeduk-vat-mode";
 const LEGACY_INCLUDE_VAT_KEY = "includeVAT";
@@ -1171,7 +1193,8 @@ function normalizeDecorationMethod(method) {
 }
 
 function getLogoUnitPrice(method) {
-  return LOGO_METHOD_UNIT_PRICES[normalizeDecorationMethod(method)] || LOGO_METHOD_UNIT_PRICES.print;
+  const bucket = normalizeDecorationMethod(method) === "embroidery" ? "embroidery" : "print";
+  return getApplicationUnitPrice(bucket, state.totalQty);
 }
 
 function applyProductHeaderUI() {

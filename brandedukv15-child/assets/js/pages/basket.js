@@ -18,6 +18,37 @@ const PRICING_RULES = {
     }
 };
 
+// Quantity-tiered application pricing (Consigliato column, IVA esclusa).
+const APPLICATION_PRICE_TIERS = {
+    print: [
+        { min: 1, max: 8, price: 7.50 },
+        { min: 9, max: 24, price: 5.25 },
+        { min: 25, max: 99, price: 4.00 },
+        { min: 100, max: 249, price: 3.00 },
+        { min: 250, max: 499, price: 2.50 },
+        { min: 500, max: 749, price: 2.25 },
+        { min: 750, max: 999, price: 2.00 },
+        { min: 1000, max: Infinity, price: 1.75 }
+    ],
+    embroidery: [
+        { min: 1, max: 8, price: 8.00 },
+        { min: 9, max: 24, price: 6.00 },
+        { min: 25, max: 99, price: 4.75 },
+        { min: 100, max: 249, price: 3.75 },
+        { min: 250, max: 499, price: 2.50 },
+        { min: 500, max: 749, price: 2.25 },
+        { min: 750, max: 999, price: 2.00 },
+        { min: 1000, max: Infinity, price: 1.75 }
+    ]
+};
+
+function getApplicationUnitPrice(method, quantity) {
+    const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
+    const qty = Math.max(1, Number(quantity) || 1);
+    const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
+    return tier.price;
+}
+
 const VAT_STORAGE_KEY = 'brandeduk-vat-mode';
 const VAT_FALLBACK_RATE = 0.20;
 
@@ -382,17 +413,6 @@ function calculateBreakdown() {
     // Application costs (sum of all positions) - now rendered as individual rows
     let applicationTotal = 0;
     
-    // Position prices
-    const positionPrices = {
-        'Left Breast': { embroidery: 5, print: 3.50 },
-        'Right Breast': { embroidery: 5, print: 3.50 },
-        'Left Arm': { embroidery: 5, print: 3.50 },
-        'Right Arm': { embroidery: 5, print: 3.50 },
-        'Small Centre Front': { embroidery: 5, print: 3.50 },
-        'Large Centre Front': { embroidery: 7, print: 5 },
-        'Large Back': { embroidery: 7, print: 5 }
-    };
-    
     // Build individual customization cost rows
     const customizationBreakdownEl = document.getElementById('customizationCostsBreakdown');
     let customizationRowsHTML = '';
@@ -402,8 +422,8 @@ function calculateBreakdown() {
         const method = customization.method;
         const customizationType = customization.type || 'logo';
         
-        if (positionPrices[positionName]) {
-            const price = positionPrices[positionName][method] || 0;
+        if (method === 'print' || method === 'embroidery') {
+            const price = getApplicationUnitPrice(method, totalQuantity);
             const positionTotal = price * totalQuantity;
             applicationTotal += positionTotal;
             
