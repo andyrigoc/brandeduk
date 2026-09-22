@@ -107,8 +107,6 @@
 
         var baseTier = tiers.find(function (tier) { return tier.min <= 1; });
         if (basePrice && baseTier) {
-            // Keep the existing catalogue price as the first tier so this
-            // presentation layer never changes the established pricing logic.
             baseTier.price = basePrice;
         } else if (basePrice) {
             tiers.unshift({ min: 1, max: 0, price: basePrice, discount: 0 });

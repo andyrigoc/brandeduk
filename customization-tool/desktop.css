@@ -1703,6 +1703,35 @@
     gap: 10px 8px;
   }
 
+  .customization-notes-field {
+    display: grid;
+    gap: 7px;
+    margin-top: 18px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .customization-notes-field textarea {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    padding: 11px 12px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #1e293b;
+    font: inherit;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .customization-notes-field textarea:focus {
+    outline: none;
+    border-color: #6d5ae6;
+    box-shadow: 0 0 0 3px rgb(109 90 230 / 12%);
+  }
+
   body.is-sweatshirt-position-picker .position-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 7px;

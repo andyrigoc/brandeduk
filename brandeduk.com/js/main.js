@@ -275,7 +275,7 @@ function initHeroBanners() {
     
     let currentBanner = 0;
     let rotationTimer = null;
-    const rotationDelay = 5000;
+    const rotationDelay = 10000;
     
     // Initialize: first banner active, others waiting on right
     banners.forEach((banner, i) => {

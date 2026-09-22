@@ -151,7 +151,7 @@
         const code = productCode || (productData && productData.code);
         if (!code) return;
 
-        return requestProductData(code, !productData).then(function (result) {
+        return requestProductData(code, true).then(function (result) {
             if (requestId !== activeProductRequest) return;
 
             const fullData = result.fullData;

@@ -6503,9 +6503,9 @@
                     }
                 }
 
-                // Display should use the lowest-discount tier (smallest quantity break).
+                // The backend product price is the opening price shown in the product card.
                 const baseTierPrice = getBaseTierPrice(product);
-                const productPrice = (baseTierPrice !== null ? baseTierPrice : (parseFloat(product.price) || parseFloat(product.basePrice) || 0));
+                const productPrice = parseFloat(product.price) || parseFloat(product.basePrice) || baseTierPrice || 0;
 
                 // For display purposes, we only need the single price
                 const minPrice = productPrice;

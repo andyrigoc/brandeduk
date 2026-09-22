@@ -39,6 +39,7 @@ const state = {
   logoZIndex: 40,
   areaDesigns: {},
   areaTextDesigns: {},
+  customizationNotes: "",
   pendingDecorationType: null
 };
 
@@ -2093,6 +2094,10 @@ function hydrateAreaDesignsFromBasketContext() {
   const item = basket[itemIndex];
   if (!item) return false;
 
+  state.customizationNotes = String(item.customizationNotes || "");
+  const notesInput = document.getElementById("customizationNotes");
+  if (notesInput) notesInput.value = state.customizationNotes;
+
   const logoCandidates = [];
   if (Array.isArray(item.logos)) logoCandidates.push(...item.logos);
   if (Array.isArray(item.positions)) logoCandidates.push(...item.positions);
@@ -3839,6 +3844,7 @@ function buildBasketItemFromState() {
     logos,
     texts,
     textDesigns: legacyTextDesigns,
+    customizationNotes: String(state.customizationNotes || "").trim(),
     designPreview
   };
 }
@@ -6292,6 +6298,10 @@ function clearLogo() {
   calculatePrice();
   updatePositionDesignUi();
 }
+
+document.getElementById("customizationNotes")?.addEventListener("input", (event) => {
+  state.customizationNotes = event.target.value;
+});
 
 if (confirmQualityBtn) {
   confirmQualityBtn.addEventListener("click", () => {

@@ -177,6 +177,7 @@ function renderBasketProductSummary(basket) {
         }
         var unitPrice = Number(item.unitPrice || item.price) || 0;
         var sizeStr = item.size || Object.keys(sizes).map(function(s){ return s+'×'+sizes[s]; }).join(', ') || '-';
+        var customizationNotes = String(item.customizationNotes || '').trim();
         html += '<div class="product-info-row" style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">' +
             '<img src="' + (item.image || item.colorImage || '') + '" alt="' + (item.name || '') + '" class="product-image-small">' +
             '<div class="product-details">' +
@@ -185,6 +186,7 @@ function renderBasketProductSummary(basket) {
                 '<p>Colour: ' + (item.color || 'N/A') + '</p>' +
                 '<p>Sizes: ' + sizeStr + '</p>' +
                 '<p>Quantity: ' + qty + ' pcs &times; ' + formatCurrency(unitPrice) + ' = <strong>' + formatCurrency(unitPrice * qty) + '</strong></p>' +
+                (customizationNotes ? '<p><strong>Artwork notes:</strong> ' + customizationNotes + '</p>' : '') +
             '</div></div>';
     });
     container.innerHTML = html;
