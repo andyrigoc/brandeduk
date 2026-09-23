@@ -39,33 +39,33 @@
                         </ul>
                     </div>
                     <div class="bar-menu-column">
-                        <div class="bar-menu-col-title">Company</div>
+                        <div class="bar-menu-col-title">Business</div>
                         <ul class="bar-menu-list">
-                            <li class="bar-menu-item"><a href="#" data-popup="about-us">About Us</a></li>
-                            <li class="bar-menu-item"><a href="/blog/">Blog</a></li>
-                            <li class="bar-menu-item"><a href="#">Careers</a></li>
-                            <li class="bar-menu-item"><a href="#">Contact Us</a></li>
-                            <li class="bar-menu-item"><a href="#">Testimonials</a></li>
+                            <li class="bar-menu-item"><a href="/index.html">About Branded UK</a></li>
+                            <li class="bar-menu-item"><a href="/bulk-orders.html">Bulk &amp; Corporate Orders</a></li>
+                            <li class="bar-menu-item"><a href="/quote-form.html">Request a Quote</a></li>
+                            <li class="bar-menu-item"><a href="/blog/case-study-500-tshirts-london-event.html">Case Studies</a></li>
+                            <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">
-                        <div class="bar-menu-col-title">Support</div>
+                        <div class="bar-menu-col-title">Help &amp; Orders</div>
                         <ul class="bar-menu-list">
-                            <li class="bar-menu-item"><a href="#">FAQ</a></li>
-                            <li class="bar-menu-item"><a href="#">Delivery Info</a></li>
-                            <li class="bar-menu-item"><a href="#">Returns</a></li>
-                            <li class="bar-menu-item"><a href="#">Privacy Policy</a></li>
-                            <li class="bar-menu-item"><a href="#">Terms of Service</a></li>
+                            <li class="bar-menu-item"><a href="/track-order.html">Track Your Order</a></li>
+                            <li class="bar-menu-item"><a href="/services.html">Delivery &amp; Lead Times</a></li>
+                            <li class="bar-menu-item"><a href="/terms-and-conditions.html#returns">Returns</a></li>
+                            <li class="bar-menu-item"><a href="/index-mobile.html?force=mobile#faq">FAQs</a></li>
+                            <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">
                         <div class="bar-menu-col-title">Shop</div>
                         <ul class="bar-menu-list">
-                            <li class="bar-menu-item"><a href="#">T-Shirts</a></li>
-                            <li class="bar-menu-item"><a href="#">Hoodies</a></li>
-                            <li class="bar-menu-item"><a href="#">Polo Shirts</a></li>
-                            <li class="bar-menu-item"><a href="#">Hi-Viz</a></li>
-                            <li class="bar-menu-item"><a href="#">Workwear</a></li>
+                            <li class="bar-menu-item"><a href="/shop.html">All Products</a></li>
+                            <li class="bar-menu-item"><a href="/tshirts.html">T-Shirts &amp; Polos</a></li>
+                            <li class="bar-menu-item"><a href="/hoodies.html">Hoodies &amp; Sweatshirts</a></li>
+                            <li class="bar-menu-item"><a href="/jackets.html">Jackets &amp; Fleeces</a></li>
+                            <li class="bar-menu-item"><a href="/hivis.html">Hi-Vis &amp; Workwear</a></li>
                         </ul>
                     </div>
                 </div>

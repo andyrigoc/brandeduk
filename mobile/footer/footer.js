@@ -51,6 +51,21 @@
     initLondonClock();
     initQuoteButton();
     initBarMenu();
+    initBottomNavigation();
+  }
+
+  /* --- Shared Mobile Bottom Navigation --- */
+  function initBottomNavigation() {
+    var nav = document.querySelector('.bottom-nav');
+    if (!nav || nav.querySelector('[data-home-nav]')) return;
+
+    var home = document.createElement('a');
+    home.href = '/index-mobile.html?force=mobile';
+    home.className = 'nav-item';
+    home.setAttribute('data-home-nav', '');
+    home.setAttribute('aria-label', 'Home');
+    home.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg><span class="nav-item-label">Home</span>';
+    nav.insertBefore(home, nav.firstChild);
   }
 
   /* --- 1. Isometric 3D Social Icons (touch) --- */
