@@ -79,6 +79,7 @@ window.goToPage = function(index) {
         }
         // Page 3 (sizes) -> Page 4: Must select at least one quantity
         if (window.current === 2) {
+            syncPage3Quantities();
             const totalQty = Object.values(window.quantities).reduce((a, b) => a + (b || 0), 0);
             if (totalQty === 0) {
                 window.showAlert('Please select at least one size/quantity', 'Select Sizes');
@@ -97,6 +98,9 @@ window.goToPage = function(index) {
     // When going to page 3, populate it
     if (index === 2) {
         populatePage3();
+    }
+    if (index === 3) {
+        fillPage4Summary();
     }
     // When going to page 5, populate it
     if (index === 4) {
@@ -366,6 +370,7 @@ function populatePage3() {
         : Number(product.price || product.basePrice) || 0;
     var grid = $('#sizeQtyGridP3');
     grid.empty();
+    grid.toggleClass('is-multi', sizes.length > 1);
     
     $('#p3BasePrice').text('£' + parseFloat(basePrice).toFixed(2));
     
@@ -534,15 +539,729 @@ $(document).on("click", "#btnCustomize", function() {
     if (!savePage3SelectionToBasket()) return;
 
     $('#addQuoteSuccess').hide();
-    if (typeof window.openPcOrderCustomizer === 'function') {
-        window.openPcOrderCustomizer();
-    } else {
-        window.goToPage(3);
-    }
+    window.goToPage(3);
 });
 
 $(document).on("click", "#p3ContinueCustomise", function() {
     $("#btnCustomize").trigger("click");
+});
+
+function fillPage4Summary() {
+    var product = window.productData || window.currentOrderProduct || {};
+    var name = product.name || '';
+    var code = product.code || product.sku || '';
+    var colour = window.selectedColour || '';
+    var title = document.querySelector('.p4-nav-title strong');
+    if (title) title.textContent = page4CustomiseTitle(product);
+    $('#p4SummaryCode, #p4ProductCode').text(code);
+    $('#p4SummaryName, #p4ProductName').text(name);
+    $('#p4SummaryColour').text(colour ? 'Colour: ' + colour : '');
+    $('#p4SelectedName').text(colour);
+    var img = $('#p3ProductImage').attr('src') || product.image || '';
+    if (img) $('#p4SummaryImage').attr('src', img);
+    var brand = document.getElementById('p3BrandLogo');
+    var summaryBrand = document.getElementById('p4SummaryBrand');
+    if (brand && summaryBrand && brand.getAttribute('src')) {
+        summaryBrand.src = brand.src;
+        summaryBrand.style.display = '';
+    }
+    var swatch = document.getElementById('p4SelectedSwatch');
+    if (swatch && img) swatch.style.backgroundImage = 'url(' + img + ')';
+    var ex = parseFloat(String($('#p3TotalCost').text() || '0').replace(/[^0-9.]/g, '')) || 0;
+    var vat = ex * 0.2;
+    var money = function (n) { return '£' + n.toFixed(2); };
+    $('#p4SumProducts, #p4SumEx').text(money(ex));
+    $('#p4SumLogo, #p4SumSetup').text(money(0));
+    $('#p4SumVat').text(money(vat));
+    $('#p4SumInc').text(money(ex + vat));
+    p4ReadLibrary();
+    p4RenderPreviousLogos();
+    loadPage4PositionImages(product);
+}
+
+var P4_METHOD_RANK = { yes: 0, poa: 1, no: 2 };
+var P4_CATEGORY_METHODS = {
+    tshirts: { dtf: 'yes', screen: 'yes', embroidery: 'poa' },
+    polos: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    sweatshirts: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    hoodies: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    shirts: { dtf: 'yes', screen: 'poa', embroidery: 'yes' },
+    fleece: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    jackets: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    'gilets-body-warmers': { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    'safety-vests': { dtf: 'yes', screen: 'yes', embroidery: 'poa' },
+    trousers: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    shorts: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    sweatpants: { dtf: 'poa', screen: 'no', embroidery: 'poa' },
+    aprons: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    bags: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    caps: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    hats: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    beanies: { dtf: 'no', screen: 'no', embroidery: 'yes' }
+};
+var P4_NAME_METHOD_OVERRIDES = [
+    { pattern: /premium|heavy|ultra|ring ?spun/i, rules: { embroidery: 'yes' } },
+    { pattern: /performance|technical|polyester|breathable|active|training/i, rules: { screen: 'poa' } },
+    { pattern: /oxford|formal|dress shirt|blouse/i, rules: { dtf: 'poa', screen: 'no' } },
+    { pattern: /\bknit|jumper|cardigan/i, rules: { dtf: 'poa', screen: 'no', embroidery: 'yes' } },
+    { pattern: /\bwool\b/i, rules: { dtf: 'no', screen: 'no', embroidery: 'poa' } },
+    { pattern: /softshell|windbreaker|wind ?shirt|bomber/i, rules: { dtf: 'yes' } },
+    { pattern: /waterproof|padded|puffer|parka|quilted|insulated|down\b/i, rules: { dtf: 'poa', screen: 'no' } },
+    { pattern: /baby|bodysuit/i, rules: { embroidery: 'no' } }
+];
+var P4_POSITION_METHODS = {
+    'large-front': { embroidery: 'no' },
+    'large-front-above-pocket': { embroidery: 'poa' },
+    'large-back': { embroidery: 'no' },
+    'lower-front': { embroidery: 'poa' },
+    'lower-back': { embroidery: 'poa' }
+};
+
+function p4WorseRule(first, second) {
+    return (P4_METHOD_RANK[second] || 0) > (P4_METHOD_RANK[first] || 0) ? second : first;
+}
+
+function p4BetterRule(first, second) {
+    return (P4_METHOD_RANK[second] || 0) < (P4_METHOD_RANK[first] || 0) ? second : first;
+}
+
+function customizationConfigTarget(product) {
+    var text = [product.name, product.productType, product.category, product.type].join(' ').toLowerCase();
+    if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text)) {
+        return { slug: 'beanies', subtype: /bobble|pom/.test(text) ? 'bobble' : 'cuffed' };
+    }
+    if (/fedora|trilby|bucket hat|wide[\s-]?brim|sun hat/.test(text)) return { slug: 'hats', subtype: 'bucket' };
+    if (/\bcap\b|baseball|snapback|trucker|visor/.test(text)) {
+        return { slug: 'caps', subtype: /trucker/.test(text) ? 'trucker' : 'baseball' };
+    }
+    if (/polo/.test(text)) return { slug: 'polos', subtype: '' };
+    if (/hoodie|hooded|zoodie/.test(text)) return { slug: 'hoodies', subtype: '' };
+    if (/sweatshirt/.test(text)) return { slug: 'sweatshirts', subtype: '' };
+    if (/fleece/.test(text)) return { slug: 'fleece', subtype: '' };
+    if (/soft[\s-]?shell/.test(text)) return { slug: 'softshells', subtype: '' };
+    if (/gilet|body[\s-]?warmer/.test(text)) return { slug: 'gilets-body-warmers', subtype: '' };
+    if (/hi[\s-]?vis|safety vest|waistcoat/.test(text)) return { slug: 'safety-vests', subtype: 'waistcoat' };
+    if (/jacket|parka|coat|anorak/.test(text)) return { slug: 'jackets', subtype: '' };
+    if (/apron/.test(text)) return { slug: 'aprons', subtype: '' };
+    if (/\bbag\b|tote|backpack|rucksack|holdall/.test(text)) return { slug: 'bags', subtype: '' };
+    if (/\bshirt|\bblouse/.test(text) && !/t[\s-]?shirt/.test(text)) return { slug: 'shirts', subtype: '' };
+    if (/t[\s-]?shirt|\btee\b/.test(text)) return { slug: 'tshirts', subtype: '' };
+    return { slug: 'tshirts', subtype: '' };
+}
+
+function page4CustomiseTitle(product) {
+    var slug = customizationConfigTarget(product || {}).slug;
+    if (slug === 'beanies') return 'Customise your beanie';
+    if (slug === 'tshirts') return 'Customise your t-shirt';
+    if (slug === 'polos') return 'Customise your polo';
+    if (slug === 'hoodies') return 'Customise your hoodie';
+    return 'Customise your product';
+}
+
+function page4CategoryRules(product) {
+    var slug = customizationConfigTarget(product || {}).slug;
+    var rules = Object.assign({ dtf: 'yes', screen: 'yes', embroidery: 'yes' }, P4_CATEGORY_METHODS[slug] || {});
+    var name = (product && product.name) || '';
+    P4_NAME_METHOD_OVERRIDES.forEach(function (item) {
+        if (item.pattern.test(name)) Object.assign(rules, item.rules);
+    });
+    return rules;
+}
+
+function page4AllowedMethods(product, position) {
+    var category = page4CategoryRules(product);
+    var slug = String(position.slug || '').toLowerCase();
+    var posRules = P4_POSITION_METHODS[slug] || {};
+    var matrix = {
+        embroidery: p4WorseRule(category.embroidery, posRules.embroidery || 'yes'),
+        print: p4WorseRule(p4BetterRule(category.dtf, category.screen), posRules.print || 'yes')
+    };
+
+    function fromApi(name) {
+        var found = null;
+        (position.methods || []).forEach(function (method) {
+            var key = String(method.method || '').toLowerCase();
+            if (name === 'print' && (key === 'print' || key === 'dtf' || key === 'screen')) found = method;
+            if (name === 'embroidery' && key === 'embroidery') found = method;
+        });
+        if (matrix[name] === 'no') return { status: 'no', price: null };
+        if (!found || found.enabled === false) return { status: matrix[name] === 'yes' ? 'yes' : matrix[name], price: null };
+        var hasPrice = found.price !== null && found.price !== undefined && found.price !== '' && !isNaN(Number(found.price));
+        return {
+            status: hasPrice ? 'yes' : (matrix[name] === 'no' ? 'no' : 'poa'),
+            price: hasPrice ? Number(found.price) : null
+        };
+    }
+
+    return {
+        embroidery: fromApi('embroidery'),
+        print: fromApi('print')
+    };
+}
+
+function page4MethodButton(kind, info) {
+    if (!info || info.status === 'no') return '';
+    var isPoa = info.status === 'poa';
+    var label = kind === 'embroidery' ? 'EMBROIDERY' : 'PRINT';
+    var price = isPoa ? 'POA' : ('£' + Number(info.price || 0).toFixed(2));
+    var cls = 'price-badge price-' + (kind === 'embroidery' ? 'emb' : 'print') + (isPoa ? ' poa-badge' : '');
+    var style = kind === 'print' && !isPoa ? ' style="background:#ff8c00!important;background-image:none!important"' : '';
+    return '<button type="button" class="' + cls + '" data-method="' + kind + '" data-default-label="' + label + '" data-default-price="' + price + '"' + style + '>' +
+        '<span class="price-label">' + label + (isPoa ? ' · POA' : '') + '</span>' +
+        '<span class="price-value">' + price + '</span></button>';
+}
+
+function p4PaintPrintButtons() {
+    document.querySelectorAll('#p4PositionOptions .position-prices').forEach(function (wrap) {
+        var print = wrap.querySelector('.price-print:not(.poa-badge)');
+        if (!print) return;
+        print.style.setProperty('background', '#ff8c00', 'important');
+        print.style.setProperty('background-color', '#ff8c00', 'important');
+        print.style.setProperty('background-image', 'none', 'important');
+    });
+}
+
+function page4PositionCard(product, position) {
+    var slug = String(position.slug || position.label || '').replace(/"/g, '');
+    var methods = page4AllowedMethods(product, position);
+    var embroideryPrice = methods.embroidery.price != null ? methods.embroidery.price.toFixed(2) : '0';
+    var printPrice = methods.print.price != null ? methods.print.price.toFixed(2) : '0';
+    return '<div class="position-card" data-position="' + slug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '">' +
+        '<div class="position-preview"><img class="position-placeholder" alt=""></div>' +
+        '<div class="position-card-header"><label class="position-checkbox"><input type="checkbox" name="p4position" value="' + slug + '"><span></span></label></div>' +
+        '<div class="position-prices">' + page4MethodButton('embroidery', methods.embroidery) + page4MethodButton('print', methods.print) + '</div>' +
+        '<div class="p4-logo-under" hidden><img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button></div></div>';
+}
+
+var page4PositionRequest = 0;
+function loadPage4PositionImages(product) {
+    var host = document.getElementById('p4PositionOptions');
+    if (!host) return;
+    var target = customizationConfigTarget(product || {});
+    var requestId = ++page4PositionRequest;
+    var url = 'https://api.brandeduk.com/api/customization-config/' + encodeURIComponent(target.slug);
+    if (target.subtype) url += '?subtype=' + encodeURIComponent(target.subtype);
+    fetch(url)
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (body) {
+            if (requestId !== page4PositionRequest || !body) return;
+            var config = body.data || body;
+            var positions = (config.positions || []).filter(function (position) {
+                return position && position.isActive !== false && (position.imageUrl || position.image_url);
+            });
+            if (!positions.length) return;
+            host.innerHTML = positions.map(function (position) { return page4PositionCard(product, position); }).join('');
+            p4PaintPrintButtons();
+            host.querySelectorAll('.position-card').forEach(function (card, index) {
+                var position = positions[index];
+                var label = position.label || position.slug || '';
+                var image = position.imageUrl || position.image_url || '';
+                var name = card.querySelector('.position-checkbox span');
+                var photo = card.querySelector('.position-placeholder');
+                if (name) name.textContent = label;
+                if (photo) {
+                    photo.src = image;
+                    photo.alt = label;
+                }
+            });
+            p4LoadBackendPrices().then(function () {
+                p4ApplyBackendPricesToCards();
+                p4PaintPrintButtons();
+                Object.keys(window.p4Assignments || {}).forEach(function (pos) {
+                    var assignment = window.p4Assignments[pos];
+                    p4AssignLogo(pos, assignment.dataUrl, assignment.method, assignment.filename);
+                });
+                p4RenderPreviousLogos();
+                p4UpdateSummary();
+            });
+        })
+        .catch(function () {});
+}
+
+window.p4Assignments = window.p4Assignments || {};
+window.p4LogoLibrary = window.p4LogoLibrary || [];
+window.p4PendingUpload = null;
+
+function p4EnsureFileInput() {
+    var input = document.getElementById('p4LogoFileInput');
+    if (input) return input;
+    input = document.createElement('input');
+    input.type = 'file';
+    input.id = 'p4LogoFileInput';
+    input.accept = 'image/*,.pdf,.svg,.eps,.ai';
+    input.hidden = true;
+    document.body.appendChild(input);
+    return input;
+}
+
+function p4ReadLibrary() {
+    try {
+        var parsed = JSON.parse(sessionStorage.getItem('toolReusableLogos') || '[]');
+        if (Array.isArray(parsed)) {
+            window.p4LogoLibrary = parsed.filter(function (entry) { return entry && entry.logo; });
+        }
+    } catch (error) {
+        window.p4LogoLibrary = window.p4LogoLibrary || [];
+    }
+}
+
+function p4SaveLibrary() {
+    try {
+        sessionStorage.setItem('toolReusableLogos', JSON.stringify(window.p4LogoLibrary.slice(-8)));
+    } catch (error) {}
+}
+
+function p4RememberLogo(src, method, filename) {
+    if (!src) return;
+    if (!window.p4LogoLibrary.some(function (entry) { return entry.logo === src; })) {
+        window.p4LogoLibrary.push({ logo: src, method: method || 'print', filename: filename || '' });
+    }
+    p4SaveLibrary();
+    p4RenderPreviousLogos();
+}
+
+function p4RenderPreviousLogos() {
+    p4ReadLibrary();
+    var host = document.getElementById('p4PreviousLogos');
+    if (!host) return;
+    host.innerHTML = '';
+    host.hidden = window.p4LogoLibrary.length === 0;
+    window.p4LogoLibrary.forEach(function (entry) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'p4-previous-logo';
+        button.innerHTML = '<img alt="Saved logo"><span class="p4-previous-remove" aria-label="Remove saved logo">&times;</span>';
+        button.querySelector('img').src = entry.logo;
+        button.draggable = true;
+        button.addEventListener('dragstart', function (event) {
+            event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
+            event.dataTransfer.setData('text/plain', entry.logo);
+            event.dataTransfer.effectAllowed = 'copy';
+            button.classList.add('is-dragging');
+        });
+        button.addEventListener('dragend', function () {
+            button.classList.remove('is-dragging');
+            document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
+                .forEach(function (card) { card.classList.remove('is-drop-ready'); });
+        });
+        button.addEventListener('click', function (event) {
+            if (event.target.closest('.p4-previous-remove')) {
+                window.p4LogoLibrary = window.p4LogoLibrary.filter(function (item) { return item.logo !== entry.logo; });
+                p4SaveLibrary();
+                p4RenderPreviousLogos();
+                return;
+            }
+            host.querySelectorAll('.p4-previous-logo').forEach(function (item) {
+                item.classList.toggle('is-selected', item === button);
+            });
+        });
+        host.appendChild(button);
+    });
+}
+
+function p4AssignLogo(position, src, method, filename) {
+    if (!position || !src) return;
+    var cardForPrice = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
+    var unitPrice = p4MethodUnitPrice(method, cardForPrice ? cardForPrice.getAttribute('data-' + method) : 0);
+    window.p4Assignments[position] = { dataUrl: src, method: method, filename: filename || '', unitPrice: unitPrice };
+    var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
+    if (!card) return;
+    card.classList.add('selected', 'has-logo');
+    var box = card.querySelector('input[type="checkbox"]');
+    if (box) box.checked = true;
+    var under = card.querySelector('.p4-logo-under img');
+    if (under) under.src = src;
+    var preview = card.querySelector('.p4-logo-under');
+    if (preview) preview.hidden = false;
+    p4UpdateSummary();
+    p4SaveLogosToBasket();
+}
+
+function p4ClearCardLogo(position) {
+    delete window.p4Assignments[position];
+    var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
+    if (!card) return;
+    card.classList.remove('has-logo', 'selected');
+    var box = card.querySelector('input[type="checkbox"]');
+    if (box) box.checked = false;
+    var preview = card.querySelector('.p4-logo-under');
+    if (preview) preview.hidden = true;
+    p4ResetBadge(card.querySelector('.price-emb'));
+    p4ResetBadge(card.querySelector('.price-print'));
+    p4UpdateSummary();
+    p4SaveLogosToBasket();
+}
+
+function p4CardMethod(card, preferred) {
+    if (preferred && card.querySelector('.price-badge[data-method="' + preferred + '"]:not(.poa-badge)')) return preferred;
+    var first = card.querySelector('.price-badge:not(.poa-badge)');
+    return first ? first.dataset.method : 'embroidery';
+}
+
+window.p4Pricing = window.p4Pricing || {
+    embroidery: { unitPrice: null, digitisingFeePerDesign: 25 },
+    print: { unitPrice: null, digitisingFeePerDesign: 0 }
+};
+
+function p4FetchPricing(method, qty) {
+    var apiMethod = method === 'print' ? 'dtf' : method;
+    return fetch('https://api.brandeduk.com/api/customization-pricing?method=' + encodeURIComponent(apiMethod) + '&quantity=' + encodeURIComponent(qty) + '&priceClass=standard')
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (body) {
+            var data = body && (body.data || body);
+            if (!data || data.unitPrice == null) return null;
+            return {
+                unitPrice: Number(data.unitPrice),
+                digitisingFeePerDesign: Number(data.digitisingFeePerDesign),
+                pricingVersion: data.pricingVersion || ''
+            };
+        })
+        .catch(function () { return null; });
+}
+
+function p4LoadBackendPrices() {
+    var qty = p4ProductQty();
+    return Promise.all([p4FetchPricing('embroidery', qty), p4FetchPricing('print', qty)]).then(function (rows) {
+        if (rows[0]) {
+            window.p4Pricing.embroidery.unitPrice = rows[0].unitPrice;
+            window.p4Pricing.embroidery.digitisingFeePerDesign = Number.isFinite(rows[0].digitisingFeePerDesign)
+                ? rows[0].digitisingFeePerDesign
+                : 25;
+        }
+        if (rows[1]) {
+            window.p4Pricing.print.unitPrice = rows[1].unitPrice;
+            window.p4Pricing.print.digitisingFeePerDesign = Number.isFinite(rows[1].digitisingFeePerDesign)
+                ? rows[1].digitisingFeePerDesign
+                : 0;
+        }
+        return window.p4Pricing;
+    });
+}
+
+function p4MethodUnitPrice(method, fallback) {
+    var record = window.p4Pricing[method === 'print' ? 'print' : method];
+    if (record && record.unitPrice != null && !isNaN(record.unitPrice)) return Number(record.unitPrice);
+    return Number(fallback) || 0;
+}
+
+function p4ApplyBackendPricesToCards() {
+    document.querySelectorAll('#p4PositionOptions .position-card').forEach(function (card) {
+        var embroidery = p4MethodUnitPrice('embroidery', card.getAttribute('data-embroidery'));
+        var print = p4MethodUnitPrice('print', card.getAttribute('data-print'));
+        if (card.querySelector('.price-emb')) {
+            card.setAttribute('data-embroidery', embroidery.toFixed(2));
+            var emb = card.querySelector('.price-emb');
+            if (emb) emb.dataset.defaultPrice = '£' + embroidery.toFixed(2);
+        }
+        if (card.querySelector('.price-print')) {
+            card.setAttribute('data-print', print.toFixed(2));
+            var prnt = card.querySelector('.price-print');
+            if (prnt) prnt.dataset.defaultPrice = '£' + print.toFixed(2);
+        }
+    });
+}
+
+function p4ExistingEmbroideryLogosInBasket() {
+    var product = window.productData || {};
+    var code = product.code || product.sku || '';
+    var colour = window.selectedColour || '';
+    var found = {};
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
+    basket.forEach(function (item) {
+        var itemCode = item.code || item.productCode || '';
+        var itemColour = item.color || item.colour || '';
+        if (itemCode === code && itemColour === colour) return;
+        (item.logos || []).forEach(function (logo) {
+            if (String(logo.method || '').toLowerCase() !== 'embroidery') return;
+            if (logo.logo) found[logo.logo] = true;
+        });
+    });
+    return found;
+}
+
+function p4EmbroiderySetupCost() {
+    var fee = Number(window.p4Pricing.embroidery.digitisingFeePerDesign);
+    if (!Number.isFinite(fee)) fee = 25;
+    var unique = {};
+    Object.keys(window.p4Assignments || {}).forEach(function (pos) {
+        var assignment = window.p4Assignments[pos];
+        if (!assignment || assignment.method !== 'embroidery' || !assignment.dataUrl) return;
+        unique[assignment.dataUrl] = true;
+    });
+    var already = p4ExistingEmbroideryLogosInBasket();
+    return Object.keys(unique).filter(function (src) { return !already[src]; }).length * fee;
+}
+
+function p4ProductQty() {
+    var total = 0;
+    Object.keys(window.quantities || {}).forEach(function (size) {
+        total += parseInt(window.quantities[size], 10) || 0;
+    });
+    if (total) return total;
+    $('#sizeQtyGridP3 .qty-input').each(function () {
+        total += parseInt(this.value, 10) || 0;
+    });
+    return total || 1;
+}
+
+function p4UpdateSummary() {
+    var products = parseFloat(String($('#p3TotalCost').text() || '0').replace(/[^0-9.]/g, '')) || 0;
+    var qty = p4ProductQty();
+    var logoUnit = 0;
+    Object.keys(window.p4Assignments || {}).forEach(function (pos) {
+        var assignment = window.p4Assignments[pos];
+        var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + pos + '"]');
+        var fallback = card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0;
+        logoUnit += assignment.unitPrice != null ? Number(assignment.unitPrice) : p4MethodUnitPrice(assignment.method, fallback);
+    });
+    var logo = logoUnit * qty;
+    var setup = p4EmbroiderySetupCost();
+    var ex = products + logo + setup;
+    var vat = ex * 0.2;
+    var money = function (n) { return '£' + n.toFixed(2); };
+    $('#p4SumProducts').text(money(products));
+    $('#p4SumLogo').text(money(logo));
+    $('#p4SumSetup').text(money(setup));
+    $('#p4SumEx').text(money(ex));
+    $('#p4SumVat').text(money(vat));
+    $('#p4SumInc').text(money(ex + vat));
+}
+
+function p4CardMethods(card) {
+    var methods = [];
+    if (!card) return methods;
+    card.querySelectorAll('.price-badge:not(.poa-badge)').forEach(function (badge) {
+        var method = badge.dataset.method;
+        if (!method) return;
+        methods.push({
+            method: method,
+            label: badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT'),
+            price: p4MethodUnitPrice(method, card.getAttribute('data-' + method))
+        });
+    });
+    return methods;
+}
+
+function p4ShowMethodPopup(card, src, filename) {
+    var methods = p4CardMethods(card);
+    if (!methods.length) return;
+    if (methods.length === 1) {
+        p4RememberLogo(src, methods[0].method, filename);
+        p4AssignLogo(card.dataset.position, src, methods[0].method, filename);
+        return;
+    }
+    var existing = document.getElementById('p4MethodModal');
+    if (existing) existing.remove();
+    var pos = card.querySelector('.position-checkbox span');
+    var posName = pos ? pos.textContent : String(card.dataset.position || '').replace(/-/g, ' ');
+    var overlay = document.createElement('div');
+    overlay.id = 'p4MethodModal';
+    overlay.innerHTML = '<div class="p4-method-card">' +
+        '<strong>Choose decoration</strong>' +
+        '<p>How should we apply your logo on <b>' + posName + '</b>?</p>' +
+        '<div class="p4-method-choices"></div>' +
+        '<button type="button" class="p4-method-cancel">Cancel</button>' +
+        '</div>';
+    var choices = overlay.querySelector('.p4-method-choices');
+    methods.forEach(function (item) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'p4-method-choice p4-method-' + item.method;
+        button.innerHTML = '<span>' + item.label + '</span><em>£' + item.price.toFixed(2) + ' each</em>';
+        button.addEventListener('click', function () {
+            overlay.remove();
+            p4RememberLogo(src, item.method, filename);
+            p4AssignLogo(card.dataset.position, src, item.method, filename);
+        });
+        choices.appendChild(button);
+    });
+    overlay.querySelector('.p4-method-cancel').addEventListener('click', function () { overlay.remove(); });
+    overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
+}
+
+function p4ApplyDroppedLogo(card, src, method, filename) {
+    if (!card || !src) return;
+    if (method) {
+        p4AssignLogo(card.dataset.position, src, p4CardMethod(card, method), filename || '');
+        return;
+    }
+    p4ShowMethodPopup(card, src, filename || '');
+}
+
+function p4OpenFilePicker(position, method) {
+    window.p4PendingUpload = { position: position, method: method };
+    var input = p4EnsureFileInput();
+    input.value = '';
+    input.click();
+}
+
+function p4SyncLogoState() {
+    window.pendingLogos = {};
+    window.logoPositions = [];
+    Object.keys(window.p4Assignments || {}).forEach(function (pos) {
+        var assignment = window.p4Assignments[pos];
+        window.pendingLogos[pos] = {
+            dataUrl: assignment.dataUrl,
+            filename: assignment.filename || '',
+            notes: $('#p4ArtworkNotes').val() || ''
+        };
+        window.logoPositions.push({
+            position: pos,
+            application: assignment.method.charAt(0).toUpperCase() + assignment.method.slice(1)
+        });
+    });
+    window.logoData = window.pendingLogos;
+    window.logoMethod = 'upload';
+}
+
+function p4SaveLogosToBasket() {
+    p4SyncLogoState();
+    var product = window.productData || {};
+    var code = product.code || product.sku || '';
+    var colour = window.selectedColour || '';
+    var notes = $('#p4ArtworkNotes').val() || '';
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
+    var logos = Object.keys(window.p4Assignments || {}).map(function (pos) {
+        var assignment = window.p4Assignments[pos];
+        var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + pos + '"]');
+        var price = assignment.unitPrice != null
+            ? Number(assignment.unitPrice)
+            : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0);
+        return {
+            method: assignment.method,
+            position: pos,
+            positionLabel: pos.replace(/-/g, ' '),
+            logo: assignment.dataUrl,
+            notes: notes,
+            unitPrice: price,
+            digitisingFeePerDesign: assignment.method === 'embroidery'
+                ? (Number(window.p4Pricing.embroidery.digitisingFeePerDesign) || 25)
+                : 0
+        };
+    });
+    var setup = p4EmbroiderySetupCost();
+    var charged = {};
+    logos.forEach(function (logo) {
+        if (logo.method !== 'embroidery' || !logo.logo || charged[logo.logo]) {
+            logo.setupCharge = 0;
+            return;
+        }
+        charged[logo.logo] = true;
+        logo.setupCharge = Number(window.p4Pricing.embroidery.digitisingFeePerDesign) || 25;
+    });
+    basket.forEach(function (item) {
+        var itemCode = item.code || item.productCode || '';
+        var itemColour = item.color || item.colour || '';
+        if (itemCode === code && itemColour === colour) {
+            item.logos = logos;
+            item.logoMethod = 'upload';
+            item.embroiderySetup = setup;
+        }
+    });
+    localStorage.setItem('quoteBasket', JSON.stringify(basket));
+    window.dispatchEvent(new Event('basketUpdated'));
+}
+
+$(document).on('change', '#p4LogoFileInput', function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+        if (typeof window.showAlert === 'function') window.showAlert('Maximum file size is 25 MB', 'File too large');
+        return;
+    }
+    var pending = window.p4PendingUpload || {};
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        var src = event.target.result;
+        p4RememberLogo(src, pending.method || '', file.name);
+        if (pending.position && pending.method) p4AssignLogo(pending.position, src, pending.method, file.name);
+        window.p4PendingUpload = null;
+    };
+    if (file.type.indexOf('image/') === 0) reader.readAsDataURL(file);
+    else {
+        p4RememberLogo('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" rx="12" fill="#eef2ff"/><text x="40" y="46" text-anchor="middle" font-size="12" font-family="Poppins,sans-serif" fill="#1d4ed8">FILE</text></svg>'), pending.method || '', file.name);
+        if (pending.position && pending.method) p4AssignLogo(pending.position, window.p4LogoLibrary[window.p4LogoLibrary.length - 1].logo, pending.method, file.name);
+        window.p4PendingUpload = null;
+    }
+});
+
+$(document).on('click', '#p4ChooseFile', function () {
+    p4OpenFilePicker('', '');
+});
+
+$(document).on('click', '#p4ConfirmBasket', function () {
+    p4SaveLogosToBasket();
+    if (typeof window.closeOrderPopup === 'function') window.closeOrderPopup();
+    else $('#orderPopup').fadeOut(300);
+});
+
+$(document).on('click', '.p4-saved-logos', function () {
+    p4RenderPreviousLogos();
+    var host = document.getElementById('p4PreviousLogos');
+    if (host) host.hidden = false;
+});
+
+$(document).on('click', '#p4PositionOptions .p4-logo-remove', function (e) {
+    e.stopPropagation();
+    var card = this.closest('.position-card');
+    if (card) p4ClearCardLogo(card.dataset.position);
+});
+
+$(document).on('dragover', '#p4PositionOptions .position-card', function (e) {
+    e.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'copy';
+    $('#p4PositionOptions .position-card').removeClass('is-drop-ready');
+    this.classList.add('is-drop-ready');
+});
+
+$(document).on('dragleave', '#p4PositionOptions .position-card', function (e) {
+    if (!this.contains(e.relatedTarget)) this.classList.remove('is-drop-ready');
+});
+
+$(document).on('drop', '#p4PositionOptions .position-card', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove('is-drop-ready');
+    var card = this;
+    var badge = e.target.closest('.price-badge');
+    var method = badge && !badge.classList.contains('poa-badge') ? badge.dataset.method : '';
+    var saved = e.originalEvent.dataTransfer.getData('application/x-brandeduk-logo')
+        || e.originalEvent.dataTransfer.getData('text/plain');
+    var file = e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files[0];
+    if (saved && saved.indexOf('data:') === 0) {
+        p4RememberLogo(saved, method, '');
+        p4ApplyDroppedLogo(card, saved, method, '');
+        return;
+    }
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) return;
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        p4RememberLogo(event.target.result, method, file.name);
+        p4ApplyDroppedLogo(card, event.target.result, method, file.name);
+    };
+    if (file.type.indexOf('image/') === 0) reader.readAsDataURL(file);
+});
+
+$(document).on('dragover', '#p4ChooseFile, #p4PreviousLogos', function (e) {
+    e.preventDefault();
+});
+
+$(document).on('drop', '#p4ChooseFile, #p4PreviousLogos', function (e) {
+    e.preventDefault();
+    var file = e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files[0];
+    if (!file || file.type.indexOf('image/') !== 0) return;
+    if (file.size > 25 * 1024 * 1024) return;
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        p4RememberLogo(event.target.result, '', file.name);
+    };
+    reader.readAsDataURL(file);
 });
 
 // Final save — called after page 5
@@ -721,89 +1440,36 @@ function p4ResetBadge(badge) {
     var method = badge.dataset.method;
     var label = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
     var price = badge.dataset.defaultPrice || (method === 'embroidery' ? '£5.00' : '£3.50');
+    if (badge.classList.contains('poa-badge') && label.indexOf('POA') === -1) label += ' · POA';
     badge.innerHTML = '<span class="price-label">' + label + '</span><span class="price-value">' + price + '</span>';
 }
 
-// PAGE 4: applyMethodUI — active badge + other becomes upload cloud (identical to mobile)
 function p4ApplyMethodUI(card, method) {
-    var embBadge = card.querySelector('.price-emb');
-    var printBadge = card.querySelector('.price-print');
-    p4ResetBadge(embBadge);
-    p4ResetBadge(printBadge);
-    if (!method) return;
-    var methodBadge = method === 'embroidery' ? embBadge : printBadge;
-    var addBadge   = method === 'embroidery' ? printBadge : embBadge;
-    if (methodBadge) {
-        methodBadge.classList.add('active');
-        methodBadge.dataset.role = 'method';
-    }
-    if (addBadge) {
-        addBadge.classList.remove('active');
-        addBadge.classList.add('add-logo-btn');
-        addBadge.dataset.role = 'add-logo';
-        addBadge.dataset.activeMethod = method;
-        var uid = 'cloud-' + Date.now();
-        addBadge.innerHTML = '<svg class="add-logo-cloud-icon" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="' + uid + '"><path fill-rule="evenodd" clip-rule="evenodd" d="M76.3818 41.5239C76.3818 41.7358 76.3818 41.7358 76.3818 41.9477C86.9769 44.0667 94.3935 54.0261 93.334 64.8332C92.2745 75.6402 83.1627 83.9044 72.1438 83.9044H29.7633C18.9563 83.9044 9.84454 75.6402 8.57313 64.8332C7.30172 54.0261 14.9302 44.0667 25.5253 41.9477C25.5253 41.7358 25.5253 41.7358 25.5253 41.5239C25.5253 27.5384 36.968 16.0957 50.9536 16.0957C64.9391 16.0957 76.3818 27.5384 76.3818 41.5239Z"/></clipPath></defs><g clip-path="url(#' + uid + ')"><path fill-rule="evenodd" clip-rule="evenodd" d="M100 -100H0V200H100V-100ZM34.8377 49.1524L47.426 36.4383C48.2652 35.5907 49.3142 35.1669 50.3632 35.1669C51.4122 35.1669 52.671 35.5907 53.3005 36.4383L65.8888 49.1524C66.9378 50.4238 67.3574 52.3309 66.728 53.8143C66.0986 55.2976 64.6299 56.3571 62.9514 56.3571H54.5593V69.0712C54.5593 71.4021 52.671 73.3093 50.3632 73.3093C48.0554 73.3093 46.1672 71.4021 46.1672 69.0712V56.3571H37.775C36.0966 56.3571 34.6279 55.2976 33.9985 53.8143C33.3691 52.119 33.5789 50.4238 34.8377 49.1524Z" fill="white" class="cloud-arrow-anim"/></g></svg>';
-    }
+    var badges = card.querySelectorAll('.price-badge');
+    badges.forEach(function (badge) {
+        var isMatch = badge.dataset.method === method;
+        badge.classList.toggle('active', isMatch);
+        badge.classList.remove('add-logo-btn', 'logo-added');
+        badge.dataset.role = 'method';
+        if (!isMatch) p4ResetBadge(badge);
+    });
 }
 
-// PAGE 4: Price badge click — identical to mobile customize.js logic
 $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     e.stopPropagation();
     var badge = this;
     var card = $(badge).closest('.position-card')[0];
-    var role = badge.dataset.role || 'method';
-
-    // "Add Logo" upload button clicked → select position + go to Next Step (page 5)
-    if (role === 'add-logo') {
-        card.classList.add('selected');
-        card.querySelector('input[type="checkbox"]').checked = true;
-        populatePage5();
-        goToPage(4);
-        return;
-    }
-
     var method = badge.dataset.method;
     if (!method) return;
-
-    // POA — don't allow selection
     if (badge.classList.contains('poa-badge') || (badge.querySelector('.price-value') && badge.querySelector('.price-value').textContent === 'POA')) {
         return;
     }
-
-    // Already active → toggle OFF (deselect)
-    if (badge.classList.contains('active')) {
-        card.classList.remove('selected');
-        card.querySelector('input[type="checkbox"]').checked = false;
-        var emb = card.querySelector('.price-emb');
-        var prnt = card.querySelector('.price-print');
-        p4ResetBadge(emb);
-        p4ResetBadge(prnt);
+    var selectedPrev = document.querySelector('#p4PreviousLogos .p4-previous-logo.is-selected img');
+    if (selectedPrev && selectedPrev.src) {
+        p4AssignLogo(card.dataset.position, selectedPrev.src, method, '');
         return;
     }
-
-    // Select this method
-    card.classList.add('selected');
-    card.querySelector('input[type="checkbox"]').checked = true;
-    p4ApplyMethodUI(card, method);
-});
-
-// PAGE 4: Click on card body (not badge) — toggle selection, default to embroidery
-$(document).on('click', '#p4PositionOptions .position-card', function(e) {
-    if ($(e.target).closest('.price-badge').length) return;
-    var card = this;
-    if (card.classList.contains('selected')) {
-        card.classList.remove('selected');
-        card.querySelector('input[type="checkbox"]').checked = false;
-        p4ResetBadge(card.querySelector('.price-emb'));
-        p4ResetBadge(card.querySelector('.price-print'));
-    } else {
-        card.classList.add('selected');
-        card.querySelector('input[type="checkbox"]').checked = true;
-        if (!card.querySelector('.price-badge.active')) {
-            p4ApplyMethodUI(card, 'embroidery');
-        }
-    }
+    p4OpenFilePicker(card.dataset.position, method);
 });
 
 // PAGE 4: Next → go to page 5
@@ -1000,6 +1666,15 @@ $(document).on("input change click", "#sizeQtyGridP3 .qty-input, #sizeQtyGridP3 
     window.setTimeout(updateP3QuantitySummary, 0);
 });
 
+function syncPage3Quantities() {
+    window.quantities = {};
+    $('#sizeQtyGridP3 .qty-input').each(function () {
+        var qty = parseInt($(this).val(), 10) || 0;
+        var size = $(this).data('size') || $(this).closest('.size-qty-box-p3').data('size');
+        if (qty > 0 && size) window.quantities[size] = qty;
+    });
+}
+
 // Update summary totals
 function updatePage2Summary() {
     let totalItems = 0;
@@ -1013,14 +1688,7 @@ function updatePage2Summary() {
     $("#totalItems").text(totalItems);
     
     // Store in window object for later use
-    window.quantities = {};
-    $(".size-qty-box").each(function() {
-        const sizeName = $(this).find(".size-name").text().trim();
-        const qty = parseInt($(this).find(".qty-input").val()) || 0;
-        if (qty > 0) {
-            window.quantities[sizeName] = qty;
-        }
-    });
+    syncPage3Quantities();
     
     console.log("Updated quantities:", window.quantities, "Total:", totalItems);
 }

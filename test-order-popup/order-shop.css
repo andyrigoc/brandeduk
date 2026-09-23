@@ -1999,9 +1999,9 @@
 }
 
 .page-4 .price-print {
-    background: linear-gradient(145deg, #f5c542, #e6b229);
+    background: #ff8c00;
     color: white;
-    border: 1px solid rgba(245,197,66,0.6);
+    border: 0;
 }
 
 .page-4 .price-badge .price-label {
@@ -2030,11 +2030,10 @@
 }
 
 .page-4 .price-print.active {
-    background: linear-gradient(145deg, #f5c542, #e6b229);
-    border: 1px solid rgba(245,197,66,0.6);
-    box-shadow: 0 6px 16px rgba(230,178,41,0.35), 0 2px 6px rgba(230,178,41,0.25),
-                inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.08);
-    transform: translateY(-1px);
+    background: #ff8c00;
+    border: 0;
+    box-shadow: none;
+    transform: none;
 }
 
 .page-4 .price-emb.active .price-label,

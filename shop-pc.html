@@ -2040,10 +2040,10 @@
 
     <!-- Order Popup Styles -->
     <link rel="stylesheet" href="test-order-popup/order.css">
-    <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260923-acc-sedex">
+    <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260923-print-orange2">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260923-qty-page">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260923-print-orange2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260913b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8486,14 +8486,46 @@
 
                         <!-- PAGE 4: Logo Positions -->
                         <div class="page page-4" style="width: 20%;">
-                            <div class="page-content-wrapper">
+                            <div class="page-content-wrapper p4-choose">
                                 <div class="pc-flow-page-nav">
                                     <button type="button" class="pc-step-back back-btn-p4"><span aria-hidden="true">←</span> BACK</button>
-                                    <div class="pc-flow-page-nav-actions">
-                                        <button class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
-                                        <button class="p4-btn-next" id="btnP4Next">NEXT <span aria-hidden="true">→</span></button>
+                                    <div class="p2-nav-title p4-nav-title">
+                                        <strong>Customise your product</strong>
+                                        <small>Choose a position and upload your logo</small>
                                     </div>
+                                    <button class="p4-btn-next" id="btnP4Next" type="button">NEXT →</button>
                                 </div>
+                                <div class="p4-layout">
+                                    <aside class="p4-summary-col">
+                                        <div class="p4-preview-head">
+                                            <div>
+                                                <span class="p3-preview-code" id="p4SummaryCode"></span>
+                                                <strong class="p3-preview-name" id="p4SummaryName"></strong>
+                                                <span class="p3-preview-colour" id="p4SummaryColour"></span>
+                                            </div>
+                                            <img class="p3-preview-brand-logo" id="p4SummaryBrand" src="" alt="">
+                                        </div>
+                                        <div class="p4-preview-frame">
+                                            <img id="p4SummaryImage" src="" alt="">
+                                        </div>
+                                        <div class="p4-order-summary">
+                                            <h3>Order summary</h3>
+                                            <div><span>Products</span><strong id="p4SumProducts">£0.00</strong></div>
+                                            <div><span>Logo customisation</span><strong id="p4SumLogo">£0.00</strong></div>
+                                            <div><span>Setup</span><strong id="p4SumSetup">£0.00</strong></div>
+                                            <div class="p4-sum-line"><span>Total (exc. VAT)</span><strong id="p4SumEx">£0.00</strong></div>
+                                            <div><span>VAT</span><strong id="p4SumVat">£0.00</strong></div>
+                                            <div class="p4-sum-total"><span>Total (inc. VAT)</span><strong id="p4SumInc">£0.00</strong></div>
+                                            <p class="p4-artwork-note"><span>✓</span> Artwork approval included<br><small>We will send a proof for approval before production begins.</small></p>
+                                            <button type="button" class="p4-confirm" id="p4ConfirmBasket">Confirm &amp; update basket</button>
+                                        </div>
+                                        <div class="p4-selected-colour">
+                                            <span>✓</span> Selected colour
+                                            <i id="p4SelectedSwatch"></i>
+                                            <strong id="p4SelectedName"></strong>
+                                        </div>
+                                    </aside>
+                                    <div class="p4-main-col">
 
                                 <!-- Identity bar (populated by JS) -->
                                 <div class="p2-identity-bar">
@@ -8775,6 +8807,35 @@
                                     </div>
 
                                 </div>
+                                        <label class="p4-notes">
+                                            <span>Notes</span>
+                                            <textarea id="p4ArtworkNotes" rows="4" placeholder="Logo size, specific colours or any other artwork details..."></textarea>
+                                        </label>
+                                    </div>
+                                    <aside class="p4-upload-col">
+                                        <h3>Add your logo</h3>
+                                        <p>Upload your artwork and we'll place it on your garment.</p>
+                                        <button type="button" class="p4-upload-box" id="p4ChooseFile">
+                                            <span class="p4-upload-icon" aria-hidden="true">&#8593;</span>
+                                            <span class="p4-upload-copy">
+                                                <strong>Upload a File</strong>
+                                                <span>Select a file to upload from your computer or device.</span>
+                                            </span>
+                                            <em>Choose File</em>
+                                        </button>
+                                        <small class="p4-file-types">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</small>
+                                        <p class="p4-file-tip">✓ For best results, use a high-resolution or vector file.</p>
+                                        <h4>Use a previous logo</h4>
+                                        <div id="p4PreviousLogos" class="p4-previous-logos" hidden></div>
+                                        <button type="button" class="p4-saved-logos">View all saved logos →</button>
+                                        <input type="file" id="p4LogoFileInput" accept="image/*,.pdf,.svg,.eps,.ai" hidden>
+                                        <div class="p4-artwork-help">
+                                            <strong>Not sure about your artwork?</strong>
+                                            <span>Upload what you have. Our team checks every file before production.</span>
+                                        </div>
+                                        <button type="button" class="p4-btn-skip" id="btnSkipLogo">Skip (no logo)</button>
+                                    </aside>
+                                </div>
 
                             </div>
                         </div>
@@ -9022,9 +9083,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20260923-qty-page"></script>
+    <script src="test-order-popup/order.js?v=20260923-print-orange2"></script>
     <script src="test-order-popup/order-integration.js?v=20260923-colour-slide"></script>
-    <script src="test-order-popup/customizer-embed.js?v=20260922-poa-contact"></script>
+    <script src="test-order-popup/customizer-embed.js?v=20260923-studio-load"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260920-product-cache"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20260923-qty-green"></script>
     <script src="mobile/js/popup-contact.js?v=20251230"></script>

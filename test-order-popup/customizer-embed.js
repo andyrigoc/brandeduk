@@ -12,6 +12,7 @@
     var preloadFrame = null;
     var preloadedCode = '';
     var frameReadyPoll = null;
+    var frameReadyTimeout = null;
     var pendingFrameUrl = '';
 
     if (!panel || !frame || !orderCard) return;
@@ -64,7 +65,7 @@
             document.body.appendChild(preloadFrame);
         }
 
-        var target = new URL('customization-tool', window.location.href);
+        var target = new URL('customization-tool/index.html', window.location.href);
         target.searchParams.set('code', code);
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
@@ -84,6 +85,10 @@
             window.clearInterval(frameReadyPoll);
             frameReadyPoll = null;
         }
+        if (frameReadyTimeout) {
+            window.clearTimeout(frameReadyTimeout);
+            frameReadyTimeout = null;
+        }
     }
 
     function showCustomizerFrame() {
@@ -92,37 +97,45 @@
         panel.classList.add('is-loaded');
     }
 
+    function frameDocumentLooksReady() {
+        try {
+            var frameDocument = frame.contentDocument;
+            if (!frameDocument || !frameDocument.body) return false;
+            if (frameDocument.readyState !== 'interactive' && frameDocument.readyState !== 'complete') return false;
+
+            var href = frame.contentWindow && frame.contentWindow.location.href;
+            if (!href || href === 'about:blank') return false;
+
+            var currentUrl = new URL(href);
+            if ((currentUrl.pathname || '').toLowerCase().indexOf('customization-tool') === -1) return false;
+
+            if (pendingFrameUrl) {
+                var expectedUrl = new URL(pendingFrameUrl);
+                if (currentUrl.origin !== expectedUrl.origin) return false;
+                var expectedCode = expectedUrl.searchParams.get('code');
+                var currentCode = currentUrl.searchParams.get('code');
+                if (expectedCode && currentCode && expectedCode !== currentCode) return false;
+            }
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
     function watchForFrameDocument() {
         stopFrameReadyWatch();
 
-        // The customizer has its own progress screen. Reveal it once its HTML
-        // is interactive instead of waiting for every image/font request to
-        // finish, which can otherwise leave Live Server behind this spinner.
+        // Reveal as soon as the tool document is interactive. Do not wait for
+        // the iframe "load" event (it waits for every image/font) or for an
+        // exact query-string match — colorImage URLs often re-encode.
         frameReadyPoll = window.setInterval(function() {
-            try {
-                var frameDocument = frame.contentDocument;
-                var frameLocation = frame.contentWindow && frame.contentWindow.location.href;
-                var documentReady = frameDocument
-                    && frameDocument.body
-                    && (frameDocument.readyState === 'interactive' || frameDocument.readyState === 'complete');
-                var currentUrl = new URL(frameLocation);
-                var expectedUrl = new URL(pendingFrameUrl);
-                var normalizePath = function(pathname) {
-                    return pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
-                };
-                var correctDocument = currentUrl.origin === expectedUrl.origin
-                    && normalizePath(currentUrl.pathname) === normalizePath(expectedUrl.pathname)
-                    && currentUrl.search === expectedUrl.search
-                    && frameDocument.getElementById('customizerLoadingOverlay');
-
-                if (documentReady && correctDocument) {
-                    showCustomizerFrame();
-                }
-            } catch (error) {
-                // Same-origin is expected here. Keep the native load listener
-                // as the fallback if the hosting arrangement ever differs.
-            }
+            if (frameDocumentLooksReady()) showCustomizerFrame();
         }, 50);
+
+        frameReadyTimeout = window.setTimeout(function() {
+            if (!panel.hidden && frame.getAttribute('src')) showCustomizerFrame();
+        }, 1800);
     }
 
     function closeCustomizer(saved) {
@@ -242,7 +255,7 @@
             summary.textContent = parts.join('  |  ') || 'Your order selections are preserved';
         }
 
-        var target = new URL('customization-tool', window.location.href);
+        var target = new URL('customization-tool/index.html', window.location.href);
         target.searchParams.set('code', item.productCode || item.code || '');
         target.searchParams.set('from', 'basket');
         target.searchParams.set('logoOnly', '1');
@@ -264,6 +277,9 @@
     };
 
     frame.addEventListener('load', function() {
+        showCustomizerFrame();
+    });
+    frame.addEventListener('error', function() {
         showCustomizerFrame();
     });
 
