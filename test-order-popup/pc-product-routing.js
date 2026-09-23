@@ -74,6 +74,57 @@
         history.replaceState(state, '', url.toString());
     }
 
+    function openBasketCustomization(url, code) {
+        if (url.searchParams.get('from') !== 'basket' || url.searchParams.get('customize') !== '1') return;
+
+        var basket = [];
+        try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
+        var basketIndex = parseInt(url.searchParams.get('basketIndex'), 10);
+        if (!Number.isInteger(basketIndex)) {
+            basketIndex = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+        }
+        var item = basket[basketIndex];
+        if (!item || cleanCode(item.code || item.productCode) !== code) return;
+
+        sessionStorage.setItem('customizingBasketIndex', String(basketIndex));
+        sessionStorage.setItem('returnAfterCustomize', 'basket');
+        window.selectedColour = item.color || item.colour || item.selectedColorName || '';
+
+        var quantities = item.sizes || item.quantities;
+        if (!quantities || typeof quantities !== 'object' || Array.isArray(quantities)) {
+            quantities = {};
+            quantities[item.size || 'One Size'] = Number(item.qty || item.quantity || item.totalQty) || 1;
+        }
+        window.quantities = Object.assign({}, quantities);
+
+        var totalQty = Object.keys(window.quantities).reduce(function (sum, size) {
+            return sum + (parseInt(window.quantities[size], 10) || 0);
+        }, 0);
+        var unitPrice = Number(item.unitPrice || item.price) || 0;
+        var image = item.colorImage || item.colourImg || item.image || '';
+        if (image) $('#p3ProductImage').attr('src', image);
+        $('#p3TotalPieces').text(totalQty);
+        $('#p3TotalCost').text('£' + (unitPrice * totalQty).toFixed(2));
+
+        window.p4Assignments = {};
+        (item.logos || []).forEach(function (logo) {
+            var position = String(logo.position || logo.positionLabel || '')
+                .trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            var dataUrl = logo.logo || logo.dataUrl || logo.preview || '';
+            if (!position || !dataUrl) return;
+            window.p4Assignments[position] = {
+                dataUrl: dataUrl,
+                method: String(logo.method || logo.application || 'embroidery').toLowerCase(),
+                filename: logo.filename || '',
+                unitPrice: logo.unitPrice != null ? Number(logo.unitPrice) : null
+            };
+        });
+
+        var notes = (item.logos && item.logos[0] && item.logos[0].notes) || item.notes || '';
+        $('#p4ArtworkNotes').val(notes);
+        window.goToPage(3);
+    }
+
     window.openPcProductDetails = function (productCode, productData, options) {
         var code = cleanCode(productCode || (productData && (productData.code || productData.style_code)));
         if (!code) return;
@@ -83,7 +134,7 @@
             setProductInUrl(code, settings.replaceHistory ? 'replace' : 'push');
         }
 
-        baseOpen(code, productData || getCachedProduct(code));
+        return baseOpen(code, productData || getCachedProduct(code));
     };
 
     window.closeOrderPopup = function () {
@@ -127,9 +178,12 @@
         var code = cleanCode(url.searchParams.get('product'));
         if (!code) return;
 
-        window.openPcProductDetails(code, getCachedProduct(code), {
+        var request = window.openPcProductDetails(code, getCachedProduct(code), {
             updateUrl: false,
             replaceHistory: true
+        });
+        Promise.resolve(request).then(function () {
+            openBasketCustomization(url, code);
         });
     }
 

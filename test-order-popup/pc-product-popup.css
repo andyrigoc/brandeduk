@@ -2921,8 +2921,8 @@ body.popup-open {
     min-height: 42px;
     border: 0;
     border-radius: 8px;
-    background: #eef0f3;
-    color: #b4bac3;
+    background: var(--pc-flow-brand);
+    color: #fff;
     font-weight: 700;
 }
 
@@ -2932,7 +2932,7 @@ body.popup-open {
     gap: 18px;
     min-height: 0;
     flex: 1 1 auto;
-    padding: 8px 20px 14px;
+    padding: 8px 20px 2px;
     overflow: auto;
 }
 
@@ -2956,7 +2956,7 @@ body.popup-open {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 180px;
+    min-height: 168px;
     margin-bottom: 12px;
     padding: 10px;
     border-radius: 16px;
@@ -2965,7 +2965,7 @@ body.popup-open {
 
 #orderPopup .page-4 .p4-preview-frame img {
     max-width: 100%;
-    max-height: 180px;
+    max-height: 168px;
     object-fit: contain;
 }
 
@@ -3004,16 +3004,6 @@ body.popup-open {
 #orderPopup .page-4 .p4-sum-total strong {
     color: #159a58;
     font-size: 22px;
-}
-
-#orderPopup .page-4 .p4-artwork-note {
-    margin: 8px 0;
-    color: #159a58;
-    font-size: 12px;
-}
-
-#orderPopup .page-4 .p4-artwork-note small {
-    color: #6b7280;
 }
 
 #orderPopup .page-4 .p4-confirm {
@@ -3066,16 +3056,42 @@ body.popup-open {
     transform: translate(-50%, -50%) scale(1);
 }
 
+#orderPopup .page-4 .p4-view-basket {
+    width: 100%;
+    min-height: 36px;
+    margin-top: 4px;
+    border: 2px solid var(--pc-flow-brand);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--pc-flow-brand);
+    font-weight: 800;
+    letter-spacing: .04em;
+    cursor: pointer;
+}
+
+#orderPopup .page-4 .p4-view-basket:hover {
+    background: var(--pc-flow-brand);
+    color: #fff;
+}
+
 #orderPopup .page-4 .p4-selected-colour {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 10px;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
     padding: 8px 10px;
     border-radius: 10px;
     background: #e8f8ef;
     color: #1f2937;
     font-size: 13px;
+}
+
+#orderPopup .page-4 .p4-selected-colour-choice {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
 }
 
 #orderPopup .page-4 .p4-selected-colour span {
@@ -3088,6 +3104,19 @@ body.popup-open {
     height: 28px;
     border-radius: 6px;
     background: #f3f4f6 center/cover no-repeat;
+}
+
+#orderPopup .page-4 .p4-artwork-approval {
+    min-width: 0;
+    padding-left: 10px;
+    border-left: 1px solid #b9e8cd;
+    color: #159a58;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+#orderPopup .page-4 .p4-artwork-approval strong {
+    display: block;
 }
 
 #orderPopup .page-4 .positions-grid {
@@ -3153,16 +3182,18 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-previous-logos {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+    width: 100%;
     margin: 8px 0;
 }
 
 #orderPopup .page-4 .p4-previous-logo {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
     padding: 4px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -3176,6 +3207,7 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-previous-logo img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -3933,8 +3965,11 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-logo-under img {
-    width: 92px;
-    height: 78px;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 78px;
     padding: 0;
     border: 0;
     object-fit: contain;

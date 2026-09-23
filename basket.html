@@ -4457,9 +4457,14 @@
             color: item.color || item.selectedColorName || '',
             _cb: Date.now().toString()
         });
+        if (!isMobile) {
+            params.set('product', item.code || item.productCode || '');
+            params.set('customize', '1');
+            params.set('basketIndex', itemIndex.toString());
+        }
         const customizerPath = isMobile
             ? 'customization-tool-mobile/index.html'
-            : 'customization-tool/index.html';
+            : 'shop-pc.html';
         window.location.href = `${customizerPath}?${params.toString()}`;
     }
 
@@ -4666,11 +4671,13 @@
             _cb: Date.now().toString()
         });
         if (!isMobile) {
-            params.set('embedded', 'pc-order');
+            params.set('product', item.code || item.productCode || '');
+            params.set('customize', '1');
+            params.set('basketIndex', itemIndex.toString());
         }
         const customizerPath = isMobile
             ? 'customization-tool-mobile/index.html'
-            : 'customization-tool/index.html';
+            : 'shop-pc.html';
         window.location.href = `${customizerPath}?${params.toString()}`;
     }
 

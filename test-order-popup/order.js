@@ -555,7 +555,6 @@ function fillPage4Summary() {
     if (title) title.textContent = page4CustomiseTitle(product);
     $('#p4SummaryCode, #p4ProductCode').text(code);
     $('#p4SummaryName, #p4ProductName').text(name);
-    $('#p4SummaryColour').text(colour ? 'Colour: ' + colour : '');
     $('#p4SelectedName').text(colour);
     var img = $('#p3ProductImage').attr('src') || product.image || '';
     if (img) $('#p4SummaryImage').attr('src', img);
@@ -570,7 +569,9 @@ function fillPage4Summary() {
     var ex = parseFloat(String($('#p3TotalCost').text() || '0').replace(/[^0-9.]/g, '')) || 0;
     var vat = ex * 0.2;
     var money = function (n) { return '£' + n.toFixed(2); };
+    var qty = p4ProductQty();
     $('#p4SumProducts, #p4SumEx').text(money(ex));
+    $('#p4SumQty').text(qty + (qty === 1 ? ' item' : ' items'));
     $('#p4SumLogo, #p4SumSetup').text(money(0));
     $('#p4SumVat').text(money(vat));
     $('#p4SumInc').text(money(ex + vat));
@@ -820,6 +821,30 @@ function p4RememberLogo(src, method, filename) {
     p4RenderPreviousLogos();
 }
 
+function p4CreateDragPreview(image) {
+    if (!image || !image.complete || !image.naturalWidth || !image.naturalHeight) return null;
+    var rect = image.getBoundingClientRect();
+    var width = Math.max(1, Math.round((rect.width || 64) * 1.25));
+    var height = Math.max(1, Math.round((rect.height || 64) * 1.25));
+    var pixelRatio = window.devicePixelRatio || 1;
+    var canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * pixelRatio);
+    canvas.height = Math.round(height * pixelRatio);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    canvas.style.position = 'fixed';
+    canvas.style.left = '-10000px';
+    canvas.style.top = '-10000px';
+    var context = canvas.getContext('2d');
+    context.scale(pixelRatio, pixelRatio);
+    var scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+    var drawWidth = image.naturalWidth * scale;
+    var drawHeight = image.naturalHeight * scale;
+    context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+    document.body.appendChild(canvas);
+    return { element: canvas, width: width, height: height };
+}
+
 function p4RenderPreviousLogos() {
     p4ReadLibrary();
     var host = document.getElementById('p4PreviousLogos');
@@ -837,6 +862,11 @@ function p4RenderPreviousLogos() {
             event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
             event.dataTransfer.setData('text/plain', entry.logo);
             event.dataTransfer.effectAllowed = 'copy';
+            var dragPreview = p4CreateDragPreview(button.querySelector('img'));
+            if (dragPreview) {
+                event.dataTransfer.setDragImage(dragPreview.element, dragPreview.width / 2, dragPreview.height / 2);
+                window.setTimeout(function () { dragPreview.element.remove(); }, 0);
+            }
             button.classList.add('is-dragging');
         });
         button.addEventListener('dragend', function () {
@@ -1023,6 +1053,7 @@ function p4UpdateSummary() {
     var vat = ex * 0.2;
     var money = function (n) { return '£' + n.toFixed(2); };
     $('#p4SumProducts').text(money(products));
+    $('#p4SumQty').text(qty + (qty === 1 ? ' item' : ' items'));
     $('#p4SumLogo').text(money(logo));
     $('#p4SumSetup').text(money(setup));
     $('#p4SumEx').text(money(ex));
@@ -1156,7 +1187,7 @@ function p4SaveLogosToBasket() {
         charged[logo.logo] = true;
         logo.setupCharge = Number(window.p4Pricing.embroidery.digitisingFeePerDesign) || 25;
     });
-    basket.forEach(function (item) {
+    function updateBasketItem(item) {
         var itemCode = item.code || item.productCode || '';
         var itemColour = item.color || item.colour || '';
         if (itemCode === code && itemColour === colour) {
@@ -1164,7 +1195,16 @@ function p4SaveLogosToBasket() {
             item.logoMethod = 'upload';
             item.embroiderySetup = setup;
         }
-    });
+    }
+    var basketIndex = parseInt(sessionStorage.getItem('customizingBasketIndex'), 10);
+    var isBasketEdit = new URLSearchParams(window.location.search).get('from') === 'basket';
+    if (isBasketEdit) {
+        if (Number.isInteger(basketIndex) && basket[basketIndex]) {
+            updateBasketItem(basket[basketIndex]);
+        }
+    } else {
+        basket.forEach(updateBasketItem);
+    }
     localStorage.setItem('quoteBasket', JSON.stringify(basket));
     window.dispatchEvent(new Event('basketUpdated'));
 }
@@ -1478,14 +1518,10 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     p4OpenFilePicker(card.dataset.position, method);
 });
 
-// PAGE 4: Next → go to page 5
-$(document).on('click', '#btnP4Next', function() {
-    var selected = $('#p4PositionOptions .position-card.selected');
-    if (selected.length === 0) {
-        window.showAlert('Please select at least one logo position, or click &quot;Skip (no logo)&quot;', 'Select Position');
-        return;
-    }
-    window.goToPage(4);
+// PAGE 4: Save the current state before opening the basket.
+$(document).on('click', '#btnP4Next, #p4ViewBasket', function() {
+    p4SaveLogosToBasket();
+    window.location.href = 'basket.html';
 });
 
 // PAGE 4: Skip logo → close popup after saving
