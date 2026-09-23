@@ -962,92 +962,207 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// HERO BANNERS CAROUSEL
+// HERO BANNERS CAROUSEL (DJ-scratch drag)
+// Finger down = full control, 1:1 scrub forward/back.
+// Finger up = snap to nearest slide, hold 10s, then autoplay.
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-    const banners = document.querySelectorAll('.hero-banner');
-    const dots = document.querySelectorAll('.banner-dot');
-    
-    if (banners.length === 0 || dots.length === 0) return;
-    
+    const container = document.querySelector('.hero-banners-container');
+    const banners = container
+        ? Array.from(container.querySelectorAll('.hero-banner'))
+        : [];
+    const dots = Array.from(document.querySelectorAll('.hero-banner-dots .banner-dot'));
+
+    if (!container || banners.length === 0) return;
+
+    const n = banners.length;
+    const HOLD_MS = 10000;
+    const AXIS_LOCK_PX = 6;
+
+    let position = 0;
     let currentBanner = 0;
     let autoSlideTimeout;
+    let isDragging = false;
+    let dragMoved = false;
+    let suppressClick = false;
+    let startX = 0;
+    let startY = 0;
+    let startPos = 0;
+    let width = 1;
+    let axisLocked = null; // null | 'x' | 'y'
+
+    function normalizeIndex(i) {
+        return ((Math.round(i) % n) + n) % n;
+    }
 
     function getBannerDurationMs(index) {
         const raw = banners[index]?.getAttribute('data-duration');
         const ms = Number(raw);
-        return Number.isFinite(ms) && ms > 0 ? ms : 12000;
+        return Number.isFinite(ms) && ms > 0 ? ms : HOLD_MS;
     }
-    
-    function showBanner(index) {
-        // Hide all banners
-        banners.forEach(b => b.classList.remove('hero-banner--active'));
-        dots.forEach(d => d.classList.remove('banner-dot--active'));
-        
-        // Show selected
-        banners[index].classList.add('hero-banner--active');
-        dots[index].classList.add('banner-dot--active');
-        currentBanner = index;
+
+    function render(pos, animate) {
+        container.classList.toggle('is-snapping', !!animate);
+        container.classList.toggle('is-dragging', isDragging && !animate);
+
+        banners.forEach((banner, i) => {
+            let d = i - pos;
+            while (d > n / 2) d -= n;
+            while (d < -n / 2) d += n;
+
+            const abs = Math.abs(d);
+            banner.style.transform = `translate3d(${d * 100}%, 0, 0)`;
+            banner.style.opacity = abs < 1.001 ? '1' : (abs < 1.5 ? String(Math.max(0, 1 - (abs - 1) * 2)) : '0');
+            banner.style.visibility = abs < 1.55 ? 'visible' : 'hidden';
+            banner.style.pointerEvents = abs < 0.45 ? 'auto' : 'none';
+            banner.classList.toggle('hero-banner--active', abs < 0.45);
+            banner.classList.remove('hero-banner--exit');
+        });
+
+        const nearest = normalizeIndex(pos);
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('banner-dot--active', i === nearest);
+        });
     }
-    
-    function nextBanner() {
-        const next = (currentBanner + 1) % banners.length;
-        showBanner(next);
+
+    function showBanner(index, animate) {
+        currentBanner = normalizeIndex(index);
+        position = currentBanner;
+        render(position, animate !== false);
     }
-    
-    function startAutoSlide() {
-        stopAutoSlide();
-        autoSlideTimeout = setTimeout(() => {
-            nextBanner();
-            startAutoSlide();
-        }, getBannerDurationMs(currentBanner));
-    }
-    
+
     function stopAutoSlide() {
         clearTimeout(autoSlideTimeout);
         autoSlideTimeout = undefined;
     }
-    
-    // Dot click handlers
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', function() {
-            stopAutoSlide();
-            showBanner(index);
+
+    function startAutoSlide(delayMs) {
+        stopAutoSlide();
+        const delay = delayMs != null ? delayMs : getBannerDurationMs(currentBanner);
+        autoSlideTimeout = setTimeout(() => {
+            showBanner(currentBanner + 1, true);
             startAutoSlide();
+        }, delay);
+    }
+
+    function beginDrag(clientX, clientY) {
+        stopAutoSlide();
+        isDragging = true;
+        dragMoved = false;
+        axisLocked = null;
+        width = container.offsetWidth || 1;
+        startX = clientX;
+        startY = clientY;
+        startPos = position;
+        container.classList.add('is-dragging');
+        container.classList.remove('is-snapping');
+    }
+
+    function moveDrag(clientX, clientY, event) {
+        if (!isDragging) return;
+
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+
+        if (!axisLocked) {
+            if (Math.abs(dx) < AXIS_LOCK_PX && Math.abs(dy) < AXIS_LOCK_PX) return;
+            axisLocked = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+            if (axisLocked === 'y') {
+                // Vertical intent: release banner control so the page can scroll.
+                isDragging = false;
+                container.classList.remove('is-dragging');
+                startAutoSlide(HOLD_MS);
+                return;
+            }
+        }
+
+        if (axisLocked !== 'x') return;
+
+        if (event && event.cancelable) event.preventDefault();
+        if (Math.abs(dx) > 3) dragMoved = true;
+
+        // 1:1 scrub — finger right reveals previous, finger left reveals next.
+        position = startPos - (dx / width);
+        render(position, false);
+    }
+
+    function endDrag() {
+        if (!isDragging) return;
+
+        isDragging = false;
+        container.classList.remove('is-dragging');
+
+        const snapped = Math.round(position);
+        showBanner(snapped, true);
+
+        if (dragMoved) {
+            suppressClick = true;
+            setTimeout(() => { suppressClick = false; }, 450);
+        }
+        dragMoved = false;
+        axisLocked = null;
+        startAutoSlide(HOLD_MS);
+    }
+
+    container.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        beginDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        if (e.touches.length !== 1) return;
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY, e);
+    }, { passive: false });
+
+    container.addEventListener('touchend', endDrag, { passive: true });
+    container.addEventListener('touchcancel', endDrag, { passive: true });
+
+    // Desktop / device-emulation pointer drag
+    container.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') return;
+        if (e.button != null && e.button !== 0) return;
+        beginDrag(e.clientX, e.clientY);
+        try { container.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    container.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        moveDrag(e.clientX, e.clientY, e);
+    });
+
+    container.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'touch') return;
+        endDrag();
+    });
+
+    container.addEventListener('pointercancel', (e) => {
+        if (e.pointerType === 'touch') return;
+        endDrag();
+    });
+
+    // Prevent accidental link navigation after a scrub
+    container.addEventListener('click', (e) => {
+        if (!suppressClick) return;
+        e.preventDefault();
+        e.stopPropagation();
+    }, true);
+
+    banners.forEach((banner) => {
+        banner.querySelectorAll('img').forEach((img) => {
+            img.setAttribute('draggable', 'false');
         });
     });
-    
-    // Start auto slide
-    showBanner(currentBanner);
-    startAutoSlide();
-    
-    // Swipe support
-    const container = document.querySelector('.hero-banners-container');
-    if (container) {
-        let startX = 0;
-        let endX = 0;
-        
-        container.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
             stopAutoSlide();
+            showBanner(index, true);
+            startAutoSlide(HOLD_MS);
         });
-        
-        container.addEventListener('touchend', (e) => {
-            endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    // Swipe left - next
-                    showBanner((currentBanner + 1) % banners.length);
-                } else {
-                    // Swipe right - prev
-                    showBanner((currentBanner - 1 + banners.length) % banners.length);
-                }
-            }
-            startAutoSlide();
-        });
-    }
+    });
+
+    showBanner(0, false);
+    startAutoSlide();
 });
 
 // ============================================
