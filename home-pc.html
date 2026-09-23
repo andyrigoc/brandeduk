@@ -693,6 +693,49 @@
         .brands-menu .nav-megamenu.brand-grid .brand-heading:first-of-type {
             margin-top: 0;
         }
+
+        @media (min-width: 1024px) {
+            .site-header .main-nav > .menu > li.brands-menu,
+            .site-header .main-nav > .menu > li.has-megamenu:first-child {
+                position: static !important;
+            }
+
+            .site-header .main-nav .brands-menu .nav-megamenu.brand-grid,
+            .site-header .main-nav .nav-megamenu.allprod-megamenu {
+                left: 50vw !important;
+                right: auto !important;
+                width: min(calc(100vw - 32px), 1220px) !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                transform: translateX(-50%) !important;
+                box-sizing: border-box;
+            }
+
+            .site-header .main-nav .brands-menu .nav-megamenu.brand-grid {
+                column-count: 6 !important;
+                column-gap: 20px !important;
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+
+            .site-header .main-nav > .menu > li.has-megamenu > a {
+                position: relative;
+            }
+
+            .site-header .main-nav > .menu > li.has-megamenu.is-open > a::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: -15px;
+                z-index: 56;
+                width: 12px;
+                height: 12px;
+                background: #fff;
+                border-top: 1px solid #e5e7eb;
+                border-left: 1px solid #e5e7eb;
+                transform: translateX(-50%) rotate(45deg);
+            }
+        }
         .exclusives-dropdown {
             position: absolute;
             top: 100%;
@@ -2347,10 +2390,10 @@
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=gildan" aria-label="Shop Gildan industry classics">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/gildan-uk-desk-gif.webp" alt="Gildan five industry classics offer: GD001, GD002, GD005, GD056 and GD057">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis" aria-label="Shop AWDis">
+            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17819-jh501-hood-banner-desktop.webp" alt="AWDis JH501 College Hoodie 2.0 designed for decoration">
             </a>
-            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis" aria-label="Shop AWDis">
+            <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=awdis-just-hoods" aria-label="Shop AWDis Just Hoods">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17829-jh501-banner-refresh.webp" alt="AWDis JH501 College Hoodie 2.0">
             </a>
 
