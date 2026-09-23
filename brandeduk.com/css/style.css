@@ -263,9 +263,28 @@ main.main-content {
 
 .hero-banner-image .onlyboards-banner-image {
     width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.fixed-partner-banner {
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 2106 / 292;
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+}
+
+.fixed-partner-banner > img {
+    width: 100%;
     height: auto;
-    aspect-ratio: 1920 / 630;
-    object-fit: contain;
+    display: block;
+    transform: translateY(-26.37%);
 }
 
 #heroBannerOnlyBoards .onlyboards-banner-image {
@@ -484,7 +503,8 @@ main.main-content {
     display: flex;
     justify-content: flex-start;
     gap: 8px;
-    width: min(100%, 1440px);
+    width: 100%;
+    max-width: none;
     margin: 0 auto;
     padding: 10px 0 0;
     position: relative;
@@ -492,7 +512,9 @@ main.main-content {
 }
 
 .banner-dot {
-    width: clamp(82px, 10vw, 144px);
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
     height: clamp(46px, 4.8vw, 70px);
     padding: 0;
     overflow: hidden;
@@ -588,9 +610,10 @@ main.main-content {
     }
 
     .hero-banner-dots {
-        width: min(100vw, 1440px);
-        padding-left: clamp(12px, 2vw, 32px);
-        padding-right: clamp(12px, 2vw, 32px);
+        width: 100vw;
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
         box-sizing: border-box;
     }
 }
