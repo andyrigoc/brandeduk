@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="78" height="40" viewBox="0 0 78 40" role="img" aria-label="REACH Compliance">
+  <rect x="1" y="1" width="76" height="38" rx="2" fill="#1d4f91" stroke="#163d70"/>
+  <text x="39" y="13" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="700" fill="#fff">REACH</text>
+  <circle cx="39" cy="22" r="6" fill="#1d4f91" stroke="#ffd200" stroke-width="1.2"/>
+  <g fill="#ffd200">
+    <circle cx="39" cy="16.5" r="0.9"/>
+    <circle cx="43.2" cy="18.2" r="0.9"/>
+    <circle cx="44.5" cy="22" r="0.9"/>
+    <circle cx="43.2" cy="25.8" r="0.9"/>
+    <circle cx="39" cy="27.5" r="0.9"/>
+    <circle cx="34.8" cy="25.8" r="0.9"/>
+    <circle cx="33.5" cy="22" r="0.9"/>
+    <circle cx="34.8" cy="18.2" r="0.9"/>
+  </g>
+  <text x="39" y="36" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="6.5" font-weight="700" fill="#fff">COMPLIANCE</text>
+</svg>

@@ -67,7 +67,10 @@
         var activeStep = Math.max(0, Math.min(3, Number(step) || 0));
         progressItems.forEach(function (item, index) {
             item.classList.toggle('is-active', index === activeStep);
-            item.classList.toggle('is-complete', index < activeStep);
+            var complete = index < activeStep;
+            if (index === 1 && window.selectedColour) complete = true;
+            if (index === 2 && quantityTotal() > 0) complete = true;
+            item.classList.toggle('is-complete', complete);
             if (index === activeStep) item.setAttribute('aria-current', 'step');
             else item.removeAttribute('aria-current');
         });
@@ -189,15 +192,19 @@
 
     popup.addEventListener('click', function (event) {
         if (event.target.closest('.colour-swatch-item')) {
-            window.setTimeout(updateStepSummary, 0);
+            window.setTimeout(function () {
+                updateProgress(window.current);
+            }, 0);
         }
         if (event.target.closest('#sizeQtyGridP3 .qty-btn')) {
-            window.setTimeout(updateStepSummary, 0);
+            window.setTimeout(function () {
+                updateProgress(window.current);
+            }, 0);
         }
     });
 
     popup.addEventListener('input', function (event) {
-        if (event.target.matches('#sizeQtyGridP3 .qty-input')) updateStepSummary();
+        if (event.target.matches('#sizeQtyGridP3 .qty-input')) updateProgress(window.current);
     });
 
     var baseOpenCustomizer = window.openPcOrderCustomizer;

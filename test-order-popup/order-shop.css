@@ -3,30 +3,37 @@
 /* Product Shop Layout */
 .product-shop-layout {
     display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 30px;
-    padding: 25px;
+    grid-template-columns: minmax(280px, 340px) 1fr;
+    gap: 28px;
+    padding: 22px 25px;
     height: 100%;
     overflow: hidden;
+    align-items: stretch;
 }
 
 /* Left Column: Gallery */
 .product-gallery {
     display: flex;
     flex-direction: column;
+    gap: 10px;
     height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding-right: 0;
 }
 
 .product-main-image {
-    background: #f9fafb;
-    border-radius: 16px;
-    padding: 20px;
+    position: relative;
+    background: #f4f5f7;
+    border-radius: 14px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
-    min-height: 0;
-    max-height: 450px;
+    flex: 0 0 auto;
+    height: 280px;
+    max-height: 280px;
+    overflow: hidden;
 }
 
 .product-main-image img {
@@ -35,7 +42,119 @@
     width: auto;
     height: auto;
     object-fit: contain;
-    border-radius: 12px;
+    border-radius: 10px;
+}
+
+.product-zoom-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #273469;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.product-zoom-btn:hover {
+    background: #fff;
+    border-color: #c7cdd8;
+}
+
+.product-thumbs-carousel {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 2px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.product-thumbs-carousel[hidden] {
+    display: none !important;
+}
+
+.product-thumbs-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.product-thumb {
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: #f4f5f7;
+    padding: 4px;
+    cursor: pointer;
+    scroll-snap-align: start;
+    overflow: hidden;
+}
+
+.product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+}
+
+.product-thumb.is-active,
+.product-thumb:hover {
+    border-color: #273469;
+    background: #fff;
+}
+
+.product-accreditations {
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 1px solid #e8ebf0;
+}
+
+.product-accreditations-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.product-accreditations-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.product-accreditation-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+}
+
+.product-accreditation-badge img {
+    height: 64px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.product-accreditations-strip {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 72px;
+    object-fit: contain;
+    object-position: left center;
 }
 
 /* Product Code Display */
@@ -102,6 +221,72 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+}
+
+.p1-desc-features {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    gap: 22px;
+    align-items: start;
+    margin-top: 14px;
+}
+
+.p1-specs-copy {
+    min-width: 0;
+}
+
+.p1-feature-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 1px solid #e8ebf0;
+    padding-left: 14px;
+}
+
+.p1-feature-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef1f5;
+}
+
+.p1-feature-item:last-child {
+    border-bottom: none;
+}
+
+.p1-feature-icon {
+    flex: 0 0 auto;
+    color: #273469;
+    margin-top: 1px;
+}
+
+.p1-feature-item strong {
+    display: block;
+    color: #273469;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.p1-feature-item small {
+    display: block;
+    color: #8b95a5;
+    font-size: 11px;
+    line-height: 1.35;
+    margin-top: 2px;
+}
+
+@media (max-width: 980px) {
+    .p1-desc-features {
+        grid-template-columns: 1fr;
+    }
+
+    .p1-feature-stack {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid #e8ebf0;
+    }
 }
 
 /* ---- PAGE 1 NEW LAYOUT ---- */

@@ -71,6 +71,9 @@
             if (url && !candidates.includes(url)) candidates.push(url);
         }
 
+        const modelFirst = collectGalleryImages(product);
+        modelFirst.forEach(function (item) { add(item.url); });
+
         add(product.image);
         add(product.mainImage);
         add(product.main_image);
@@ -86,9 +89,6 @@
             : (Array.isArray(product.colours) ? product.colours : []);
         colours.filter(colour => String(colour && colour.name || '').trim().toLowerCase() === 'model')
             .forEach(colour => add(colour && (colour.main || colour.image || colour.thumb)));
-
-        images.forEach(image => add(image && (image.url || image.src)));
-        colours.forEach(colour => add(colour && (colour.main || colour.image || colour.thumb)));
 
         return candidates;
     }
@@ -121,6 +121,222 @@
             image.classList.add('is-image-fallback');
             image.src = PRODUCT_IMAGE_FALLBACK;
         }
+    }
+
+    function isHumanModelShot(url, label) {
+        const src = String(url || '');
+        const name = String(label || '');
+        const file = src.split('/').pop() || '';
+        if (/_FT(\.|$)/i.test(file)) return false;
+        if (/^(model|lifestyle|worn|on[\s-]?body|hero)$/i.test(name.trim())) return true;
+        if (/LS\d+|lifestyle|onbody|on-body|worn|model[-_]?shot/i.test(src + ' ' + name)) return true;
+        return false;
+    }
+
+    function collectGalleryImages(product) {
+        const items = [];
+        const seen = new Set();
+
+        function push(url, label) {
+            const src = String(url || '').trim();
+            if (!src || seen.has(src)) return;
+            if (!isHumanModelShot(src, label)) return;
+            seen.add(src);
+            items.push({ url: src, label: label || 'Model' });
+        }
+
+        const colours = Array.isArray(product.colors)
+            ? product.colors
+            : (Array.isArray(product.colours) ? product.colours : []);
+        colours.forEach(function (colour) {
+            const name = String(colour && colour.name || '').trim();
+            push(colour && (colour.main || colour.image || colour.thumb), name || 'Model');
+        });
+
+        const images = Array.isArray(product.images) ? product.images : [];
+        images.forEach(function (image) {
+            push(image && (image.url || image.src), image && (image.type || image.label) || 'Model');
+        });
+
+        push(product.image || product.mainImage || product.main_image, 'Model');
+        return items.slice(0, 8);
+    }
+
+    function renderProductGallery(product) {
+        const carousel = document.getElementById('productThumbsCarousel');
+        const mainImage = document.getElementById('productMainImage');
+        if (!carousel || !mainImage) return;
+
+        const gallery = collectGalleryImages(product);
+        carousel.innerHTML = '';
+        carousel.hidden = gallery.length < 2;
+
+        if (!gallery.length) {
+            setProductMainImage(product);
+            return;
+        }
+
+        mainImage.src = gallery[0].url;
+        mainImage.alt = (product.name || 'Product') + ' — ' + gallery[0].label;
+
+        gallery.forEach(function (item, index) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'product-thumb' + (index === 0 ? ' is-active' : '');
+            btn.setAttribute('role', 'option');
+            btn.setAttribute('aria-label', item.label);
+            btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+            btn.innerHTML = '<img src="' + item.url.replace(/"/g, '&quot;') + '" alt="">';
+            btn.addEventListener('click', function () {
+                mainImage.src = item.url;
+                mainImage.alt = (product.name || 'Product') + ' — ' + item.label;
+                carousel.querySelectorAll('.product-thumb').forEach(function (el) {
+                    el.classList.remove('is-active');
+                    el.setAttribute('aria-selected', 'false');
+                });
+                btn.classList.add('is-active');
+                btn.setAttribute('aria-selected', 'true');
+            });
+            carousel.appendChild(btn);
+        });
+    }
+
+    function shortFabricLabel(fabric) {
+        const text = String(fabric || '').trim();
+        if (!text) return '';
+        // Prefer first sentence / clause before composition lists explode
+        const first = text.split(/[.;]/)[0] || text;
+        return first.trim().slice(0, 42);
+    }
+
+    function getProductSizeList(product) {
+        const fromSizes = Array.isArray(product.sizes)
+            ? product.sizes.map(function (s) { return String(s || '').trim(); }).filter(Boolean)
+            : [];
+        if (fromSizes.length) return Array.from(new Set(fromSizes));
+
+        const fromVariants = Array.isArray(product.variants)
+            ? product.variants.map(function (v) { return String(v && v.size || '').trim(); }).filter(Boolean)
+            : [];
+        if (fromVariants.length) return Array.from(new Set(fromVariants));
+
+        return [];
+    }
+
+    function renderFeatureStack(product) {
+        const fabric = (product.details && product.details.fabric) || product.fabric || product.composition || '';
+        const care = (product.details && product.details.care) || product.care || '';
+        const description = String(product.description || '');
+        const sizes = getProductSizeList(product);
+
+        const materialEl = document.getElementById('p1FeatureMaterial');
+        const sizeEl = document.getElementById('p1FeatureSize');
+        const careEl = document.getElementById('p1FeatureCare');
+
+        if (materialEl) {
+            const label = shortFabricLabel(fabric);
+            if (label) {
+                materialEl.hidden = false;
+                const title = document.getElementById('p1FeatureMaterialTitle');
+                const sub = document.getElementById('p1FeatureMaterialSub');
+                if (title) title.textContent = label;
+                if (sub) sub.textContent = 'Premium feel, everyday wear';
+            } else {
+                materialEl.hidden = true;
+            }
+        }
+
+        if (sizeEl) {
+            if (sizes.length) {
+                sizeEl.hidden = false;
+                const title = document.getElementById('p1FeatureSizeTitle');
+                const sub = document.getElementById('p1FeatureSizeSub');
+                const isOne = sizes.length === 1 && /one\s*size|os|onesize/i.test(sizes[0]);
+                const sizeLabel = isOne
+                    ? 'One size'
+                    : (sizes.length === 1 ? sizes[0] : (sizes.length + ' sizes'));
+                if (title) title.textContent = sizeLabel;
+                if (sub) {
+                    sub.textContent = isOne
+                        ? 'A comfortable fit for all'
+                        : sizes.join(' · ');
+                }
+                const p2Size = document.getElementById('p2SizeLine');
+                if (p2Size) p2Size.textContent = isOne ? 'One size' : sizes.join(' · ');
+            } else {
+                sizeEl.hidden = true;
+            }
+        }
+
+        if (careEl) {
+            const washable = /wash/i.test(care) || /machine wash/i.test(description);
+            if (washable || care) {
+                careEl.hidden = false;
+                const title = document.getElementById('p1FeatureCareTitle');
+                const sub = document.getElementById('p1FeatureCareSub');
+                if (title) title.textContent = washable ? 'Machine washable' : care.slice(0, 36);
+                if (sub) sub.textContent = washable ? 'Easy care, long lasting' : 'Care guidance';
+            } else {
+                careEl.hidden = true;
+            }
+        }
+    }
+
+    var ACCREDITATION_DEFS = [
+        {
+            slug: 'amfori-bsci',
+            label: 'amfori BSCI',
+            src: 'brandedukv15-child/assets/images/ui/accreditations/amfori-bsci.svg'
+        },
+        {
+            slug: 'reach',
+            label: 'REACH Compliance',
+            src: 'brandedukv15-child/assets/images/ui/accreditations/reach.svg'
+        },
+        {
+            slug: 'sedex',
+            label: 'Sedex',
+            src: 'brandedukv15-child/assets/images/ui/accreditations/sedex.svg'
+        }
+    ];
+
+    function renderAccreditations(slugs) {
+        const wrap = document.getElementById('productAccreditations');
+        const row = document.getElementById('productAccreditationsRow');
+        if (!wrap || !row) return;
+
+        row.innerHTML = '';
+        row.className = 'product-accreditations-row is-official';
+        row.innerHTML = '<img class="product-accreditations-strip" src="brandedukv15-child/assets/images/ui/accreditations-row.png" alt="amfori BSCI, REACH Compliance, Sedex">';
+        wrap.hidden = false;
+    }
+
+    function loadProductAccreditations(productCode) {
+        const code = String(productCode || '').trim().toUpperCase();
+        if (!code) {
+            renderAccreditations([]);
+            return Promise.resolve([]);
+        }
+
+        const apiBase = (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
+        return Promise.all(ACCREDITATION_DEFS.map(function (def) {
+            const url = apiBase + '/api/products?limit=5&q=' + encodeURIComponent(code) +
+                '&accreditations[]=' + encodeURIComponent(def.slug);
+            return fetch(url)
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (data) {
+                    const items = (data && (data.items || data.products)) || [];
+                    const exact = items.some(function (item) {
+                        return String(item && item.code || '').toUpperCase() === code;
+                    });
+                    return exact ? def.slug : null;
+                })
+                .catch(function () { return null; });
+        })).then(function (results) {
+            const slugs = results.filter(Boolean);
+            renderAccreditations(slugs);
+            return slugs;
+        });
     }
     
     // Check if popup HTML is already in DOM
@@ -379,7 +595,18 @@
         $("#p3BasePrice").text("£" + basePrice.toFixed(2));
         
         setProductMainImage(product, imageCandidates);
+        renderProductGallery(product);
+        renderFeatureStack(product);
+        loadProductAccreditations(product.code || product.sku || '');
         
+        window.selectedColour = null;
+        $('#selectedColourName').text('No colour selected');
+        var selectedThumb = document.getElementById('p2SelectedThumb');
+        if (selectedThumb) {
+            selectedThumb.hidden = true;
+            selectedThumb.style.backgroundImage = '';
+        }
+
         // Load colours using product data (API uses 'colors' not 'colours')
         loadProductColours(product);
         
@@ -406,38 +633,186 @@
         return 'other';
     }
 
+    var allColourPage = 0;
+    var ALL_COLOUR_PAGE_SIZE = 20;
+    var colourPagerBusy = false;
+
+    function visibleAllColourItems() {
+        return Array.from(document.querySelectorAll('#colourSwatches .colour-swatch-item')).filter(function (item) {
+            return !item.hidden;
+        });
+    }
+
+    function rebuildColourPages() {
+        var host = document.getElementById('colourSwatches');
+        if (!host) return 0;
+        var items = Array.from(host.querySelectorAll('.colour-swatch-item'));
+        var visible = items.filter(function (item) { return !item.hidden; });
+        var hidden = items.filter(function (item) { return item.hidden; });
+
+        var viewport = host.querySelector('.colour-swatches-wrapper');
+        if (!viewport) {
+            viewport = document.createElement('div');
+            viewport.className = 'colour-swatches-wrapper';
+            host.appendChild(viewport);
+        }
+        viewport.classList.add('p2-all-viewport');
+
+        var track = viewport.querySelector('.p2-all-track');
+        if (!track) {
+            track = document.createElement('div');
+            track.className = 'p2-all-track';
+            viewport.insertBefore(track, viewport.firstChild);
+        }
+
+        var dump = viewport.querySelector('.p2-all-hidden');
+        if (!dump) {
+            dump = document.createElement('div');
+            dump.className = 'p2-all-hidden';
+            dump.hidden = true;
+            viewport.appendChild(dump);
+        }
+
+        hidden.forEach(function (item) {
+            item.classList.remove('p2-off-page');
+            dump.appendChild(item);
+        });
+
+        Array.from(track.querySelectorAll('.p2-all-page')).forEach(function (page) {
+            page.remove();
+        });
+
+        for (var i = 0; i < visible.length; i += ALL_COLOUR_PAGE_SIZE) {
+            var page = document.createElement('div');
+            page.className = 'colour-swatches-grid p2-all-page';
+            visible.slice(i, i + ALL_COLOUR_PAGE_SIZE).forEach(function (item) {
+                item.classList.remove('p2-off-page');
+                page.appendChild(item);
+            });
+            track.appendChild(page);
+        }
+
+        Array.from(viewport.querySelectorAll('.colour-swatches-grid:not(.p2-all-page)')).forEach(function (old) {
+            old.remove();
+        });
+
+        return track.querySelectorAll('.p2-all-page').length;
+    }
+
+    function updateAllColourPager(page, options) {
+        options = options || {};
+        if (options.rebuild) rebuildColourPages();
+
+        var track = document.querySelector('#colourSwatches .p2-all-track');
+        var pageNodes = track ? track.querySelectorAll('.p2-all-page') : [];
+        var pages = Math.max(1, pageNodes.length);
+        var items = visibleAllColourItems();
+        if (page === 0 || page) allColourPage = page;
+        allColourPage = Math.max(0, Math.min(pages - 1, allColourPage));
+
+        var target = (-allColourPage * 100) + '%';
+        var shouldAnimate = options.animate !== false && pageNodes.length > 1;
+
+        function finish() {
+            colourPagerBusy = false;
+        }
+
+        if (track) {
+            if (shouldAnimate && window.jQuery) {
+                colourPagerBusy = true;
+                window.jQuery(track).stop().animate(
+                    { left: target },
+                    { duration: 700, easing: 'easeInOutBack', complete: finish }
+                );
+            } else if (window.jQuery) {
+                window.jQuery(track).stop(true, true).css('left', target);
+                finish();
+            } else {
+                track.style.left = target;
+                finish();
+            }
+        }
+
+        var prev = document.getElementById('p2ColourPrev');
+        var next = document.getElementById('p2ColourNext');
+        var showArrows = items.length > ALL_COLOUR_PAGE_SIZE;
+        if (prev) {
+            prev.hidden = !showArrows;
+            prev.disabled = allColourPage <= 0;
+        }
+        if (next) {
+            next.hidden = !showArrows;
+            next.disabled = allColourPage >= pages - 1;
+        }
+    }
+
+    function bindAllColourPager() {
+        if (bindAllColourPager.bound) return;
+        var prev = document.getElementById('p2ColourPrev');
+        var next = document.getElementById('p2ColourNext');
+        if (prev) {
+            prev.addEventListener('click', function () {
+                if (colourPagerBusy || allColourPage <= 0) return;
+                updateAllColourPager(allColourPage - 1);
+            });
+        }
+        if (next) {
+            next.addEventListener('click', function () {
+                if (colourPagerBusy) return;
+                updateAllColourPager(allColourPage + 1);
+            });
+        }
+        bindAllColourPager.bound = true;
+    }
+
+    function applyColourFamilyFilter(filter) {
+        const family = filter || 'all';
+        document.querySelectorAll('.p2-filter-chip').forEach(function (chip) {
+            chip.classList.toggle('is-active', chip.dataset.colourFilter === family);
+        });
+        document.querySelectorAll('.colour-swatch-item').forEach(function (item) {
+            item.hidden = family !== 'all' && item.dataset.colourFamily !== family;
+        });
+        var popular = document.getElementById('p2PopularColours');
+        var popularSection = popular && popular.closest('.p2-popular-section');
+        if (popularSection) {
+            popularSection.hidden = !popular.querySelector('.colour-swatch-item:not([hidden])');
+        }
+        updateAllColourPager(0, { rebuild: true, animate: false });
+    }
+
     function setupColourToolbar(colors) {
         const select = document.getElementById('p2ColourSelect');
-        if (!select) return;
-
-        select.innerHTML = '<option value="">Please select colour</option>';
-        colors.forEach(function (colour) {
-            const option = document.createElement('option');
-            option.value = colour.name || '';
-            option.textContent = colour.name || 'Colour';
-            select.appendChild(option);
-        });
-
-        document.querySelectorAll('[data-colour-filter]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                const filter = button.dataset.colourFilter || 'all';
-                document.querySelectorAll('.p2-filter-chip').forEach(function (chip) {
-                    chip.classList.toggle('is-active', chip === button || (filter === 'all' && chip.dataset.colourFilter === 'all'));
-                });
-                document.querySelectorAll('.colour-swatch-item').forEach(function (item) {
-                    item.hidden = filter !== 'all' && item.dataset.colourFamily !== filter;
-                });
+        if (select) {
+            select.innerHTML = '<option value="">Please select colour</option>';
+            colors.forEach(function (colour) {
+                const option = document.createElement('option');
+                option.value = colour.name || '';
+                option.textContent = colour.name || 'Colour';
+                select.appendChild(option);
             });
-        });
+        }
 
-        select.addEventListener('change', function () {
-            const selected = select.value;
-            if (!selected) return;
-            const item = Array.from(document.querySelectorAll('.colour-swatch-item')).find(function (swatch) {
-                return (swatch.dataset.name || swatch.dataset.colour) === selected;
+        if (!setupColourToolbar.bound) {
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('[data-colour-filter]');
+                if (!button || !button.closest('#orderPopup')) return;
+                applyColourFamilyFilter(button.dataset.colourFilter || 'all');
             });
-            if (item) item.click();
-        });
+            if (select) {
+                select.addEventListener('change', function () {
+                    const selected = select.value;
+                    if (!selected) return;
+                    const item = Array.from(document.querySelectorAll('#colourSwatches .colour-swatch-item')).find(function (swatch) {
+                        return (swatch.dataset.name || swatch.dataset.colour) === selected;
+                    });
+                    if (item) item.click();
+                });
+            }
+            setupColourToolbar.bound = true;
+        }
+
+        applyColourFamilyFilter('all');
     }
 
     function loadProductColours(product) {
@@ -487,7 +862,40 @@
             
             wrapper.append(grid);
             colourGrid.append(wrapper);
+
+            const popularHost = document.getElementById('p2PopularColours');
+            if (popularHost) {
+                popularHost.innerHTML = '';
+                const shuffled = colors.slice();
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const swap = shuffled[i];
+                    shuffled[i] = shuffled[j];
+                    shuffled[j] = swap;
+                }
+                shuffled.slice(0, 6).forEach(function (colour, index) {
+                    const imgUrl = colour.main || colour.image || product.image || '';
+                    const colorName = colour.name || 'Unknown';
+                    const colorHex = colour.hex || getColourHex(colorName);
+                    popularHost.insertAdjacentHTML('beforeend',
+                        '<div class="colour-swatch-item" data-colour="' + colorName + '" data-colour-family="' + getColourFamily(colorName) + '" data-hex="' + colorHex + '" data-img="' + imgUrl + '" data-name="' + colorName + '" data-index="p' + index + '">' +
+                        '<div class="swatch-thumb" style="background-image: url(\'' + imgUrl + '\');"></div>' +
+                        '<div class="swatch-info"><p class="swatch-name">' + colorName + '</p></div>' +
+                        '</div>'
+                    );
+                });
+            }
+
+            const preview = document.getElementById('p2PreviewImage');
+            const first = colors[0];
+            if (preview && first) {
+                preview.src = first.main || first.image || product.image || preview.src;
+                preview.alt = (product.name || 'Product') + ' in ' + (first.name || 'colour');
+            }
+
             setupColourToolbar(colors);
+            bindAllColourPager();
+            updateAllColourPager(0, { rebuild: true, animate: false });
             
             // View button handler only (selection handled by order.js)
             grid[0].querySelectorAll('.swatch-view-btn').forEach(function(btn) {

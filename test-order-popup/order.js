@@ -541,6 +541,10 @@ $(document).on("click", "#btnCustomize", function() {
     }
 });
 
+$(document).on("click", "#p3ContinueCustomise", function() {
+    $("#btnCustomize").trigger("click");
+});
+
 // Final save — called after page 5
 function finalSaveToBasket(redirectUrl) {
     var basket = [];
@@ -934,15 +938,24 @@ $(document).on("click", ".colour-swatch-item", function(e) {
     const imgUrl = $(this).data("img");
     const colourHex = $(this).data("hex") || '#64748b';
     window.selectedColour = colourName;
-    $("#selectedColourName").text(colourName);
+    $("#selectedColourName").text(colourName + ' selected');
     $("#p2ColourSelect").val(colourName);
     $("#orderPopup").css("--pc-selected-colour", colourHex);
-    if (imgUrl) $("#productMainImage").attr("src", imgUrl);
+    document.querySelectorAll('.colour-swatch-item').forEach(function (el) {
+        var match = (el.dataset.colour || el.dataset.name) === String(colourName);
+        el.classList.toggle('selected', match);
+    });
+    if (imgUrl) {
+        $("#productMainImage, #p2PreviewImage, #p3ProductImage").attr("src", imgUrl);
+        var thumb = document.getElementById('p2SelectedThumb');
+        if (thumb) {
+            thumb.hidden = false;
+            thumb.style.backgroundImage = 'url(' + imgUrl + ')';
+        }
+    }
     if (typeof window.preloadPcOrderCustomizer === 'function' && window.productData) {
         window.preloadPcOrderCustomizer(window.productData, colourName, imgUrl, colourHex);
     }
-
-    window.goToPage(2);
 });
 
 // Handle quantity controls (PAGE 2)
