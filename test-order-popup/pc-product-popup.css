@@ -3017,16 +3017,53 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-confirm {
+    position: relative;
     width: 100%;
     min-height: 42px;
     border: 0;
     border-radius: 8px;
-    background: #c5cad3;
+    background: #f97316;
     color: #fff;
     font-weight: 800;
     letter-spacing: .04em;
     text-transform: uppercase;
     cursor: pointer;
+    overflow: hidden;
+    transition: background .6s ease;
+}
+
+#orderPopup .page-4 .p4-confirm:hover {
+    background: #ea6c0a;
+}
+
+#orderPopup .page-4 .p4-confirm-text {
+    transition: opacity .25s ease;
+}
+
+#orderPopup .page-4 .p4-confirm-check {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(.4);
+    opacity: 0;
+    transition: opacity .3s ease .25s, transform .3s ease .25s;
+}
+
+#orderPopup .page-4 .p4-confirm.is-confirmed {
+    background: #00c853;
+}
+
+#orderPopup .page-4 .p4-confirm.is-confirmed:hover {
+    background: #00b34a;
+}
+
+#orderPopup .page-4 .p4-confirm.is-confirmed .p4-confirm-text {
+    opacity: 0;
+}
+
+#orderPopup .page-4 .p4-confirm.is-confirmed .p4-confirm-check {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 #orderPopup .page-4 .p4-selected-colour {

@@ -875,6 +875,7 @@ function p4AssignLogo(position, src, method, filename) {
     if (preview) preview.hidden = false;
     p4UpdateSummary();
     p4SaveLogosToBasket();
+    p4ResetConfirmState();
 }
 
 function p4ClearCardLogo(position) {
@@ -890,6 +891,7 @@ function p4ClearCardLogo(position) {
     p4ResetBadge(card.querySelector('.price-print'));
     p4UpdateSummary();
     p4SaveLogosToBasket();
+    p4ResetConfirmState();
 }
 
 function p4CardMethod(card, preferred) {
@@ -1196,9 +1198,13 @@ $(document).on('click', '#p4ChooseFile', function () {
 
 $(document).on('click', '#p4ConfirmBasket', function () {
     p4SaveLogosToBasket();
-    if (typeof window.closeOrderPopup === 'function') window.closeOrderPopup();
-    else $('#orderPopup').fadeOut(300);
+    this.classList.add('is-confirmed');
 });
+
+function p4ResetConfirmState() {
+    var confirmBtn = document.getElementById('p4ConfirmBasket');
+    if (confirmBtn) confirmBtn.classList.remove('is-confirmed');
+}
 
 $(document).on('click', '.p4-saved-logos', function () {
     p4RenderPreviousLogos();
