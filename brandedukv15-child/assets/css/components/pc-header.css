@@ -144,7 +144,12 @@
         display: flex;
         align-items: center;
         min-height: 64px;
-        gap: 18px;
+        gap: 16px;
+    }
+
+    .site-header .searchbar-header__brand {
+        flex: 0 0 auto;
+        margin-right: 8px;
     }
 
     .site-header .searchbar-header__brand-img {
@@ -157,6 +162,7 @@
 
     .site-header .searchbar-header .category-dropdown {
         flex: 0 0 auto;
+        margin-left: 0;
     }
 
     .site-header .shop-products-btn,
@@ -205,22 +211,24 @@
     .site-header .searchbar-header__actions {
         display: flex;
         align-items: center;
-        flex: 1;
+        flex: 1 1 auto;
         min-width: 0;
-        gap: 22px;
+        gap: 16px;
+        margin-left: 0;
     }
 
     .site-header .searchbar-header__search-expand {
         position: relative;
-        flex: 0 1 520px;
-        width: 100% !important;
-        max-width: 520px;
+        flex: 1 1 auto;
+        width: auto !important;
+        max-width: none;
+        min-width: 280px;
         height: 40px;
         margin-right: 0;
     }
 
     .site-header .header-util-link:first-of-type {
-        margin-left: auto;
+        margin-left: 0;
     }
 
     .site-header .searchbar-header__search-expand .search-input-expand {
@@ -254,6 +262,8 @@
         color: #9ca3af;
         cursor: pointer;
         pointer-events: auto;
+        display: block;
+        z-index: 2;
     }
 
     .site-header .header-util-link {
@@ -751,5 +761,95 @@
     .top-promo-bar {
         width: 100%;
         margin: 0;
+    }
+
+    .site-header .category-dropdown .dropdown-box {
+        top: calc(100% + 10px);
+        left: 0;
+        min-width: 320px;
+        padding: 8px 0 0;
+        border: 1px solid #eef0f3;
+        border-radius: 16px;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .site-header .category-dropdown .dropdown-box::before {
+        display: none;
+    }
+
+    .site-header .category-menu {
+        width: 320px;
+    }
+
+    .site-header .category-menu > li > a {
+        gap: 14px;
+        padding: 14px 20px;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 600;
+        border-top: none;
+    }
+
+    .site-header .category-menu > li + li > a {
+        border-top: none;
+    }
+
+    .site-header .category-menu .category-icon {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        color: #111827;
+        /* Source PNGs are lavender (#9b7eb9). Flatten strokes to black; alpha stays transparent. */
+        filter: brightness(0);
+        display: block;
+        object-fit: contain;
+    }
+
+    .site-header .category-menu > li:hover > a,
+    .site-header .category-menu > li.is-expanded > a,
+    .site-header .category-menu > li:focus-within > a {
+        background: #fff7f0;
+        color: #ff7a00;
+    }
+
+    .site-header .category-menu > li:hover .category-icon,
+    .site-header .category-menu > li.is-expanded .category-icon,
+    .site-header .category-menu > li:focus-within .category-icon {
+        color: #ff7a00;
+        /* Recolor original PNG line icons to #ff7a00 on hover. */
+        filter: brightness(0) saturate(100%) invert(48%) sepia(60%) saturate(2000%) hue-rotate(360deg) brightness(102%) contrast(105%);
+    }
+
+    .site-header .category-menu > li:hover .category-caret,
+    .site-header .category-menu > li.is-expanded .category-caret,
+    .site-header .category-menu > li:focus-within .category-caret {
+        color: #ff7a00;
+    }
+
+    .site-header .category-menu .megamenu a:hover,
+    .site-header .category-menu .megamenu a:focus-visible,
+    .site-header .category-menu .megamenu.brand-grid li a:hover,
+    .site-header .category-menu .megamenu.brand-grid li a:focus-visible {
+        background: #fff7f0;
+        color: #ff7a00;
+    }
+
+    .site-header .category-menu .category-caret {
+        color: #c4c9d2;
+        font-size: 18px;
+    }
+
+    .site-header .category-menu .view-all-link {
+        margin: 6px 8px 8px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #f3f4f6;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .site-header .category-menu .view-all-link:hover {
+        background: #fff7f0;
+        color: #ff7a00;
     }
 }
