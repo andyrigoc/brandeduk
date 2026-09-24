@@ -3442,24 +3442,24 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .price-emb {
-    background: #1d4ed8 !important;
+    background: #FFC107 !important;
 }
 
 #orderPopup .page-4 .price-print,
 #orderPopup .page-4 .price-print:only-child,
 #orderPopup .page-4 .position-prices:has(.price-emb) .price-print:not(.poa-badge) {
-    background: #ff8c00 !important;
-    background-color: #ff8c00 !important;
+    background: #1769D2 !important;
+    background-color: #1769D2 !important;
     background-image: none !important;
     box-shadow: none !important;
 }
 
 #orderPopup .page-4 .price-emb.active {
-    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #1d4ed8;
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #FFC107;
 }
 
 #orderPopup .page-4 .price-print.active {
-    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #ff8c00;
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #1769D2;
 }
 
 #orderPopup .page-4 .price-emb.poa-badge,
@@ -3475,11 +3475,33 @@ body.popup-open {
 
 #orderPopup .page-4 .price-emb .price-label,
 #orderPopup .page-4 .price-print .price-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-family: Poppins, Inter, sans-serif;
     font-size: 10px !important;
     font-weight: 700;
     letter-spacing: .04em;
     color: #fff !important;
+}
+
+#orderPopup .page-4 .price-emb:not(.poa-badge) .price-label {
+    color: #1E2749 !important;
+}
+
+#orderPopup .page-4 .price-badge:not(.add-logo-btn) .price-label::before {
+    font-family: "Font Awesome 6 Free";
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+#orderPopup .page-4 .price-emb:not(.add-logo-btn) .price-label::before {
+    content: "\e2ca";
+}
+
+#orderPopup .page-4 .price-print:not(.add-logo-btn) .price-label::before {
+    content: "\f02f";
 }
 
 #orderPopup .page-4 .price-emb .price-value,
@@ -4053,9 +4075,28 @@ body.popup-open {
 }
 
 #p4MethodModal .p4-method-choice span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     font-family: Poppins, Inter, sans-serif;
     font-size: 13px;
     font-weight: 700;
+}
+
+#p4MethodModal .p4-method-choice span::before {
+    font-family: "Font Awesome 6 Free";
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+#p4MethodModal .p4-method-embroidery span::before {
+    content: "\e2ca";
+}
+
+#p4MethodModal .p4-method-print span::before {
+    content: "\f02f";
 }
 
 #p4MethodModal .p4-method-choice em {
@@ -4066,11 +4107,12 @@ body.popup-open {
 }
 
 #p4MethodModal .p4-method-embroidery {
-    background: #1d4ed8;
+    background: #FFC107;
+    color: #1E2749;
 }
 
 #p4MethodModal .p4-method-print {
-    background: #ff8c00;
+    background: #1769D2;
 }
 
 #p4MethodModal .p4-method-cancel {

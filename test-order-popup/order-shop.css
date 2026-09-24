@@ -1993,13 +1993,13 @@
 }
 
 .page-4 .price-emb {
-    background: linear-gradient(145deg, #5b8def, #4a76d6);
+    background: #FFC107;
     color: white;
-    border: 1px solid rgba(91,141,239,0.6);
+    border: 1px solid #FFC107;
 }
 
 .page-4 .price-print {
-    background: #ff8c00;
+    background: #1769D2;
     color: white;
     border: 0;
 }
@@ -2022,15 +2022,15 @@
 
 /* Active states — identici a mobile */
 .page-4 .price-emb.active {
-    background: linear-gradient(145deg, #5b8def, #4a76d6);
-    border: 1px solid rgba(91,141,239,0.6);
-    box-shadow: 0 6px 16px rgba(74,118,214,0.3), 0 2px 6px rgba(74,118,214,0.2),
+    background: #FFC107;
+    border: 1px solid #FFC107;
+    box-shadow: 0 6px 16px rgba(255,193,7,0.3), 0 2px 6px rgba(255,193,7,0.2),
                 inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.08);
     transform: translateY(-1px);
 }
 
 .page-4 .price-print.active {
-    background: #ff8c00;
+    background: #1769D2;
     border: 0;
     box-shadow: none;
     transform: none;

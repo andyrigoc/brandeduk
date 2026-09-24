@@ -706,7 +706,7 @@ function page4MethodButton(kind, info) {
     var label = kind === 'embroidery' ? 'EMBROIDERY' : 'PRINT';
     var price = isPoa ? 'POA' : ('£' + Number(info.price || 0).toFixed(2));
     var cls = 'price-badge price-' + (kind === 'embroidery' ? 'emb' : 'print') + (isPoa ? ' poa-badge' : '');
-    var style = kind === 'print' && !isPoa ? ' style="background:#ff8c00!important;background-image:none!important"' : '';
+    var style = kind === 'print' && !isPoa ? ' style="background:#1769D2!important;background-image:none!important"' : '';
     return '<button type="button" class="' + cls + '" data-method="' + kind + '" data-default-label="' + label + '" data-default-price="' + price + '"' + style + '>' +
         '<span class="price-label">' + label + (isPoa ? ' · POA' : '') + '</span>' +
         '<span class="price-value">' + price + '</span></button>';
@@ -716,8 +716,8 @@ function p4PaintPrintButtons() {
     document.querySelectorAll('#p4PositionOptions .position-prices').forEach(function (wrap) {
         var print = wrap.querySelector('.price-print:not(.poa-badge)');
         if (!print) return;
-        print.style.setProperty('background', '#ff8c00', 'important');
-        print.style.setProperty('background-color', '#ff8c00', 'important');
+        print.style.setProperty('background', '#1769D2', 'important');
+        print.style.setProperty('background-color', '#1769D2', 'important');
         print.style.setProperty('background-image', 'none', 'important');
     });
 }
