@@ -770,7 +770,7 @@ function loadPage4PositionImages(product) {
                 p4PaintPrintButtons();
                 Object.keys(window.p4Assignments || {}).forEach(function (pos) {
                     var assignment = window.p4Assignments[pos];
-                    p4AssignLogo(pos, assignment.dataUrl, assignment.method, assignment.filename);
+                    p4AssignLogo(pos, assignment.dataUrl, assignment.method, assignment.filename, assignment.sourceMethod);
                 });
                 p4RenderPreviousLogos();
                 p4UpdateSummary();
@@ -812,10 +812,15 @@ function p4SaveLibrary() {
     } catch (error) {}
 }
 
-function p4RememberLogo(src, method, filename) {
+function p4RememberLogo(src, method, filename, sourceMethod) {
     if (!src) return;
     if (!window.p4LogoLibrary.some(function (entry) { return entry.logo === src; })) {
-        window.p4LogoLibrary.push({ logo: src, method: method || 'print', filename: filename || '' });
+        window.p4LogoLibrary.push({
+            logo: src,
+            method: method || 'print',
+            sourceMethod: String(sourceMethod || method || 'print').toLowerCase(),
+            filename: filename || ''
+        });
     }
     p4SaveLibrary();
     p4RenderPreviousLogos();
@@ -855,11 +860,13 @@ function p4RenderPreviousLogos() {
         var button = document.createElement('button');
         button.type = 'button';
         button.className = 'p4-previous-logo';
+        button.dataset.sourceMethod = String(entry.sourceMethod || entry.method || 'print').toLowerCase();
         button.innerHTML = '<img alt="Saved logo"><span class="p4-previous-remove" aria-label="Remove saved logo">&times;</span>';
         button.querySelector('img').src = entry.logo;
         button.draggable = true;
         button.addEventListener('dragstart', function (event) {
             event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
+            event.dataTransfer.setData('application/x-brandeduk-source-method', button.dataset.sourceMethod);
             event.dataTransfer.setData('text/plain', entry.logo);
             event.dataTransfer.effectAllowed = 'copy';
             var dragPreview = p4CreateDragPreview(button.querySelector('img'));
@@ -889,11 +896,17 @@ function p4RenderPreviousLogos() {
     });
 }
 
-function p4AssignLogo(position, src, method, filename) {
+function p4AssignLogo(position, src, method, filename, sourceMethod) {
     if (!position || !src) return;
     var cardForPrice = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
     var unitPrice = p4MethodUnitPrice(method, cardForPrice ? cardForPrice.getAttribute('data-' + method) : 0);
-    window.p4Assignments[position] = { dataUrl: src, method: method, filename: filename || '', unitPrice: unitPrice };
+    window.p4Assignments[position] = {
+        dataUrl: src,
+        method: method,
+        sourceMethod: String(sourceMethod || method || '').toLowerCase(),
+        filename: filename || '',
+        unitPrice: unitPrice
+    };
     var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
     if (!card) return;
     card.classList.add('selected', 'has-logo');
@@ -903,6 +916,7 @@ function p4AssignLogo(position, src, method, filename) {
     if (under) under.src = src;
     var preview = card.querySelector('.p4-logo-under');
     if (preview) preview.hidden = false;
+    p4ApplyMethodUI(card, method);
     p4UpdateSummary();
     p4SaveLogosToBasket();
     p4ResetConfirmState();
@@ -1006,6 +1020,7 @@ function p4ExistingEmbroideryLogosInBasket() {
         if (itemCode === code && itemColour === colour) return;
         (item.logos || []).forEach(function (logo) {
             if (String(logo.method || '').toLowerCase() !== 'embroidery') return;
+            if (String(logo.sourceMethod || logo.originalMethod || logo.method || '').toLowerCase() !== 'embroidery') return;
             if (logo.logo) found[logo.logo] = true;
         });
     });
@@ -1019,6 +1034,7 @@ function p4EmbroiderySetupCost() {
     Object.keys(window.p4Assignments || {}).forEach(function (pos) {
         var assignment = window.p4Assignments[pos];
         if (!assignment || assignment.method !== 'embroidery' || !assignment.dataUrl) return;
+        if (String(assignment.sourceMethod || assignment.method).toLowerCase() !== 'embroidery') return;
         unique[assignment.dataUrl] = true;
     });
     var already = p4ExistingEmbroideryLogosInBasket();
@@ -1076,12 +1092,12 @@ function p4CardMethods(card) {
     return methods;
 }
 
-function p4ShowMethodPopup(card, src, filename) {
+function p4ShowMethodPopup(card, src, filename, sourceMethod) {
     var methods = p4CardMethods(card);
     if (!methods.length) return;
     if (methods.length === 1) {
-        p4RememberLogo(src, methods[0].method, filename);
-        p4AssignLogo(card.dataset.position, src, methods[0].method, filename);
+        p4RememberLogo(src, methods[0].method, filename, sourceMethod || methods[0].method);
+        p4AssignLogo(card.dataset.position, src, methods[0].method, filename, sourceMethod || methods[0].method);
         return;
     }
     var existing = document.getElementById('p4MethodModal');
@@ -1104,8 +1120,8 @@ function p4ShowMethodPopup(card, src, filename) {
         button.innerHTML = '<span>' + item.label + '</span><em>£' + item.price.toFixed(2) + ' each</em>';
         button.addEventListener('click', function () {
             overlay.remove();
-            p4RememberLogo(src, item.method, filename);
-            p4AssignLogo(card.dataset.position, src, item.method, filename);
+            p4RememberLogo(src, item.method, filename, sourceMethod || item.method);
+            p4AssignLogo(card.dataset.position, src, item.method, filename, sourceMethod || item.method);
         });
         choices.appendChild(button);
     });
@@ -1116,13 +1132,13 @@ function p4ShowMethodPopup(card, src, filename) {
     document.body.appendChild(overlay);
 }
 
-function p4ApplyDroppedLogo(card, src, method, filename) {
+function p4ApplyDroppedLogo(card, src, method, filename, sourceMethod) {
     if (!card || !src) return;
     if (method) {
-        p4AssignLogo(card.dataset.position, src, p4CardMethod(card, method), filename || '');
+        p4AssignLogo(card.dataset.position, src, p4CardMethod(card, method), filename || '', sourceMethod || method);
         return;
     }
-    p4ShowMethodPopup(card, src, filename || '');
+    p4ShowMethodPopup(card, src, filename || '', sourceMethod);
 }
 
 function p4OpenFilePicker(position, method) {
@@ -1167,12 +1183,13 @@ function p4SaveLogosToBasket() {
             : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0);
         return {
             method: assignment.method,
+            sourceMethod: assignment.sourceMethod || assignment.method,
             position: pos,
             positionLabel: pos.replace(/-/g, ' '),
             logo: assignment.dataUrl,
             notes: notes,
             unitPrice: price,
-            digitisingFeePerDesign: assignment.method === 'embroidery'
+            digitisingFeePerDesign: assignment.method === 'embroidery' && (assignment.sourceMethod || assignment.method) === 'embroidery'
                 ? (Number(window.p4Pricing.embroidery.digitisingFeePerDesign) || 25)
                 : 0
         };
@@ -1180,7 +1197,7 @@ function p4SaveLogosToBasket() {
     var setup = p4EmbroiderySetupCost();
     var charged = {};
     logos.forEach(function (logo) {
-        if (logo.method !== 'embroidery' || !logo.logo || charged[logo.logo]) {
+        if (logo.method !== 'embroidery' || logo.sourceMethod !== 'embroidery' || !logo.logo || charged[logo.logo]) {
             logo.setupCharge = 0;
             return;
         }
@@ -1278,10 +1295,11 @@ $(document).on('drop', '#p4PositionOptions .position-card', function (e) {
     var method = badge && !badge.classList.contains('poa-badge') ? badge.dataset.method : '';
     var saved = e.originalEvent.dataTransfer.getData('application/x-brandeduk-logo')
         || e.originalEvent.dataTransfer.getData('text/plain');
+    var sourceMethod = e.originalEvent.dataTransfer.getData('application/x-brandeduk-source-method');
     var file = e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files[0];
     if (saved && saved.indexOf('data:') === 0) {
-        p4RememberLogo(saved, method, '');
-        p4ApplyDroppedLogo(card, saved, method, '');
+        p4RememberLogo(saved, method, '', sourceMethod || method);
+        p4ApplyDroppedLogo(card, saved, method, '', sourceMethod || method);
         return;
     }
     if (!file) return;
@@ -1333,6 +1351,7 @@ function finalSaveToBasket(redirectUrl) {
                     if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
                     return {
                         method: method,
+                        sourceMethod: String((window.p4Assignments[lp.position] || {}).sourceMethod || method).toLowerCase(),
                         position: lp.position.toLowerCase().replace(/ /g, '-'),
                         positionLabel: lp.position,
                         logo: posData.dataUrl || '',
@@ -1362,6 +1381,7 @@ function finalSaveToBasket(redirectUrl) {
                 if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
                 return {
                     method: method,
+                    sourceMethod: String((window.p4Assignments[lp.position] || {}).sourceMethod || method).toLowerCase(),
                     position: lp.position.toLowerCase().replace(/ /g, '-'),
                     positionLabel: lp.position,
                     logo: posData.dataUrl || '',
@@ -1512,7 +1532,8 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     }
     var selectedPrev = document.querySelector('#p4PreviousLogos .p4-previous-logo.is-selected img');
     if (selectedPrev && selectedPrev.src) {
-        p4AssignLogo(card.dataset.position, selectedPrev.src, method, '');
+        var sourceMethod = selectedPrev.closest('.p4-previous-logo').dataset.sourceMethod;
+        p4AssignLogo(card.dataset.position, selectedPrev.src, method, '', sourceMethod || method);
         return;
     }
     p4OpenFilePicker(card.dataset.position, method);
@@ -1572,8 +1593,8 @@ $(document).on('click', '#btnP5Next', function() {
     var positions = [];
     $('#p4PositionOptions .position-card.selected').each(function() {
         var pos = $(this).data('position');
-        var activeBadge = $(this).find('.price-badge.active');
-        var app = activeBadge.length ? (activeBadge.attr('data-method') || 'embroidery') : 'embroidery';
+        var assignment = window.p4Assignments[pos];
+        var app = assignment ? assignment.method : 'embroidery';
         positions.push({ position: pos, application: app.charAt(0).toUpperCase() + app.slice(1) });
     });
     window.logoPositions = positions;
@@ -1615,12 +1636,8 @@ function populatePage5() {
     selected.each(function() {
         var pos = $(this).data('position');
         var img = $(this).find('.position-placeholder').attr('src') || '';
-        var activeBadge = $(this).find('.price-badge.active');
-        // fallback: if active badge not found, check role='method' badge
-        if (!activeBadge.length) {
-            activeBadge = $(this).find('.price-badge[data-role="method"]:not(.add-logo-btn)');
-        }
-        var app = activeBadge.length ? (activeBadge.data('method') || activeBadge.attr('data-method')) : 'embroidery';
+        var assignment = window.p4Assignments[pos];
+        var app = assignment ? assignment.method : 'embroidery';
         app = app.charAt(0).toUpperCase() + app.slice(1);
         var chip = $('<div class="p5-pos-chip">' +
             (img ? '<img src="' + img + '" alt="' + pos + '">' : '') +

@@ -115,6 +115,7 @@
             window.p4Assignments[position] = {
                 dataUrl: dataUrl,
                 method: String(logo.method || logo.application || 'embroidery').toLowerCase(),
+                sourceMethod: String(logo.sourceMethod || logo.originalMethod || logo.method || logo.application || 'embroidery').toLowerCase(),
                 filename: logo.filename || '',
                 unitPrice: logo.unitPrice != null ? Number(logo.unitPrice) : null
             };

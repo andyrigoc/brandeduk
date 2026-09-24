@@ -666,6 +666,9 @@
             padding: 0;
         }
         .logo-row .logo-method-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             font-size: 13px;
             font-weight: 600;
             color: var(--basket-navy);
@@ -675,6 +678,19 @@
             flex: 1;
             min-width: 0;
         }
+        .logo-method-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 20px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .02em;
+            line-height: 1;
+        }
+        .logo-method-badge--embroidery { color: #7a4d00; background: #ffe29a; }
+        .logo-method-badge--print { color: #174ea6; background: #dbeafe; }
         .logo-row .logo-row-remove {
             color: var(--basket-orange);
             font-size: 13px;
@@ -721,9 +737,11 @@
         .logo-action-separator { color: #c5c7cc; font-size: 11px; }
         .logo-notes { font-size: 11px; color: #9ca3af; margin-top: 2px; font-style: italic; }
         .logos-applied-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
             font-size: 13px; font-weight: 600; color: #374151;
             padding: 10px 0 4px; border-top: 1px solid #f3f4f6; margin-top: 4px;
         }
+        .logos-applied-header .add-logo-btn { margin: 0; }
         .logo-row .logo-actions-row {
             display: flex;
             align-items: center;
@@ -756,12 +774,33 @@
             white-space: nowrap; text-align: right; flex-shrink: 0;
             line-height: 1.25;
         }
+        .logo-row .logo-customisation-cost {
+            display: block;
+        }
         .logo-row .logo-price small {
             display: block;
             font-weight: 400;
             color: #6b7280;
             font-size: 11px;
         }
+        .logo-setup-fee {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: #f3f4f6;
+            color: #344054;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .logo-setup-fee-label,
+        .logo-setup-fee-price { display: inline-flex; align-items: center; gap: 8px; }
+        .logo-setup-fee-label i { color: #273469; }
+        .logo-setup-fee-price { flex-direction: column; align-items: flex-end; gap: 0; color: var(--basket-navy); font-weight: 800; }
+        .logo-setup-fee-price small { color: #6b7280; font-size: 9px; font-weight: 400; }
 
         /* Add another logo button (black) */
         .add-logo-btn {
@@ -796,6 +835,21 @@
             font-size: 14px; color: #6b7280;
         }
         .summary-row .summary-val { font-weight: 600; color: #1f2937; }
+        .summary-breakdown-section { border-top: 1px solid #e5e7eb; }
+        .summary-breakdown-heading {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; padding: 9px 0 4px; color: #344054;
+            font-size: 13px; font-weight: 700;
+        }
+        .summary-breakdown-title { display: inline-flex; align-items: center; gap: 8px; }
+        .summary-breakdown-title i { width: 10px; font-size: 10px; color: #344054; }
+        .summary-breakdown-total { color: #1f2937; white-space: nowrap; }
+        .summary-breakdown-list { padding: 0 0 7px 18px; }
+        .summary-detail-row {
+            display: flex; justify-content: space-between; gap: 12px;
+            padding: 3px 0; color: #7a8495; font-size: 11px;
+        }
+        .summary-detail-row span:last-child { flex-shrink: 0; }
         .summary-grand-total {
             display: flex; justify-content: space-between; padding: 12px 0 0;
             margin-top: 8px; border-top: 2px solid #e5e7eb;
@@ -2275,13 +2329,19 @@
                     <span>Products</span>
                     <span class="summary-val" id="summaryProductCosts">&#163;0.00</span>
                 </div>
-                <div class="summary-row">
-                    <span>Logo customisation</span>
-                    <span class="summary-val" id="summaryLogoCosts">&#163;0.00</span>
+                <div class="summary-breakdown-section" id="customisationSummarySection">
+                    <div class="summary-breakdown-heading">
+                        <span class="summary-breakdown-title"><i class="fas fa-chevron-down" aria-hidden="true"></i>Customisation</span>
+                        <span class="summary-breakdown-total" id="summaryLogoCosts">&#163;0.00</span>
+                    </div>
+                    <div class="summary-breakdown-list" id="summaryCustomisationBreakdown"></div>
                 </div>
-                <div class="summary-row" id="digitizingFeeRow" style="display: none;">
-                    <span id="summaryDigitizingLabel">Embroidery digitising (£25 per design)</span>
-                    <span class="summary-val" id="summaryDigitizingFee">&#163;25.00</span>
+                <div class="summary-breakdown-section" id="digitizingFeeRow" style="display: none;">
+                    <div class="summary-breakdown-heading">
+                        <span class="summary-breakdown-title"><i class="fas fa-chevron-down" aria-hidden="true"></i>Setup fees</span>
+                        <span class="summary-breakdown-total" id="summaryDigitizingFee">&#163;25.00</span>
+                    </div>
+                    <div class="summary-breakdown-list" id="summarySetupBreakdown"></div>
                 </div>
                 <div class="summary-row">
                     <span>Total (exc. VAT)</span>
@@ -3281,6 +3341,7 @@
                 position: pos,
                 positionLabel: entry.positionLabel || toReadablePosition(pos),
                 method: method,
+                sourceMethod: String(entry.sourceMethod || entry.originalMethod || '').toLowerCase(),
                 logo: entry.logo || '',
                 unitPrice: safeUnitPrice,
                 qualityPct: parseInt(entry.qualityPct || 0, 10) || 0,
@@ -3302,6 +3363,7 @@
                     position: p.position || '',
                     positionLabel: toReadablePosition(p.name || p.position || ''),
                     method: (p.method || methodByPos[p.position] || 'embroidery').toLowerCase(),
+                    sourceMethod: p.sourceMethod || p.originalMethod || '',
                     logo: p.logo || '',
                     unitPrice: p.unitPrice,
                     qualityPct: p.qualityPct,
@@ -3321,6 +3383,7 @@
                     position: posKey,
                     positionLabel: toReadablePosition(d.position || posKey),
                     method: method,
+                    sourceMethod: d.sourceMethod || d.originalMethod || '',
                     logo: d.logo || '',
                     unitPrice: d.unitPrice,
                     qualityPct: d.qualityPct,
@@ -3339,6 +3402,7 @@
                     position: l.position || '',
                     positionLabel: l.positionLabel || toReadablePosition(l.position),
                     method: (l.method || methodByPos[l.position] || 'embroidery').toLowerCase(),
+                    sourceMethod: l.sourceMethod || l.originalMethod || '',
                     logo: l.logo || '',
                     unitPrice: l.unitPrice,
                     qualityPct: l.qualityPct,
@@ -3400,6 +3464,7 @@
     function adaptLogoForTargetItem(logoData, targetItem) {
         const src = logoData || {};
         const position = mapPositionForTargetItem(src.position, targetItem);
+        const sourceMethod = String(src.sourceMethod || src.originalMethod || src.method || 'print').toLowerCase();
         let method = String(src.method || 'print').toLowerCase();
         let unitPrice = parseFloat(src.unitPrice);
 
@@ -3424,6 +3489,7 @@
             position: position,
             positionLabel: toReadablePosition(position),
             method: method,
+            sourceMethod: sourceMethod,
             unitPrice: unitPrice
         };
     }
@@ -4068,6 +4134,8 @@
         if (!container) return;
 
         let html = '';
+        const chargedEmbroideryDesigns = new Set();
+        const artworkSourceMethods = getArtworkSourceMethods(basket);
         basket.forEach((item, index) => {
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             const unitPrice = parseFloat(item.unitPrice) || 0;
@@ -4077,13 +4145,23 @@
 
             // Logo rows
             let logosHtml = '';
+            let itemSetupTotal = 0;
             const itemTexts = Array.isArray(item.texts) ? item.texts : [];
             if ((item.logos && item.logos.length > 0) || itemTexts.length > 0) {
-                logosHtml += `<div class="logos-applied-header">Decorations applied to this item</div>`;
+                logosHtml += `<div class="logos-applied-header"><span>Decorations applied to this item</span><button type="button" class="add-logo-btn" onclick="addLogoToItem(${index})"><i class="fas fa-plus" aria-hidden="true"></i> Add another logo to this item</button></div>`;
             }
             if (item.logos && item.logos.length > 0) {
                 item.logos.forEach((logo, logoIdx) => {
                     const methodNorm = (logo.method || 'embroidery').toLowerCase();
+                    let setupCharge = 0;
+                    const designKey = getEmbroideryDesignKey(logo, `item:${index}:logo:${logoIdx}`);
+                    if (requiresEmbroiderySetup(logo, artworkSourceMethods, `item:${index}:logo:${logoIdx}`)) {
+                        if (!chargedEmbroideryDesigns.has(designKey)) {
+                            chargedEmbroideryDesigns.add(designKey);
+                            setupCharge = DIGITIZING_FEE_PER_DESIGN;
+                            itemSetupTotal += setupCharge;
+                        }
+                    }
                     const methodLabel = methodNorm === 'embroidery'
                         ? 'Embroidery'
                         : methodNorm === 'dtf'
@@ -4102,8 +4180,11 @@
                             ${thumbSrc ? `<div class="${thumbWrapClass}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
                             <div class="logo-info">
                                 <div class="logo-title-line">
-                                    <div class="logo-method-label">${methodLabel}</div>
-                                    <div class="logo-price">${formatCurrency(logoTotal)}<small>exc. VAT</small></div>
+                                    <div class="logo-method-label">${methodLabel}<span class="logo-method-badge logo-method-badge--${methodNorm === 'embroidery' ? 'embroidery' : 'print'}">${methodNorm === 'embroidery' ? 'EMB' : 'PRINT'}</span></div>
+                                    <div class="logo-price">
+                                        <span class="logo-customisation-cost">${formatCurrency(logoTotal)}</span>
+                                        <small>customisation, exc. VAT</small>
+                                    </div>
                                 </div>
                                 <div class="logo-meta-actions">
                                     <span class="logo-position-label">Position: ${posLabel}</span>
@@ -4114,6 +4195,7 @@
                                     <span class="logo-action-separator" aria-hidden="true">&middot;</span>
                                     <button type="button" class="logo-row-remove" onclick="removeLogo(${index}, ${logoIdx})">Remove</button>
                                 </div>
+                                ${setupCharge ? `<div class="logo-setup-fee"><span class="logo-setup-fee-label"><i class="fas fa-gear" aria-hidden="true"></i> One-off embroidery setup fee <i class="far fa-circle-question" aria-hidden="true"></i></span><span class="logo-setup-fee-price">${formatCurrency(setupCharge)}<small>exc. VAT</small></span></div>` : ''}
                                 ${logo.notes ? `<div class="logo-notes">${logo.notes}</div>` : ''}
                             </div>
                         </div>
@@ -4122,6 +4204,16 @@
             }
             itemTexts.forEach((textDesign, textIdx) => {
                 const posLabel = textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area);
+                const textMethod = String(textDesign.method || '').toLowerCase();
+                let textSetupCharge = 0;
+                if (textMethod === 'embroidery' && String(textDesign.text || '').trim()) {
+                    const designKey = getEmbroideryTextDesignKey(textDesign);
+                    if (!chargedEmbroideryDesigns.has(designKey)) {
+                        chargedEmbroideryDesigns.add(designKey);
+                        textSetupCharge = DIGITIZING_FEE_PER_DESIGN;
+                        itemSetupTotal += textSetupCharge;
+                    }
+                }
                 logosHtml += `
                     <div class="logo-row">
                         <div class="logo-thumb-wrap" aria-hidden="true" style="font-size:20px;font-weight:800;color:${escapeAttr(textDesign.textColour || '#111827')};">T</div>
@@ -4134,6 +4226,7 @@
                                 <span class="logo-action-separator" aria-hidden="true">&middot;</span>
                                 <button type="button" class="logo-row-remove" onclick="removeTextDecoration(${index}, ${textIdx})">Remove</button>
                             </div>
+                            ${textSetupCharge ? `<div class="logo-setup-fee"><span class="logo-setup-fee-label"><i class="fas fa-gear" aria-hidden="true"></i> One-off embroidery setup fee <i class="far fa-circle-question" aria-hidden="true"></i></span><span class="logo-setup-fee-price">${formatCurrency(textSetupCharge)}<small>exc. VAT</small></span></div>` : ''}
                             <div class="logo-notes">${escapeAttr(textDesign.text || '')}</div>
                         </div>
                     </div>
@@ -4146,7 +4239,7 @@
             if (item.logos) {
                 item.logos.forEach(l => { logosCostTotal += (l.unitPrice || 0) * qty; });
             }
-            const itemTotal = garmentTotal + logosCostTotal;
+            const itemTotal = garmentTotal + logosCostTotal + itemSetupTotal;
 
             html += `
                 <div class="basket-item-row" data-index="${index}" data-id="${item.id || ''}">
@@ -4187,9 +4280,7 @@
                         ${logosHtml}
                     </div>
 
-                    <button type="button" class="add-logo-btn" onclick="addLogoToItem(${index})">
-                        ${item.logos && item.logos.length > 0 ? 'Add another logo to this item' : 'Add logo to this item'}
-                    </button>
+                    ${(!item.logos || item.logos.length === 0) && itemTexts.length === 0 ? `<button type="button" class="add-logo-btn" onclick="addLogoToItem(${index})">Add logo to this item</button>` : ''}
 
                     <div class="item-row-total">
                         <span class="total-label">Total item cost:</span>
@@ -4210,8 +4301,8 @@
     const BASKET_VAT_RATE = 0.20;
     const DIGITIZING_FEE_PER_DESIGN = 25;
 
-    function getEmbroideryDesignKey(logo) {
-        if (!logo || typeof logo !== 'object') return 'embroidery-design';
+    function getEmbroideryDesignKey(logo, fallbackKey) {
+        if (!logo || typeof logo !== 'object') return fallbackKey || 'embroidery-design';
 
         const source = String(
             logo.originalLogo || logo.logo || logo.logoData || logo.dataUrl ||
@@ -4227,7 +4318,7 @@
             logo.designId || logo.logoId || logo.fileName || logo.filename ||
             logo.originalName || logo.name || ''
         ).trim().toLowerCase();
-        return identity ? `identity:${identity}` : 'embroidery-design';
+        return identity ? `identity:${identity}` : (fallbackKey || 'embroidery-design');
     }
 
     function getEmbroideryTextDesignKey(textDesign) {
@@ -4238,20 +4329,64 @@
         return `text:${text}:${font}:${weight}:${style}`;
     }
 
+    function normalizeDecorationMethod(method) {
+        return String(method || '').toLowerCase() === 'embroidery' ? 'embroidery' : 'print';
+    }
+
+    function getArtworkSourceMethods(basket) {
+        const methods = new Map();
+        (basket || []).forEach((item, itemIndex) => {
+            _extractLogos(item).forEach((logo, logoIndex) => {
+                const key = getEmbroideryDesignKey(logo, `item:${itemIndex}:logo:${logoIndex}`);
+                const method = normalizeDecorationMethod(logo.sourceMethod || logo.originalMethod || logo.method);
+                if (!methods.has(key) || method === 'print') methods.set(key, method);
+            });
+        });
+        return methods;
+    }
+
+    function requiresEmbroiderySetup(logo, sourceMethods, fallbackKey) {
+        if (normalizeDecorationMethod(logo && logo.method) !== 'embroidery') return false;
+        const key = getEmbroideryDesignKey(logo, fallbackKey);
+        const sourceMethod = normalizeDecorationMethod(
+            logo.sourceMethod || logo.originalMethod || sourceMethods.get(key) || logo.method
+        );
+        return sourceMethod === 'embroidery';
+    }
+
     function computeBasketTotals(basket) {
         let productCosts = 0;
         let logoCosts = 0;
         const uniqueEmbroideryDesigns = new Set();
+        const customisationGroups = new Map();
+        const setupBreakdown = [];
+        const artworkSourceMethods = getArtworkSourceMethods(basket);
 
-        (basket || []).forEach(item => {
+        (basket || []).forEach((item, itemIndex) => {
             const qty = item.qty || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
             productCosts += unitPrice * qty;
 
-            _extractLogos(item).forEach(logo => {
-                logoCosts += (parseFloat(logo.unitPrice) || 0) * qty;
-                if (String(logo.method || '').toLowerCase() === 'embroidery') {
-                    uniqueEmbroideryDesigns.add(getEmbroideryDesignKey(logo));
+            _extractLogos(item).forEach((logo, logoIndex) => {
+                const method = String(logo.method || '').toLowerCase();
+                const applicationCost = (parseFloat(logo.unitPrice) || 0) * qty;
+                logoCosts += applicationCost;
+                const groupLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
+                const groupKey = `${groupLabel}:${applicationCost.toFixed(2)}`;
+                const group = customisationGroups.get(groupKey) || { label: groupLabel, count: 0, amountEach: applicationCost, total: 0 };
+                group.count += 1;
+                group.total += applicationCost;
+                customisationGroups.set(groupKey, group);
+
+                if (requiresEmbroiderySetup(logo, artworkSourceMethods, `item:${itemIndex}:logo:${logoIndex}`)) {
+                    const designKey = getEmbroideryDesignKey(logo, `item:${itemIndex}:logo:${logoIndex}`);
+                    if (!uniqueEmbroideryDesigns.has(designKey)) {
+                        uniqueEmbroideryDesigns.add(designKey);
+                        setupBreakdown.push({
+                            label: `Embroidery setup (${logo.positionLabel || toReadablePosition(logo.position)})`,
+                            amount: DIGITIZING_FEE_PER_DESIGN
+                        });
+                    }
                 }
             });
 
@@ -4260,7 +4395,14 @@
                     String(textDesign?.method || '').toLowerCase() === 'embroidery'
                     && String(textDesign?.text || '').trim()
                 ) {
-                    uniqueEmbroideryDesigns.add(getEmbroideryTextDesignKey(textDesign));
+                    const designKey = getEmbroideryTextDesignKey(textDesign);
+                    if (!uniqueEmbroideryDesigns.has(designKey)) {
+                        uniqueEmbroideryDesigns.add(designKey);
+                        setupBreakdown.push({
+                            label: `Embroidery text setup (${textDesign.positionLabel || toReadablePosition(textDesign.position || textDesign.area)})`,
+                            amount: DIGITIZING_FEE_PER_DESIGN
+                        });
+                    }
                 }
             });
         });
@@ -4276,6 +4418,8 @@
             logoCosts,
             digitizingFee,
             embroideryDesignCount,
+            customisationBreakdown: Array.from(customisationGroups.values()),
+            setupBreakdown,
             subtotalExVat,
             vatAmount,
             grandTotalIncVat,
@@ -4311,6 +4455,8 @@
             logoCosts,
             digitizingFee,
             embroideryDesignCount,
+            customisationBreakdown,
+            setupBreakdown,
             subtotalExVat,
             vatAmount,
             grandTotalIncVat: grandTotal
@@ -4320,17 +4466,23 @@
         const el = (id) => document.getElementById(id);
         if (el('summaryProductCosts')) el('summaryProductCosts').textContent = '\u00A3' + productCosts.toFixed(2);
         if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '\u00A3' + logoCosts.toFixed(2);
+        if (el('summaryCustomisationBreakdown')) {
+            el('summaryCustomisationBreakdown').innerHTML = customisationBreakdown.map(group =>
+                `<div class="summary-detail-row"><span>${group.label} (${group.count} &times; ${formatCurrency(group.amountEach)})</span><span>${formatCurrency(group.total)}</span></div>`
+            ).join('');
+        }
         
         // Show/hide digitizing fee row
         const digitizingRow = el('digitizingFeeRow');
         if (digitizingRow) {
             if (digitizingFee > 0) {
-                digitizingRow.style.display = 'flex';
-                const designWord = embroideryDesignCount === 1 ? 'design' : 'designs';
-                if (el('summaryDigitizingLabel')) {
-                    el('summaryDigitizingLabel').textContent = `Embroidery digitising (£25 × ${embroideryDesignCount} ${designWord})`;
-                }
+                digitizingRow.style.display = 'block';
                 if (el('summaryDigitizingFee')) el('summaryDigitizingFee').textContent = '\u00A3' + digitizingFee.toFixed(2);
+                if (el('summarySetupBreakdown')) {
+                    el('summarySetupBreakdown').innerHTML = setupBreakdown.map(entry =>
+                        `<div class="summary-detail-row"><span>${escapeAttr(entry.label)}</span><span>${formatCurrency(entry.amount)}</span></div>`
+                    ).join('');
+                }
             } else {
                 digitizingRow.style.display = 'none';
             }
@@ -4449,6 +4601,7 @@
                     position: l.position,
                     name: l.positionLabel || toReadablePosition(l.position),
                     method: l.method || 'embroidery',
+                    sourceMethod: l.sourceMethod || l.originalMethod || l.method || 'embroidery',
                     unitPrice: l.unitPrice || 5.00,
                     logo: l.logo || '',
                     qualityPct: l.qualityPct || 0,
@@ -4461,6 +4614,7 @@
                     bi.positionDesigns[l.position] = {
                         position: l.position,
                         method: l.method || 'embroidery',
+                        sourceMethod: l.sourceMethod || l.originalMethod || l.method || 'embroidery',
                         logo: l.logo || '',
                         unitPrice: l.unitPrice || 5.00,
                         qualityPct: l.qualityPct || 0,
@@ -4573,6 +4727,7 @@
                         position: logo.position,
                         positionLabel: logo.positionLabel,
                         method: logo.method,
+                        sourceMethod: logo.sourceMethod || logo.originalMethod || logo.method,
                         unitPrice: logo.unitPrice
                     }, targetItem);
                     logos.push({
