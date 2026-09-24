@@ -125,6 +125,26 @@
         window.goToPage(3);
     }
 
+    function notifyBasketWhenReady(url) {
+        if (url.searchParams.get('basketEmbed') !== '1' || window.parent === window) return;
+        var attempts = 0;
+        var timer = window.setInterval(function () {
+            attempts += 1;
+            var cards = Array.prototype.slice.call(document.querySelectorAll('#p4PositionOptions .position-card'));
+            var imagesReady = cards.length > 0 && cards.every(function (card) {
+                var image = card.querySelector('.position-placeholder');
+                return !image || (image.getAttribute('src') && image.complete);
+            });
+            if (window.current === 3 && cards.length > 0 && imagesReady) {
+                window.clearInterval(timer);
+                window.parent.postMessage({ type: 'pcCustomizerReady' }, window.location.origin);
+            } else if (attempts >= 200) {
+                window.clearInterval(timer);
+                window.parent.postMessage({ type: 'pcCustomizerReady' }, window.location.origin);
+            }
+        }, 50);
+    }
+
     window.openPcProductDetails = function (productCode, productData, options) {
         var code = cleanCode(productCode || (productData && (productData.code || productData.style_code)));
         if (!code) return;
@@ -138,6 +158,11 @@
     };
 
     window.closeOrderPopup = function () {
+        var url = new URL(window.location.href);
+        if (url.searchParams.get('basketEmbed') === '1' && window.parent !== window) {
+            window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+            return;
+        }
         baseClose();
         removeProductFromUrl();
     };
@@ -184,6 +209,7 @@
         });
         Promise.resolve(request).then(function () {
             openBasketCustomization(url, code);
+            notifyBasketWhenReady(url);
         });
     }
 

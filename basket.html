@@ -714,6 +714,10 @@
             cursor: pointer;
         }
         .logo-meta-actions button:hover { text-decoration: underline; }
+        .logo-meta-actions .edit-btn,
+        .logo-meta-actions .copy-btn { color: #111827; }
+        .logo-meta-actions .edit-btn:hover,
+        .logo-meta-actions .copy-btn:hover { color: #000; }
         .logo-action-separator { color: #c5c7cc; font-size: 11px; }
         .logo-notes { font-size: 11px; color: #9ca3af; margin-top: 2px; font-style: italic; }
         .logos-applied-header {
@@ -859,11 +863,11 @@
         .btn-checkout:hover { background: #dc2626; }
         /* New primary / secondary CTAs */
         .btn-checkout-primary {
-            width: 100%; padding: 16px; background: #16a34a; color: #fff;
+            width: 100%; padding: 16px; background: #f97316; color: #fff;
             border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
-        .btn-checkout-primary:hover { background: #15803d; }
+        .btn-checkout-primary:hover { background: #ea580c; }
         .btn-request-quote {
             width: 100%; padding: 14px; background: #fff; color: #7c3aed;
             border: 2px dashed #7c3aed; border-radius: 10px; font-size: 14px; font-weight: 600;
@@ -990,6 +994,59 @@
         .customize-popup-close:hover { background: #fff; }
         .customize-popup-close svg { stroke: #333; }
         #customizePopupIframe { width: 100%; height: 100%; border: none; }
+        .customize-popup-loading { display: none; }
+        .customize-popup-overlay.is-pc-customizer {
+            background: rgba(250, 247, 243, .9);
+        }
+        .customize-popup-overlay.is-pc-customizer .customize-popup-container {
+            width: 100%; height: 100%; max-width: none; max-height: none;
+            border-radius: 0; overflow: hidden; background: transparent;
+        }
+        .customize-popup-overlay.is-pc-customizer .customize-popup-close { display: none; }
+        .customize-popup-overlay.is-pc-customizer #customizePopupIframe {
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+        .customize-popup-overlay.is-pc-customizer.is-ready #customizePopupIframe { opacity: 1; }
+        .customize-popup-overlay.is-pc-customizer .customize-popup-loading {
+            position: absolute; inset: 0; z-index: 2;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(250, 247, 243, .9);
+            opacity: 1;
+            transition: opacity .3s ease, visibility 0s linear .3s;
+        }
+        .customize-popup-overlay.is-pc-customizer.is-ready .customize-popup-loading {
+            opacity: 0; visibility: hidden; pointer-events: none;
+        }
+        .customize-upload {
+            position: relative; width: 100px; height: 100px;
+            contain: layout paint;
+        }
+        .customize-upload span {
+            position: absolute; display: block; width: 40%; height: 40%;
+            border-radius: 50%; box-shadow: 2px 2px 3px rgba(0,0,0,.4);
+            -webkit-animation: customize-upload-run 2s infinite ease-in-out;
+            animation: customize-upload-run 2s infinite ease-in-out;
+        }
+        .customize-upload .customize-upload1 { background: #f3b222; animation-delay: 1.5s; }
+        .customize-upload .customize-upload2 { background: #f0653e; animation-delay: 1s; }
+        .customize-upload .customize-upload3 { background: #b9c0c0; animation-delay: .5s; }
+        .customize-upload .customize-upload4 { background: #8f7473; }
+        @-webkit-keyframes customize-upload-run {
+            0% { transform: translate(0%); border-radius: 50%; }
+            25% { transform: translate(150%) scale(.5); border-radius: 0%; }
+            50% { transform: translate(150%, 150%); border-radius: 50%; }
+            75% { transform: translate(0%, 150%) scale(.5); border-radius: 0%; }
+        }
+        @keyframes customize-upload-run {
+            0% { transform: translate(0%); border-radius: 50%; }
+            25% { transform: translate(150%) scale(.5); border-radius: 0%; }
+            50% { transform: translate(150%, 150%); border-radius: 50%; }
+            75% { transform: translate(0%, 150%) scale(.5); border-radius: 0%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .customize-upload span { animation-duration: 4s; }
+        }
 
         /* ===== Quick Add Logo Modal ===== */
         .quick-logo-overlay {
@@ -1450,11 +1507,11 @@
             .summary-actions { margin-top: 18px; gap: 9px; }
             .btn-checkout-primary {
                 padding: 15px;
-                background: var(--basket-navy);
+                background: #f97316;
                 border-radius: 9px;
                 font-size: 15px;
             }
-            .btn-checkout-primary:hover { background: #18203d; }
+            .btn-checkout-primary:hover { background: #ea580c; }
             .btn-request-quote {
                 padding: 13px;
                 color: var(--basket-navy);
@@ -1784,11 +1841,11 @@
             .summary-actions { margin-top: 16px; gap: 8px; }
             .btn-checkout-primary {
                 padding: 14px;
-                background: #8a249a;
+                background: #f97316;
                 border-radius: 2px;
                 font-size: 14px;
             }
-            .btn-checkout-primary:hover { background: #701d7d; }
+            .btn-checkout-primary:hover { background: #ea580c; }
             .btn-request-quote,
             .btn-share-basket {
                 padding: 12px;
@@ -2348,6 +2405,14 @@
                     <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
+            <div class="customize-popup-loading" role="status" aria-live="polite" aria-label="Loading customisation tool">
+                <div class="customize-upload" aria-hidden="true">
+                    <span class="customize-upload1"></span>
+                    <span class="customize-upload2"></span>
+                    <span class="customize-upload3"></span>
+                    <span class="customize-upload4"></span>
+                </div>
+            </div>
             <iframe id="customizePopupIframe" src="" frameborder="0"></iframe>
         </div>
     </div>
@@ -4465,7 +4530,12 @@
         const customizerPath = isMobile
             ? 'customization-tool-mobile/index.html'
             : 'shop-pc.html';
-        window.location.href = `${customizerPath}?${params.toString()}`;
+        const targetUrl = `${customizerPath}?${params.toString()}`;
+        if (isMobile) window.location.href = targetUrl;
+        else {
+            params.set('basketEmbed', '1');
+            openCustomizePopup(`${customizerPath}?${params.toString()}`, true);
+        }
     }
 
     function copyLogo(itemIndex, logoIndex) {
@@ -4678,7 +4748,12 @@
         const customizerPath = isMobile
             ? 'customization-tool-mobile/index.html'
             : 'shop-pc.html';
-        window.location.href = `${customizerPath}?${params.toString()}`;
+        const targetUrl = `${customizerPath}?${params.toString()}`;
+        if (isMobile) window.location.href = targetUrl;
+        else {
+            params.set('basketEmbed', '1');
+            openCustomizePopup(`${customizerPath}?${params.toString()}`, true);
+        }
     }
 
     function _setCustomizeSessionData(item) {
@@ -4748,10 +4823,18 @@
     // CUSTOMIZE POPUP
     // ========================
 
-    function openCustomizePopup(url) {
+    let pcCustomizerRevealTimer = null;
+    let pcCustomizerOpenedAt = 0;
+
+    function openCustomizePopup(url, isPcCustomizer) {
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
         if (!overlay || !iframe) return;
+        clearTimeout(pcCustomizerRevealTimer);
+        pcCustomizerRevealTimer = null;
+        pcCustomizerOpenedAt = isPcCustomizer ? performance.now() : 0;
+        overlay.classList.toggle('is-pc-customizer', Boolean(isPcCustomizer));
+        overlay.classList.remove('is-ready');
         iframe.src = url;
         overlay.hidden = false;
         document.body.style.overflow = 'hidden';
@@ -4762,6 +4845,9 @@
         basketDebug('[closeCustomizePopup] Called - syncing logos and re-rendering basket');
         const overlay = document.getElementById('customizePopupOverlay');
         const iframe = document.getElementById('customizePopupIframe');
+        clearTimeout(pcCustomizerRevealTimer);
+        pcCustomizerRevealTimer = null;
+        pcCustomizerOpenedAt = 0;
         try {
             if (iframe && iframe.contentWindow && typeof iframe.contentWindow._forceAutoSave === 'function') {
                 iframe.contentWindow._forceAutoSave();
@@ -4771,6 +4857,7 @@
         }
         if (overlay) overlay.hidden = true;
         if (iframe) iframe.src = '';
+        if (overlay) overlay.classList.remove('is-pc-customizer', 'is-ready');
         document.body.style.overflow = '';
         // Sync old-format positions/positionDesigns &larr;’ logos[] then re-render
         syncLogosFromOldFormat();
@@ -4801,6 +4888,18 @@
     });
 
     window.addEventListener('message', (e) => {
+        if (e.origin !== window.location.origin) return;
+        if (e.data && e.data.type === 'pcCustomizerReady') {
+            const overlay = document.getElementById('customizePopupOverlay');
+            if (overlay && !overlay.hidden && overlay.classList.contains('is-pc-customizer')) {
+                const remainingTime = Math.max(0, 3000 - (performance.now() - pcCustomizerOpenedAt));
+                clearTimeout(pcCustomizerRevealTimer);
+                pcCustomizerRevealTimer = setTimeout(() => {
+                    overlay.classList.add('is-ready');
+                    pcCustomizerRevealTimer = null;
+                }, remainingTime);
+            }
+        }
         if (e.data && e.data.type === 'closeCustomizePopup') closeCustomizePopup();
     });
 

@@ -1521,7 +1521,12 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
 // PAGE 4: Save the current state before opening the basket.
 $(document).on('click', '#btnP4Next, #p4ViewBasket', function() {
     p4SaveLogosToBasket();
-    window.location.href = 'basket.html';
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('basketEmbed') === '1' && window.parent !== window) {
+        window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+    } else {
+        window.location.href = 'basket.html';
+    }
 });
 
 // PAGE 4: Skip logo → close popup after saving

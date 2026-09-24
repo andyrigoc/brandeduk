@@ -59,22 +59,43 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: #ffffff;
+            background: #faf7f3;
             color: #333;
         }
         .loader-container {
-            text-align: center;
-            padding: 20px;
+            position: relative;
+            width: 100px;
+            height: 100px;
+            contain: layout paint;
         }
-        .splash-logo {
-            width: 320px;
-            max-width: 82vw;
-            height: auto;
-            animation: fadeInScale 0.6s ease-out;
+        .upload span {
+            display: block;
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            border-radius: 50%;
+            box-shadow: 2px 2px 3px rgba(0,0,0,.4);
+            -webkit-animation: run 2s infinite ease-in-out;
+            animation: run 2s infinite ease-in-out;
         }
-        @keyframes fadeInScale {
-            0% { opacity: 0; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
+        .upload .upload1 { background: #f3b222; animation-delay: 1.5s; }
+        .upload .upload2 { background: #f0653e; animation-delay: 1s; }
+        .upload .upload3 { background: #b9c0c0; animation-delay: .5s; }
+        .upload .upload4 { background: #8f7473; }
+        @-webkit-keyframes run {
+            0% { transform: translate(0%); border-radius: 50%; }
+            25% { transform: translate(150%) scale(.5); border-radius: 0%; }
+            50% { transform: translate(150%, 150%); border-radius: 50%; }
+            75% { transform: translate(0%, 150%) scale(.5); border-radius: 0%; }
+        }
+        @keyframes run {
+            0% { transform: translate(0%); border-radius: 50%; }
+            25% { transform: translate(150%) scale(.5); border-radius: 0%; }
+            50% { transform: translate(150%, 150%); border-radius: 50%; }
+            75% { transform: translate(0%, 150%) scale(.5); border-radius: 0%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .upload span { animation-duration: 4s; }
         }
         a { color: #273469; text-decoration: none; }
         a:hover { text-decoration: underline; }
@@ -83,7 +104,12 @@
 <body>
     <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">BrandedUK - Custom Workwear, Uniforms, Embroidery &amp; Printing</h1>
     <div class="loader-container">
-        <img class="splash-logo" src="brandedukv15-child/assets/images/ui/brandeduk-logo-full-removebg-preview (1).png" alt="BrandedUK Logo">
+        <div class="upload" role="status" aria-label="Loading BrandedUK">
+            <span class="upload1"></span>
+            <span class="upload2"></span>
+            <span class="upload3"></span>
+            <span class="upload4"></span>
+        </div>
         <p id="debugInfo" style="display:none;"></p>
         <noscript>
             <p>
@@ -152,7 +178,7 @@
             // Redirect after splash screen delay.
             updateDebug('pending');
 
-            var MAX_WAIT_MS = 2500;
+            var MAX_WAIT_MS = 3000;
             var didRedirect = false;
 
             function safeRedirect(reason) {
@@ -169,7 +195,7 @@
                 }, MAX_WAIT_MS);
             }
 
-            // Wait for this loader page to be fully ready, then keep splash visible for ~4 seconds.
+            // Wait for this loader page to be fully ready, then show one full animation cycle.
             if (document.readyState === 'complete') {
                 startSplashCountdown();
             } else {
