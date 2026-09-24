@@ -25,7 +25,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Basket page uses its own header; hide the global fixed site header to avoid double headers and clipped top area on mobile. */
+        /* Mobile + desktop: hide the homepage mobile/tablet chrome. Tablet (768–1023) overrides this. */
         body.basket-page .mobile-header,
         body.basket-page .tablet-top-bar {
             display: none !important;
@@ -62,15 +62,49 @@
             body.basket-page .top-promo-bar     { display: none !important; }
             /* Hide the entire site header (logo bar) on mobile basket page */
             body.basket-page .searchbar-header  { display: none !important; }
+            /* Browse Categories: mobile basket only — keep visible on tablet/desktop basket and shop/home */
+            body.basket-page .category-dropdown,
+            body.basket-page .category-toggle,
+            body.basket-page .header-bottom .category-toggle-label {
+                display: none !important;
+            }
         }
 
-        /* ── TABLET (768-1023px): full site header, hide basket-header page title ── */
-        @media (min-width: 768px) and (max-width: 1023px) {
+        /* ── TABLET (768-1023px): homepage mobile-route header, not a scaled-down PC header ── */
+        /* 1023.98 closes the subpixel gap where neither 1023 nor 1024 media queries match. */
+        @media (min-width: 768px) and (max-width: 1023.98px) {
             body.basket-page .basket-header { display: none !important; }
-            /* The full site header is position:fixed at this width too (see header.css).
-               Without this, it overlaps the top of the basket content. */
+            body.basket-page .site-header,
+            body.basket-page .header-top,
+            body.basket-page .header-bottom,
+            body.basket-page .searchbar-header {
+                display: none !important;
+            }
+            body.basket-page .searchbar-header__action,
+            body.basket-page .searchbar-header__action-ring {
+                display: none !important;
+            }
+            body.basket-page .tablet-top-bar {
+                display: flex !important;
+            }
+            body.basket-page .mobile-header {
+                display: flex !important;
+                flex-direction: column;
+                top: 36px;
+            }
+            body.basket-page .mobile-header .header-top-row,
+            body.basket-page .mobile-header .back-btn-header {
+                display: none !important;
+            }
+            body.basket-page .top-promo-bar {
+                display: block !important;
+            }
+            body.basket-page .mobile-header + .top-promo-bar {
+                margin-top: calc(var(--header-height, 102px) + 44px) !important;
+            }
+            /* Promo is in-flow below the fixed tablet-top-bar + mobile-header. */
             body.basket-page {
-                padding-top: var(--brandeduk-site-header-height, 170px) !important;
+                padding-top: 0 !important;
             }
             body.basket-page .basket-content {
                 padding-top: 20px !important;
@@ -117,13 +151,13 @@
             margin-left: auto;
         }
 
-        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
-        .social-icons-mobile {
+        /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only, not tablet-top-bar) */
+        .mobile-header .social-icons-mobile {
             gap: 3px !important;
             margin-left: 8px !important;
             padding-left: 0 !important;
         }
-        .social-icons-mobile .social-icon {
+        .mobile-header .social-icons-mobile .social-icon {
             width: 27px !important;
             height: 27px !important;
             min-width: 27px !important;
@@ -132,7 +166,7 @@
             max-height: 27px !important;
             border-radius: 7px !important;
         }
-        .social-icons-mobile .social-icon i {
+        .mobile-header .social-icons-mobile .social-icon i {
             font-size: 12px !important;
         }
 
@@ -1386,6 +1420,10 @@
             .basket-header { display: none !important; }
             .mobile-header { display: none !important; }
             .tablet-top-bar { display: none !important; }
+            /* mobile-header stays in the DOM before the promo; don't inherit its tablet offset */
+            body.basket-page .mobile-header + .top-promo-bar {
+                margin-top: 0 !important;
+            }
 
             /* Outer page */
             body.basket-page { background: #f3f4f6; }
@@ -1841,9 +1879,9 @@
         .basket-desktop-footer,
         .basket-list-toolbar .clear-desktop-btn { display: none; }
 
-        /* ── TABLET (768–1023px): full site header is shown (see top of file), so the
+        /* ── TABLET (768–1023px): homepage mobile header is shown, so the
            basket toolbar / Clear basket button must also appear here, not only at 1024px+. ── */
-        @media (min-width: 768px) and (max-width: 1023px) {
+        @media (min-width: 768px) and (max-width: 1023.98px) {
             .basket-list-toolbar {
                 display: flex;
                 align-items: center;
@@ -2196,6 +2234,52 @@
 </head>
 <body class="basket-page">
 
+<!-- Tablet top bar: same homepage mobile-route header (768–1023px) -->
+<div class="tablet-top-bar">
+    <div class="tablet-top-bar__left">
+        <div class="social-icons-container social-icons-mobile">
+            <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/brandeduk_workwear/" class="social-icon instagram" target="_blank" rel="noopener">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/anderson-ricotta-92a394321/" class="social-icon linkedin" target="_blank" rel="noopener">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://www.youtube.com/@barudanamericainc3060" class="social-icon youtube" target="_blank" rel="noopener">
+                <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://uk.pinterest.com/search/pins/?q=embroidery%20polo&rs=typed" class="social-icon pinterest" target="_blank" rel="noopener">
+                <i class="fab fa-pinterest-p"></i>
+            </a>
+        </div>
+    </div>
+    <div class="tablet-top-bar__center">
+        <a href="mailto:info@brandeduk.com" class="tablet-top-bar__email">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            info@brandeduk.com
+        </a>
+        <a href="tel:02089742722" class="tablet-top-bar__phone">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            0208 974 2722
+        </a>
+    </div>
+    <div class="tablet-top-bar__right">
+        <div class="vat-toggle-tablet">
+            <span class="vat-label vat-label--exc">EXC VAT</span>
+            <input type="checkbox" id="vatToggleTablet" class="vat-checkbox" />
+            <label for="vatToggleTablet" class="vat-toggle-label">Toggle VAT</label>
+            <span class="vat-label vat-label--inc">INC VAT</span>
+        </div>
+    </div>
+</div>
+
 <!-- ============================================
     SITE HEADER
     ============================================ -->
@@ -2332,22 +2416,9 @@
     </div>
 </header>
 
-<!-- Top Promotional Bar -->
-<div class="top-promo-bar">
-    <div class="promo-scroll">
-        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
-        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
-    </div>
-</div>
-</div>
-<!-- END SITE HEADER -->
-<script>window.BrandedPcHeader.mount();</script>
-
-    <!-- Mobile Header (mobile only) -->
+    <!-- Homepage mobile-route header (tablet 768–1023): logo + wide search, no action rings -->
     <header class="mobile-header">
-        <!-- Top Row: Social + VAT Toggle -->
         <div class="header-top-row">
-            <!-- Social Buttons Left -->
             <div class="social-icons-container social-icons-mobile">
                 <a href="https://www.facebook.com/profile.php?id=100083540654262" class="social-icon facebook" target="_blank" rel="noopener">
                     <i class="fab fa-facebook-f"></i>
@@ -2366,7 +2437,6 @@
                 </a>
             </div>
 
-            <!-- VAT Toggle Right -->
             <div class="vat-toggle-mobile" id="vatToggleContainer">
                 <span class="vat-label vat-label--exc">EX VAT</span>
                 <input type="checkbox" id="vatToggleCheckbox" class="vat-checkbox" />
@@ -2375,19 +2445,12 @@
             </div>
         </div>
 
-        <!-- Bottom Row: Back + Logo + Search -->
         <div class="header-logo-row">
-            <button class="back-btn-header" onclick="window.history.back()" aria-label="Go back">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
             <a href="index.html" class="mobile-logo-center">
                 <img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" class="logo-badge-img">
             </a>
-            <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
-                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand">
+                <input type="text" placeholder="Search 9,000+ products..." id="searchInput" class="search-input-expand" autocomplete="off" aria-label="Search products">
                 <svg class="search-icon-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
@@ -2395,6 +2458,17 @@
             </div>
         </div>
     </header>
+
+<!-- Top Promotional Bar -->
+<div class="top-promo-bar">
+    <div class="promo-scroll">
+        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
+        <span>Custom Workwear &amp; Uniforms UK &bull; Embroidery &bull; DTF Printing &bull; Screen Printing &bull; Vinyl Heat Transfer &bull; Trades &amp; Construction &bull; Schools &amp; Leavers &bull; Hospitality &amp; Restaurants &bull; Corporate &amp; Office Teams &bull; T-Shirts &bull; Polo Shirts &bull; Hoodies &bull; Hi-Vis &bull; Jackets &bull; Fleeces &bull; Caps &bull; Bags &bull; Fast Turnaround &bull; Bulk Pricing Available</span>
+    </div>
+</div>
+</div>
+<!-- END SITE HEADER -->
+<script>window.BrandedPcHeader.mount();</script>
 
     <!-- Breadcrumbs -->
     <nav class="site-breadcrumbs" id="siteBreadcrumbs" aria-label="Breadcrumb">
@@ -3692,11 +3766,13 @@
     function initVATToggle() {
         const sideToggle = document.getElementById('vatToggle');
         const mobileToggle = document.getElementById('vatToggleCheckbox');
+        const tabletToggle = document.getElementById('vatToggleTablet');
         const headerToggles = Array.from(document.querySelectorAll('.header-top-vat-toggle'));
 
         const applyVatUiState = () => {
             if (sideToggle) sideToggle.checked = includeVAT;
             if (mobileToggle) mobileToggle.checked = includeVAT;
+            if (tabletToggle) tabletToggle.checked = includeVAT;
             headerToggles.forEach((btn) => {
                 btn.setAttribute('aria-pressed', includeVAT ? 'true' : 'false');
                 btn.classList.toggle('is-on', includeVAT);
@@ -3721,6 +3797,12 @@
         if (mobileToggle) {
             mobileToggle.addEventListener('change', () => {
                 setIncludeVat(mobileToggle.checked);
+            });
+        }
+
+        if (tabletToggle) {
+            tabletToggle.addEventListener('change', () => {
+                setIncludeVat(tabletToggle.checked);
             });
         }
 
@@ -6137,15 +6219,17 @@
     var emptyBtn = document.getElementById('emptyBasketShopBtn');
     if (emptyBtn) emptyBtn.href = isMobile ? shopAllUrl : shopAllUrl;
 
-    var input = document.getElementById('searchbarHeaderInput');
-    var icon  = document.querySelector('.searchbar-header .search-icon-expand');
     var shopBase = isMobile ? '/shop' : '/shop-pc.html';
-    function submitSearch() {
-        var q = (input ? input.value : '').trim();
-        if (q) window.location.href = shopBase + '?q=' + encodeURIComponent(q);
+    function bindSearch(input, icon) {
+        function submitSearch() {
+            var q = (input ? input.value : '').trim();
+            if (q) window.location.href = shopBase + '?q=' + encodeURIComponent(q);
+        }
+        if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
+        if (icon)  icon.addEventListener('click', submitSearch);
     }
-    if (input) input.addEventListener('keydown', function(e) { if (e.key === 'Enter') submitSearch(); });
-    if (icon)  icon.addEventListener('click', submitSearch);
+    bindSearch(document.getElementById('searchbarHeaderInput'), document.querySelector('.searchbar-header .search-icon-expand'));
+    bindSearch(document.getElementById('searchInput'), document.querySelector('.mobile-header .search-icon-expand'));
 })();
 document.addEventListener('DOMContentLoaded', function() {
     var continueBtn = document.getElementById('continueShoppingBtn');
