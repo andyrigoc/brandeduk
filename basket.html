@@ -67,6 +67,14 @@
         /* ── TABLET (768-1023px): full site header, hide basket-header page title ── */
         @media (min-width: 768px) and (max-width: 1023px) {
             body.basket-page .basket-header { display: none !important; }
+            /* The full site header is position:fixed at this width too (see header.css).
+               Without this, it overlaps the top of the basket content. */
+            body.basket-page {
+                padding-top: var(--brandeduk-site-header-height, 170px) !important;
+            }
+            body.basket-page .basket-content {
+                padding-top: 20px !important;
+            }
         }
 
         /* ── FIX: responsive.css collapses searchbar to 44px on 1280px+ — override it ── */
@@ -1832,6 +1840,49 @@
         }
         .basket-desktop-footer,
         .basket-list-toolbar .clear-desktop-btn { display: none; }
+
+        /* ── TABLET (768–1023px): full site header is shown (see top of file), so the
+           basket toolbar / Clear basket button must also appear here, not only at 1024px+. ── */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .basket-list-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 16px 20px;
+                background: #fff;
+                border: 1px solid #dededb;
+                border-bottom: 0;
+                border-radius: 3px 3px 0 0;
+            }
+            .basket-toolbar-controls {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .basket-list-toolbar .clear-desktop-btn {
+                display: block;
+                padding: 0 0 0 16px;
+                color: #b42318;
+                background: transparent;
+                border: 0;
+                border-left: 1px solid #dededb;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .basket-list-toolbar .clear-desktop-btn:hover { color: #7a1710; }
+            .basket-items-panel {
+                border: 1px solid #dededb;
+                border-radius: 0 0 3px 3px;
+                overflow: hidden;
+                background: #fff;
+            }
+            .basket-summary-column { margin-top: 20px; }
+            .order-summary-bottom { max-width: 480px; }
+        }
 
         @media (min-width: 1024px) {
             body.basket-page {
