@@ -102,10 +102,10 @@ window.BrandedConfig = (function () {
         'polo': 'polos',
         'polo-shirts': 'polos',
         'fleeces': 'fleece',
-        'hivis': 'safety-vests',
-        'hi-vis': 'safety-vests',
-        'hi-viz': 'safety-vests',
-        'headwear': 'hats',
+        'hivis': 'hi-vis',
+        'hi-vis': 'hi-vis',
+        'hi-viz': 'hi-vis',
+        'headwear': 'headwear',
         'sustainable': null,
         'workwear': null,
         // Direct matches
@@ -139,9 +139,12 @@ window.BrandedConfig = (function () {
     const CATEGORY_ALIASES = {
         't-shirt': 'tshirts', 't-shirts': 'tshirts', 'tees': 'tshirts', 'tee': 'tshirts',
         'polo-shirts': 'polo', 'polos': 'polo',
-        'hi-viz': 'hivis', 'hi-vis': 'hivis', 'hi-vis clothing': 'hivis', 'hi-viz clothing': 'hivis',
+        'hi-viz': 'hivis', 'hi-vis': 'hivis', 'hi vis': 'hivis', 'hi-vis clothing': 'hivis', 'hi-viz clothing': 'hivis',
         'safety-vests': 'hivis',
-        'fleece': 'fleeces'
+        'fleece': 'fleeces',
+        'chef-jacket': 'chef-jackets', 'chef-jackets': 'chef-jackets',
+        'bodywarmers': 'gilets', 'gilets-body-warmers': 'gilets',
+        'sports-overtops': 'sports-overtops', 'sports overtops': 'sports-overtops'
     };
 
     function normalizeCategory(raw) {
@@ -155,24 +158,31 @@ window.BrandedConfig = (function () {
     // ──────────────────────────────────────────────
     const SLUG_TO_API_NAME = {
         'tshirts': 'T-Shirts',
+        't-shirts': 'T-Shirts',
         'caps': 'Caps',
+        'hats': 'Hats',
         'hoodies': 'Hoodies',
         'jackets': 'Jackets',
         'polo': 'Polos',
+        'polos': 'Polos',
         'shirts': 'Shirts',
         'sweatshirts': 'Sweatshirts',
         'beanies': 'Beanies',
         'blouses': 'Blouses',
         'chinos': 'Chinos',
         'fleeces': 'Fleece',
-        'hivis': 'Hi-Vis',
+        'fleece': 'Fleece',
+        'hivis': 'Hi Vis',
+        'hi-vis': 'Hi Vis',
         'trousers': 'Trousers',
-        'workwear': 'Workwear',
         'aprons': 'Aprons',
         'bags': 'Bags',
         'shorts': 'Shorts',
         'softshells': 'Softshells',
-        'gilets': 'Gilets & Body Warmers'
+        'gilets': 'Gilets & Body Warmers',
+        'chef-jackets': 'Chef Jackets',
+        'tunics': 'Tunics',
+        'sports-overtops': 'Sports Overtops'
     };
 
     function getApiCategoryName(categorySlug) {
@@ -320,11 +330,16 @@ window.BrandedConfig = (function () {
             'semi-fitted': 'semi-fitted'
         },
         sector: {
-            'sport': 'sport',
-            'corporate': 'corporate',
-            'hospitality': 'hospitality',
-            'travel': 'travel',
-            'fashion': 'fashion'
+            'sport': 'Sport',
+            'corporate': 'Corporate',
+            'hospitality': 'Hospitality',
+            'travel': 'Travel',
+            'fashion': 'Fashion',
+            'school': 'School',
+            'safety': 'Safety',
+            'outdoor': 'Outdoor',
+            'athleisure': 'Athleisure',
+            'home': 'Home'
         },
         sport: {
             'golf': 'golf',
@@ -349,6 +364,255 @@ window.BrandedConfig = (function () {
     };
 
     // ──────────────────────────────────────────────
+    // VERIFIED NAV LANDINGS  (current API only)
+    // Multiple productTypes are server-side OR.
+    // productTypes + sectors are (A OR B) AND sector.
+    // Workwear is a mega-menu container, not a landing.
+    // sort=price-lh is not fully reliable on OR pages.
+    // ──────────────────────────────────────────────
+    const NAV_LANDINGS = {
+        hospitality: {
+            title: 'Hospitality',
+            productTypes: ['T-Shirts', 'Polos', 'Shirts', 'Aprons', 'Chef Jackets', 'Tunics'],
+            sectors: ['Hospitality']
+        },
+        school: {
+            title: 'School',
+            productTypes: ['T-Shirts', 'Hoodies', 'Sweatshirts'],
+            sectors: ['School']
+        },
+        safety: {
+            title: 'Safety',
+            productTypes: ['Hi Vis', 'Jackets', 'Trousers', 'Polos', 'T-Shirts'],
+            sectors: ['Safety']
+        },
+        corporate: {
+            title: 'Corporate',
+            productTypes: ['Polos', 'T-Shirts', 'Shirts', 'Blouses', 'Jackets', 'Fleece'],
+            sectors: ['Corporate']
+        },
+        outdoor: {
+            title: 'Outdoor',
+            productTypes: ['Jackets', 'Fleece', 'Gilets & Body Warmers'],
+            sectors: ['Outdoor']
+        },
+        sport: {
+            title: 'Sport',
+            productTypes: ['T-Shirts', 'Polos', 'Shorts', 'Hoodies', 'Sports Overtops', 'Caps'],
+            sectors: ['Sport']
+        },
+        headwear: {
+            title: 'Headwear',
+            productTypes: ['Caps', 'Hats', 'Beanies'],
+            sectors: []
+        },
+        deals: {
+            title: 'Deals',
+            productTypes: [],
+            sectors: [],
+            flags: ['offers']
+        }
+    };
+
+    function collectSearchValues(params, name) {
+        if (!params) return [];
+        return []
+            .concat(params.getAll(name) || [])
+            .concat(params.getAll(name + '[]') || [])
+            .map(function (value) { return String(value || '').trim(); })
+            .filter(Boolean);
+    }
+
+    function uniquePreserve(values) {
+        var seen = {};
+        var out = [];
+        (values || []).forEach(function (value) {
+            var key = String(value).toLowerCase();
+            if (!key || seen[key]) return;
+            seen[key] = true;
+            out.push(value);
+        });
+        return out;
+    }
+
+    function matchNavLanding(productTypes, sectors, flags) {
+        var typeKey = uniquePreserve(productTypes).map(function (value) {
+            return String(value).toLowerCase();
+        }).sort().join('|');
+        var sectorKey = uniquePreserve(sectors).map(function (value) {
+            return String(value).toLowerCase();
+        }).sort().join('|');
+        var flagKey = uniquePreserve(flags).map(function (value) {
+            return String(value).toLowerCase();
+        }).sort().join('|');
+
+        var keys = Object.keys(NAV_LANDINGS);
+        for (var i = 0; i < keys.length; i++) {
+            var landing = NAV_LANDINGS[keys[i]];
+            var landingTypes = (landing.productTypes || []).map(function (value) {
+                return String(value).toLowerCase();
+            }).sort().join('|');
+            var landingSectors = (landing.sectors || []).map(function (value) {
+                return String(value).toLowerCase();
+            }).sort().join('|');
+            var landingFlags = (landing.flags || []).map(function (value) {
+                return String(value).toLowerCase();
+            }).sort().join('|');
+            if (typeKey === landingTypes && sectorKey === landingSectors && flagKey === landingFlags) {
+                return Object.assign({ id: keys[i] }, landing);
+            }
+        }
+        return null;
+    }
+
+    function isAggregatedOrQuery(productTypes) {
+        return Array.isArray(productTypes) && productTypes.length > 1;
+    }
+
+    // ──────────────────────────────────────────────
+    // MEGA DROP HERO IMAGES & ICONS
+    // ──────────────────────────────────────────────
+    // Edit heroImage and icon / icons here to change every drop window.
+    // Paths are relative to the site root. Do not put these URLs in CSS.
+    // heroImage → <img data-mega-hero>    icon → <i data-mega-icon>
+    // icons.fit / icons.style / … → <i data-mega-icon="fit">
+    const MEGA_DROP_ASSETS = {
+        allproducts: {
+            heroImage: 'blog/images/corporate-staff-uniforms-planning-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-border-all'
+        },
+        industries: {
+            heroImage: 'blog/images/hospitality-uniforms-cafe-restaurant-hotel.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-industry',
+            icons: {
+                corporate: 'fa-solid fa-building',
+                hospitality: 'fa-solid fa-utensils',
+                school: 'fa-solid fa-graduation-cap',
+                safety: 'fa-solid fa-shield-halved',
+                sport: 'fa-solid fa-trophy',
+                outdoor: 'fa-solid fa-tree'
+            }
+        },
+        tshirts: {
+            heroImage: 'blog/images/custom-t-shirts-printing-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-shirt',
+            icons: {
+                fit: 'fa-solid fa-user-group',
+                style: 'fa-solid fa-shirt',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        polos: {
+            heroImage: 'blog/images/personalised-embroidered-polo-shirts-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-shirt',
+            icons: {
+                fit: 'fa-solid fa-user-group',
+                style: 'fa-solid fa-shirt',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        hoodies: {
+            heroImage: 'blog/images/personalised-hoodies-sweatshirts-jackets-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-shirt',
+            icons: {
+                fit: 'fa-solid fa-user-group',
+                style: 'fa-solid fa-shirt',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        sweatshirts: {
+            heroImage: 'blog/images/personalised-hoodies-sweatshirts-jackets-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-shirt',
+            icons: {
+                fit: 'fa-solid fa-user-group',
+                style: 'fa-solid fa-shirt',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        jackets: {
+            heroImage: 'blog/images/personalised-workwear-team-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-vest',
+            icons: {
+                type: 'fa-solid fa-vest',
+                fit: 'fa-solid fa-user-group',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        hivis: {
+            heroImage: 'blog/images/construction-custom-hi-vis-workwear-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-person-hiking',
+            icons: {
+                type: 'fa-solid fa-person-hiking',
+                fit: 'fa-solid fa-user-group',
+                industry: 'fa-solid fa-building',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        workwear: {
+            heroImage: 'blog/images/personalised-workwear-team-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-helmet-safety',
+            icons: {
+                type: 'fa-solid fa-helmet-safety',
+                fit: 'fa-solid fa-user-group',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        headwear: {
+            heroImage: 'blog/images/custom-t-shirts-printing-guide.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-hat-cowboy',
+            icons: {
+                type: 'fa-solid fa-hat-cowboy',
+                fit: 'fa-solid fa-user-group',
+                brands: 'fa-solid fa-star'
+            }
+        }
+    };
+
+    function resolveMegaAssetUrl(path) {
+        if (!path) return '';
+        if (/^(?:https?:|data:|\/)/i.test(path)) return path;
+        try {
+            return new URL(path, document.baseURI).href;
+        } catch (error) {
+            return path;
+        }
+    }
+
+    function applyMegaDropAssets(root) {
+        var scope = root && root.querySelectorAll ? root : document;
+        Object.keys(MEGA_DROP_ASSETS).forEach(function (key) {
+            var cfg = MEGA_DROP_ASSETS[key];
+            scope.querySelectorAll('[data-mega-key="' + key + '"]').forEach(function (drop) {
+                drop.querySelectorAll('[data-mega-hero]').forEach(function (img) {
+                    if (!cfg.heroImage) return;
+                    img.setAttribute('src', resolveMegaAssetUrl(cfg.heroImage));
+                    img.setAttribute('alt', cfg.heroAlt || '');
+                });
+                drop.querySelectorAll('[data-mega-icon]').forEach(function (iconEl) {
+                    var iconKey = iconEl.getAttribute('data-mega-icon');
+                    var iconClass = (cfg.icons && iconKey && cfg.icons[iconKey]) || cfg.icon;
+                    if (iconClass) iconEl.className = iconClass;
+                });
+            });
+        });
+    }
+
+    // ──────────────────────────────────────────────
     // PUBLIC API
     // ──────────────────────────────────────────────
     return {
@@ -359,8 +623,15 @@ window.BrandedConfig = (function () {
         CATEGORY_ALIASES:   CATEGORY_ALIASES,
         SLUG_TO_API_NAME:   SLUG_TO_API_NAME,
         FILTER_MAPPINGS:    FILTER_MAPPINGS,
+        NAV_LANDINGS:       NAV_LANDINGS,
         normalizeCategory:  normalizeCategory,
         getApiCategoryName: getApiCategoryName,
+        collectSearchValues: collectSearchValues,
+        uniquePreserve: uniquePreserve,
+        matchNavLanding: matchNavLanding,
+        isAggregatedOrQuery: isAggregatedOrQuery,
+        MEGA_DROP_ASSETS: MEGA_DROP_ASSETS,
+        applyMegaDropAssets: applyMegaDropAssets,
 
         /** Convenience: get category title for a slug */
         getCategoryTitle: function (slug) {

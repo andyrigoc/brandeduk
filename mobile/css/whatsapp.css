@@ -12,7 +12,7 @@
     height: 56px;
     border: none;
     border-radius: 50%;
-    background: #273469;
+    background: #1EAE56;
     color: #fff;
     font-size: 28px;
     display: flex;
@@ -141,7 +141,7 @@
 
 /* Header */
 .wa-popup__header {
-    background: #273469;
+    background: #1EAE56;
     color: #fff;
     padding: 10px 18px 8px;
     display: flex;
@@ -199,7 +199,7 @@
     justify-content: center;
     gap: 10px;
     text-decoration: none;
-    background: #273469;
+    background: #1EAE56;
     color: #fff;
     padding: 14px 16px;
     border-radius: 14px;

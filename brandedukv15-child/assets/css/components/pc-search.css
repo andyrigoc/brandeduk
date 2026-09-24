@@ -61,9 +61,15 @@
         transition: background-color 120ms ease;
     }
 
+    .pc-search-product:nth-child(6n + 1),
+    .pc-search-product:nth-child(6n + 2),
+    .pc-search-product:nth-child(6n + 3) {
+        background: #e5e7eb;
+    }
+
     .pc-search-product:hover,
     .pc-search-product:focus-visible {
-        background: #f7f7f9;
+        background: #e8eaed;
         outline: none;
     }
 
@@ -128,7 +134,7 @@
         min-height: 58px;
         padding: 8px 24px;
         border-top: 1px solid #dfe3e8;
-        background: #fff;
+        background: #e5e7eb;
     }
 
     .pc-search-total {
@@ -161,10 +167,17 @@
     }
 
     .pc-search-page:hover:not(:disabled),
-    .pc-search-page:focus-visible,
-    .pc-search-page.is-current {
+    .pc-search-page:focus-visible {
+        color: #ff7a00;
+        background: transparent;
+        outline: none;
+    }
+
+    .pc-search-page.is-current,
+    .pc-search-page.is-current:hover,
+    .pc-search-page.is-current:focus-visible {
         color: #fff;
-        background: #273469;
+        background: #ff7a00;
         outline: none;
     }
 

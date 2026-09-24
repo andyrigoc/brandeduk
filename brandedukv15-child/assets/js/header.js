@@ -72,12 +72,81 @@
     }
 
     function closeAllMegaMenus(exceptItem) {
-        document.querySelectorAll('.has-megamenu.is-open').forEach((item) => {
+        document.querySelectorAll('.has-megamenu').forEach((item) => {
             if (exceptItem && item === exceptItem) return;
+            const wasOpen = item.classList.contains('is-open');
             item.classList.remove('is-open');
             const trigger = item.querySelector(':scope > a');
             if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            const megamenu = item.querySelector(':scope > .nav-megamenu');
+            if (wasOpen || megamenu) setMegaAvailability(megamenu, false);
         });
+    }
+
+    function setMegaAvailability(megamenu, open) {
+        if (!megamenu) return;
+        megamenu.setAttribute('aria-hidden', open ? 'false' : 'true');
+        megamenu.inert = !open;
+        megamenu.querySelectorAll('a, button').forEach((el) => {
+            if (open) el.removeAttribute('tabindex');
+            else el.setAttribute('tabindex', '-1');
+        });
+    }
+
+    function collectQueryValues(name) {
+        const params = new URLSearchParams(window.location.search);
+        return []
+            .concat(params.getAll(name) || [])
+            .concat(params.getAll(name + '[]') || [])
+            .map((value) => String(value || '').trim())
+            .filter(Boolean);
+    }
+
+    function markActivePrimaryNav() {
+        const types = collectQueryValues('productType').map((value) => value.toLowerCase()).sort();
+        const sectors = collectQueryValues('sector');
+        const flags = collectQueryValues('flag');
+        const isDeals = flags.includes('offers') && types.length === 0;
+        const isHeadwear = types.join('|') === 'beanies|caps|hats';
+        const isIndustryLanding = sectors.length > 0;
+
+        document.querySelectorAll('.main-nav > .menu > li').forEach((item) => {
+            item.classList.remove('is-active');
+            const trigger = item.querySelector(':scope > a');
+            if (trigger) trigger.removeAttribute('aria-current');
+        });
+
+        let match = null;
+        document.querySelectorAll('.main-nav > .menu > li > a').forEach((link) => {
+            const label = link.textContent.replace(/\s+/g, ' ').trim();
+            if (isDeals && label === 'Deals') match = link;
+            else if (isHeadwear && label === 'Headwear') match = link;
+            else if (isIndustryLanding && label === 'Industries') match = link;
+            else if (!isIndustryLanding && !isHeadwear && types.length === 1) {
+                const rawHref = link.getAttribute('href') || '';
+                if (!rawHref || rawHref === '#') return;
+                try {
+                    const href = new URL(rawHref, window.location.href);
+                    const hrefTypes = []
+                        .concat(href.searchParams.getAll('productType') || [])
+                        .concat(href.searchParams.getAll('productType[]') || [])
+                        .map((value) => value.toLowerCase());
+                    const hrefSectors = []
+                        .concat(href.searchParams.getAll('sector') || [])
+                        .concat(href.searchParams.getAll('sector[]') || []);
+                    if (hrefTypes.length === 1 && !hrefSectors.length && hrefTypes[0] === types[0]) {
+                        match = link;
+                    }
+                } catch (error) { /* ignore invalid href */ }
+            } else if (!types.length && !isDeals && !isIndustryLanding && label === 'All Products') {
+                match = link;
+            }
+        });
+
+        if (match) {
+            match.setAttribute('aria-current', 'page');
+            if (match.parentElement) match.parentElement.classList.add('is-active');
+        }
     }
 
     function initMegaMenuToggle() {
@@ -94,6 +163,7 @@
             if (!trigger || !megamenu) return;
 
             trigger.setAttribute('aria-expanded', 'false');
+            setMegaAvailability(megamenu, false);
 
             const toggle = (event) => {
                 if (event) { event.preventDefault(); event.stopPropagation(); }
@@ -106,6 +176,9 @@
                 closeAllSearchbarDropdowns();
                 item.classList.toggle('is-open', willOpen);
                 trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                document.querySelectorAll('.main-nav .menu > li.has-megamenu > .nav-megamenu').forEach((menu) => {
+                    setMegaAvailability(menu, menu.parentElement === item && willOpen);
+                });
             };
 
             trigger.addEventListener('click', toggle);
@@ -709,7 +782,39 @@
         }, { passive: true });
     }
 
+    function bindHeaderContactLinks() {
+        document.querySelectorAll('.site-header [data-open-contact="1"]').forEach(function (link) {
+            if (link.dataset.contactBound === '1') return;
+            link.dataset.contactBound = '1';
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (typeof window.openContactPopup === 'function') {
+                    window.openContactPopup();
+                    return;
+                }
+                var popup = document.getElementById('popupContact');
+                var overlay = document.getElementById('popupOverlay');
+                if (popup) {
+                    popup.classList.add('active');
+                    if (overlay) overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+    }
+
+    function relocateShopProducts() {
+        var header = document.querySelector('.site-header');
+        var inner = header && header.querySelector('.searchbar-header__inner');
+        var dropdown = header && header.querySelector('.category-dropdown');
+        var actions = inner && inner.querySelector('.searchbar-header__actions');
+        if (!inner || !dropdown || !actions || dropdown.parentElement === inner) return;
+        inner.insertBefore(dropdown, actions);
+    }
+
     function initHeaderScripts() {
+        relocateShopProducts();
+        bindHeaderContactLinks();
         initFixedHeaderOffset();
         initCategoryDropdown();
         initSearchbarHeaderDropdown();
@@ -721,6 +826,10 @@
         initCatalogueDropdownToggle();
         initSearchTypeahead();
         initHideHeaderOnScroll();
+        markActivePrimaryNav();
+        if (window.BrandedConfig && typeof window.BrandedConfig.applyMegaDropAssets === 'function') {
+            window.BrandedConfig.applyMegaDropAssets(document.querySelector('.site-header') || document);
+        }
     }
 
     if (document.readyState === 'loading') {

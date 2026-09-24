@@ -27,7 +27,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer/footer.css?v=FTR10APR2026">
-    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260726a"></script>
+    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260924-nav"></script>
     <style>
         /* Search Autocomplete Dropdown */
         .search-autocomplete {
@@ -324,11 +324,22 @@
         var cat = p.get('category') || 'all';
         var q = p.get('q') || p.get('search') || '';
         var bs = p.get('bestsellers') === '1' || p.get('sort') === 'bestsellers';
+        var types = (cfg && typeof cfg.collectSearchValues === 'function') ? cfg.collectSearchValues(p, 'productType') : [];
+        var sectors = (cfg && typeof cfg.collectSearchValues === 'function') ? cfg.collectSearchValues(p, 'sector') : [];
+        var flags = (cfg && typeof cfg.collectSearchValues === 'function') ? cfg.collectSearchValues(p, 'flag') : [];
+        var landing = (cfg && typeof cfg.matchNavLanding === 'function') ? cfg.matchNavLanding(types, sectors, flags) : null;
         var title = 'All Products';
         var desc = 'Browse our full range of customisable workwear and uniforms.';
         if (q) {
             title = 'Search: "' + q + '"';
             desc = 'Finding matches for "' + q + '" across custom clothing, workwear and accessories.';
+        } else if (landing && landing.title) {
+            title = landing.title;
+            desc = sectors.length ? ('Products for the ' + landing.title + ' sector.') : desc;
+        } else if (types.length === 1 && cfg && typeof cfg.getCategoryTitle === 'function') {
+            title = cfg.getCategoryTitle(types[0]) || types[0];
+        } else if (flags.indexOf('offers') !== -1) {
+            title = 'Deals';
         } else if (bs) {
             title = 'Recommended For You';
             desc = 'A quick mix of popular branded workwear and custom clothing picked for faster browsing.';
@@ -868,6 +879,9 @@
         let currentPriceMax = null;
         let currentArrayFilters = {};
         let currentFlagFilters = [];
+        let landingProductTypes = [];
+        let landingSectors = [];
+        let landingTitle = '';
         let totalProducts = 0;
         let isBestsellerMode = false;
         let currentSort = 'best';
@@ -961,6 +975,44 @@
             return best || list[0] || null;
         }
 
+        function collectMobileSearchValues(params, name) {
+            if (window.BrandedConfig && typeof window.BrandedConfig.collectSearchValues === 'function') {
+                return window.BrandedConfig.collectSearchValues(params, name);
+            }
+            return []
+                .concat((params && params.getAll(name)) || [])
+                .concat((params && params.getAll(name + '[]')) || [])
+                .map((value) => String(value || '').trim())
+                .filter(Boolean);
+        }
+
+        function uniqueMobileValues(values) {
+            if (window.BrandedConfig && typeof window.BrandedConfig.uniquePreserve === 'function') {
+                return window.BrandedConfig.uniquePreserve(values);
+            }
+            const seen = {};
+            const out = [];
+            (values || []).forEach((value) => {
+                const key = String(value || '').toLowerCase();
+                if (!key || seen[key]) return;
+                seen[key] = true;
+                out.push(value);
+            });
+            return out;
+        }
+
+        function resolveMobileProductType(value) {
+            if (!value) return '';
+            const raw = String(value).trim();
+            if (window.BrandedConfig) {
+                const slug = window.BrandedConfig.normalizeCategory(raw);
+                return window.BrandedConfig.getApiCategoryName(slug)
+                    || window.BrandedConfig.getApiCategoryName(raw)
+                    || raw;
+            }
+            return raw;
+        }
+
         function readStoredFilters() {
             const raw = sessionStorage.getItem('brandeduk-filters');
             const parsed = safeJsonParse(raw);
@@ -994,7 +1046,10 @@
                     flags.push(TOGGLE_FLAG_MAP[toggleKey]);
                 }
             });
-            currentFlagFilters = Array.from(new Set(flags));
+            const urlFlags = (typeof collectMobileSearchValues === 'function')
+                ? collectMobileSearchValues(urlParams, 'flag')
+                : [];
+            currentFlagFilters = Array.from(new Set(flags.concat(urlFlags)));
 
             // Checkbox groups -> API array params (except primaryColour)
             const checkboxes = stored.checkboxes && typeof stored.checkboxes === 'object' ? stored.checkboxes : {};
@@ -1004,6 +1059,8 @@
                 if (groupName === 'primaryColour') return;
                 nextArrayFilters[groupName] = values.map(v => String(v).trim()).filter(Boolean);
             });
+            if (landingSectors.length) delete nextArrayFilters.sector;
+            if (landingProductTypes.length) delete nextArrayFilters.productType;
             currentArrayFilters = nextArrayFilters;
 
             // Primary Colour -> canonical color filter
@@ -1027,8 +1084,16 @@
             const search = (overrides.search || overrides.q || currentSearchQuery || '').toString().trim();
             if (search) {
                 options.search = search;
+            } else if (landingProductTypes.length > 1) {
+                options['productType[]'] = landingProductTypes;
+            } else if (landingProductTypes.length === 1) {
+                options.productType = landingProductTypes[0];
             } else {
                 options.category = currentCategory;
+            }
+
+            if (landingSectors.length) {
+                options['sector[]'] = landingSectors;
             }
 
             if (Number.isFinite(currentPriceMax) && currentPriceMax > 0) {
@@ -1501,7 +1566,7 @@
                     </section>
                 </div>
             `;
-            const loadingBaseTitle = isBestsellerMode ? 'Recommended For You' : (CATEGORY_TITLES[currentCategory] || 'Products');
+            const loadingBaseTitle = isBestsellerMode ? 'Recommended For You' : (landingTitle || CATEGORY_TITLES[currentCategory] || 'Products');
             updateShopLoadingMeta({ mode: 'category', title: loadingBaseTitle });
 
             try {
@@ -1515,7 +1580,7 @@
                 totalProducts = result.total;
 
                 // Update title
-                const baseTitle = isBestsellerMode ? 'Recommended For You' : (CATEGORY_TITLES[currentCategory] || 'Products');
+                const baseTitle = isBestsellerMode ? 'Recommended For You' : (landingTitle || CATEGORY_TITLES[currentCategory] || 'Products');
                 const title = currentColorFilter ? `${baseTitle} (${currentColorFilter.toUpperCase()})` : baseTitle;
                 if (categoryTitle) categoryTitle.textContent = title;
                 if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentCategory);
@@ -1650,6 +1715,31 @@
             currentCategory = urlParams.get('category') || 'all';
             currentSearchQuery = urlParams.get('search') || urlParams.get('q') || '';
             currentColorFilter = urlParams.get('color') || '';
+            landingProductTypes = uniqueMobileValues(
+                collectMobileSearchValues(urlParams, 'productType').map(resolveMobileProductType)
+            );
+            landingSectors = uniqueMobileValues(collectMobileSearchValues(urlParams, 'sector'));
+            const urlFlags = uniqueMobileValues(collectMobileSearchValues(urlParams, 'flag'));
+            currentFlagFilters = uniqueMobileValues(currentFlagFilters.concat(urlFlags));
+            if (window.BrandedConfig && typeof window.BrandedConfig.matchNavLanding === 'function') {
+                const matchedLanding = window.BrandedConfig.matchNavLanding(
+                    landingProductTypes,
+                    landingSectors,
+                    urlFlags
+                );
+                if (matchedLanding) landingTitle = matchedLanding.title;
+            } else if (landingProductTypes.length > 1 && !landingSectors.length) {
+                const typeKey = landingProductTypes.map((value) => value.toLowerCase()).sort().join('|');
+                if (typeKey === 'beanies|caps|hats') landingTitle = 'Headwear';
+            } else if (landingSectors.length === 1 && landingProductTypes.length > 1) {
+                landingTitle = landingSectors[0];
+            } else if (urlFlags.includes('offers') && !landingProductTypes.length) {
+                landingTitle = 'Deals';
+            } else if (landingProductTypes.length === 1) {
+                landingTitle = window.BrandedConfig && typeof window.BrandedConfig.getCategoryTitle === 'function'
+                    ? window.BrandedConfig.getCategoryTitle(landingProductTypes[0])
+                    : landingProductTypes[0];
+            }
             isBestsellerMode = urlParams.get('bestsellers') === '1' || urlParams.get('sort') === 'bestsellers';
             const sortParam = urlParams.get('sort') || 'best';
             currentSort = ['newest', 'best', 'recommended', 'brand-az', 'brand-za', 'price-lh', 'price-hl'].includes(sortParam) ? sortParam : 'best';

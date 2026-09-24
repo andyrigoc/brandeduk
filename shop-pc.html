@@ -12,10 +12,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260924-header2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260912b"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260913c"></script>
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260924-header6"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260924-header6"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260924-header9"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260922c">
     <script src="footer-dev/pc-footer.js?v=20260922c" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
@@ -3754,11 +3755,16 @@
             },
             // Related Sector - values match API spec directly
             sector: {
-                'sport': 'sport',
-                'corporate': 'corporate',
-                'hospitality': 'hospitality',
-                'travel': 'travel',
-                'fashion': 'fashion'
+                'sport': 'Sport',
+                'corporate': 'Corporate',
+                'hospitality': 'Hospitality',
+                'travel': 'Travel',
+                'fashion': 'Fashion',
+                'school': 'School',
+                'safety': 'Safety',
+                'outdoor': 'Outdoor',
+                'athleisure': 'Athleisure',
+                'home': 'Home'
             },
             // Related Sport - values match API spec directly
             sport: {
@@ -3792,6 +3798,10 @@
             total: 0,
             category: 'all',
             productType: null, // Store productType from URL (e.g., 'aprons', 'tshirts')
+            productTypes: [], // Landing product types. Multiple values are API OR.
+            landingSectors: [], // Locked sector AND on industry landings
+            landingFlags: [], // Locked flag[] on Deals
+            landingTitle: null,
             brand: null, // Store brand from URL (e.g., 'nike', 'adidas')
             search: '',
             priceMin: null,
@@ -3893,23 +3903,113 @@
                 'blouses': 'Blouses',
                 'chinos': 'Chinos',
                 'fleeces': 'Fleece',
-                'hivis': 'Hi-Vis',
+                'fleece': 'Fleece',
+                'hivis': 'Hi Vis',
+                'hi-vis': 'Hi Vis',
                 'trousers': 'Trousers',
-                'workwear': 'Workwear'
+                'aprons': 'Aprons',
+                'tunics': 'Tunics',
+                'blouses': 'Blouses',
+                'hats': 'Hats',
+                'caps': 'Caps',
+                'shorts': 'Shorts',
+                'softshells': 'Softshells',
+                'chef-jackets': 'Chef Jackets',
+                'sports-overtops': 'Sports Overtops',
+                'gilets': 'Gilets & Body Warmers'
             };
             return slugToApiName[categorySlug] || null;
         }
 
+        function collectSearchValues(params, name) {
+            if (window.BrandedConfig && typeof window.BrandedConfig.collectSearchValues === 'function') {
+                return window.BrandedConfig.collectSearchValues(params, name);
+            }
+            return []
+                .concat(params.getAll(name) || [])
+                .concat(params.getAll(name + '[]') || [])
+                .map(value => String(value || '').trim())
+                .filter(Boolean);
+        }
+
+        function uniquePreserve(values) {
+            if (window.BrandedConfig && typeof window.BrandedConfig.uniquePreserve === 'function') {
+                return window.BrandedConfig.uniquePreserve(values);
+            }
+            const seen = new Set();
+            const out = [];
+            (values || []).forEach(value => {
+                const key = String(value).toLowerCase();
+                if (!key || seen.has(key)) return;
+                seen.add(key);
+                out.push(value);
+            });
+            return out;
+        }
+
+        function resolveApiProductType(value) {
+            if (!value) return '';
+            const raw = String(value).trim();
+            if (window.BrandedConfig) {
+                const slug = window.BrandedConfig.normalizeCategory(raw);
+                return window.BrandedConfig.getApiCategoryName(slug)
+                    || window.BrandedConfig.getApiCategoryName(raw)
+                    || raw;
+            }
+            return getApiCategoryName(normalizeCategory(raw)) || getApiCategoryName(raw) || raw;
+        }
+
+        function resolveApiSector(value) {
+            if (!value) return '';
+            const raw = String(value).trim();
+            const mapped = FILTER_MAPPINGS.sector?.[raw]
+                || FILTER_MAPPINGS.sector?.[raw.toLowerCase()];
+            if (mapped) return mapped;
+            return raw.charAt(0).toUpperCase() + raw.slice(1);
+        }
+
+        function isAggregatedOrQuery() {
+            return Array.isArray(currentState.productTypes) && currentState.productTypes.length > 1;
+        }
+
         // Initialize state from URL
-        const productTypeParam = urlParams.get('productType');
+        const productTypeValues = uniquePreserve(collectSearchValues(urlParams, 'productType'));
+        const landingSectorValues = uniquePreserve(collectSearchValues(urlParams, 'sector'));
+        const flagValues = uniquePreserve(collectSearchValues(urlParams, 'flag'));
+        const productTypeParam = productTypeValues[0] || null;
         const accreditationParam = urlParams.get('accreditation');
         const brandParam = urlParams.get('brand');
+        const hasOffersFlag = flagValues.includes('offers');
+
+        currentState.productTypes = productTypeValues;
+        currentState.landingSectors = landingSectorValues;
+        currentState.landingFlags = hasOffersFlag ? ['offers'] : [];
+        if (window.BrandedConfig && typeof window.BrandedConfig.matchNavLanding === 'function') {
+            const matchedLanding = window.BrandedConfig.matchNavLanding(
+                productTypeValues.map(resolveApiProductType),
+                landingSectorValues.map(resolveApiSector),
+                flagValues
+            );
+            if (matchedLanding) currentState.landingTitle = matchedLanding.title;
+        } else if (productTypeValues.length > 1 && !landingSectorValues.length) {
+            const typeKey = productTypeValues.map(value => value.toLowerCase()).sort().join('|');
+            if (typeKey === 'beanies|caps|hats') currentState.landingTitle = 'Headwear';
+        } else if (landingSectorValues.length === 1 && productTypeValues.length > 1) {
+            currentState.landingTitle = resolveApiSector(landingSectorValues[0]);
+        } else if (hasOffersFlag && !productTypeValues.length) {
+            currentState.landingTitle = 'Deals';
+        } else if (productTypeValues.length === 1) {
+            currentState.landingTitle = resolveApiProductType(productTypeValues[0]);
+        }
 
 
-        // If productType, accreditation, or brand is in URL, reset state to defaults (clean state)
-        if (productTypeParam || accreditationParam || brandParam) {
+        // If productType, accreditation, brand, or deals flag is in URL, reset state to defaults (clean state)
+        if (productTypeParam || accreditationParam || brandParam || hasOffersFlag) {
             currentState.category = 'all';
-            currentState.productType = productTypeParam || null; // Store productType from URL
+            currentState.productType = productTypeValues.length === 1 ? productTypeValues[0] : null;
+            currentState.productTypes = productTypeValues;
+            currentState.landingSectors = landingSectorValues;
+            currentState.landingFlags = hasOffersFlag ? ['offers'] : [];
             currentState.brand = brandParam || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 100;
@@ -3943,6 +4043,9 @@
             if (accreditationParam === 'recycled') {
                 currentState.filters.quickFilters.push('recycled');
             }
+            if (hasOffersFlag && !currentState.filters.quickFilters.includes('offers')) {
+                currentState.filters.quickFilters.push('offers');
+            }
         } else {
             // Normal category-based navigation
             let categoryFilter = normalizeCategory(urlParams.get('category')) || 'all';
@@ -3967,6 +4070,8 @@
             sector: 'sector', sport: 'sport', tag: 'tag', effect: 'effect'
         };
         Object.entries(FILTER_URL_PARAM_MAP).forEach(([stateKey, apiKey]) => {
+            if (apiKey === 'productType' && currentState.productTypes.length) return;
+            if (apiKey === 'sector' && currentState.landingSectors.length) return;
             const values = urlParams.getAll(`${apiKey}[]`).filter(Boolean);
             if (values.length) currentState.filters[stateKey] = values;
         });
@@ -4544,6 +4649,33 @@
             'build your brand': 'build-your-brand',
         };
 
+        function applyLandingProductTypes(params) {
+            const landingTypes = uniquePreserve(
+                (currentState.productTypes && currentState.productTypes.length
+                    ? currentState.productTypes
+                    : (currentState.productType ? [currentState.productType] : []))
+                    .map(resolveApiProductType)
+                    .filter(Boolean)
+            );
+
+            if (landingTypes.length > 1) {
+                params['productType[]'] = landingTypes;
+                return;
+            }
+
+            if (landingTypes.length === 1) {
+                params.productType = landingTypes[0];
+                return;
+            }
+
+            if (currentState.category && currentState.category !== 'all') {
+                const apiCategoryName = resolveApiProductType(currentState.category);
+                if (apiCategoryName && apiCategoryName !== 'all') {
+                    params.productType = apiCategoryName;
+                }
+            }
+        }
+
         // Build API params from current state
         function buildApiParams() {
             const params = {};
@@ -4575,6 +4707,7 @@
                     'price-hl': 'price-hl'
                 };
                 const apiSort = sortMap[currentState.sort] || currentState.sort;
+                // price-lh is not fully reliable on aggregated OR pages (UC924 first-item leak).
                 params.sort = apiSort;
             }
 
@@ -4594,30 +4727,10 @@
                     console.log('Exact category search detected, using productType filter:', exactProductType);
                 } else {
                     params.q = normQ;
-                    if (currentState.productType) {
-                        params.productType = getApiCategoryName(currentState.productType) || currentState.productType;
-                    } else if (currentState.category && currentState.category !== 'all') {
-                        params.productType = getApiCategoryName(currentState.category) || currentState.category;
-                    }
+                    applyLandingProductTypes(params);
                 }
-            } else if (currentState.productType) {
-                // If productType is set from URL, use it directly (may need mapping)
-                const apiCategoryName = getApiCategoryName(currentState.productType);
-                if (apiCategoryName) {
-                    params.productType = apiCategoryName;
-                } else {
-                    // Use productType as-is if no mapping found (e.g., 'aprons' -> 'aprons')
-                    params.productType = currentState.productType;
-                }
-                console.log('ðŸ“¦ Adding productType to API params:', params.productType);
-            } else if (currentState.category !== 'all') {
-                // Map category slug to API productType name only if no search and no productType
-                const apiCategoryName = getApiCategoryName(currentState.category);
-                if (apiCategoryName) {
-                    params.productType = apiCategoryName;
-                } else {
-                    params.productType = currentState.category;
-                }
+            } else {
+                applyLandingProductTypes(params);
             }
 
             // Note: accreditation=recycled from URL is handled via quickFilters -> flag[]=['recycled-organic']
@@ -4677,6 +4790,12 @@
 
                 if (values.length > 0) {
                     const apiParam = filterMap[filterKey];
+                    if (filterKey === 'sector' && currentState.landingSectors.length) {
+                        return;
+                    }
+                    if (filterKey === 'productType' && (currentState.productTypes || []).length) {
+                        return;
+                    }
                     if (apiParam) {
                         // Map each value using FILTER_MAPPINGS
                         const mappedValues = values.map(val => {
@@ -4691,6 +4810,10 @@
                 }
             });
 
+            if (currentState.landingSectors && currentState.landingSectors.length) {
+                params['sector[]'] = uniquePreserve(currentState.landingSectors.map(resolveApiSector).filter(Boolean));
+            }
+
             // Handle quick filters separately (flag[] param with special mappings)
             if (currentState.filters.quickFilters) {
                 const quickValues = Array.isArray(currentState.filters.quickFilters)
@@ -4703,6 +4826,13 @@
                         params['flag[]'] = mappedQuickFilters;
                     }
                 }
+            }
+
+            if (currentState.landingFlags && currentState.landingFlags.length) {
+                params['flag[]'] = uniquePreserve([]
+                    .concat(Array.isArray(params['flag[]']) ? params['flag[]'] : [])
+                    .concat(currentState.landingFlags)
+                );
             }
 
             // Variant colour param (server-side filter by any matching variant)
@@ -4948,12 +5078,24 @@
                     filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
                     console.log('Using brand-specific filters API for:', activeBrandFilter);
                 } else {
-                    // Add productType from URL param or category slug
-                    if (currentState.productType) {
-                        params.append('productType', currentState.productType);
+                    const landingTypes = uniquePreserve(
+                        (currentState.productTypes && currentState.productTypes.length
+                            ? currentState.productTypes
+                            : (currentState.productType ? [currentState.productType] : []))
+                            .map(resolveApiProductType)
+                            .filter(Boolean)
+                    );
+                    if (landingTypes.length > 1) {
+                        landingTypes.forEach(type => params.append('productType[]', type));
+                    } else if (landingTypes.length === 1) {
+                        params.append('productType', landingTypes[0]);
                     } else if (currentState.category && currentState.category !== 'all') {
-                        const apiCategoryName = getApiCategoryName(currentState.category);
+                        const apiCategoryName = resolveApiProductType(currentState.category);
                         if (apiCategoryName) params.append('productType', apiCategoryName);
+                    }
+                    if (currentState.landingSectors && currentState.landingSectors.length) {
+                        uniquePreserve(currentState.landingSectors.map(resolveApiSector).filter(Boolean))
+                            .forEach(sector => params.append('sector[]', sector));
                     }
                 }
 
@@ -4983,6 +5125,9 @@
                         params.append('flag[]', mappedFlag);
                     });
                 }
+                (currentState.landingFlags || []).forEach(flag => {
+                    if (!params.getAll('flag[]').includes(flag)) params.append('flag[]', flag);
+                });
 
                 // Facet counts must represent the complete active selection, not only
                 // the page category. This keeps combined desktop filters accurate.
@@ -5011,7 +5156,8 @@
 
                 Object.entries(facetParamMap).forEach(([stateKey, apiKey]) => {
                     if (stateKey === 'brand' && activeBrandFilter) return;
-                    if (stateKey === 'productType' && currentState.productType) return;
+                    if (stateKey === 'productType' && ((currentState.productTypes || []).length || currentState.productType)) return;
+                    if (stateKey === 'sector' && currentState.landingSectors.length) return;
 
                     const values = Array.isArray(currentState.filters[stateKey])
                         ? currentState.filters[stateKey]
@@ -5425,26 +5571,43 @@
             const urlParams = new URLSearchParams(window.location.search);
 
             // Check if productType, brand, or accreditation is in URL/state
-            const hasProductType = currentState.productType !== null && currentState.productType !== undefined;
+            const landingTypes = uniquePreserve(currentState.productTypes || (currentState.productType ? [currentState.productType] : []));
+            const hasProductType = landingTypes.length > 0;
             const hasBrand = currentState.brand !== null && currentState.brand !== undefined;
             const accreditationParam = urlParams.get('accreditation');
             // Check if recycled is in quickFilters (from accreditation=recycled URL param)
             const hasRecycledFlag = currentState.filters.quickFilters && currentState.filters.quickFilters.includes('recycled');
+            const hasOffersFlag = (currentState.filters.quickFilters && currentState.filters.quickFilters.includes('offers'))
+                || (currentState.landingFlags && currentState.landingFlags.includes('offers'));
 
-            if (hasProductType || hasBrand || accreditationParam || hasRecycledFlag) {
+            url.searchParams.delete('productType');
+            url.searchParams.delete('productType[]');
+            url.searchParams.delete('sector');
+            url.searchParams.delete('sector[]');
+            url.searchParams.delete('flag[]');
+
+            if (hasProductType || hasBrand || accreditationParam || hasRecycledFlag || hasOffersFlag) {
                 // When productType, brand, or accreditation is present, only include essential parameters
                 if (hasBrand) {
                     url.searchParams.set('brand', currentState.brand);
-                    url.searchParams.delete('productType');
                     url.searchParams.delete('accreditation');
                 } else if (hasProductType) {
-                    url.searchParams.set('productType', currentState.productType);
+                    if (landingTypes.length > 1) {
+                        landingTypes.forEach(type => url.searchParams.append('productType[]', type));
+                    } else {
+                        url.searchParams.set('productType', landingTypes[0]);
+                    }
                     url.searchParams.delete('accreditation');
                     url.searchParams.delete('brand');
                 }
+                if (currentState.landingSectors && currentState.landingSectors.length) {
+                    currentState.landingSectors.forEach(sector => url.searchParams.append('sector[]', sector));
+                }
+                if (hasOffersFlag) {
+                    url.searchParams.append('flag[]', 'offers');
+                }
                 if (accreditationParam || hasRecycledFlag) {
                     url.searchParams.set('accreditation', 'recycled');
-                    url.searchParams.delete('productType');
                     url.searchParams.delete('brand');
                 }
 
@@ -5475,7 +5638,6 @@
                 if (currentState.limit === 100) url.searchParams.delete('limit');
             } else {
                 // Normal category-based navigation - include all params
-                url.searchParams.delete('productType');
                 url.searchParams.delete('brand');
                 url.searchParams.set('category', currentState.category);
                 url.searchParams.set('page', currentState.page);
@@ -5503,9 +5665,28 @@
             const facetParamNames = new Set(Object.values(FILTER_URL_PARAM_MAP).map(name => `${name}[]`));
             facetParamNames.forEach(name => url.searchParams.delete(name));
             Object.entries(FILTER_URL_PARAM_MAP).forEach(([stateKey, apiKey]) => {
+                if (apiKey === 'productType' && landingTypes.length) return;
+                if (apiKey === 'sector' && currentState.landingSectors.length) return;
                 const values = Array.isArray(currentState.filters[stateKey]) ? currentState.filters[stateKey] : [];
                 values.forEach(value => url.searchParams.append(`${apiKey}[]`, value));
             });
+
+            // Facet rewrite deletes productType[] / sector[]. Re-apply locked landing params last.
+            url.searchParams.delete('productType');
+            url.searchParams.delete('productType[]');
+            if (landingTypes.length > 1) {
+                landingTypes.forEach(type => url.searchParams.append('productType[]', type));
+            } else if (landingTypes.length === 1) {
+                url.searchParams.set('productType', landingTypes[0]);
+            }
+            url.searchParams.delete('sector');
+            url.searchParams.delete('sector[]');
+            (currentState.landingSectors || []).forEach(sector => {
+                url.searchParams.append('sector[]', sector);
+            });
+            if (hasOffersFlag && !url.searchParams.getAll('flag[]').includes('offers')) {
+                url.searchParams.append('flag[]', 'offers');
+            }
 
             window.history.replaceState({}, '', url);
         }
@@ -5525,7 +5706,9 @@
             'beanies': 'Beanies',
             'sustainable': 'Sustainable',
             'trousers': 'Trousers',
-            'workwear': 'Workwear'
+            'sweatshirts': 'Sweatshirts',
+            'headwear': 'Headwear',
+            'deals': 'Deals'
         };
 
         // Cache for product type names
@@ -6283,6 +6466,11 @@
                             .join(' ');
                         categoryTitleEl.style.opacity = '1';
                     });
+                } else if (currentState.landingTitle) {
+                    document.getElementById('brand-editorial')?.setAttribute('hidden', '');
+                    updateCategoryBrandLogo('', '');
+                    categoryTitleEl.textContent = currentState.landingTitle;
+                    categoryTitleEl.style.opacity = '1';
                 } else if (productTypeParam) {
                     document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
@@ -6750,8 +6938,11 @@
                 currentState.filters[key] = [];
             });
 
-            // Reset quick filters
+            // Reset quick filters, but keep locked landing flags such as Deals.
             currentState.filters.quickFilters = [];
+            if ((currentState.landingFlags || []).includes('offers')) {
+                currentState.filters.quickFilters.push('offers');
+            }
 
             // Clear search input
             const searchInput = document.querySelector('.filter-search');

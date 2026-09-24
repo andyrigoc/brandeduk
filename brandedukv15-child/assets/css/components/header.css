@@ -1269,6 +1269,7 @@ body {
 }
 
 .header-bottom {
+    position: relative;
     background: #ffffff;
     border-top: 1px solid var(--brandeduk-header-gray);
 }
@@ -1648,30 +1649,23 @@ body {
 
 .main-nav .nav-megamenu {
     position: absolute;
-    top: calc(100% + 12px);
+    top: 100%;
     left: 0;
+    right: 0;
     display: none;
     margin: 0;
     list-style: none;
-    padding: 20px 24px;
+    padding: 28px 28px 32px;
     background: #ffffff;
-    border: 1px solid var(--brandeduk-header-gray);
-    border-radius: 20px;
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.22);
+    border: none;
+    border-top: 1px solid #eef0f3;
+    border-radius: 0;
+    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.1);
     z-index: 50;
 }
 
 .main-nav .nav-megamenu::before {
-    content: "";
-    position: absolute;
-    top: -8px;
-    left: 32px;
-    width: 16px;
-    height: 16px;
-    background: #ffffff;
-    border-left: 1px solid var(--brandeduk-header-gray);
-    border-top: 1px solid var(--brandeduk-header-gray);
-    transform: rotate(45deg);
+    display: none;
 }
 
 /* Full-width brand-grid: replace triangle with invisible hover bridge */
@@ -1699,6 +1693,60 @@ body {
 
 .main-nav .nav-megamenu a:hover {
     color: var(--brandeduk-header-teal);
+}
+
+.main-nav .industries-menu,
+.main-nav .workwear-menu,
+.main-nav .menu > li.has-megamenu {
+    position: static;
+}
+
+.industries-megamenu,
+.workwear-megamenu {
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: none;
+}
+
+.industries-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(320px, 360px);
+    gap: 0;
+}
+
+.industries-col ul,
+.workwear-megamenu ul {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.industries-col li,
+.workwear-megamenu li {
+    margin: 0 0 6px;
+}
+
+.industries-col-title,
+.workwear-megamenu-title {
+    display: inline-block;
+    margin: 0 0 10px;
+    color: #273469;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.workwear-megamenu {
+    min-width: 0;
+    padding: 28px 28px 32px;
+}
+
+.allprod-view-all a {
+    color: #2563eb;
+    font-weight: 700;
 }
 
 .promotions-menu {
