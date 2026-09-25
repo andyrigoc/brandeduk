@@ -164,7 +164,8 @@
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
-    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260925-cube">
+    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260925-cube2">
+    <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260925-em7">
     <style>
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
@@ -2795,6 +2796,51 @@
         </div>
     </section>
 
+    <section class="embroidery-scroll" data-embroidery-scroll id="embroideryStory" aria-label="Embroidery process">
+        <div class="embroidery-sticky" data-embroidery-pin>
+            <video
+                id="embroideryVideo"
+                src="brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4"
+                muted
+                playsinline
+                preload="auto"
+            ></video>
+            <div class="stage-label" data-stage-list>
+                <div class="stage-item is-active" data-stage="0">
+                    <span>STAGE 1</span>
+                    <strong>Plain Garment</strong>
+                    <small>Ready for embroidery</small>
+                </div>
+                <div class="stage-item" data-stage="1">
+                    <span>STAGE 2</span>
+                    <strong>Underlay</strong>
+                    <small>Building the foundation</small>
+                </div>
+                <div class="stage-item" data-stage="2">
+                    <span>STAGE 3</span>
+                    <strong>Complex Fill</strong>
+                    <small>Colour and structure emerge</small>
+                </div>
+                <div class="stage-item" data-stage="3">
+                    <span>STAGE 4</span>
+                    <strong>Satin Stitches</strong>
+                    <small>Definition and depth</small>
+                </div>
+                <div class="stage-item" data-stage="4">
+                    <span>STAGE 5</span>
+                    <strong>Finished Embroidery</strong>
+                    <small>Precision in every stitch</small>
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="progressValue">0%</span>
+            </div>
+        </div>
+    </section>
+
     <!-- Home Highlights (Featured Products) - Dynamic from API -->
     <section class="bestsellers-section" id="featuredSection">
         <div class="section-container">
@@ -2814,66 +2860,6 @@
                 </div>
                 <button type="button" class="featured-control next" id="featNext" aria-label="Next Products"><i class="fas fa-chevron-right"></i></button>
             </div>
-        </div>
-    </section>
-
-    <!-- Trust Section -->
-    <section class="trust-section">
-        <div class="trust-truck-row">
-            <div class="loop-wrapper">
-                <div class="mountain"></div>
-                <div class="hill"></div>
-                <div class="tree"></div>
-                <div class="tree"></div>
-                <div class="tree"></div>
-                <div class="rock"></div>
-                <div class="truck"></div>
-                <div class="wheels"></div>
-            </div>
-        </div>
-        <div class="trust-truck-label-row">
-            <span class="trust-truck-label">Delivery calculated at checkout</span>
-        </div>
-        
-        <div class="trust-badges-row">
-            <div class="trust-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    <polyline points="9 12 11 14 15 10"></polyline>
-                </svg>
-                <span>Trusted Since 2001</span>
-            </div>
-            <div class="trust-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <span>5-7 Working Days</span>
-            </div>
-            <div class="trust-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                </svg>
-                <span>Free Design Service</span>
-            </div>
-            <div class="trust-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <span>Dedicated Account Manager</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Promo Banner -->
-    <section class="promo-banner">
-        <div class="promo-banner-content">
-            <h3>Need a Custom Quote?</h3>
-            <p>Add items to your basket and get instant pricing with customization options. Volume discounts available.</p>
-            <a href="shop-pc.html" class="promo-banner-btn">Start Building Your Order</a>
         </div>
     </section>
 
@@ -3528,6 +3514,7 @@
 <script src="brandeduk.com/js/hero.js?v=20260706a"></script>
 <script src="brandeduk.com/js/main.js?v=20260925-banners"></script>
 <script src="brandeduk.com/js/uniform-cube.js?v=20260925-cube"></script>
+<script src="brandeduk.com/js/embroidery-scroll.js?v=20260925-em5"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
