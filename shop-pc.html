@@ -14,9 +14,9 @@
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260924-header2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260924-header6"></script>
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260924-header11"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260924-header17"></script>
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260925-subcats"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260925-trust4"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260925-header27"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260922c">
     <script src="footer-dev/pc-footer.js?v=20260922c" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
@@ -3916,7 +3916,14 @@
                 'softshells': 'Softshells',
                 'chef-jackets': 'Chef Jackets',
                 'sports-overtops': 'Sports Overtops',
-                'gilets': 'Gilets & Body Warmers'
+                'gilets': 'Gilets & Body Warmers',
+                'gilets-body-warmers': 'Gilets & Body Warmers',
+                'vests-t-shirt': 'Vests (t-shirt)',
+                'shorts': 'Shorts',
+                'accessories': 'Accessories',
+                'gloves': 'Gloves',
+                'scarves': 'Scarves',
+                'hats': 'Hats'
             };
             return slugToApiName[categorySlug] || null;
         }
@@ -4072,7 +4079,7 @@
         Object.entries(FILTER_URL_PARAM_MAP).forEach(([stateKey, apiKey]) => {
             if (apiKey === 'productType' && currentState.productTypes.length) return;
             if (apiKey === 'sector' && currentState.landingSectors.length) return;
-            const values = urlParams.getAll(`${apiKey}[]`).filter(Boolean);
+            const values = uniquePreserve(collectSearchValues(urlParams, apiKey));
             if (values.length) currentState.filters[stateKey] = values;
         });
         if (urlParams.has('q')) currentState.search = urlParams.get('q') || '';

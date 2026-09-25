@@ -154,14 +154,15 @@
             window.location.href = 'index-mobile.html?force=mobile';
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260924-nav">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260924-header17">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260925-header27">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260924-wa2">
-    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
+    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260925-halloween">
+    <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
     <style>
         /* ============================================
@@ -1375,7 +1376,7 @@
     </style>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-search.css?v=20260913a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&family=Eater&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260922c">
     <script src="footer-dev/pc-footer.js?v=20260922c" defer></script>
@@ -1391,9 +1392,19 @@
         <div class="header-container">
             <div class="header-top-left">
                 <ul class="header-trust-list">
-                    <li><i class="fa-regular fa-circle-check" aria-hidden="true"></i>Free artwork check</li>
-                    <li><i class="fa-regular fa-circle-check" aria-hidden="true"></i>Proof before production</li>
-                    <li><i class="fa-regular fa-circle-check" aria-hidden="true"></i>Reliable, on-time delivery</li>
+                    <li><i class="fa-solid fa-circle-check trust-icon--check" aria-hidden="true"></i>Free artwork check</li>
+                    <li><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i>Proof before production</li>
+                    <li>
+                        <svg class="trust-icon trust-icon--van" viewBox="0 0 32 20" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1.8 6.4h4M1.4 9.4h5.2M1.8 12.4h3.6"></path>
+                            <rect x="7" y="2.8" width="12.4" height="11" rx="2.1"></rect>
+                            <path d="M19.4 7h4.8c1.15 0 1.95.75 2.25 1.7L27.4 11.2v2.4c0 .6-.5 1.1-1.1 1.1H19.4V7z"></path>
+                            <path d="M11.4 10.6V7.2m0 0l1.7 1.35M11.4 7.2L9.7 8.55"></path>
+                            <circle cx="11.1" cy="16.15" r="2.25"></circle>
+                            <circle cx="23.15" cy="16.15" r="2.25"></circle>
+                        </svg>
+                        Reliable, on-time delivery
+                    </li>
                 </ul>
             </div>
             <div class="header-top-right">
@@ -1478,18 +1489,18 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Crew Neck</a></li>
-                                        <li><a href="#">Heavyweight / Workwear</a></li>
-                                        <li><a href="#">Kids T-shirts</a></li>
-                                        <li><a href="#">Lightweight</a></li>
-                                        <li><a href="#">Long Sleeve T-shirts</a></li>
-                                        <li><a href="#">Performance / Sports</a></li>
-                                        <li><a href="customization-tool/index.html?code=8700M&from=short-sleeve&product=tshirt">Short Sleeve T-shirts</a></li>
-                                        <li><a href="#">Tank Tops</a></li>
-                                        <li><a href="#">T-shirts for Embroidery</a></li>
-                                        <li><a href="#">T-shirts for Print</a></li>
-                                        <li><a href="#">V-Neck</a></li>
-                                        <li><a href="#">Women's T-shirts</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Crew Neck</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=heavyweight">Heavyweight / Workwear</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;ageGroup[]=kids">Kids T-shirts</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=lightweight">Lightweight</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;sleeve[]=long-sleeve">Long Sleeve T-shirts</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;sector[]=Sport">Performance / Sports</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;sleeve[]=short-sleeve">Short Sleeve T-shirts</a></li>
+                                        <li><a href="shop-pc.html?productType=vests-t-shirt">Tank Tops</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts">T-shirts for Embroidery</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts">T-shirts for Print</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;neckline[]=v-neck">V-Neck</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;gender[]=female">Women's T-shirts</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1503,15 +1514,15 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Classic Cotton Polos</a></li>
-                                        <li><a href="#">Kids Polos</a></li>
-                                        <li><a href="#">Long Sleeve Polos</a></li>
-                                        <li><a href="#">Performance Polos</a></li>
-                                        <li><a href="#">Poly Cotton Polos</a></li>
-                                        <li><a href="#">Polos for Embroidery</a></li>
-                                        <li><a href="#">Short Sleeve Polos</a></li>
-                                        <li><a href="#">Slim Fit Polos</a></li>
-                                        <li><a href="#">Women's Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;fabric[]=cotton">Classic Cotton Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;ageGroup[]=kids">Kids Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;sleeve[]=long-sleeve">Long Sleeve Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;feature[]=breathable">Performance Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;fabric[]=cotton-blend">Poly Cotton Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos">Polos for Embroidery</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;sleeve[]=short-sleeve">Short Sleeve Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;fit[]=slim-fit">Slim Fit Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;gender[]=female">Women's Polos</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1525,14 +1536,14 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Heavyweight Hoodies</a></li>
-                                        <li><a href="#">Kids Hoodies</a></li>
-                                        <li><a href="#">Lightweight Hoodies</a></li>
-                                        <li><a href="#">Premium / Workwear Hoodies</a></li>
-                                        <li><a href="#">Pullover Hoodies</a></li>
-                                        <li><a href="#">Sweatshirts (Crew Neck)</a></li>
-                                        <li><a href="#">Women's Hoodies</a></li>
-                                        <li><a href="#">Zip Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=heavyweight">Heavyweight Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;ageGroup[]=kids">Kids Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=lightweight">Lightweight Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;sector[]=Safety">Premium / Workwear Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;style[]=hooded">Pullover Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=sweatshirts&amp;neckline[]=crew-neck&amp;neckline[]=crew-neck-2">Sweatshirts (Crew Neck)</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;gender[]=female">Women's Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;neckline[]=zip-neck">Zip Hoodies</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1546,15 +1557,15 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Bodywarmers / Gilets</a></li>
-                                        <li><a href="#">Bomber Jackets</a></li>
-                                        <li><a href="#">Fleece Jackets</a></li>
-                                        <li><a href="#">High-performance Jackets</a></li>
-                                        <li><a href="#">Softshell Jackets</a></li>
-                                        <li><a href="#">Waterproof Jackets</a></li>
-                                        <li><a href="#">Windbreakers</a></li>
-                                        <li><a href="#">Women's Jackets</a></li>
-                                        <li><a href="#">Workwear Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=gilets-body-warmers">Bodywarmers / Gilets</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets">Bomber Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece">Fleece Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=breathable">High-performance Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=softshells">Softshell Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=waterproof">Waterproof Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=windproof">Windbreakers</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;gender[]=female">Women's Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1568,15 +1579,15 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">EN ISO 20471 Certified</a></li>
-                                        <li><a href="#">Hi-vis Hoodies</a></li>
-                                        <li><a href="#">Hi-vis Jackets</a></li>
-                                        <li><a href="#">Hi-vis Polos</a></li>
-                                        <li><a href="#">Hi-vis T-shirts</a></li>
-                                        <li><a href="#">Hi-vis Trousers</a></li>
-                                        <li><a href="#">Hi-vis Vests</a></li>
-                                        <li><a href="#">RIS-3279 Rail</a></li>
-                                        <li><a href="#">Waterproof Hi-Vis</a></li>
+                                        <li><a href="shop-pc.html?productType=safety-vests">EN ISO 20471 Certified</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;feature[]=high-visibility">Hi-vis Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;feature[]=high-visibility">Hi-vis Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=polos&amp;feature[]=high-visibility">Hi-vis Polos</a></li>
+                                        <li><a href="shop-pc.html?productType=tshirts&amp;feature[]=high-visibility">Hi-vis T-shirts</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers&amp;feature[]=high-visibility">Hi-vis Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=safety-vests">Hi-vis Vests</a></li>
+                                        <li><a href="shop-pc.html?productType=safety-vests">RIS-3279 Rail</a></li>
+                                        <li><a href="shop-pc.html?productType=safety-vests&amp;feature[]=waterproof">Waterproof Hi-Vis</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1590,13 +1601,13 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Cargo Pants</a></li>
-                                        <li><a href="#">Ripstop Trousers</a></li>
-                                        <li><a href="#">Stretch Work Trousers</a></li>
-                                        <li><a href="#">Waterproof / Over-trousers</a></li>
-                                        <li><a href="#">Work Shorts</a></li>
-                                        <li><a href="#">Work Trousers</a></li>
-                                        <li><a href="#">Women's Work Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers">Cargo Pants</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers">Ripstop Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers">Stretch Work Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers&amp;feature[]=waterproof">Waterproof / Over-trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=shorts">Work Shorts</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers">Work Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers&amp;gender[]=female">Women's Work Trousers</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1610,11 +1621,11 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Work Trousers</a></li>
-                                        <li><a href="#">Workwear Jackets</a></li>
-                                        <li><a href="#">Workwear Hoodies</a></li>
-                                        <li><a href="#">Work Accessories</a></li>
-                                        <li><a href="#">Aprons</a></li>
+                                        <li><a href="shop-pc.html?productType=trousers">Work Trousers</a></li>
+                                        <li><a href="shop-pc.html?productType=jackets&amp;sector[]=Safety">Workwear Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=hoodies&amp;sector[]=Safety">Workwear Hoodies</a></li>
+                                        <li><a href="shop-pc.html?productType=accessories">Work Accessories</a></li>
+                                        <li><a href="shop-pc.html?productType=aprons">Aprons</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1628,12 +1639,12 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Full Zip Fleece</a></li>
-                                        <li><a href="#">Half Zip Fleece</a></li>
-                                        <li><a href="#">Heavy Fleece</a></li>
-                                        <li><a href="#">Kids Fleece</a></li>
-                                        <li><a href="#">Microfleece Jackets</a></li>
-                                        <li><a href="#">Women's Fleece</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece">Full Zip Fleece</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece&amp;neckline[]=zip-neck">Half Zip Fleece</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece&amp;feature[]=heavyweight">Heavy Fleece</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece&amp;ageGroup[]=kids">Kids Fleece</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece&amp;feature[]=lightweight">Microfleece Jackets</a></li>
+                                        <li><a href="shop-pc.html?productType=fleece&amp;gender[]=female">Women's Fleece</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1647,13 +1658,13 @@
                             <ul class="megamenu">
                                 <li>
                                     <ul>
-                                        <li><a href="#">Beanies</a></li>
-                                        <li><a href="#">Bucket Hats</a></li>
-                                        <li><a href="#">Caps</a></li>
-                                        <li><a href="#">Gloves &amp; Scarves</a></li>
-                                        <li><a href="#">Hi-Vis Headwear</a></li>
-                                        <li><a href="#">Kids Headwear</a></li>
-                                        <li><a href="#">Work Accessories</a></li>
+                                        <li><a href="shop-pc.html?productType=beanies">Beanies</a></li>
+                                        <li><a href="shop-pc.html?productType=hats">Bucket Hats</a></li>
+                                        <li><a href="shop-pc.html?productType=caps">Caps</a></li>
+                                        <li><a href="shop-pc.html?productType[]=gloves&amp;productType[]=scarves">Gloves &amp; Scarves</a></li>
+                                        <li><a href="shop-pc.html?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;feature[]=high-visibility">Hi-Vis Headwear</a></li>
+                                        <li><a href="shop-pc.html?productType[]=caps&amp;productType[]=hats&amp;productType[]=beanies&amp;ageGroup[]=kids">Kids Headwear</a></li>
+                                        <li><a href="shop-pc.html?productType=accessories">Work Accessories</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1666,65 +1677,65 @@
                             </a>
                             <ul class="megamenu brand-grid">
                                 <li class="brand-heading">0 - 9</li>
-                                <li><a href="#">2786</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=2786">2786</a></li>
                                 <li class="brand-heading">A</li>
-                                <li><a href="#">Adidas</a></li>
-                                <li><a href="#">Asquith &amp; Fox</a></li>
-                                <li><a href="#">AWDis Just Cool</a></li>
-                                <li><a href="#">AWDis Just Hoods</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=adidasr">Adidas</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=asquith-%26-fox">Asquith &amp; Fox</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=awdis-just-cool">AWDis Just Cool</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=awdis-just-hoods">AWDis Just Hoods</a></li>
                                 <li class="brand-heading">B</li>
-                                <li><a href="#">B&amp;C Collection</a></li>
-                                <li><a href="#">Bagbase</a></li>
-                                <li><a href="#">Beechfield</a></li>
-                                <li><a href="#">Build Your Brand</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=b%26c-collection">B&amp;C Collection</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=bagbase">Bagbase</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=beechfield">Beechfield</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=build-your-brand">Build Your Brand</a></li>
                                 <li class="brand-heading">C</li>
-                                <li><a href="#">Callaway</a></li>
-                                <li><a href="#">Craghoppers</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=callaway">Callaway</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=craghoppers">Craghoppers</a></li>
                                 <li class="brand-heading">F</li>
-                                <li><a href="#">Finden &amp; Hales</a></li>
-                                <li><a href="#">Flexfit by Yupoong</a></li>
-                                <li><a href="#">Front Row</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=finden-%26-hales">Finden &amp; Hales</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=flexfit-by-yupoong">Flexfit by Yupoong</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=front-row">Front Row</a></li>
                                 <li class="brand-heading">H</li>
-                                <li><a href="#">Henbury</a></li>
-                                <li><a href="#">Home &amp; Living</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=henbury">Henbury</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=home-%26-living">Home &amp; Living</a></li>
                                 <li class="brand-heading">K</li>
-                                <li><a href="#">Kariban</a></li>
-                                <li><a href="#">KiMood</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=kariban">Kariban</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=kimood">KiMood</a></li>
                                 <li class="brand-heading">L</li>
-                                <li><a href="#">Larkwood</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=larkwood">Larkwood</a></li>
                                 <li class="brand-heading">M</li>
-                                <li><a href="#">Madeira</a></li>
-                                <li><a href="#">Mumbles</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=madeira">Madeira</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=mumbles">Mumbles</a></li>
                                 <li class="brand-heading">N</li>
-                                <li><a href="#">New Morning Studios</a></li>
-                                <li><a href="#">Nike</a></li>
-                                <li><a href="#">Nimbus</a></li>
-                                <li><a href="#">Nutshell</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=new-morning-studios">New Morning Studios</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nike">Nike</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nimbus">Nimbus</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=nutshellr">Nutshell</a></li>
                                 <li class="brand-heading">P</li>
-                                <li><a href="#">Portwest</a></li>
-                                <li><a href="#">Premier</a></li>
-                                <li><a href="#">Pro RTX</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=portwest">Portwest</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=premier">Premier</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=prortx">Pro RTX</a></li>
                                 <li class="brand-heading">Q</li>
-                                <li><a href="#">Quadra</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=quadra">Quadra</a></li>
                                 <li class="brand-heading">R</li>
-                                <li><a href="#">RalaFlex</a></li>
-                                <li><a href="#">Regatta Junior</a></li>
-                                <li><a href="#">Regatta Professional</a></li>
-                                <li><a href="#">Result</a></li>
-                                <li><a href="#">Russell Athletic&reg;</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled">RalaFlex</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=regatta-junior">Regatta Junior</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=regatta-professional">Regatta Professional</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=result">Result</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=russell-athletic">Russell Athletic&reg;</a></li>
                                 <li class="brand-heading">S</li>
-                                <li><a href="#">Scruffs</a></li>
-                                <li><a href="#">SF</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=scruffs">Scruffs</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=sf">SF</a></li>
                                 <li class="brand-heading">T</li>
-                                <li><a href="#">Stormtech</a></li>
-                                <li><a href="#">Tee Jays</a></li>
-                                <li><a href="#">Tombo</a></li>
-                                <li><a href="#">TriDri</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=stormtech">Stormtech</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tee-jays">Tee Jays</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tombo">Tombo</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=tridrir">TriDri</a></li>
                                 <li class="brand-heading">W</li>
-                                <li><a href="#">Westford Mill</a></li>
-                                <li><a href="#">Wombat</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=westford-mill">Westford Mill</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=wombat">Wombat</a></li>
                                 <li class="brand-heading">Y</li>
-                                <li><a href="#">Yoko</a></li>
+                                <li><a href="shop-pc.html?accreditation=recycled&amp;brand=yoko">Yoko</a></li>
                             </ul>
                         </li>
                         <li>
@@ -2599,7 +2610,7 @@
 
     <!-- HERO 2 - Get in Touch Neon Banner -->
     <section class="hero-banners-section">
-        <div class="hero-banners-container">
+        <div class="hero-banners-container" data-hero-banners>
             <div class="hero-banner hero-banner-image hero-banner--active" aria-label="Premier Workwear">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/Premier%202026.jpg" alt="Premier Workwear about us" width="1920" height="700">
             </div>
@@ -2669,7 +2680,7 @@
         </div>
 
         <!-- Banner gallery navigation -->
-        <div class="hero-banner-dots" role="tablist" aria-label="Choose a banner">
+        <div class="hero-banner-dots" data-hero-banner-dots role="tablist" aria-label="Choose a banner">
             <button class="banner-dot banner-dot--active" role="tab" type="button" data-banner="0" aria-label="Show Premier Workwear banner" aria-selected="true"><img class="banner-thumb" src="brandeduk.com/assets/Premier%202026.jpg" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="1" aria-label="Show Branded Digital banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.png" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="2" aria-label="Show Regatta banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt=""></button>
@@ -2685,9 +2696,10 @@
             <button class="banner-dot" role="tab" type="button" data-banner="12" aria-label="Show Only Boards banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/only-boards-desktop.webp" alt=""></button>
         </div>
 
-        <a class="fixed-partner-banner" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener" aria-label="Explore signs and boards at Only Boards">
-            <img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_50_00%20AM.png" alt="Only Boards official print partner: explore signs and boards" width="2106" height="747">
-        </a>
+        <div class="fixed-partner-banner">
+            <img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_50_00%20AM.png" alt="Only Boards official print partner" width="2106" height="747">
+            <a class="fixed-partner-banner__cta" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener">Explore signs &amp; boards</a>
+        </div>
     </section>
 
     <!-- Quick Actions - Desktop -->
@@ -3555,14 +3567,14 @@
 </div>
 
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-<script src="brandedukv15-child/assets/js/shared-config.js?v=20260924-header5"></script>
+<script src="brandedukv15-child/assets/js/shared-config.js?v=20260925-halloween"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260924-header5"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
 <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
 <script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
 <script src="brandeduk.com/js/hero.js?v=20260706a"></script>
-<script src="brandeduk.com/js/main.js?v=20260730a"></script>
+<script src="brandeduk.com/js/main.js?v=20260925-banners"></script>
 <script src="mobile/js/popup-contact.js?v=20251230"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>

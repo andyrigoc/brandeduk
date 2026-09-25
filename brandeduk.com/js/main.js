@@ -266,8 +266,11 @@ function initFaqTabs() {
 // HERO BANNERS - Carousel with Auto-rotate (Slide)
 // ============================================
 function initHeroBanners() {
-    const banners = document.querySelectorAll('.hero-banner');
-    const dots = document.querySelectorAll('.banner-dot');
+    if (window.BrandedConfig && typeof window.BrandedConfig.applyHeroBanners === 'function') {
+        window.BrandedConfig.applyHeroBanners({ view: 'pc' });
+    }
+    const banners = document.querySelectorAll('.hero-banners-container .hero-banner');
+    const dots = document.querySelectorAll('.hero-banner-dots .banner-dot');
     const neonContainer = document.querySelector('.neon-container');
     const bannerStage = document.querySelector('.hero-banners-container');
     
@@ -275,7 +278,7 @@ function initHeroBanners() {
     
     let currentBanner = 0;
     let rotationTimer = null;
-    const rotationDelay = 10000;
+    const rotationDelay = 7000;
     
     // Initialize: first banner active, others waiting on right
     banners.forEach((banner, i) => {

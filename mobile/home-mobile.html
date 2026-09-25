@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="footer/footer.css?v=FTR10APR2026">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&family=Eater&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <style>
         /* Hide Shop Now buttons in hero */
         .hero-el__cta {
@@ -206,7 +207,7 @@
 
         <!-- Hero Banners Carousel (Separate section with dots) -->
         <div class="hero-banners-wrapper">
-            <div class="hero-banners-container">
+            <div class="hero-banners-container" data-hero-banners>
                 <!-- Banner 1 - Get in Touch Neon -->
                 <div class="hero-banner hero-banner--active" id="heroBanner1" onclick="openContactPopup()" style="cursor: pointer;">
                     <div class="neon-container">
@@ -239,7 +240,7 @@
             </div>
 
             <!-- Banner Dots Navigation -->
-            <div class="hero-banner-dots">
+            <div class="hero-banner-dots" data-hero-banner-dots>
                 <button class="banner-dot banner-dot--active" data-banner="1" aria-label="Banner 1"></button>
                 <button class="banner-dot" data-banner="2" aria-label="Banner 2"></button>
                 <button class="banner-dot" data-banner="3" aria-label="Regatta banner"></button>
@@ -1648,7 +1649,8 @@
         </div>
     </div>
 
-    <script src="js/mobile.js?v=20260923-hero-scratch"></script>
+    <script src="../brandedukv15-child/assets/js/shared-config.js?v=20260925-halloween"></script>
+    <script src="js/mobile.js?v=20260925-banners"></script>
     <script src="hero/hero.js?v=20251230"></script>
     <script src="js/popup-contact.js?v=20251230"></script>
     <script src="js/faq.js?v=20251230"></script>

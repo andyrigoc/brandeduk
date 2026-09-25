@@ -285,6 +285,27 @@ main.main-content {
     height: auto;
     display: block;
     transform: translateY(-26.37%);
+    pointer-events: none;
+}
+
+.fixed-partner-banner__cta {
+    position: absolute;
+    left: 80.4%;
+    top: 34%;
+    width: 18.6%;
+    height: 32%;
+    z-index: 2;
+    border-radius: 999px;
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.fixed-partner-banner__cta:focus-visible {
+    outline: 3px solid #111827;
+    outline-offset: 4px;
 }
 
 #heroBannerOnlyBoards .onlyboards-banner-image {
@@ -560,6 +581,7 @@ main.main-content {
 .banner-thumb-branded { background: #ffeb00; color: #000; font-size: 23px; }
 .banner-thumb-contact { background: #111; color: #dbff2a; text-transform: uppercase; }
 .banner-thumb-make { background: #fff; color: #111; text-transform: uppercase; }
+.banner-thumb-halloween { background: #1b2628; color: #fa6701; font-size: 13px; text-transform: uppercase; }
 
 /* Full-bleed PC hero from 13-inch laptops through 27-inch desktop displays. */
 @media (min-width: 1024px) {

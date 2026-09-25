@@ -1,0 +1,291 @@
+/* Halloween spider banner — scoped to the carousel slide. */
+
+.hero-banner-halloween {
+    background-color: #1b2628;
+    background-image: radial-gradient(ellipse at center, #2f5363 0%, #1b2628 80%);
+    color: inherit;
+}
+
+.halloween-banner {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.halloween-banner .spider {
+    position: absolute;
+    top: 0;
+    height: 40px;
+    width: 50px;
+    margin: 40px 0 0;
+    border-radius: 50%;
+    background: #110d04;
+    z-index: 1;
+}
+
+.halloween-banner .spider::before {
+    content: "";
+    position: absolute;
+    width: 1px;
+    background: #aaaaaa;
+    left: 50%;
+    top: -320px;
+    height: 320px;
+}
+
+.halloween-banner .eye {
+    position: absolute;
+    top: 16px;
+    height: 14px;
+    width: 12px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.halloween-banner .eye::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    height: 5px;
+    width: 5px;
+    border-radius: 50%;
+    background: #000;
+}
+
+.halloween-banner .eye.left {
+    left: 14px;
+}
+
+.halloween-banner .eye.left::after {
+    right: 3px;
+}
+
+.halloween-banner .eye.right {
+    right: 14px;
+}
+
+.halloween-banner .eye.right::after {
+    left: 3px;
+}
+
+.halloween-banner .leg {
+    position: absolute;
+    top: 6px;
+    height: 12px;
+    width: 14px;
+    border-top: 2px solid #110d04;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    z-index: -1;
+}
+
+.halloween-banner .leg.left {
+    left: -8px;
+    transform-origin: top right;
+    transform: rotate(36deg) skewX(-20deg);
+    border-left: 2px solid #110d04;
+    border-radius: 60% 0 0 0;
+    animation: halloween-legs-left 1s 0s infinite;
+}
+
+.halloween-banner .leg.right {
+    right: -8px;
+    transform-origin: top left;
+    transform: rotate(-36deg) skewX(20deg);
+    border-right: 2px solid #110d04;
+    border-radius: 0 60% 0 0;
+    animation: halloween-legs-right 1s 0.2s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(2) {
+    top: 14px;
+    left: -11px;
+    animation: halloween-legs-left 1s 0.8s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(3) {
+    top: 22px;
+    left: -12px;
+    animation: halloween-legs-left 1s 0.2s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(4) {
+    top: 31px;
+    left: -10px;
+    animation: halloween-legs-left 1s 0.4s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(6) {
+    top: 14px;
+    right: -11px;
+    animation: halloween-legs-right 1s 0.4s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(7) {
+    top: 22px;
+    right: -12px;
+    animation: halloween-legs-right 1s 0.7s infinite;
+}
+
+.halloween-banner .leg:nth-of-type(8) {
+    top: 31px;
+    right: -10px;
+    animation: halloween-legs-right 1s 0.3s infinite;
+}
+
+.halloween-banner .spider_0 {
+    left: 5%;
+    animation: halloween-spider-0 5s infinite;
+}
+
+.halloween-banner .spider_1 {
+    left: 20%;
+    animation: halloween-spider-1 5s infinite;
+}
+
+.halloween-banner .spider_2 {
+    left: 35%;
+    animation: halloween-spider-2 5s infinite;
+}
+
+.halloween-banner .spider_3 {
+    right: 35%;
+    margin-top: 160px;
+    animation: halloween-spider-3 5s infinite;
+}
+
+.halloween-banner .spider_4 {
+    right: 20%;
+    margin-top: 50px;
+    animation: halloween-spider-4 5s infinite;
+}
+
+.halloween-banner .spider_5 {
+    right: 5%;
+    margin-top: 210px;
+    animation: halloween-spider-5 5s infinite;
+}
+
+.halloween-title {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: 10%;
+    margin: 0;
+    font-family: Eater, cursive;
+    font-size: clamp(28px, 6.4vw, 92px);
+    line-height: 0.95;
+    color: #111;
+    z-index: 2;
+    animation: halloween-flicker 4s 0s infinite;
+}
+
+.halloween-web {
+    position: absolute;
+    top: -10px;
+    width: min(28vw, 220px);
+    height: min(28vw, 220px);
+    z-index: 0;
+    opacity: 0.22;
+    background: url("http://www.scandiafun.com/images/spiderweb-corner-right.png") no-repeat center / contain;
+}
+
+.halloween-web-right {
+    right: -10px;
+}
+
+.halloween-web-left {
+    left: -10px;
+    transform: rotate(-90deg);
+}
+
+.hero-banner-halloween:not(.hero-banner--active) .spider,
+.hero-banner-halloween:not(.hero-banner--active) .leg,
+.hero-banner-halloween:not(.hero-banner--active) .halloween-title {
+    animation-play-state: paused;
+}
+
+.banner-thumb-halloween {
+    background: #1b2628;
+    color: #fa6701;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+@keyframes halloween-flicker {
+    0%, 6%, 12% {
+        text-shadow: none;
+        color: #111;
+    }
+    3%, 9% {
+        text-shadow: 0 0 8px rgba(250, 103, 1, 0.6);
+        color: #fa6701;
+    }
+    60%, 100% {
+        text-shadow:
+            0 0 8px rgba(250, 103, 1, 0.6),
+            0 0 16px rgba(250, 103, 1, 0.4),
+            0 0 20px rgba(255, 0, 84, 0.2),
+            0 0 22px rgba(255, 0, 84, 0.1);
+        color: #fa6701;
+    }
+}
+
+@keyframes halloween-legs-left {
+    0%, 100% { transform: rotate(36deg) skewX(-20deg); }
+    25%, 75% { transform: rotate(15deg) skewX(-20deg); }
+    50% { transform: rotate(45deg) skewX(-20deg); }
+}
+
+@keyframes halloween-legs-right {
+    0%, 100% { transform: rotate(-36deg) skewX(20deg); }
+    25%, 75% { transform: rotate(-15deg) skewX(20deg); }
+    50% { transform: rotate(-45deg) skewX(20deg); }
+}
+
+@keyframes halloween-spider-0 {
+    0%, 100% { margin-top: 56px; }
+    62% { margin-top: 148px; }
+}
+
+@keyframes halloween-spider-1 {
+    0%, 100% { margin-top: 88px; }
+    38% { margin-top: 168px; }
+}
+
+@keyframes halloween-spider-2 {
+    0%, 100% { margin-top: 44px; }
+    71% { margin-top: 132px; }
+}
+
+@keyframes halloween-spider-3 {
+    0%, 100% { margin-top: 160px; }
+    47% { margin-top: 236px; }
+}
+
+@keyframes halloween-spider-4 {
+    0%, 100% { margin-top: 50px; }
+    54% { margin-top: 142px; }
+}
+
+@keyframes halloween-spider-5 {
+    0%, 100% { margin-top: 210px; }
+    33% { margin-top: 286px; }
+}
+
+@media (max-width: 767px) {
+    .halloween-banner .spider {
+        transform: scale(0.72);
+        transform-origin: top center;
+    }
+
+    .halloween-title {
+        left: 5%;
+        right: 5%;
+        bottom: 8%;
+        font-size: clamp(26px, 11vw, 56px);
+        text-align: center;
+    }
+}

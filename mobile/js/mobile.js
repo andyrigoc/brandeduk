@@ -964,9 +964,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 // HERO BANNERS CAROUSEL (DJ-scratch drag)
 // Finger down = full control, 1:1 scrub forward/back.
-// Finger up = snap to nearest slide, hold 10s, then autoplay.
+// Finger up = snap to nearest slide, hold 7s, then autoplay.
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.BrandedConfig && typeof window.BrandedConfig.applyHeroBanners === 'function') {
+        window.BrandedConfig.applyHeroBanners({ view: 'mobile' });
+    }
     const container = document.querySelector('.hero-banners-container');
     const banners = container
         ? Array.from(container.querySelectorAll('.hero-banner'))
@@ -976,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!container || banners.length === 0) return;
 
     const n = banners.length;
-    const HOLD_MS = 10000;
+    const HOLD_MS = 7000;
     const AXIS_LOCK_PX = 6;
 
     let position = 0;
