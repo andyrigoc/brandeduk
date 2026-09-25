@@ -34,7 +34,7 @@
         links: [
           ["Track Your Order", "track-order.html"],
           ["Delivery & Lead Times", "services.html"],
-          ["Returns", "docs/Branded_UK_Terms_and_Conditions.pdf"],
+          ["Returns", "terms-and-conditions.html#returns"],
           ["Size Guides", "shop-pc.html"],
           ["FAQs", "home-pc.html#faq"],
           ["Contact Us", "#contact", "contact"]
@@ -48,7 +48,8 @@
           ["Request a Quote", "quote-form.html"],
           ["Case Studies", "blog/case-study-500-tshirts-london-event.html"],
           ["Sustainability", "services.html"],
-          ["Blog", "blog/index.html"]
+          ["Blog", "blog/index.html"],
+          ["Terms & Conditions", "terms-and-conditions.html"]
         ]
       }
     ],
@@ -128,7 +129,7 @@
 
     const policies = frame.querySelector(".buk-footer__policies");
     policies.append(
-      createLink("Terms & Conditions", "docs/Branded_UK_Terms_and_Conditions.pdf"),
+      createLink("Terms & Conditions", "terms-and-conditions.html"),
       createLink("Privacy Policy", "#privacy"),
       createLink("Cookie Policy", "#cookies")
     );

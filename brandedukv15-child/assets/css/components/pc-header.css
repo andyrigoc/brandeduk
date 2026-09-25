@@ -889,3 +889,98 @@
         color: #ff7a00;
     }
 }
+
+/* Compact the search row on 14.5–15.5" laptops. 1440px and up stay at full size. */
+@media (min-width: 1024px) and (max-width: 1439px) {
+    .site-header .searchbar-header__inner {
+        gap: 12px;
+    }
+
+    .site-header .searchbar-header__surface {
+        padding: 10px 20px !important;
+    }
+
+    .site-header .shop-products-btn,
+    .site-header .category-toggle.shop-products-btn {
+        height: 32px;
+        padding: 0 10px 0 9px;
+        gap: 5px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    .site-header .shop-products-btn .category-toggle-icon::before {
+        width: 12px;
+        height: 12px;
+        background:
+            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 8px 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 0 8px / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 8px 8px / 4px 4px no-repeat;
+    }
+
+    .site-header .searchbar-header__actions {
+        gap: 12px;
+    }
+
+    .site-header .searchbar-header__search-expand {
+        flex: 0 1 320px;
+        width: min(360px, 30vw) !important;
+        max-width: 360px;
+        min-width: 200px;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+    .site-header .searchbar-header__inner {
+        gap: 10px;
+    }
+
+    .site-header .searchbar-header__surface {
+        padding: 10px 16px !important;
+    }
+
+    .site-header .searchbar-header__brand {
+        margin-right: 0;
+    }
+
+    .site-header .searchbar-header__brand-img {
+        height: 50px !important;
+        max-width: 200px;
+    }
+
+    .site-header .shop-products-btn,
+    .site-header .category-toggle.shop-products-btn {
+        height: 30px;
+        padding: 0 8px 0 8px;
+        gap: 4px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+
+    .site-header .shop-products-btn .category-toggle-icon::before {
+        width: 11px;
+        height: 11px;
+        background:
+            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 7px 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 0 7px / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 7px 7px / 4px 4px no-repeat;
+    }
+
+    .site-header .searchbar-header__actions {
+        gap: 10px;
+    }
+
+    .site-header .header-util-link {
+        gap: 6px;
+        font-size: 13px;
+    }
+
+    .site-header .searchbar-header__search-expand {
+        flex: 0 1 280px;
+        width: min(300px, 28vw) !important;
+        max-width: 300px;
+        min-width: 180px;
+    }
+}

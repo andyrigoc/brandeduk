@@ -46,6 +46,7 @@
                             <li class="bar-menu-item"><a href="/quote-form.html">Request a Quote</a></li>
                             <li class="bar-menu-item"><a href="/blog/case-study-500-tshirts-london-event.html">Case Studies</a></li>
                             <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
+                            <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">
@@ -55,7 +56,6 @@
                             <li class="bar-menu-item"><a href="/services.html">Delivery &amp; Lead Times</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html#returns">Returns</a></li>
                             <li class="bar-menu-item"><a href="/index-mobile.html?force=mobile#faq">FAQs</a></li>
-                            <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">

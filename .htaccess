@@ -4,6 +4,7 @@ DirectoryIndex index.html index.htm
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^blog$ /blog/ [R=301,L]
+    RewriteRule ^terms-and-conditions/?$ /terms-and-conditions.html [L]
 </IfModule>
 
 # Enable directory listing (optional - remove if you don't want it)
