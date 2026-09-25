@@ -169,6 +169,7 @@
     .site-header .searchbar-header__inner {
         display: flex;
         align-items: center;
+        flex-wrap: nowrap;
         min-height: 64px;
         gap: 16px;
     }
@@ -238,17 +239,26 @@
         display: flex;
         align-items: center;
         flex: 0 0 auto;
+        width: auto;
         min-width: 0;
+        order: 0;
         gap: 16px;
         margin-left: 0;
+        justify-content: flex-end;
+    }
+
+    .site-header .searchbar-header__search,
+    .site-header .searchbar-header__search-expand {
+        order: 0;
+        width: auto;
     }
 
     .site-header .searchbar-header__search-expand {
         position: relative;
         flex: 0 1 400px;
         width: 400px !important;
-        max-width: 400px;
-        min-width: 280px;
+        max-width: min(400px, 32vw);
+        min-width: 220px;
         height: 36px;
         margin-right: 0;
     }
