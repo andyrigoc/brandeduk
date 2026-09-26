@@ -17,13 +17,13 @@
             <div class="order-drawer" id="orderDrawer">
                 <!-- Header -->
                 <div class="order-drawer-header">
-                    <button class="order-drawer-back" id="orderDrawerBack" style="opacity: 0;">
+                    <button class="order-drawer-back is-hidden" id="orderDrawerBack">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>
                     </button>
                     <h2 class="order-drawer-title" id="orderDrawerTitle">Your Basket</h2>
-                    <button class="order-drawer-clear-all" id="orderDrawerClearAll" title="Clear all items">Clear All</button>
+                    <button class="order-drawer-clear-all" id="orderDrawerClearAll" title="Clear basket">Clear basket</button>
                     <button class="order-drawer-close" id="orderDrawerClose">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 6L6 18M6 6l12 12"/>
@@ -55,19 +55,18 @@
                         
                         <!-- STEP 1: BASKET -->
                         <div class="order-drawer-step" data-step="1">
-                            <div class="order-drawer-top-cta">
-                                <button class="btn-view-basket" onclick="window.location.href='basket.html'">View Basket ›</button>
-                                <button class="btn-order-next" id="basketNextBtn">
-                                    Go to Checkout
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                </button>
-                            </div>
-
                             <div class="order-drawer-content">
-                                <div id="basketItemsContainer"></div>
-                                
+                                <div class="basket-items-scroll" id="basketItemsScroll">
+                                    <div id="basketItemsContainer"></div>
+                                </div>
+                                <div class="basket-scroll-hint" id="basketScrollHint" hidden aria-hidden="true">
+                                    <span class="basket-scroll-hint__line" aria-hidden="true"></span>
+                                    <span class="basket-scroll-hint__label">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                                        Scroll for more items
+                                    </span>
+                                    <span class="basket-scroll-hint__line" aria-hidden="true"></span>
+                                </div>
                                 <div class="order-drawer-empty" id="basketEmptyMessage" style="display: none;">
                                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -77,20 +76,36 @@
                                     <p>Add products to start building your quote</p>
                                 </div>
                             </div>
-                            
-                            <div class="drawer-stats-bar" id="drawerStatsBar" style="display:none;">
-                                <span>Product Lines <strong id="drProductLines">0</strong></span>
-                                <span>Total Quantity <strong id="drTotalQty">0</strong></span>
-                            </div>
 
-                            <div class="order-drawer-footer">
-                                <h4 class="drawer-summary-title">Your order summary</h4>
-                                <div class="drawer-summary-row"><span>Product Costs</span><span id="drProductCosts">£0.00</span></div>
-                                <div class="drawer-summary-row"><span>Costs To Add Logo</span><span id="drLogoCosts">£0.00</span></div>
-                                <div class="drawer-summary-row" id="drDigitizingRow" style="display:none;"><span>£25 Digitizing &amp; Test (one-off)</span><span id="drDigitizingFee">£25.00</span></div>
-                                <div class="drawer-summary-row"><span>Total (exc. VAT)</span><span id="drExcVat">£0.00</span></div>
-                                <div class="drawer-summary-row"><span>VAT (20%)</span><span id="drVat">£0.00</span></div>
-                                <div class="drawer-grand-total"><span>Your total (inc. VAT)</span><strong id="basketTotalAmount">£0.00</strong></div>
+                            <div class="order-drawer-footer" id="basketSummary">
+                                <div class="drawer-summary-card">
+                                    <div class="drawer-summary-head">
+                                        <h4 class="drawer-summary-title">Order summary</h4>
+                                        <span><span id="drProductLines">0</span> <span id="drProductLinesLabel">product lines</span></span>
+                                        <span>Total quantity <span id="drTotalQty">0</span></span>
+                                    </div>
+                                    <div class="drawer-summary-row"><span>Product Costs</span><span id="drProductCosts">£0.00</span></div>
+                                    <button type="button" class="drawer-summary-row drawer-summary-row--toggle" data-summary-toggle="logo">
+                                        <span>Customisation <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                                        <span id="drLogoCosts">£0.00</span>
+                                    </button>
+                                    <div class="drawer-summary-detail" id="drLogoDetail" hidden></div>
+                                    <button type="button" class="drawer-summary-row drawer-summary-row--toggle" id="drDigitizingRow" data-summary-toggle="setup" style="display:none;">
+                                        <span>Setup fees <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                                        <span id="drDigitizingFee">£0.00</span>
+                                    </button>
+                                    <div class="drawer-summary-detail" id="drSetupDetail" hidden></div>
+                                    <div class="drawer-summary-row drawer-summary-row--strong"><span>Total (exc. VAT)</span><span id="drExcVat">£0.00</span></div>
+                                    <div class="drawer-summary-row"><span>VAT (20%)</span><span id="drVat">£0.00</span></div>
+                                    <div class="drawer-grand-total"><span>Total (inc. VAT)</span><strong id="basketTotalAmount">£0.00</strong></div>
+                                </div>
+                                <div class="drawer-actions">
+                                    <button class="btn-view-basket" onclick="window.location.href='basket.html'">View basket →</button>
+                                    <button class="btn-order-next" id="basketNextBtn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                        Proceed to checkout →
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -235,7 +250,7 @@
                 right: 0;
                 bottom: 0;
                 width: 100%;
-                max-width: 600px;
+                max-width: 480px;
                 background: #fff;
                 box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
                 transform: translateX(100%);
@@ -262,17 +277,26 @@
 
             .order-drawer-back,
             .order-drawer-close {
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
                 border: none;
-                background: #f3f4f6;
-                color: #374151;
+                background: transparent;
+                color: #111827;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 transition: all 0.2s ease;
+            }
+
+            .order-drawer-back.is-hidden {
+                width: 0;
+                min-width: 0;
+                padding: 0;
+                opacity: 0;
+                overflow: hidden;
+                pointer-events: none;
             }
 
             .order-drawer-back:hover,
@@ -286,30 +310,26 @@
             }
 
             .order-drawer-clear-all {
-                padding: 6px 12px;
-                border: 1.5px solid #e5e7eb;
-                border-radius: 8px;
-                background: white;
-                color: #6b7280;
-                font-size: 12px;
-                font-weight: 600;
+                margin-left: auto;
+                padding: 0;
+                border: none;
+                background: transparent;
+                color: #e11d48;
+                font-size: 14px;
+                font-weight: 650;
                 cursor: pointer;
-                transition: all 0.2s ease;
                 white-space: nowrap;
-                margin-right: 4px;
             }
 
             .order-drawer-clear-all:hover {
-                border-color: #ef4444;
-                color: #ef4444;
-                background: #fef2f2;
+                color: #be123c;
             }
 
             .order-drawer-title {
-                flex: 1;
-                font-size: 20px;
-                font-weight: 700;
-                color: #1f2937;
+                flex: 0 1 auto;
+                font-size: 22px;
+                font-weight: 800;
+                color: #1e3a5f;
                 margin: 0;
             }
 
@@ -319,9 +339,9 @@
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
-                padding: 20px 24px;
-                background: #f9fafb;
-                border-bottom: 1px solid #e5e7eb;
+                padding: 8px 24px 16px;
+                background: #fff;
+                border-bottom: none;
             }
 
             .order-step {
@@ -339,22 +359,29 @@
             }
 
             .step-circle {
-                width: 32px;
-                height: 32px;
+                width: 28px;
+                height: 28px;
                 border-radius: 50%;
-                background: #d1d5db;
-                color: #fff;
+                background: #fff;
+                color: #9ca3af;
+                border: 2px solid #e5e7eb;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-weight: 700;
-                font-size: 14px;
+                font-size: 13px;
                 transition: all 0.3s ease;
             }
 
             .order-step.active .step-circle {
-                background: #273469;
-                box-shadow: 0 0 0 4px rgba(39, 52, 105, 0.15);
+                background: #ff7a00;
+                border-color: #ff7a00;
+                color: #fff;
+                box-shadow: none;
+            }
+
+            .order-step.active span {
+                color: #ff7a00;
             }
 
             .order-step.completed .step-circle {
@@ -368,10 +395,15 @@
             }
 
             .step-line {
-                width: 60px;
-                height: 3px;
+                width: 72px;
+                height: 2px;
                 background: #e5e7eb;
                 border-radius: 99px;
+                margin-bottom: 18px;
+            }
+
+            .order-step.active + .step-line {
+                background: linear-gradient(90deg, #ff7a00 0 55%, #e5e7eb 55% 100%);
             }
 
             /* Viewport & Track */
@@ -396,14 +428,66 @@
 
             .order-drawer-content {
                 flex: 1;
-                overflow-y: auto;
-                padding: 24px;
+                min-height: 0;
+                overflow: hidden;
+                padding: 14px 18px 10px;
+                display: flex;
+                flex-direction: column;
             }
 
             .order-drawer-content.center {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                overflow-y: auto;
+            }
+
+            .order-drawer-step[data-step="2"] .order-drawer-content {
+                overflow-y: auto;
+                display: block;
+            }
+
+            .basket-items-scroll {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+            }
+
+            .basket-scroll-hint {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 0 0 auto;
+                margin-top: 10px;
+                color: #9ca3af;
+                font-size: 12px;
+                font-weight: 500;
+                letter-spacing: 0.01em;
+                user-select: none;
+                pointer-events: none;
+            }
+
+            .basket-scroll-hint[hidden] {
+                display: none;
+            }
+
+            .basket-scroll-hint__line {
+                flex: 1;
+                height: 1px;
+                background: #e5e7eb;
+            }
+
+            .basket-scroll-hint__label {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                white-space: nowrap;
+            }
+
+            .basket-scroll-hint__label svg {
+                flex: 0 0 auto;
+                opacity: 0.85;
             }
 
             /* Empty State */
@@ -436,46 +520,134 @@
 
             /* Basket Items */
             .basket-item {
-                display: flex;
-                gap: 16px;
-                padding: 16px;
-                background: #f9fafb;
+                display: grid;
+                grid-template-columns: 64px 1fr;
+                gap: 10px;
+                padding: 10px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
                 border-radius: 12px;
-                margin-bottom: 12px;
+                margin-bottom: 6px;
             }
 
             .basket-item-img {
-                width: 96px;
-                height: 96px;
-                flex: 0 0 96px;
+                width: 64px;
+                height: 74px;
                 box-sizing: border-box;
-                padding: 6px;
+                padding: 3px;
                 object-fit: contain;
                 object-position: center;
                 border-radius: 8px;
-                background: #fff;
+                background: #f8fafc;
             }
 
-            .basket-item-info {
-                flex: 1;
+            .basket-item-main {
+                min-width: 0;
+            }
+
+            .basket-item-top {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
             }
 
             .basket-item-name {
-                font-weight: 600;
-                color: #1f2937;
-                margin-bottom: 4px;
+                font-weight: 650;
+                color: #111827;
+                font-size: 14px;
+                line-height: 1.25;
             }
 
-            .basket-item-details {
-                font-size: 13px;
+            .basket-item-code,
+            .basket-item-meta {
+                margin-top: 1px;
+                font-size: 12px;
                 color: #6b7280;
-                margin-bottom: 8px;
             }
 
             .basket-item-price {
+                text-align: right;
                 font-weight: 700;
-                color: #273469;
+                color: #111827;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .basket-item-price small {
+                display: block;
+                margin-top: 1px;
+                color: #9ca3af;
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+            .basket-logo-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 6px;
+            }
+
+            .basket-logo-thumb {
+                width: 32px;
+                height: 32px;
+                flex: 0 0 32px;
+                object-fit: contain;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                background: #fff;
+            }
+
+            .basket-logo-label {
+                flex: 1;
+                min-width: 0;
+                color: #374151;
+                font-size: 13px;
+            }
+
+            .basket-item-tools {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 12px;
+                margin-top: 6px;
+            }
+
+            .basket-qty {
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .basket-qty button {
+                width: 28px;
+                height: 28px;
+                border: none;
+                background: #fff;
+                color: #111827;
+                cursor: pointer;
                 font-size: 16px;
+            }
+
+            .basket-qty span {
+                min-width: 22px;
+                text-align: center;
+                font-size: 14px;
+                font-weight: 650;
+            }
+
+            .basket-item-remove {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                border: none;
+                background: transparent;
+                color: #e11d48;
+                font-size: 13px;
+                font-weight: 650;
+                cursor: pointer;
             }
 
             /* Top CTA (basket step) */
@@ -515,69 +687,119 @@
 
             /* Footer / order summary */
             .order-drawer-footer {
-                padding: 16px 20px 20px;
-                border-top: 1px solid #e5e7eb;
+                padding: 6px 14px 12px;
+                border-top: none;
                 background: #fff;
             }
 
+            .drawer-summary-card {
+                padding: 8px 10px 6px;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+            }
+
+            .drawer-summary-head {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-bottom: 4px;
+                color: #9ca3af;
+                font-size: 11px;
+                font-weight: 500;
+            }
+
             .drawer-summary-title {
-                font-size: 14px;
-                font-weight: 700;
-                color: #1f2937;
-                margin: 0 0 12px;
+                margin-right: auto;
+                font-size: 13px;
+                font-weight: 650;
+                color: #1e3a5f;
             }
 
             .drawer-summary-row {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                font-size: 13px;
+                width: 100%;
+                padding: 3px 0;
+                border: none;
+                background: transparent;
                 color: #6b7280;
-                padding: 5px 0;
-                border-bottom: 1px solid #f3f4f6;
+                font-size: 12px;
+                font-weight: 500;
+                text-align: left;
+            }
+
+            .drawer-summary-row span:first-child {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .drawer-summary-row--strong {
+                font-weight: 650;
+                color: #374151;
+            }
+
+            .drawer-summary-detail {
+                margin: -1px 0 3px 10px;
+                color: #9ca3af;
+                font-size: 11px;
+            }
+
+            .drawer-summary-detail div {
+                display: flex;
+                justify-content: space-between;
+                padding: 1px 0;
             }
 
             .drawer-grand-total {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: 10px;
-                padding-top: 10px;
-                font-size: 15px;
-                font-weight: 700;
-                color: #1f2937;
+                margin-top: 4px;
+                padding: 6px 10px;
+                border-radius: 8px;
+                background: #ecfdf3;
+                color: #166534;
+                font-size: 12px;
+                font-weight: 600;
             }
 
             .drawer-grand-total strong {
-                font-size: 18px;
-                color: #273469;
+                font-size: 16px;
+                font-weight: 700;
+                color: #16a34a;
+            }
+
+            .drawer-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 8px;
             }
 
             .btn-order-next,
             .btn-order-submit,
             .btn-order-done {
                 width: 100%;
-                padding: 14px 18px;
-                background: #273469;
+                padding: 14px 16px;
+                background: #ff7a00;
                 color: #fff;
                 border: none;
-                border-radius: 10px;
+                border-radius: 12px;
                 font-size: 15px;
-                font-weight: 600;
+                font-weight: 700;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
-                transition: all 0.2s ease;
+                transition: background 0.2s ease;
             }
 
             .btn-order-next:hover,
             .btn-order-submit:hover,
             .btn-order-done:hover {
-                background: #1e2a52;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(39, 52, 105, 0.3);
+                background: #e86e00;
             }
 
             .btn-order-next:disabled,
@@ -589,20 +811,41 @@
 
             .btn-view-basket {
                 flex: 0 0 auto;
-                padding: 14px 18px;
-                background: #fff;
-                color: #273469;
-                border: 2px solid #273469;
-                border-radius: 10px;
+                padding: 14px 16px;
+                background: #ffffff;
+                color: #26366d;
+                border: 1.5px solid #26366d;
+                border-radius: 12px;
                 font-size: 15px;
-                font-weight: 600;
+                font-weight: 700;
                 cursor: pointer;
-                transition: all 0.2s ease;
                 white-space: nowrap;
             }
 
             .btn-view-basket:hover {
-                background: #f0f2fa;
+                background: #f3f6fb;
+                border-color: #1e2c5c;
+            }
+
+            .btn-view-basket:active {
+                background: #e9eef7;
+                border-color: #1e2c5c;
+            }
+
+            .drawer-actions .btn-order-next,
+            .drawer-actions .btn-view-basket {
+                flex: 1;
+                width: auto;
+                padding: 8px 10px;
+                font-size: 13px;
+                font-weight: 650;
+                border-radius: 10px;
+                white-space: nowrap;
+            }
+
+            .drawer-actions .btn-order-next svg {
+                width: 14px;
+                height: 14px;
             }
 
             /* Form Styles */
@@ -776,6 +1019,7 @@
             currentStep = 1;
             updateStep(1);
             loadBasketData();
+            updateBasketScrollHint();
         };
 
         // Close drawer
@@ -819,6 +1063,27 @@
                 currentStep = 2;
                 updateStep(2);
             }
+        });
+
+        document.getElementById('basketItemsContainer').addEventListener('click', (event) => {
+            const button = event.target.closest('[data-drawer-action]');
+            if (!button) return;
+            const index = Number(button.dataset.index);
+            const action = button.dataset.drawerAction;
+            if (action === 'qty') adjustDrawerQty(index, Number(button.dataset.delta) || 0);
+            if (action === 'remove') removeDrawerItem(index);
+            if (action === 'add-logo') openDrawerLogoEditor(index);
+        });
+
+        window.addEventListener('resize', function () {
+            if (overlay.classList.contains('active')) updateBasketScrollHint();
+        });
+
+        document.getElementById('basketSummary').addEventListener('click', (event) => {
+            const toggle = event.target.closest('[data-summary-toggle]');
+            if (!toggle) return;
+            const detail = document.getElementById(toggle.dataset.summaryToggle === 'logo' ? 'drLogoDetail' : 'drSetupDetail');
+            if (detail) detail.hidden = !detail.hidden;
         });
 
         // Submit button (checkout to confirmation)
@@ -869,8 +1134,7 @@
             title.textContent = titles[step] || 'Order';
 
             // Show/hide back button
-            backBtn.style.opacity = step > 1 && step < 3 ? '1' : '0';
-            backBtn.style.pointerEvents = step > 1 && step < 3 ? 'auto' : 'none';
+            backBtn.classList.toggle('is-hidden', !(step > 1 && step < 3));
         }
 
         function getItemQuantityDetails(item) {
@@ -897,7 +1161,107 @@
                 ? entries.map(([size, quantity]) => `${size} x ${quantity}`).join(', ')
                 : (item.size && total > 0 ? `${item.size} x ${total}` : '');
 
-            return { total, sizeText };
+            return { total, sizeText, entries };
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, function (ch) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+            });
+        }
+
+        function safeImageSrc(src) {
+            const value = String(src || '').trim();
+            if (/^(https?:|data:image\/)/i.test(value)) return value;
+            if (/^(brandeduk|\.\/|\/)/i.test(value)) return value;
+            return '';
+        }
+
+        function formatMethod(method) {
+            const value = String(method || 'embroidery').toLowerCase();
+            if (value === 'dtf') return 'DTF';
+            if (value === 'screen') return 'Screen print';
+            if (value === 'print') return 'Print';
+            return 'Embroidery';
+        }
+
+        function formatPosition(logo) {
+            return String(logo.positionLabel || logo.position || 'front')
+                .replace(/[-_]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+        }
+
+        function readBasket() {
+            try { return JSON.parse(localStorage.getItem('quoteBasket') || '[]'); }
+            catch (error) { return []; }
+        }
+
+        function writeBasket(basket) {
+            localStorage.setItem('quoteBasket', JSON.stringify(basket));
+            window.dispatchEvent(new Event('basketUpdated'));
+            loadBasketData();
+        }
+
+        function setItemQuantity(item, nextTotal) {
+            const raw = item.sizes || item.quantities;
+            if (Array.isArray(raw)) {
+                const active = raw.filter(entry => Number(entry && (entry.qty ?? entry.quantity ?? entry.value)) > 0);
+                const target = active[0] || raw[0];
+                if (target) {
+                    if ('qty' in target || !('quantity' in target)) target.qty = nextTotal;
+                    else target.quantity = nextTotal;
+                }
+            } else if (raw && typeof raw === 'object') {
+                const keys = Object.keys(raw).filter(key => {
+                    const value = raw[key];
+                    const amount = Number(value && typeof value === 'object' ? (value.qty ?? value.quantity ?? value.value) : value);
+                    return amount > 0;
+                });
+                const key = keys[0] || Object.keys(raw)[0];
+                if (key) {
+                    if (raw[key] && typeof raw[key] === 'object') raw[key].qty = nextTotal;
+                    else raw[key] = nextTotal;
+                }
+            }
+            item.qty = nextTotal;
+            item.quantity = nextTotal;
+            item.totalQty = nextTotal;
+            item.totalQuantity = nextTotal;
+        }
+
+        function adjustDrawerQty(index, delta) {
+            const basket = readBasket();
+            const item = basket[index];
+            if (!item) return;
+            const next = Math.max(1, getItemQuantityDetails(item).total + delta);
+            setItemQuantity(item, next);
+            writeBasket(basket);
+        }
+
+        function removeDrawerItem(index) {
+            const basket = readBasket();
+            if (index < 0 || index >= basket.length) return;
+            basket.splice(index, 1);
+            writeBasket(basket);
+        }
+
+        function openDrawerLogoEditor(index) {
+            const item = readBasket()[index];
+            if (!item) return;
+            const params = new URLSearchParams({
+                code: item.code || item.productCode || '',
+                product: item.code || item.productCode || '',
+                from: 'basket',
+                logoOnly: '1',
+                customize: '1',
+                basketIndex: String(index),
+                productType: item.productType || '',
+                color: item.color || item.colour || ''
+            });
+            sessionStorage.setItem('customizingBasketIndex', String(index));
+            window.location.href = 'shop-pc.html?' + params.toString();
         }
 
         function getBasketTotalQuantity(basket) {
@@ -935,6 +1299,7 @@
                 const parsedPrice = parseFloat(entry.unitPrice);
                 logos.push({
                     position,
+                    positionLabel: entry.positionLabel || '',
                     method,
                     logo: entry.logo,
                     unitPrice: Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : defaultUnitPrice(method)
@@ -970,18 +1335,21 @@
 
             function setEl(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
 
+            const summary = document.getElementById('basketSummary');
             if (basket.length === 0) {
                 container.innerHTML = '';
                 emptyMsg.style.display = 'flex';
+                if (summary) summary.style.display = 'none';
                 nextBtn.disabled = true;
                 totalEl.textContent = '£0.00';
                 setEl('drProductCosts', '£0.00'); setEl('drLogoCosts', '£0.00');
                 setEl('drExcVat', '£0.00'); setEl('drVat', '£0.00');
                 setEl('drProductLines', '0'); setEl('drTotalQty', '0');
-                const sb = document.getElementById('drawerStatsBar'); if (sb) sb.style.display = 'none';
                 const dr = document.getElementById('drDigitizingRow'); if (dr) dr.style.display = 'none';
+                updateBasketScrollHint(true);
                 return;
             }
+            if (summary) summary.style.display = '';
 
             emptyMsg.style.display = 'none';
             nextBtn.disabled = false;
@@ -1013,16 +1381,41 @@
                     if (text) uniqueEmbroideryDesigns.add(`text:${text}:${textDesign.font || textDesign.fontFamily || 'default'}`);
                 });
                 const colourLabel = item.colour || item.color || '';
+                const sizeLabel = quantityDetails.entries.length === 1
+                    ? 'Size ' + quantityDetails.entries[0][0]
+                    : (quantityDetails.entries.length > 1 ? sizesText : (item.size ? 'Size ' + item.size : ''));
+                const meta = [colourLabel, sizeLabel, 'Qty: ' + totalQty].filter(Boolean).join(' · ');
+                const logoRows = itemLogos.map(logo => {
+                    const src = safeImageSrc(logo.logo);
+                    const thumb = src ? `<img class="basket-logo-thumb" src="${escapeHtml(src)}" alt="">` : '';
+                    return `<div class="basket-logo-row">${thumb}<span class="basket-logo-label">${escapeHtml(formatMethod(logo.method) + ' – ' + formatPosition(logo))}</span></div>`;
+                }).join('');
+                const itemIndex = basket.indexOf(item);
 
                 html += `
                     <div class="basket-item">
-                        <img class="basket-item-img" src="${item.image || item.colourImg || 'brandedukv15-child/assets/images/ui/no-image.png'}" alt="${item.name || ''}">
-                        <div class="basket-item-info">
-                            <div class="basket-item-name">${item.name || 'Product'} <span style="color:#6b7280;font-size:12px;">${item.code || ''}</span></div>
-                            <div class="basket-item-details">
-                                ${colourLabel ? colourLabel + ' • ' : ''}Qty: ${totalQty}${sizesText ? '<br><span style="font-size:11px;color:#9ca3af;">' + sizesText + '</span>' : ''}
+                        <img class="basket-item-img" src="${escapeHtml(item.image || item.colourImg || 'brandedukv15-child/assets/images/ui/no-image.png')}" alt="${escapeHtml(item.name || '')}">
+                        <div class="basket-item-main">
+                            <div class="basket-item-top">
+                                <div>
+                                    <div class="basket-item-name">${escapeHtml(item.name || 'Product')}</div>
+                                    <div class="basket-item-code">${escapeHtml(item.code || item.productCode || '')}</div>
+                                    <div class="basket-item-meta">${escapeHtml(meta)}</div>
+                                </div>
+                                <div class="basket-item-price">£${(garmentTotal + itemLogoTotal).toFixed(2)}<small>(exc. VAT)</small></div>
                             </div>
-                            <div class="basket-item-price">£${itemTotal.toFixed(2)}</div>
+                            ${logoRows}
+                            <div class="basket-item-tools">
+                                <div class="basket-qty">
+                                    <button type="button" data-drawer-action="qty" data-delta="-1" data-index="${itemIndex}" aria-label="Decrease quantity">−</button>
+                                    <span>${totalQty}</span>
+                                    <button type="button" data-drawer-action="qty" data-delta="1" data-index="${itemIndex}" aria-label="Increase quantity">+</button>
+                                </div>
+                                <button type="button" class="basket-item-remove" data-drawer-action="remove" data-index="${itemIndex}">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                                    Remove
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1040,11 +1433,46 @@
             setEl('drVat', `£${vatAmount.toFixed(2)}`);
             totalEl.textContent = `£${grandTotal.toFixed(2)}`;
             setEl('drProductLines', basket.length);
+            const linesLabel = document.getElementById('drProductLinesLabel');
+            if (linesLabel) linesLabel.textContent = basket.length === 1 ? 'product line' : 'product lines';
             setEl('drTotalQty', totalQtyAll);
-            const sb = document.getElementById('drawerStatsBar'); if (sb) sb.style.display = 'flex';
             const drRow = document.getElementById('drDigitizingRow');
             if (drRow) drRow.style.display = digitizingFee > 0 ? 'flex' : 'none';
             setEl('drDigitizingFee', `\u00a3${digitizingFee.toFixed(2)}`);
+            const logoDetail = document.getElementById('drLogoDetail');
+            if (logoDetail) {
+                logoDetail.innerHTML = basket.map(item => getDrawerLogos(item).map(logo => {
+                    const qty = getItemQuantityDetails(item).total;
+                    return `<div><span>${escapeHtml(formatMethod(logo.method) + ' – ' + formatPosition(logo))}</span><span>£${(logo.unitPrice * qty).toFixed(2)}</span></div>`;
+                }).join('')).join('');
+            }
+            const setupDetail = document.getElementById('drSetupDetail');
+            if (setupDetail) {
+                setupDetail.innerHTML = uniqueEmbroideryDesigns.size
+                    ? `<div><span>Digitising &amp; test</span><span>£${digitizingFee.toFixed(2)}</span></div>`
+                    : '';
+            }
+            updateBasketScrollHint();
+        }
+
+        function updateBasketScrollHint(forceHide) {
+            const scrollEl = document.getElementById('basketItemsScroll');
+            const hint = document.getElementById('basketScrollHint');
+            if (!scrollEl || !hint) return;
+            const apply = function () {
+                if (forceHide) {
+                    hint.hidden = true;
+                    hint.setAttribute('aria-hidden', 'true');
+                    return;
+                }
+                const canScroll = scrollEl.scrollHeight > scrollEl.clientHeight + 1;
+                hint.hidden = !canScroll;
+                hint.setAttribute('aria-hidden', canScroll ? 'false' : 'true');
+            };
+            // Measure after flex layout settles.
+            requestAnimationFrame(function () {
+                requestAnimationFrame(apply);
+            });
         }
 
         // Submit quote

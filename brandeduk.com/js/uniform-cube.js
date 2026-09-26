@@ -19,6 +19,9 @@
         { x: -90, y: -360 }
     ];
 
+    var EASE = 0.12;
+    var EPS = 0.0005;
+
     var section = document.querySelector("[data-uniform-cube]");
     if (!section) return;
 
@@ -82,8 +85,12 @@
         return "is-fixed";
     }
 
+    var lastPin = "";
+
     function applyPin() {
         var mode = pinMode();
+        if (mode === lastPin) return;
+        lastPin = mode;
         pinned.forEach(function (el) {
             el.classList.toggle("is-fixed", mode === "is-fixed");
             el.classList.toggle("is-after", mode === "is-after");
@@ -99,6 +106,7 @@
         var p = clamp(index, 0, steps) / steps;
         var y = section.offsetTop - headerH() + p * scrollSpan();
         window.scrollTo({ top: y, behavior: "auto" });
+        kick();
     }
 
     function faceIndex(p) {
@@ -114,35 +122,49 @@
         cube.style.transform = "rotateX(" + (a.x + (b.x - a.x) * f) + "deg) rotateY(" + (a.y + (b.y - a.y) * f) + "deg)";
     }
 
-    var last = -1;
-    var ticking = false;
+    var smooth = 0;
+    var lastFace = -1;
+    var animating = false;
 
-    function frame() {
-        ticking = false;
+    function applyHud(p) {
+        if (pct) pct.textContent = String(Math.round(p * 100)).padStart(3, "0") + "%";
+        if (fill) fill.style.width = (p * 100) + "%";
+        var index = faceIndex(p);
+        if (index === lastFace) return;
+        lastFace = index;
+        if (nameEl) nameEl.textContent = NAMES[index];
+        dots.forEach(function (dot, n) {
+            dot.classList.toggle("is-active", n === index);
+        });
+        slides.forEach(function (slide, n) {
+            var on = n === index;
+            slide.classList.toggle("is-current", on);
+            slide.classList.toggle("is-visible", on);
+        });
+    }
+
+    function tick() {
         var target = progress();
-        updateCube(target);
+        smooth += (target - smooth) * EASE;
+        if (Math.abs(target - smooth) < EPS) {
+            smooth = target;
+        }
+
+        updateCube(smooth);
+        applyHud(smooth);
         applyPin();
-        if (pct) pct.textContent = String(Math.round(target * 100)).padStart(3, "0") + "%";
-        if (fill) fill.style.width = (target * 100) + "%";
-        var index = faceIndex(target);
-        if (index !== last) {
-            last = index;
-            if (nameEl) nameEl.textContent = NAMES[index];
-            dots.forEach(function (dot, n) {
-                dot.classList.toggle("is-active", n === index);
-            });
-            slides.forEach(function (slide, n) {
-                var on = n === index;
-                slide.classList.toggle("is-current", on);
-                slide.classList.toggle("is-visible", on);
-            });
+
+        if (Math.abs(target - smooth) >= EPS) {
+            requestAnimationFrame(tick);
+        } else {
+            animating = false;
         }
     }
 
-    function requestFrame() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(frame);
+    function kick() {
+        if (animating) return;
+        animating = true;
+        requestAnimationFrame(tick);
     }
 
     section.addEventListener("click", function (event) {
@@ -156,7 +178,7 @@
         scrollToIndex(index);
     });
 
-    window.addEventListener("scroll", requestFrame, { passive: true });
-    window.addEventListener("resize", requestFrame);
-    requestFrame();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    kick();
 })();

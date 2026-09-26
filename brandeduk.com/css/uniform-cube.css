@@ -43,12 +43,13 @@
 }
 
 .uniform-cube__box {
-    --s: min(52vw, 58vh, 520px);
+    --s: min(49.4vw, 55.1vh, 494px);
     position: relative;
     width: var(--s);
     height: var(--s);
     transform-style: preserve-3d;
     transform: rotateX(90deg) rotateY(0deg);
+    transition: none;
     will-change: transform;
 }
 
@@ -184,7 +185,7 @@
     inset: 0;
     display: flex;
     align-items: center;
-    padding: 4rem clamp(2rem, 7vw, 7rem);
+    padding: 4rem clamp(1.5rem, 5.5vw, 5.5rem);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -197,15 +198,17 @@
 }
 
 .uniform-cube__card {
-    width: min(390px, 100%);
-    padding: 2rem;
+    width: min(350px, 100%);
+    padding: 1.8rem;
     background: var(--uc-card);
     border-left: 1px solid #e5e7eb;
     box-shadow: 0 18px 50px rgba(16, 24, 40, .08);
+    margin-left: -0.6rem;
 }
 
 .uniform-cube__card.is-right {
     margin-left: auto;
+    margin-right: -0.6rem;
     text-align: right;
     border-left: 0;
     border-right: 1px solid #e5e7eb;
@@ -287,27 +290,25 @@
 
 .uniform-cube__reveal {
     opacity: 0;
-    transform: translateY(14px);
-    transition: .55s ease;
 }
 
-.uniform-cube__slide.is-visible .uniform-cube__reveal {
-    opacity: 1;
-    transform: none;
+.uniform-cube__slide.is-current .uniform-cube__reveal {
+    animation: uniform-cube-reveal .5s ease-out both;
 }
 
-.uniform-cube__slide.is-current .uniform-cube__reveal,
-.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(2),
-.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(3),
-.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(4) {
-    opacity: 1;
-    transform: none;
-    transition-duration: .12s;
-    transition-delay: 0s;
+@keyframes uniform-cube-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 @media (max-width: 850px) {
-    .uniform-cube__box { --s: min(78vw, 44vh, 360px); }
+    .uniform-cube__box { --s: min(74.1vw, 41.8vh, 342px); }
     .uniform-cube__slide {
         min-height: 0;
         align-items: flex-end;
@@ -336,9 +337,10 @@
 
 @media (prefers-reduced-motion: reduce) {
     .uniform-cube__box { transition: none; }
-    .uniform-cube__reveal {
+    .uniform-cube__reveal,
+    .uniform-cube__slide.is-current .uniform-cube__reveal {
         opacity: 1;
         transform: none;
-        transition: none;
+        animation: none;
     }
 }

@@ -21,6 +21,14 @@
     document.body.style.overflow = '';
   }
   
+  // Open contact popup from any [data-open-contact="1"] trigger (header, banners, etc.)
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest('[data-open-contact="1"]');
+    if (!trigger) return;
+    e.preventDefault();
+    window.openContactPopup();
+  });
+
   if (closeBtn) {
     closeBtn.addEventListener('click', closePopup);
   }
@@ -51,11 +59,11 @@
       // Get form values
       var name = document.getElementById('contactName')?.value.trim();
       var email = document.getElementById('contactEmail')?.value.trim();
-      var interest = document.getElementById('contactInterest')?.value;
+      var interest = document.getElementById('contactInterest')?.value || '';
       var phone = document.getElementById('contactPhone')?.value.trim() || '';
       var message = document.getElementById('contactMessage')?.value.trim();
       
-      // Desktop-only fields (may not exist on mobile)
+      // Desktop-only fields (may not exist on mobile) — phone & post code are optional
       var address = document.getElementById('contactAddress')?.value.trim() || '';
       var postCode = document.getElementById('contactPostCode')?.value.trim() || '';
       
@@ -66,21 +74,19 @@
       // Log form values for debugging
       console.log('📝 Form values:', { name, email, interest, phone, message, address, postCode });
       
-      // Validation
-      if (!name || !email || !interest || !message) {
+      // Required: name, email, message. Interest, phone, and post code are optional.
+      if (!name || !email || !message) {
         var missingFields = [];
         if (!name) missingFields.push('Name');
         if (!email) missingFields.push('Email');
-        if (!interest) missingFields.push('Interest');
         if (!message) missingFields.push('Message');
         alert('Please fill in all required fields: ' + missingFields.join(', '));
         return;
       }
       
-      // Additional validation for interest (must not be empty string)
-      if (interest === '' || interest === null) {
-        alert('Please select an interest option.');
-        return;
+      // Backend still expects an interest value — default when left blank
+      if (!interest) {
+        interest = 'other';
       }
       
       // Email validation

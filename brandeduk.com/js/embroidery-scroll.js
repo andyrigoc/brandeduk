@@ -1,15 +1,16 @@
 (function () {
     "use strict";
 
-    var VIDEO_SRC = "brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260926-industrial";
+    var VIDEO_SRC = "brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260926-intra3";
     var VIDEO_FALLBACK = "brandedukv15-child/assets/videos/embroidery/create-an-ultra-realistic-969472967.mp4";
 
+    // Equal wheel distance per stage. videoFrom/videoTo follow the real stitch order.
     var stages = [
-        { from: 0, to: 0.12, number: "STAGE 1", title: "Plain Garment", subtitle: "Ready for embroidery" },
-        { from: 0.12, to: 0.30, number: "STAGE 2", title: "Underlay", subtitle: "Building the foundation" },
-        { from: 0.30, to: 0.55, number: "STAGE 3", title: "Complex Fill", subtitle: "Colour and structure emerge" },
-        { from: 0.55, to: 0.78, number: "STAGE 4", title: "Satin Stitches", subtitle: "Definition and depth" },
-        { from: 0.78, to: 1, number: "STAGE 5", title: "Finished Embroidery", subtitle: "Precision in every stitch" }
+        { from: 0, to: 0.20, videoFrom: 0.00, videoTo: 0.08 },
+        { from: 0.20, to: 0.40, videoFrom: 0.08, videoTo: 0.24 },
+        { from: 0.40, to: 0.60, videoFrom: 0.24, videoTo: 0.45 },
+        { from: 0.60, to: 0.80, videoFrom: 0.45, videoTo: 0.66 },
+        { from: 0.80, to: 1, videoFrom: 0.66, videoTo: 1 }
     ];
 
     var section = document.querySelector("[data-embroidery-scroll]");
@@ -38,8 +39,18 @@
         return Math.max(min, Math.min(max, value));
     }
 
-    function embroideryCurve(p) {
-        return clamp(p, 0, 1);
+    function stageIndex(progress) {
+        for (var i = 0; i < stages.length; i++) {
+            if (progress >= stages[i].from && progress < stages[i].to) return i;
+        }
+        return stages.length - 1;
+    }
+
+    function videoProgress(progress) {
+        var stage = stages[stageIndex(progress)];
+        var span = stage.to - stage.from;
+        var local = span <= 0 ? 1 : clamp((progress - stage.from) / span, 0, 1);
+        return stage.videoFrom + (stage.videoTo - stage.videoFrom) * local;
     }
 
     function getScrollProgress() {
@@ -67,10 +78,7 @@
     }
 
     function updateStage(progress) {
-        var index = stages.findIndex(function (item) {
-            return progress >= item.from && progress < item.to;
-        });
-        if (index < 0) index = stages.length - 1;
+        var index = stageIndex(progress);
         if (index === lastStage) return;
         lastStage = index;
         stageItems.forEach(function (item, i) {
@@ -78,28 +86,25 @@
         });
     }
 
+    function applySeek() {
+        if (!video || video.readyState < 1 || video.seeking) return;
+        if (Math.abs(video.currentTime - targetTime) < 0.012) return;
+        try { video.currentTime = targetTime; } catch (err) {}
+    }
+
     function render() {
         running = false;
         var progress = getScrollProgress();
-        var mapped = embroideryCurve(progress);
-
-        targetTime = mapped * Math.max(videoDuration - 0.04, 0);
+        var duration = video && Number.isFinite(video.duration) && video.duration > 0 ? video.duration : videoDuration;
+        targetTime = videoProgress(progress) * Math.max(duration - 0.04, 0);
         currentTime = targetTime;
-
-        if (video && video.readyState >= 2 && Math.abs(video.currentTime - currentTime) > 0.015) {
-            try { video.currentTime = currentTime; } catch (err) {}
-        }
+        applySeek();
 
         var percentage = Math.round(progress * 100);
         if (progressFill) progressFill.style.height = percentage + "%";
         if (progressValue) progressValue.textContent = percentage + "%";
-        updateStage(mapped);
+        updateStage(progress);
         applyPin();
-
-        if (Math.abs(targetTime - currentTime) > 0.002) {
-            running = true;
-            requestAnimationFrame(render);
-        }
     }
 
     function requestFrame() {
@@ -130,6 +135,9 @@
             video.setAttribute("data-fallback-used", "1");
             video.src = VIDEO_FALLBACK;
             video.load();
+        });
+        video.addEventListener("seeked", function () {
+            if (Math.abs(video.currentTime - targetTime) > 0.012) applySeek();
         });
         video.load();
         if (video.readyState >= 1) bindVideo();

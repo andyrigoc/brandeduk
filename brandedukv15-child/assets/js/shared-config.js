@@ -701,6 +701,17 @@ window.BrandedConfig = (function () {
             label: 'Show Halloween banner'
         },
         {
+            id: 'dtf',
+            enabled: true,
+            views: ['pc'],
+            kind: 'image',
+            hrefPc: 'quote-form.html',
+            openContact: true,
+            label: 'Show DTF printing banner',
+            alt: 'DTF printing service — full-colour Direct to Film prints for custom workwear and apparel',
+            pc: { src: 'brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.png' }
+        },
+        {
             id: 'gildan',
             enabled: true,
             views: ['pc'],
@@ -869,6 +880,7 @@ window.BrandedConfig = (function () {
             return '<div' + attrs + '>' + inner + '</div>';
         }
         var extra = banner.external ? ' target="_blank" rel="noopener"' : '';
+        if (banner.openContact) attrs += ' data-open-contact="1"';
         return '<a' + attrs + ' href="' + escapeBannerText(href) + '"' + extra + '>' + inner + '</a>';
     }
 

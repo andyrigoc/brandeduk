@@ -97,7 +97,7 @@
           </div>
           <div class="buk-footer__payments" aria-label="Accepted payment methods"></div>
         </div>
-        <div class="buk-footer__watermark" aria-hidden="true"><span>branded</span><span class="buk-footer__watermark-uk">uk</span></div>
+        <a class="buk-footer__watermark" href="home-pc.html" aria-label="Branded UK home"><span>branded</span><span class="buk-footer__watermark-uk">uk</span></a>
       </footer>`;
 
     frame.querySelector(".buk-footer__eyebrow").textContent = config.brand.eyebrow;
@@ -149,6 +149,13 @@
       badge.className = "buk-footer__payment";
       badge.textContent = payment;
       payments.appendChild(badge);
+    });
+
+    const watermark = frame.querySelector(".buk-footer__watermark");
+    watermark.addEventListener("click", (event) => {
+      if (!/home-pc\.html$/.test(window.location.pathname)) return;
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "auto" });
     });
 
     frame.addEventListener("click", (event) => {

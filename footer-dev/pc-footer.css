@@ -263,8 +263,14 @@
     line-height: .82;
     letter-spacing: -.085em;
     white-space: nowrap;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
     user-select: none;
+  }
+
+  .buk-footer__watermark:hover {
+    color: rgb(207 207 203 / 28%);
   }
 
   .buk-footer__watermark-uk {
