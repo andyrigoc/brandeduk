@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    var VIDEO_SRC = "brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4";
+    var VIDEO_SRC = "brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260926-industrial";
     var VIDEO_FALLBACK = "brandedukv15-child/assets/videos/embroidery/create-an-ultra-realistic-969472967.mp4";
 
     var stages = [
@@ -39,10 +39,7 @@
     }
 
     function embroideryCurve(p) {
-        if (p < 0.10) return p * 0.30;
-        if (p < 0.35) return 0.03 + ((p - 0.10) / 0.25) * 0.25;
-        if (p < 0.75) return 0.28 + ((p - 0.35) / 0.40) * 0.50;
-        return 0.78 + ((p - 0.75) / 0.25) * 0.22;
+        return clamp(p, 0, 1);
     }
 
     function getScrollProgress() {
@@ -87,8 +84,7 @@
         var mapped = embroideryCurve(progress);
 
         targetTime = mapped * Math.max(videoDuration - 0.04, 0);
-        currentTime += (targetTime - currentTime) * (reduceMotion ? 1 : 0.18);
-        if (Math.abs(targetTime - currentTime) < 0.002) currentTime = targetTime;
+        currentTime = targetTime;
 
         if (video && video.readyState >= 2 && Math.abs(video.currentTime - currentTime) > 0.015) {
             try { video.currentTime = currentTime; } catch (err) {}

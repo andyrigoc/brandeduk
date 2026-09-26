@@ -5,7 +5,9 @@
     --uc-ink: #10243b;
     --uc-header: var(--brandeduk-site-header-height, 220px);
     --uc-view: calc(100vh - var(--uc-header));
+    --uc-step: 200px;
     position: relative;
+    height: calc(var(--uc-view) + 5 * var(--uc-step));
     background: #fff;
     color: var(--uc-ink);
     font-family: "DM Mono", monospace;
@@ -156,16 +158,42 @@
 }
 
 .uniform-cube__content {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--uc-view);
     z-index: 3;
+    pointer-events: none;
+}
+
+.uniform-cube__content.is-fixed {
+    position: fixed;
+    top: var(--uc-header);
+}
+
+.uniform-cube__content.is-after {
+    top: auto;
+    bottom: 0;
 }
 
 .uniform-cube__slide {
-    min-height: var(--uc-view);
+    min-height: 0;
+    height: 100%;
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     padding: 4rem clamp(2rem, 7vw, 7rem);
-    scroll-margin-top: var(--uc-header);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.uniform-cube__slide.is-current {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .uniform-cube__card {
@@ -268,19 +296,25 @@
     transform: none;
 }
 
-.uniform-cube__slide.is-visible .uniform-cube__reveal:nth-child(2) { transition-delay: .08s; }
-.uniform-cube__slide.is-visible .uniform-cube__reveal:nth-child(3) { transition-delay: .16s; }
-.uniform-cube__slide.is-visible .uniform-cube__reveal:nth-child(4) { transition-delay: .24s; }
+.uniform-cube__slide.is-current .uniform-cube__reveal,
+.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(2),
+.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(3),
+.uniform-cube__slide.is-current .uniform-cube__reveal:nth-child(4) {
+    opacity: 1;
+    transform: none;
+    transition-duration: .12s;
+    transition-delay: 0s;
+}
 
 @media (max-width: 850px) {
     .uniform-cube__box { --s: min(78vw, 44vh, 360px); }
     .uniform-cube__slide {
-        min-height: 120vh;
+        min-height: 0;
         align-items: flex-end;
         padding: 3rem 1.2rem;
     }
     .uniform-cube__slide:first-child {
-        min-height: var(--uc-view);
+        min-height: 0;
         align-items: center;
     }
     .uniform-cube__card,

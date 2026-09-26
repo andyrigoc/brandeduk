@@ -31,8 +31,8 @@
     var nameEl = section.querySelector("[data-uniform-name]");
     var stage = section.querySelector("[data-uniform-stage]");
     var hud = section.querySelector("[data-uniform-hud]");
-    var pinned = [stage, hud, dotsRoot].filter(Boolean);
-    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var content = section.querySelector(".uniform-cube__content");
+    var pinned = [stage, hud, dotsRoot, content].filter(Boolean);
 
     function headerH() {
         var raw = getComputedStyle(document.documentElement).getPropertyValue("--brandeduk-site-header-height");
@@ -44,9 +44,7 @@
         return Math.max(min, Math.min(max, value));
     }
 
-    function ease(t) {
-        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    }
+    var steps = STOPS.length - 1;
 
     faces.forEach(function (face, index) {
         var img = new Image();
@@ -59,7 +57,7 @@
         button.className = "uniform-cube__dot" + (index === 0 ? " is-active" : "");
         button.setAttribute("aria-label", NAMES[index]);
         button.addEventListener("click", function () {
-            slides[index].scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+            scrollToIndex(index);
         });
         dotsRoot.appendChild(button);
     });
@@ -92,54 +90,52 @@
         });
     }
 
-    function activeSlide() {
-        var mid = headerH() + (window.innerHeight - headerH()) / 2;
-        var best = 0;
-        var dist = Infinity;
-        slides.forEach(function (slide, index) {
-            var rect = slide.getBoundingClientRect();
-            var gap = Math.abs(rect.top + rect.height / 2 - mid);
-            if (gap < dist) {
-                dist = gap;
-                best = index;
-            }
-        });
-        return best;
+    function scrollSpan() {
+        var top = headerH();
+        return Math.max(top - (window.innerHeight - section.offsetHeight), 1);
+    }
+
+    function scrollToIndex(index) {
+        var p = clamp(index, 0, steps) / steps;
+        var y = section.offsetTop - headerH() + p * scrollSpan();
+        window.scrollTo({ top: y, behavior: "auto" });
+    }
+
+    function faceIndex(p) {
+        return clamp(Math.floor(p * steps + 0.001), 0, steps);
     }
 
     function updateCube(p) {
-        var t = p * (STOPS.length - 1);
-        var i = Math.min(Math.floor(t), STOPS.length - 2);
-        var f = ease(t - i);
+        var t = p * steps;
+        var i = Math.min(Math.floor(t), steps - 1);
+        var f = t >= steps ? 1 : t - i;
         var a = STOPS[i];
-        var b = STOPS[i + 1];
+        var b = STOPS[Math.min(i + 1, STOPS.length - 1)];
         cube.style.transform = "rotateX(" + (a.x + (b.x - a.x) * f) + "deg) rotateY(" + (a.y + (b.y - a.y) * f) + "deg)";
     }
 
-    var smooth = 0;
     var last = -1;
     var ticking = false;
 
     function frame() {
         ticking = false;
         var target = progress();
-        smooth += (target - smooth) * (reduceMotion ? 1 : 0.12);
-        if (Math.abs(target - smooth) < 0.0008) smooth = target;
-        updateCube(smooth);
+        updateCube(target);
         applyPin();
-        if (pct) pct.textContent = String(Math.round(smooth * 100)).padStart(3, "0") + "%";
-        if (fill) fill.style.width = (smooth * 100) + "%";
-        var index = activeSlide();
+        if (pct) pct.textContent = String(Math.round(target * 100)).padStart(3, "0") + "%";
+        if (fill) fill.style.width = (target * 100) + "%";
+        var index = faceIndex(target);
         if (index !== last) {
             last = index;
             if (nameEl) nameEl.textContent = NAMES[index];
             dots.forEach(function (dot, n) {
                 dot.classList.toggle("is-active", n === index);
             });
-        }
-        if (Math.abs(target - smooth) > 0.0008) {
-            ticking = true;
-            requestAnimationFrame(frame);
+            slides.forEach(function (slide, n) {
+                var on = n === index;
+                slide.classList.toggle("is-current", on);
+                slide.classList.toggle("is-visible", on);
+            });
         }
     }
 
@@ -149,20 +145,15 @@
         requestAnimationFrame(frame);
     }
 
-    var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) entry.target.classList.add("is-visible");
-        });
-    }, { threshold: 0.25 });
-    slides.forEach(function (slide) { observer.observe(slide); });
-
     section.addEventListener("click", function (event) {
         var link = event.target.closest('a[href^="#"]');
         if (!link || !section.contains(link)) return;
         var target = section.querySelector(link.getAttribute("href"));
         if (!target) return;
+        var index = slides.indexOf(target);
+        if (index < 0) return;
         event.preventDefault();
-        target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+        scrollToIndex(index);
     });
 
     window.addEventListener("scroll", requestFrame, { passive: true });

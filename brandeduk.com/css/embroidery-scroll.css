@@ -2,7 +2,7 @@
     --em-header: var(--brandeduk-site-header-height, 220px);
     --em-view: calc(100vh - var(--em-header));
     position: relative;
-    height: 450vh;
+    height: 140vh;
     background: #fff;
     color: #1d2f46;
 }
