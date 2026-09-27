@@ -23,7 +23,7 @@
     isolation: isolate;
     overflow: hidden;
     min-height: 920px;
-    padding: 72px 76px 280px;
+    padding: 72px 76px 250px;
     color: var(--footer-text);
     font-family: Inter, "Segoe UI", Arial, sans-serif;
     background: var(--footer-panel);
@@ -41,7 +41,7 @@
     gap: 40px;
     align-items: flex-end;
     justify-content: space-between;
-    padding-bottom: 36px;
+    padding-bottom: 22px;
     border-bottom: 1px solid var(--footer-line);
   }
 
@@ -107,7 +107,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: clamp(28px, 4vw, 68px);
-    padding: 45px 0 43px;
+    padding: 24px 0 24px;
   }
 
   .buk-footer__column h3 {
@@ -258,7 +258,7 @@
     left: 36px;
     overflow: visible;
     color: rgb(207 207 203 / 16%);
-    font-size: clamp(180px, 16vw, 305px);
+    font-size: clamp(153px, 13.6vw, 259.25px);
     font-weight: 850;
     line-height: .82;
     letter-spacing: -.085em;
