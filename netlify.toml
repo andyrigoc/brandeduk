@@ -89,8 +89,20 @@
 
 [[redirects]]
   from = "/quote-form.html"
-  to = "/quote"
-  status = 301
+  to = "/?contact=1"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/quote-form"
+  to = "/?contact=1"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/brandeduk.com/quote-form-pc.html"
+  to = "/?contact=1"
+  status = 302
   force = true
 
 [[redirects]]
@@ -174,8 +186,9 @@
 
 [[redirects]]
   from = "/quote"
-  to = "/quote-form.html"
-  status = 200
+  to = "/?contact=1"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/product"

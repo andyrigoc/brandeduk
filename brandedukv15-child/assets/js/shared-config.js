@@ -705,7 +705,7 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc'],
             kind: 'image',
-            hrefPc: 'quote-form.html',
+            hrefPc: '#',
             openContact: true,
             label: 'Show DTF printing banner',
             alt: 'DTF printing service — full-colour Direct to Film prints for custom workwear and apparel',
@@ -755,8 +755,9 @@ window.BrandedConfig = (function () {
             enabled: true,
             views: ['pc', 'mobile'],
             kind: 'contact',
-            hrefPc: 'quote-form.html',
-            hrefMobile: 'quote-form.html',
+            hrefPc: '#',
+            hrefMobile: '#',
+            openContact: true,
             label: 'Show Get in Touch banner'
         },
         {

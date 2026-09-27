@@ -130,16 +130,6 @@ function brandedukv15_child_enqueue_scripts() {
         );
     }
 
-    if ( is_page( 'quote-form' ) ) {
-        wp_enqueue_script(
-            'brandedukv15-page-quote-form',
-            BRANDEDUKV15_CHILD_URI . '/assets/js/pages/quote-form.js',
-            array( 'brandedukv15-vat-toggle' ),
-            BRANDEDUKV15_CHILD_VERSION,
-            true
-        );
-    }
-
     if ( is_page( 'customize-positions' ) ) {
         wp_enqueue_script(
             'brandedukv15-page-customize-positions',

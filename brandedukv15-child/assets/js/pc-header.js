@@ -1,3 +1,27 @@
+/* Start at the top on reload/navigation unless the URL targets an in-page anchor. Shared by pc-header.js, pc-footer.js and mobile/footer/footer.js. */
+(function () {
+    if (window.__brandedScrollTopOnReload) return;
+    window.__brandedScrollTopOnReload = true;
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    function hasAnchorTarget() {
+        var id = window.location.hash.slice(1);
+        if (!id) return false;
+        try { id = decodeURIComponent(id); } catch (error) { /* keep raw hash */ }
+        return !!(document.getElementById(id) || document.getElementsByName(id)[0]);
+    }
+
+    function resetScroll(event) {
+        if (event && event.persisted) return;
+        if (hasAnchorTarget()) return;
+        window.scrollTo(0, 0);
+    }
+
+    resetScroll();
+    window.addEventListener('pageshow', resetScroll);
+    window.addEventListener('load', resetScroll);
+})();
+
 (function () {
     'use strict';
 
@@ -150,7 +174,7 @@
             }
             if (typeof window.openContactPopup !== 'function' && !hasAsset('script[src]', 'src', 'popup-contact.js')) {
                 var script = document.createElement('script');
-                script.src = new URL('mobile/js/popup-contact.js?v=20260926-contactui', projectRoot).href;
+                script.src = new URL('mobile/js/popup-contact.js?v=20260927-quoteonly', projectRoot).href;
                 script.dataset.pcContactPopup = 'true';
                 document.body.appendChild(script);
             }
@@ -165,7 +189,7 @@
         }
         var link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = new URL('mobile/css/popup-contact.css?v=20260926-contactui', projectRoot).href;
+        link.href = new URL('mobile/css/popup-contact.css?v=20260927-quoteonly', projectRoot).href;
         link.dataset.pcHeaderStyle = 'contact';
         link.addEventListener('load', injectMarkup);
         link.addEventListener('error', injectMarkup);

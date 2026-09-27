@@ -1,51 +1,205 @@
 // Popup Contact - Get in Touch
+// Self-contained: loads its stylesheet and markup when the page lacks them, opens from any
+// [data-open-contact] trigger (including buttons built later by JS) and auto-opens on ?contact=1.
 (function() {
-  var popup = document.getElementById('popupContact');
-  var overlay = document.getElementById('popupOverlay');
-  var closeBtn = document.getElementById('popupContactClose');
-  var form = document.getElementById('contactQuickForm');
-  
-  if (!popup) return;
-  
-  // Global function to open popup
-  window.openContactPopup = function() {
+  if (window.__brandedContactPopupLoaded) return;
+  window.__brandedContactPopupLoaded = true;
+
+  var ASSET_VERSION = '20260927-quoteonly';
+  var scriptSrc = (document.currentScript && document.currentScript.src) || window.location.href;
+  var popup = null;
+  var overlay = null;
+  var loading = false;
+  var readyCallbacks = [];
+
+  function assetUrl(file) {
+    try {
+      return new URL(file + '?v=' + ASSET_VERSION, scriptSrc).href;
+    } catch (error) {
+      return file;
+    }
+  }
+
+  function findAsset(selector, attribute, fileName) {
+    return Array.prototype.find.call(document.querySelectorAll(selector), function (element) {
+      try {
+        return new URL(element.getAttribute(attribute), window.location.href).pathname.split('/').pop() === fileName;
+      } catch (error) {
+        return false;
+      }
+    }) || null;
+  }
+
+  // The markup must not be inserted before its stylesheet hides it.
+  function loadStylesheet(done) {
+    var link = findAsset('link[rel="stylesheet"][href]', 'href', 'popup-contact.css');
+    if (link && link.sheet) {
+      done();
+      return;
+    }
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = assetUrl('../css/popup-contact.css');
+      document.head.appendChild(link);
+    }
+    var finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      done();
+    }
+    link.addEventListener('load', finish);
+    link.addEventListener('error', finish);
+    setTimeout(finish, 4000);
+  }
+
+  function loadTemplate(done) {
+    if (window.BrandedPcContactTemplate) {
+      done();
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = assetUrl('popup-contact-template.js');
+    script.onload = done;
+    script.onerror = done;
+    document.head.appendChild(script);
+  }
+
+  function bindPopup() {
+    var element = document.getElementById('popupContact');
+    if (!element) return false;
+    popup = element;
+    overlay = document.getElementById('popupOverlay');
+    if (element.dataset.contactBound === '1') return true;
+    element.dataset.contactBound = '1';
+
+    var closeBtn = document.getElementById('popupContactClose');
+    if (closeBtn) closeBtn.addEventListener('click', closePopup);
+    if (overlay) overlay.addEventListener('click', closePopup);
+    var form = document.getElementById('contactQuickForm');
+    if (form) bindForm(form);
+    return true;
+  }
+
+  function ensurePopup(callback) {
+    if (bindPopup()) {
+      if (callback) callback();
+      return;
+    }
+    if (callback) readyCallbacks.push(callback);
+    if (loading || !document.body) return;
+    loading = true;
+
+    var pending = 2;
+    function step() {
+      pending -= 1;
+      if (pending > 0) return;
+      if (!document.getElementById('popupContact') && window.BrandedPcContactTemplate) {
+        document.body.insertAdjacentHTML('beforeend', window.BrandedPcContactTemplate);
+      }
+      loading = false;
+      var callbacks = readyCallbacks.splice(0);
+      if (!bindPopup()) return;
+      callbacks.forEach(function (queued) { queued(); });
+    }
+    loadStylesheet(step);
+    loadTemplate(step);
+  }
+
+  function showPopup(options) {
+    if (!popup) return;
+    var message = options && options.message;
+    if (message) {
+      var messageField = document.getElementById('contactMessage');
+      if (messageField && !messageField.value.trim()) messageField.value = message;
+    }
     popup.classList.add('active');
     if (overlay) overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+  }
+
+  // Pages embedded in an iframe (customisation tool) open the host page's popup.
+  function openInParent(options) {
+    try {
+      if (window.parent && window.parent !== window && typeof window.parent.openContactPopup === 'function') {
+        window.parent.openContactPopup(options);
+        return true;
+      }
+    } catch (error) {
+      // Cross-origin parent: fall back to this page's popup.
+    }
+    return false;
+  }
+
+  // Global function to open popup. Optional: { message: 'prefilled text' }
+  window.openContactPopup = function(options) {
+    if (openInParent(options)) return;
+    ensurePopup(function () { showPopup(options); });
   };
   
   // Close popup
   function closePopup() {
+    if (!popup) return;
     popup.classList.remove('active');
     if (overlay) overlay.classList.remove('active');
     document.body.style.overflow = '';
   }
   
-  // Open contact popup from any [data-open-contact="1"] trigger (header, banners, etc.)
+  // Capture phase so menus that stop propagation cannot swallow the trigger.
   document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('[data-open-contact="1"]');
-    if (!trigger) return;
+    var trigger = e.target && e.target.closest ? e.target.closest('[data-open-contact]') : null;
+    if (!trigger || trigger.getAttribute('data-open-contact') === '0') return;
     e.preventDefault();
-    window.openContactPopup();
-  });
+    var message = trigger.getAttribute('data-contact-message') || '';
+    // Deferred so menus closing on the same click do not undo the scroll lock.
+    setTimeout(function () {
+      window.openContactPopup(message ? { message: message } : undefined);
+    }, 0);
+  }, true);
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closePopup);
-  }
-  
-  if (overlay) {
-    overlay.addEventListener('click', closePopup);
-  }
-  
   // Close on escape key
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && popup.classList.contains('active')) {
+    if (e.key === 'Escape' && popup && popup.classList.contains('active')) {
       closePopup();
     }
   });
+
+  function shouldAutoOpen() {
+    try {
+      return new URLSearchParams(window.location.search).get('contact') === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function clearContactParam() {
+    try {
+      var url = new URL(window.location.href);
+      url.searchParams.delete('contact');
+      history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+    } catch (error) {
+      // Leave the URL untouched.
+    }
+  }
+
+  function boot() {
+    if (shouldAutoOpen()) {
+      clearContactParam();
+      window.openContactPopup();
+      return;
+    }
+    if (window.parent === window) ensurePopup();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
   
   // Form submit handler
-  if (form) {
+  function bindForm(form) {
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       

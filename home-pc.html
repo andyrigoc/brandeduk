@@ -147,11 +147,11 @@
         // servers so relative assets and links continue resolving under /brandeduk/.
         var isBrandedProductionHost = /(^|\.)brandeduk\.com$/i.test(window.location.hostname);
         if (isBrandedProductionHost && window.location.pathname !== '/') {
-            history.replaceState(null, '', '/');
+            history.replaceState(null, '', '/' + window.location.search + window.location.hash);
         }
         // Redirect to mobile version on smaller screens (mobile + tablet)
         if (window.innerWidth < 1024) {
-            window.location.href = 'index-mobile.html?force=mobile';
+            window.location.href = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -163,7 +163,7 @@
     <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
-    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260926-contactui">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260927-walogo">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260927-neonfix">
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
@@ -1364,7 +1364,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700&family=Eater&family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260925-terms">
-    <script src="footer-dev/pc-footer.js?v=20260925-terms" defer></script>
+    <script src="footer-dev/pc-footer.js?v=20260927-quoteonly" defer></script>
 </head>
 <body>
 
@@ -2617,7 +2617,7 @@
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=anthem" aria-label="Shop Anthem">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17804-anthem-hoodies-banners-v3_01_1920-x-630.webp" alt="Anthem heavy bass hoodie collection">
             </a>
-            <a class="hero-banner hero-banner-image" href="quote-form.html" data-open-contact="1" aria-label="DTF printing service">
+            <a class="hero-banner hero-banner-image" href="#" data-open-contact="1" aria-label="DTF printing service">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/DTF%20Printing%20Service%20Studio%20Banner.png" alt="DTF printing service — full-colour Direct to Film prints for custom workwear and apparel">
             </a>
             <a class="hero-banner hero-banner-image" href="shop-pc.html?brand=gildan" aria-label="Shop Gildan industry classics">
@@ -2638,7 +2638,7 @@
             </a>
 
             <!-- Original banner 3 - Get in Touch -->
-            <a class="hero-banner" id="heroBanner2" href="quote-form.html" aria-label="Request a quote">
+            <a class="hero-banner" id="heroBanner2" href="#" data-open-contact="1" aria-label="Request a quote">
                 <div class="neon-container">
                     <div class="neon-text">GET IN</div>
                     <div class="flux-text">TOUCH</div>
@@ -2776,7 +2776,7 @@
                     <p class="uniform-cube__copy uniform-cube__reveal">Professional chefwear combines comfort, durability and a polished image for every service.<br><br>Coordinated uniforms help kitchen teams look confident, work as one and represent the business behind every plate.</p>
                     <div class="uniform-cube__actions uniform-cube__reveal">
                         <a class="uniform-cube__shop" href="shop-pc.html?productType=chef-jackets">Shop chefwear</a>
-                        <a class="uniform-cube__next" href="quote-form.html">Get a quote</a>
+                        <a class="uniform-cube__next" href="#" data-open-contact="1">Get a quote</a>
                     </div>
                 </div>
             </article>
@@ -3569,7 +3569,7 @@
 </div>
 
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-<script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-headwearhero"></script>
+<script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-quoteonly"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260924-header5"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
@@ -3579,7 +3579,7 @@
 <script src="brandeduk.com/js/main.js?v=20260927-neonfix"></script>
 <script src="brandeduk.com/js/uniform-cube.js?v=20260926-cubeease"></script>
 <script src="brandeduk.com/js/embroidery-scroll.js?v=20260926-industrial"></script>
-<script src="mobile/js/popup-contact.js?v=20260926-contactui"></script>
+<script src="mobile/js/popup-contact.js?v=20260927-quoteonly"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
 <script src="brandedukv15-child/assets/js/pc-search.js?v=20260917-popup-route"></script>
@@ -3766,7 +3766,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ignore
     }
 
-    var mobileUrl = 'index-mobile.html?force=mobile';
+    var mobileUrl = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
 
     function isMobileViewport() {
         if (window.matchMedia) {

@@ -1,9 +1,36 @@
+/* Start at the top on reload/navigation unless the URL targets an in-page anchor. Shared by pc-header.js, pc-footer.js and mobile/footer/footer.js. */
+(function () {
+    if (window.__brandedScrollTopOnReload) return;
+    window.__brandedScrollTopOnReload = true;
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    function hasAnchorTarget() {
+        var id = window.location.hash.slice(1);
+        if (!id) return false;
+        try { id = decodeURIComponent(id); } catch (error) { /* keep raw hash */ }
+        return !!(document.getElementById(id) || document.getElementsByName(id)[0]);
+    }
+
+    function resetScroll(event) {
+        if (event && event.persisted) return;
+        if (hasAnchorTarget()) return;
+        window.scrollTo(0, 0);
+    }
+
+    resetScroll();
+    window.addEventListener('pageshow', resetScroll);
+    window.addEventListener('load', resetScroll);
+})();
+
 ﻿/* =============================================
    BrandedUK Footer – Production JS
    (Template injection + all init functions)
    ============================================= */
 (function () {
   'use strict';
+
+  var footerScriptUrl = (document.currentScript && document.currentScript.src) ||
+    new URL('/mobile/footer/footer.js', window.location.origin).href;
 
   /* --- Template Injection --- */
   function injectFooter() {
@@ -169,14 +196,23 @@
     setInterval(tick, 1000);
   }
 
-  /* --- 4. Quote Button --- */
+  /* --- 4. Quote Button: opens the Get in touch popup --- */
   function initQuoteButton() {
-    var btn = document.querySelector('.quote-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      // Navigate to quote form
-      window.location.href = 'quote-form.html';
+    document.querySelectorAll('footer .quote-btn').forEach(function (btn) {
+      btn.setAttribute('data-open-contact', '1');
     });
+    ensureContactPopupScript();
+  }
+
+  function ensureContactPopupScript() {
+    if (typeof window.openContactPopup === 'function') return;
+    var loaded = Array.prototype.some.call(document.querySelectorAll('script[src]'), function (script) {
+      return /\/popup-contact\.js(?:\?|$)/.test(script.src);
+    });
+    if (loaded) return;
+    var script = document.createElement('script');
+    script.src = new URL('../js/popup-contact.js?v=20260927-quoteonly', footerScriptUrl).href;
+    document.body.appendChild(script);
   }
 
   /* --- 5. Hamburger / Purple Sidebar --- */

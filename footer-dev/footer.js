@@ -158,8 +158,7 @@
     var btn = document.querySelector('.quote-btn');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      // Navigate to quote form
-      window.location.href = 'quote-form.html';
+      if (typeof window.openContactPopup === 'function') window.openContactPopup();
     });
   }
 

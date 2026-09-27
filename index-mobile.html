@@ -168,13 +168,13 @@
     <!-- Mobile-First CSS -->
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260923-hero-scratch">
     <link rel="stylesheet" href="mobile/hero/hero.css?v=20260927-neonfix">
-    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260307A">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
     <link rel="stylesheet" href="mobile/css/upload-logo-modal.css?v=20260413a">
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260409B">
-    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260926-dtfbanner"></script>
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-quoteonly"></script>
     <!-- Desktop Header CSS -->
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260331A">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
@@ -1192,7 +1192,7 @@
                 <a class="hero-banner" href="shop.html?brand=mumbles" aria-label="Shop Mumbles"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185849.png" alt="Mumbles Halloween plush collection" width="490" height="602"></a>
                 <a class="hero-banner" href="shop.html?brand=anthem" aria-label="Shop Anthem"><img src="brandeduk.com/assets/Screenshot%202026-09-15%20185951.png" alt="Anthem heavy bass hoodie collection" width="496" height="604"></a>
                 <a class="hero-banner" href="shop.html?category=t-shirts" aria-label="Shop branded T-shirts"><div class="hero-bounce-container"><div class="hero-bounce-headline" data-bounce-text>branded</div></div></a>
-                <a class="hero-banner hero-banner--clickable" href="quote-form.html" aria-label="Request a quote"><div class="neon-container"><div class="neon-text">GET IN</div><div class="flux-text">TOUCH</div></div></a>
+                <a class="hero-banner hero-banner--clickable" href="#" data-open-contact="1" aria-label="Request a quote"><div class="neon-container"><div class="neon-text">GET IN</div><div class="flux-text">TOUCH</div></div></a>
                 <a class="hero-banner" href="shop.html" aria-label="Browse all products"><div class="hero-text-container"><div class="hero-text-make">MAKE</div><div class="hero-flip-wrapper"><div class="hero-flip-word flip-work">WORK</div><div class="hero-flip-word flip-lifestyle">LIFESTYLE</div><div class="hero-flip-word flip-everything">EVERYTHING</div></div><div class="hero-text-awesome">AWESOME!</div></div></a>
             </div>
 
@@ -2600,7 +2600,7 @@
     <script src="mobile/js/mobile.js?v=20260925-banners"></script>
     <!-- customize.js only needed on customize pages, not homepage -->
     <script src="mobile/hero/hero.js?v=20260923-expansion"></script>
-    <script src="mobile/js/popup-contact.js?v=20260102"></script>
+    <script src="mobile/js/popup-contact.js?v=20260927-quoteonly"></script>
     <script src="mobile/js/faq.js?v=20260102"></script>
     <!-- Desktop Header JS -->
     <script src="brandedukv15-child/assets/js/header.js?v=20260104B"></script>
@@ -3157,7 +3157,7 @@
 
             function maybeRedirectToDesktop() {
                 if (!isDesktopViewport()) return;
-                window.location.replace('home-pc.html?force=desktop');
+                window.location.replace('home-pc.html?force=desktop' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : ''));
             }
 
             setTimeout(maybeRedirectToDesktop, 0);
@@ -3195,7 +3195,7 @@
         })();
     </script>
 
-    <script src="mobile/footer/footer.js?v=20260615A" defer></script>
+    <script src="mobile/footer/footer.js?v=20260927-quoteonly" defer></script>
 
     <!-- Categories auto-scroll (native scroll + JS ticker) -->
     <script>

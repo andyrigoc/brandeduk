@@ -43,7 +43,7 @@
                         <ul class="bar-menu-list">
                             <li class="bar-menu-item"><a href="/index.html">About Branded UK</a></li>
                             <li class="bar-menu-item"><a href="/bulk-orders.html">Bulk &amp; Corporate Orders</a></li>
-                            <li class="bar-menu-item"><a href="/quote-form.html">Request a Quote</a></li>
+                            <li class="bar-menu-item"><a href="#" data-open-contact="1">Request a Quote</a></li>
                             <li class="bar-menu-item"><a href="/blog/case-study-500-tshirts-london-event.html">Case Studies</a></li>
                             <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
@@ -91,7 +91,7 @@
                 <span class="ticks"></span>
             </div>
         </div>
-        <button class="quote-btn" type="button">GET A QUOTE</button>
+        <button class="quote-btn" type="button" data-open-contact="1">GET A QUOTE</button>
         <a href="mailto:info@brandeduk.com" class="quote-email">info@brandeduk.com</a>
         <div class="footer-spacer"></div>
     </div>

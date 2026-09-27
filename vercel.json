@@ -41,7 +41,6 @@
     { "source": "/payment-success", "destination": "/payment-success.html" },
     { "source": "/payment-cancel", "destination": "/payment-cancel.html" },
     { "source": "/customize", "destination": "/customize.html" },
-    { "source": "/quote", "destination": "/quote-form.html" },
     { "source": "/services", "destination": "/services.html" },
 
     { "source": "/product", "destination": "/product-detail.html" },
@@ -58,6 +57,11 @@
   ],
 
   "redirects": [
+    { "source": "/quote", "destination": "/?contact=1", "permanent": false },
+    { "source": "/quote-form", "destination": "/?contact=1", "permanent": false },
+    { "source": "/quote-form.html", "destination": "/?contact=1", "permanent": false },
+    { "source": "/brandeduk.com/quote-form-pc", "destination": "/?contact=1", "permanent": false },
+    { "source": "/brandeduk.com/quote-form-pc.html", "destination": "/?contact=1", "permanent": false },
     {
       "source": "/mobile",
       "destination": "/",
@@ -151,11 +155,6 @@
     {
       "source": "/customize.html",
       "destination": "/customize",
-      "permanent": true
-    },
-    {
-      "source": "/quote-form.html",
-      "destination": "/quote",
       "permanent": true
     },
     {

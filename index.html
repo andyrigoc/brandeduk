@@ -171,7 +171,7 @@
                 if (target) {
                     redirected = true;
                     lastTarget = target;
-                    window.location.replace(target);
+                    window.location.replace(target + window.location.search + window.location.hash);
                 }
             }
 

@@ -1,5 +1,31 @@
+/* Start at the top on reload/navigation unless the URL targets an in-page anchor. Shared by pc-header.js, pc-footer.js and mobile/footer/footer.js. */
+(function () {
+    if (window.__brandedScrollTopOnReload) return;
+    window.__brandedScrollTopOnReload = true;
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    function hasAnchorTarget() {
+        var id = window.location.hash.slice(1);
+        if (!id) return false;
+        try { id = decodeURIComponent(id); } catch (error) { /* keep raw hash */ }
+        return !!(document.getElementById(id) || document.getElementsByName(id)[0]);
+    }
+
+    function resetScroll(event) {
+        if (event && event.persisted) return;
+        if (hasAnchorTarget()) return;
+        window.scrollTo(0, 0);
+    }
+
+    resetScroll();
+    window.addEventListener('pageshow', resetScroll);
+    window.addEventListener('load', resetScroll);
+})();
+
 (function initializePcFooter() {
   "use strict";
+
+  const footerScriptUrl = document.currentScript ? document.currentScript.src : "";
 
   const config = {
     brand: {
@@ -45,7 +71,7 @@
         links: [
           ["About Branded UK", "home-pc.html"],
           ["Bulk & Corporate Orders", "bulk-orders.html"],
-          ["Request a Quote", "quote-form.html"],
+          ["Request a Quote", "#", "contact"],
           ["Case Studies", "blog/case-study-500-tshirts-london-event.html"],
           ["Sustainability", "services.html"],
           ["Blog", "blog/index.html"],
@@ -67,7 +93,17 @@
     link.textContent = label;
     link.href = url || "#";
     if (action) link.dataset.footerAction = action;
+    if (action === "contact") link.dataset.openContact = "1";
     return link;
+  }
+
+  function ensureContactPopupScript() {
+    if (typeof window.openContactPopup === "function") return;
+    const loaded = Array.from(document.querySelectorAll("script[src]")).some((script) => /\/popup-contact\.js(?:\?|$)/.test(script.src));
+    if (loaded || !footerScriptUrl) return;
+    const script = document.createElement("script");
+    script.src = new URL("../mobile/js/popup-contact.js?v=20260927-quoteonly", footerScriptUrl).href;
+    document.body.appendChild(script);
   }
 
   function buildFooter(mount) {
@@ -82,7 +118,7 @@
               <h2 class="buk-footer__title"></h2>
               <p class="buk-footer__intro"></p>
             </div>
-            <a class="buk-footer__cta" href="quote-form.html"><span>Request a quote</span><span aria-hidden="true">&nearr;</span></a>
+            <a class="buk-footer__cta" href="#" data-open-contact="1"><span>Request a quote</span><span aria-hidden="true">&nearr;</span></a>
           </div>
           <nav class="buk-footer__columns" aria-label="Footer navigation"></nav>
           <section class="buk-footer__contacts" aria-label="Contact information">
@@ -158,18 +194,13 @@
       window.scrollTo({ top: 0, behavior: "auto" });
     });
 
-    frame.addEventListener("click", (event) => {
-      const contactLink = event.target.closest('[data-footer-action="contact"]');
-      if (!contactLink) return;
-      event.preventDefault();
-      if (typeof window.openContactPopup === "function") window.openContactPopup();
-    });
-
     mount.replaceChildren(frame);
   }
 
   function initialize() {
-    document.querySelectorAll("[data-pc-footer]").forEach(buildFooter);
+    const mounts = document.querySelectorAll("[data-pc-footer]");
+    mounts.forEach(buildFooter);
+    if (mounts.length) ensureContactPopupScript();
   }
 
   if (document.readyState === "loading") {

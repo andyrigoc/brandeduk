@@ -1567,20 +1567,25 @@
                 });
             }
             
-            // Request quote button — open popup
+            // Request quote button — opens the site-wide Get in touch popup with a basket summary
             const quoteBtn = document.getElementById('requestQuoteBtn');
             const quoteOverlay = document.getElementById('quotePopupOverlay');
             const closeQuoteBtn = document.getElementById('closeQuotePopup');
             
-            if (quoteBtn && quoteOverlay) {
+            if (quoteBtn) {
                 quoteBtn.addEventListener('click', () => {
                     const basket = getBasket();
-                    if (basket.length === 0) {
-                        alert('Please add items to your basket first');
-                        return;
+                    const MAX_LINES = 12;
+                    const lines = basket.slice(0, MAX_LINES).map((item) => {
+                        const qty = item.totalQty || item.qty || 1;
+                        const details = [item.productCode || item.code, item.color].filter(Boolean).join(', ');
+                        return `- ${qty} x ${item.productName || item.name || 'Product'}${details ? ` (${details})` : ''}`;
+                    });
+                    if (basket.length > MAX_LINES) lines.push(`- ...and ${basket.length - MAX_LINES} more item(s)`);
+                    const message = lines.length ? `Hi, I would like a quote for the items in my basket:\n${lines.join('\n')}` : '';
+                    if (typeof window.openContactPopup === 'function') {
+                        window.openContactPopup(message ? { message } : undefined);
                     }
-                    quoteOverlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
                     if (navigator.vibrate) navigator.vibrate(10);
                 });
             }
@@ -1968,6 +1973,7 @@
     </script>
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260731a"></script>
-    <script src="footer/footer.js?v=FTR10APR2026"></script>
+    <script src="js/popup-contact.js?v=20260927-quoteonly"></script>
+    <script src="footer/footer.js?v=20260927-quoteonly"></script>
 </body>
 </html>

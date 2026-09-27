@@ -523,10 +523,11 @@ function clearBasket() {
     }
 }
 
-// PROCEED TO QUOTE FORM
+// REQUEST A QUOTE: opens the Get in touch popup
 function proceedToQuoteForm() {
-    console.log('ðŸ“ Proceeding to Quote Form...');
-    window.location.href = 'quote-form.html';
+    if (typeof window.openContactPopup === 'function') {
+        window.openContactPopup();
+    }
 }
 
 function removeItem() {
