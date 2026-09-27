@@ -512,6 +512,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
         }
         .item-row-image img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
         .item-placement-preview-card {
@@ -661,6 +662,32 @@
             border-radius: 8px;
             border: 1px solid #e5e7eb;
             background: #ffffff;
+        }
+        .preview-image-modal__stage--logo {
+            background:
+                linear-gradient(45deg, #eef2f6 25%, transparent 25%),
+                linear-gradient(-45deg, #eef2f6 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #eef2f6 75%),
+                linear-gradient(-45deg, transparent 75%, #eef2f6 75%),
+                #ffffff;
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+        }
+        .preview-image-modal__stage--logo > img {
+            background: transparent;
+            max-height: 50vh;
+        }
+        .is-zoomable {
+            font: inherit;
+            color: inherit;
+            cursor: zoom-in;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .is-zoomable:hover,
+        .is-zoomable:focus-visible {
+            border-color: #ff7a00;
+            box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.18);
+            outline: none;
         }
         .preview-image-modal__status {
             margin: 0;
@@ -994,7 +1021,7 @@
             text-align: right; margin-top: 8px; font-size: 14px;
         }
         .item-row-total .total-label { color: #6b7280; }
-        .item-row-total .total-value { font-size: 20px; font-weight: 800; color: #ea580c; margin-left: 8px; }
+        .item-row-total .total-value { font-size: 20px; font-weight: 800; color: #16804a; margin-left: 8px; }
 
         /* ===== ORDER SUMMARY (bottom) ===== */
         .order-summary-bottom {
@@ -1032,7 +1059,7 @@
             margin-top: 8px; border-top: 2px solid #e5e7eb;
         }
         .summary-grand-total span:first-child { font-size: 15px; font-weight: 700; color: #1f2937; }
-        .summary-grand-total .grand-total-val { font-size: 22px; font-weight: 800; color: #ef4444; }
+        .summary-grand-total .grand-total-val { font-size: 22px; font-weight: 800; color: #16804a; }
 
         .summary-trust-note {
             margin-top: 16px; padding: 12px; background: #f0fdf4; border-radius: 8px;
@@ -3943,8 +3970,8 @@
         return `left:${safePct(box && box.left)}%;top:${safePct(box && box.top)}%;width:${safePct(box && box.width)}%;height:${safePct(box && box.height)}%;`;
     }
 
-    function renderGarmentThumb(item, fallbackImg, altText) {
-        return `<div class="item-row-image" title="${escapeAttr(item && item.color)}"><img src="${escapeAttr(fallbackImg)}" alt="${escapeAttr(altText)}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'"></div>`;
+    function renderGarmentThumb(item, fallbackImg, altText, index) {
+        return `<button type="button" class="item-row-image is-zoomable" title="View larger" aria-label="View ${escapeAttr(altText)} larger" onclick="event.stopPropagation(); openGarmentImagePreview(${index})" onkeydown="event.stopPropagation()"><img src="${escapeAttr(fallbackImg)}" alt="${escapeAttr(altText)}" onerror="this.src='brandedukv15-child/assets/images/products/default.jpg'"></button>`;
     }
 
     function renderPlacementPreview(item, altText, index) {
@@ -4381,9 +4408,42 @@
         }
     }
 
+    function openImagePreview(src, titleText, altText, isLogo) {
+        const modal = document.getElementById('placementPreviewModal');
+        const stage = document.getElementById('placementPreviewStage');
+        const title = document.getElementById('placementPreviewTitle');
+        if (!modal || !stage || !src) return;
+
+        if (title) title.textContent = titleText;
+        stage.classList.toggle('preview-image-modal__stage--logo', !!isLogo);
+        stage.innerHTML = `<img src="${escapeAttr(src)}" alt="${escapeAttr(altText)}">`;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openGarmentImagePreview(index) {
+        const item = getBasket()[index];
+        if (!item) return;
+        const src = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
+        const name = item.name || item.productName || 'Product';
+        const details = [item.code, getItemColorLabel(item), item.size].filter(Boolean).join(' · ');
+        openImagePreview(src, details ? `${name} - ${details}` : name, name, false);
+    }
+
+    function openLogoImagePreview(index, logoIdx) {
+        const item = getBasket()[index];
+        const logo = item && item.logos && item.logos[logoIdx];
+        if (!logo || !logo.logo) return;
+        const position = logo.positionLabel || toReadablePosition(logo.position);
+        openImagePreview(logo.logo, position ? `Your logo - ${position}` : 'Your logo', 'Uploaded logo', true);
+    }
+
     function closePlacementPreview() {
         const modal = document.getElementById('placementPreviewModal');
         if (!modal) return;
+        const stage = document.getElementById('placementPreviewStage');
+        if (stage) stage.classList.remove('preview-image-modal__stage--logo');
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
@@ -4445,7 +4505,7 @@
 
                     logosHtml += `
                         <div class="logo-row">
-                            ${thumbSrc ? `<div class="${thumbWrapClass}" title="${colorTitle}"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></div>` : ''}
+                            ${thumbSrc ? `<button type="button" class="${thumbWrapClass} is-zoomable" title="View logo larger" aria-label="View logo larger" onclick="openLogoImagePreview(${index}, ${logoIdx})"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></button>` : ''}
                             <div class="logo-info">
                                 <div class="logo-title-line">
                                     <div class="logo-method-label">${methodLabel}<span class="logo-method-badge logo-method-badge--${methodNorm === 'embroidery' ? 'embroidery' : 'print'}">${methodNorm === 'embroidery' ? 'EMB' : 'PRINT'}</span></div>
@@ -4514,7 +4574,7 @@
                     <div class="item-row-header item-row-header--clickable" role="button" tabindex="0" aria-label="Edit item" onclick="editBasketItem(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editBasketItem(${index});}">
                         <div class="item-row-top">
 
-                            ${renderGarmentThumb(item, img, item.name || 'Product')}
+                            ${renderGarmentThumb(item, img, item.name || 'Product', index)}
                             <div class="item-row-head-text">
                                 <div class="item-row-title-line">
                                     <h4 class="item-row-title">${item.name || 'Product'}</h4>
