@@ -578,8 +578,8 @@ window.BrandedConfig = (function () {
             }
         },
         headwear: {
-            heroImage: 'blog/images/custom-t-shirts-printing-guide.webp',
-            heroAlt: '',
+            heroImage: 'blog/images/custom-branded-caps-bucket-hats-team.webp',
+            heroAlt: 'Team wearing branded caps and bucket hats',
             icon: 'fa-solid fa-hat-cowboy',
             icons: {
                 type: 'fa-solid fa-hat-cowboy',
