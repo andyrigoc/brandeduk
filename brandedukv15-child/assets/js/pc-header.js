@@ -6,6 +6,8 @@
     var projectRoot = new URL('../../../', scriptUrl);
     var assetsRoot = new URL('brandedukv15-child/assets/', projectRoot);
     var mounted = false;
+    var contactPopupPending = false;
+    var contactPopupCallbacks = [];
 
     if (window.innerWidth < 1024) {
         window.BrandedPcHeader = { mount: function () { return false; } };
@@ -100,21 +102,74 @@
         header.querySelectorAll('[data-open-contact="1"]').forEach(function (link) {
             link.addEventListener('click', function (event) {
                 event.preventDefault();
-                if (typeof window.openContactPopup === 'function') {
-                    window.openContactPopup();
-                    return;
-                }
-                var popup = document.getElementById('popupContact');
-                var overlay = document.getElementById('popupOverlay');
-                if (popup) {
-                    popup.classList.add('active');
-                    if (overlay) overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    return;
-                }
-                window.location.href = new URL('quote-form.html', projectRoot).href;
+                ensureContactPopup(openContactPopup);
             });
         });
+    }
+
+    function openContactPopup() {
+        if (typeof window.openContactPopup === 'function') {
+            window.openContactPopup();
+            return;
+        }
+        var popup = document.getElementById('popupContact');
+        var overlay = document.getElementById('popupOverlay');
+        if (!popup) return;
+        popup.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function flushContactPopupCallbacks() {
+        var callbacks = contactPopupCallbacks.splice(0);
+        callbacks.forEach(function (callback) { callback(); });
+    }
+
+    function hasAsset(selector, attribute, fileName) {
+        return Array.from(document.querySelectorAll(selector)).some(function (element) {
+            try {
+                return new URL(element.getAttribute(attribute), window.location.href).pathname.split('/').pop() === fileName;
+            } catch (error) {
+                return false;
+            }
+        });
+    }
+
+    function ensureContactPopup(callback) {
+        if (typeof callback === 'function') contactPopupCallbacks.push(callback);
+        if (document.getElementById('popupContact')) {
+            flushContactPopupCallbacks();
+            return;
+        }
+        if (contactPopupPending || !window.BrandedPcContactTemplate || !document.body) return;
+        contactPopupPending = true;
+
+        function injectMarkup() {
+            if (!document.getElementById('popupContact')) {
+                document.body.insertAdjacentHTML('beforeend', window.BrandedPcContactTemplate);
+            }
+            if (typeof window.openContactPopup !== 'function' && !hasAsset('script[src]', 'src', 'popup-contact.js')) {
+                var script = document.createElement('script');
+                script.src = new URL('mobile/js/popup-contact.js?v=20260926-contactui', projectRoot).href;
+                script.dataset.pcContactPopup = 'true';
+                document.body.appendChild(script);
+            }
+            contactPopupPending = false;
+            flushContactPopupCallbacks();
+        }
+
+        // The popup markup must not render before its stylesheet hides it.
+        if (hasAsset('link[rel="stylesheet"][href]', 'href', 'popup-contact.css')) {
+            injectMarkup();
+            return;
+        }
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = new URL('mobile/css/popup-contact.css?v=20260926-contactui', projectRoot).href;
+        link.dataset.pcHeaderStyle = 'contact';
+        link.addEventListener('load', injectMarkup);
+        link.addEventListener('error', injectMarkup);
+        document.head.appendChild(link);
     }
 
     function initAllProductsDescriptions(header) {
@@ -202,6 +257,12 @@
     document.documentElement.classList.add('pc-header-loading');
     ensureSharedAssets();
     window.BrandedPcHeader = { mount: mount };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { ensureContactPopup(); });
+    } else {
+        ensureContactPopup();
+    }
 
     window.addEventListener('load', function () {
         if (!mounted) {

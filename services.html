@@ -47,15 +47,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260220">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-logo64"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-logo64"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quotepopup"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 1024px)">
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 1024px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
-    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20251230">
+    <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260926-contactui">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260110a">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260109e">
     <style>
@@ -482,36 +482,6 @@
         }
 
         /* Logo viola con immagine */
-        /* Popup Contact Desktop - larger */
-        .popup-contact {
-            max-width: 700px;
-            width: calc(100% - 80px);
-        }
-        .popup-contact__body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            padding: 0 32px 32px;
-            max-height: calc(90vh - 100px);
-        }
-        .popup-contact__form {
-            order: 1;
-        }
-        .popup-contact__map {
-            order: 2;
-            margin-top: 0;
-            padding-top: 0;
-        }
-        .popup-contact__map iframe {
-            height: 100%;
-            min-height: 320px;
-        }
-        .popup-contact__header {
-            padding: 32px 32px 24px;
-        }
-        .popup-contact__title {
-            font-size: 36px;
-        }
         .neon-container {
             cursor: pointer;
         }
@@ -2058,53 +2028,133 @@
 <div class="popup-contact" id="popupContact">
     <div class="popup-contact__header">
         <h2 class="popup-contact__title">Get in touch</h2>
-        <button class="popup-contact__close" id="popupContactClose" aria-label="Close">Ã—</button>
+        <p class="popup-contact__subtitle">Have a question, need a quote or want to discuss your project? We're here to help.</p>
+        <button class="popup-contact__close" id="popupContactClose" aria-label="Close contact form" type="button">
+            <svg class="popup-contact__close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6 6l12 12M18 6L6 18"></path>
+            </svg>
+        </button>
     </div>
     <div class="popup-contact__body">
-        <form class="popup-contact__form" id="contactQuickForm">
-            <div class="form-group">
-                <input type="text" id="contactName" placeholder="Name" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="contactEmail" placeholder="Email address" required>
-            </div>
-            <div class="form-group">
-                <select id="contactInterest" required>
-                    <option value="" disabled selected>Interested in</option>
-                    <option value="embroidery">Embroidery</option>
-                    <option value="printing">Printing</option>
-                    <option value="workwear">Workwear</option>
-                    <option value="uniforms">Uniforms</option>
-                    <option value="promotional">Promotional Items</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="tel" id="contactPhone" placeholder="Phone number">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <input type="text" id="contactAddress" placeholder="Address">
+        <form class="popup-contact__form" id="contactQuickForm" novalidate>
+            <div class="popup-contact__form-grid">
+                <div class="form-row">
+                    <div class="form-group">
+                        <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="contactName" name="name" placeholder="Your name *" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
+                        <input type="email" id="contactEmail" name="email" placeholder="Email address *" required autocomplete="email">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="contactPostCode" placeholder="Post Code">
+                    <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                    <select id="contactInterest" name="interest" aria-label="What are you interested in?">
+                        <option value="" selected>What are you interested in?</option>
+                        <option value="embroidery">Embroidery</option>
+                        <option value="printing">Printing / DTF</option>
+                        <option value="workwear">Workwear</option>
+                        <option value="uniforms">Uniforms</option>
+                        <option value="promotional">Promotional Items</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <input type="tel" id="contactPhone" name="phone" placeholder="Phone number" autocomplete="tel">
+                    </div>
+                    <div class="form-group">
+                        <svg class="popup-contact__field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <input type="text" id="contactPostCode" name="postCode" placeholder="Post code" autocomplete="postal-code">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <svg class="popup-contact__field-icon popup-contact__field-icon--textarea" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <textarea id="contactMessage" name="message" placeholder="Your message *" required></textarea>
+                </div>
+                <label class="popup-contact__consent">
+                    <input type="checkbox" id="contactConsent" name="consent">
+                    <span>I agree to be contacted about my enquiry</span>
+                </label>
+                <button type="submit" class="popup-contact__submit">Send message →</button>
+                <div class="popup-contact__perks" aria-label="Why choose BrandedUK">
+                    <div class="popup-contact__perk">
+                        <span class="popup-contact__perk-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+                        </span>
+                        <div>
+                            <strong>Free artwork check</strong>
+                            <span>See it before we print</span>
+                        </div>
+                    </div>
+                    <div class="popup-contact__perk">
+                        <span class="popup-contact__perk-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </span>
+                        <div>
+                            <strong>Competitive pricing</strong>
+                            <span>Better rates for bigger teams</span>
+                        </div>
+                    </div>
+                    <div class="popup-contact__perk">
+                        <span class="popup-contact__perk-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        </span>
+                        <div>
+                            <strong>Fast turnaround</strong>
+                            <span>7–10 working days</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <textarea id="contactMessage" placeholder="Message" required></textarea>
-            </div>
-            <button type="submit" class="popup-contact__submit">Submit</button>
         </form>
 
-        <!-- Google Map -->
-        <div class="popup-contact__map">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div>
+        <aside class="popup-contact__aside">
+            <div class="popup-contact__map">
+                <div class="popup-contact__map-frame">
+                    <a class="popup-contact__map-open" href="https://www.google.com/maps/search/?api=1&query=Branded%20Europe%20Ltd%2C%20Unit%208%20Red%20Lion%20Business%20Centre%2C%20Surbiton%20KT6%207QD" target="_blank" rel="noopener">
+                        Open in Google Maps
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+                    </a>
+                    <iframe
+                        title="Branded Europe Ltd location map"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1456.0490450435852!2d-0.2944082213978167!3d51.37503081265773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760a3b287b96e5%3A0x53b62f78d81fb599!2sBranded%20Europe%20Ltd!5e1!3m2!1sen!2suk!4v1766788895449!5m2!1sen!2suk"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+            <div class="popup-contact__visit">
+                <h3 class="popup-contact__visit-title">Visit us</h3>
+                <div class="popup-contact__visit-row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <div>
+                        Unit 8, Red Lion Business Centre<br>
+                        Surbiton, Surrey KT6 7QD<br>
+                        United Kingdom
+                    </div>
+                </div>
+                <div class="popup-contact__visit-contacts">
+                    <div class="popup-contact__visit-row">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <div>
+                            <a href="tel:02089742722">0208 974 2722</a>
+                            <small>Mon–Fri, 9:00–18:00</small>
+                        </div>
+                    </div>
+                    <div class="popup-contact__visit-row">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
+                        <div>
+                            <a href="mailto:info@brandeduk.com">info@brandeduk.com</a>
+                            <small>We usually reply quickly</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 </div>
 
@@ -2245,7 +2295,7 @@
 <script src="brandedukv15-child/assets/js/api.js?v=20260107"></script>
 <script src="brandeduk.com/js/hero.js?v=20251230"></script>
 <script src="brandeduk.com/js/main.js?v=20260730a"></script>
-<script src="mobile/js/popup-contact.js?v=20251230"></script>
+<script src="mobile/js/popup-contact.js?v=20260926-contactui"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
 <script>
 // Header Top Basket functionality
