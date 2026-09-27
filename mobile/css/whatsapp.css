@@ -164,6 +164,12 @@
     filter: brightness(0) invert(1);
     display: block;
 }
+.wa-popup__info h3 img.wa-popup__logo {
+    width: auto;
+    height: 30px;
+    max-width: 100%;
+    filter: none;
+}
 .wa-popup__info span {
     font-size: 13px;
     opacity: 0.95;
