@@ -671,16 +671,21 @@
         line-height: 1.5;
     }
 
-    .site-header .mega-hero-cta {
+    .site-header .mega-hero-cta,
+    .site-header .main-nav .menu a.mega-hero-cta {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
-        padding: 10px 18px;
+        gap: 6px;
+        box-sizing: border-box;
+        height: 32px;
+        padding: 0 18px 1px;
         border-radius: 999px;
         background: #ff7a00;
         color: #fff !important;
         font-size: 14px;
         font-weight: 700;
+        line-height: 1;
         text-decoration: none;
     }
 
@@ -737,18 +742,23 @@
         line-height: 1.55;
     }
 
-    .site-header .mega-help-cta {
+    .site-header .mega-help-cta,
+    .site-header .main-nav .menu a.mega-help-cta {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
+        gap: 6px;
         width: fit-content;
+        box-sizing: border-box;
+        height: 32px;
         margin-bottom: 22px;
-        padding: 10px 18px;
+        padding: 0 18px 1px;
         border-radius: 999px;
         background: #ff7a00;
         color: #fff !important;
         font-size: 14px;
         font-weight: 700;
+        line-height: 1;
         text-decoration: none;
     }
 
