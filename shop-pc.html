@@ -13,10 +13,14 @@
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260926-vatgap">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260925-subcats"></script>
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260925-trust4"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260925-header29"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-logo64"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-logo64"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260926-home">
     <script src="footer-dev/pc-footer.js?v=20260926-home" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
@@ -35,7 +39,7 @@
         }
 
         .searchbar-header__brand-img {
-            height: 80px !important;
+            height: 64px !important;
         }
 
         /* ============================================
@@ -2045,7 +2049,8 @@
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
     <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260924-method-colours2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260926-brandwhite">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-chevrons">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -2105,8 +2110,7 @@
                                     data-vat-inc>inc vat</span>
                             </button>
                         </div>
-                        <a class="header-top-basket-link" href="#" onclick="event.preventDefault(); openOrderDrawer();"
-                            aria-label="View basket">
+                        <a class="header-top-basket-link" href="basket.html" aria-label="View basket">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M6 6h15l-1.5 9h-12z" />
@@ -2126,7 +2130,7 @@
                 <div class="searchbar-header__inner">
                     <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
                         <img class="searchbar-header__brand-img"
-                            src="../brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK">
+                            src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
                     </a>
 
                     <div class="searchbar-header__actions">
@@ -3804,6 +3808,7 @@
             landingTitle: null,
             brand: null, // Store brand from URL (e.g., 'nike', 'adidas')
             search: '',
+            facetQuery: '', // Text-search fallback for menu facets the API cannot filter (e.g. style=zipped)
             priceMin: null,
             priceMax: null,
             apiPriceRange: null, // Store priceRange from API response to update slider
@@ -3975,6 +3980,131 @@
             return raw.charAt(0).toUpperCase() + raw.slice(1);
         }
 
+        // Menu slugs that are not products API productType names. Each routes to the
+        // productType[], sector[] or q values the API actually filters on.
+        const PRODUCT_TYPE_ROUTES = {
+            'joggers': { types: ['Sweatpants'] },
+            'knitwear': { types: ['Knitted Jumpers', 'Cardigans'] },
+            'overalls': { types: ['Coveralls'] },
+            'bib-brace-overalls': { types: ['Coveralls'] },
+            'footwear': { types: ['Boots', 'Trainers'] },
+            'lounge-underwear': { types: ['Loungewear Bottoms', 'Robes', 'Bras'] },
+            'chefswear': { types: ['Chef Jackets', 'Aprons'] },
+            'hospitality': { sectors: ['Hospitality'] },
+            'schoolwear': { sectors: ['School'] },
+            'sports-teamwear': { sectors: ['Sport'] },
+            'construction': { sectors: ['Safety'] },
+            'ppe': { sectors: ['Safety'] },
+            'golf': { q: 'golf' },
+            'lab-coats': { q: 'lab coat' },
+            'suits': { q: 'suit' },
+            'plus-size': { q: 'plus size' },
+            'flame-retardant': { q: 'flame retardant' },
+            'scrubs': { q: 'scrubs' },
+            'security': { q: 'security' },
+            'trades': { q: 'trades' },
+            'anti-static': { q: 'anti-static' },
+            'welding': { q: 'welding' },
+            'painter-decorator': { q: 'painter' },
+            'rail-spec': { q: 'rail' },
+            'winter-workwear': { q: 'winter' },
+            'summer-workwear': { q: 'summer' },
+            'spring-workwear': { q: 'spring' },
+            'autumn-workwear': { q: 'autumn' }
+        };
+
+        function routeLandingTypes(values) {
+            const route = { types: [], sectors: [], q: '' };
+            (values || []).forEach(value => {
+                const target = PRODUCT_TYPE_ROUTES[String(value || '').trim().toLowerCase()];
+                if (!target) {
+                    const apiType = resolveApiProductType(value);
+                    if (apiType) route.types.push(apiType);
+                    return;
+                }
+                (target.types || []).forEach(type => route.types.push(type));
+                (target.sectors || []).forEach(sector => route.sectors.push(sector));
+                if (target.q && !route.q) route.q = target.q;
+            });
+            route.types = uniquePreserve(route.types);
+            route.sectors = uniquePreserve(route.sectors);
+            return route;
+        }
+
+        // Menu facet values that differ from the API facet slugs.
+        // A `q` target is sent as a text search because the API has no matching facet.
+        const FACET_VALUE_ROUTES = {
+            style: {
+                'zipped': { q: 'zip' },
+                'zip': { q: 'zip' },
+                'zip-through': { q: 'zip' },
+                'oversized': { fit: 'oversized-fit' },
+                'hooded-1': { style: 'hooded' }
+            },
+            fit: {
+                'classic': { fit: 'classic-fit' },
+                'oversized': { fit: 'oversized-fit' },
+                'relaxed': { fit: 'relaxed-fit' },
+                'regular': { fit: 'regular-fit' },
+                'slim': { fit: 'slim-fit' }
+            },
+            sleeve: {
+                'long-sleeve-2': { sleeve: 'long-sleeve' },
+                'short-sleeve-2': { sleeve: 'short-sleeve' }
+            }
+        };
+
+        function normalizeUrlFacets() {
+            Object.keys(FACET_VALUE_ROUTES).forEach(facet => {
+                const values = Array.isArray(currentState.filters[facet]) ? currentState.filters[facet] : [];
+                const kept = [];
+                values.forEach(value => {
+                    const target = FACET_VALUE_ROUTES[facet][String(value).toLowerCase()];
+                    if (!target) {
+                        kept.push(value);
+                        return;
+                    }
+                    Object.entries(target).forEach(([key, mapped]) => {
+                        if (key === 'q') {
+                            if (!currentState.facetQuery) currentState.facetQuery = mapped;
+                            return;
+                        }
+                        if (key === facet) {
+                            kept.push(mapped);
+                            return;
+                        }
+                        if (!Array.isArray(currentState.filters[key])) currentState.filters[key] = [];
+                        if (!currentState.filters[key].includes(mapped)) currentState.filters[key].push(mapped);
+                    });
+                });
+                currentState.filters[facet] = uniquePreserve(kept);
+            });
+        }
+
+        // Menu brand slugs that the products API does not recognise.
+        const BRAND_ALIASES = {
+            'regatta': 'Regatta Professional',
+            'pro-rtx': 'ProRTX',
+            'pro rtx': 'ProRTX',
+            'adidas': 'adidas\u00AE',
+            'adidasr': 'adidas\u00AE',
+            'nutshell': 'Nutshell\u00AE',
+            'nutshellr': 'Nutshell\u00AE',
+            'tridri': 'TriDri\u00AE',
+            'tridrir': 'TriDri\u00AE',
+            'comfort-colors': 'Comfort Colors\u00AE',
+            'flexfit': 'Flexfit by Yupoong',
+            'russell': 'Russell Athletic',
+            'sf-clothing': 'SF',
+            'stanley-stella': 'Stanley/Stella',
+            'bella+canvas': 'Bella Canvas'
+        };
+
+        function resolveApiBrand(value) {
+            if (!value) return value;
+            return BRAND_ALIASES[String(value).trim().toLowerCase()] || value;
+        }
+
         function isAggregatedOrQuery() {
             return Array.isArray(currentState.productTypes) && currentState.productTypes.length > 1;
         }
@@ -4017,7 +4147,7 @@
             currentState.productTypes = productTypeValues;
             currentState.landingSectors = landingSectorValues;
             currentState.landingFlags = hasOffersFlag ? ['offers'] : [];
-            currentState.brand = brandParam || null; // Store brand from URL
+            currentState.brand = resolveApiBrand(brandParam) || null; // Store brand from URL
             currentState.page = parseInt(urlParams.get('page')) || 1;
             currentState.limit = parseInt(urlParams.get('limit')) || 100;
             currentState.sort = urlParams.get('sort') || 'best';
@@ -4099,6 +4229,7 @@
                 currentState.filters.style.push(styleSlug);
             }
         }
+        normalizeUrlFacets();
 
         // Map frontend filter values to API slugs
         function mapFilterValue(filterType, frontendValue) {
@@ -4246,6 +4377,9 @@
 
             // -- Polo Shirts -------------------------------------------------------
             q = q.replace(/\bpolo[\s\-]?shirts?\b/gi, 'polos'); // polo shirt, polo-shirt
+
+            // -- Zip ---------------------------------------------------------------
+            q = q.replace(/\bzip(?:ped|per|pered)?(?:[\s\-]?(?:up|through|thru))?\b/gi, 'zip'); // zipped, zipper, zip-up, zip through
 
             // -- Hoodies -----------------------------------------------------------
             q = q.replace(/\bhodd?ie[s]?\b/gi, 'hoodies'); // hoodie, hoddie
@@ -4656,31 +4790,40 @@
             'build your brand': 'build-your-brand',
         };
 
-        function applyLandingProductTypes(params) {
-            const landingTypes = uniquePreserve(
-                (currentState.productTypes && currentState.productTypes.length
-                    ? currentState.productTypes
-                    : (currentState.productType ? [currentState.productType] : []))
-                    .map(resolveApiProductType)
-                    .filter(Boolean)
-            );
-
-            if (landingTypes.length > 1) {
-                params['productType[]'] = landingTypes;
-                return;
-            }
-
-            if (landingTypes.length === 1) {
-                params.productType = landingTypes[0];
-                return;
-            }
-
+        function getLandingRoute() {
+            const landingValues = currentState.productTypes && currentState.productTypes.length
+                ? currentState.productTypes
+                : (currentState.productType ? [currentState.productType] : []);
+            if (landingValues.length) return routeLandingTypes(landingValues);
             if (currentState.category && currentState.category !== 'all') {
-                const apiCategoryName = resolveApiProductType(currentState.category);
-                if (apiCategoryName && apiCategoryName !== 'all') {
-                    params.productType = apiCategoryName;
-                }
+                const route = routeLandingTypes([currentState.category]);
+                route.types = route.types.filter(type => type && type !== 'all');
+                return route;
             }
+            return { types: [], sectors: [], q: '' };
+        }
+
+        // Routed menu slugs may need sector[] or q in place of productType, so the
+        // caller applies route.sectors and route.q after the facet params are built.
+        function applyLandingProductTypes(params) {
+            const route = getLandingRoute();
+
+            if (route.types.length > 1) {
+                params['productType[]'] = route.types;
+            } else if (route.types.length === 1) {
+                params.productType = route.types[0];
+            }
+            return route;
+        }
+
+        function applyRouteExtras(params, route, hasSearch) {
+            if (route && route.sectors.length) {
+                const existing = Array.isArray(params['sector[]']) ? params['sector[]'] : [];
+                params['sector[]'] = uniquePreserve(existing.concat(route.sectors));
+            }
+            if (hasSearch) return;
+            const q = [route && route.q, currentState.facetQuery].filter(Boolean).join(' ');
+            if (q) params.q = q;
         }
 
         // Build API params from current state
@@ -4720,7 +4863,9 @@
 
             // Search query. For a sidebar search, retain the active category so
             // "Search within results" does not silently become a global search.
-            if (currentState.search && currentState.search.trim()) {
+            let landingRoute = null;
+            const hasSearch = !!(currentState.search && currentState.search.trim());
+            if (hasSearch) {
                 // Normalise spelling first
                 const normQ = normalizeSearchQuery(currentState.search.trim());
                 const exactProductType = exactSearchProductType(normQ) || exactSearchProductType(currentState.search);
@@ -4734,10 +4879,10 @@
                     console.log('Exact category search detected, using productType filter:', exactProductType);
                 } else {
                     params.q = normQ;
-                    applyLandingProductTypes(params);
+                    landingRoute = applyLandingProductTypes(params);
                 }
             } else {
-                applyLandingProductTypes(params);
+                landingRoute = applyLandingProductTypes(params);
             }
 
             // Note: accreditation=recycled from URL is handled via quickFilters -> flag[]=['recycled-organic']
@@ -4823,6 +4968,13 @@
 
             if (currentState.landingSectors && currentState.landingSectors.length) {
                 params['sector[]'] = uniquePreserve(currentState.landingSectors.map(resolveApiSector).filter(Boolean));
+            }
+            applyRouteExtras(params, landingRoute, hasSearch);
+            // BrandedAPI.getProducts drops a plain productType whenever q is set;
+            // productType[] is always forwarded, so the search stays within the type.
+            if (params.q && params.productType) {
+                params['productType[]'] = [params.productType];
+                delete params.productType;
             }
 
             // Handle quick filters separately (flag[] param with special mappings)
@@ -5084,34 +5236,27 @@
                 // Use the brand-specific endpoint only for a dedicated brand page.
                 // Sidebar brand choices stay on the general endpoint so multi-select works.
                 const activeBrandFilter = currentState.brand || null;
+                const hasFacetSearch = !!(currentState.search && currentState.search.trim());
+                let facetRoute = null;
 
                 if (activeBrandFilter) {
                     filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
                     console.log('Using brand-specific filters API for:', activeBrandFilter);
                 } else {
-                    const landingTypes = uniquePreserve(
-                        (currentState.productTypes && currentState.productTypes.length
-                            ? currentState.productTypes
-                            : (currentState.productType ? [currentState.productType] : []))
-                            .map(resolveApiProductType)
-                            .filter(Boolean)
+                    facetRoute = getLandingRoute();
+                    if (facetRoute.types.length > 1) {
+                        facetRoute.types.forEach(type => params.append('productType[]', type));
+                    } else if (facetRoute.types.length === 1) {
+                        params.append('productType', facetRoute.types[0]);
+                    }
+                    const facetSectors = uniquePreserve(
+                        (currentState.landingSectors || []).map(resolveApiSector).filter(Boolean).concat(facetRoute.sectors)
                     );
-                    if (landingTypes.length > 1) {
-                        landingTypes.forEach(type => params.append('productType[]', type));
-                    } else if (landingTypes.length === 1) {
-                        params.append('productType', landingTypes[0]);
-                    } else if (currentState.category && currentState.category !== 'all') {
-                        const apiCategoryName = resolveApiProductType(currentState.category);
-                        if (apiCategoryName) params.append('productType', apiCategoryName);
-                    }
-                    if (currentState.landingSectors && currentState.landingSectors.length) {
-                        uniquePreserve(currentState.landingSectors.map(resolveApiSector).filter(Boolean))
-                            .forEach(sector => params.append('sector[]', sector));
-                    }
+                    facetSectors.forEach(sector => params.append('sector[]', sector));
                 }
 
                 // Add search query if present
-                if (currentState.search && currentState.search.trim()) {
+                if (hasFacetSearch) {
                     const normalizedSearch = normalizeSearchQuery(currentState.search.trim());
                     const exactProductType = exactSearchProductType(normalizedSearch) || exactSearchProductType(currentState.search);
                     if (exactProductType) {
@@ -5119,6 +5264,9 @@
                     } else {
                         params.append('q', normalizedSearch);
                     }
+                } else {
+                    const routedQuery = [facetRoute && facetRoute.q, currentState.facetQuery].filter(Boolean).join(' ');
+                    if (routedQuery) params.append('q', routedQuery);
                 }
 
                 // Add price range if set
@@ -5681,6 +5829,9 @@
                 const values = Array.isArray(currentState.filters[stateKey]) ? currentState.filters[stateKey] : [];
                 values.forEach(value => url.searchParams.append(`${apiKey}[]`, value));
             });
+            // A plain style= that normalizeUrlFacets mapped to a real facet is now persisted
+            // as a [] param; keep it only while it drives a text-search fallback.
+            if (!currentState.facetQuery) url.searchParams.delete('style');
 
             // Facet rewrite deletes productType[] / sector[]. Re-apply locked landing params last.
             url.searchParams.delete('productType');
@@ -6942,6 +7093,7 @@
             // Reset state
             currentState.page = 1;
             currentState.search = '';
+            currentState.facetQuery = '';
             currentState.color = '';
             currentState.priceMin = null;
             currentState.priceMax = null;
@@ -8341,7 +8493,7 @@
                 <header class="pc-product-flow-header">
                     <div class="pc-product-flow-brand">
                         <a class="pc-product-flow-logo-link" href="index.html" aria-label="BrandedUK home">
-                            <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/branded-logo-sunset.png"
+                            <img class="pc-product-flow-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
                                 alt="BrandedUK">
                         </a>
                         <span class="pc-product-flow-brand-copy">
@@ -8367,9 +8519,9 @@
                         </li>
                     </ol>
                     <div class="pc-product-flow-help">
-                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket">
+                        <a class="pc-flow-basket" href="basket.html" aria-label="View quote basket" data-cart-lottie="show">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                            <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" hidden>0</span>
+                            <span class="pc-flow-basket-badge" id="pcFlowBasketBadge" data-cart-lottie-badge hidden>0</span>
                         </a>
                         <span>Need help?</span>
                         <a href="tel:02089742722">0208 974 2722</a>
@@ -9140,7 +9292,7 @@
                     <header class="pc-customizer-header">
                         <div class="pc-customizer-left">
                             <a class="pc-customizer-logo-link" href="index.html" aria-label="BrandedUK home">
-                                <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/bd-logo-3d.png"
+                                <img class="pc-customizer-logo" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack"
                                     alt="BrandedUK">
                             </a>
                             <button type="button" id="pcCustomizerBack" class="pc-customizer-back"
@@ -9396,6 +9548,7 @@
     <script src="test-order-popup/customizer-embed.js?v=20260923-studio-load"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260924-basket-loader"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20260923-qty-green"></script>
+    <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2"></script>
     <script src="mobile/js/popup-contact.js?v=20260926-contactui"></script>
 
     <script>
@@ -9508,6 +9661,7 @@
             banner.classList.add('visible');
         })();
     </script>
+    <script src="brandedukv15-child/assets/js/header-basket-lottie.js?v=20260927-basketnoflash1"></script>
 </body>
 
 </html>

@@ -156,7 +156,11 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260926-headerlogo2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260926-headerlogo2">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260927-logo64">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260926-contactui">
@@ -170,178 +174,182 @@
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
            ============================================ */
-        .featured-products-wrapper {
-            position: relative;
-            margin: 20px 0;
-            padding: 0 10px; /* space for absolute buttons if they go outside */
-        }
-        .featured-products-carousel {
-            display: flex;
-            overflow-x: auto;
-            scroll-behavior: auto; /* native jump for infinite looping */
-            gap: 24px;
-            padding: 15px 4px 30px 4px;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-            /* Removed scroll-snap so smooth linear movement isn't jerky */
-            will-change: transform, scroll-position;
-        }
-        .featured-products-carousel::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* Navigation Buttons */
-        .featured-control {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            color: #374151;
-            font-size: 18px;
-            display: flex;
+        .featured-showcase {
+            display: grid;
+            grid-template-columns: 250px minmax(0, 1fr);
+            gap: 22px;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.2s ease;
+            padding: 20px 0 20px 20px;
+            background: #f6f1e7;
+            border-radius: 20px;
         }
-        .featured-control:hover {
-            background: #273469;
-            color: #fff;
-            border-color: #273469;
-        }
-        .featured-control.prev { left: -15px; }
-        .featured-control.next { right: -15px; }
-
-        /* -- Card -- */
-        .featured-card {
-            width: 280px;
-            flex-shrink: 0;
-            background: #fff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+        .featured-intro {
             display: flex;
             flex-direction: column;
-            border: 1px solid #f0f0f0;
+            align-self: center;
+            box-sizing: border-box;
+            min-height: 360px;
+            padding: 26px 24px 24px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
         }
-        .featured-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 44px rgba(0,0,0,0.12);
+        .featured-intro__eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #9ca3af;
         }
-
-        /* Media */
-        .featured-card .fc-media {
+        .featured-intro__title {
+            margin: 10px 0 12px;
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #111827;
+        }
+        .featured-intro__text {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #6b7280;
+        }
+        .featured-intro__cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            align-self: flex-start;
+            margin-top: auto;
+            padding: 11px 18px;
+            border-radius: 10px;
+            background: #273469;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        .featured-intro__cta:hover {
+            background: #1d2752;
+            color: #fff;
+        }
+        .featured-products-wrapper {
             position: relative;
-        }
-        .featured-card .fc-figure {
-            width: 100%;
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #fafafa, #f1f1f1);
-            display: grid;
-            place-items: center;
             overflow: hidden;
         }
-        .featured-card .fc-figure img {
+        .featured-products-carousel {
+            --fl-card-w: 220px;
+            --fl-spacing: 210px;
+            position: relative;
+            display: flex;
+            gap: 24px;
+            /* Turned cards project ~410px tall (perspective enlarges the near edge); the wrapper clips at this height. */
+            height: 440px;
+            padding-top: 22px;
+            box-sizing: border-box;
+        }
+        .featured-products-carousel.is-looping {
+            display: block;
+        }
+
+        /* Looping 3D cards: each item slides left; the card faces sideways until hovered. */
+        .featured-products-carousel.is-looping .carousel-item {
+            position: absolute;
+            top: 22px;
+            left: 100%;
+            width: var(--fl-card-w);
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            animation: scroll-left var(--time) linear infinite;
+            animation-delay: calc(var(--time) / var(--total) * (var(--i) - 1) - var(--time));
+            will-change: transform;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .featured-products-carousel.is-looping .carousel-item:hover,
+        .featured-products-carousel.is-looping .carousel-item:focus-visible {
+            z-index: 5;
+            outline: none;
+        }
+        .featured-products-wrapper.is-offscreen .carousel-item {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-left {
+            to { transform: translateX(calc(var(--total) * var(--fl-spacing) * -1)); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .featured-products-carousel.is-looping .carousel-item {
+                animation-play-state: paused;
+            }
+        }
+
+        .fl-card {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border: 1px solid #eceef2;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.10);
+            transform: rotateY(-45deg);
+            transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+        }
+        .carousel-item:hover .fl-card,
+        .carousel-item:focus-visible .fl-card {
+            transform: rotateY(0deg) translateY(-10px);
+            box-shadow: 0 18px 44px rgba(17, 24, 39, 0.18);
+        }
+        .carousel-item:focus-visible .fl-card {
+            outline: 2px solid #ff7a00;
+            outline-offset: 2px;
+        }
+        .fl-card .fl-media {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #fafafa, #f1f1f1);
+        }
+        .fl-card .fl-media img {
+            display: block;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.35s ease;
         }
-        .featured-card:hover .fc-figure img {
-            transform: scale(1.04);
-        }
-
-        /* Badges */
-        .featured-card .fc-badges {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+        .fl-card .fl-info {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            z-index: 3;
+            gap: 4px;
+            padding: 12px 14px 14px;
         }
-        .featured-card .fc-badge {
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: #fff;
-        }
-        .fc-badge.best-seller  { background: #dc2626; }
-        .fc-badge.featured     { background: #273469; }
-        .fc-badge.embroidery   { background: #3b82f6; }
-        .fc-badge.print        { background: #eab308; }
-        .fc-badge.recommended  { background: #059669; }
-
-        /* Info */
-        .featured-card .fc-info {
-            padding: 16px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .featured-card .fc-code {
+        .fl-card .fl-code {
             font-size: 11px;
+            font-weight: 600;
             color: #9ca3af;
-            font-weight: 600;
             text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            letter-spacing: 0.3px;
         }
-        .featured-card .fc-code .fc-brand-name {
-            font-size: 10px;
-            font-weight: 500;
-            color: #b0b0b0;
-            letter-spacing: 0.5px;
-        }
-        .featured-card .fc-code .brand-logo {
-            height: 22px;
-            width: auto;
-            object-fit: contain;
-            opacity: 0.85;
-        }
-        .featured-card .fc-name {
-            font-size: 15px;
+        .fl-card .fl-name {
+            min-height: 2.6em;
+            font-size: 14px;
             font-weight: 600;
+            line-height: 1.3;
             color: #1a1a1a;
-            line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .featured-card .fc-price {
-            margin-top: 4px;
-        }
-        .featured-card .fc-price-label {
+        .fl-card .fc-price-label,
+        .fl-card .fc-price-suffix {
             font-size: 11px;
             color: #9ca3af;
-            margin-right: 4px;
         }
-        .featured-card .fc-price-value {
-            font-size: 17px;
+        .fl-card .fc-price-label { margin-right: 4px; }
+        .fl-card .fc-price-suffix { margin-left: 4px; }
+        .fl-card .fc-price-value {
+            font-size: 16px;
             font-weight: 700;
             color: #273469;
-        }
-        .featured-card .fc-price-suffix {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-left: 4px;
         }
 
         .featured-card-skeleton {
@@ -406,7 +414,7 @@
             padding: 0 var(--searchbar-shell-padding, var(--header-shell-padding)) !important;
         }
         .site-header .searchbar-header__brand-img {
-            height: 80px !important;
+            height: 64px !important;
             width: auto !important;
             max-width: none !important;
             object-fit: contain;
@@ -1399,7 +1407,7 @@
                             <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
                         </button>
                     </div>
-                    <a class="header-top-basket-link" href="#" onclick="event.preventDefault(); openOrderDrawer();" aria-label="View quote">
+                    <a class="header-top-basket-link" href="basket.html" aria-label="View basket">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 6h15l-1.5 9h-12z"/>
                             <circle cx="9" cy="20" r="1"/>
@@ -1417,7 +1425,7 @@
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
                 <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
-                    <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo.png?v=20260926-headerlogo2" alt="brandedUK">
+                    <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
                 </a>
 
                 <div class="searchbar-header__actions">
@@ -2823,13 +2831,15 @@
     <!-- Home Highlights (Featured Products) - Dynamic from API -->
     <section class="bestsellers-section" id="featuredSection">
         <div class="section-container">
-            <div class="section-header">
-                <h2 class="section-title">Featured Products</h2>
-                <a href="shop-pc.html?sort=featured" class="see-all-link">View All &rarr;</a>
+          <div class="featured-showcase">
+            <div class="featured-intro">
+                <span class="featured-intro__eyebrow">Our collection</span>
+                <h2 class="featured-intro__title">Featured Products</h2>
+                <p class="featured-intro__text">Popular styles, trusted by businesses, teams and organisations.</p>
+                <a href="shop-pc.html?sort=featured" class="featured-intro__cta">View all products <span aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="featured-products-wrapper">
-                <button type="button" class="featured-control prev" id="featPrev" aria-label="Previous Products"><i class="fas fa-chevron-left"></i></button>
-                <div class="featured-products-carousel" id="featuredProductsCarousel">
+                <div class="featured-products-carousel carousel-track" id="featuredProductsCarousel">
                     <!-- Skeleton loading cards -->
                     <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
                     <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
@@ -2837,8 +2847,8 @@
                     <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
                     <div class="featured-card-skeleton"><div class="skeleton-img"></div><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
                 </div>
-                <button type="button" class="featured-control next" id="featNext" aria-label="Next Products"><i class="fas fa-chevron-right"></i></button>
             </div>
+          </div>
         </div>
     </section>
 
@@ -4090,61 +4100,42 @@ document.addEventListener('DOMContentLoaded', function() {
         return HIDDEN.some(function(h){ return n.includes(h); });
     }
 
-    function getBrandLogo(b) {
-        var m = {
-            'gildan':'brandedukv15-child/assets/images/brands/gildan2020.webp','fruit of the loom':'brandedukv15-child/assets/images/brands/fruit-of-the-loom.jpg',
-            'russell':'brandedukv15-child/assets/images/brands/russell.webp','awdis':'brandedukv15-child/assets/images/brands/awdis.webp',
-            'anthem':'brandedukv15-child/assets/images/brands/anthem.jpg','result':'brandedukv15-child/assets/images/brands/result2020.webp',
-            'regatta':'brandedukv15-child/assets/images/brands/regatta.webp','portwest':'brandedukv15-child/assets/images/brands/portwest.webp',
-            'nike':'brandedukv15-child/assets/images/brands/nike2020.jpg','adidas':'brandedukv15-child/assets/images/brands/adidas.jpg',
-            'under armour':'brandedukv15-child/assets/images/brands/under-armour.webp','premier':'brandedukv15-child/assets/images/brands/premier2020.webp',
-            'henbury':'brandedukv15-child/assets/images/brands/henbury2020.webp','beechfield':'brandedukv15-child/assets/images/brands/beechfield.jpeg',
-            'kustom kit':'brandedukv15-child/assets/images/brands/kustom-kit2020.webp','scruffs':'brandedukv15-child/assets/images/brands/scruffs.jpg',
-            'yoko':'brandedukv15-child/assets/images/brands/yoko.webp','tridri':'brandedukv15-child/assets/images/brands/tridri.webp',
-            'pro rtx':'brandedukv15-child/assets/images/brands/pro-rtx2020.jpg','b&c':'brandedukv15-child/assets/images/brands/bc20202.webp',
-            'regatta professional':'brandedukv15-child/assets/images/brands/regatta-professional2020.webp'
-        };
-        return m[(b||'').toLowerCase().trim()] || null;
+    function _escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+        });
     }
 
-    // Build a single featured product card
-    function buildCard(item) {
-        var card = document.createElement('div');
-        card.className = 'featured-card';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
+    // Build a single looping carousel card; duplicates are hidden from assistive tech.
+    function buildCard(item, index, isDuplicate) {
+        var card = document.createElement('a');
+        card.className = 'carousel-item';
+        card.href = 'shop-pc.html?product=' + encodeURIComponent(item.style_code || '');
+        card.style.setProperty('--i', String(index + 1));
+        if (isDuplicate) {
+            card.setAttribute('aria-hidden', 'true');
+            card.tabIndex = -1;
+        }
 
-        // Badges
-        var badges = '';
-        if (item.is_best_seller) badges += '<span class="fc-badge best-seller">BEST SELLER</span>';
-        if (item.is_featured)   badges += '<span class="fc-badge featured">FEATURED</span>';
-        if (item.is_recommended) badges += '<span class="fc-badge recommended">RECOMMENDED</span>';
-
-        // Price
         var priceVal = Number(item.price) || 0;
-        var displayPrice = _fmtCurrency(priceVal);
-
-        // Brand
+        var name = (item.style_name || '').replace(/[\u00AE\u2122\u00A9]/g, '');
         var brand = _shouldHideBrand(item.brand_name) ? '' : (item.brand_name || '');
-        var bLogo = brand ? getBrandLogo(brand) : null;
-        var brandHTML = brand ? (bLogo ? '<img src="' + bLogo + '" alt="' + brand + '" class="brand-logo" title="' + brand + '">' : '<span class="fc-brand-name">' + brand + '</span>') : '';
+        card.setAttribute('aria-label', name + ', from ' + _fmtCurrency(priceVal) + ' ' + _vatSuffix());
 
         card.innerHTML =
-            '<div class="fc-media">' +
-                '<div class="fc-badges">' + badges + '</div>' +
-                '<div class="fc-figure">' +
-                    '<img src="' + (item.image || '') + '" alt="' + (item.style_name||'') + '" loading="lazy" decoding="async" fetchpriority="low" width="320" height="400">' +
+            '<div class="fl-card">' +
+                '<div class="fl-media">' +
+                    '<img src="' + _escapeHtml(item.image || '') + '" alt="' + _escapeHtml(name) + '" loading="lazy" decoding="async" width="220" height="220">' +
                 '</div>' +
-            '</div>' +
-            '<div class="fc-info">' +
-                '<div class="fc-code">' + (item.style_code||'') + ' ' + brandHTML + '</div>' +
-                '<div class="fc-name">' + (item.style_name||'').replace(/[\u00AE\u2122\u00A9]/g,'') + '</div>' +
-                '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
-                    '<span class="fc-price-label">From</span>' +
-                    '<span class="fc-price-value">' + displayPrice + '</span>' +
-                    '<span class="fc-price-suffix">' + _vatSuffix() + '</span>' +
+                '<div class="fl-info">' +
+                    '<div class="fl-code">' + _escapeHtml(item.style_code || '') + (brand ? ' &middot; ' + _escapeHtml(brand) : '') + '</div>' +
+                    '<div class="fl-name">' + _escapeHtml(name) + '</div>' +
+                    '<div class="fc-price" data-price-min="' + priceVal + '" data-price-max="' + priceVal + '">' +
+                        '<span class="fc-price-label">From</span>' +
+                        '<span class="fc-price-value">' + _fmtCurrency(priceVal) + '</span>' +
+                        '<span class="fc-price-suffix">' + _vatSuffix() + '</span>' +
+                    '</div>' +
                 '</div>' +
-                '<a class="fc-cta" href="shop-pc.html?product=' + encodeURIComponent(item.style_code||'') + '">View Product</a>' +
             '</div>';
 
         // Helper: store correct product data before navigating
@@ -4161,21 +4152,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }));
         }
 
-        // CTA button click
-        var cta = card.querySelector('.fc-cta');
-        if (cta) {
-            cta.addEventListener('click', function(e) {
-                e.preventDefault();
-                storeProductData();
-                window.location.href = this.href;
-            });
-        }
-
-        // Card click (anywhere except CTA)
         card.addEventListener('click', function(e) {
-            if (e.target.closest('.fc-cta')) return;
             storeProductData();
-            window.location.href = 'shop-pc.html?product=' + encodeURIComponent(item.style_code);
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            window.location.href = card.href;
         });
 
         return card;
@@ -4183,7 +4164,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Refresh price labels on VAT toggle
     function refreshPrices() {
-        document.querySelectorAll('.featured-card .fc-price').forEach(function(el) {
+        document.querySelectorAll('#featuredProductsCarousel .fc-price').forEach(function(el) {
             var min = Number(el.dataset.priceMin);
             var max = Number(el.dataset.priceMax);
             var valEl  = el.querySelector('.fc-price-value');
@@ -4197,8 +4178,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch & render
     async function loadFeaturedProducts() {
         var carouselContainer = document.getElementById('featuredProductsCarousel');
-        var prevBtn = document.getElementById('featPrev');
-        var nextBtn = document.getElementById('featNext');
         if (!carouselContainer || featuredLoadStarted) return;
         featuredLoadStarted = true;
 
@@ -4215,91 +4194,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Create enough duplicates to fill the track at least once fully, then double it for exact infinite half-wrapping
-            var originalItems = items.slice();
-            while(originalItems.length < 8) { originalItems = originalItems.concat(items); }
-            var renderItems = originalItems.concat(originalItems); // array is now doubled perfectly
+            // Travel distance (card count x --fl-spacing) must exceed the track width plus
+            // one card, otherwise a card re-enters on the right before it has left.
+            var styles = getComputedStyle(carouselContainer);
+            var spacing = parseFloat(styles.getPropertyValue('--fl-spacing')) || 210;
+            var cardWidth = parseFloat(styles.getPropertyValue('--fl-card-w')) || 220;
+            var minCount = Math.ceil((Math.max(carouselContainer.clientWidth, 1440) + cardWidth + spacing) / spacing);
+            var renderItems = items.concat(items);
+            while (renderItems.length < minCount) renderItems = renderItems.concat(items);
 
-            renderItems.forEach(function(item) {
-                var card = buildCard(item);
-                carouselContainer.appendChild(card);
+            carouselContainer.style.setProperty('--total', String(renderItems.length));
+            carouselContainer.style.setProperty('--time', Math.round(renderItems.length * spacing / 70) + 's');
+            renderItems.forEach(function(item, index) {
+                carouselContainer.appendChild(buildCard(item, index, index >= items.length));
             });
+            carouselContainer.classList.add('is-looping');
 
-            // Smooth infinite continuous scroll logic + Manual override
-            var isHovered = false;
-            var isManualScrolling = false;
-            var isInViewport = true;
-            var manualTimeout;
-            var cardWidth = 280 + 24; // card width + gap
-            var rafId = null;
-
-            // Wait brief moment for layout/images to be processed
-            setTimeout(function() {
-                var halfWidth = carouselContainer.scrollWidth / 2;
-
-                if ('IntersectionObserver' in window) {
-                    var wrapper = document.querySelector('.featured-products-wrapper') || carouselContainer;
-                    var animationObserver = new IntersectionObserver(function(entries) {
-                        isInViewport = entries.some(function(entry) { return entry.isIntersecting; });
-                    }, { rootMargin: '180px 0px' });
-                    animationObserver.observe(wrapper);
-                }
-
-                // 1) Continuous Auto Scroll Frame Loop
-                function loopScroll() {
-                    if (isInViewport && !document.hidden && !isHovered && !isManualScrolling) {
-                        carouselContainer.scrollLeft += 0.8; // Slow, smooth speed
-                        // Wrap at half to be seamless
-                        if (carouselContainer.scrollLeft >= halfWidth) {
-                            carouselContainer.scrollLeft -= halfWidth;
-                        }
-                    }
-                    rafId = requestAnimationFrame(loopScroll);
-                }
-
-                // 2) Manual Jump
-                function doManualScroll(direction) {
-                    isManualScrolling = true;
-                    carouselContainer.style.scrollBehavior = 'smooth';
-                    carouselContainer.scrollLeft += direction * cardWidth;
-
-                    clearTimeout(manualTimeout);
-                    manualTimeout = setTimeout(function() {
-                        carouselContainer.style.scrollBehavior = 'auto'; // Revert to instant jump
-                        // Immediately correct bounds if out of sync
-                        if (carouselContainer.scrollLeft >= halfWidth) {
-                            carouselContainer.scrollLeft -= halfWidth;
-                        } else if (carouselContainer.scrollLeft <= 5) {
-                            // If they rapidly clicked backward and hit 0
-                            carouselContainer.scrollLeft += halfWidth;
-                        }
-                        isManualScrolling = false;
-                    }, 400); // 400ms is standard for smooth scroll finish
-                }
-
-                // Setup Listeners
-                if (prevBtn) prevBtn.addEventListener('click', function() { doManualScroll(-1); });
-                if (nextBtn) nextBtn.addEventListener('click', function() { doManualScroll(1); });
-
-                carouselContainer.addEventListener('mouseenter', function() { isHovered = true; });
-                carouselContainer.addEventListener('mouseleave', function() { isHovered = false; });
-                carouselContainer.addEventListener('touchstart', function() { isHovered = true; }, {passive:true});
-                carouselContainer.addEventListener('touchend', function() { isHovered = false; }, {passive:true});
-
-                // 3) Swipe Support (allow native looping)
-                carouselContainer.addEventListener('scroll', function() {
-                    if (isManualScrolling) return; // let smooth jump finish
-                    // Handle edge bouncing when swiped
-                    if (carouselContainer.scrollLeft >= halfWidth) {
-                        carouselContainer.scrollLeft -= halfWidth;
-                    } else if (carouselContainer.scrollLeft <= 0) {
-                        carouselContainer.scrollLeft += halfWidth;
-                    }
-                }, {passive:true});
-
-                // Start loop
-                rafId = requestAnimationFrame(loopScroll);
-            }, 100);
+            if ('IntersectionObserver' in window) {
+                var wrapper = carouselContainer.closest('.featured-products-wrapper') || carouselContainer;
+                new IntersectionObserver(function(entries) {
+                    wrapper.classList.toggle('is-offscreen', !entries.some(function(entry) { return entry.isIntersecting; }));
+                }, { rootMargin: '120px 0px' }).observe(wrapper);
+            }
 
         } catch (err) {
             if (window.BRANDED_DEBUG) {
@@ -4367,6 +4283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })();
 </script>
+<script src="brandedukv15-child/assets/js/header-basket-lottie.js?v=20260927-basketnoflash1"></script>
 
 </body>
 </html>

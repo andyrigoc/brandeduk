@@ -383,6 +383,7 @@ body {
 .products-header-left {
     grid-area: summary;
     flex: initial;
+    align-items: center;
     gap: 12px;
     min-width: 0;
 }
@@ -400,7 +401,10 @@ body {
 .products-header h1 {
     overflow: hidden;
     max-width: min(38vw, 440px);
+    margin: 0;
+    color: var(--shop-ink);
     font-size: 20px;
+    line-height: 1.2;
     text-overflow: ellipsis;
 }
 
@@ -408,13 +412,25 @@ body {
     flex-shrink: 0;
     color: var(--shop-muted);
     font-size: 13px;
+    line-height: 1.2;
 }
 
+/* header.css adds margin-bottom: 16px, which lifts Back above the title. */
 .back-btn {
     height: 40px;
+    margin: 0;
     padding: 0 14px;
     background: #fff;
     border-color: #dfe3ea;
+    color: var(--shop-brand);
+    font-weight: 600;
+    line-height: 1;
+}
+
+.back-btn:hover {
+    background: var(--shop-soft);
+    border-color: #cfd5df;
+    color: var(--shop-brand);
 }
 
 .control-select {
@@ -444,9 +460,39 @@ body {
     border-radius: 7px;
 }
 
+.products-header .control-select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 1.5L6 6L10.5 1.5' stroke='%23ff7a00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px 8px;
+}
+
+.products-header #paginationTop .pagination-button,
+.pagination-container .pagination-button {
+    color: #ff7a00;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.products-header #paginationTop .pagination-button:hover:not(:disabled),
+.pagination-container .pagination-button:hover:not(:disabled) {
+    background: #fff4ea;
+    border-color: #ff7a00;
+    color: #ff7a00;
+}
+
+.products-header #paginationTop .pagination-button:disabled,
+.pagination-container .pagination-button:disabled {
+    background: #fff;
+    color: #ff7a00;
+    opacity: .45;
+}
+
 .pagination-page.active {
     background: var(--shop-brand);
     border-color: var(--shop-brand);
+    color: #fff;
 }
 
 .product-card {

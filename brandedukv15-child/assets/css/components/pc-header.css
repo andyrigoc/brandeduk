@@ -210,8 +210,8 @@
     .site-header .searchbar-header__brand-img {
         display: block;
         width: auto;
-        height: 58px !important;
-        max-width: 240px;
+        height: 64px !important;
+        max-width: none;
         object-fit: contain;
     }
 
@@ -973,8 +973,8 @@
     }
 
     .site-header .searchbar-header__brand-img {
-        height: 50px !important;
-        max-width: 200px;
+        height: 40px !important;
+        max-width: 160px;
     }
 
     .site-header .shop-products-btn,
