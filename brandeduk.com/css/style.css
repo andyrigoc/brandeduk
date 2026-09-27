@@ -1213,11 +1213,11 @@ main.main-content {
 }
 
 .brands-track-right {
-    animation: scrollRight 80s linear infinite;
+    animation: scrollRight 160s linear infinite;
 }
 
 .brands-track-left {
-    animation: scrollLeft 80s linear infinite;
+    animation: scrollLeft 160s linear infinite;
 }
 
 @keyframes scrollRight {

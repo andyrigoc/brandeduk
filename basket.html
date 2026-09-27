@@ -756,9 +756,19 @@
         }
         .qty-controls .qty-btn:hover { background: #e5e7eb; }
         .qty-controls .qty-value {
-            width: 36px; text-align: center; font-size: 14px; font-weight: 700;
-            color: #1f2937; border-left: 1px solid #d1d5db; border-right: 1px solid #d1d5db;
+            width: 50px; text-align: center; font-size: 14px; font-weight: 700;
+            color: #1f2937; border: 0; border-left: 1px solid #d1d5db; border-right: 1px solid #d1d5db;
             height: 30px; line-height: 30px;
+            padding: 0; margin: 0; background: #fff; font-family: inherit;
+            border-radius: 0; box-sizing: border-box;
+            -moz-appearance: textfield; appearance: textfield;
+        }
+        .qty-controls .qty-value::-webkit-outer-spin-button,
+        .qty-controls .qty-value::-webkit-inner-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+        .qty-controls .qty-value:focus {
+            outline: 2px solid #f97316; outline-offset: -2px;
         }
         .item-row-price {
             text-align: right;
@@ -1009,7 +1019,7 @@
             font-size: 13px; font-weight: 700;
         }
         .summary-breakdown-title { display: inline-flex; align-items: center; gap: 8px; }
-        .summary-breakdown-title i { width: 10px; font-size: 10px; color: #344054; }
+        .summary-breakdown-title i { width: 10px; font-size: 10px; color: #ff7a00; }
         .summary-breakdown-total { color: #1f2937; white-space: nowrap; }
         .summary-breakdown-list { padding: 0 0 7px 18px; }
         .summary-detail-row {
@@ -1642,7 +1652,7 @@
             .qty-controls { border-color: #d0d5dd; border-radius: 8px; }
             .qty-controls .qty-btn { width: 34px; height: 34px; background: #fff; }
             .qty-controls .qty-value {
-                width: 40px;
+                width: 52px;
                 height: 34px;
                 line-height: 34px;
                 border-color: #d0d5dd;
@@ -2037,7 +2047,7 @@
             body.basket-page .logo-row .logo-actions .remove-btn { color: #6f2580 !important; }
             .qty-controls { border-color: #cfcfcb; border-radius: 2px; }
             .qty-controls .qty-btn { width: 32px; height: 32px; background: #fafaf9; }
-            .qty-controls .qty-value { width: 38px; height: 32px; line-height: 32px; border-color: #cfcfcb; }
+            .qty-controls .qty-value { width: 50px; height: 32px; line-height: 32px; border-color: #cfcfcb; }
 
             .item-placement-preview-list { margin-top: 10px; }
             .item-placement-preview-list-title { margin-bottom: 6px; color: #373a40; font-size: 11px; }
@@ -4525,7 +4535,7 @@
                     <div class="item-row-qty-price">
                         <div class="qty-controls">
                             <button type="button" class="qty-btn" onclick="changeQty(${index}, -1)">&#8722;</button>
-                            <span class="qty-value">${qty}</span>
+                            <input type="number" class="qty-value" min="1" step="1" inputmode="numeric" value="${qty}" aria-label="Quantity" onchange="setQty(${index}, this.value)" onkeydown="if (event.key === 'Enter') this.blur()" onfocus="this.select()">
                             <button type="button" class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
                         </div>
                         <div class="item-row-price">
@@ -4759,17 +4769,24 @@
     // ========================
 
     function changeQty(index, delta) {
+        const basket = getBasket();
+        if (index < 0 || index >= basket.length) return;
+        setQty(index, (basket[index].qty || 1) + delta);
+        if (navigator.vibrate) navigator.vibrate(10);
+    }
+
+    function setQty(index, value) {
         let basket = getBasket();
         if (index < 0 || index >= basket.length) return;
 
-        basket[index].qty = Math.max(1, (basket[index].qty || 1) + delta);
+        const parsed = parseInt(value, 10);
+        basket[index].qty = Number.isFinite(parsed) ? Math.min(99999, Math.max(1, parsed)) : (basket[index].qty || 1);
 
         // Recalculate tier pricing across all items with the same product code
         recalcTierPricing(basket, basket[index].code);
 
         saveBasket(basket);
         renderBasket();
-        if (navigator.vibrate) navigator.vibrate(10);
     }
 
     // Recalculate tier pricing for all rows sharing the same product code

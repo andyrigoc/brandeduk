@@ -165,7 +165,7 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260927-walogo">
-    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260927-neonfix">
+    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260927-slowbrands">
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
     <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260926-cubefade">
@@ -2445,7 +2445,170 @@
 <main class="main-content">
     <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Custom Workwear, Uniforms, Embroidery &amp; Printing UK - BrandedUK</h1>
     
-    <!-- HERO - Expanding Panels -->
+    <style>
+        .shop-by-category {
+            padding: 24px 40px 8px;
+        }
+        .sbc-card {
+            display: grid;
+            grid-template-columns: 250px minmax(0, 1fr);
+            gap: 28px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 28px;
+            border: 1px solid #efe9df;
+            border-radius: 20px;
+            background: #fbf8f3;
+            box-sizing: border-box;
+        }
+        .sbc-intro {
+            padding-left: 8px;
+        }
+        .sbc-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 14px;
+            color: #f25c19;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .sbc-eyebrow::before {
+            content: '';
+            width: 22px;
+            height: 2px;
+            background: currentColor;
+        }
+        .sbc-title {
+            margin: 0 0 16px;
+            color: #0f1b3d;
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.08;
+        }
+        .sbc-text {
+            margin: 0 0 24px;
+            color: #4b5563;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+        .sbc-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 22px;
+            border-radius: 999px;
+            background: #f25c19;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .2s ease, transform .2s ease;
+        }
+        .sbc-cta:hover {
+            background: #db4f10;
+            transform: translateY(-1px);
+        }
+        .sbc-features {
+            display: grid;
+            gap: 14px;
+            margin: 28px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .sbc-features li {
+            display: grid;
+            grid-template-columns: 26px 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+        .sbc-features svg {
+            color: #0f1b3d;
+        }
+        .sbc-features strong {
+            display: block;
+            color: #0f1b3d;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .sbc-features small {
+            display: block;
+            color: #6b7280;
+            font-size: 11.5px;
+        }
+        .shop-by-category .hero-expanding-wrapper {
+            position: relative;
+            left: auto;
+            width: auto;
+            height: 380px;
+            margin: 0;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .shop-by-category .hero-cont {
+            height: 100%;
+            padding: 0;
+        }
+        .shop-by-category .hero-cont__inner {
+            max-width: none;
+        }
+        .shop-by-category .hero-el:not(.s--active) {
+            width: calc((100% - 96px) / 9);
+        }
+        .shop-by-category .hero-el__preview-cont {
+            box-sizing: border-box;
+            padding-bottom: 14px;
+        }
+        .shop-by-category .hero-el__heading {
+            margin: 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: rgba(17, 17, 17, .72);
+            font-size: 10px;
+            letter-spacing: .06em;
+            white-space: nowrap;
+        }
+        .shop-by-category .hero-el__text {
+            font-size: 26px;
+        }
+        @media (max-width: 1279px) {
+            .shop-by-category .hero-el__heading {
+                padding: 5px 5px;
+                font-size: 8px;
+                letter-spacing: .02em;
+            }
+        }
+    </style>
+
+    <!-- Shop by Category - Expanding Panels -->
+    <section class="shop-by-category" aria-labelledby="sbcTitle">
+      <div class="sbc-card">
+        <div class="sbc-intro">
+            <p class="sbc-eyebrow">Our range</p>
+            <h2 class="sbc-title" id="sbcTitle">Shop by Category</h2>
+            <p class="sbc-text">Quality workwear, uniforms and promotional clothing for every industry, all in one place.</p>
+            <a class="sbc-cta" href="shop-pc.html">Browse All Products <span aria-hidden="true">&rarr;</span></a>
+            <ul class="sbc-features">
+                <li>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4h13v12H1zM14 8h4l4 4v4h-8"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg>
+                    <span><strong>Fast UK Delivery</strong><small>On all orders</small></span>
+                </li>
+                <li>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+                    <span><strong>Quality You Can Trust</strong><small>From leading brands</small></span>
+                </li>
+                <li>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+                    <span><strong>Expert Support</strong><small>Here when you need us</small></span>
+                </li>
+            </ul>
+        </div>
+
     <div class="hero-expanding-wrapper">
         <div class="hero-cont s--inactive" id="hero1">
             <div class="hero-cont__inner">
@@ -2524,7 +2687,7 @@
                         <div class="hero-el__inner">
                             <div class="hero-el__bg"></div>
                             <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Hi-Viz</h2>
+                                <h2 class="hero-el__heading">Hi-Vis</h2>
                             </div>
                             <div class="hero-el__content">
                                 <div class="hero-el__text">Custom Hi-Viz</div>
@@ -2575,30 +2738,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="hero-el" data-category="trousers">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Work Trousers</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Work Trousers</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+      </div>
+    </section>
 
     <!-- HERO 2 - Get in Touch Neon Banner -->
     <section class="hero-banners-section">
         <div class="hero-banners-container" data-hero-banners>
-            <div class="hero-banner hero-banner-image hero-banner--active" aria-label="Premier Workwear">
-                <img class="onlyboards-banner-image" src="brandeduk.com/assets/Premier%202026.jpg" alt="Premier Workwear about us" width="1920" height="700">
-            </div>
+            <!-- Original banner 2 - Branded -->
+            <a class="hero-banner hero-banner--active" id="heroBanner4" href="shop-pc.html?productType=tshirts" aria-label="Shop branded T-shirts">
+                <div class="hero-bounce-container">
+                    <div class="hero-bounce-headline" data-bounce-text="branded">branded</div>
+                </div>
+            </a>
 
             <div class="hero-banner hero-banner-image" aria-label="Branded Digital websites for your industry">
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.png" alt="Branded Digital - Websites built for coffee shops, gyms and building companies" width="2188" height="718">
@@ -2630,13 +2784,6 @@
                 <img class="onlyboards-banner-image" src="brandeduk.com/assets/ral17829-jh501-banner-refresh.webp" alt="AWDis JH501 College Hoodie 2.0">
             </a>
 
-            <!-- Original banner 2 - Branded -->
-            <a class="hero-banner" id="heroBanner4" href="shop-pc.html?productType=tshirts" aria-label="Shop branded T-shirts">
-                <div class="hero-bounce-container">
-                    <div class="hero-bounce-headline" data-bounce-text="branded">branded</div>
-                </div>
-            </a>
-
             <!-- Original banner 3 - Get in Touch -->
             <a class="hero-banner" id="heroBanner2" href="#" data-open-contact="1" aria-label="Request a quote">
                 <div class="neon-container">
@@ -2665,11 +2812,15 @@
                     <img class="onlyboards-banner-image" src="brandeduk.com/assets/only-boards-desktop.webp" alt="Only Boards - Proud partners. Made to stand out. High-impact printed boards and signage for every project." width="1920" height="630" onerror="this.onerror=null;this.src='brandeduk.com/assets/ChatGPT%20Image%20Sep%2015%2C%202026%2C%2001_39_25%20PM.png';">
                 </picture>
             </a>
+
+            <div class="hero-banner hero-banner-image" aria-label="Premier Workwear">
+                <img class="onlyboards-banner-image" src="brandeduk.com/assets/Premier%202026.jpg" alt="Premier Workwear about us" width="1920" height="700">
+            </div>
         </div>
 
         <!-- Banner gallery navigation -->
         <div class="hero-banner-dots" data-hero-banner-dots role="tablist" aria-label="Choose a banner">
-            <button class="banner-dot banner-dot--active" role="tab" type="button" data-banner="0" aria-label="Show Premier Workwear banner" aria-selected="true"><img class="banner-thumb" src="brandeduk.com/assets/Premier%202026.jpg" alt=""></button>
+            <button class="banner-dot banner-dot--active" role="tab" type="button" data-banner="0" aria-label="Show Branded banner" aria-selected="true"><span class="banner-thumb banner-thumb-branded">branded</span></button>
             <button class="banner-dot" role="tab" type="button" data-banner="1" aria-label="Show Branded Digital banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2021%2C%202026%2C%2011_06_11%20PM.png" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="2" aria-label="Show Regatta banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ral17774-regatta-1.50-off-banners-dropbox-12.webp" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="3" aria-label="Show AWDis banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ral17788---the-best-got-bigger_desktop-banner-1.webp" alt=""></button>
@@ -2679,10 +2830,10 @@
             <button class="banner-dot" role="tab" type="button" data-banner="7" aria-label="Show Gildan industry classics banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/gildan-uk-desk-gif.webp" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="8" aria-label="Show AWDis JH501 decoration banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ral17819-jh501-hood-banner-desktop.webp" alt=""></button>
             <button class="banner-dot" role="tab" type="button" data-banner="9" aria-label="Show AWDis JH501 College Hoodie 2.0 banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/ral17829-jh501-banner-refresh.webp" alt=""></button>
-            <button class="banner-dot" role="tab" type="button" data-banner="10" aria-label="Show Branded banner" aria-selected="false"><span class="banner-thumb banner-thumb-branded">branded</span></button>
-            <button class="banner-dot" role="tab" type="button" data-banner="11" aria-label="Show Get in Touch banner" aria-selected="false"><span class="banner-thumb banner-thumb-contact">Get in<br>touch</span></button>
-            <button class="banner-dot" role="tab" type="button" data-banner="12" aria-label="Show Make Awesome banner" aria-selected="false"><span class="banner-thumb banner-thumb-make">Make<br>awesome</span></button>
-            <button class="banner-dot" role="tab" type="button" data-banner="13" aria-label="Show Only Boards banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/only-boards-desktop.webp" alt=""></button>
+            <button class="banner-dot" role="tab" type="button" data-banner="10" aria-label="Show Get in Touch banner" aria-selected="false"><span class="banner-thumb banner-thumb-contact">Get in<br>touch</span></button>
+            <button class="banner-dot" role="tab" type="button" data-banner="11" aria-label="Show Make Awesome banner" aria-selected="false"><span class="banner-thumb banner-thumb-make">Make<br>awesome</span></button>
+            <button class="banner-dot" role="tab" type="button" data-banner="12" aria-label="Show Only Boards banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/only-boards-desktop.webp" alt=""></button>
+            <button class="banner-dot" role="tab" type="button" data-banner="13" aria-label="Show Premier Workwear banner" aria-selected="false"><img class="banner-thumb" src="brandeduk.com/assets/Premier%202026.jpg" alt=""></button>
         </div>
 
         <div class="fixed-partner-banner">
@@ -2853,183 +3004,212 @@
     </section>
 
     <style>
-        .brands-section .brand-card {
-            width: 210px;
-            height: 82px;
-            padding: 10px 18px;
-            background: #eef0f3;
-            border: 1px solid #d9dde3;
+        .brands-section {
+            padding: 72px 40px 56px;
+            background: #faf8f5;
+        }
+        .tb-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .tb-header::before {
+            content: '';
+            display: block;
+            width: 44px;
+            height: 2px;
+            margin: 0 auto 22px;
+            background: #e8a24a;
+        }
+        .tb-header .section-title {
+            margin: 0 0 14px;
+        }
+        .tb-subtitle {
+            max-width: 560px;
+            margin: 0 auto;
+            color: #4b5563;
+            font-size: 15px;
+            line-height: 1.6;
+            letter-spacing: .02em;
+        }
+        .tb-featured {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .tb-feature {
+            position: relative;
+            display: block;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #e5e7eb;
+            text-decoration: none;
+            box-shadow: 0 10px 30px rgba(17, 24, 39, .08);
+        }
+        .tb-feature img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            color: transparent;
+            transition: transform .5s ease;
+        }
+        .tb-feature:hover img,
+        .tb-feature:focus-visible img {
+            transform: scale(1.03);
+        }
+        .tb-logos {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .tb-arrow {
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            background: #fff;
+            color: #111827;
+            box-shadow: 0 2px 8px rgba(17, 24, 39, .06);
             cursor: pointer;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .tb-arrow:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 12px rgba(17, 24, 39, .1);
+        }
+        .tb-track {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .tb-track::-webkit-scrollbar {
+            display: none;
+        }
+        .brands-section .brand-card,
+        .brands-section .brand-card:hover {
+            flex: 0 0 calc((100% - 5 * 12px) / 6);
+            min-width: 0;
+            box-sizing: border-box;
+            height: 82px;
+            padding: 12px 18px;
+            background: #fff;
+            border: 1px solid #eceae6;
+            border-radius: 10px;
+            scroll-snap-align: start;
+            cursor: pointer;
+        }
+        .brands-section .brand-card:hover {
+            border-color: #d6d3cd;
         }
         .brands-section .brand-card img {
             display: block;
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: grayscale(1);
-            opacity: .84;
-            transition: filter .2s ease, opacity .2s ease, transform .2s ease;
+            transition: transform .2s ease;
         }
         .brands-section .brand-card:hover img {
-            filter: grayscale(0);
-            opacity: 1;
             transform: scale(1.04);
+        }
+        @media (max-width: 900px) {
+            .tb-featured {
+                grid-template-columns: 1fr;
+            }
+            .brands-section .brand-card,
+            .brands-section .brand-card:hover {
+                flex-basis: calc((100% - 2 * 12px) / 3);
+            }
         }
     </style>
 
-    <!-- Brands Marquee -->
+    <!-- Trusted Brands -->
     <section class="brands-section">
         <div class="section-container">
-            <div class="section-header centered">
+            <div class="tb-header">
                 <h2 class="section-title">Our Trusted Brands</h2>
+                <p class="tb-subtitle">Industry-leading brands. Quality workwear, uniforms and promotional clothing you can rely on.</p>
             </div>
-        </div>
-        
-        <!-- Row 1: Left to Right -->
-        <div class="brands-marquee">
-            <div class="brands-track brands-track-right">
-                <div class="brand-card">2786</div>
-                <div class="brand-card">Adidas</div>
-                <div class="brand-card">Anthem</div>
-                <div class="brand-card">Asquith & Fox</div>
-                <div class="brand-card">AWDis</div>
-                <div class="brand-card">B&C Collection</div>
-                <div class="brand-card">BabyBugz</div>
-                <div class="brand-card">BagBase</div>
-                <div class="brand-card">Beechfield</div>
-                <div class="brand-card">Bella+Canvas</div>
-                <div class="brand-card">Callaway</div>
-                <div class="brand-card">Colortone</div>
-                <div class="brand-card">Comfort Colors</div>
-                <div class="brand-card">Craghoppers</div>
-                <div class="brand-card">Finden & Hales</div>
-                <div class="brand-card">Flexfit</div>
-                <div class="brand-card">Front Row</div>
-                <div class="brand-card">Fruit of the Loom</div>
-                <div class="brand-card">Gamegear</div>
-                <div class="brand-card">Gildan</div>
-                <div class="brand-card">Henbury</div>
-                <div class="brand-card">Kariban</div>
-                <div class="brand-card">KiMood</div>
-                <div class="brand-card">Kustom Kit</div>
-                <div class="brand-card">Nike</div>
-                <div class="brand-card">Nimbus</div>
-                <div class="brand-card">Portwest</div>
-                <div class="brand-card">Premier</div>
-                <div class="brand-card">Pro RTX</div>
-                <div class="brand-card">Regatta</div>
-                <div class="brand-card">Result</div>
-                <div class="brand-card">Russell</div>
-                <div class="brand-card">Scruffs</div>
-                <div class="brand-card">Stanley/Stella</div>
-                <div class="brand-card">Stormtech</div>
-                <div class="brand-card">Tee Jays</div>
-                <div class="brand-card">TriDri</div>
-                <div class="brand-card">Under Armour</div>
-                <!-- Duplicate for seamless loop -->
-                <div class="brand-card">2786</div>
-                <div class="brand-card">Adidas</div>
-                <div class="brand-card">Anthem</div>
-                <div class="brand-card">Asquith & Fox</div>
-                <div class="brand-card">AWDis</div>
-                <div class="brand-card">B&C Collection</div>
-                <div class="brand-card">BabyBugz</div>
-                <div class="brand-card">BagBase</div>
-                <div class="brand-card">Beechfield</div>
-                <div class="brand-card">Bella+Canvas</div>
-                <div class="brand-card">Callaway</div>
-                <div class="brand-card">Colortone</div>
-                <div class="brand-card">Comfort Colors</div>
-                <div class="brand-card">Craghoppers</div>
-                <div class="brand-card">Finden & Hales</div>
-                <div class="brand-card">Flexfit</div>
-                <div class="brand-card">Front Row</div>
-                <div class="brand-card">Fruit of the Loom</div>
-                <div class="brand-card">Gamegear</div>
-                <div class="brand-card">Gildan</div>
-                <div class="brand-card">Henbury</div>
-                <div class="brand-card">Kariban</div>
-                <div class="brand-card">KiMood</div>
-                <div class="brand-card">Kustom Kit</div>
-                <div class="brand-card">Nike</div>
-                <div class="brand-card">Nimbus</div>
-                <div class="brand-card">Portwest</div>
-                <div class="brand-card">Premier</div>
-                <div class="brand-card">Pro RTX</div>
-                <div class="brand-card">Regatta</div>
-                <div class="brand-card">Result</div>
-                <div class="brand-card">Russell</div>
-                <div class="brand-card">Scruffs</div>
-                <div class="brand-card">Stanley/Stella</div>
-                <div class="brand-card">Stormtech</div>
-                <div class="brand-card">Tee Jays</div>
-                <div class="brand-card">TriDri</div>
-                <div class="brand-card">Under Armour</div>
+
+            <div class="tb-featured">
+                <a class="tb-feature" href="shop-pc.html?brand=Portwest">
+                    <img src="brandedukv15-child/assets/images/trusted-brands/portwest.webp?v=20260927-hq" alt="Portwest - Built for a safer tomorrow" loading="lazy">
+                </a>
+                <a class="tb-feature" href="shop-pc.html?brand=Premier">
+                    <img src="brandedukv15-child/assets/images/trusted-brands/premier.webp?v=20260927-hq" alt="Premier - Uniforms that work for you" loading="lazy">
+                </a>
+                <a class="tb-feature" href="shop-pc.html?brand=ProRTX">
+                    <img src="brandedukv15-child/assets/images/trusted-brands/pro-rtx.webp?v=20260927-hq" alt="Pro RTX - High visibility, high performance" loading="lazy">
+                </a>
             </div>
-        </div>
-        
-        <!-- Row 2: Right to Left -->
-        <div class="brands-marquee">
-            <div class="brands-track brands-track-left">
-                <div class="brand-card">Yoko</div>
-                <div class="brand-card">Xpres</div>
-                <div class="brand-card">Wombat</div>
-                <div class="brand-card">Westford Mill</div>
-                <div class="brand-card">Towel City</div>
-                <div class="brand-card">Tombo</div>
-                <div class="brand-card">Spiro</div>
-                <div class="brand-card">SF Clothing</div>
-                <div class="brand-card">Rhino</div>
-                <div class="brand-card">Quadra</div>
-                <div class="brand-card">OGIO</div>
-                <div class="brand-card">Mumbles</div>
-                <div class="brand-card">Maddins</div>
-                <div class="brand-card">Larkwood</div>
-                <div class="brand-card">Fruit of the Loom</div>
-                <div class="brand-card">Craghoppers</div>
-                <div class="brand-card">Comfort Colors</div>
-                <div class="brand-card">Colortone</div>
-                <div class="brand-card">Callaway</div>
-                <div class="brand-card">Bella+Canvas</div>
-                <div class="brand-card">Beechfield</div>
-                <div class="brand-card">BagBase</div>
-                <div class="brand-card">BabyBugz</div>
-                <div class="brand-card">B&C Collection</div>
-                <div class="brand-card">AWDis</div>
-                <div class="brand-card">Asquith & Fox</div>
-                <div class="brand-card">Anthem</div>
-                <div class="brand-card">Adidas</div>
-                <div class="brand-card">2786</div>
-                <!-- Duplicate for seamless loop -->
-                <div class="brand-card">Yoko</div>
-                <div class="brand-card">Xpres</div>
-                <div class="brand-card">Wombat</div>
-                <div class="brand-card">Westford Mill</div>
-                <div class="brand-card">Towel City</div>
-                <div class="brand-card">Tombo</div>
-                <div class="brand-card">Spiro</div>
-                <div class="brand-card">SF Clothing</div>
-                <div class="brand-card">Rhino</div>
-                <div class="brand-card">Quadra</div>
-                <div class="brand-card">OGIO</div>
-                <div class="brand-card">Mumbles</div>
-                <div class="brand-card">Maddins</div>
-                <div class="brand-card">Larkwood</div>
-                <div class="brand-card">Fruit of the Loom</div>
-                <div class="brand-card">Craghoppers</div>
-                <div class="brand-card">Comfort Colors</div>
-                <div class="brand-card">Colortone</div>
-                <div class="brand-card">Callaway</div>
-                <div class="brand-card">Bella+Canvas</div>
-                <div class="brand-card">Beechfield</div>
-                <div class="brand-card">BagBase</div>
-                <div class="brand-card">BabyBugz</div>
-                <div class="brand-card">B&C Collection</div>
-                <div class="brand-card">AWDis</div>
-                <div class="brand-card">Asquith & Fox</div>
-                <div class="brand-card">Anthem</div>
-                <div class="brand-card">Adidas</div>
-                <div class="brand-card">2786</div>
+
+            <div class="tb-logos">
+                <button type="button" class="tb-arrow" data-dir="-1" aria-label="Previous brands">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="tb-track">
+                    <div class="brand-card">Nimbus</div>
+                    <div class="brand-card">Regatta</div>
+                    <div class="brand-card">OGIO</div>
+                    <div class="brand-card">Mumbles</div>
+                    <div class="brand-card">Maddins</div>
+                    <div class="brand-card">Larkwood</div>
+                    <div class="brand-card">2786</div>
+                    <div class="brand-card">Adidas</div>
+                    <div class="brand-card">Anthem</div>
+                    <div class="brand-card">Asquith & Fox</div>
+                    <div class="brand-card">AWDis</div>
+                    <div class="brand-card">B&C Collection</div>
+                    <div class="brand-card">BabyBugz</div>
+                    <div class="brand-card">BagBase</div>
+                    <div class="brand-card">Beechfield</div>
+                    <div class="brand-card">Bella+Canvas</div>
+                    <div class="brand-card">Callaway</div>
+                    <div class="brand-card">Colortone</div>
+                    <div class="brand-card">Comfort Colors</div>
+                    <div class="brand-card">Craghoppers</div>
+                    <div class="brand-card">Finden & Hales</div>
+                    <div class="brand-card">Flexfit</div>
+                    <div class="brand-card">Front Row</div>
+                    <div class="brand-card">Fruit of the Loom</div>
+                    <div class="brand-card">Gamegear</div>
+                    <div class="brand-card">Gildan</div>
+                    <div class="brand-card">Henbury</div>
+                    <div class="brand-card">Kariban</div>
+                    <div class="brand-card">KiMood</div>
+                    <div class="brand-card">Kustom Kit</div>
+                    <div class="brand-card">Nike</div>
+                    <div class="brand-card">Quadra</div>
+                    <div class="brand-card">Result</div>
+                    <div class="brand-card">Rhino</div>
+                    <div class="brand-card">Russell</div>
+                    <div class="brand-card">Scruffs</div>
+                    <div class="brand-card">SF Clothing</div>
+                    <div class="brand-card">Spiro</div>
+                    <div class="brand-card">Stanley/Stella</div>
+                    <div class="brand-card">Stormtech</div>
+                    <div class="brand-card">Tee Jays</div>
+                    <div class="brand-card">Tombo</div>
+                    <div class="brand-card">Towel City</div>
+                    <div class="brand-card">TriDri</div>
+                    <div class="brand-card">Under Armour</div>
+                    <div class="brand-card">Westford Mill</div>
+                    <div class="brand-card">Wombat</div>
+                    <div class="brand-card">Xpres</div>
+                    <div class="brand-card">Yoko</div>
+                </div>
+                <button type="button" class="tb-arrow" data-dir="1" aria-label="Next brands">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
             </div>
         </div>
     </section>
@@ -3087,6 +3267,20 @@
             const card = event.target.closest('.brand-card');
             const brand = card?.dataset.brand || card?.textContent.trim();
             if (brand) window.location.href = 'shop-pc.html?brand=' + encodeURIComponent(apiBrands[brand] || brand);
+        });
+
+        const track = document.querySelector('.brands-section .tb-track');
+        document.querySelectorAll('.brands-section .tb-arrow').forEach(button => {
+            button.addEventListener('click', () => {
+                const dir = Number(button.dataset.dir);
+                const maxScroll = track.scrollWidth - track.clientWidth;
+                const atEnd = dir > 0 ? track.scrollLeft >= maxScroll - 2 : track.scrollLeft <= 2;
+                if (atEnd) {
+                    track.scrollTo({ left: dir > 0 ? 0 : maxScroll });
+                } else {
+                    track.scrollBy({ left: dir * track.clientWidth });
+                }
+            });
         });
     })();
     </script>
@@ -3262,7 +3456,7 @@
     <script>
         (function () {
             const main = document.querySelector('.main-content');
-            const heroOne = main?.querySelector('.hero-expanding-wrapper');
+            const heroOne = main?.querySelector('.shop-by-category');
             const heroTwo = main?.querySelector('.hero-banners-section');
             if (!main || !heroOne || !heroTwo) return;
             main.insertBefore(heroTwo, heroOne);
@@ -3569,7 +3763,7 @@
 </div>
 
 <script src="brandedukv15-child/assets/js/cart.js?v=20260417"></script>
-<script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-quoteonly"></script>
+<script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-bannerorder"></script>
 <script src="brandedukv15-child/assets/js/header.js?v=20260924-header5"></script>
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
@@ -4204,7 +4398,7 @@ document.addEventListener('DOMContentLoaded', function() {
             while (renderItems.length < minCount) renderItems = renderItems.concat(items);
 
             carouselContainer.style.setProperty('--total', String(renderItems.length));
-            carouselContainer.style.setProperty('--time', Math.round(renderItems.length * spacing / 70) + 's');
+            carouselContainer.style.setProperty('--time', Math.round(renderItems.length * spacing / 35) + 's');
             renderItems.forEach(function(item, index) {
                 carouselContainer.appendChild(buildCard(item, index, index >= items.length));
             });
@@ -4261,7 +4455,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ORDER DRAWER PC - Slide-in order process (PC only, doesn't affect mobile/tablet) -->
-<script src="order-drawer-pc.js?v=20260926-drawertight"></script>
+<script src="order-drawer-pc.js?v=20260927-orangearrows"></script>
 
 <script>
 (function () {

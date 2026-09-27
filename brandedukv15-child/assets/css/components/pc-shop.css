@@ -350,7 +350,7 @@ body {
 }
 
 #cat-desc-banner {
-    padding: 16px 20px;
+    padding: 18px 20px;
     margin-bottom: 20px;
     text-align: left;
     background: #f8f7fc;
@@ -358,17 +358,113 @@ body {
     border-radius: 8px;
 }
 
+#cat-desc-banner.visible {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    align-items: center;
+    gap: 24px;
+}
+
 #cat-desc-title {
-    margin-bottom: 4px;
-    font-size: 18px;
-    letter-spacing: -0.015em;
+    margin: 0 0 12px;
+    color: #0f1b3d;
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+#cat-desc-title::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin-top: 8px;
+    border-radius: 2px;
+    background: #ff7a00;
 }
 
 #cat-desc-text {
-    max-width: 1050px;
+    max-width: 760px;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cat-desc-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-left: 24px;
+    border-left: 1px solid #e2def0;
+}
+
+.cat-desc-help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff1e5;
+    color: #ff7a00;
+}
+
+.cat-desc-help-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.cat-desc-help-body h3 {
+    margin: 0 0 4px;
+    color: var(--shop-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.cat-desc-help-body p {
+    margin: 0 0 6px;
     color: #596477;
     font-size: 13px;
-    line-height: 1.55;
+    line-height: 1.45;
+}
+
+.cat-desc-help-body p a {
+    color: #ff7a00;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.cat-desc-help-phone {
+    color: var(--shop-ink);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.cat-desc-help-phone strong {
+    color: #ff7a00;
+    white-space: nowrap;
+}
+
+.cat-desc-help-phone:hover strong,
+.cat-desc-help-body p a:hover {
+    color: #e56d00;
+}
+
+@media (max-width: 1180px) {
+    #cat-desc-banner.visible {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .cat-desc-help {
+        padding: 14px 0 0;
+        border-left: 0;
+        border-top: 1px solid #e2def0;
+    }
 }
 
 .products-header {

@@ -282,60 +282,166 @@
         }
     }
 
-    var ACCREDITATION_DEFS = [
-        {
-            slug: 'amfori-bsci',
-            label: 'amfori BSCI',
-            src: 'brandedukv15-child/assets/images/ui/accreditations/amfori-bsci.svg'
-        },
-        {
-            slug: 'reach',
-            label: 'REACH Compliance',
-            src: 'brandedukv15-child/assets/images/ui/accreditations/reach.svg'
-        },
-        {
-            slug: 'sedex',
-            label: 'Sedex',
-            src: 'brandedukv15-child/assets/images/ui/accreditations/sedex.svg'
-        }
+    // Badge colour family per accreditation slug; anything unmatched uses the neutral style.
+    var ACCREDITATION_TONES = [
+        { tone: 'eco', pattern: /organic|recycl|recylced|gots|grs|ocs|rcs|tencel|better-cotton|bci|polylana|bluesign|made-in-green|sustainable|b-corp|iso-?14001/ },
+        { tone: 'vegan', pattern: /vegan|certified-down|rds/ },
+        { tone: 'safety', pattern: /oeko-tex|reach/ },
+        { tone: 'ethical', pattern: /fair|amfori|bsci|sedex|wrap|fla|eti|ethical|sa8000|rsc|fama|global-compact|usctp/ }
     ];
 
-    function renderAccreditations(slugs) {
+    // Logo file per API accreditation slug. Licensed-only marks (GRS, OCS, RCS, RDS,
+    // PETA-Approved Vegan, ...) have no public artwork and fall back to a text badge.
+    var ACCREDITATION_LOGO_DIR = 'brandedukv15-child/assets/images/ui/accreditations/';
+    var ACCREDITATION_LOGOS = {
+        'amfori-bsci': 'amfori-bsci.png',
+        'reach': 'reach.png',
+        'reach-1': 'reach.png',
+        'sedex': 'sedex.png',
+        'sedex-1': 'sedex.png',
+        'oeko-tex': 'oeko-tex.svg',
+        'oeko-tex-standard-100': 'oeko-tex-standard-100.svg',
+        'oeko-tex-garment-licence': 'oeko-tex-standard-100.svg',
+        'oeko-tex-garment-recycled-licence': 'oeko-tex-standard-100.svg',
+        'oeko-tex-home-licence': 'oeko-tex-standard-100.svg',
+        'oeko-tex-home-recycled-licence': 'oeko-tex-standard-100.svg',
+        'oeko-tex-step': 'oeko-tex-step.svg',
+        'oeko-tex-made-in-green': 'oeko-tex-made-in-green.svg',
+        'fair-wear-foundation': 'fair-wear-foundation.svg',
+        'gots-licence': 'gots.svg',
+        'b-corp': 'b-corp.svg',
+        'better-cotton': 'better-cotton.svg',
+        'bci-better-cotton-initiative': 'better-cotton.svg',
+        'bluesign': 'bluesign.png',
+        'fair-labour-association': 'fla.svg',
+        'fair-labour-association-fla': 'fla.svg',
+        'fair-labour-association-fla-': 'fla.svg',
+        'wrap': 'wrap.svg',
+        'ethical-trading-initiative': 'eti.svg',
+        'ethical-trading-initiative-eti': 'eti.svg',
+        'sa8000': 'sa8000.png',
+        'usctp': 'usctp.png',
+        'sustainable-apparel-coalition': 'cascale.svg',
+        'rsc-accord': 'rsc.png',
+        'tenceltm': 'tencel.svg',
+        'iso14001': 'iso-14001.svg',
+        'iso-14001': 'iso-14001.svg',
+        'recycled': 'recycled.svg',
+        'recylced': 'recycled.svg',
+        'certified-recycled': 'recycled.svg',
+        'organic': 'organic.svg',
+        'certified-organic': 'organic.svg',
+        'vegan-tested': 'vegan.svg'
+    };
+
+    var accreditationCache = {};
+    var currentAccreditationCode = '';
+
+    function accreditationTone(slug) {
+        var match = ACCREDITATION_TONES.find(function (entry) { return entry.pattern.test(slug); });
+        return match ? match.tone : 'neutral';
+    }
+
+    function accreditationBadge(item) {
+        const name = String(item.name || item.slug).trim();
+        const logo = ACCREDITATION_LOGOS[item.slug];
+        if (logo) {
+            const wrap = document.createElement('span');
+            wrap.className = 'product-accreditation-logo';
+            wrap.title = name;
+            const img = document.createElement('img');
+            img.src = ACCREDITATION_LOGO_DIR + logo;
+            img.alt = name;
+            img.loading = 'lazy';
+            img.onerror = function () { wrap.replaceWith(accreditationChip(item)); };
+            wrap.appendChild(img);
+            return wrap;
+        }
+        return accreditationChip(item);
+    }
+
+    function accreditationChip(item) {
+        const badge = document.createElement('span');
+        badge.className = 'product-accreditation-chip product-accreditation-chip--' + accreditationTone(item.slug);
+        badge.textContent = String(item.name || item.slug).trim();
+        return badge;
+    }
+
+    function renderAccreditations(list) {
         const wrap = document.getElementById('productAccreditations');
         const row = document.getElementById('productAccreditationsRow');
         if (!wrap || !row) return;
 
         row.innerHTML = '';
-        row.className = 'product-accreditations-row is-official';
-        row.innerHTML = '<img class="product-accreditations-strip" src="brandedukv15-child/assets/images/ui/accreditations-row.png" alt="amfori BSCI, REACH Compliance, Sedex">';
+        row.className = 'product-accreditations-row product-accreditations-row--badges';
+        if (!list || !list.length) {
+            wrap.hidden = true;
+            return;
+        }
+
+        const seenLogos = {};
+        list.slice().sort(function (a, b) {
+            return (ACCREDITATION_LOGOS[a.slug] ? 0 : 1) - (ACCREDITATION_LOGOS[b.slug] ? 0 : 1);
+        }).forEach(function (item) {
+            const logo = ACCREDITATION_LOGOS[item.slug];
+            if (logo && seenLogos[logo]) return;
+            if (logo) seenLogos[logo] = true;
+            row.appendChild(accreditationBadge(item));
+        });
         wrap.hidden = false;
+    }
+
+    function fetchJson(url) {
+        return fetch(url).then(function (res) { return res.ok ? res.json() : null; }).catch(function () { return null; });
+    }
+
+    function productListHasCode(data, code) {
+        const items = (data && (data.items || data.products)) || [];
+        return items.some(function (item) {
+            return String(item && item.code || '').toUpperCase() === code;
+        });
+    }
+
+    // The product detail endpoint has no accreditations, so read the facet counts for a
+    // search on the product code, then confirm per slug when the search matches other products.
+    function fetchProductAccreditations(code) {
+        const apiBase = (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
+        const q = encodeURIComponent(code);
+        return Promise.all([
+            fetchJson(apiBase + '/api/products/filters?q=' + q),
+            fetchJson(apiBase + '/api/products?limit=5&q=' + q)
+        ]).then(function (responses) {
+            const filters = responses[0] && (responses[0].filters || responses[0]);
+            const candidates = ((filters && filters.accreditations) || []).filter(function (entry) {
+                return entry && entry.slug && Number(entry.count) > 0;
+            });
+            const search = responses[1];
+            const items = (search && (search.items || search.products)) || [];
+            if (!candidates.length || !productListHasCode(search, code)) return [];
+            if (items.length === 1) return candidates;
+
+            return Promise.all(candidates.map(function (entry) {
+                return fetchJson(apiBase + '/api/products?limit=20&q=' + q + '&accreditations[]=' + encodeURIComponent(entry.slug))
+                    .then(function (data) { return productListHasCode(data, code) ? entry : null; });
+            })).then(function (results) { return results.filter(Boolean); });
+        });
     }
 
     function loadProductAccreditations(productCode) {
         const code = String(productCode || '').trim().toUpperCase();
-        if (!code) {
-            renderAccreditations([]);
-            return Promise.resolve([]);
-        }
+        currentAccreditationCode = code;
+        renderAccreditations([]);
+        if (!code) return Promise.resolve([]);
 
-        const apiBase = (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
-        return Promise.all(ACCREDITATION_DEFS.map(function (def) {
-            const url = apiBase + '/api/products?limit=5&q=' + encodeURIComponent(code) +
-                '&accreditations[]=' + encodeURIComponent(def.slug);
-            return fetch(url)
-                .then(function (res) { return res.ok ? res.json() : null; })
-                .then(function (data) {
-                    const items = (data && (data.items || data.products)) || [];
-                    const exact = items.some(function (item) {
-                        return String(item && item.code || '').toUpperCase() === code;
-                    });
-                    return exact ? def.slug : null;
-                })
-                .catch(function () { return null; });
-        })).then(function (results) {
-            const slugs = results.filter(Boolean);
-            renderAccreditations(slugs);
-            return slugs;
+        if (!accreditationCache[code]) {
+            accreditationCache[code] = fetchProductAccreditations(code).catch(function () {
+                delete accreditationCache[code];
+                return [];
+            });
+        }
+        return accreditationCache[code].then(function (list) {
+            if (currentAccreditationCode === code) renderAccreditations(list);
+            return list;
         });
     }
     

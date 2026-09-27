@@ -627,13 +627,13 @@ window.BrandedConfig = (function () {
     // ──────────────────────────────────────────────
     const HERO_BANNERS = [
         {
-            id: 'premier',
+            id: 'branded',
             enabled: true,
-            views: ['pc'],
-            kind: 'image',
-            label: 'Show Premier Workwear banner',
-            alt: 'Premier Workwear about us',
-            pc: { src: 'brandeduk.com/assets/Premier%202026.jpg' }
+            views: ['pc', 'mobile'],
+            kind: 'branded',
+            hrefPc: 'shop-pc.html?productType=tshirts',
+            hrefMobile: 'shop.html?category=t-shirts',
+            label: 'Show Branded banner'
         },
         {
             id: 'branded-digital',
@@ -742,15 +742,6 @@ window.BrandedConfig = (function () {
             pc: { src: 'brandeduk.com/assets/ral17829-jh501-banner-refresh.webp' }
         },
         {
-            id: 'branded',
-            enabled: true,
-            views: ['pc', 'mobile'],
-            kind: 'branded',
-            hrefPc: 'shop-pc.html?productType=tshirts',
-            hrefMobile: 'shop.html?category=t-shirts',
-            label: 'Show Branded banner'
-        },
-        {
             id: 'contact',
             enabled: true,
             views: ['pc', 'mobile'],
@@ -784,6 +775,15 @@ window.BrandedConfig = (function () {
                 srcNarrow: 'brandeduk.com/assets/only-boards-mobile.webp'
             },
             mobile: { src: 'brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_18_04%20AM.png' }
+        },
+        {
+            id: 'premier',
+            enabled: true,
+            views: ['pc'],
+            kind: 'image',
+            label: 'Show Premier Workwear banner',
+            alt: 'Premier Workwear about us',
+            pc: { src: 'brandeduk.com/assets/Premier%202026.jpg' }
         }
     ];
 

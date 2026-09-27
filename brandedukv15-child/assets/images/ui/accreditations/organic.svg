@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Organic">
+  <circle cx="60" cy="60" r="58" fill="#1f6b4f"/>
+  <path d="M60 30c-13 8-18 21-12 33 3 6 8 9 12 10 4-1 9-4 12-10 6-12 1-25-12-33z" fill="#8fd694"/>
+  <path d="M60 38v40" stroke="#1f6b4f" stroke-width="3" stroke-linecap="round"/>
+  <text x="60" y="97" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#fff" letter-spacing="1">ORGANIC</text>
+</svg>

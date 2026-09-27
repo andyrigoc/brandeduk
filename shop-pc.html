@@ -18,7 +18,7 @@
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
     <link rel="preload" as="fetch" crossorigin="anonymous" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-quoteonly"></script>
+    <script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-bannerorder"></script>
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260927-footergap">
@@ -2048,9 +2048,9 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20260924-method-colours2">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260924-method-colours2">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20260927-acclogos">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-orangefilters">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-cattitle">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -3503,8 +3503,26 @@
         <section class="products-section">
             <!-- Category Description Banner -->
             <div id="cat-desc-banner">
-                <h2 id="cat-desc-title"></h2>
-                <p id="cat-desc-text"></p>
+                <div class="cat-desc-copy">
+                    <h2 id="cat-desc-title"></h2>
+                    <p id="cat-desc-text"></p>
+                </div>
+                <aside class="cat-desc-help" aria-label="Need help choosing?">
+                    <span class="cat-desc-help-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 14v-2a8 8 0 0 1 16 0v2"></path>
+                            <path d="M4 14a2 2 0 0 1 2-2h1v6H6a2 2 0 0 1-2-2v-2z"></path>
+                            <path d="M20 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2z"></path>
+                            <path d="M18 18v.5a2.5 2.5 0 0 1-2.5 2.5H13"></path>
+                        </svg>
+                    </span>
+                    <div class="cat-desc-help-body">
+                        <h3>Need help choosing?</h3>
+                        <p><a href="#" data-open-contact="1">Contact us</a> and we&rsquo;ll point you in the right direction.</p>
+                        <a class="cat-desc-help-phone" href="tel:02089742722">Direct line: <strong>0208 974 2722</strong></a>
+                    </div>
+                </aside>
             </div>
             <section id="brand-editorial" class="brand-editorial" hidden aria-label="Brand information">
                 <div class="brand-editorial-copy">
@@ -3592,6 +3610,7 @@
     <div data-pc-footer></div>
 
     <script src="brandedukv15-child/assets/data/brand-descriptions.js?v=20260915"></script>
+    <script src="brandedukv15-child/assets/data/category-descriptions.js?v=20260927"></script>
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
@@ -9544,7 +9563,7 @@
 
     <!-- Order Popup Scripts -->
     <script src="test-order-popup/order.js?v=20260927-outback-bucket"></script>
-    <script src="test-order-popup/order-integration.js?v=20260923-colour-slide"></script>
+    <script src="test-order-popup/order-integration.js?v=20260927-acclogos"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260923-studio-load"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260924-basket-loader"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20260923-qty-green"></script>
@@ -9601,54 +9620,33 @@
     </script>
 
     <!-- ORDER DRAWER PC - Slide-in basket summary -->
-    <script src="order-drawer-pc.js?v=20260926-drawertight"></script>
+    <script src="order-drawer-pc.js?v=20260927-orangearrows"></script>
 
     <script>
         (function () {
-            var DESCRIPTIONS = {
-                'accessories': { title: 'Accessories', desc: 'Complete your branded uniform with practical accessories for staff, events and daily workwear. From bags to small add-ons, these items help keep your team looking organised and professional. Ideal for corporate, hospitality, schools, clubs and promotional use.' },
-                'aprons': { title: 'Aprons', desc: 'Personalised aprons are ideal for restaurants, cafes, bars, salons, workshops and catering teams. Add your logo with embroidery or print for a clean, professional look. Choose from bib aprons, waist aprons and durable workwear styles built for daily use.' },
-                'bags': { title: 'Bags', desc: 'Branded bags are a practical way to promote your company while giving staff, customers or event teams something useful. Choose from gym bags, tote bags, backpacks and work bags suitable for schools, corporate teams, clubs and promotions.' },
-                'baselayers': { title: 'Baselayers', desc: 'Personalised baselayers are designed for comfort, performance and warmth during work, sport or outdoor activity. Ideal for teams, clubs, security staff and outdoor workers. Add your logo for a consistent branded look underneath jackets, uniforms or sportswear.' },
-                'beanies': { title: 'Beanies', desc: 'Custom beanies are a simple and effective choice for winter workwear, outdoor teams, events and promotional merchandise. Add embroidery for a premium finish that keeps your brand visible in colder weather. Suitable for construction, logistics, schools and clubs.' },
-                'blouses': { title: 'Blouses', desc: 'Branded blouses give office, hospitality, reception and customer-facing teams a smart and professional appearance. Available in styles suitable for corporate uniforms and front-of-house staff. Add subtle embroidery for a refined branded finish.' },
-                'bodywarmers': { title: 'Bodywarmers & Gilets', desc: 'Personalised bodywarmers and gilets are ideal for staff who need warmth without restricting movement. Perfect for trades, warehouses, outdoor teams, events and hospitality. Add embroidery or print for a practical uniform layer with strong brand visibility.' },
-                'caps': { title: 'Caps', desc: 'Personalised caps are a popular choice for workwear, events, hospitality, clubs and promotional campaigns. Add embroidery or print to create a clean branded finish. Available in styles suitable for staff uniforms, outdoor work and team merchandise.' },
-                'chefswear': { title: 'Chef Jackets', desc: 'Personalised chef jackets are designed for kitchens, restaurants, hotels, catering teams and food service professionals. Add your logo or staff name with embroidery for a premium finish. Choose durable garments that maintain a clean and professional appearance.' },
-                'coveralls': { title: 'Coveralls', desc: 'Personalised coveralls are built for trades, mechanics, engineering, maintenance and industrial work. They provide full-body protection while helping your team look organised and professional. Add embroidery or print to create durable branded workwear.' },
-                'dresses': { title: 'Dresses', desc: 'Workwear dresses offer a smart and polished option for hospitality, beauty, healthcare, reception and corporate teams. Comfortable and professional, they help create a consistent brand image. Suitable for staff uniforms in customer-facing environments.' },
-                'fleece': { title: 'Fleece', desc: 'Personalised fleeces are a versatile uniform layer for staff working indoors or outdoors. Warm, comfortable and easy to brand, they are ideal for trades, schools, hospitality, clubs and corporate teams. Add embroidery for a professional long-lasting finish.' },
-                'footwear': { title: 'Footwear', desc: 'Work boots and shoes are designed for protection, durability and comfort across demanding environments. Suitable for construction, warehouse, industrial and outdoor teams. Choose reliable footwear options to support staff safety and everyday performance.' },
-                'gloves': { title: 'Gloves', desc: 'Work gloves help protect staff across construction, warehouse, logistics, catering, cleaning and outdoor environments. Choose from practical styles designed for comfort, grip and durability. Ideal for completing safety-focused workwear packages.' },
-                'helmets': { title: 'Helmets', desc: 'Safety helmets are essential for construction, site work, maintenance and industrial environments. They help protect staff while supporting workplace safety requirements. Suitable for contractors, site teams and trade professionals.' },
-                'safety-vests': { title: 'Hi-Vis / Safety Vests', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
-                'hivis': { title: 'Hi-Vis', desc: 'Safety vests are essential for visibility in construction, logistics, warehousing, events and site work. Add your logo or staff role for clear identification. A practical and cost-effective option for branded PPE and compliant workwear.' },
-                'hoodies': { title: 'Hoodies', desc: 'Personalised hoodies are a popular choice for staff uniforms, schools, trades, clubs and promotional clothing. Comfortable and easy to brand, they work well for casual workwear or teamwear. Add embroidery or print for a professional branded finish.' },
-                'jackets': { title: 'Jackets', desc: 'Personalised jackets are ideal for keeping staff warm, dry and professional in all working conditions. Suitable for construction, logistics, hospitality, events and corporate teams. Choose from softshells, waterproofs, fleeces and insulated styles with embroidery or print.' },
-                'joggers': { title: 'Joggers', desc: 'Personalised sweatpants and joggers are ideal for schools, clubs, gyms, sports teams and casual staff uniforms. Comfortable and practical, they work well with hoodies, t-shirts and jackets. Add print or embroidery for a complete branded teamwear look.' },
-                'knitwear': { title: 'Knitted Jumpers', desc: 'Knitted jumpers offer a smart and comfortable uniform layer for offices, schools, hospitality and customer-facing teams. Add embroidery for a clean branded finish. Ideal for professional environments where warmth and presentation are both important.' },
-                'polos': { title: 'Polo Shirts', desc: 'Personalised polo shirts are one of the most versatile uniform options for businesses, schools, hospitality, trades and events. Smart, comfortable and easy to brand, they work well with embroidery or print. Ideal for professional staff uniforms and teamwear.' },
-                'scarves': { title: 'Scarves', desc: 'Branded scarves are suitable for schools, clubs, sports teams, events and winter merchandise. They offer warmth while keeping your identity visible. Ideal for seasonal uniforms, supporter merchandise and promotional campaigns.' },
-                'shirts': { title: 'Shirts', desc: 'Personalised shirts are ideal for corporate, hospitality, reception, retail and front-of-house teams. Smart and professional, they help create a consistent brand image. Add embroidery for a subtle and durable uniform finish.' },
-                'shorts': { title: 'Shorts', desc: 'Workwear shorts are suitable for warmer conditions, outdoor teams, trades, schools, sports and hospitality staff. Comfortable and practical, they pair well with branded polos, t-shirts and jackets. Ideal for seasonal uniforms and active work environments.' },
-                'skirts': { title: 'Skirts', desc: 'Uniform skirts provide a smart option for corporate, school, hospitality and front-of-house teams. Comfortable and professional, they help maintain a consistent appearance. Suitable for staff uniforms where presentation is important.' },
-                'socks': { title: 'Socks', desc: 'Personalised socks are suitable for sports teams, schools, clubs, promotions and branded merchandise. Comfortable and practical, they can complete a uniform or teamwear package. Ideal for events, gifts and retail-style campaigns.' },
-                'softshells': { title: 'Softshell Jackets', desc: 'Personalised softshell jackets are a smart and practical choice for trades, outdoor teams, hospitality, events and corporate uniforms. They offer warmth, comfort and weather resistance without bulk. Add embroidery for a premium professional finish.' },
-                'sports-teamwear': { title: 'Sports & Teamwear', desc: 'Sports overtop garments are ideal for clubs, schools, teams and training sessions. Lightweight and practical, they help create a consistent team appearance. Add logos, names or numbers for a professional branded sportswear finish.' },
-                'sweatshirts': { title: 'Sweatshirts', desc: 'Branded sweatshirts are a versatile uniform option for schools, trades, clubs, offices and promotional clothing. Comfortable and durable, they are suitable for everyday use. Add embroidery or print for a clean and professional branded finish.' },
-                'tabards': { title: 'Tabards', desc: 'Tabards are ideal for cleaning teams, care homes, schools, catering, salons and service staff. Practical and easy to wear, they help identify roles clearly. Add embroidery or print to create a professional branded uniform.' },
-                'ties': { title: 'Ties', desc: 'Personalised or coordinated ties help complete a smart uniform for corporate, hospitality, school and front-of-house teams. They add a professional finish to shirts and formal workwear. Suitable for reception, events and customer-facing staff.' },
-                'towels': { title: 'Towels', desc: 'Branded towels are ideal for gyms, spas, hotels, salons, sports clubs and promotional gift sets. Add embroidery for a premium, long-lasting finish. Suitable for hospitality, wellness and leisure businesses looking for professional branded products.' },
-                'trousers': { title: 'Trousers', desc: 'Work trousers are essential for trades, warehouses, logistics, hospitality, healthcare and general staff uniforms. Durable and practical, they support comfort and movement throughout the working day. Pair with branded tops and jackets for a complete uniform.' },
-                't-shirts': { title: 'T-Shirts', desc: 'Personalised t-shirts are perfect for staff uniforms, events, promotions, clubs, schools and casual workwear. Easy to brand with print or embroidery, they offer a cost-effective way to promote your business. Choose from a wide range of colours and fits.' },
-                'tunics': { title: 'Tunics', desc: 'Tunics are ideal for healthcare, beauty, spa, salon and care environments. Smart, comfortable and practical, they help staff maintain a professional appearance. Add embroidery for a clean branded uniform finish.' },
-                'umbrellas': { title: 'Umbrellas', desc: 'Branded umbrellas are practical promotional products for events, corporate gifts, hospitality and outdoor teams. They keep your brand visible in everyday use while offering real value to customers or staff. Ideal for seasonal campaigns and premium giveaways.' },
-                'waistcoats': { title: 'Waistcoats', desc: 'Waistcoats are a smart option for hospitality, events, corporate, reception and front-of-house teams. They help create a polished and consistent uniform appearance. Suitable for hotels, restaurants, venues and formal customer-facing roles.' },
-            };
+            var DESCRIPTIONS = window.BrandedCategoryDescriptions || {};
+
+            var SUSTAINABLE = { title: 'Sustainable', desc: 'Lower-impact garments made with recycled, organic and more responsible materials, without compromising on quality or customisation options.' };
+            var ALL_PRODUCTS = { title: 'Explore Our Full Product Range', desc: 'Browse over 9,000 customisable products from leading workwear, uniform and promotional clothing brands. Use the filters to narrow your search by product type, brand, colour, size, fabric, style and features, then find the right garments to personalise with embroidery or print.' };
 
             var params = new URLSearchParams(window.location.search);
             var type = (params.get('productType') || '').toLowerCase().trim();
+            var compactKey = function (value) { return value.replace(/[^a-z0-9]/g, ''); };
             var data = DESCRIPTIONS[type];
+            if (!data && type) {
+                var match = Object.keys(DESCRIPTIONS).find(function (key) { return compactKey(key) === compactKey(type); });
+                data = match ? DESCRIPTIONS[match] : null;
+            }
+            var accreditation = (params.get('accreditation') || '').toLowerCase().trim();
+            if (!data && !type && !params.get('brand') && ['recycled', 'sustainable', 'organic'].indexOf(accreditation) !== -1) {
+                data = SUSTAINABLE;
+            }
+            if (!data && !type) {
+                var category = (params.get('category') || '').toLowerCase().trim();
+                var isFiltered = ['brand', 'accreditation', 'sector', 'flag', 'q'].some(function (key) { return params.get(key); })
+                    || (category && category !== 'all');
+                if (!isFiltered) data = ALL_PRODUCTS;
+            }
             if (!data) return;
 
             var banner = document.getElementById('cat-desc-banner');

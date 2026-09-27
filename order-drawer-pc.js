@@ -631,11 +631,35 @@
                 font-size: 16px;
             }
 
-            .basket-qty span {
-                min-width: 22px;
-                text-align: center;
+            .basket-qty-input {
+                width: 46px;
+                height: 28px;
+                padding: 0;
+                margin: 0;
+                border: 0;
+                border-left: 1px solid #e5e7eb;
+                border-right: 1px solid #e5e7eb;
+                border-radius: 0;
+                background: #fff;
+                color: #111827;
+                font: inherit;
                 font-size: 14px;
                 font-weight: 650;
+                text-align: center;
+                box-sizing: border-box;
+                -moz-appearance: textfield;
+                appearance: textfield;
+            }
+
+            .basket-qty-input::-webkit-outer-spin-button,
+            .basket-qty-input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            .basket-qty-input:focus {
+                outline: 2px solid #f97316;
+                outline-offset: -2px;
             }
 
             .basket-item-remove {
@@ -733,6 +757,22 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
+            }
+
+            .drawer-summary-row--toggle {
+                cursor: pointer;
+            }
+
+            .drawer-summary-row--toggle svg {
+                width: 15px;
+                height: 15px;
+                stroke: #ff7a00;
+                stroke-width: 2.6;
+                transition: transform 0.2s ease;
+            }
+
+            .drawer-summary-row--toggle.is-open svg {
+                transform: rotate(180deg);
             }
 
             .drawer-summary-row--strong {
@@ -1075,6 +1115,18 @@
             if (action === 'add-logo') openDrawerLogoEditor(index);
         });
 
+        const basketItemsContainer = document.getElementById('basketItemsContainer');
+        basketItemsContainer.addEventListener('change', (event) => {
+            const input = event.target.closest('.basket-qty-input');
+            if (input) setDrawerQty(Number(input.dataset.index), input.value);
+        });
+        basketItemsContainer.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && event.target.closest('.basket-qty-input')) event.target.blur();
+        });
+        basketItemsContainer.addEventListener('focusin', (event) => {
+            if (event.target.closest('.basket-qty-input')) event.target.select();
+        });
+
         window.addEventListener('resize', function () {
             if (overlay.classList.contains('active')) updateBasketScrollHint();
         });
@@ -1083,7 +1135,9 @@
             const toggle = event.target.closest('[data-summary-toggle]');
             if (!toggle) return;
             const detail = document.getElementById(toggle.dataset.summaryToggle === 'logo' ? 'drLogoDetail' : 'drSetupDetail');
-            if (detail) detail.hidden = !detail.hidden;
+            if (!detail) return;
+            detail.hidden = !detail.hidden;
+            toggle.classList.toggle('is-open', !detail.hidden);
         });
 
         // Submit button (checkout to confirmation)
@@ -1236,6 +1290,16 @@
             const item = basket[index];
             if (!item) return;
             const next = Math.max(1, getItemQuantityDetails(item).total + delta);
+            setItemQuantity(item, next);
+            writeBasket(basket);
+        }
+
+        function setDrawerQty(index, value) {
+            const basket = readBasket();
+            const item = basket[index];
+            if (!item) return;
+            const parsed = parseInt(value, 10);
+            const next = Number.isFinite(parsed) ? Math.min(99999, Math.max(1, parsed)) : getItemQuantityDetails(item).total;
             setItemQuantity(item, next);
             writeBasket(basket);
         }
@@ -1408,7 +1472,7 @@
                             <div class="basket-item-tools">
                                 <div class="basket-qty">
                                     <button type="button" data-drawer-action="qty" data-delta="-1" data-index="${itemIndex}" aria-label="Decrease quantity">−</button>
-                                    <span>${totalQty}</span>
+                                    <input type="number" class="basket-qty-input" min="1" step="1" inputmode="numeric" value="${totalQty}" data-index="${itemIndex}" aria-label="Quantity">
                                     <button type="button" data-drawer-action="qty" data-delta="1" data-index="${itemIndex}" aria-label="Increase quantity">+</button>
                                 </div>
                                 <button type="button" class="basket-item-remove" data-drawer-action="remove" data-index="${itemIndex}">
