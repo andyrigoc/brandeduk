@@ -279,6 +279,7 @@ function initHeroBanners() {
     let currentBanner = 0;
     let rotationTimer = null;
     const rotationDelay = 7000;
+    const exitTimers = new WeakMap();
     
     // Initialize: first banner active, others waiting on right
     banners.forEach((banner, i) => {
@@ -311,10 +312,19 @@ function initHeroBanners() {
             dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
         });
         
-        // Reset exited banner after transition
-        setTimeout(() => {
+        // The jump back from -100% to +100% must not animate, or the exited banner
+        // sweeps across the stage and shows through banners with transparent areas.
+        clearTimeout(exitTimers.get(currentEl));
+        exitTimers.set(currentEl, setTimeout(() => {
+            if (currentEl.classList.contains('hero-banner--active')) {
+                currentEl.classList.remove('hero-banner--exit');
+                return;
+            }
+            currentEl.style.transition = 'none';
             currentEl.classList.remove('hero-banner--exit');
-        }, 600);
+            void currentEl.offsetWidth;
+            currentEl.style.transition = '';
+        }, 600));
         
         currentBanner = index;
     }

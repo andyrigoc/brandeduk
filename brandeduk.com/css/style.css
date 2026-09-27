@@ -127,7 +127,8 @@ main.main-content {
 }
 
 /* Banner 2 - Neon Get in Touch */
-#heroBanner2 {
+#heroBanner2,
+.hero-banner[data-hero-id="contact"] {
     background: #000;
 }
 
@@ -372,7 +373,8 @@ main.main-content {
 /* Neon Font */
 @font-face {
     font-family: 'Neon';
-    src: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/707108/neon.ttf') format('truetype');
+    src: url('../assets/fonts/neon.ttf') format('truetype');
+    font-display: swap;
 }
 
 /* Neon Container - Get in Touch */
