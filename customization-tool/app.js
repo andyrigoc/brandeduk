@@ -2751,7 +2751,7 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text)) return "sweatpants";
   if (/sweatshirt|crew neck sweat|raglan sweat/.test(text)) return "sweatshirts";
   if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text)) return "beanies";
-  if (/fedora|trilby|bucket hat|wide[\s-]?brim|sun hat|safari hat|bush hat|legionnaire/.test(text)) return "hats";
+  if (/fedora|trilby|bucket hat|outback hat|wide[\s-]?brim|sun hat|safari hat|bush hat|legionnaire/.test(text)) return "hats";
   if (/\bcap\b|baseball cap|snapback|trucker|visor/.test(text)) return "caps";
   if (/\bapron/.test(text)) return "aprons";
   if (/laptop[\s-]?case|laptop[\s-]?bag|computer[\s-]?case|tablet[\s-]?case/.test(text)) return "bags";
@@ -3073,7 +3073,7 @@ function inferProductTypeFromCatalog(name, productType) {
   if (/beanie|bobble hat|knit hat|wool hat/.test(label) || /beanie|headwear/.test(type)) return "beanie";
   if (/t\s*-?shirt|tee/.test(label) || /t-?shirt/.test(type)) return "tshirt";
   if (/hoodie|sweatshirt|fleece|jacket|softshell|gilet|body warmer/.test(label) || /hoodie|sweatshirt|fleece|jacket|softshell|gilet/.test(type)) return "hoodie";
-  if (/bucket hat|wide[\s-]?brim|sun hat|safari hat|bush hat|legionnaire/.test(label) || /bucket|wide[\s-]?brim|hats?/.test(type)) return "hat";
+  if (/bucket hat|outback hat|wide[\s-]?brim|sun hat|safari hat|bush hat|legionnaire/.test(label) || /bucket|wide[\s-]?brim|hats?/.test(type)) return "hat";
   if (/\bcap\b|baseball cap/.test(label) || /\bcap\b|headwear/.test(type)) return "cap";
   if (/polo/.test(label) || /polo/.test(type)) return "polo";
   if (/shirt|vest|apron|bag|trouser|short|pant/.test(label) || /shirt|vest|apron|bag|trouser|short|pant/.test(type)) return "tshirt";

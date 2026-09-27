@@ -631,7 +631,7 @@ function customizationConfigTarget(product) {
     if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text)) {
         return { slug: 'beanies', subtype: /bobble|pom/.test(text) ? 'bobble' : 'cuffed' };
     }
-    if (/fedora|trilby|bucket hat|wide[\s-]?brim|sun hat/.test(text)) return { slug: 'hats', subtype: 'bucket' };
+    if (/fedora|trilby|bucket hat|outback hat|wide[\s-]?brim|sun hat/.test(text)) return { slug: 'hats', subtype: 'bucket' };
     if (/\bcap\b|baseball|snapback|trucker|visor/.test(text)) {
         return { slug: 'caps', subtype: /trucker/.test(text) ? 'trucker' : 'baseball' };
     }
