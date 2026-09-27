@@ -60,6 +60,15 @@
         }
     }
 
+    var navigateTimer = null;
+
+    function closePanels() {
+        clearTimeout(navigateTimer);
+        navigateTimer = null;
+        $cont.classList.remove('s--el-active');
+        $elsArr.forEach(function($el) { $el.classList.remove('s--active'); });
+    }
+
     $elsArr.forEach(function($el) {
         $el.addEventListener('click', function(e) {
             // Don't navigate if clicking close button or CTA link
@@ -69,18 +78,21 @@
             
             // If already active, navigate immediately
             if (this.classList.contains('s--active')) {
+                clearTimeout(navigateTimer);
                 navigateToCategory(this.getAttribute('data-category'));
                 return;
             }
             
             // Step 1: Expand this panel (visual effect)
+            closePanels();
             revealHeroBackground(this);
             $cont.classList.add('s--el-active');
             this.classList.add('s--active');
 
             // Step 2: After full expansion animation, auto-navigate to the category
             var clickedEl = this;
-            setTimeout(function() {
+            navigateTimer = setTimeout(function() {
+                navigateTimer = null;
                 navigateToCategory(clickedEl.getAttribute('data-category'));
             }, 2500);
         });
@@ -90,19 +102,22 @@
     $closeBtnsArr.forEach(function($btn) {
         $btn.addEventListener('click', function(e) {
             e.stopPropagation();
-            $cont.classList.remove('s--el-active');
-            var activeEl = $cont.querySelector('.hero-el.s--active');
-            if (activeEl) activeEl.classList.remove('s--active');
+            closePanels();
         });
     });
 
     // ESC key to close
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            $cont.classList.remove('s--el-active');
-            var activeEl = $cont.querySelector('.hero-el.s--active');
-            if (activeEl) activeEl.classList.remove('s--active');
-        }
+        if (e.key === 'Escape') closePanels();
+    });
+
+    // Back/forward cache restores the page with the panel still expanded.
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) closePanels();
+    });
+    window.addEventListener('pagehide', function() {
+        clearTimeout(navigateTimer);
+        navigateTimer = null;
     });
 })();
 
