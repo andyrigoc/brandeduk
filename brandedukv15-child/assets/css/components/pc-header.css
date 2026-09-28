@@ -48,6 +48,9 @@
     .site-header .header-top .header-container {
         min-height: 40px;
         padding: 8px 24px;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
     }
 
     .site-header .header-social-3d,
@@ -930,8 +933,38 @@
 
 /* Compact the search row on 14.5–15.5" laptops. 1440px and up stay at full size. */
 @media (min-width: 700px) and (max-width: 1439px) {
+    .site-header .header-top .header-container {
+        min-height: 36px;
+        padding: 7px 20px;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 16px;
+    }
+
+    .site-header .header-top-left,
+    .site-header .header-trust-list {
+        flex-wrap: nowrap;
+        min-width: 0;
+    }
+
+    .site-header .header-trust-list {
+        gap: 16px;
+        font-size: 12px;
+    }
+
+    .site-header .header-top-phone {
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .site-header .header-top .header-top-basket-link {
+        display: none;
+    }
+
     .site-header .searchbar-header__inner {
         gap: 12px;
+        min-height: 56px;
     }
 
     .site-header .searchbar-header__surface {
@@ -982,9 +1015,9 @@
         margin-right: 0;
     }
 
-    .site-header .searchbar-header__brand-img {
-        height: 40px !important;
-        max-width: 160px;
+    html body .site-header .searchbar-header__brand-img {
+        height: 44px !important;
+        max-width: 176px;
     }
 
     .site-header .shop-products-btn,
@@ -1021,39 +1054,75 @@
         max-width: 300px;
         min-width: 180px;
     }
+
+    .site-header .header-bottom > .header-container {
+        padding: 8px 16px;
+    }
+
+    .site-header .main-nav {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .site-header .main-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .site-header .main-nav > .menu {
+        gap: 16px;
+        width: max-content;
+    }
+
+    .site-header .main-nav > .menu > li > a {
+        font-size: 13px;
+    }
 }
 
 /* iPad mini / small tablets: keep Shop Products on one row. */
 @media (min-width: 700px) and (max-width: 899px) {
+    .site-header .header-top .header-container {
+        padding: 6px 14px;
+        gap: 12px;
+    }
+
+    .site-header .header-trust-list li:nth-child(3) {
+        display: none;
+    }
+
     .site-header .searchbar-header__inner {
-        gap: 8px;
+        min-height: 48px;
+        gap: 10px;
     }
 
     .site-header .searchbar-header__surface {
-        padding: 8px 12px !important;
+        padding: 10px 14px !important;
     }
 
-    .site-header .searchbar-header__brand-img {
-        height: 36px !important;
-        max-width: 140px;
+    html body .site-header .searchbar-header__brand-img {
+        height: 40px !important;
+        max-width: 148px;
     }
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 28px;
-        padding: 0 10px;
-        font-size: 11px;
-    }
-
-    .site-header .header-util-link {
-        gap: 4px;
+        height: 30px;
+        padding: 0 12px;
         font-size: 12px;
     }
 
+    .site-header .header-util-link {
+        gap: 0;
+        font-size: 0;
+        width: 34px;
+        justify-content: center;
+    }
+
     .site-header .searchbar-header__search-expand {
-        flex: 1 1 140px;
-        width: min(200px, 24vw) !important;
-        max-width: 220px;
-        min-width: 120px;
+        flex: 1 1 160px;
+        width: auto !important;
+        max-width: none;
+        min-width: 128px;
     }
 }

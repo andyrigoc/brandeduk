@@ -43,7 +43,7 @@
 }
 
 .uniform-cube__box {
-    --s: min(49.4vw, 55.1vh, 494px);
+    --s: min(38vw, 46vh, 420px);
     position: relative;
     width: var(--s);
     height: var(--s);
@@ -185,7 +185,7 @@
     inset: 0;
     display: flex;
     align-items: center;
-    padding: 4rem clamp(1.5rem, 5.5vw, 5.5rem);
+    padding: 3.5rem clamp(1.75rem, 6vw, 6.5rem);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -198,17 +198,17 @@
 }
 
 .uniform-cube__card {
-    width: min(350px, 100%);
-    padding: 1.8rem;
+    width: min(300px, 32vw, 100%);
+    padding: 1.5rem 1.6rem;
     background: var(--uc-card);
     border-left: 1px solid #e5e7eb;
     box-shadow: 0 18px 50px rgba(16, 24, 40, .08);
-    margin-left: -0.6rem;
+    margin-left: 0;
 }
 
 .uniform-cube__card.is-right {
     margin-left: auto;
-    margin-right: -0.6rem;
+    margin-right: 0;
     text-align: right;
     border-left: 0;
     border-right: 1px solid #e5e7eb;
@@ -226,14 +226,14 @@
     margin: 0;
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
-    font-size: clamp(3rem, 6vw, 5rem);
-    line-height: .9;
+    font-size: clamp(2.1rem, 3.4vw, 3.4rem);
+    line-height: .92;
     letter-spacing: .02em;
     color: var(--uc-ink);
 }
 
 .uniform-cube__slide:first-child .uniform-cube__title {
-    font-size: clamp(4rem, 8vw, 6.4rem);
+    font-size: clamp(2.35rem, 3.8vw, 3.8rem);
 }
 
 .uniform-cube__copy {
@@ -308,15 +308,26 @@
 }
 
 @media (max-width: 850px) {
-    .uniform-cube__box { --s: min(74.1vw, 41.8vh, 342px); }
+    .uniform-cube__stage {
+        align-items: flex-start;
+        padding-top: 2.8rem;
+    }
+    .uniform-cube__box { --s: min(68vw, 40vh, 320px); }
     .uniform-cube__slide {
         min-height: 0;
         align-items: flex-end;
-        padding: 3rem 1.2rem;
+        padding: 1.6rem 1.35rem 2.2rem;
     }
     .uniform-cube__slide:first-child {
         min-height: 0;
-        align-items: center;
+        align-items: flex-end;
+    }
+    .uniform-cube__title,
+    .uniform-cube__slide:first-child .uniform-cube__title {
+        font-size: clamp(2rem, 6.4vw, 2.7rem);
+    }
+    .uniform-cube__card {
+        padding: 1.25rem 1.35rem;
     }
     .uniform-cube__card,
     .uniform-cube__card.is-right {

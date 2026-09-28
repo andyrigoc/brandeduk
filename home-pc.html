@@ -157,7 +157,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260926-headerlogo2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260927-ctacenter">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260928-air1">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
@@ -166,11 +166,11 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260927-walogo">
-    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260927-slowbrands">
+    <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260928-air1">
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
-    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260928-cubefluid">
-    <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260928-scrub">
+    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260928-air2">
+    <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260928-air2">
     <style>
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
@@ -178,9 +178,9 @@
         .featured-showcase {
             display: grid;
             grid-template-columns: 250px minmax(0, 1fr);
-            gap: 22px;
+            gap: 28px;
             align-items: center;
-            padding: 20px 0 20px 20px;
+            padding: 28px 0 28px 28px;
             background: #f6f1e7;
             border-radius: 20px;
         }
@@ -204,7 +204,7 @@
         }
         .featured-intro__title {
             margin: 10px 0 12px;
-            font-size: 30px;
+            font-size: clamp(24px, 2.4vw, 30px);
             font-weight: 800;
             line-height: 1.1;
             color: #111827;
@@ -403,6 +403,16 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
+        }
+        @media (max-width: 1100px) {
+            .featured-showcase {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 24px;
+            }
+            .featured-intro {
+                min-height: 0;
+            }
         }
     </style>
     <style>
@@ -1439,7 +1449,7 @@
                         <div class="search-autocomplete" id="searchAutocomplete"></div>
                     </div>
 
-                    <a class="header-util-link" href="#" data-open-contact="1">
+                    <a class="header-util-link" href="#" data-open-contact="1" aria-label="Get a quote">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>
                         Get a quote
                     </a>
@@ -2448,16 +2458,16 @@
     
     <style>
         .shop-by-category {
-            padding: 24px 40px 8px;
+            padding: 40px 40px 36px;
         }
         .sbc-card {
             display: grid;
             grid-template-columns: 250px minmax(0, 1fr);
             gap: 28px;
             align-items: center;
-            max-width: 1400px;
+            max-width: 1610px;
             margin: 0 auto;
-            padding: 28px;
+            padding: 32px;
             border: 1px solid #efe9df;
             border-radius: 20px;
             background: #fbf8f3;
@@ -2488,7 +2498,7 @@
             margin: 0 0 16px;
             color: #0f1b3d;
             font-family: 'Poppins', sans-serif;
-            font-size: 38px;
+            font-size: clamp(28px, 2.6vw, 38px);
             font-weight: 800;
             line-height: 1.08;
         }
@@ -2579,9 +2589,42 @@
         }
         @media (max-width: 1279px) {
             .shop-by-category .hero-el__heading {
-                padding: 5px 5px;
-                font-size: 8px;
-                letter-spacing: .02em;
+                padding: 5px 8px;
+                font-size: 9px;
+                letter-spacing: .04em;
+            }
+        }
+        @media (max-width: 1100px) {
+            .shop-by-category {
+                padding: 28px 20px 24px;
+            }
+            .sbc-card {
+                grid-template-columns: 1fr;
+                gap: 22px;
+                padding: 24px;
+            }
+            .sbc-intro {
+                padding-left: 0;
+            }
+            .sbc-features {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px 22px;
+                margin-top: 20px;
+            }
+            .shop-by-category .hero-expanding-wrapper {
+                height: 340px;
+            }
+        }
+        @media (max-width: 899px) {
+            .sbc-features {
+                display: none;
+            }
+            .sbc-text {
+                margin-bottom: 18px;
+            }
+            .shop-by-category .hero-expanding-wrapper {
+                height: 300px;
             }
         }
     </style>
