@@ -64,7 +64,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20260927-ctacenter', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20260928-logo10c', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-search.css?v=20260924-search3', assetsRoot).href, 'search');
     }
 

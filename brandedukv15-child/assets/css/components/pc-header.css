@@ -210,10 +210,10 @@
         margin-right: 8px;
     }
 
-    .site-header .searchbar-header__brand-img {
+    html body .site-header .searchbar-header__brand-img {
         display: block;
         width: auto;
-        height: 64px !important;
+        height: 58px !important;
         max-width: none;
         object-fit: contain;
     }
@@ -221,6 +221,7 @@
     .site-header .searchbar-header .category-dropdown {
         flex: 0 0 auto;
         margin-left: auto;
+        left: -20px;
     }
 
     .site-header .shop-products-btn,
@@ -276,6 +277,8 @@
         gap: 16px;
         margin-left: 0;
         justify-content: flex-end;
+        position: relative;
+        left: -20px;
     }
 
     .site-header .searchbar-header__search,
@@ -967,6 +970,15 @@
         min-height: 56px;
     }
 
+    html body .site-header .searchbar-header__brand-img {
+        height: 58px !important;
+    }
+
+    .site-header .searchbar-header .category-dropdown,
+    .site-header .searchbar-header__actions {
+        left: -20px;
+    }
+
     .site-header .searchbar-header__surface {
         padding: 10px 20px !important;
     }
@@ -1016,8 +1028,13 @@
     }
 
     html body .site-header .searchbar-header__brand-img {
-        height: 44px !important;
-        max-width: 176px;
+        height: 40px !important;
+        max-width: 158px;
+    }
+
+    .site-header .searchbar-header .category-dropdown,
+    .site-header .searchbar-header__actions {
+        left: -20px;
     }
 
     .site-header .shop-products-btn,
@@ -1101,8 +1118,13 @@
     }
 
     html body .site-header .searchbar-header__brand-img {
-        height: 40px !important;
-        max-width: 148px;
+        height: 36px !important;
+        max-width: 133px;
+    }
+
+    .site-header .searchbar-header .category-dropdown,
+    .site-header .searchbar-header__actions {
+        left: 0;
     }
 
     .site-header .shop-products-btn,
@@ -1124,5 +1146,13 @@
         width: auto !important;
         max-width: none;
         min-width: 128px;
+    }
+}
+
+/* Below ~14" the 20px cluster shift would overlap the logo; keep packing flush. */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .site-header .searchbar-header .category-dropdown,
+    .site-header .searchbar-header__actions {
+        left: 0;
     }
 }
