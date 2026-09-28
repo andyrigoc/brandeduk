@@ -1076,17 +1076,14 @@
         .btn-continue-shopping:hover { background: #f9fafb; }
         .btn-share-basket {
             width: 100%; padding: 13px 14px; display: flex; align-items: center;
-            justify-content: center; gap: 8px; background: #f5f6ff; color: #273469;
-            border: 2px solid #273469; border-radius: 10px; font-size: 14px; font-weight: 750;
-            cursor: pointer; box-shadow: 0 3px 10px rgba(39, 52, 105, .10);
-            transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+            justify-content: center; gap: 8px; background: #16804a; color: #fff;
+            border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: none;
+            transition: background .18s ease;
         }
-        .btn-share-basket:hover {
-            background: #eceeff; box-shadow: 0 5px 14px rgba(39, 52, 105, .16);
-            transform: translateY(-1px);
-        }
+        .btn-share-basket:hover { background: #12703f; }
         .btn-share-basket:focus-visible {
-            outline: 3px solid rgba(39, 52, 105, .22); outline-offset: 2px;
+            outline: 3px solid rgba(22, 128, 74, .28); outline-offset: 2px;
         }
         .btn-share-basket:disabled { opacity: .65; cursor: wait; transform: none; }
         .share-basket-modal {
@@ -1127,11 +1124,11 @@
         }
         .btn-checkout-primary:hover { background: #ea580c; }
         .btn-request-quote {
-            width: 100%; padding: 14px; background: #fff; color: #7c3aed;
-            border: 2px dashed #7c3aed; border-radius: 10px; font-size: 14px; font-weight: 600;
+            width: 100%; padding: 14px; background: #fff; color: #273469;
+            border: 1.5px dashed #b7bec9; border-radius: 10px; font-size: 14px; font-weight: 650;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        .btn-request-quote:hover { background: #f5f3ff; }
+        .btn-request-quote:hover { background: #f7f8fc; border-color: #273469; }
 
         /* Discount code (collapsed) */
         .discount-code-section {
@@ -1770,25 +1767,29 @@
             .btn-checkout-primary {
                 padding: 15px;
                 background: #f97316;
-                border-radius: 9px;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
                 font-size: 15px;
             }
             .btn-checkout-primary:hover { background: #ea580c; }
             .btn-request-quote {
                 padding: 13px;
-                color: var(--basket-navy);
-                border: 1px solid #b8c0d9;
-                border-radius: 9px;
+                color: #273469;
+                background: #fff;
+                border: 1.5px dashed #b7bec9;
+                border-radius: 10px;
             }
-            .btn-request-quote:hover { background: #f7f8fc; }
+            .btn-request-quote:hover { background: #f7f8fc; border-color: #273469; }
             .btn-share-basket {
                 padding: 12px;
-                background: #fff;
-                border: 1px solid #d0d5dd;
-                border-radius: 9px;
+                color: #fff;
+                background: #16804a;
+                border: none;
+                border-radius: 10px;
                 box-shadow: none;
             }
-            .btn-share-basket:hover { background: #f9fafb; box-shadow: none; transform: none; }
+            .btn-share-basket:hover { color: #fff; background: #12703f; box-shadow: none; transform: none; }
             .btn-continue-shopping {
                 padding: 8px 4px 0;
                 border: 0;
@@ -2147,21 +2148,31 @@
             .btn-checkout-primary {
                 padding: 14px;
                 background: #f97316;
-                border-radius: 2px;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
                 font-size: 14px;
             }
             .btn-checkout-primary:hover { background: #ea580c; }
-            .btn-request-quote,
-            .btn-share-basket {
+            .btn-request-quote {
                 padding: 12px;
-                color: #30343b;
+                color: #273469;
                 background: #fff;
-                border: 1px solid #cfcfcb;
-                border-radius: 2px;
+                border: 1.5px dashed #b7bec9;
+                border-radius: 10px;
                 font-size: 13px;
             }
-            .btn-request-quote:hover,
-            .btn-share-basket:hover { color: #202124; background: #f7f7f5; }
+            .btn-request-quote:hover { color: #273469; background: #f7f8fc; }
+            .btn-share-basket {
+                padding: 12px;
+                color: #fff;
+                background: #16804a;
+                border: none;
+                border-radius: 10px;
+                font-size: 13px;
+                box-shadow: none;
+            }
+            .btn-share-basket:hover { color: #fff; background: #12703f; box-shadow: none; transform: none; }
             .btn-continue-shopping { color: #64676d; }
 
             .basket-desktop-footer {
