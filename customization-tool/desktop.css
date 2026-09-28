@@ -1997,6 +1997,12 @@
     background: #1d4ed8;
   }
 
+  .position-card.is-logo-drop-ready {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 2px #2563eb;
+  }
+
   body.has-configured-position-picker .position-card.is-logo-drop-ready .position-logo-preview-box {
     border-color: #2563eb;
     background: #eff6ff;

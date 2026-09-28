@@ -4911,6 +4911,7 @@ function syncInlineLogoPanels() {
     });
     button.addEventListener("dragstart", (event) => {
       event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
+      event.dataTransfer?.setData("text/plain", entry.logo);
       event.dataTransfer.effectAllowed = "copy";
       const dragImage = document.createElement("img");
       dragImage.src = entry.logo;
@@ -5791,14 +5792,14 @@ function showPoaNotice(positionKey = "", method = "embroidery") {
 
 // Only "yes" methods are directly assignable; POA-only positions show the
 // contact notice instead of silently accepting the artwork.
-function chooseMethodForPosition(card, positionKey, onChoose) {
+function chooseMethodForPosition(card, positionKey, onChoose, forcePrompt) {
   const allowed = getAllowedMethodsForPositionKey(positionKey);
   const options = ["embroidery", "print"].filter((method) => allowed[method] !== "no");
   if (options.length === 0) {
     showPoaNotice(positionKey);
     return;
   }
-  if (options.length === 1 && allowed[options[0]] === "yes") {
+  if (!forcePrompt && options.length === 1 && allowed[options[0]] === "yes") {
     onChoose(options[0]);
     return;
   }
@@ -5919,7 +5920,7 @@ function configurePositionCardsForProduct() {
           : "");
       methodButtons = `<span class="position-method-buttons">${embroideryButton}${printButton}</span>`;
     }
-    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>${methodButtons}<span class="position-logo-preview-box"><img alt="Logo preview"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
+    card.innerHTML = `<input type="checkbox" aria-label="${label}"><span class="position-thumb-wrap"><img alt="${label}" draggable="false"><span class="position-thumb-colour-layer" aria-hidden="true"></span><span class="position-print-area-guide" aria-hidden="true"></span></span><span class="position-name"></span>${methodButtons}<span class="position-logo-preview-box"><img alt="Logo preview" draggable="false"><button type="button" class="position-logo-remove" aria-label="Remove logo from ${label}" hidden>&times;</button></span>`;
     card.querySelector(".position-name").textContent = label;
     grid.appendChild(card);
   });
@@ -8574,6 +8575,20 @@ if (positionGrid) {
       .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
   };
 
+  const isSavedLogoDrag = (event) => {
+    const types = event.dataTransfer?.types ? Array.from(event.dataTransfer.types) : [];
+    return types.includes("application/x-brandeduk-logo") || types.includes("Files");
+  };
+
+  const isEmptyPositionCard = (card) => {
+    const position = String(card?.dataset?.position || "").trim();
+    return Boolean(position) && !state.positionLogoAssignments?.[position]?.logo;
+  };
+
+  positionGrid.querySelectorAll("img").forEach((image) => {
+    image.draggable = false;
+  });
+
   const activateDroppedPosition = (position) => {
     if (state.selectedPositions.includes(position)) return true;
     if (state.selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
@@ -8592,10 +8607,12 @@ if (positionGrid) {
 
   positionGrid.addEventListener("dragover", (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || !hasConfiguredPositionPicker()) return;
-    clearPositionDropState();
+    if (!card || !isSavedLogoDrag(event) || !isEmptyPositionCard(card)) {
+      clearPositionDropState();
+      return;
+    }
     event.preventDefault();
-    const position = card.dataset.position;
+    clearPositionDropState();
     if (!card.classList.contains("is-selected") && state.selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
       event.dataTransfer.dropEffect = "none";
       card.classList.add("is-logo-drop-blocked");
@@ -8611,26 +8628,29 @@ if (positionGrid) {
 
   positionGrid.addEventListener("drop", async (event) => {
     const card = event.target.closest(".position-card");
-    if (!card || !hasConfiguredPositionPicker()) return;
+    if (!card || !isEmptyPositionCard(card)) return;
     event.preventDefault();
     clearPositionDropState();
 
     const position = card.dataset.position;
     if (!activateDroppedPosition(position)) return;
-    const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo");
+    const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo")
+      || event.dataTransfer?.getData("text/plain");
     const file = event.dataTransfer?.files?.[0];
-    if (!savedLogo && !file) return;
+    const reusedLogo = /^(?:data:|blob:|https?:)/i.test(String(savedLogo || "")) ? savedLogo : "";
+    if (!reusedLogo && !file) return;
+    state.selectedArea = normalizeAreaForPicker(card.dataset.area) || state.selectedArea || "front";
     chooseMethodForPosition(card, position, async (method) => {
-      if (savedLogo) {
+      if (reusedLogo) {
         state.decorationType = method;
-        assignLogoToPosition(position, savedLogo, method);
+        assignLogoToPosition(position, reusedLogo, method);
         return;
       }
       state.pendingPositionLogoTarget = position;
       state.pendingDecorationType = method;
       document.body.dataset.decorationType = normalizeDecorationMethod(method);
       await processLogoFile(file);
-    });
+    }, true);
   });
 
   // EMB / PRINT buttons: pick the method, then upload straight into this card.
