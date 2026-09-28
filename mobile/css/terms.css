@@ -136,7 +136,7 @@
     display: none;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 699px) {
     body.terms-page {
         padding-top: 0 !important;
     }
@@ -149,7 +149,7 @@
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
     .terms-mobile-bar,
     .terms-page .bottom-nav,
     [data-mobile-footer] {

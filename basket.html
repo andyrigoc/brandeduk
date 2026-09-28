@@ -18,8 +18,8 @@
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 1024px)">
-    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 1024px)">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
+    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Mobile + desktop: hide the homepage mobile/tablet chrome. Tablet (768–1023) overrides this. */
+        /* Mobile + desktop: hide the homepage mobile/tablet chrome. Phones use .basket-header. */
         body.basket-page .mobile-header,
         body.basket-page .tablet-top-bar {
             display: none !important;
@@ -49,7 +49,7 @@
         }
 
         /* Desktop: push content below the fixed header */
-        @media (min-width: 1024px) {
+        @media (min-width: 700px) {
             body.basket-page .basket-content {
                 padding-top: 32px !important;
             }
@@ -60,8 +60,8 @@
             margin-top: 0;
         }
 
-        /* ── MOBILE (< 768px): only basket-header (back + title + clear) — hide site header entirely ── */
-        @media (max-width: 767px) {
+        /* ── MOBILE (< 700px): only basket-header (back + title + clear) — hide site header entirely ── */
+        @media (max-width: 699px) {
             body.basket-page .header-top        { display: none !important; }
             body.basket-page .header-bottom     { display: none !important; }
             body.basket-page .top-promo-bar     { display: none !important; }
@@ -75,46 +75,7 @@
             }
         }
 
-        /* ── TABLET (768-1023px): homepage mobile-route header, not a scaled-down PC header ── */
-        /* 1023.98 closes the subpixel gap where neither 1023 nor 1024 media queries match. */
-        @media (min-width: 768px) and (max-width: 1023.98px) {
-            body.basket-page .basket-header { display: none !important; }
-            body.basket-page .site-header,
-            body.basket-page .header-top,
-            body.basket-page .header-bottom,
-            body.basket-page .searchbar-header {
-                display: none !important;
-            }
-            body.basket-page .searchbar-header__action,
-            body.basket-page .searchbar-header__action-ring {
-                display: none !important;
-            }
-            body.basket-page .tablet-top-bar {
-                display: flex !important;
-            }
-            body.basket-page .mobile-header {
-                display: flex !important;
-                flex-direction: column;
-                top: 36px;
-            }
-            body.basket-page .mobile-header .header-top-row,
-            body.basket-page .mobile-header .back-btn-header {
-                display: none !important;
-            }
-            body.basket-page .top-promo-bar {
-                display: block !important;
-            }
-            body.basket-page .mobile-header + .top-promo-bar {
-                margin-top: calc(var(--header-height, 102px) + 44px) !important;
-            }
-            /* Promo is in-flow below the fixed tablet-top-bar + mobile-header. */
-            body.basket-page {
-                padding-top: 0 !important;
-            }
-            body.basket-page .basket-content {
-                padding-top: 20px !important;
-            }
-        }
+        /* Tablets (>= 700px) use the PC header, not the mobile-route header. */
 
         /* ── FIX: responsive.css collapses searchbar to 44px on 1280px+ — override it ── */
         /* Match home-pc.html header exactly */
@@ -1459,7 +1420,7 @@
         }
 
         /* ===== DESKTOP (>1024px) ===== */
-        @media (min-width: 1024px) {
+        @media (min-width: 700px) {
             /* Hide mobile-only elements */
             .basket-header { display: none !important; }
             .mobile-header { display: none !important; }
@@ -1570,7 +1531,7 @@
             }
             .btn-continue-shopping:hover { color: #374151; }
         }
-        @media (min-width: 1024px) {
+        @media (min-width: 700px) {
             body.basket-page { background: #f5f7fb; }
             body.basket-page .quote-footer { display: none !important; }
             body.basket-page .basket-content {
@@ -1927,9 +1888,8 @@
         .basket-desktop-footer,
         .basket-list-toolbar .clear-desktop-btn { display: none; }
 
-        /* ── TABLET (768–1023px): homepage mobile header is shown, so the
-           basket toolbar / Clear basket button must also appear here, not only at 1024px+. ── */
-        @media (min-width: 768px) and (max-width: 1023.98px) {
+        /* ── 700–1023px: PC header is shown; keep the basket toolbar visible (not only at 1024px+). ── */
+        @media (min-width: 700px) and (max-width: 1023.98px) {
             .basket-list-toolbar {
                 display: flex;
                 align-items: center;
@@ -1970,7 +1930,7 @@
             .order-summary-bottom { max-width: 480px; }
         }
 
-        @media (min-width: 1024px) {
+        @media (min-width: 700px) {
             body.basket-page {
                 --basket-navy: #202939;
                 --basket-link-blue: #6f2580;
@@ -5017,7 +4977,7 @@
         if (logo) sessionStorage.setItem('editingPosition', logo.position);
         sessionStorage.setItem('returnAfterCustomize', 'basket');
         _setCustomizeSessionData(item);
-        const isMobile = window.innerWidth < 1024;
+        const isMobile = window.innerWidth < 700;
         const params = new URLSearchParams({
             code: item.code || item.productCode || '',
             from: 'basket',
@@ -5190,7 +5150,7 @@
             return;
         }
 
-        const isMobile = window.innerWidth < 1024;
+        const isMobile = window.innerWidth < 700;
         const code = item.code || item.productCode || '';
         if (!isMobile) {
             window.location.href = `shop-pc.html?product=${encodeURIComponent(code)}`;
@@ -5237,7 +5197,7 @@
 
         _setCustomizeSessionData(item);
         sessionStorage.removeItem('toolAskLogoChoice');
-        const isMobile = window.innerWidth < 1024;
+        const isMobile = window.innerWidth < 700;
         const params = new URLSearchParams({
             code: item.code || item.productCode || '',
             from: 'basket',
@@ -6310,7 +6270,7 @@
 <script>
 // Basket page: search + shop links → correct shop per device
 (function() {
-    var isMobile = window.innerWidth < 1024;
+    var isMobile = window.innerWidth < 700;
     var shopAllUrl = isMobile ? '/shop?category=all' : '/shop-pc.html?category=all';
     var homeUrl = '/index-mobile.html';
 
@@ -6334,7 +6294,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (continueBtn) {
         continueBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            var isMobile = window.innerWidth < 1024;
+            var isMobile = window.innerWidth < 700;
             window.location.assign(isMobile ? '/index-mobile.html' : '/shop-pc.html?category=all');
         });
     }

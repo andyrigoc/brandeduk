@@ -3084,7 +3084,7 @@ html.force-mobile-customizer .customization-context-label {
   z-index: 190;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 699px) {
   body.tool-with-site-header {
     padding-top: var(--tool-site-header-height);
     padding-bottom: calc(var(--tool-bottom-nav-height) + env(safe-area-inset-bottom));
@@ -3099,7 +3099,7 @@ html.force-mobile-customizer .customization-context-label {
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
   .tool-bottom-nav {
     display: none;
   }
@@ -4325,9 +4325,9 @@ html.force-mobile-customizer .customization-context-label {
 }
 
 /* ================================================================
-   DESKTOP LAYOUT  ≥ 800px
+   DESKTOP LAYOUT  ≥ 700px
    ================================================================ */
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
   .tool-site-header {
     display: none;
   }

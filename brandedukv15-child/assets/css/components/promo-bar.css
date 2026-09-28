@@ -25,7 +25,7 @@
     margin-top: calc(var(--header-height, 102px) + 20px);
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 699px) {
     .mobile-header + .top-promo-bar {
         min-height: 40px;
         padding: 10px 12px;

@@ -21,7 +21,7 @@
   object-fit: contain;
 }
 
-@media (min-width: 800px) {
+@media (min-width: 700px) {
   :root {
     --desktop-navy: #142456;
     --desktop-purple: #8f2ca3;
@@ -2518,7 +2518,7 @@
   }
 }
 
-@media (min-width: 800px) and (max-width: 1120px) {
+@media (min-width: 700px) and (max-width: 1120px) {
   #mainEditor.active-screen {
     grid-template-columns: 220px minmax(300px, 1fr) 270px;
   }
@@ -2558,7 +2558,7 @@
  * Embedded PC order mode: colour and size/quantity were already selected in
  * the parent order flow, so the studio focuses purely on visual decoration.
  */
-@media (min-width: 800px) {
+@media (min-width: 700px) {
   body.is-pc-order-embed #mainEditor.active-screen {
     grid-template-columns: minmax(270px, .65fr) minmax(570px, 1.25fr) minmax(340px, .72fr);
     grid-template-rows: 64px minmax(0, 1fr);
@@ -2610,7 +2610,7 @@
   }
 }
 
-@media (min-width: 800px) and (max-width: 1080px) {
+@media (min-width: 700px) and (max-width: 1080px) {
   body.is-pc-order-embed #mainEditor.active-screen {
     grid-template-columns: 220px minmax(360px, 1fr) 300px;
   }
@@ -2631,7 +2631,7 @@
   }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 700px) {
   /* Internal steps fill the embedded studio instead of becoming a second
      floating card inside the parent order modal. */
   body.is-pc-order-embed .customiser-app > .screen.active-screen:not(#mainEditor) {
@@ -2906,7 +2906,7 @@
   }
 }
 
-@media (min-width: 800px) and (max-width: 1050px) {
+@media (min-width: 700px) and (max-width: 1050px) {
   body.is-pc-order-embed .print-type-list,
   body.is-pc-order-embed #designTypePage .print-type-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));

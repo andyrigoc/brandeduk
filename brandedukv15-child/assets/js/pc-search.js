@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    if (window.BrandedPcSearchInitialized || window.innerWidth < 1024) return;
+    if (window.BrandedPcSearchInitialized || window.innerWidth < 700) return;
     window.BrandedPcSearchInitialized = true;
 
     var currentScript = document.currentScript;

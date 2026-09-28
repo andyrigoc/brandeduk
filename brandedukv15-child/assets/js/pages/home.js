@@ -448,7 +448,7 @@ function goToProduct(code, evt = null, selectedColor = null) {
         }
     }
     // Detect if we're on mobile (mobile pages are in /mobile/ or served as index-mobile.html)
-    var isMobile = window.innerWidth < 1280 || /index-mobile\.html/i.test(window.location.pathname) || /\/mobile\//i.test(window.location.pathname);
+    var isMobile = window.innerWidth < 700 || /index-mobile\.html/i.test(window.location.pathname) || /\/mobile\//i.test(window.location.pathname);
     if (isMobile) {
         window.location.href = 'mobile/customize-mobile.html?code=' + encodeURIComponent(code);
     } else {
@@ -477,7 +477,7 @@ function initBrowseCategories() {
 
     const toggle = dropdown.querySelector('.category-toggle');
     const menuItems = dropdown.querySelectorAll('.category-menu > li.has-children');
-    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const desktopQuery = window.matchMedia('(min-width: 700px)');
     const hoverQuery = window.matchMedia('(hover: hover)');
     let isOpen = false;
 

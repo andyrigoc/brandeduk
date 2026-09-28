@@ -73,7 +73,7 @@ const isPcOrderEmbed = customizationFromParam !== "customize-mobile"
   && (customizationEmbedParam === "pc-order"
     || customizationEmbedParam === "pc-order-preload"
     || customizationFromParam === "customize-pc"
-    || Boolean(window.matchMedia && window.matchMedia("(min-width: 1024px)").matches));
+    || Boolean(window.matchMedia && window.matchMedia("(min-width: 700px)").matches));
 if (isPcOrderEmbed) {
   document.body.classList.add("is-pc-order-embed");
 }
@@ -1140,7 +1140,7 @@ function isDesktopToolExperience() {
   const params = new URLSearchParams(window.location.search);
   if (String(params.get("from") || "").toLowerCase() === "customize-mobile") return false;
   if (String(params.get("from") || "").toLowerCase() === "customize-pc") return true;
-  return Boolean(window.matchMedia && window.matchMedia("(min-width: 1024px)").matches);
+  return Boolean(window.matchMedia && window.matchMedia("(min-width: 700px)").matches);
 }
 
 function notifyEmbeddedOrderSaved(result) {

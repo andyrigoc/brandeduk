@@ -113,15 +113,17 @@
         <p id="debugInfo" style="display:none;"></p>
         <noscript>
             <p>
-                <a href="index-mobile.html">Mobile/Tablet</a> | 
-                <a href="home-pc.html">Desktop</a>
+                <a href="index-mobile.html">Mobile</a> | 
+                <a href="home-pc.html">Desktop / tablet</a>
             </p>
         </noscript>
     </div>
 
     <script>
         (function () {
-            var BREAKPOINT = 1280;
+            // Mobile if CSS width < 700 (phones ~390–430). PC from 700px:
+            // iPad mini 6 (744), iPad mini (768), Android tablets, desktops.
+            var BREAKPOINT = 700;
             var lastTarget = null;
             var autoTimer = null;
             var debugInfoEl = document.getElementById('debugInfo');
@@ -155,11 +157,13 @@
                 var isAndroid = ua.indexOf('android') !== -1;
                 var isAndroidTablet = isAndroid && ua.indexOf('mobile') === -1;
                 var isTabletUA = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
-                var isMobileUA = uaDataMobile || isIPhone || /\bmobi\b/.test(ua) || ua.indexOf('iemobile') !== -1 || ua.indexOf('opera mini') !== -1;
+                // Phones stay mobile even in landscape. Do not use generic "Mobile" in UA:
+                // older iPads and some Android tablets include it.
+                var isPhoneUA = !isTabletUA && (uaDataMobile || isIPhone);
                 var isViewportMobile = window.matchMedia
                     ? window.matchMedia('(max-width: ' + (BREAKPOINT - 1) + 'px)').matches
                     : (window.innerWidth < BREAKPOINT);
-                var shouldUseMobile = isMobileUA || isTabletUA || isViewportMobile;
+                var shouldUseMobile = isPhoneUA || isViewportMobile;
                 return shouldUseMobile ? 'index-mobile.html' : 'home-pc.html';
             }
 

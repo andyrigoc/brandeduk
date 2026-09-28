@@ -126,7 +126,7 @@
   function renderGallery(containerEl, opts = {}) {
     if (!containerEl) return;
     const logos = _load();
-    const isMobile = !!opts.mobile || window.matchMedia('(max-width: 1024px)').matches;
+    const isMobile = !!opts.mobile || window.matchMedia('(max-width: 699px)').matches;
 
     containerEl.innerHTML = '';
     containerEl.classList.add('logo-gallery');

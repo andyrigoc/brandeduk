@@ -19,8 +19,8 @@
         { x: -90, y: -360 }
     ];
 
-    var EASE = 0.12;
-    var EPS = 0.0005;
+    var EASE = 0.07;
+    var EPS = 0.0004;
 
     var section = document.querySelector("[data-uniform-cube]");
     if (!section) return;
@@ -45,6 +45,11 @@
 
     function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    function easeRemaining(t) {
+        t = clamp(t, 0, 1);
+        return t * t * (3 - 2 * t);
     }
 
     var steps = STOPS.length - 1;
@@ -116,7 +121,7 @@
     function updateCube(p) {
         var t = p * steps;
         var i = Math.min(Math.floor(t), steps - 1);
-        var f = t >= steps ? 1 : t - i;
+        var f = t >= steps ? 1 : easeRemaining(t - i);
         var a = STOPS[i];
         var b = STOPS[Math.min(i + 1, STOPS.length - 1)];
         cube.style.transform = "rotateX(" + (a.x + (b.x - a.x) * f) + "deg) rotateY(" + (a.y + (b.y - a.y) * f) + "deg)";
@@ -145,7 +150,9 @@
 
     function tick() {
         var target = progress();
-        smooth += (target - smooth) * EASE;
+        var remaining = target - smooth;
+        var catchUp = Math.abs(remaining) > 0.14 ? 0.09 : EASE;
+        smooth += remaining * catchUp;
         if (Math.abs(target - smooth) < EPS) {
             smooth = target;
         }
@@ -154,7 +161,7 @@
         applyHud(smooth);
         applyPin();
 
-        if (Math.abs(target - smooth) >= EPS) {
+        if (Math.abs(target - smooth) >= EPS || pinMode() === "is-fixed") {
             requestAnimationFrame(tick);
         } else {
             animating = false;

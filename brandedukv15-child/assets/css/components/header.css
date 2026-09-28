@@ -1005,7 +1005,7 @@ body {
 }
 
 /* Desktop-only: widen header to match hero (1400px) */
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
     :root {
         --header-shell-width: 1400px;
     }
@@ -2260,7 +2260,7 @@ body {
     }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 699px) {
     .header-container {
         flex-wrap: wrap;
         padding: 0 20px;
@@ -2328,7 +2328,7 @@ body {
     }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 699px) {
     .header-contact,
     .header-action-link {
         display: none;
@@ -2359,7 +2359,7 @@ body {
    ============================================ */
 
 /* Compact PC navigation: keep the header easy to scan and closer to catalogue-style sites. */
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
     .header-with-promo {
         zoom: 0.95;
     }
@@ -2445,7 +2445,7 @@ body {
 }
 
 /* Desktop-only: enlarge brandedUK logo */
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
     .searchbar-header__brand-img {
         height: 162px;
     }

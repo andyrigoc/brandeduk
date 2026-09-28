@@ -675,7 +675,7 @@
                 };
 
                 // Premium UI for Products
-                const isMobile = window.innerWidth < 1280;
+                const isMobile = window.innerWidth < 700;
                 const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
                 const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                 let html = '<div class="suggestion-group-title">Product Results</div>';
@@ -687,7 +687,7 @@
                     const imgUrl = product.image || '/brandedukv15-child/assets/images/ui/no-image.png';
 
                     html += `
-                        <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<1280){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
+                        <a href="${detailUrl}" class="suggestion-item" data-product-code="${product.value}" onclick="if(window.innerWidth<700){sessionStorage.setItem('selectedProduct','${product.value}');sessionStorage.setItem('selectedProductData',JSON.stringify({code:'${product.value}',name:'${(product.label||'').replace(/'/g,"\\'")}'}));}">
                             <img src="${imgUrl}" class="suggestion-item-image" onerror="this.src='/brandedukv15-child/assets/images/ui/no-image.png'">
                             <div class="suggestion-item-content">
                                 <div class="suggestion-item-label">${highlight(product.label)}</div>
@@ -744,7 +744,7 @@
                 if (e.key === 'Enter') {
                     const query = e.target.value.trim();
                     if (query) {
-                        const isMobile = window.innerWidth < 1280;
+                        const isMobile = window.innerWidth < 700;
                         const inMobileFolder = window.location.pathname.toLowerCase().includes('/mobile/');
                         const mobileBasePath = inMobileFolder ? '' : 'mobile/';
                         window.location.href = isMobile
@@ -758,14 +758,14 @@
 
     function initHideHeaderOnScroll() {
         // Desktop only — do not hide header on mobile/tablet
-        if (window.innerWidth < 1024) return;
+        if (window.innerWidth < 700) return;
         var header = document.querySelector('.site-header');
         if (!header) return;
         var lastY = window.scrollY;
         var ticking = false;
 
         window.addEventListener('scroll', function () {
-            if (window.innerWidth < 1024) return;
+            if (window.innerWidth < 700) return;
             if (!ticking) {
                 window.requestAnimationFrame(function () {
                     var currentY = window.scrollY;

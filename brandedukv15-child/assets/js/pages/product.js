@@ -2437,7 +2437,7 @@ if (continueShoppingButton) {
             var msg = 'You have ' + total + ' items of ' + selectedColorName + ' not added to basket.\nLeave and discard them?';
             if (!confirm(msg)) return;
         }
-        window.location.href = (window.innerWidth < 1024) ? '/shop?category=all' : '/shop-pc.html?category=all';
+        window.location.href = (window.innerWidth < 700) ? '/shop?category=all' : '/shop-pc.html?category=all';
     };
 }
 
@@ -2785,7 +2785,7 @@ if (popupAddLogoBtn) {
             }));
         }
         try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
-        const isMobile = window.innerWidth < 1024;
+        const isMobile = window.innerWidth < 700;
         if (isMobile) {
             window.location.href = 'mobile/customize-mobile.html';
         } else {

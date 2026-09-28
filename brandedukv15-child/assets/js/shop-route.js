@@ -1,10 +1,11 @@
 /**
  * Shop routing: mobile → /shop (shop.html), desktop → /shop-pc.html
+ * Cutoff: width < 700 = mobile (phones); width >= 700 = PC (tablets + desktop).
  */
 (function (w) {
     'use strict';
 
-    var BP = 1024;
+    var BP = 700;
 
     function isMobileViewport() {
         try {

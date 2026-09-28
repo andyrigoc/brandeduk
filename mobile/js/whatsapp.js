@@ -67,7 +67,7 @@
         openBtn.style.left = 'auto';
         openBtn.style.right = '18px';
         openBtn.style.top = 'auto';
-        openBtn.style.bottom = window.matchMedia('(min-width: 1024px)').matches ? '24px' : '82px';
+        openBtn.style.bottom = window.matchMedia('(min-width: 700px)').matches ? '24px' : '82px';
     }
 
     function openPopup() {

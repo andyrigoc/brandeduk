@@ -149,8 +149,9 @@
         if (isBrandedProductionHost && window.location.pathname !== '/') {
             history.replaceState(null, '', '/' + window.location.search + window.location.hash);
         }
-        // Redirect to mobile version on smaller screens (mobile + tablet)
-        if (window.innerWidth < 1024) {
+        var keepDesktop = /(?:\?|&)force(?:-desktop|=desktop)\b/i.test(window.location.search);
+        // Redirect to mobile version on phones (width < 700). Tablets stay on PC.
+        if (!keepDesktop && window.innerWidth < 700) {
             window.location.href = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
         }
     </script>
@@ -168,8 +169,8 @@
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20260927-slowbrands">
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
-    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260926-cubefade">
-    <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260926-sens2">
+    <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260928-cubefluid">
+    <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260928-scrub">
     <style>
         /* ============================================
            FEATURED PRODUCTS CAROUSEL & CARDS
@@ -711,7 +712,7 @@
             margin-top: 0;
         }
 
-        @media (min-width: 1024px) {
+        @media (min-width: 700px) {
             .site-header .main-nav > .menu > li.brands-menu,
             .site-header .main-nav > .menu > li.has-megamenu:first-child {
                 position: static !important;
@@ -2938,10 +2939,11 @@
         <div class="embroidery-sticky" data-embroidery-pin>
             <video
                 id="embroideryVideo"
-                src="brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260926-industrial"
+                src="brandedukv15-child/assets/videos/embroidery/embroidery-scroll.mp4?v=20260928-scrub2"
                 muted
                 playsinline
-                preload="auto"
+                webkit-playsinline
+                preload="none"
             ></video>
             <div class="stage-label" data-stage-list>
                 <div class="stage-item is-active" data-stage="0">
@@ -3771,8 +3773,8 @@
 <script src="brandedukv15-child/assets/js/account-panel.js?v=20260522-google-only-auth"></script>
 <script src="brandeduk.com/js/hero.js?v=20260927-backreset"></script>
 <script src="brandeduk.com/js/main.js?v=20260927-neonfix"></script>
-<script src="brandeduk.com/js/uniform-cube.js?v=20260926-cubeease"></script>
-<script src="brandeduk.com/js/embroidery-scroll.js?v=20260926-industrial"></script>
+<script src="brandeduk.com/js/uniform-cube.js?v=20260928-cubefluid"></script>
+<script src="brandeduk.com/js/embroidery-scroll.js?v=20260928-scrub8"></script>
 <script src="mobile/js/popup-contact.js?v=20260927-quoteonly"></script>
 <script src="mobile/js/whatsapp.js?v=20260409a"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
@@ -3950,7 +3952,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Responsive routing helper (for DevTools/device emulation)
 (function() {
-    var BREAKPOINT = 1024;
+    var BREAKPOINT = 700;
 
     try {
         var params = new URLSearchParams(window.location.search);

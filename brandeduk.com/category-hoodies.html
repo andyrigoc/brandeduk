@@ -9,7 +9,7 @@
     (function () {
       const params = new URLSearchParams(window.location.search);
       const force = (params.get('force') || '').toLowerCase();
-      const isMobile = window.innerWidth < 1024;
+      const isMobile = window.innerWidth < 700;
 
       if (force === 'mobile' || (force !== 'desktop' && isMobile)) {
         window.location.replace('../category-hoodies.html?force=mobile');

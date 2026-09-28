@@ -10,7 +10,7 @@
             var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
                 ? path.slice(0, mountAt + '/brandeduk'.length)
                 : '';
-            d.write('<script src="' + base + '/desktop-gate.js?v=20260803a"><\/script>');
+            d.write('<script src="' + base + '/desktop-gate.js?v=20260928-pc700"><\/script>');
         }(document));
     </script>
     <meta charset="UTF-8">
@@ -397,7 +397,7 @@
 <body class="home-page">
     
     <!-- ========================================
-         DESKTOP HEADER (visible on 1024px+)
+         DESKTOP HEADER (kept in markup; this page hides it — PC uses home-pc.html from 700px)
          ======================================== -->
     <header class="site-header">
         <!-- Top Bar: Social + Email + Phone + VAT + Basket -->
@@ -904,7 +904,7 @@
     </header>
 
     <!-- ========================================
-         MOBILE HEADER (visible below 1024px)
+         MOBILE HEADER (this page is for width < 700px)
          ======================================== -->
     <!-- Mobile Header -->
     <!-- Tablet/Desktop Top Bar (hidden on mobile) -->
@@ -3136,7 +3136,7 @@
         // Tablet Social Icons - first click opens the link; active class is visual feedback only.
         // Responsive routing helper (for DevTools/device emulation)
         (function() {
-            var BREAKPOINT = 1024;
+            var BREAKPOINT = 700;
             try {
                 var params = new URLSearchParams(window.location.search);
                 var force = (params.get('force') || '').toLowerCase();

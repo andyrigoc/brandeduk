@@ -16,7 +16,7 @@
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var canObserveVisibility = 'IntersectionObserver' in window;
     // Same breakpoint pc-header.js uses before it injects the shared PC header.
-    var wantsHeaderCart = currentScript.hasAttribute('data-header-cart') && window.innerWidth >= 1024;
+    var wantsHeaderCart = currentScript.hasAttribute('data-header-cart') && window.innerWidth >= 700;
 
     var waiting = [];
     var resourcesRequested = false;

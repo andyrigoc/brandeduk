@@ -1,4 +1,4 @@
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
   .buk-footer-frame {
     --footer-frame: #e9e9e7;
     --footer-panel: #202020;
@@ -278,7 +278,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 699px) {
   [data-pc-footer] {
     display: none !important;
   }

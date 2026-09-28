@@ -394,7 +394,7 @@ const ShopManager = (function () {
 
             // Determine if we're on mobile or desktop
             const isMobile = window.location.pathname.includes('mobile/') ||
-                window.innerWidth < 1280;
+                window.innerWidth < 700;
             // Use explicit mobile path so redirects from the root shop page land on the correct file
             try { sessionStorage.setItem('customizeFreshItem', '1'); } catch (e) { /* ignore */ }
             const targetPage = isMobile ? 'mobile/customize-mobile.html' : 'customization-tool/index.html';

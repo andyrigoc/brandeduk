@@ -33,7 +33,7 @@
     var contactPopupPending = false;
     var contactPopupCallbacks = [];
 
-    if (window.innerWidth < 1024) {
+    if (window.innerWidth < 700) {
         window.BrandedPcHeader = { mount: function () { return false; } };
         return;
     }

@@ -1,9 +1,8 @@
 .embroidery-scroll {
     --em-header: var(--brandeduk-site-header-height, 220px);
     --em-view: calc(100vh - var(--em-header));
-    --em-step: 200px;
     position: relative;
-    height: calc(var(--em-view) + 5 * var(--em-step));
+    height: 450vh;
     background: #fff;
     color: #1d2f46;
 }

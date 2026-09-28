@@ -4778,7 +4778,7 @@
                     // Save breadcrumb category before navigating
                     if (typeof storeBreadcrumbCategory === 'function') storeBreadcrumbCategory(currentState.category || '');
                     const productCode = encodeURIComponent(product.code || '');
-                    const isMobile = window.innerWidth < 1280 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+                    const isMobile = window.innerWidth < 700 || /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent || '');
                     window.location.href = isMobile
                         ? 'mobile/customize-mobile.html?code=' + productCode
                         : 'product-detail.html?code=' + productCode;

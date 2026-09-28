@@ -6,7 +6,7 @@
     <title>Shop - BrandedUK</title>
     <script>
         // Redirect to mobile version on smaller screens
-        if (window.innerWidth < 1024) {
+        if (window.innerWidth < 700) {
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'all';
             window.location.href = '../mobile/shop-mobile.html?category=' + category;

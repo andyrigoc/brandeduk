@@ -43,7 +43,7 @@
             document.getElementById('ogUrl').setAttribute('content', cleanUrl);
             document.getElementById('twitterUrl').setAttribute('content', cleanUrl);
 
-            var isMobile = window.innerWidth < 1280 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+            var isMobile = window.innerWidth < 700 || /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent || '');
             if (isMobile && code) {
                 window.location.replace('mobile/customize-mobile.html?code=' + encodeURIComponent(code));
             } else if (code) {
@@ -65,8 +65,8 @@
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 1024px)">
-    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 1024px)">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
+    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/pages/product.css?v=20260522">
@@ -1735,7 +1735,7 @@
                             </div>
                             
                             <!-- Continue Shopping Button -->
-                            <button id="continueShoppingBtnSummary" onclick="window.location.href=(window.innerWidth<1024?'/shop?category=all':'/shop-pc.html?category=all')" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #273469; background:#fff; color:#273469; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
+                            <button id="continueShoppingBtnSummary" onclick="window.location.href=(window.innerWidth<700?'/shop?category=all':'/shop-pc.html?category=all')" style="width:100%; padding:14px 24px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; border:2px solid #273469; background:#fff; color:#273469; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; transition: all 0.2s ease;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M19 12H5"></path>
                                     <path d="M12 19l-7-7 7-7"></path>

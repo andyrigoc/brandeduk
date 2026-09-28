@@ -40,7 +40,7 @@
     </script>
     <script>
         // Redirect to mobile version on smaller screens (mobile + tablet)
-        if (window.innerWidth < 1024) {
+        if (window.innerWidth < 700) {
             window.location.href = 'index-mobile.html?force=mobile';
         }
     </script>
@@ -50,8 +50,8 @@
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 1024px)">
-    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 1024px)">
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
+    <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
@@ -2817,7 +2817,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Responsive routing helper (for DevTools/device emulation)
 (function() {
-    var BREAKPOINT = 1024;
+    var BREAKPOINT = 700;
 
     try {
         var params = new URLSearchParams(window.location.search);

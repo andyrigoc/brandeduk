@@ -5,7 +5,7 @@
     --uc-ink: #10243b;
     --uc-header: var(--brandeduk-site-header-height, 220px);
     --uc-view: calc(100vh - var(--uc-header));
-    --uc-step: 200px;
+    --uc-step: min(58vh, 520px);
     position: relative;
     height: calc(var(--uc-view) + 5 * var(--uc-step));
     background: #fff;

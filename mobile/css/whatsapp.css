@@ -240,8 +240,8 @@
     }
 }
 
-/* â”€â”€â”€ Desktop (1024px+) â”€â”€â”€ */
-@media (min-width: 1024px) {
+/* --- Desktop (700px+): no bottom-nav --- */
+@media (min-width: 700px) {
     .whatsapp-float {
         bottom: 24px;        /* no bottom-nav on desktop */
     }
