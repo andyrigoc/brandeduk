@@ -4885,10 +4885,6 @@ function getSessionLogoLibrary() {
   return out;
 }
 
-function prefersFinePointer() {
-  return Boolean(window.matchMedia && window.matchMedia("(pointer: fine)").matches);
-}
-
 let logoPickLockUntil = 0;
 function beginLogoPickLock(ms = 450) {
   const now = Date.now();
@@ -4905,7 +4901,6 @@ function syncInlineLogoPanels() {
 
   if (!inlineUploadLibrary || !inlineUploadLibraryItems) return;
   const library = getSessionLogoLibrary();
-  const allowDrag = prefersFinePointer();
   inlineUploadLibrary.hidden = library.length === 0;
   inlineUploadLibraryItems.innerHTML = "";
   library.forEach((entry) => {
@@ -4913,12 +4908,12 @@ function syncInlineLogoPanels() {
     button.type = "button";
     button.title = "Use this logo";
     button.className = "inline-upload-library-logo";
-    // Touch tablets treat long-press / double-tap as native image drag, which
-    // can navigate the iframe away. Keep drag for fine pointers (mouse) only.
-    button.draggable = allowDrag;
+    button.draggable = true;
     const image = document.createElement("img");
     image.src = entry.logo;
     image.alt = "Saved logo";
+    // Keep native <img> drag off so a drop never navigates to the image URL;
+    // HTML5 drag still runs on the button itself.
     image.draggable = false;
     const removeButton = document.createElement("span");
     removeButton.className = "inline-upload-library-remove";
@@ -4947,27 +4942,25 @@ function syncInlineLogoPanels() {
       });
       reuseLibraryLogo(entry.logo);
     });
-    if (allowDrag) {
-      button.addEventListener("dragstart", (event) => {
-        event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
-        event.dataTransfer?.setData("text/plain", entry.logo);
-        event.dataTransfer.effectAllowed = "copy";
-        const dragImage = document.createElement("img");
-        dragImage.src = entry.logo;
-        dragImage.alt = "";
-        dragImage.draggable = false;
-        dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
-        document.body.appendChild(dragImage);
-        event.dataTransfer?.setDragImage(dragImage, 70, 70);
-        window.setTimeout(() => dragImage.remove(), 0);
-        button.classList.add("is-dragging-logo");
-      });
-      button.addEventListener("dragend", () => {
-        button.classList.remove("is-dragging-logo");
-        document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
-          .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
-      });
-    }
+    button.addEventListener("dragstart", (event) => {
+      event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
+      event.dataTransfer?.setData("text/plain", entry.logo);
+      event.dataTransfer.effectAllowed = "copy";
+      const dragImage = document.createElement("img");
+      dragImage.src = entry.logo;
+      dragImage.alt = "";
+      dragImage.draggable = false;
+      dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
+      document.body.appendChild(dragImage);
+      event.dataTransfer?.setDragImage(dragImage, 70, 70);
+      window.setTimeout(() => dragImage.remove(), 0);
+      button.classList.add("is-dragging-logo");
+    });
+    button.addEventListener("dragend", () => {
+      button.classList.remove("is-dragging-logo");
+      document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
+        .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
+    });
     inlineUploadLibraryItems.appendChild(button);
   });
 }

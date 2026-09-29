@@ -850,15 +850,10 @@ function p4CreateDragPreview(image) {
     return { element: canvas, width: width, height: height };
 }
 
-function p4PrefersFinePointer() {
-    return Boolean(window.matchMedia && window.matchMedia('(pointer: fine)').matches);
-}
-
 function p4RenderPreviousLogos() {
     p4ReadLibrary();
     var host = document.getElementById('p4PreviousLogos');
     if (!host) return;
-    var allowDrag = p4PrefersFinePointer();
     host.innerHTML = '';
     host.hidden = window.p4LogoLibrary.length === 0;
     window.p4LogoLibrary.forEach(function (entry) {
@@ -868,28 +863,24 @@ function p4RenderPreviousLogos() {
         button.dataset.sourceMethod = String(entry.sourceMethod || entry.method || 'print').toLowerCase();
         button.innerHTML = '<img alt="Saved logo" draggable="false"><span class="p4-previous-remove" aria-label="Remove saved logo">&times;</span>';
         button.querySelector('img').src = entry.logo;
-        // Touch tablets can turn a double-tap / long-press into a native image
-        // drag that navigates the page away. Drag only on mouse/trackpad.
-        button.draggable = allowDrag;
-        if (allowDrag) {
-            button.addEventListener('dragstart', function (event) {
-                event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
-                event.dataTransfer.setData('application/x-brandeduk-source-method', button.dataset.sourceMethod);
-                event.dataTransfer.setData('text/plain', entry.logo);
-                event.dataTransfer.effectAllowed = 'copy';
-                var dragPreview = p4CreateDragPreview(button.querySelector('img'));
-                if (dragPreview) {
-                    event.dataTransfer.setDragImage(dragPreview.element, dragPreview.width / 2, dragPreview.height / 2);
-                    window.setTimeout(function () { dragPreview.element.remove(); }, 0);
-                }
-                button.classList.add('is-dragging');
-            });
-            button.addEventListener('dragend', function () {
-                button.classList.remove('is-dragging');
-                document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
-                    .forEach(function (card) { card.classList.remove('is-drop-ready'); });
-            });
-        }
+        button.draggable = true;
+        button.addEventListener('dragstart', function (event) {
+            event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
+            event.dataTransfer.setData('application/x-brandeduk-source-method', button.dataset.sourceMethod);
+            event.dataTransfer.setData('text/plain', entry.logo);
+            event.dataTransfer.effectAllowed = 'copy';
+            var dragPreview = p4CreateDragPreview(button.querySelector('img'));
+            if (dragPreview) {
+                event.dataTransfer.setDragImage(dragPreview.element, dragPreview.width / 2, dragPreview.height / 2);
+                window.setTimeout(function () { dragPreview.element.remove(); }, 0);
+            }
+            button.classList.add('is-dragging');
+        });
+        button.addEventListener('dragend', function () {
+            button.classList.remove('is-dragging');
+            document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
+                .forEach(function (card) { card.classList.remove('is-drop-ready'); });
+        });
         button.addEventListener('click', function (event) {
             if (event.target.closest('.p4-previous-remove')) {
                 window.p4LogoLibrary = window.p4LogoLibrary.filter(function (item) { return item.logo !== entry.logo; });

@@ -125,7 +125,7 @@
 
     .site-header .header-top .header-top-right {
         position: relative;
-        left: 0;
+        left: -10px;
         display: flex;
         justify-content: flex-end;
         align-items: center;

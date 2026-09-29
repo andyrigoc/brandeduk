@@ -3268,9 +3268,8 @@ body.popup-open {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: #fff;
-    cursor: pointer;
+    cursor: grab;
     touch-action: manipulation;
-    -webkit-user-drag: none;
     -webkit-touch-callout: none;
     user-select: none;
 }
