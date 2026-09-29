@@ -1738,10 +1738,23 @@
             setEl('drDigitizingFee', `\u00a3${digitizingFee.toFixed(2)}`);
             const logoDetail = document.getElementById('drLogoDetail');
             if (logoDetail) {
-                logoDetail.innerHTML = basket.map(item => getDrawerLogos(item).map(logo => {
+                // Aggregate by decoration method: qty = garments, unit = total ÷ qty
+                const methodGroups = new Map();
+                basket.forEach(item => {
                     const qty = getItemQuantityDetails(item).total;
-                    return `<div><span>${escapeHtml(formatMethod(logo.method) + ' – ' + formatPosition(logo))}</span><span>£${(logo.unitPrice * qty).toFixed(2)}</span></div>`;
-                }).join('')).join('');
+                    getDrawerLogos(item).forEach(logo => {
+                        const label = formatMethod(logo.method);
+                        const unitPrice = parseFloat(logo.unitPrice) || 0;
+                        const group = methodGroups.get(label) || { label, count: 0, total: 0 };
+                        group.count += qty;
+                        group.total += unitPrice * qty;
+                        methodGroups.set(label, group);
+                    });
+                });
+                logoDetail.innerHTML = Array.from(methodGroups.values()).map(group => {
+                    const unitEach = group.count > 0 ? group.total / group.count : 0;
+                    return `<div><span>${escapeHtml(group.label)} (${group.count} &times; £${unitEach.toFixed(2)})</span><span>£${group.total.toFixed(2)}</span></div>`;
+                }).join('');
             }
             const setupDetail = document.getElementById('drSetupDetail');
             if (setupDetail) {

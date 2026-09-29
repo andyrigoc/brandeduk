@@ -3498,6 +3498,9 @@ body.popup-open {
     object-fit: contain;
     object-position: center center;
     background: #fff;
+    /* API position art includes a baked-in name under the garment — crop it;
+       the HTML .position-checkbox span remains the visible position label. */
+    clip-path: inset(0 0 13% 0);
 }
 
 #orderPopup .page-4 .p4-place-guide {

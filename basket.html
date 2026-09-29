@@ -4696,14 +4696,16 @@
 
             _extractLogos(item).forEach((logo, logoIndex) => {
                 const method = String(logo.method || '').toLowerCase();
-                const applicationCost = (parseFloat(logo.unitPrice) || 0) * qty;
+                const unitPrice = parseFloat(logo.unitPrice) || 0;
+                const applicationCost = unitPrice * qty;
                 logoCosts += applicationCost;
+                // Aggregate by decoration method across all cart lines.
+                // count = total garments with that method (not number of size/colour lines).
                 const groupLabel = method === 'embroidery' ? 'Embroidery' : 'Print';
-                const groupKey = `${groupLabel}:${applicationCost.toFixed(2)}`;
-                const group = customisationGroups.get(groupKey) || { label: groupLabel, count: 0, amountEach: applicationCost, total: 0 };
-                group.count += 1;
+                const group = customisationGroups.get(groupLabel) || { label: groupLabel, count: 0, total: 0 };
+                group.count += qty;
                 group.total += applicationCost;
-                customisationGroups.set(groupKey, group);
+                customisationGroups.set(groupLabel, group);
 
                 if (requiresEmbroiderySetup(logo)) {
                     const designKey = getEmbroideryDesignKey(logo, `item:${itemIndex}:logo:${logoIndex}`);
@@ -4794,9 +4796,10 @@
         if (el('summaryProductCosts')) el('summaryProductCosts').textContent = '\u00A3' + productCosts.toFixed(2);
         if (el('summaryLogoCosts')) el('summaryLogoCosts').textContent = '\u00A3' + logoCosts.toFixed(2);
         if (el('summaryCustomisationBreakdown')) {
-            el('summaryCustomisationBreakdown').innerHTML = customisationBreakdown.map(group =>
-                `<div class="summary-detail-row"><span>${group.label} (${group.count} &times; ${formatCurrency(group.amountEach)})</span><span>${formatCurrency(group.total)}</span></div>`
-            ).join('');
+            el('summaryCustomisationBreakdown').innerHTML = customisationBreakdown.map(group => {
+                const unitEach = group.count > 0 ? group.total / group.count : 0;
+                return `<div class="summary-detail-row"><span>${group.label} (${group.count} &times; ${formatCurrency(unitEach)})</span><span>${formatCurrency(group.total)}</span></div>`;
+            }).join('');
         }
         
         // Show/hide digitizing fee row
