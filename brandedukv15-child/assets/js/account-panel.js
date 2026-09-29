@@ -1,12 +1,37 @@
 window.BrandedAccountPanel = (function () {
     'use strict';
 
+    var LOCAL_PREVIEW_TOKEN = 'local-preview-auth';
+
     function accountScriptLoaded() {
         return !!(window.BrandedAccount && typeof window.BrandedAccount.request === 'function');
     }
 
+    function isLocalHost() {
+        var host = window.location.hostname;
+        return host === 'localhost' || host === '127.0.0.1';
+    }
+
     function byId(id) {
         return document.getElementById(id);
+    }
+
+    function localPreviewUser() {
+        return {
+            firstName: 'Local',
+            lastName: 'Preview',
+            name: 'Local Preview',
+            email: 'local.preview@brandeduk.test',
+            picture: 'https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png',
+            provider: 'google-local-preview'
+        };
+    }
+
+    function isLocalPreviewSession() {
+        return isLocalHost() && (
+            localStorage.getItem('authToken') === LOCAL_PREVIEW_TOKEN ||
+            localStorage.getItem('coAuthToken') === LOCAL_PREVIEW_TOKEN
+        );
     }
 
     function safeJsonParse(value) {
@@ -154,7 +179,15 @@ window.BrandedAccountPanel = (function () {
             '.account-trigger-name{max-width:92px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
             '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}' +
             '.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}' +
-            '.site-header .header-util-link.is-signed-in,.header-util-link.is-signed-in{gap:0!important;}' +
+            '.site-header .header-util-link.is-signed-in,.header-util-link.is-signed-in{gap:0!important;width:auto!important;font-size:0!important;}' +
+            /* Kill leftover Account chrome if an older build appended the pill beside it. */
+            '.header-util-link:has(> .account-trigger-profile) > :not(.account-trigger-profile),' +
+            '.searchbar-header__account:has(> .account-trigger-profile) > :not(.account-trigger-profile),' +
+            '#accountBtn:has(> .account-trigger-profile) > :not(.account-trigger-profile){display:none!important;width:0!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;}' +
+            '.header-util-link:has(> .account-trigger-profile),' +
+            '.searchbar-header__account:has(> .account-trigger-profile),' +
+            '#accountBtn:has(> .account-trigger-profile){width:auto!important;font-size:0!important;gap:0!important;}' +
+            '.header-util-link .account-trigger-profile,.searchbar-header__account .account-trigger-profile,#accountBtn .account-trigger-profile{font-size:12px!important;}' +
             '.nav-item.is-signed-in{color:#273469;font-weight:800;}' +
             '.nav-item .account-trigger-profile{display:none!important;}' +
             '@media(max-width:767px){.account-trigger-profile{left:0;}}';
@@ -187,6 +220,17 @@ window.BrandedAccountPanel = (function () {
             if (navAvatar) navAvatar.remove();
             if (svg) svg.style.display = '';
         }
+    }
+
+    function enforceDesktopProfileOnly(trigger) {
+        if (!trigger || trigger.classList.contains('nav-item')) return;
+        var profile = trigger.querySelector(':scope > .account-trigger-profile') ||
+            trigger.querySelector('.account-trigger-profile');
+        if (!profile) return;
+        if (trigger.innerHTML !== profile.outerHTML) {
+            trigger.innerHTML = profile.outerHTML;
+        }
+        trigger.classList.add('is-signed-in');
     }
 
     function decorateAccountTrigger(refs, user) {
@@ -232,6 +276,7 @@ window.BrandedAccountPanel = (function () {
                 '<span class="account-trigger-avatar">' + avatarInner + '</span>' +
                 '<span class="account-trigger-name">' + escapeHtml(firstName) + '</span>' +
             '</span>';
+        enforceDesktopProfileOnly(trigger);
     }
 
     function injectAuthAffordances(refs) {
@@ -246,7 +291,7 @@ window.BrandedAccountPanel = (function () {
                         '<path fill="#4A90E2" d="M3.86 10.546A5.41 5.41 0 013.572 9c0-.536.097-1.056.288-1.546V5.076H.78A8.997 8.997 0 000 9c0 1.45.347 2.824.78 3.924l3.08-2.378z"/>' +
                         '<path fill="#FBBC05" d="M9 3.58c1.35 0 2.565.465 3.52 1.377l2.64-2.64C13.56.802 11.477 0 9 0 5.48 0 2.43 2.02.78 5.076l3.08 2.378C4.584 5.194 6.61 3.58 9 3.58z"/>' +
                     '</svg>' +
-                    '<span>Continue with Google</span>' +
+                    '<span>' + (isLocalHost() ? 'Continue with Google (local preview)' : 'Continue with Google') + '</span>' +
                 '</button>';
         }
 
@@ -316,6 +361,14 @@ window.BrandedAccountPanel = (function () {
                 renderSignedOutView(refs);
                 return null;
             }
+            // Localhost cannot complete Google OAuth redirect; keep a UI preview session.
+            if (isLocalPreviewSession()) {
+                var previewUser = readSessionUser() || localPreviewUser();
+                localStorage.setItem('authUser', JSON.stringify(previewUser));
+                localStorage.setItem('coUser', JSON.stringify(previewUser));
+                renderSignedInView(Account, refs, previewUser);
+                return previewUser;
+            }
             try {
                 var json = await Account.request('/api/auth/me', {
                     headers: Account.authHeaders()
@@ -330,6 +383,16 @@ window.BrandedAccountPanel = (function () {
                 renderSignedOutView(refs);
                 return null;
             }
+        }
+
+        function applyLocalPreviewSignIn() {
+            var user = localPreviewUser();
+            localStorage.setItem('authToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('coAuthToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('authUser', JSON.stringify(user));
+            localStorage.setItem('coUser', JSON.stringify(user));
+            renderSignedInView(Account, refs, user);
+            showToast('Local preview signed in — only the Google profile pill should show.');
         }
 
         function openPanel(preferredCard) {
@@ -354,6 +417,11 @@ window.BrandedAccountPanel = (function () {
 
         function goToProfileIfSignedIn() {
             if (!Account.token()) return false;
+            // Local preview has no real profile API session — keep the panel open for logout.
+            if (isLocalPreviewSession()) {
+                openPanel();
+                return true;
+            }
             window.location.href = Account.pageHref('profile');
             return true;
         }
@@ -404,6 +472,11 @@ window.BrandedAccountPanel = (function () {
 
         Array.prototype.forEach.call(refs.panel.querySelectorAll('.account-google-btn'), function (googleBtn) {
             googleBtn.addEventListener('click', function () {
+                if (isLocalHost()) {
+                    applyLocalPreviewSignIn();
+                    closePanel();
+                    return;
+                }
                 safeReturnUrl(Account);
                 setButtonLoading(googleBtn, true);
                 googleBtn.querySelector('span').textContent = 'Connecting securely...';
@@ -411,6 +484,20 @@ window.BrandedAccountPanel = (function () {
                 window.location.href = Account.apiBaseUrl() + '/auth/google';
             });
         });
+
+        // If anything re-injects Account chrome after sign-in, strip it back to the pill only.
+        if (refs.trigger && typeof MutationObserver === 'function') {
+            var enforceTimer = null;
+            var observer = new MutationObserver(function () {
+                if (!refs.trigger.classList.contains('is-signed-in')) return;
+                if (enforceTimer) return;
+                enforceTimer = setTimeout(function () {
+                    enforceTimer = null;
+                    enforceDesktopProfileOnly(refs.trigger);
+                }, 0);
+            });
+            observer.observe(refs.trigger, { childList: true, subtree: true });
+        }
 
         if (refs.signinFormData) {
             refs.signinFormData.addEventListener('submit', async function (event) {

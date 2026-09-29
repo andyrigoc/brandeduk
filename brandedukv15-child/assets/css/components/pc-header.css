@@ -374,12 +374,20 @@
     }
 
     /* Signed-in desktop: Account control contains only the Google profile pill. */
-    .site-header .header-util-link.is-signed-in {
+    .site-header .header-util-link.is-signed-in,
+    .site-header .header-util-link:has(> .account-trigger-profile) {
         gap: 0 !important;
+        width: auto !important;
+        font-size: 0 !important;
     }
-    .site-header .header-util-link.is-signed-in .account-trigger-profile {
+    .site-header .header-util-link.is-signed-in .account-trigger-profile,
+    .site-header .header-util-link:has(> .account-trigger-profile) .account-trigger-profile {
         position: relative;
         left: -15px;
+        font-size: 12px !important;
+    }
+    .site-header .header-util-link:has(> .account-trigger-profile) > :not(.account-trigger-profile) {
+        display: none !important;
     }
 
     .site-header .header-util-link.header-top-basket-link .header-top-basket-badge {
@@ -1165,6 +1173,12 @@
         font-size: 0;
         width: 34px;
         justify-content: center;
+    }
+
+    .site-header .header-util-link.is-signed-in,
+    .site-header .header-util-link:has(> .account-trigger-profile) {
+        width: auto !important;
+        font-size: 0 !important;
     }
 
     .site-header .searchbar-header__search-expand {
