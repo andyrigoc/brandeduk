@@ -58,6 +58,10 @@ window.BrandedAccountPanel = (function () {
             .replace(/>/g, '&gt;');
     }
 
+    function escapeHtml(value) {
+        return escapeAttr(value).replace(/'/g, '&#39;');
+    }
+
     function currentReturnUrl() {
         var url = new URL(window.location.href);
         url.searchParams.delete('token');
@@ -144,30 +148,26 @@ window.BrandedAccountPanel = (function () {
             '.account-panel-link:hover{background:#f9fafb;}' +
             '.account-submit-btn.is-loading{opacity:.7;pointer-events:none;}' +
             '.account-google-btn.is-loading{opacity:.82;pointer-events:none;}' +
-            '.account-trigger-profile{display:inline-flex;align-items:center;gap:8px;margin-left:0;padding:6px 10px;border:1px solid rgba(39,52,105,.12);border-radius:999px;background:#fff;color:#273469;font-size:12px;font-weight:900;box-shadow:0 10px 22px rgba(39,52,105,.12);vertical-align:middle;}' +
+            '.account-trigger-profile{display:inline-flex;align-items:center;gap:8px;margin-left:0;padding:6px 10px;border:1px solid rgba(39,52,105,.12);border-radius:999px;background:#fff;color:#273469;font-size:12px;font-weight:900;box-shadow:0 10px 22px rgba(39,52,105,.12);vertical-align:middle;position:relative;left:-15px;}' +
             '.account-trigger-avatar{width:24px;height:24px;border-radius:999px;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;overflow:hidden;}' +
             '.account-trigger-avatar img{width:100%;height:100%;object-fit:cover;}' +
             '.account-trigger-name{max-width:92px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
             '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}' +
             '.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}' +
-            /* Signed-in desktop: only Google/profile pill. Beat .site-header .header-util-link font-size. */ +
-            '.site-header .header-util-link.is-signed-in,.header-util-link.is-signed-in,.searchbar-header__account.is-signed-in{font-size:0!important;gap:0!important;}' +
-            '.site-header .header-util-link.is-signed-in > svg,.site-header .header-util-link.is-signed-in .account-trigger-icon,.header-util-link.is-signed-in > svg,.header-util-link.is-signed-in .account-trigger-icon,.searchbar-header__account.is-signed-in > svg,.searchbar-header__account.is-signed-in .searchbar-header__action-ring,.searchbar-header__account.is-signed-in .account-trigger-icon{display:none!important;}' +
-            '.site-header .header-util-link.is-signed-in .account-trigger-label,.header-util-link.is-signed-in .account-trigger-label,.searchbar-header__account.is-signed-in .account-trigger-label{display:none!important;}' +
-            '.site-header .header-util-link.is-signed-in .account-trigger-profile,.header-util-link.is-signed-in .account-trigger-profile,.searchbar-header__account.is-signed-in .account-trigger-profile{display:inline-flex!important;font-size:12px!important;margin-left:0;position:relative;left:-15px;}' +
+            '.site-header .header-util-link.is-signed-in,.header-util-link.is-signed-in{gap:0!important;}' +
             '.nav-item.is-signed-in{color:#273469;font-weight:800;}' +
-            '@media(max-width:767px){.account-trigger-profile{display:none!important;}}';
+            '.nav-item .account-trigger-profile{display:none!important;}' +
+            '@media(max-width:767px){.account-trigger-profile{left:0;}}';
     }
 
     // On the mobile bottom-nav (.nav-item), swap the person icon for the Google
-    // profile photo so it's obvious the user is signed in. On the desktop header,
-    // CSS hides the generic Account icon/label when .is-signed-in is set, leaving
-    // only the Google profile pill.
+    // profile photo so it's obvious the user is signed in. On desktop, decorateAccountTrigger
+    // replaces the Account chrome with the Google profile pill only.
     function setNavIconAvatar(trigger, photoUrl, initials) {
         if (!trigger || !trigger.classList.contains('nav-item')) return;
         var svg = trigger.querySelector('svg');
         var navAvatar = trigger.querySelector('.account-nav-avatar');
-        if (photoUrl) {
+        if (photoUrl || initials) {
             if (svg) svg.style.display = 'none';
             if (!navAvatar) {
                 navAvatar = document.createElement('span');
@@ -176,86 +176,62 @@ window.BrandedAccountPanel = (function () {
                 if (label) trigger.insertBefore(navAvatar, label);
                 else trigger.insertBefore(navAvatar, trigger.firstChild);
             }
-            navAvatar.innerHTML = '<img src="' + escapeAttr(photoUrl) + '" alt="" ' +
-                'referrerpolicy="no-referrer" ' +
-                'onerror="this.remove();this.parentNode.textContent=\'' + escapeAttr(initials) + '\';">';
+            if (photoUrl) {
+                navAvatar.innerHTML = '<img src="' + escapeAttr(photoUrl) + '" alt="" ' +
+                    'referrerpolicy="no-referrer" ' +
+                    'onerror="this.remove();this.parentNode.textContent=\'' + escapeAttr(initials) + '\';">';
+            } else {
+                navAvatar.textContent = initials || '';
+            }
         } else {
             if (navAvatar) navAvatar.remove();
             if (svg) svg.style.display = '';
         }
     }
 
-    function ensureAccountLabel(trigger) {
-        if (!trigger || trigger.classList.contains('nav-item')) return null;
-        var label = trigger.querySelector('.account-trigger-label');
-        if (label) return label;
-        // Wrap leftover raw "Account" text nodes so we can hide them when signed in.
-        Array.prototype.slice.call(trigger.childNodes).forEach(function (node) {
-            if (node.nodeType === 3 && String(node.textContent || '').trim()) {
-                if (!label) {
-                    label = document.createElement('span');
-                    label.className = 'account-trigger-label';
-                    label.textContent = String(node.textContent).trim();
-                    trigger.insertBefore(label, node);
-                }
-                node.textContent = '';
-            }
-        });
-        return label || trigger.querySelector('.account-trigger-label');
-    }
-
-    function setDesktopAccountChrome(trigger, signedIn) {
-        if (!trigger || trigger.classList.contains('nav-item')) return;
-        ensureAccountLabel(trigger);
-        Array.prototype.forEach.call(trigger.children, function (el) {
-            if (!el || !el.tagName) return;
-            var tag = String(el.tagName).toLowerCase();
-            if (tag === 'svg' || el.classList.contains('account-trigger-icon') || el.classList.contains('searchbar-header__action-ring')) {
-                el.style.display = signedIn ? 'none' : '';
-            }
-        });
-        var label = trigger.querySelector('.account-trigger-label');
-        if (label) label.style.display = signedIn ? 'none' : '';
-    }
-
     function decorateAccountTrigger(refs, user) {
         if (!refs || !refs.trigger) return;
-        var existing = refs.trigger.querySelector('.account-trigger-profile');
-        refs.trigger.classList.toggle('is-signed-in', !!user);
-        setDesktopAccountChrome(refs.trigger, !!user);
+        var trigger = refs.trigger;
+
+        // Snapshot the logged-out chrome once so we can restore it after logout.
+        if (!trigger.getAttribute('data-account-default-html')) {
+            trigger.setAttribute('data-account-default-html', trigger.innerHTML);
+        }
 
         if (!user) {
-            if (existing) existing.remove();
-            setNavIconAvatar(refs.trigger, '', '');
-            var label = refs.trigger.querySelector('.nav-item-label');
-            if (label) label.textContent = 'Account';
-            var accountLabel = refs.trigger.querySelector('.account-trigger-label');
-            if (accountLabel) accountLabel.textContent = 'Account';
-            refs.trigger.setAttribute('aria-label', 'My Account');
+            trigger.classList.remove('is-signed-in');
+            trigger.innerHTML = trigger.getAttribute('data-account-default-html') || trigger.innerHTML;
+            setNavIconAvatar(trigger, '', '');
+            var mobileLabel = trigger.querySelector('.nav-item-label');
+            if (mobileLabel) mobileLabel.textContent = 'Account';
+            trigger.setAttribute('aria-label', 'My Account');
             return;
         }
 
         var firstName = firstNameFromUser(user);
-        var labelEl = refs.trigger.querySelector('.nav-item-label');
-        // Mobile nav keeps a short greeting; desktop header shows only the Google pill.
-        if (labelEl) labelEl.textContent = 'Hi, ' + firstName;
-        refs.trigger.setAttribute('aria-label', 'My account, signed in as ' + (user.email || firstName));
-
-        if (!existing) {
-            existing = document.createElement('span');
-            existing.className = 'account-trigger-profile';
-            refs.trigger.appendChild(existing);
-        }
-
         var photoUrl = avatarUrlFromUser(user);
         var initials = initialsFromUser(user);
-        setNavIconAvatar(refs.trigger, photoUrl, initials);
+        trigger.classList.add('is-signed-in');
+        trigger.setAttribute('aria-label', 'My account, signed in as ' + (user.email || firstName));
+
+        // Mobile bottom-nav: keep greeting + avatar swap.
+        if (trigger.classList.contains('nav-item')) {
+            var labelEl = trigger.querySelector('.nav-item-label');
+            if (labelEl) labelEl.textContent = 'Hi, ' + firstName;
+            setNavIconAvatar(trigger, photoUrl, initials);
+            return;
+        }
+
+        // Desktop header: replace Account icon+label entirely with the Google profile pill only.
         var avatarInner = photoUrl
             ? '<img src="' + escapeAttr(photoUrl) + '" alt="" referrerpolicy="no-referrer" ' +
               'onerror="this.remove();this.parentNode.textContent=\'' + escapeAttr(initials) + '\';">'
             : initials;
-        var avatar = '<span class="account-trigger-avatar">' + avatarInner + '</span>';
-        existing.innerHTML = avatar + '<span class="account-trigger-name">' + firstName + '</span>';
+        trigger.innerHTML =
+            '<span class="account-trigger-profile">' +
+                '<span class="account-trigger-avatar">' + avatarInner + '</span>' +
+                '<span class="account-trigger-name">' + escapeHtml(firstName) + '</span>' +
+            '</span>';
     }
 
     function injectAuthAffordances(refs) {
