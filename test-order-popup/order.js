@@ -1527,10 +1527,12 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     var badge = this;
     var card = $(badge).closest('.position-card')[0];
     var method = badge.dataset.method;
-    if (!method) return;
+    if (!method || !card) return;
     if (badge.classList.contains('poa-badge') || (badge.querySelector('.price-value') && badge.querySelector('.price-value').textContent === 'POA')) {
         return;
     }
+    // Show selected method immediately (hover/selected CSS) before upload/assign.
+    p4ApplyMethodUI(card, method);
     var selectedPrev = document.querySelector('#p4PreviousLogos .p4-previous-logo.is-selected img');
     if (selectedPrev && selectedPrev.src) {
         var sourceMethod = selectedPrev.closest('.p4-previous-logo').dataset.sourceMethod;

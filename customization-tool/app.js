@@ -1214,6 +1214,27 @@ function normalizeDecorationMethod(method) {
   return "print";
 }
 
+function decorationMethodFamily(method) {
+  const normalized = normalizeDecorationMethod(method);
+  return normalized === "embroidery" ? "embroidery" : "print";
+}
+
+function markPositionMethodSelected(card, method) {
+  if (!card) return;
+  const family = decorationMethodFamily(method);
+  card.querySelectorAll(".position-method-btn").forEach((btn) => {
+    const btnMethod = String(btn.dataset.method || "");
+    if (btn.disabled || btn.classList.contains("is-disabled") || btnMethod.startsWith("poa")) {
+      btn.classList.remove("is-selected");
+      btn.setAttribute("aria-pressed", "false");
+      return;
+    }
+    const isMatch = decorationMethodFamily(btnMethod) === family;
+    btn.classList.toggle("is-selected", isMatch);
+    btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
+  });
+}
+
 function getCustomizationPricingRecord(method, quantity = getProductPricingQuantity(state.totalQty)) {
   const canonicalMethod = customizationApi?.normalizeMethod(method) || normalizeDecorationMethod(method);
   const record = state.customizationPricing[canonicalMethod];
@@ -5829,12 +5850,19 @@ function chooseMethodForPosition(card, positionKey, onChoose, forcePrompt) {
   popup.querySelectorAll("[data-choice]").forEach((button) => {
     button.addEventListener("click", () => {
       const method = button.dataset.choice;
+      popup.querySelectorAll("[data-choice]").forEach((btn) => {
+        btn.classList.remove("is-selected");
+        btn.setAttribute("aria-pressed", "false");
+      });
+      button.classList.add("is-selected");
+      button.setAttribute("aria-pressed", "true");
       popup.remove();
       document.removeEventListener("pointerdown", dismiss, true);
       if (button.dataset.status === "poa") {
         showPoaNotice(positionKey, method);
         return;
       }
+      markPositionMethodSelected(card, method);
       onChoose(method);
     });
   });
@@ -8667,6 +8695,9 @@ if (positionGrid) {
       return;
     }
     if (!activateDroppedPosition(position)) return;
+    // Persist selected visual until another method on this card is chosen
+    // (or the logo lands and the buttons hide).
+    markPositionMethodSelected(card, methodButton.dataset.method);
     state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
     state.pendingPositionLogoTarget = position;
     state.pendingDecorationType = methodButton.dataset.method;

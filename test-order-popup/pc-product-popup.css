@@ -3473,6 +3473,23 @@ body.popup-open {
     height: 118px;
     overflow: hidden;
     background: #fff;
+    border-radius: 8px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    will-change: transform;
+}
+
+/* Whole card stays still — only the preview image lifts on hover. */
+#orderPopup .page-4 .position-card,
+#orderPopup .page-4 .position-card:hover,
+#orderPopup .page-4 .position-card.selected {
+    transform: none !important;
+}
+
+#orderPopup .page-4 .position-card .position-preview:hover {
+    z-index: 2;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 16px rgb(15 23 42 / 14%);
+    overflow: visible;
 }
 
 #orderPopup .page-4 .position-placeholder {
@@ -3507,29 +3524,77 @@ body.popup-open {
     border: 0 !important;
     border-radius: 8px;
     color: #fff !important;
-    box-shadow: none;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 18%);
     cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
 }
 
 #orderPopup .page-4 .price-emb {
-    background: #FFC107 !important;
+    background: linear-gradient(180deg, #ffd54f, #ffc107) !important;
+    color: #1e2749 !important;
 }
 
 #orderPopup .page-4 .price-print,
 #orderPopup .page-4 .price-print:only-child,
 #orderPopup .page-4 .position-prices:has(.price-emb) .price-print:not(.poa-badge) {
-    background: #1769D2 !important;
-    background-color: #1769D2 !important;
-    background-image: none !important;
-    box-shadow: none !important;
+    background: linear-gradient(180deg, #3f83f8, #1769d2) !important;
+    background-color: #1769d2 !important;
+    background-image: linear-gradient(180deg, #3f83f8, #1769d2) !important;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 18%) !important;
 }
 
+/* Separate hover for each method — card itself does not move. */
+#orderPopup .page-4 .price-emb:hover:not(.poa-badge):not(:disabled),
+#orderPopup .page-4 .price-print:hover:not(.poa-badge):not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 14px rgb(15 23 42 / 28%) !important;
+    filter: brightness(1.08);
+}
+
+#orderPopup .page-4 .price-emb:active:not(.poa-badge):not(:disabled),
+#orderPopup .page-4 .price-print:active:not(.poa-badge):not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 1px 4px rgb(15 23 42 / 22%) !important;
+    filter: brightness(0.96);
+}
+
+/* Clear selected/click state — stays until the other method on this card is chosen. */
 #orderPopup .page-4 .price-emb.active {
-    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #FFC107;
+    position: relative;
+    z-index: 1;
+    transform: translateY(0) scale(1.04);
+    box-shadow:
+        0 0 0 3px #142456,
+        0 0 0 6px rgb(255 255 255 / 95%),
+        0 8px 18px rgb(15 23 42 / 32%) !important;
+    filter: brightness(1.04);
 }
 
 #orderPopup .page-4 .price-print.active {
-    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #1769D2;
+    position: relative;
+    z-index: 1;
+    transform: translateY(0) scale(1.04);
+    box-shadow:
+        0 0 0 3px #142456,
+        0 0 0 6px rgb(255 255 255 / 95%),
+        0 8px 18px rgb(15 23 42 / 32%) !important;
+    filter: brightness(1.04);
+}
+
+#orderPopup .page-4 .price-emb.active:hover:not(:disabled),
+#orderPopup .page-4 .price-print.active:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.05);
+    filter: brightness(1.08);
+}
+
+#orderPopup .page-4 .position-prices:has(.active) .price-badge:not(.active):not(.poa-badge) {
+    opacity: 0.48;
+    filter: grayscale(0.2) brightness(0.96);
+    box-shadow: none !important;
+    transform: none;
 }
 
 #orderPopup .page-4 .price-emb.poa-badge,

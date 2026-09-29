@@ -1910,9 +1910,9 @@
     pointer-events: none;
   }
 
+  /* Card itself stays still — no translate/scale/lift on card hover. */
   body.is-pc-order-embed .position-card:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 14px rgb(15 23 42 / 12%);
+    transform: none;
   }
 
   body.is-pc-order-embed .position-card.is-selected::after {
@@ -1934,6 +1934,16 @@
     margin-top: 0;
     overflow: hidden;
     background: #fff;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    will-change: transform;
+  }
+
+  /* Light lift only when hovering the image area — not the whole card. */
+  body.is-pc-order-embed .position-card .position-thumb-wrap:hover {
+    z-index: 2;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 16px rgb(15 23 42 / 14%);
+    overflow: visible;
   }
 
   body.is-pc-order-embed .position-thumb-wrap > img {
@@ -2158,7 +2168,9 @@
     background: #f3f4f6;
     color: #1f2937;
     cursor: pointer;
-    transition: all 0.2s ease;
+    /* Border/bg only — never translate/scale the whole card on hover. */
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    transform: none;
     min-height: 138px;
   }
 
@@ -3035,7 +3047,8 @@ body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-buttons {
   padding: 9px 9px 11px;
 }
 
-body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn {
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn,
+.position-method-choice .position-method-btn {
   border: 0;
   border-radius: 9px;
   padding: 10px 6px;
@@ -3045,27 +3058,76 @@ body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn {
   letter-spacing: .07em;
   cursor: pointer;
   box-shadow: 0 2px 6px rgb(15 23 42 / 20%);
-  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, outline-color .12s ease;
 }
 
-body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 12px rgb(15 23 42 / 25%);
-  filter: brightness(1.05);
+/* Hover: slight lift + brightness so the target method is obvious */
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn:hover:not(:disabled):not(.is-disabled),
+.position-method-choice .position-method-btn:hover:not(:disabled):not(.is-disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgb(15 23 42 / 28%);
+  filter: brightness(1.08);
 }
 
+/* Press: tactile scale-down (mouse + touch) */
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn:active:not(:disabled):not(.is-disabled),
+.position-method-choice .position-method-btn:active:not(:disabled):not(.is-disabled) {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 22%);
+  filter: brightness(0.96);
+}
+
+/* Selected: stays after click until another method on the same card is chosen */
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn.is-selected,
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn[aria-pressed="true"],
+.position-method-choice .position-method-btn.is-selected,
+.position-method-choice .position-method-btn[aria-pressed="true"] {
+  position: relative;
+  z-index: 1;
+  transform: translateY(0) scale(1.04);
+  box-shadow:
+    0 0 0 3px #142456,
+    0 0 0 6px rgb(255 255 255 / 95%),
+    0 10px 22px rgb(15 23 42 / 38%);
+  filter: brightness(1.04);
+  outline: none;
+}
+
+/* Dim the other method on the same card so the choice is unmistakable */
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-buttons:has(.is-selected) .position-method-btn:not(.is-selected):not([aria-pressed="true"]),
+.position-method-choice-actions:has(.is-selected) .position-method-btn:not(.is-selected):not([aria-pressed="true"]) {
+  opacity: 0.48;
+  filter: grayscale(0.2) brightness(0.96);
+  box-shadow: none;
+  transform: none;
+}
+
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn.is-selected:hover:not(:disabled),
+body.is-pc-order-embed.is-sweatshirt-position-picker .position-method-btn[aria-pressed="true"]:hover:not(:disabled),
+.position-method-choice .position-method-btn.is-selected:hover:not(:disabled),
+.position-method-choice .position-method-btn[aria-pressed="true"]:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.05);
+  filter: brightness(1.08);
+}
+
+/* Brand colors: embroidery = yellow/gold, print = blue */
 body.is-pc-order-embed.is-sweatshirt-position-picker .method-embroidery,
 .position-method-choice .method-embroidery {
-  background: linear-gradient(180deg, #3f83f8, #1d4ed8);
+  background: linear-gradient(180deg, #ffd54f, #ffc107);
+  color: #1e2749;
 }
 
 body.is-pc-order-embed.is-sweatshirt-position-picker .method-print,
 .position-method-choice .method-print {
-  background: linear-gradient(180deg, #fcc419, #f59f00);
-  color: #4a3400;
+  background: linear-gradient(180deg, #3f83f8, #1769d2);
+  color: #fff;
 }
 
-body.is-pc-order-embed.is-sweatshirt-position-picker .method-poa {
+body.is-pc-order-embed.is-sweatshirt-position-picker .method-poa,
+.position-method-choice .method-poa {
   background: #eef2f7;
   color: #334155;
   border: 1px dashed #94a3b8;
@@ -3124,17 +3186,6 @@ body.is-pc-order-embed.is-sweatshirt-position-picker .position-card:not(.has-ass
   display: flex;
   flex-direction: column;
   gap: 7px;
-}
-
-.position-method-choice .position-method-btn {
-  border: 0;
-  border-radius: 9px;
-  padding: 10px 6px;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .07em;
-  cursor: pointer;
 }
 
 /* Simplified editor toolbar: BACK left, basket + NEXT right. */
