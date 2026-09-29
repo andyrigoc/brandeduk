@@ -10,7 +10,7 @@
             var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
                 ? path.slice(0, mountAt + '/brandeduk'.length)
                 : '';
-            d.write('<script src="' + base + '/desktop-gate.js?v=20260928-pc700"><\/script>');
+            d.write('<script src="' + base + '/desktop-gate.js?v=20260929-mobilestay1"><\/script>');
         }(document));
     </script>
     <meta charset="UTF-8">
@@ -3134,19 +3134,31 @@
         })();
         
         // Tablet Social Icons - first click opens the link; active class is visual feedback only.
-        // Responsive routing helper (for DevTools/device emulation)
+        // Routing: phones stay on mobile (never force=desktop). Tablets → PC.
         (function() {
             var BREAKPOINT = 700;
             try {
                 var params = new URLSearchParams(window.location.search);
                 var force = (params.get('force') || '').toLowerCase();
-                if (force === 'mobile') {
-                    // stay on mobile/tablet
-                    return;
-                }
-            } catch (e) {
-                // ignore
+                if (force === 'mobile') return; // explicit mobile lock
+            } catch (e) { /* ignore */ }
+
+            function isPhoneUa() {
+                var ua = (navigator.userAgent || '').toLowerCase();
+                var uaDataMobile = false;
+                try {
+                    uaDataMobile = !!(navigator.userAgentData && navigator.userAgentData.mobile);
+                } catch (e2) { uaDataMobile = false; }
+                var isIPad = ua.indexOf('ipad') !== -1 || (ua.indexOf('macintosh') !== -1 && (navigator.maxTouchPoints || 0) > 1);
+                var isIPhone = ua.indexOf('iphone') !== -1 || ua.indexOf('ipod') !== -1;
+                var isAndroid = ua.indexOf('android') !== -1;
+                var isAndroidTablet = isAndroid && ua.indexOf('mobile') === -1;
+                var isTabletUA = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
+                return !isTabletUA && (uaDataMobile || isIPhone || (isAndroid && ua.indexOf('mobile') !== -1));
             }
+
+            // Phones never leave the mobile experience.
+            if (isPhoneUa()) return;
 
             function isDesktopViewport() {
                 if (window.matchMedia) {
@@ -3156,8 +3168,9 @@
             }
 
             function maybeRedirectToDesktop() {
-                if (!isDesktopViewport()) return;
-                window.location.replace('home-pc.html?force=desktop' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : ''));
+                if (!isDesktopViewport() || isPhoneUa()) return;
+                var contact = /[?&]contact=1(?:&|$)/.test(window.location.search) ? '?contact=1' : '';
+                window.location.replace('home-pc.html' + contact);
             }
 
             setTimeout(maybeRedirectToDesktop, 0);
@@ -3573,7 +3586,7 @@
             </div>
         </div>
     </div>
-    <script src="mobile/js/whatsapp.js?v=20260929-chatui2"></script>
+    <script src="mobile/js/whatsapp.js?v=20260929-wachat3"></script>
 
     <!-- Upload Logo Modal -->
     <div class="upload-modal-overlay" id="uploadModalOverlay"></div>

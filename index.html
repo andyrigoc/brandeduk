@@ -163,7 +163,8 @@
                 var isViewportMobile = window.matchMedia
                     ? window.matchMedia('(max-width: ' + (BREAKPOINT - 1) + 'px)').matches
                     : (window.innerWidth < BREAKPOINT);
-                var shouldUseMobile = isPhoneUA || isViewportMobile;
+                // Phones always stay on mobile. Tablets/desktops use PC.
+                var shouldUseMobile = isPhoneUA || (!isTabletUA && isViewportMobile);
                 return shouldUseMobile ? 'index-mobile.html' : 'home-pc.html';
             }
 
@@ -172,9 +173,22 @@
                 var forced = getForcedTarget();
                 var target = forced || computeTargetByDevice();
                 updateDebug(forced ? ('forced:' + forced) : (target.indexOf('mobile') !== -1 ? 'auto:mobile' : 'auto:desktop'));
-                if (target) {
-                    redirected = true;
-                    lastTarget = target;
+                if (!target) return;
+                redirected = true;
+                lastTarget = target;
+                try {
+                    var u = new URL(target, window.location.href);
+                    // Preserve current query (utm, contact, etc.)
+                    var cur = new URLSearchParams(window.location.search);
+                    cur.forEach(function (value, key) {
+                        if (!u.searchParams.has(key)) u.searchParams.set(key, value);
+                    });
+                    // Lock phones on mobile so they are never force=desktop.
+                    if (!forced && target.indexOf('mobile') !== -1) {
+                        u.searchParams.set('force', 'mobile');
+                    }
+                    window.location.replace(u.pathname + u.search + (window.location.hash || u.hash || ''));
+                } catch (e) {
                     window.location.replace(target + window.location.search + window.location.hash);
                 }
             }

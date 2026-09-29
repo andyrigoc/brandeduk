@@ -19,8 +19,8 @@
 }
 
 .bu-tablet-rotate-hint__glass {
-    width: min(420px, 88vw);
-    padding: 36px 28px 28px;
+    width: min(440px, 92vw);
+    padding: 18px 18px 22px;
     border-radius: 28px;
     border: 1px solid rgba(255, 255, 255, 0.38);
     background: linear-gradient(
@@ -38,48 +38,24 @@
     backdrop-filter: blur(22px) saturate(1.35);
 }
 
-.bu-tablet-rotate-hint__icon {
-    width: 148px;
-    height: 148px;
-    margin: 0 auto 18px;
-    display: grid;
-    place-items: center;
-    border-radius: 28px;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+.bu-tablet-rotate-hint__media {
+    width: 100%;
+    margin: 0 auto 16px;
+    border-radius: 20px;
+    background: #070a12;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
+    line-height: 0;
 }
 
-.bu-tablet-rotate-hint__icon img {
-    width: 112px;
-    height: 112px;
-    object-fit: contain;
+.bu-tablet-rotate-hint__video {
+    width: 100%;
+    height: auto;
     display: block;
-    /* Source art is white on black — drop the black plate on the glass. */
-    mix-blend-mode: screen;
+    object-fit: cover;
+    pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
-    pointer-events: none;
-    animation: bu-tablet-rotate-pulse 2.4s ease-in-out infinite;
-}
-
-.bu-tablet-rotate-hint__title {
-    margin: 0 0 8px;
-    font-family: Inter, Arial, sans-serif;
-    font-size: clamp(20px, 3.4vw, 26px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
-}
-
-.bu-tablet-rotate-hint__sub {
-    margin: 0 0 22px;
-    font-family: Inter, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.45;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.88);
 }
 
 .bu-tablet-rotate-hint__continue {
@@ -108,13 +84,7 @@
     outline: none;
 }
 
-@keyframes bu-tablet-rotate-pulse {
-    0%, 100% { transform: rotate(-8deg) scale(1); opacity: 0.92; }
-    50% { transform: rotate(8deg) scale(1.04); opacity: 1; }
-}
-
 @media (orientation: landscape), (pointer: fine) and (hover: hover) {
-    /* Safety: never keep the hint up in landscape; JS also hides it. */
     body:not(.bu-tablet-rotate-hint-active) .bu-tablet-rotate-hint {
         display: none !important;
     }

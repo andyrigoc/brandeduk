@@ -149,16 +149,33 @@
         if (isBrandedProductionHost && window.location.pathname !== '/') {
             history.replaceState(null, '', '/' + window.location.search + window.location.hash);
         }
-        var keepDesktop = /(?:\?|&)force(?:-desktop|=desktop)\b/i.test(window.location.search);
-        // Redirect to mobile version on phones (width < 700). Tablets stay on PC.
-        if (!keepDesktop && window.innerWidth < 700) {
+        // Redirect narrow phones to mobile. Never keep a phone on PC via force=desktop.
+        // Tablets (>=700) stay on the PC experience.
+        var forceParam = '';
+        try {
+            forceParam = (new URLSearchParams(window.location.search).get('force') || '').toLowerCase();
+        } catch (e) { forceParam = ''; }
+        var isForcedDesktop = forceParam === 'desktop';
+        var isPhoneUa = (function () {
+            var ua = (navigator.userAgent || '').toLowerCase();
+            var uaDataMobile = false;
+            try { uaDataMobile = !!(navigator.userAgentData && navigator.userAgentData.mobile); } catch (e2) {}
+            var isIPad = ua.indexOf('ipad') !== -1 || (ua.indexOf('macintosh') !== -1 && (navigator.maxTouchPoints || 0) > 1);
+            var isIPhone = ua.indexOf('iphone') !== -1 || ua.indexOf('ipod') !== -1;
+            var isAndroid = ua.indexOf('android') !== -1;
+            var isAndroidTablet = isAndroid && ua.indexOf('mobile') === -1;
+            var isTabletUA = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
+            return !isTabletUA && (uaDataMobile || isIPhone || (isAndroid && ua.indexOf('mobile') !== -1));
+        })();
+        // Phones always go to mobile (ignore force=desktop).
+        if (isPhoneUa || (!isForcedDesktop && window.innerWidth < 700)) {
             window.location.href = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260929-basket25">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260929-topshift10">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20260929-openrotate1">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20260929-rotatebeat3">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
@@ -3803,7 +3820,7 @@
 <script src="brandeduk.com/js/uniform-cube.js?v=20260928-cubefluid"></script>
 <script src="brandeduk.com/js/embroidery-scroll.js?v=20260928-scrub8"></script>
 <script src="mobile/js/popup-contact.js?v=20260927-quoteonly"></script>
-<script src="mobile/js/whatsapp.js?v=20260929-chatui2"></script>
+<script src="mobile/js/whatsapp.js?v=20260929-wachat3"></script>
 <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
 <script src="brandedukv15-child/assets/js/pc-search.js?v=20260917-popup-route"></script>
 <script>
@@ -3995,19 +4012,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })();
 
-// Responsive routing helper (for DevTools/device emulation)
+// Responsive routing: phones → mobile always. force=desktop never keeps a phone on PC.
 (function() {
     var BREAKPOINT = 700;
+    var mobileUrl = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
 
-    try {
-        var params = new URLSearchParams(window.location.search);
-        var force = (params.get('force') || '').toLowerCase();
-        if (force === 'desktop') return;
-    } catch (e) {
-        // ignore
+    function isPhoneUa() {
+        var ua = (navigator.userAgent || '').toLowerCase();
+        var uaDataMobile = false;
+        try { uaDataMobile = !!(navigator.userAgentData && navigator.userAgentData.mobile); } catch (e) {}
+        var isIPad = ua.indexOf('ipad') !== -1 || (ua.indexOf('macintosh') !== -1 && (navigator.maxTouchPoints || 0) > 1);
+        var isIPhone = ua.indexOf('iphone') !== -1 || ua.indexOf('ipod') !== -1;
+        var isAndroid = ua.indexOf('android') !== -1;
+        var isAndroidTablet = isAndroid && ua.indexOf('mobile') === -1;
+        var isTabletUA = isIPad || isAndroidTablet || ua.indexOf('tablet') !== -1 || ua.indexOf('silk') !== -1;
+        return !isTabletUA && (uaDataMobile || isIPhone || (isAndroid && ua.indexOf('mobile') !== -1));
     }
 
-    var mobileUrl = 'index-mobile.html?force=mobile' + (/[?&]contact=1(?:&|$)/.test(window.location.search) ? '&contact=1' : '');
+    function isForcedDesktop() {
+        try {
+            return (new URLSearchParams(window.location.search).get('force') || '').toLowerCase() === 'desktop';
+        } catch (e) {
+            return false;
+        }
+    }
 
     function isMobileViewport() {
         if (window.matchMedia) {
@@ -4017,11 +4045,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function maybeRedirectToMobile() {
+        if (isPhoneUa()) {
+            window.location.replace(mobileUrl);
+            return;
+        }
+        if (isForcedDesktop()) return;
         if (!isMobileViewport()) return;
         window.location.replace(mobileUrl);
     }
 
-    // Run once (after layout) and on viewport changes
     setTimeout(maybeRedirectToMobile, 0);
     var timer;
     window.addEventListener('resize', function() {
@@ -4525,7 +4557,7 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 <script src="brandedukv15-child/assets/js/header-basket-lottie.js?v=20260927-basketnoflash1"></script>
-<script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20260929-openrotate1"></script>
+<script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20260929-rotatebeat3"></script>
 <script>
 /* Local-only header adapt preview: Desktop / Tablet landscape / Tablet portrait */
 (function () {

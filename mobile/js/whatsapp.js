@@ -74,11 +74,11 @@
             '  </div>' +
             '  <div class="wa-popup__composer">' +
             '    <div class="wa-popup__input-wrap">' +
-            '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Type your message..." autocomplete="off">' +
+            '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Write a message, then Send opens WhatsApp..." autocomplete="off">' +
             '      <button type="button" class="wa-popup__icon-btn" id="waChatAttach" aria-label="Attach file">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '      </button>' +
-            '      <button type="button" class="wa-popup__send" id="waChatSend" aria-label="Send message">' +
+            '      <button type="button" class="wa-popup__send" id="waChatSend" aria-label="Send on WhatsApp" title="Opens WhatsApp — tap Send there to deliver">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
             '      </button>' +
             '    </div>' +
@@ -237,6 +237,22 @@
         popup.setAttribute('aria-hidden', 'true');
     }
 
+    function appendAgentBubble(text) {
+        if (!chatBody || !text) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'wa-msg wa-msg--agent';
+        wrap.innerHTML =
+            '<img class="wa-msg__avatar" src="' + IMG.mark + '" alt="">' +
+            '<div class="wa-msg__stack">' +
+            '  <div class="wa-msg__bubble"></div>' +
+            '  <div class="wa-msg__meta">Branded Support · <span></span></div>' +
+            '</div>';
+        wrap.querySelector('.wa-msg__bubble').textContent = text;
+        wrap.querySelector('.wa-msg__meta span').textContent = nowLabel();
+        chatBody.appendChild(wrap);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
     function appendUserBubble(text) {
         if (!chatBody || !text) return;
         var wrap = document.createElement('div');
@@ -252,11 +268,31 @@
         chatBody.scrollTop = chatBody.scrollHeight;
     }
 
+    function openWhatsAppLink(url) {
+        // Prefer a real <a> click inside the user gesture — window.open is often
+        // blocked on mobile, so customers think they sent but WhatsApp never opens.
+        var anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+        anchor.setAttribute('aria-hidden', 'true');
+        anchor.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+        document.body.appendChild(anchor);
+        anchor.click();
+        window.setTimeout(function () {
+            if (anchor.parentNode) anchor.parentNode.removeChild(anchor);
+        }, 0);
+        return url;
+    }
+
     function sendToWhatsApp(text) {
         var msg = (text || '').trim();
         if (!msg) msg = 'Hi, I would like some help';
         appendUserBubble(msg);
-        window.open(waLink(msg), '_blank', 'noopener');
+        var url = waLink(msg);
+        openWhatsAppLink(url);
+        appendAgentBubble('Opening WhatsApp… Please tap Send there so our team receives your message. If nothing opened, use Speak to a member of our team below.');
+        return url;
     }
 
     function openQuoteContact(message) {

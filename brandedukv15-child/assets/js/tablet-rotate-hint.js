@@ -1,10 +1,22 @@
 /**
- * Tablet portrait rotate hint for PC pages (home-pc / shop-pc).
- * Shows on open when a touch tablet is portrait; hides on landscape or "Continue anyway".
- * Phones on mobile (<700) never load these pages under the normal desktop gate.
+ * Tablet portrait rotate hint — PC pages ONLY (home-pc / shop-pc).
+ *
+ * Mobile phones (normal dimensions, width < 700 → index-mobile / mobile/*)
+ * stay on the existing mobile system and must never load or show this.
+ * Tablets are part of the PC experience; this overlay only helps them
+ * rotate to landscape on PC pages.
+ *
+ * Video beat (rotate-device-hint.mp4):
+ *  0–1s → only “Rotate / Your / Phone” + divider
+ *  1s+  → tablet appears and rotates
  */
 (function setupTabletRotateHint() {
     if (window.__buTabletRotateHintInit) return;
+    // Hard stop: never attach on mobile routes.
+    try {
+        var path = String(location.pathname || '');
+        if (/index-mobile\.html|(?:^|\/)mobile\//i.test(path)) return;
+    } catch (error) { /* continue */ }
     window.__buTabletRotateHintInit = true;
 
     var HINT_ID = 'buTabletRotateHint';
@@ -38,6 +50,15 @@
         } catch (error) { /* ignore */ }
     }
 
+    function playVideo(vid) {
+        if (!vid) return;
+        vid.muted = true;
+        try {
+            var p = vid.play();
+            if (p && p.catch) p.catch(function () { /* autoplay blocked */ });
+        } catch (error) { /* ignore */ }
+    }
+
     function ensureHint() {
         var el = document.getElementById(HINT_ID);
         if (el) return el;
@@ -52,15 +73,22 @@
         el.setAttribute('aria-label', 'Rotate your tablet for the best experience');
         el.innerHTML = [
             '<div class="bu-tablet-rotate-hint__glass">',
-            '  <div class="bu-tablet-rotate-hint__icon" aria-hidden="true">',
-            '    <img src="' + assetUrl('rotate-device-hint.png') + '" alt="">',
+            '  <div class="bu-tablet-rotate-hint__media" aria-hidden="true">',
+            '    <video class="bu-tablet-rotate-hint__video"',
+            '      src="' + assetUrl('rotate-device-hint.mp4') + '"',
+            '      autoplay muted loop playsinline preload="auto"',
+            '      disablepictureinpicture',
+            '      controlslist="nodownload noplaybackrate noremoteplayback"></video>',
             '  </div>',
-            '  <p class="bu-tablet-rotate-hint__title">Rotate your tablet for the best experience</p>',
-            '  <p class="bu-tablet-rotate-hint__sub">Please turn your device horizontally</p>',
             '  <button type="button" class="bu-tablet-rotate-hint__continue">Continue anyway</button>',
             '</div>'
         ].join('');
         document.body.appendChild(el);
+        var vid = el.querySelector('.bu-tablet-rotate-hint__video');
+        if (vid) {
+            vid.setAttribute('muted', '');
+            vid.addEventListener('loadeddata', function () { playVideo(vid); }, { once: true });
+        }
         var btn = el.querySelector('.bu-tablet-rotate-hint__continue');
         if (btn) {
             btn.addEventListener('click', function () {
@@ -87,13 +115,6 @@
         return touchPoints >= 1 || coarse;
     }
 
-    /**
-     * Target tablet PC experience only:
-     * - touch / coarse pointer
-     * - portrait (or taller than wide)
-     * - short side in tablet/PC band (≥700 desktop gate; exclude phones)
-     * - long side not a giant desktop monitor
-     */
     function isTabletPortrait() {
         if (!isTouchLike()) return false;
         if (!isPortrait()) return false;
@@ -108,9 +129,20 @@
         if (!document.body) return;
         var el = ensureHint();
         var show = !wasDismissed() && isTabletPortrait();
+        var wasHidden = el.hidden;
         el.hidden = !show;
         el.setAttribute('aria-hidden', show ? 'false' : 'true');
         document.body.classList.toggle('bu-tablet-rotate-hint-active', show);
+        var vid = el.querySelector('.bu-tablet-rotate-hint__video');
+        if (show && vid) {
+            // Restart from text-only intro whenever the hint opens.
+            if (wasHidden) {
+                try { vid.currentTime = 0; } catch (error) { /* ignore */ }
+            }
+            playVideo(vid);
+        } else if (vid) {
+            try { vid.pause(); } catch (error) { /* ignore */ }
+        }
     }
 
     window.syncTabletRotateHint = syncTabletRotateHint;
