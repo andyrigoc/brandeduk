@@ -4885,6 +4885,18 @@ function getSessionLogoLibrary() {
   return out;
 }
 
+function prefersFinePointer() {
+  return Boolean(window.matchMedia && window.matchMedia("(pointer: fine)").matches);
+}
+
+let logoPickLockUntil = 0;
+function beginLogoPickLock(ms = 450) {
+  const now = Date.now();
+  if (now < logoPickLockUntil) return false;
+  logoPickLockUntil = now + ms;
+  return true;
+}
+
 function syncInlineLogoPanels() {
   const hasLogo = Boolean(state.uploadedLogo);
   const keepUploadPanel = isPcOrderEmbed && hasConfiguredPositionPicker();
@@ -4893,6 +4905,7 @@ function syncInlineLogoPanels() {
 
   if (!inlineUploadLibrary || !inlineUploadLibraryItems) return;
   const library = getSessionLogoLibrary();
+  const allowDrag = prefersFinePointer();
   inlineUploadLibrary.hidden = library.length === 0;
   inlineUploadLibraryItems.innerHTML = "";
   library.forEach((entry) => {
@@ -4900,10 +4913,13 @@ function syncInlineLogoPanels() {
     button.type = "button";
     button.title = "Use this logo";
     button.className = "inline-upload-library-logo";
-    button.draggable = true;
+    // Touch tablets treat long-press / double-tap as native image drag, which
+    // can navigate the iframe away. Keep drag for fine pointers (mouse) only.
+    button.draggable = allowDrag;
     const image = document.createElement("img");
     image.src = entry.logo;
     image.alt = "Saved logo";
+    image.draggable = false;
     const removeButton = document.createElement("span");
     removeButton.className = "inline-upload-library-remove";
     removeButton.setAttribute("role", "button");
@@ -4925,29 +4941,33 @@ function syncInlineLogoPanels() {
         syncInlineLogoPanels();
         return;
       }
+      if (!beginLogoPickLock()) return;
       inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
         item.classList.toggle("is-selected", item === button);
       });
       reuseLibraryLogo(entry.logo);
     });
-    button.addEventListener("dragstart", (event) => {
-      event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
-      event.dataTransfer?.setData("text/plain", entry.logo);
-      event.dataTransfer.effectAllowed = "copy";
-      const dragImage = document.createElement("img");
-      dragImage.src = entry.logo;
-      dragImage.alt = "";
-      dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
-      document.body.appendChild(dragImage);
-      event.dataTransfer?.setDragImage(dragImage, 70, 70);
-      window.setTimeout(() => dragImage.remove(), 0);
-      button.classList.add("is-dragging-logo");
-    });
-    button.addEventListener("dragend", () => {
-      button.classList.remove("is-dragging-logo");
-      document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
-        .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
-    });
+    if (allowDrag) {
+      button.addEventListener("dragstart", (event) => {
+        event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
+        event.dataTransfer?.setData("text/plain", entry.logo);
+        event.dataTransfer.effectAllowed = "copy";
+        const dragImage = document.createElement("img");
+        dragImage.src = entry.logo;
+        dragImage.alt = "";
+        dragImage.draggable = false;
+        dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
+        document.body.appendChild(dragImage);
+        event.dataTransfer?.setDragImage(dragImage, 70, 70);
+        window.setTimeout(() => dragImage.remove(), 0);
+        button.classList.add("is-dragging-logo");
+      });
+      button.addEventListener("dragend", () => {
+        button.classList.remove("is-dragging-logo");
+        document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
+          .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
+      });
+    }
     inlineUploadLibraryItems.appendChild(button);
   });
 }
@@ -5006,20 +5026,30 @@ function showLogoLibraryPicker(library) {
   library.forEach((entry) => {
     const cell = document.createElement("button");
     cell.type = "button";
-    cell.style.cssText = "flex:0 0 auto;width:90px;height:90px;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc center/contain no-repeat;cursor:pointer;padding:0;";
+    cell.style.cssText = "flex:0 0 auto;width:90px;height:90px;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc center/contain no-repeat;cursor:pointer;padding:0;touch-action:manipulation;-webkit-user-drag:none;-webkit-touch-callout:none;";
     cell.style.backgroundImage = `url("${entry.logo}")`;
     cell.title = "Reuse this logo";
     cell.setAttribute("aria-label", `Use this logo on ${getDesignAreaLabel()}`);
-    cell.addEventListener("click", () => {
-      overlay.remove();
+    cell.draggable = false;
+    cell.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (!beginLogoPickLock()) return;
+      // Keep a brief invisible shield so a tablet double-tap cannot hit BACK /
+      // EMB/PRINT underneath after the picker closes.
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "auto";
       state.decorationType = state.pendingDecorationType || entry.method || state.decorationType || "logo";
       document.body.dataset.decorationType = normalizeDecorationMethod(state.decorationType);
       reuseLibraryLogo(entry.logo);
+      window.setTimeout(() => {
+        if (overlay.parentNode) overlay.remove();
+      }, 400);
     });
     grid.appendChild(cell);
   });
 
   panel.querySelector("#toolLogoLibraryUpload").addEventListener("click", () => {
+    if (!beginLogoPickLock()) return;
     overlay.remove();
     document.getElementById("logoFileInput").click();
   });
@@ -8882,6 +8912,17 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
     resetLayerRotationToStraight("text");
   }
 });
+
+// Block stray image drops from navigating the iframe (common on tablet touch
+// when a logo thumbnail is long-pressed / dragged). Intentional card drops
+// still work — they already call preventDefault themselves.
+(function preventStrayLogoNavigation() {
+  ["dragover", "drop"].forEach((type) => {
+    document.addEventListener(type, (event) => {
+      event.preventDefault();
+    });
+  });
+})();
 
 // PC embed toolbar: the tab bar is replaced by BACK (one step back in the
 // order flow) and NEXT (same action as CONFIRM & UPDATE BASKET). The basket

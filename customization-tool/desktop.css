@@ -2036,6 +2036,23 @@
     cursor: grab;
     position: relative;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    touch-action: manipulation;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  body.is-pc-order-embed .inline-upload-library-logo img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (pointer: coarse) {
+    body.is-pc-order-embed .inline-upload-library-logo {
+      cursor: pointer;
+    }
   }
 
   body.is-pc-order-embed .inline-upload-library-logo.is-selected {
