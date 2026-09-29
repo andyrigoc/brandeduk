@@ -218,14 +218,27 @@ function updateBasketCount() {
     
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket')) || [];
-        const groups = new Set();
-        basket.forEach((item, index) => {
-            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-            groups.add(code ? `${code}::${color}` : String(item?.id || index));
+        let count = 0;
+        basket.forEach((item) => {
+            const rawSizes = item?.sizes || item?.quantities;
+            let sum = 0;
+            if (Array.isArray(rawSizes)) {
+                rawSizes.forEach((entry) => {
+                    sum += Number(entry?.qty ?? entry?.quantity ?? entry?.value) || 0;
+                });
+            } else if (rawSizes && typeof rawSizes === 'object') {
+                Object.values(rawSizes).forEach((value) => {
+                    if (value && typeof value === 'object') {
+                        sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+                    } else {
+                        sum += Number(value) || 0;
+                    }
+                });
+            }
+            if (sum > 0) count += sum;
+            else count += Number(item?.qty ?? item?.quantity ?? item?.totalQty ?? item?.totalQuantity) || 0;
         });
-        const count = groups.size;
-        badge.textContent = count;
+        badge.textContent = count > 99 ? '99+' : String(count);
         badge.style.display = count > 0 ? 'flex' : 'none';
     } catch (e) {
         badge.textContent = '0';

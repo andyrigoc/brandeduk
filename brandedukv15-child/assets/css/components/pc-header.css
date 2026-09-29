@@ -232,7 +232,7 @@
     .site-header .searchbar-header .category-dropdown {
         flex: 0 0 auto;
         margin-left: auto;
-        left: -20px;
+        left: -35px;
     }
 
     .site-header .shop-products-btn,
@@ -289,7 +289,7 @@
         margin-left: 0;
         justify-content: flex-end;
         position: relative;
-        left: -20px;
+        left: -35px;
     }
 
     .site-header .searchbar-header__search,
@@ -375,6 +375,12 @@
 
     .site-header .header-util-link.header-top-basket-link .header-top-basket-badge {
         display: none !important;
+    }
+
+    /* Keep Basket in place while Shop products / search / quote / Account shift left. */
+    .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link {
+        position: relative;
+        left: 15px;
     }
 
     .site-header .searchbar-header__action,
@@ -987,7 +993,7 @@
 
     .site-header .searchbar-header .category-dropdown,
     .site-header .searchbar-header__actions {
-        left: -20px;
+        left: -35px;
     }
 
     .site-header .searchbar-header__surface {
@@ -1045,7 +1051,7 @@
 
     .site-header .searchbar-header .category-dropdown,
     .site-header .searchbar-header__actions {
-        left: -20px;
+        left: -35px;
     }
 
     .site-header .shop-products-btn,

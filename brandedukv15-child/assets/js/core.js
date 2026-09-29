@@ -46,16 +46,40 @@
     }
   }
 
-  function getBasketEntryCount(basket) {
-    var groups = {};
-    for (var i = 0; i < basket.length; i++) {
-      var item = basket[i] || {};
-      var code = String(item.productCode || item.code || '').trim().toLowerCase();
-      var color = String(item.color || item.selectedColorName || '').trim().toLowerCase();
-      var key = code ? code + '::' + color : String(item.id || i);
-      groups[key] = true;
+  function getItemQty(item) {
+    if (!item) return 0;
+    var rawSizes = item.sizes || item.quantities;
+    var sum = 0;
+
+    if (Array.isArray(rawSizes)) {
+      for (var i = 0; i < rawSizes.length; i++) {
+        var entry = rawSizes[i] || {};
+        sum += Number(entry.qty ?? entry.quantity ?? entry.value) || 0;
+      }
+    } else if (rawSizes && typeof rawSizes === 'object') {
+      var keys = Object.keys(rawSizes);
+      for (var k = 0; k < keys.length; k++) {
+        var value = rawSizes[keys[k]];
+        if (value && typeof value === 'object') {
+          sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+        } else {
+          sum += Number(value) || 0;
+        }
+      }
     }
-    return Object.keys(groups).length;
+
+    if (sum > 0) return sum;
+    var fallback = Number(item.qty ?? item.quantity ?? item.totalQty ?? item.totalQuantity);
+    return Number.isFinite(fallback) && fallback > 0 ? fallback : 0;
+  }
+
+  /** Total garment units in the basket (sum of quantities), not distinct product lines. */
+  function getBasketTotalQty(basket) {
+    var total = 0;
+    for (var i = 0; i < basket.length; i++) {
+      total += getItemQty(basket[i]);
+    }
+    return total;
   }
 
   function setBadgeCount(badge, totalItems) {
@@ -91,7 +115,7 @@
   // Cart badge update function
   window.brandedukv15.updateCartBadge = function () {
     var basket = getBasketSafe();
-    var totalItems = getBasketEntryCount(basket);
+    var totalItems = getBasketTotalQty(basket);
 
     // Support multiple badge ids used across pages.
     setBadgeCount(document.getElementById('cartBadge'), totalItems);

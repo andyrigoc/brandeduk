@@ -553,21 +553,39 @@ function initBottomNav() {
 // ============================================
 // CART COUNT
 // ============================================
+function getBasketTotalQty(basket) {
+    let total = 0;
+    (basket || []).forEach((item) => {
+        const rawSizes = item?.sizes || item?.quantities;
+        let sum = 0;
+        if (Array.isArray(rawSizes)) {
+            rawSizes.forEach((entry) => {
+                sum += Number(entry?.qty ?? entry?.quantity ?? entry?.value) || 0;
+            });
+        } else if (rawSizes && typeof rawSizes === 'object') {
+            Object.values(rawSizes).forEach((value) => {
+                if (value && typeof value === 'object') {
+                    sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+                } else {
+                    sum += Number(value) || 0;
+                }
+            });
+        }
+        if (sum > 0) total += sum;
+        else total += Number(item?.qty ?? item?.quantity ?? item?.totalQty ?? item?.totalQuantity) || 0;
+    });
+    return total;
+}
+
 function updateCartCount() {
     const cartCountEl = document.getElementById('cartCount');
     if (!cartCountEl) return;
 
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const groups = new Set();
-        basket.forEach((item, index) => {
-            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-            groups.add(code ? `${code}::${color}` : String(item?.id || index));
-        });
-        const totalItems = groups.size;
+        const totalItems = getBasketTotalQty(basket);
 
-        cartCountEl.textContent = totalItems;
+        cartCountEl.textContent = totalItems > 99 ? '99+' : String(totalItems);
         cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
     } catch (e) {
         cartCountEl.textContent = '0';
@@ -896,16 +914,10 @@ function updateLiveBadge() {
 
     let totalItems = 0;
     
-    // Get items from basket
+    // Get items from basket — total garment quantity, not distinct product types
     try {
         const basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
-        const groups = new Set();
-        basket.forEach((item, index) => {
-            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-            groups.add(code ? `${code}::${color}` : String(item?.id || index));
-        });
-        totalItems = groups.size;
+        totalItems = typeof getBasketTotalQty === 'function' ? getBasketTotalQty(basket) : basket.length;
     } catch (e) {
         console.error('Error reading basket:', e);
     }
@@ -913,7 +925,7 @@ function updateLiveBadge() {
     // Update all badge elements
     badges.forEach(badge => {
         if (totalItems > 0) {
-            badge.textContent = totalItems;
+            badge.textContent = totalItems > 99 ? '99+' : String(totalItems);
             badge.style.display = 'flex';
         } else {
             badge.style.display = 'none';

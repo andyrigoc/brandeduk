@@ -64,12 +64,33 @@
     }
   }
 
-  /** Parse a numeric qty from various item shapes. */
+  /** Parse a numeric qty from various item shapes (sizes map, quantities, qty fields). */
   function _getQty(item) {
     if (!item) return 0;
+    var rawSizes = item.sizes || item.quantities;
+    var sum = 0;
+
+    if (Array.isArray(rawSizes)) {
+      for (var i = 0; i < rawSizes.length; i++) {
+        var entry = rawSizes[i] || {};
+        sum += Number(entry.qty ?? entry.quantity ?? entry.value) || 0;
+      }
+    } else if (rawSizes && typeof rawSizes === 'object') {
+      var keys = Object.keys(rawSizes);
+      for (var k = 0; k < keys.length; k++) {
+        var value = rawSizes[keys[k]];
+        if (value && typeof value === 'object') {
+          sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+        } else {
+          sum += Number(value) || 0;
+        }
+      }
+    }
+
+    if (sum > 0) return sum;
     var raw = item.qty || item.quantity || item.totalQty || item.totalQuantity;
     var n = parseInt(raw, 10);
-    return Number.isFinite(n) && n > 0 ? n : 1;
+    return Number.isFinite(n) && n > 0 ? n : 0;
   }
 
   /**

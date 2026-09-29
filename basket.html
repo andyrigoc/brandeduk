@@ -993,6 +993,38 @@
         .order-summary-bottom h3 {
             font-size: 18px; font-weight: 700; color: #1f2937; margin: 0 0 16px;
         }
+        .order-summary-bottom__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 0 16px;
+        }
+        .order-summary-bottom__header h3 {
+            margin: 0;
+        }
+        .order-summary-clear-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #ef4444;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .order-summary-clear-btn:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .order-summary-clear-btn i {
+            font-size: 14px;
+            line-height: 1;
+        }
         .summary-row {
             display: flex; justify-content: space-between; padding: 6px 0;
             font-size: 14px; color: #6b7280;
@@ -2098,7 +2130,7 @@
                 border-radius: 3px;
                 box-shadow: none;
             }
-            .order-summary-bottom h3 { color: #202124; font-size: 18px; font-weight: 700; }
+            .order-summary-bottom h3 { color: #202124; font-size: 18px; font-weight: 700; margin: 0; }
             .summary-row { color: #64676d; }
             .summary-row .summary-val { color: #30343b; }
             .summary-grand-total { border-top-color: #d8d8d4; }
@@ -2590,7 +2622,12 @@
             <aside class="basket-summary-column" aria-label="Order summary">
             <!-- Order Summary (bottom) -->
             <div class="order-summary-bottom" id="orderSummaryBottom">
-                <h3>Order summary</h3>
+                <div class="order-summary-bottom__header">
+                    <h3>Order summary</h3>
+                    <button type="button" class="order-summary-clear-btn" id="clearBasketBtnSummary" aria-label="Clear basket" title="Clear basket">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                    </button>
+                </div>
                 <div class="summary-row">
                     <span>Products</span>
                     <span class="summary-val" id="summaryProductCosts">&#163;0.00</span>
@@ -5481,6 +5518,8 @@
         if (clearBtn) clearBtn.addEventListener('click', openClearConfirmModal);
         const clearBtnDesktop = document.getElementById('clearBasketBtnDesktop');
         if (clearBtnDesktop) clearBtnDesktop.addEventListener('click', openClearConfirmModal);
+        const clearBtnSummary = document.getElementById('clearBasketBtnSummary');
+        if (clearBtnSummary) clearBtnSummary.addEventListener('click', openClearConfirmModal);
         clearConfirmCancel?.addEventListener('click', closeClearConfirmModal);
         clearConfirmClose?.addEventListener('click', closeClearConfirmModal);
         clearConfirmModal?.addEventListener('click', (e) => { if (e.target === clearConfirmModal) closeClearConfirmModal(); });

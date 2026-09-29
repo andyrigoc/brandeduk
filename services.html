@@ -2320,30 +2320,48 @@
         renderBasket();
     }
     
+    function getItemQty(item) {
+        if (!item) return 0;
+        const rawSizes = item.sizes || item.quantities;
+        let sum = 0;
+        if (Array.isArray(rawSizes)) {
+            rawSizes.forEach((entry) => {
+                sum += Number(entry?.qty ?? entry?.quantity ?? entry?.value) || 0;
+            });
+        } else if (rawSizes && typeof rawSizes === 'object') {
+            Object.values(rawSizes).forEach((value) => {
+                if (value && typeof value === 'object') {
+                    sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+                } else {
+                    sum += Number(value) || 0;
+                }
+            });
+        }
+        if (sum > 0) return sum;
+        const fallback = Number(item.qty ?? item.quantity ?? item.totalQty ?? item.totalQuantity);
+        return Number.isFinite(fallback) && fallback > 0 ? fallback : 0;
+    }
+
     function renderBasket() {
         const basket = getBasket();
-        // Count distinct product/colour basket entries, not garment units.
-        const count = new Set(basket.map((item, index) => {
-            const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-            const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-            return code ? `${code}::${color}` : String(item?.id || index);
-        })).size;
+        // Show total garment quantity, not distinct product types.
+        const count = basket.reduce((sum, item) => sum + getItemQty(item), 0);
         
         // Update badge (header-top version)
         if (basketBadge) {
-            basketBadge.textContent = count;
+            basketBadge.textContent = count > 99 ? '99+' : String(count);
             basketBadge.style.display = count > 0 ? 'flex' : 'none';
         }
         
         // Update cart badge (searchbar version)
         if (cartBadge) {
-            cartBadge.textContent = count;
+            cartBadge.textContent = count > 99 ? '99+' : String(count);
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
         
         // Render items
         if (basketItems) {
-            if (count === 0) {
+            if (basket.length === 0) {
                 basketItems.innerHTML = '<p class="header-basket-empty">Your basket is empty</p>';
             } else {
                 basketItems.innerHTML = basket.map((item, index) => `
