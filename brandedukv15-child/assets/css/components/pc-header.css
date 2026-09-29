@@ -101,6 +101,12 @@
         gap: 18px;
     }
 
+    /* Phone + VAT toggle + basket move together 30px to the left. */
+    .site-header .header-top .header-top-right {
+        position: relative;
+        left: -30px;
+    }
+
     .site-header .header-top-phone {
         color: #0f172a;
         font-size: 15px; /* was 13px; +15% */

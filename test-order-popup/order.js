@@ -1291,23 +1291,24 @@ $(document).on('drop', '#p4PositionOptions .position-card', function (e) {
     e.stopPropagation();
     this.classList.remove('is-drop-ready');
     var card = this;
-    var badge = e.target.closest('.price-badge');
-    var method = badge && !badge.classList.contains('poa-badge') ? badge.dataset.method : '';
-    var saved = e.originalEvent.dataTransfer.getData('application/x-brandeduk-logo')
-        || e.originalEvent.dataTransfer.getData('text/plain');
-    var sourceMethod = e.originalEvent.dataTransfer.getData('application/x-brandeduk-source-method');
-    var file = e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files[0];
-    if (saved && saved.indexOf('data:') === 0) {
-        p4RememberLogo(saved, method, '', sourceMethod || method);
-        p4ApplyDroppedLogo(card, saved, method, '', sourceMethod || method);
+    var transfer = e.originalEvent.dataTransfer;
+    var saved = (transfer.getData('application/x-brandeduk-logo') || transfer.getData('text/plain') || '').trim();
+    var sourceMethod = transfer.getData('application/x-brandeduk-source-method');
+    var file = transfer.files && transfer.files[0];
+    // A previously uploaded logo can be a data URL or a hosted URL (basket
+    // items keep hosted links). Dropping it anywhere on the card, buttons
+    // included, always opens the Embroidery / Print choice.
+    if (/^(data:|blob:|https?:\/\/)/i.test(saved)) {
+        p4RememberLogo(saved, sourceMethod || '', '', sourceMethod || '');
+        p4ShowMethodPopup(card, saved, '', sourceMethod || '');
         return;
     }
     if (!file) return;
     if (file.size > 25 * 1024 * 1024) return;
     var reader = new FileReader();
     reader.onload = function (event) {
-        p4RememberLogo(event.target.result, method, file.name);
-        p4ApplyDroppedLogo(card, event.target.result, method, file.name);
+        p4RememberLogo(event.target.result, '', file.name);
+        p4ShowMethodPopup(card, event.target.result, file.name, '');
     };
     if (file.type.indexOf('image/') === 0) reader.readAsDataURL(file);
 });

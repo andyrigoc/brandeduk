@@ -93,9 +93,7 @@
         }
         .header-with-promo .searchbar-header__search-expand {
             position: relative !important;
-            flex: 1 !important;
-            width: auto !important;
-            min-width: 200px !important;
+            /* size comes from pc-header.css, same as home-pc.html (Shop products sits next to search) */
             height: 44px !important;
             transition: none !important;
             margin-right: 8px;
@@ -112,11 +110,6 @@
         .header-with-promo .searchbar-header__search-expand .search-input-expand::placeholder {
             color: #9ca3af !important;
         }
-        .header-with-promo .searchbar-header__actions {
-            flex: 1 !important;
-            margin-left: auto;
-        }
-
         /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE (mobile header only, not tablet-top-bar) */
         .mobile-header .social-icons-mobile {
             gap: 3px !important;
@@ -1015,6 +1008,18 @@
         .summary-breakdown-title i { width: 10px; font-size: 10px; color: #ff7a00; }
         .summary-breakdown-total { color: #1f2937; white-space: nowrap; }
         .summary-breakdown-list { padding: 0 0 7px 18px; }
+        /* Setup fees: light grey so the one-off fee reads as a separate line */
+        #digitizingFeeRow {
+            background: #f1f3f6;
+            border-top: 0;
+            border-radius: 8px;
+            margin: 6px 0;
+            padding: 0 10px;
+        }
+        #digitizingFeeRow .summary-breakdown-title,
+        #digitizingFeeRow .summary-breakdown-total,
+        #digitizingFeeRow .summary-breakdown-list,
+        #digitizingFeeRow .summary-breakdown-list * { color: #98a0ac !important; }
         .summary-detail-row {
             display: flex; justify-content: space-between; gap: 12px;
             padding: 3px 0; color: #7a8495; font-size: 11px;
@@ -1946,9 +1951,7 @@
                 padding-bottom: 7px;
             }
             body.basket-page .searchbar-header__surface { padding-top: 10px !important; padding-bottom: 10px !important; }
-            body.basket-page .searchbar-header__inner { gap: 34px; }
             body.basket-page .searchbar-header__brand-img { height: 64px !important; }
-            body.basket-page .searchbar-header__actions { gap: 12px; }
             body.basket-page .searchbar-header__action-ring {
                 width: 42px;
                 height: 42px;
@@ -4439,7 +4442,6 @@
 
         let html = '';
         const chargedEmbroideryDesigns = new Set();
-        const artworkSourceMethods = getArtworkSourceMethods(basket);
         basket.forEach((item, index) => {
             const img = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
             const unitPrice = parseFloat(item.unitPrice) || 0;
@@ -4459,7 +4461,7 @@
                     const methodNorm = (logo.method || 'embroidery').toLowerCase();
                     let setupCharge = 0;
                     const designKey = getEmbroideryDesignKey(logo, `item:${index}:logo:${logoIdx}`);
-                    if (requiresEmbroiderySetup(logo, artworkSourceMethods, `item:${index}:logo:${logoIdx}`)) {
+                    if (requiresEmbroiderySetup(logo)) {
                         if (!chargedEmbroideryDesigns.has(designKey)) {
                             chargedEmbroideryDesigns.add(designKey);
                             setupCharge = DIGITIZING_FEE_PER_DESIGN;
@@ -4637,25 +4639,10 @@
         return String(method || '').toLowerCase() === 'embroidery' ? 'embroidery' : 'print';
     }
 
-    function getArtworkSourceMethods(basket) {
-        const methods = new Map();
-        (basket || []).forEach((item, itemIndex) => {
-            _extractLogos(item).forEach((logo, logoIndex) => {
-                const key = getEmbroideryDesignKey(logo, `item:${itemIndex}:logo:${logoIndex}`);
-                const method = normalizeDecorationMethod(logo.sourceMethod || logo.originalMethod || logo.method);
-                if (!methods.has(key) || method === 'print') methods.set(key, method);
-            });
-        });
-        return methods;
-    }
-
-    function requiresEmbroiderySetup(logo, sourceMethods, fallbackKey) {
-        if (normalizeDecorationMethod(logo && logo.method) !== 'embroidery') return false;
-        const key = getEmbroideryDesignKey(logo, fallbackKey);
-        const sourceMethod = normalizeDecorationMethod(
-            logo.sourceMethod || logo.originalMethod || sourceMethods.get(key) || logo.method
-        );
-        return sourceMethod === 'embroidery';
+    function requiresEmbroiderySetup(logo) {
+        // Charge from the placement itself. A print copy of the same artwork
+        // must not cancel the one-off setup on the embroidery line.
+        return normalizeDecorationMethod(logo && logo.method) === 'embroidery';
     }
 
     function computeBasketTotals(basket) {
@@ -4664,7 +4651,6 @@
         const uniqueEmbroideryDesigns = new Set();
         const customisationGroups = new Map();
         const setupBreakdown = [];
-        const artworkSourceMethods = getArtworkSourceMethods(basket);
 
         (basket || []).forEach((item, itemIndex) => {
             const qty = item.qty || 0;
@@ -4682,7 +4668,7 @@
                 group.total += applicationCost;
                 customisationGroups.set(groupKey, group);
 
-                if (requiresEmbroiderySetup(logo, artworkSourceMethods, `item:${itemIndex}:logo:${logoIndex}`)) {
+                if (requiresEmbroiderySetup(logo)) {
                     const designKey = getEmbroideryDesignKey(logo, `item:${itemIndex}:logo:${logoIndex}`);
                     if (!uniqueEmbroideryDesigns.has(designKey)) {
                         uniqueEmbroideryDesigns.add(designKey);
