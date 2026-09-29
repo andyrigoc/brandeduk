@@ -852,9 +852,11 @@ function p4CreateDragPreview(image) {
 
 // Mouse keeps HTML5 DnD. Touch/pen: custom pointer-drag onto position cards.
 // Native Safari image-drag is cancelled (it navigates / SNAP).
-function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart) {
+function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart, onSelect) {
     var activePointerType = 'mouse';
     var dragState = null;
+    var skipNextClick = false;
+    var dragThreshold = 16;
     button.draggable = true;
 
     function clearCards() {
@@ -875,6 +877,11 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         return null;
     }
 
+    function markSkipClick() {
+        skipNextClick = true;
+        window.setTimeout(function () { skipNextClick = false; }, 450);
+    }
+
     function cleanup() {
         if (dragState && dragState.ghost) dragState.ghost.remove();
         button.classList.remove('is-dragging');
@@ -891,7 +898,7 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         var dx = event.clientX - dragState.x;
         var dy = event.clientY - dragState.y;
         if (!dragState.dragging) {
-            if (Math.hypot(dx, dy) < 8) return;
+            if (Math.hypot(dx, dy) < dragThreshold) return;
             dragState.dragging = true;
             document.body.classList.add('bu-logo-touch-dragging');
             dragState.ghost = document.createElement('div');
@@ -916,11 +923,16 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         if (!dragState || event.pointerId !== dragState.id) return;
         var wasDragging = dragState.dragging;
         var card = dragState.card || hitCard(event.clientX, event.clientY);
+        markSkipClick();
         cleanup();
-        if (!wasDragging) return;
-        event.preventDefault();
-        event.stopPropagation();
-        if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+        if (wasDragging) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+            return;
+        }
+        // Tap / long-press without drag → select logo (stay on Customise).
+        if (typeof onSelect === 'function') onSelect();
     }
 
     button.addEventListener('pointerdown', function (event) {
@@ -939,6 +951,17 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         window.addEventListener('pointermove', onWindowMove, true);
         window.addEventListener('pointerup', onWindowUp, true);
         window.addEventListener('pointercancel', onWindowUp, true);
+    });
+
+    button.addEventListener('click', function (event) {
+        if (!skipNextClick) return;
+        skipNextClick = false;
+        event.preventDefault();
+        event.stopPropagation();
+    }, true);
+
+    button.addEventListener('contextmenu', function (event) {
+        event.preventDefault();
     });
 
     button.addEventListener('dragstart', function (event) {
@@ -963,6 +986,11 @@ function p4RenderPreviousLogos() {
         button.dataset.sourceMethod = String(entry.sourceMethod || entry.method || 'print').toLowerCase();
         button.innerHTML = '<img alt="Saved logo" draggable="false"><span class="p4-previous-remove" aria-label="Remove saved logo">&times;</span>';
         button.querySelector('img').src = entry.logo;
+        function selectThisLogo() {
+            host.querySelectorAll('.p4-previous-logo').forEach(function (item) {
+                item.classList.toggle('is-selected', item === button);
+            });
+        }
         p4EnableLogoGalleryMouseDrag(button, entry.logo, button.dataset.sourceMethod, function (event) {
             // Custom MIME carries the real logo. Never put a navigable URL in
             // text/plain — browsers can navigate to it on an unhandled drop.
@@ -976,7 +1004,7 @@ function p4RenderPreviousLogos() {
                 window.setTimeout(function () { dragPreview.element.remove(); }, 0);
             }
             button.classList.add('is-dragging');
-        });
+        }, selectThisLogo);
         button.addEventListener('dragend', function () {
             button.classList.remove('is-dragging');
             document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
@@ -989,9 +1017,7 @@ function p4RenderPreviousLogos() {
                 p4RenderPreviousLogos();
                 return;
             }
-            host.querySelectorAll('.p4-previous-logo').forEach(function (item) {
-                item.classList.toggle('is-selected', item === button);
-            });
+            selectThisLogo();
         });
         host.appendChild(button);
     });

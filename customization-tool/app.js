@@ -4927,6 +4927,8 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
   const cardSelector = options.cardSelector || ".position-card";
   const readyClass = options.readyClass || "is-logo-drop-ready";
   const draggingClass = options.draggingClass || "is-dragging-logo";
+  // Keep threshold high enough that long-press / SELECT taps never become a drag.
+  const dragThreshold = Number(options.dragThreshold) > 0 ? Number(options.dragThreshold) : 16;
   let startX = 0;
   let startY = 0;
   let dragging = false;
@@ -4934,6 +4936,7 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
   let activeCard = null;
   let pointerId = null;
   let lastPointerType = "mouse";
+  let skipNextClick = false;
 
   const clearCards = () => {
     document.querySelectorAll(`${cardSelector}.${readyClass}`)
@@ -4966,9 +4969,14 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
     return null;
   };
 
+  const markSkipClick = () => {
+    skipNextClick = true;
+    window.setTimeout(() => { skipNextClick = false; }, 450);
+  };
+
   const startGhost = (clientX, clientY) => {
     dragging = true;
-    beginLogoPickLock(1200);
+    // Do NOT beginLogoPickLock here — that blocked the next SELECT tap for 1.2s.
     document.body.classList.add("bu-logo-touch-dragging");
     ghost = document.createElement("div");
     ghost.className = "bu-logo-drag-ghost";
@@ -4989,7 +4997,7 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
     const dx = event.clientX - startX;
     const dy = event.clientY - startY;
     if (!dragging) {
-      if (Math.hypot(dx, dy) < 8) return;
+      if (Math.hypot(dx, dy) < dragThreshold) return;
       startGhost(event.clientX, event.clientY);
     }
     event.preventDefault();
@@ -5009,11 +5017,16 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
       event.stopPropagation();
       const card = activeCard || hitCard(event.clientX, event.clientY);
       const src = logoSrc;
+      markSkipClick();
       cleanup();
       if (card) dropLogoOntoPositionCard(card, src, options.method);
       return;
     }
+    // Tap / long-press without drag: load into preview immediately.
+    // Do not rely only on the synthetic click (iOS often swallows it).
+    markSkipClick();
     cleanup();
+    if (typeof options.onSelect === "function") options.onSelect();
   };
 
   button.addEventListener("pointerdown", (event) => {
@@ -5029,6 +5042,17 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
     window.addEventListener("pointermove", onWindowMove, true);
     window.addEventListener("pointerup", onWindowUp, true);
     window.addEventListener("pointercancel", onWindowUp, true);
+  });
+
+  button.addEventListener("click", (event) => {
+    if (!skipNextClick) return;
+    skipNextClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  button.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
   });
 
   button.addEventListener("dragstart", (event) => {
@@ -5085,6 +5109,13 @@ function syncInlineLogoPanels() {
     removeButton.textContent = "×";
     button.appendChild(image);
     button.appendChild(removeButton);
+    const selectThisLogo = () => {
+      if (!beginLogoPickLock()) return;
+      inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
+        item.classList.toggle("is-selected", item === button);
+      });
+      reuseLibraryLogo(entry.logo);
+    };
     button.addEventListener("click", (event) => {
       if (event.target.closest(".inline-upload-library-remove")) {
         sessionLogoLibrary.splice(0, sessionLogoLibrary.length, ...sessionLogoLibrary.filter((item) => item.logo !== entry.logo));
@@ -5098,13 +5129,12 @@ function syncInlineLogoPanels() {
         syncInlineLogoPanels();
         return;
       }
-      if (!beginLogoPickLock()) return;
-      inlineUploadLibraryItems.querySelectorAll(".inline-upload-library-logo").forEach((item) => {
-        item.classList.toggle("is-selected", item === button);
-      });
-      reuseLibraryLogo(entry.logo);
+      selectThisLogo();
     });
-    attachSavedLogoPointerDrag(button, entry.logo, { method: entry.method });
+    attachSavedLogoPointerDrag(button, entry.logo, {
+      method: entry.method,
+      onSelect: selectThisLogo
+    });
     inlineUploadLibraryItems.appendChild(button);
   });
 }
@@ -5126,17 +5156,19 @@ function rememberUploadedLogo(src, method) {
 
 function reuseLibraryLogo(src) {
   state.copyrightConfirmed = true;
-  state.pendingDecorationType = null;
+  const method = state.pendingDecorationType || state.decorationType || "print";
   const targetPosition = ensurePendingPositionLogoTarget();
-  if (targetPosition) {
-    assignLogoToPosition(targetPosition, src, state.decorationType || "print");
-    state.pendingPositionLogoTarget = "";
-    openScreen("mainEditor");
-    updateConfirmButtonState();
-    return;
-  }
   openScreen("mainEditor");
   showLogoOnCanvas(src);
+  if (targetPosition) {
+    state.decorationType = method;
+    document.body.dataset.decorationType = normalizeDecorationMethod(method);
+    assignLogoToPosition(targetPosition, src, method);
+    state.pendingPositionLogoTarget = "";
+    state.pendingDecorationType = null;
+  } else {
+    state.pendingDecorationType = null;
+  }
   calculatePrice();
   updateConfirmButtonState();
 }
@@ -5473,33 +5505,30 @@ function resolvePositionConflicts(newPosition) {
 function ensurePendingPositionLogoTarget() {
   if (!isPcOrderEmbed || !hasConfiguredPositionPicker()) return "";
 
+  // Only auto-assign when EMB/PRINT (or drop) already chose a position.
+  // A plain SELECT / tap must load the logo into the preview instead of
+  // silently forcing the first position card.
+  const existingTarget = normalizeProductTypeSlug(state.pendingPositionLogoTarget);
+  if (!existingTarget) return "";
+
   const cards = [...document.querySelectorAll(".position-card[data-position]")];
   if (cards.length === 0) return "";
 
-  const existingTarget = normalizeProductTypeSlug(state.pendingPositionLogoTarget);
-  const selectedTarget = normalizeProductTypeSlug(state.selectedPosition);
-  const latestSelected = [...(state.selectedPositions || [])]
-    .reverse()
-    .map(normalizeProductTypeSlug)
-    .find(position => cards.some(card => card.dataset.position === position));
-  const target = [existingTarget, selectedTarget, latestSelected]
-    .find(position => position && cards.some(card => card.dataset.position === position))
-    || cards[0].dataset.position;
-  const card = cards.find(item => item.dataset.position === target);
+  const card = cards.find(item => item.dataset.position === existingTarget);
   if (!card) return "";
-  if (!resolvePositionConflicts(target)) return "";
+  if (!resolvePositionConflicts(existingTarget)) return "";
 
-  if (!state.selectedPositions.includes(target)) {
-    state.selectedPositions.push(target);
+  if (!state.selectedPositions.includes(existingTarget)) {
+    state.selectedPositions.push(existingTarget);
   }
-  state.selectedPosition = target;
+  state.selectedPosition = existingTarget;
   state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
-  state.pendingPositionLogoTarget = target;
+  state.pendingPositionLogoTarget = existingTarget;
   const checkbox = card.querySelector('input[type="checkbox"]');
   if (checkbox) checkbox.checked = true;
   syncPositionSelectionCards();
   updateCustomizationContextLabel();
-  return target;
+  return existingTarget;
 }
 
 function syncPositionCardImages() {
@@ -8889,7 +8918,7 @@ if (positionGrid) {
     }, true);
   });
 
-  // EMB / PRINT buttons: pick the method, then upload straight into this card.
+  // EMB / PRINT: assign selected/previous/canvas logo first; only open picker if none.
   positionGrid.addEventListener("click", (event) => {
     const methodButton = event.target.closest(".position-method-btn");
     if (!methodButton) return;
@@ -8905,11 +8934,24 @@ if (positionGrid) {
     if (!activateDroppedPosition(position)) return;
     // Persist selected visual until another method on this card is chosen
     // (or the logo lands and the buttons hide).
-    markPositionMethodSelected(card, methodButton.dataset.method);
+    const method = methodButton.dataset.method;
+    markPositionMethodSelected(card, method);
     state.selectedArea = normalizeAreaForPicker(card.dataset.area) || "front";
+    document.body.dataset.decorationType = normalizeDecorationMethod(method);
+
+    const selectedPrev = document.querySelector(".inline-upload-library-logo.is-selected img");
+    const logoSrc = (selectedPrev && selectedPrev.src) || state.uploadedLogo || "";
+    if (logoSrc) {
+      state.decorationType = method;
+      state.pendingPositionLogoTarget = "";
+      state.pendingDecorationType = null;
+      assignLogoToPosition(position, logoSrc, method);
+      if (!state.uploadedLogo || state.uploadedLogo !== logoSrc) showLogoOnCanvas(logoSrc);
+      return;
+    }
+
     state.pendingPositionLogoTarget = position;
-    state.pendingDecorationType = methodButton.dataset.method;
-    document.body.dataset.decorationType = normalizeDecorationMethod(methodButton.dataset.method);
+    state.pendingDecorationType = method;
     openLogoFilePicker();
   });
 
