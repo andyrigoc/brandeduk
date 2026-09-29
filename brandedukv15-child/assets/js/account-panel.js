@@ -606,3 +606,52 @@ window.BrandedAccountPanel = (function () {
         init: bindPanel
     };
 })();
+
+/* Lock header rail to the live HERO banner width on every viewport (incl. real tablet). */
+(function syncHeaderRailToHero() {
+    if (window.__buHeroRailBound) return;
+    window.__buHeroRailBound = true;
+
+    function apply() {
+        var header = document.querySelector('.site-header');
+        var hero = document.querySelector('.hero-banners-container');
+        if (!header) return;
+        if (hero) {
+            var width = Math.round(hero.getBoundingClientRect().width);
+            if (width > 0) {
+                header.style.setProperty('--bu-hero-width', width + 'px');
+                return;
+            }
+        }
+        header.style.removeProperty('--bu-hero-width');
+    }
+
+    var scheduled = false;
+    function schedule() {
+        if (scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(function () {
+            scheduled = false;
+            apply();
+        });
+    }
+
+    apply();
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', schedule);
+    }
+    if (typeof ResizeObserver === 'function') {
+        var hero = document.querySelector('.hero-banners-container');
+        if (hero) {
+            new ResizeObserver(schedule).observe(hero);
+        } else {
+            document.addEventListener('DOMContentLoaded', function () {
+                var lateHero = document.querySelector('.hero-banners-container');
+                if (lateHero) new ResizeObserver(schedule).observe(lateHero);
+                schedule();
+            });
+        }
+    }
+})();

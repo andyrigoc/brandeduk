@@ -28,25 +28,34 @@
         background: #fff;
     }
 
-    .site-header .header-top .header-container,
-    .site-header .header-container,
-    .site-header .searchbar-header__surface {
-        width: 100%;
-        max-width: 1400px;
-        margin-left: auto;
-        margin-right: auto;
-        box-sizing: border-box;
-    }
-
     /*
-     * Shared right rail (no absolute positioning):
-     * both rows use identical padding-right so mini-basket and laptop Basket
-     * share one right edge. Search shrinks in normal flex flow.
+     * Header rail = HERO banner.
+     * --bu-hero-width is measured from .hero-banners-container (JS), with the same
+     * CSS fallback as style.css: width: min(100%, 1440px).
+     * Right padding is 0 so mini-basket + laptop Basket sit on the hero right edge.
      */
     .site-header {
         --bu-adapt: 0;
+        --bu-content-max: 1440px;
+        --bu-hero-width: min(100%, 1440px);
         --bu-pad-x: 24px;
-        --bu-rail-inset: 60px;
+        --bu-rail-inset: 0px;
+        --header-shell-width: 1440px;
+        --header-shell-padding: var(--bu-pad-x);
+        --searchbar-shell-padding: var(--bu-pad-x);
+    }
+
+    .site-header .header-top .header-container,
+    .site-header .header-container,
+    .site-header .searchbar-header__surface,
+    .site-header .header-bottom > .header-container {
+        width: var(--bu-hero-width) !important;
+        max-width: none !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+        padding-left: var(--bu-pad-x) !important;
+        padding-right: 0 !important;
     }
 
     .site-header .header-top {
@@ -59,8 +68,8 @@
     .site-header .header-top .header-container {
         position: relative;
         min-height: 40px;
-        padding: 8px var(--bu-pad-x);
-        padding-right: calc(var(--bu-pad-x) + var(--bu-rail-inset));
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
         flex-direction: row;
         align-items: center;
         flex-wrap: nowrap;
@@ -239,8 +248,8 @@
 
     .site-header .searchbar-header__surface {
         position: relative;
-        padding: 12px var(--bu-pad-x) !important;
-        padding-right: calc(var(--bu-pad-x) + var(--bu-rail-inset)) !important;
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
         border-radius: 0;
         transform: none;
     }
@@ -469,7 +478,8 @@
 
     .site-header .header-bottom > .header-container {
         min-height: 0;
-        padding: 10px var(--bu-pad-x);
+        padding-top: 10px;
+        padding-bottom: 10px;
         gap: 0;
         justify-content: flex-start;
     }
@@ -513,10 +523,10 @@
 
     .site-header .header-bottom > .header-container {
         position: relative;
-        width: 100%;
-        max-width: 1400px;
         min-width: 0;
         overflow: visible;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
     }
 
     .site-header .brands-menu,
@@ -1257,13 +1267,14 @@
 }
 
 /*
- * Progressive adapt — shared padding vars only.
- * Same --bu-rail-inset on both rows = mini-basket and laptop Basket move together.
+ * Progressive adapt — keep right edge locked to HERO (1440).
+ * Search max-width shrinks gradually; do not add rail-inset (that desyncs from hero).
  */
 @media (min-width: 700px) {
     .site-header {
         --bu-adapt: clamp(0, (1200px - 100vw) / 500px, 1);
-        --bu-rail-inset: calc(60px + (50px * var(--bu-adapt)));
+        --bu-content-max: 1440px;
+        --bu-rail-inset: 0px;
         --bu-pad-x: clamp(14px, 0.8vw + 10px, 24px);
     }
 }
@@ -1310,17 +1321,11 @@
     }
 }
 
-/* Local preview */
+/* Local preview — keep rail locked to live HERO width (JS --bu-hero-width). */
 html[data-bu-header-preview="tablet-portrait"] .site-header {
     --bu-adapt: 1;
-    --bu-rail-inset: 110px;
+    --bu-rail-inset: 0px;
     --bu-pad-x: 14px;
-}
-
-html[data-bu-header-preview="tablet-portrait"] .site-header .header-top .header-container,
-html[data-bu-header-preview="tablet-portrait"] .site-header .header-bottom > .header-container,
-html[data-bu-header-preview="tablet-portrait"] .site-header .searchbar-header__surface {
-    max-width: 768px;
 }
 
 html[data-bu-header-preview="tablet-portrait"] .site-header .header-trust-list {
@@ -1362,14 +1367,8 @@ html[data-bu-header-preview="tablet-portrait"] .site-header .searchbar-header__a
 
 html[data-bu-header-preview="tablet-landscape"] .site-header {
     --bu-adapt: 0.55;
-    --bu-rail-inset: calc(60px + (50px * 0.55));
+    --bu-rail-inset: 0px;
     --bu-pad-x: 16px;
-}
-
-html[data-bu-header-preview="tablet-landscape"] .site-header .header-top .header-container,
-html[data-bu-header-preview="tablet-landscape"] .site-header .header-bottom > .header-container,
-html[data-bu-header-preview="tablet-landscape"] .site-header .searchbar-header__surface {
-    max-width: 1024px;
 }
 
 html[data-bu-header-preview="tablet-landscape"] .site-header .searchbar-header .category-dropdown {
