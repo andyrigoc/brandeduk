@@ -3269,14 +3269,14 @@ body.popup-open {
     border-radius: 8px;
     background: #fff;
     cursor: grab;
-    touch-action: manipulation;
+    touch-action: none;
     -webkit-touch-callout: none;
     user-select: none;
 }
 
 @media (pointer: coarse) {
     #orderPopup .page-4 .p4-previous-logo {
-        cursor: pointer;
+        cursor: grab;
     }
 }
 
@@ -4171,6 +4171,16 @@ body.popup-open {
 
 #orderPopup .page-4 .p4-previous-logo.is-dragging {
     opacity: .55;
+}
+
+body.bu-logo-touch-dragging {
+    overflow: hidden !important;
+    touch-action: none !important;
+}
+
+body.bu-logo-touch-dragging #p4PositionOptions .position-card.is-drop-ready {
+    outline: 2px solid #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22);
 }
 
 #p4MethodModal {

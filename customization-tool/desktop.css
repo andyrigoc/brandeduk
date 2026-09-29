@@ -2036,7 +2036,8 @@
     cursor: grab;
     position: relative;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    touch-action: manipulation;
+    /* none = custom tablet drag works; manipulation blocked pointermove. */
+    touch-action: none;
     -webkit-touch-callout: none;
     user-select: none;
   }
@@ -2048,9 +2049,19 @@
     user-select: none;
   }
 
+  body.bu-logo-touch-dragging {
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+
+  body.bu-logo-touch-dragging .position-card.is-logo-drop-ready {
+    outline: 2px solid #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22);
+  }
+
   @media (pointer: coarse) {
     body.is-pc-order-embed .inline-upload-library-logo {
-      cursor: pointer;
+      cursor: grab;
     }
   }
 

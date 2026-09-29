@@ -850,12 +850,78 @@ function p4CreateDragPreview(image) {
     return { element: canvas, width: width, height: height };
 }
 
-// Mouse keeps HTML5 DnD. Touch/pen: tap selects; pointer-drag drops onto a
-// position card. Native Safari image-drag is cancelled (it navigates / SNAP).
+// Mouse keeps HTML5 DnD. Touch/pen: custom pointer-drag onto position cards.
+// Native Safari image-drag is cancelled (it navigates / SNAP).
 function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart) {
     var activePointerType = 'mouse';
     var dragState = null;
     button.draggable = true;
+
+    function clearCards() {
+        document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
+            .forEach(function (item) { item.classList.remove('is-drop-ready'); });
+    }
+
+    function hitCard(clientX, clientY) {
+        var stack = typeof document.elementsFromPoint === 'function'
+            ? document.elementsFromPoint(clientX, clientY)
+            : [document.elementFromPoint(clientX, clientY)].filter(Boolean);
+        for (var i = 0; i < stack.length; i += 1) {
+            var el = stack[i];
+            if (!el || (dragState && dragState.ghost && (el === dragState.ghost || dragState.ghost.contains(el)))) continue;
+            var card = el.closest ? el.closest('#p4PositionOptions .position-card') : null;
+            if (card) return card;
+        }
+        return null;
+    }
+
+    function cleanup() {
+        if (dragState && dragState.ghost) dragState.ghost.remove();
+        button.classList.remove('is-dragging');
+        document.body.classList.remove('bu-logo-touch-dragging');
+        clearCards();
+        window.removeEventListener('pointermove', onWindowMove, true);
+        window.removeEventListener('pointerup', onWindowUp, true);
+        window.removeEventListener('pointercancel', onWindowUp, true);
+        dragState = null;
+    }
+
+    function onWindowMove(event) {
+        if (!dragState || event.pointerId !== dragState.id) return;
+        var dx = event.clientX - dragState.x;
+        var dy = event.clientY - dragState.y;
+        if (!dragState.dragging) {
+            if (Math.hypot(dx, dy) < 8) return;
+            dragState.dragging = true;
+            document.body.classList.add('bu-logo-touch-dragging');
+            dragState.ghost = document.createElement('div');
+            dragState.ghost.style.cssText = 'position:fixed;left:0;top:0;width:110px;height:110px;z-index:2147483646;pointer-events:none;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 10px 24px rgba(37,99,235,.28);display:grid;place-items:center;padding:8px;box-sizing:border-box;';
+            var img = document.createElement('img');
+            img.src = logoSrc;
+            img.alt = '';
+            img.draggable = false;
+            img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;pointer-events:none;';
+            dragState.ghost.appendChild(img);
+            document.body.appendChild(dragState.ghost);
+            button.classList.add('is-dragging');
+        }
+        event.preventDefault();
+        dragState.ghost.style.transform = 'translate(' + (event.clientX - 55) + 'px,' + (event.clientY - 55) + 'px)';
+        clearCards();
+        dragState.card = hitCard(event.clientX, event.clientY);
+        if (dragState.card) dragState.card.classList.add('is-drop-ready');
+    }
+
+    function onWindowUp(event) {
+        if (!dragState || event.pointerId !== dragState.id) return;
+        var wasDragging = dragState.dragging;
+        var card = dragState.card || hitCard(event.clientX, event.clientY);
+        cleanup();
+        if (!wasDragging) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+    }
 
     button.addEventListener('pointerdown', function (event) {
         activePointerType = event.pointerType || 'mouse';
@@ -870,49 +936,10 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
             ghost: null,
             card: null
         };
-        try { button.setPointerCapture(event.pointerId); } catch (error) { /* ignore */ }
+        window.addEventListener('pointermove', onWindowMove, true);
+        window.addEventListener('pointerup', onWindowUp, true);
+        window.addEventListener('pointercancel', onWindowUp, true);
     });
-
-    button.addEventListener('pointermove', function (event) {
-        if (!dragState || event.pointerId !== dragState.id) return;
-        var dx = event.clientX - dragState.x;
-        var dy = event.clientY - dragState.y;
-        if (!dragState.dragging) {
-            if (Math.hypot(dx, dy) < 12) return;
-            dragState.dragging = true;
-            dragState.ghost = document.createElement('div');
-            dragState.ghost.style.cssText = 'position:fixed;left:0;top:0;width:110px;height:110px;z-index:100000;pointer-events:none;border:2px solid #2563eb;border-radius:10px;background:#fff center/contain no-repeat;box-shadow:0 10px 24px rgba(37,99,235,.28);';
-            dragState.ghost.style.backgroundImage = 'url("' + logoSrc + '")';
-            document.body.appendChild(dragState.ghost);
-            button.classList.add('is-dragging');
-        }
-        dragState.ghost.style.transform = 'translate(' + (event.clientX - 55) + 'px,' + (event.clientY - 55) + 'px)';
-        var under = document.elementFromPoint(event.clientX, event.clientY);
-        var card = under && under.closest ? under.closest('#p4PositionOptions .position-card') : null;
-        document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
-            .forEach(function (item) { item.classList.remove('is-drop-ready'); });
-        dragState.card = card;
-        if (card) card.classList.add('is-drop-ready');
-    });
-
-    function endTouchDrag(event) {
-        if (!dragState || event.pointerId !== dragState.id) return;
-        try { button.releasePointerCapture(event.pointerId); } catch (error) { /* ignore */ }
-        var wasDragging = dragState.dragging;
-        var card = dragState.card;
-        if (dragState.ghost) dragState.ghost.remove();
-        button.classList.remove('is-dragging');
-        document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
-            .forEach(function (item) { item.classList.remove('is-drop-ready'); });
-        dragState = null;
-        if (!wasDragging) return;
-        event.preventDefault();
-        event.stopPropagation();
-        if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
-    }
-
-    button.addEventListener('pointerup', endTouchDrag);
-    button.addEventListener('pointercancel', endTouchDrag);
 
     button.addEventListener('dragstart', function (event) {
         if (activePointerType !== 'mouse') {

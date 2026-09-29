@@ -4945,59 +4945,69 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
     if (ghost) ghost.remove();
     ghost = null;
     button.classList.remove(draggingClass);
+    document.body.classList.remove("bu-logo-touch-dragging");
     clearCards();
     dragging = false;
     pointerId = null;
+    window.removeEventListener("pointermove", onWindowMove, true);
+    window.removeEventListener("pointerup", onWindowUp, true);
+    window.removeEventListener("pointercancel", onWindowUp, true);
   };
 
-  button.addEventListener("pointerdown", (event) => {
-    lastPointerType = event.pointerType || "mouse";
-    // Mouse: HTML5 DnD. Touch/pen: disable native drag so Safari cannot navigate
-    // the iframe to the image URL (SNAP). Tap still fires click → reuseLibraryLogo.
-    button.draggable = lastPointerType === "mouse";
-    if (lastPointerType === "mouse") return;
-    if (event.target.closest(removeSelector)) return;
-    pointerId = event.pointerId;
-    startX = event.clientX;
-    startY = event.clientY;
-    dragging = false;
-    // Do NOT setPointerCapture yet — capturing on every touch swallows the
-    // synthetic click on iOS, so tap-to-assign never reaches reuseLibraryLogo.
-  });
+  const hitCard = (clientX, clientY) => {
+    const stack = typeof document.elementsFromPoint === "function"
+      ? document.elementsFromPoint(clientX, clientY)
+      : [document.elementFromPoint(clientX, clientY)].filter(Boolean);
+    for (const el of stack) {
+      if (!el || el === ghost || (ghost && ghost.contains(el))) continue;
+      const card = el.closest?.(cardSelector);
+      if (card) return card;
+    }
+    return null;
+  };
 
-  button.addEventListener("pointermove", (event) => {
+  const startGhost = (clientX, clientY) => {
+    dragging = true;
+    beginLogoPickLock(1200);
+    document.body.classList.add("bu-logo-touch-dragging");
+    ghost = document.createElement("div");
+    ghost.className = "bu-logo-drag-ghost";
+    ghost.style.cssText = "position:fixed;left:0;top:0;width:120px;height:120px;z-index:2147483646;pointer-events:none;border:2px solid #2563eb;border-radius:12px;background:#fff;box-shadow:0 10px 28px rgba(37,99,235,.35);display:grid;place-items:center;padding:8px;box-sizing:border-box;";
+    const img = document.createElement("img");
+    img.src = logoSrc;
+    img.alt = "";
+    img.draggable = false;
+    img.style.cssText = "max-width:100%;max-height:100%;object-fit:contain;pointer-events:none;";
+    ghost.appendChild(img);
+    document.body.appendChild(ghost);
+    ghost.style.transform = `translate(${clientX - 60}px, ${clientY - 60}px)`;
+    button.classList.add(draggingClass);
+  };
+
+  const onWindowMove = (event) => {
     if (pointerId == null || event.pointerId !== pointerId) return;
     const dx = event.clientX - startX;
     const dy = event.clientY - startY;
     if (!dragging) {
-      if (Math.hypot(dx, dy) < 12) return;
-      dragging = true;
-      beginLogoPickLock(900);
-      try { button.setPointerCapture(event.pointerId); } catch (error) { /* ignore */ }
-      ghost = document.createElement("div");
-      ghost.className = "bu-logo-drag-ghost";
-      ghost.style.cssText = "position:fixed;left:0;top:0;width:120px;height:120px;z-index:100000;pointer-events:none;border:2px solid #2563eb;border-radius:12px;background:#fff center/contain no-repeat;box-shadow:0 10px 28px rgba(37,99,235,.3);";
-      ghost.style.backgroundImage = `url("${logoSrc}")`;
-      document.body.appendChild(ghost);
-      button.classList.add(draggingClass);
+      if (Math.hypot(dx, dy) < 8) return;
+      startGhost(event.clientX, event.clientY);
     }
+    event.preventDefault();
     ghost.style.transform = `translate(${event.clientX - 60}px, ${event.clientY - 60}px)`;
-    const under = document.elementFromPoint(event.clientX, event.clientY);
-    const card = under?.closest?.(cardSelector) || null;
+    const card = hitCard(event.clientX, event.clientY);
     clearCards();
     if (card) {
       activeCard = card;
       card.classList.add(readyClass);
     }
-  });
+  };
 
-  const endPointer = (event) => {
+  const onWindowUp = (event) => {
     if (pointerId == null || event.pointerId !== pointerId) return;
-    try { button.releasePointerCapture(event.pointerId); } catch (error) { /* ignore */ }
     if (dragging) {
       event.preventDefault();
       event.stopPropagation();
-      const card = activeCard;
+      const card = activeCard || hitCard(event.clientX, event.clientY);
       const src = logoSrc;
       cleanup();
       if (card) dropLogoOntoPositionCard(card, src, options.method);
@@ -5006,10 +5016,21 @@ function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
     cleanup();
   };
 
-  button.addEventListener("pointerup", endPointer);
-  button.addEventListener("pointercancel", endPointer);
+  button.addEventListener("pointerdown", (event) => {
+    lastPointerType = event.pointerType || "mouse";
+    // Mouse: HTML5 DnD. Touch/pen: custom drag (native Safari drag navigates SNAP).
+    button.draggable = lastPointerType === "mouse";
+    if (lastPointerType === "mouse") return;
+    if (event.target.closest(removeSelector)) return;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    dragging = false;
+    window.addEventListener("pointermove", onWindowMove, true);
+    window.addEventListener("pointerup", onWindowUp, true);
+    window.addEventListener("pointercancel", onWindowUp, true);
+  });
 
-  // Mouse keeps native HTML5 DnD. Touch/pen must not — Safari navigates the iframe.
   button.addEventListener("dragstart", (event) => {
     if (lastPointerType === "touch" || lastPointerType === "pen" || !button.draggable) {
       event.preventDefault();
