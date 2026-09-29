@@ -850,6 +850,79 @@ function p4CreateDragPreview(image) {
     return { element: canvas, width: width, height: height };
 }
 
+// Mouse keeps HTML5 DnD. Touch/pen: tap selects; pointer-drag drops onto a
+// position card. Native Safari image-drag is cancelled (it navigates / SNAP).
+function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart) {
+    var activePointerType = 'mouse';
+    var dragState = null;
+    button.draggable = true;
+
+    button.addEventListener('pointerdown', function (event) {
+        activePointerType = event.pointerType || 'mouse';
+        button.draggable = activePointerType === 'mouse';
+        if (activePointerType === 'mouse') return;
+        if (event.target.closest('.p4-previous-remove')) return;
+        dragState = {
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+            dragging: false,
+            ghost: null,
+            card: null
+        };
+        try { button.setPointerCapture(event.pointerId); } catch (error) { /* ignore */ }
+    });
+
+    button.addEventListener('pointermove', function (event) {
+        if (!dragState || event.pointerId !== dragState.id) return;
+        var dx = event.clientX - dragState.x;
+        var dy = event.clientY - dragState.y;
+        if (!dragState.dragging) {
+            if (Math.hypot(dx, dy) < 12) return;
+            dragState.dragging = true;
+            dragState.ghost = document.createElement('div');
+            dragState.ghost.style.cssText = 'position:fixed;left:0;top:0;width:110px;height:110px;z-index:100000;pointer-events:none;border:2px solid #2563eb;border-radius:10px;background:#fff center/contain no-repeat;box-shadow:0 10px 24px rgba(37,99,235,.28);';
+            dragState.ghost.style.backgroundImage = 'url("' + logoSrc + '")';
+            document.body.appendChild(dragState.ghost);
+            button.classList.add('is-dragging');
+        }
+        dragState.ghost.style.transform = 'translate(' + (event.clientX - 55) + 'px,' + (event.clientY - 55) + 'px)';
+        var under = document.elementFromPoint(event.clientX, event.clientY);
+        var card = under && under.closest ? under.closest('#p4PositionOptions .position-card') : null;
+        document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
+            .forEach(function (item) { item.classList.remove('is-drop-ready'); });
+        dragState.card = card;
+        if (card) card.classList.add('is-drop-ready');
+    });
+
+    function endTouchDrag(event) {
+        if (!dragState || event.pointerId !== dragState.id) return;
+        try { button.releasePointerCapture(event.pointerId); } catch (error) { /* ignore */ }
+        var wasDragging = dragState.dragging;
+        var card = dragState.card;
+        if (dragState.ghost) dragState.ghost.remove();
+        button.classList.remove('is-dragging');
+        document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
+            .forEach(function (item) { item.classList.remove('is-drop-ready'); });
+        dragState = null;
+        if (!wasDragging) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+    }
+
+    button.addEventListener('pointerup', endTouchDrag);
+    button.addEventListener('pointercancel', endTouchDrag);
+
+    button.addEventListener('dragstart', function (event) {
+        if (activePointerType !== 'mouse') {
+            event.preventDefault();
+            return;
+        }
+        onDragStart(event);
+    });
+}
+
 function p4RenderPreviousLogos() {
     p4ReadLibrary();
     var host = document.getElementById('p4PreviousLogos');
@@ -863,11 +936,12 @@ function p4RenderPreviousLogos() {
         button.dataset.sourceMethod = String(entry.sourceMethod || entry.method || 'print').toLowerCase();
         button.innerHTML = '<img alt="Saved logo" draggable="false"><span class="p4-previous-remove" aria-label="Remove saved logo">&times;</span>';
         button.querySelector('img').src = entry.logo;
-        button.draggable = true;
-        button.addEventListener('dragstart', function (event) {
+        p4EnableLogoGalleryMouseDrag(button, entry.logo, button.dataset.sourceMethod, function (event) {
+            // Custom MIME carries the real logo. Never put a navigable URL in
+            // text/plain — browsers can navigate to it on an unhandled drop.
             event.dataTransfer.setData('application/x-brandeduk-logo', entry.logo);
             event.dataTransfer.setData('application/x-brandeduk-source-method', button.dataset.sourceMethod);
-            event.dataTransfer.setData('text/plain', entry.logo);
+            event.dataTransfer.setData('text/plain', 'brandeduk-logo');
             event.dataTransfer.effectAllowed = 'copy';
             var dragPreview = p4CreateDragPreview(button.querySelector('img'));
             if (dragPreview) {
@@ -1292,7 +1366,7 @@ $(document).on('drop', '#p4PositionOptions .position-card', function (e) {
     this.classList.remove('is-drop-ready');
     var card = this;
     var transfer = e.originalEvent.dataTransfer;
-    var saved = (transfer.getData('application/x-brandeduk-logo') || transfer.getData('text/plain') || '').trim();
+    var saved = (transfer.getData('application/x-brandeduk-logo') || '').trim();
     var sourceMethod = transfer.getData('application/x-brandeduk-source-method');
     var file = transfer.files && transfer.files[0];
     // A previously uploaded logo can be a data URL or a hosted URL (basket
@@ -2006,5 +2080,15 @@ function luaApplyLogosToCards() {
 ['dragover', 'drop'].forEach(function (type) {
     document.addEventListener(type, function (event) {
         event.preventDefault();
-    });
+    }, true);
 });
+document.addEventListener('dragstart', function (event) {
+    var types = event.dataTransfer && event.dataTransfer.types
+        ? Array.from(event.dataTransfer.types)
+        : [];
+    if (types.indexOf('application/x-brandeduk-logo') !== -1) return;
+    var target = event.target;
+    if (target && (target.tagName === 'IMG' || (target.closest && target.closest('img, a[href]')))) {
+        event.preventDefault();
+    }
+}, true);

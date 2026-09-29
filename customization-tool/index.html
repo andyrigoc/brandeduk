@@ -44,7 +44,7 @@
       if (isPcCustomization) {
         var desktopStyles = document.createElement("link");
         desktopStyles.rel = "stylesheet";
-        desktopStyles.href = folderPath + "desktop.css?v=20260929-dndrestore1";
+        desktopStyles.href = folderPath + "desktop.css?v=20260929-touchdnd3";
         document.head.appendChild(desktopStyles);
       }
     })();
@@ -1206,7 +1206,7 @@
     apiScript.src = new URL("customization-api.js?v=20260922-api-integration", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20260929-dndrestore1", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20260929-touchdnd3", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

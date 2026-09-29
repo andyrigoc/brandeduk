@@ -1140,5 +1140,102 @@
             closeOrderPopup();
         }
     });
+
+    // Tablet portrait: frosted "Rotate for a better experience" over product popup only.
+    (function setupTabletRotateHint() {
+        var HINT_ID = 'buTabletRotateHint';
+
+        function ensureHint() {
+            var el = document.getElementById(HINT_ID);
+            if (el) return el;
+            el = document.createElement('div');
+            el.id = HINT_ID;
+            el.className = 'bu-tablet-rotate-hint';
+            el.hidden = true;
+            el.setAttribute('aria-hidden', 'true');
+            el.setAttribute('role', 'dialog');
+            el.setAttribute('aria-live', 'polite');
+            el.setAttribute('aria-label', 'Rotate your tablet for a better experience');
+            el.innerHTML = [
+                '<div class="bu-tablet-rotate-hint__glass">',
+                '  <div class="bu-tablet-rotate-hint__icon" aria-hidden="true">',
+                '    <img src="brandedukv15-child/assets/images/ui/rotate-device-hint.png" alt="">',
+                '  </div>',
+                '  <p class="bu-tablet-rotate-hint__title">Rotate for a better experience</p>',
+                '  <p class="bu-tablet-rotate-hint__sub">Turn your tablet sideways to continue colour, quantity and customise.</p>',
+                '</div>'
+            ].join('');
+            document.body.appendChild(el);
+            return el;
+        }
+
+        function isOrderPopupOpen() {
+            var popup = document.getElementById('orderPopup');
+            if (!popup) return false;
+            if (popup.style.display === 'none') return false;
+            try {
+                return window.getComputedStyle(popup).display !== 'none';
+            } catch (error) {
+                return $('#orderPopup').is(':visible');
+            }
+        }
+
+        function isTabletPortrait() {
+            var touchPoints = Number(navigator.maxTouchPoints || 0);
+            var coarse = window.matchMedia('(pointer: coarse)').matches;
+            if (touchPoints < 1 && !coarse) return false;
+            if (!window.matchMedia('(orientation: portrait)').matches) return false;
+            var minSide = Math.min(window.innerWidth, window.innerHeight);
+            var maxSide = Math.max(window.innerWidth, window.innerHeight);
+            // Tablet band: larger than phones, smaller than desktops.
+            return minSide >= 600 && maxSide <= 1400;
+        }
+
+        function syncTabletRotateHint() {
+            var el = ensureHint();
+            var show = isOrderPopupOpen() && isTabletPortrait();
+            el.hidden = !show;
+            el.setAttribute('aria-hidden', show ? 'false' : 'true');
+            document.body.classList.toggle('bu-tablet-rotate-hint-active', show);
+        }
+
+        window.syncTabletRotateHint = syncTabletRotateHint;
+
+        var originalOpen = window.openOrderPopup;
+        if (typeof originalOpen === 'function') {
+            window.openOrderPopup = function () {
+                var result = originalOpen.apply(this, arguments);
+                window.setTimeout(syncTabletRotateHint, 0);
+                window.setTimeout(syncTabletRotateHint, 320);
+                return result;
+            };
+        }
+
+        var originalClose = window.closeOrderPopup;
+        if (typeof originalClose === 'function') {
+            window.closeOrderPopup = function () {
+                var result = originalClose.apply(this, arguments);
+                window.setTimeout(syncTabletRotateHint, 0);
+                window.setTimeout(syncTabletRotateHint, 320);
+                return result;
+            };
+        }
+
+        window.addEventListener('orientationchange', function () {
+            window.setTimeout(syncTabletRotateHint, 60);
+            window.setTimeout(syncTabletRotateHint, 280);
+        });
+        window.addEventListener('resize', syncTabletRotateHint, { passive: true });
+
+        var popup = document.getElementById('orderPopup');
+        if (popup && typeof MutationObserver === 'function') {
+            new MutationObserver(syncTabletRotateHint).observe(popup, {
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+        }
+
+        syncTabletRotateHint();
+    })();
     
 })();

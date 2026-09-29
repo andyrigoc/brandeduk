@@ -4842,7 +4842,7 @@ document.querySelectorAll("[data-design-type]").forEach(card => {
     if (library.length > 0) {
       showLogoLibraryPicker(library);
     } else {
-      document.getElementById("logoFileInput").click();
+      openLogoFilePicker();
     }
   });
 });
@@ -4885,12 +4885,155 @@ function getSessionLogoLibrary() {
   return out;
 }
 
+const LOGO_DRAG_MIME = "application/x-brandeduk-logo";
+const LOGO_DRAG_TOKEN = "brandeduk-logo";
+
 let logoPickLockUntil = 0;
 function beginLogoPickLock(ms = 450) {
   const now = Date.now();
   if (now < logoPickLockUntil) return false;
   logoPickLockUntil = now + ms;
   return true;
+}
+
+function dropLogoOntoPositionCard(card, logoSrc, preferredMethod) {
+  if (!card || !logoSrc) return false;
+  const position = card.dataset.position;
+  if (!position) return false;
+  if (!state.selectedPositions.includes(position)) {
+    if (state.selectedPositions.length >= MAX_CUSTOMISATIONS_PER_PRODUCT) {
+      if (typeof window.showToast === "function") {
+        window.showToast("You can select up to five logo positions.");
+      }
+      return false;
+    }
+    if (!resolvePositionConflicts(position)) return false;
+    state.selectedPositions.push(position);
+    state.selectedPosition = position;
+    syncPositionSelectionCards();
+    updateCustomizationContextLabel();
+  }
+  state.selectedArea = normalizeAreaForPicker(card.dataset.area) || state.selectedArea || "front";
+  chooseMethodForPosition(card, position, (method) => {
+    state.decorationType = preferredMethod || method;
+    document.body.dataset.decorationType = normalizeDecorationMethod(state.decorationType);
+    assignLogoToPosition(position, logoSrc, state.decorationType);
+  }, true);
+  return true;
+}
+
+function attachSavedLogoPointerDrag(button, logoSrc, options = {}) {
+  const removeSelector = options.removeSelector || ".inline-upload-library-remove";
+  const cardSelector = options.cardSelector || ".position-card";
+  const readyClass = options.readyClass || "is-logo-drop-ready";
+  const draggingClass = options.draggingClass || "is-dragging-logo";
+  let startX = 0;
+  let startY = 0;
+  let dragging = false;
+  let ghost = null;
+  let activeCard = null;
+  let pointerId = null;
+  let lastPointerType = "mouse";
+
+  const clearCards = () => {
+    document.querySelectorAll(`${cardSelector}.${readyClass}`)
+      .forEach((card) => card.classList.remove(readyClass));
+    activeCard = null;
+  };
+
+  const cleanup = () => {
+    if (ghost) ghost.remove();
+    ghost = null;
+    button.classList.remove(draggingClass);
+    clearCards();
+    dragging = false;
+    pointerId = null;
+  };
+
+  button.addEventListener("pointerdown", (event) => {
+    lastPointerType = event.pointerType || "mouse";
+    // Mouse: HTML5 DnD. Touch/pen: disable native drag so Safari cannot navigate
+    // the iframe to the image URL (SNAP). Tap still fires click → reuseLibraryLogo.
+    button.draggable = lastPointerType === "mouse";
+    if (lastPointerType === "mouse") return;
+    if (event.target.closest(removeSelector)) return;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    dragging = false;
+    // Do NOT setPointerCapture yet — capturing on every touch swallows the
+    // synthetic click on iOS, so tap-to-assign never reaches reuseLibraryLogo.
+  });
+
+  button.addEventListener("pointermove", (event) => {
+    if (pointerId == null || event.pointerId !== pointerId) return;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+    if (!dragging) {
+      if (Math.hypot(dx, dy) < 12) return;
+      dragging = true;
+      beginLogoPickLock(900);
+      try { button.setPointerCapture(event.pointerId); } catch (error) { /* ignore */ }
+      ghost = document.createElement("div");
+      ghost.className = "bu-logo-drag-ghost";
+      ghost.style.cssText = "position:fixed;left:0;top:0;width:120px;height:120px;z-index:100000;pointer-events:none;border:2px solid #2563eb;border-radius:12px;background:#fff center/contain no-repeat;box-shadow:0 10px 28px rgba(37,99,235,.3);";
+      ghost.style.backgroundImage = `url("${logoSrc}")`;
+      document.body.appendChild(ghost);
+      button.classList.add(draggingClass);
+    }
+    ghost.style.transform = `translate(${event.clientX - 60}px, ${event.clientY - 60}px)`;
+    const under = document.elementFromPoint(event.clientX, event.clientY);
+    const card = under?.closest?.(cardSelector) || null;
+    clearCards();
+    if (card) {
+      activeCard = card;
+      card.classList.add(readyClass);
+    }
+  });
+
+  const endPointer = (event) => {
+    if (pointerId == null || event.pointerId !== pointerId) return;
+    try { button.releasePointerCapture(event.pointerId); } catch (error) { /* ignore */ }
+    if (dragging) {
+      event.preventDefault();
+      event.stopPropagation();
+      const card = activeCard;
+      const src = logoSrc;
+      cleanup();
+      if (card) dropLogoOntoPositionCard(card, src, options.method);
+      return;
+    }
+    cleanup();
+  };
+
+  button.addEventListener("pointerup", endPointer);
+  button.addEventListener("pointercancel", endPointer);
+
+  // Mouse keeps native HTML5 DnD. Touch/pen must not — Safari navigates the iframe.
+  button.addEventListener("dragstart", (event) => {
+    if (lastPointerType === "touch" || lastPointerType === "pen" || !button.draggable) {
+      event.preventDefault();
+      return;
+    }
+    event.dataTransfer?.setData(LOGO_DRAG_MIME, logoSrc);
+    event.dataTransfer?.setData("text/plain", LOGO_DRAG_TOKEN);
+    event.dataTransfer.effectAllowed = "copy";
+    const dragImage = document.createElement("img");
+    dragImage.src = logoSrc;
+    dragImage.alt = "";
+    dragImage.draggable = false;
+    dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
+    document.body.appendChild(dragImage);
+    event.dataTransfer?.setDragImage(dragImage, 70, 70);
+    window.setTimeout(() => dragImage.remove(), 0);
+    button.classList.add(draggingClass);
+  });
+
+  button.addEventListener("dragend", () => {
+    button.classList.remove(draggingClass);
+    document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
+      .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
+  });
 }
 
 function syncInlineLogoPanels() {
@@ -4912,8 +5055,6 @@ function syncInlineLogoPanels() {
     const image = document.createElement("img");
     image.src = entry.logo;
     image.alt = "Saved logo";
-    // Keep native <img> drag off so a drop never navigates to the image URL;
-    // HTML5 drag still runs on the button itself.
     image.draggable = false;
     const removeButton = document.createElement("span");
     removeButton.className = "inline-upload-library-remove";
@@ -4942,25 +5083,7 @@ function syncInlineLogoPanels() {
       });
       reuseLibraryLogo(entry.logo);
     });
-    button.addEventListener("dragstart", (event) => {
-      event.dataTransfer?.setData("application/x-brandeduk-logo", entry.logo);
-      event.dataTransfer?.setData("text/plain", entry.logo);
-      event.dataTransfer.effectAllowed = "copy";
-      const dragImage = document.createElement("img");
-      dragImage.src = entry.logo;
-      dragImage.alt = "";
-      dragImage.draggable = false;
-      dragImage.style.cssText = "position:fixed;left:-1000px;top:-1000px;width:140px;height:140px;object-fit:contain;padding:10px;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(37,99,235,.28);";
-      document.body.appendChild(dragImage);
-      event.dataTransfer?.setDragImage(dragImage, 70, 70);
-      window.setTimeout(() => dragImage.remove(), 0);
-      button.classList.add("is-dragging-logo");
-    });
-    button.addEventListener("dragend", () => {
-      button.classList.remove("is-dragging-logo");
-      document.querySelectorAll(".position-card.is-logo-drop-ready, .position-card.is-logo-drop-blocked")
-        .forEach((card) => card.classList.remove("is-logo-drop-ready", "is-logo-drop-blocked"));
-    });
+    attachSavedLogoPointerDrag(button, entry.logo, { method: entry.method });
     inlineUploadLibraryItems.appendChild(button);
   });
 }
@@ -5044,7 +5167,7 @@ function showLogoLibraryPicker(library) {
   panel.querySelector("#toolLogoLibraryUpload").addEventListener("click", () => {
     if (!beginLogoPickLock()) return;
     overlay.remove();
-    document.getElementById("logoFileInput").click();
+    openLogoFilePicker();
   });
   panel.querySelector("#toolLogoLibraryCancel").addEventListener("click", () => {
     state.pendingDecorationType = null;
@@ -5278,6 +5401,7 @@ function syncPositionCardLogoPreviews() {
 function assignLogoToPosition(position, logo, method = state.decorationType || "print") {
   if (!position || !logo || !state.selectedPositions.includes(position)) return false;
   state.positionLogoAssignments[position] = { logo, method };
+  clearPersistedPendingLogoTarget();
   syncPositionCardLogoPreviews();
   calculatePrice();
   updateConfirmButtonState();
@@ -6480,7 +6604,7 @@ async function optimizeLogoFileForBasket(file) {
 }
 
 document.getElementById("logoUploadPageChooseBtn")?.addEventListener("click", () => {
-  document.getElementById("logoFileInput")?.click();
+  openLogoFilePicker();
 });
 
 inlineViewSavedLogosBtn?.addEventListener("click", () => {
@@ -6523,6 +6647,46 @@ async function processLogoFile(file) {
 }
 
 const logoFileInput = document.getElementById("logoFileInput");
+
+function persistPendingLogoTarget() {
+  try {
+    sessionStorage.setItem("toolPendingLogoTarget", JSON.stringify({
+      position: state.pendingPositionLogoTarget || "",
+      method: state.pendingDecorationType || state.decorationType || ""
+    }));
+  } catch (error) {
+    // Session storage may be unavailable in private mode.
+  }
+}
+
+function restorePendingLogoTarget() {
+  try {
+    const raw = sessionStorage.getItem("toolPendingLogoTarget");
+    if (!raw) return;
+    const pending = JSON.parse(raw);
+    if (pending?.position && !state.pendingPositionLogoTarget) {
+      state.pendingPositionLogoTarget = pending.position;
+      state.pendingDecorationType = pending.method || state.pendingDecorationType;
+      if (pending.method) {
+        document.body.dataset.decorationType = normalizeDecorationMethod(pending.method);
+      }
+    }
+  } catch (error) {
+    // Ignore corrupt pending targets.
+  }
+}
+
+function clearPersistedPendingLogoTarget() {
+  try { sessionStorage.removeItem("toolPendingLogoTarget"); } catch (error) { /* ignore */ }
+}
+
+function openLogoFilePicker() {
+  persistPendingLogoTarget();
+  logoFileInput?.click();
+}
+
+restorePendingLogoTarget();
+window.addEventListener("pageshow", restorePendingLogoTarget);
 const pcUploadModal = document.getElementById("pcUploadModal");
 let pcPendingUploadFile = null;
 let pcUploadTimer = null;
@@ -6595,7 +6759,7 @@ document.getElementById("pcUploadCancel")?.addEventListener("click", resetPcUplo
 document.getElementById("pcUploadReset")?.addEventListener("click", () => {
   pcPendingUploadFile = null;
   document.getElementById("pcUploadReady").hidden = true;
-  logoFileInput?.click();
+  openLogoFilePicker();
 });
 
 const inlineLogoDropzone = document.querySelector(".inline-upload-dropzone");
@@ -8685,8 +8849,8 @@ if (positionGrid) {
 
     const position = card.dataset.position;
     if (!activateDroppedPosition(position)) return;
-    const savedLogo = event.dataTransfer?.getData("application/x-brandeduk-logo")
-      || event.dataTransfer?.getData("text/plain");
+    const savedLogo = event.dataTransfer?.getData(LOGO_DRAG_MIME)
+      || event.dataTransfer?.getData("application/x-brandeduk-logo");
     const file = event.dataTransfer?.files?.[0];
     const reusedLogo = /^(?:data:|blob:|https?:)/i.test(String(savedLogo || "")) ? savedLogo : "";
     if (!reusedLogo && !file) return;
@@ -8725,7 +8889,7 @@ if (positionGrid) {
     state.pendingPositionLogoTarget = position;
     state.pendingDecorationType = methodButton.dataset.method;
     document.body.dataset.decorationType = normalizeDecorationMethod(methodButton.dataset.method);
-    document.getElementById("logoFileInput")?.click();
+    openLogoFilePicker();
   });
 
   positionGrid.addEventListener("click", (event) => {
@@ -8743,7 +8907,7 @@ if (positionGrid) {
         state.pendingPositionLogoTarget = position;
         state.pendingDecorationType = method;
         document.body.dataset.decorationType = normalizeDecorationMethod(method);
-        document.getElementById("logoFileInput")?.click();
+        openLogoFilePicker();
       });
       return;
     }
@@ -8913,8 +9077,18 @@ document.getElementById("straightenBtn").addEventListener("click", () => {
   ["dragover", "drop"].forEach((type) => {
     document.addEventListener(type, (event) => {
       event.preventDefault();
-    });
+    }, true);
   });
+  // Extra guard: cancel native image / link drags that did not come from our
+  // mouse-only gallery drag helper (those set application/x-brandeduk-logo).
+  document.addEventListener("dragstart", (event) => {
+    const types = event.dataTransfer?.types ? Array.from(event.dataTransfer.types) : [];
+    if (types.includes("application/x-brandeduk-logo")) return;
+    const target = event.target;
+    if (target && (target.tagName === "IMG" || target.closest?.("img, a[href]"))) {
+      event.preventDefault();
+    }
+  }, true);
 })();
 
 // PC embed toolbar: the tab bar is replaced by BACK (one step back in the
