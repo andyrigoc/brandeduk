@@ -373,6 +373,23 @@
         stroke-linejoin: round;
     }
 
+    /* Signed-in: hide Account person icon + label; keep only Google profile pill, 15px left. */
+    .site-header .header-util-link.is-signed-in {
+        gap: 0 !important;
+        font-size: 0 !important;
+    }
+    .site-header .header-util-link.is-signed-in > svg,
+    .site-header .header-util-link.is-signed-in .account-trigger-icon,
+    .site-header .header-util-link.is-signed-in .account-trigger-label {
+        display: none !important;
+    }
+    .site-header .header-util-link.is-signed-in .account-trigger-profile {
+        display: inline-flex !important;
+        font-size: 12px !important;
+        position: relative;
+        left: -15px;
+    }
+
     .site-header .header-util-link.header-top-basket-link .header-top-basket-badge {
         display: none !important;
     }
