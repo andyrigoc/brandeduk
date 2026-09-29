@@ -126,9 +126,12 @@ window.BrandedAccountPanel = (function () {
     }
 
     function injectStyles() {
-        if (byId('accountPanelEnhancements')) return;
-        var style = document.createElement('style');
-        style.id = 'accountPanelEnhancements';
+        var style = byId('accountPanelEnhancements');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'accountPanelEnhancements';
+            document.head.appendChild(style);
+        }
         style.textContent = '' +
             '.account-google-btn{width:100%;min-height:46px;border:1px solid #d1d5db;border-radius:12px;background:#fff;color:#1f2937;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;margin:12px 0 10px;padding:0 14px;}' +
             '.account-google-btn:hover{background:#f9fafb;}' +
@@ -141,22 +144,26 @@ window.BrandedAccountPanel = (function () {
             '.account-panel-link:hover{background:#f9fafb;}' +
             '.account-submit-btn.is-loading{opacity:.7;pointer-events:none;}' +
             '.account-google-btn.is-loading{opacity:.82;pointer-events:none;}' +
-            '.account-trigger-profile{display:inline-flex;align-items:center;gap:8px;margin-left:8px;padding:6px 10px;border:1px solid rgba(39,52,105,.12);border-radius:999px;background:#fff;color:#273469;font-size:12px;font-weight:900;box-shadow:0 10px 22px rgba(39,52,105,.12);vertical-align:middle;}' +
+            '.account-trigger-profile{display:inline-flex;align-items:center;gap:8px;margin-left:0;padding:6px 10px;border:1px solid rgba(39,52,105,.12);border-radius:999px;background:#fff;color:#273469;font-size:12px;font-weight:900;box-shadow:0 10px 22px rgba(39,52,105,.12);vertical-align:middle;}' +
             '.account-trigger-avatar{width:24px;height:24px;border-radius:999px;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;overflow:hidden;}' +
             '.account-trigger-avatar img{width:100%;height:100%;object-fit:cover;}' +
             '.account-trigger-name{max-width:92px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
             '.account-nav-avatar{width:24px;height:24px;border-radius:999px;overflow:hidden;display:inline-grid;place-items:center;background:#273469;color:#fff;font-size:10px;font-weight:900;line-height:1;}' +
             '.account-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;}' +
+            /* When signed in, show only the Google/profile pill — hide the generic Account person icon + label. */ +
+            '.header-util-link.is-signed-in,.searchbar-header__account.is-signed-in{font-size:0;gap:0;}' +
+            '.header-util-link.is-signed-in > svg,.searchbar-header__account.is-signed-in > svg,.searchbar-header__account.is-signed-in .searchbar-header__action-ring{display:none!important;}' +
+            '.header-util-link.is-signed-in .account-trigger-profile,.searchbar-header__account.is-signed-in .account-trigger-profile{font-size:12px;}' +
             '.searchbar-header__account.is-signed-in .searchbar-header__action-ring{border-color:transparent;background:#C952DE;}' +
             '.searchbar-header__account.is-signed-in .searchbar-header__action-icon{stroke:#fff;fill:none;}' +
             '.nav-item.is-signed-in{color:#273469;font-weight:800;}' +
             '@media(max-width:767px){.account-trigger-profile{display:none;}}';
-        document.head.appendChild(style);
     }
 
     // On the mobile bottom-nav (.nav-item), swap the person icon for the Google
-    // profile photo so it's obvious the user is signed in. On the desktop header
-    // the existing profile pill already shows the avatar, so we leave its icon.
+    // profile photo so it's obvious the user is signed in. On the desktop header,
+    // CSS hides the generic Account icon/label when .is-signed-in is set, leaving
+    // only the Google profile pill.
     function setNavIconAvatar(trigger, photoUrl, initials) {
         if (!trigger || !trigger.classList.contains('nav-item')) return;
         var svg = trigger.querySelector('svg');
@@ -194,6 +201,7 @@ window.BrandedAccountPanel = (function () {
 
         var firstName = firstNameFromUser(user);
         var labelEl = refs.trigger.querySelector('.nav-item-label');
+        // Mobile nav keeps a short greeting; desktop header shows only the Google pill.
         if (labelEl) labelEl.textContent = 'Hi, ' + firstName;
         refs.trigger.setAttribute('aria-label', 'My account, signed in as ' + (user.email || firstName));
 
