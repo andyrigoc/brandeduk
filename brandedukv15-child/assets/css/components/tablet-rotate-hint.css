@@ -1,0 +1,121 @@
+/* Tablet portrait: frosted rotate hint on PC pages (home / shop / opening). */
+.bu-tablet-rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    box-sizing: border-box;
+    background: rgba(15, 23, 42, 0.28);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+    pointer-events: auto;
+}
+
+.bu-tablet-rotate-hint[hidden] {
+    display: none !important;
+}
+
+.bu-tablet-rotate-hint__glass {
+    width: min(420px, 88vw);
+    padding: 36px 28px 28px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        rgba(255, 255, 255, 0.12) 55%,
+        rgba(255, 255, 255, 0.08) 100%
+    );
+    box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    text-align: center;
+    color: #fff;
+    -webkit-backdrop-filter: blur(22px) saturate(1.35);
+    backdrop-filter: blur(22px) saturate(1.35);
+}
+
+.bu-tablet-rotate-hint__icon {
+    width: 148px;
+    height: 148px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.bu-tablet-rotate-hint__icon img {
+    width: 112px;
+    height: 112px;
+    object-fit: contain;
+    display: block;
+    /* Source art is white on black — drop the black plate on the glass. */
+    mix-blend-mode: screen;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    animation: bu-tablet-rotate-pulse 2.4s ease-in-out infinite;
+}
+
+.bu-tablet-rotate-hint__title {
+    margin: 0 0 8px;
+    font-family: Inter, Arial, sans-serif;
+    font-size: clamp(20px, 3.4vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
+}
+
+.bu-tablet-rotate-hint__sub {
+    margin: 0 0 22px;
+    font-family: Inter, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.bu-tablet-rotate-hint__continue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-family: Inter, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.bu-tablet-rotate-hint__continue:hover,
+.bu-tablet-rotate-hint__continue:focus-visible {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.62);
+    outline: none;
+}
+
+@keyframes bu-tablet-rotate-pulse {
+    0%, 100% { transform: rotate(-8deg) scale(1); opacity: 0.92; }
+    50% { transform: rotate(8deg) scale(1.04); opacity: 1; }
+}
+
+@media (orientation: landscape), (pointer: fine) and (hover: hover) {
+    /* Safety: never keep the hint up in landscape; JS also hides it. */
+    body:not(.bu-tablet-rotate-hint-active) .bu-tablet-rotate-hint {
+        display: none !important;
+    }
+}
