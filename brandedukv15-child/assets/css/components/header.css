@@ -219,7 +219,7 @@ body {
     position: relative;
     display: inline-flex;
     align-items: center;
-    margin-left: 12px;
+    margin-left: -13px;
     color: #4b5563;
     text-decoration: none;
     transition: color 0.2s ease;

@@ -108,6 +108,8 @@
     }
 
     .site-header .header-top-phone {
+        position: relative;
+        left: -20px;
         color: #0f172a;
         font-size: 15px; /* was 13px; +15% */
         font-weight: 700;
@@ -121,6 +123,8 @@
     .site-header .header-top-vat-control {
         margin-left: 0;
         flex: 0 0 auto;
+        position: relative;
+        left: -15px;
     }
 
     .site-header .header-top-vat-toggle {
@@ -177,6 +181,7 @@
     .site-header .header-top-basket-link {
         position: relative;
         color: #111827;
+        margin-left: -13px;
     }
 
     .site-header .header-top-basket-badge {

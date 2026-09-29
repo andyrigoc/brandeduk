@@ -10,7 +10,7 @@
     <title>Customize Your Workwear - BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260603">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260929-chatui2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260116a">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260116a">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
@@ -1165,22 +1165,13 @@
         // Basket link now navigates to basket.html directly
     </script>
 
-    <!-- WhatsApp Floating Button -->
-    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
-        <i class="fa-brands fa-whatsapp"></i>
-    </button>
+    <!-- Support Chat Floating Button -->
+<button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open support chat">
+    <i class="fa-brands fa-whatsapp"></i>
+</button>
 
-    <!-- WhatsApp Popup -->
-    <div class="wa-popup" id="waPopup">
-        <div class="wa-popup__card">
-            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
-            <div class="wa-popup__header">
-                <div class="wa-popup__avatar"><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK"></div>
-                <div class="wa-popup__info">
-                    <h3><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK"></h3>
-                    <span>Typically replies quickly</span>
-                </div>
-            </div>
+<!-- Support Chat Popup (markup rebuilt by whatsapp.js) -->
+<div class="wa-popup" id="waPopup" aria-hidden="true"></div>
             <div class="wa-popup__body">
                 <div class="wa-message">Hi, how can we help you?</div>
             </div>
@@ -1191,7 +1182,7 @@
             </div>
         </div>
     </div>
-    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+    <script src="mobile/js/whatsapp.js?v=20260929-chatui2"></script>
 
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>

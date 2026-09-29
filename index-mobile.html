@@ -171,7 +171,7 @@
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="mobile/css/faq.css?v=20260307A">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260331A">
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260409a">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20260929-chatui2">
     <link rel="stylesheet" href="mobile/css/upload-logo-modal.css?v=20260413a">
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260409B">
     <script src="brandedukv15-child/assets/js/shared-config.js?v=20260927-bannerorder"></script>
@@ -3556,22 +3556,13 @@
 })();
 </script>
 
-    <!-- WhatsApp Floating Button -->
-    <button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open WhatsApp chat">
-        <i class="fa-brands fa-whatsapp"></i>
-    </button>
+    <!-- Support Chat Floating Button -->
+<button class="whatsapp-float" id="openWhatsappPopup" aria-label="Open support chat">
+    <i class="fa-brands fa-whatsapp"></i>
+</button>
 
-    <!-- WhatsApp Popup -->
-    <div class="wa-popup" id="waPopup">
-        <div class="wa-popup__card">
-            <button class="wa-popup__close" id="closeWhatsappPopup" aria-label="Close popup">&times;</button>
-            <div class="wa-popup__header">
-                <div class="wa-popup__avatar"><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" width="11851" height="5792"></div>
-                <div class="wa-popup__info">
-                    <h3><img src="brandedukv15-child/assets/images/ui/bd-logo-3d.png" alt="BrandedUK" width="11851" height="5792"></h3>
-                    <span>Typically replies quickly</span>
-                </div>
-            </div>
+<!-- Support Chat Popup (markup rebuilt by whatsapp.js) -->
+<div class="wa-popup" id="waPopup" aria-hidden="true"></div>
             <div class="wa-popup__body">
                 <div class="wa-message">Hi, how can we help you?</div>
             </div>
@@ -3582,7 +3573,7 @@
             </div>
         </div>
     </div>
-    <script src="mobile/js/whatsapp.js?v=20260409a"></script>
+    <script src="mobile/js/whatsapp.js?v=20260929-chatui2"></script>
 
     <!-- Upload Logo Modal -->
     <div class="upload-modal-overlay" id="uploadModalOverlay"></div>

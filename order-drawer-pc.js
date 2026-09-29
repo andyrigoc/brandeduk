@@ -220,6 +220,51 @@
                 </div>
             </div>
         </div>
+
+        <!-- Clear basket confirmation (site modal, not browser confirm) -->
+        <div class="order-drawer-clear-overlay" id="orderDrawerClearModal" aria-hidden="true">
+            <div class="order-drawer-clear-modal" role="dialog" aria-modal="true" aria-labelledby="orderDrawerClearTitle">
+                <button type="button" class="order-drawer-clear-close" id="orderDrawerClearClose" aria-label="Close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+                <div class="order-drawer-clear-icon" aria-hidden="true">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                </div>
+                <h3 class="order-drawer-clear-title" id="orderDrawerClearTitle">Clear your basket?</h3>
+                <p class="order-drawer-clear-body">
+                    This will remove all items, customisations and<br>quantities from your basket and reset everything.
+                </p>
+                <div class="order-drawer-clear-warning">
+                    <span class="order-drawer-clear-warning-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <strong>This action cannot be undone.</strong>
+                        <span>All items will be permanently removed.</span>
+                    </div>
+                </div>
+                <div class="order-drawer-clear-actions">
+                    <button type="button" class="order-drawer-clear-btn" id="orderDrawerClearCancel">Cancel</button>
+                    <button type="button" class="order-drawer-clear-btn order-drawer-clear-btn--danger" id="orderDrawerClearConfirm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6M14 11v6"/>
+                        </svg>
+                        <span>Clear All</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M5 12h14M13 6l6 6-6 6"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
 
     const ORDER_DRAWER_CSS = `
@@ -1029,6 +1074,141 @@
                     grid-template-columns: 1fr;
                 }
             }
+
+            /* Clear basket confirmation modal */
+            .order-drawer-clear-overlay {
+                position: fixed;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+                background: rgba(17, 24, 39, 0.45);
+                z-index: 100050;
+            }
+            .order-drawer-clear-overlay.active {
+                display: flex;
+            }
+            .order-drawer-clear-modal {
+                position: relative;
+                width: 100%;
+                max-width: 430px;
+                padding: 28px 22px 20px;
+                border-radius: 20px;
+                background: #fff;
+                box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+                text-align: center;
+            }
+            .order-drawer-clear-close {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                width: 28px;
+                height: 28px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 0;
+                border-radius: 50%;
+                background: transparent;
+                color: #9ca3af;
+                cursor: pointer;
+            }
+            .order-drawer-clear-close:hover {
+                background: #f3f4f6;
+                color: #374151;
+            }
+            .order-drawer-clear-icon {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: #fff4ed;
+                color: #f97316;
+            }
+            .order-drawer-clear-title {
+                margin: 0;
+                color: #1e293b;
+                font-size: 24px;
+                line-height: 1.2;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+            }
+            .order-drawer-clear-body {
+                max-width: 360px;
+                margin: 8px auto 16px;
+                color: #6b7280;
+                font-size: 14px;
+                line-height: 1.45;
+            }
+            .order-drawer-clear-warning {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 14px;
+                border-radius: 12px;
+                background: #f3f4f6;
+                text-align: left;
+            }
+            .order-drawer-clear-warning-icon {
+                flex: 0 0 22px;
+                width: 22px;
+                height: 22px;
+                margin-top: 1px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #6b7280;
+            }
+            .order-drawer-clear-warning strong,
+            .order-drawer-clear-warning span {
+                display: block;
+            }
+            .order-drawer-clear-warning strong {
+                color: #374151;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .order-drawer-clear-warning span {
+                margin-top: 2px;
+                color: #6b7280;
+                font-size: 12px;
+                line-height: 1.35;
+            }
+            .order-drawer-clear-actions {
+                display: flex;
+                gap: 12px;
+                padding: 16px 0 0;
+            }
+            .order-drawer-clear-btn {
+                flex: 1;
+                height: 46px;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
+                background: #fff;
+                color: #111827;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .order-drawer-clear-btn:hover {
+                background: #f9fafb;
+            }
+            .order-drawer-clear-btn--danger {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border: none;
+                background: #f97316;
+                color: #fff;
+            }
+            .order-drawer-clear-btn--danger:hover {
+                background: #ea580c;
+            }
         </style>
     `;
 
@@ -1037,11 +1217,27 @@
         // Inject CSS
         if (!document.getElementById('orderDrawerStyles')) {
             document.head.insertAdjacentHTML('beforeend', ORDER_DRAWER_CSS);
+        } else if (!document.getElementById('orderDrawerClearStyles')) {
+            document.head.insertAdjacentHTML(
+                'beforeend',
+                '<style id="orderDrawerClearStyles">' +
+                ORDER_DRAWER_CSS.slice(
+                    ORDER_DRAWER_CSS.indexOf('/* Clear basket confirmation modal */'),
+                    ORDER_DRAWER_CSS.lastIndexOf('</style>')
+                ) +
+                '</style>'
+            );
         }
 
         // Inject HTML
         if (!document.getElementById('orderDrawerOverlay')) {
             document.body.insertAdjacentHTML('beforeend', ORDER_DRAWER_HTML);
+        } else if (!document.getElementById('orderDrawerClearModal')) {
+            // Older sessions may already have the drawer without the confirm modal
+            document.body.insertAdjacentHTML(
+                'beforeend',
+                ORDER_DRAWER_HTML.slice(ORDER_DRAWER_HTML.indexOf('<!-- Clear basket confirmation'))
+            );
         }
 
         const overlay = document.getElementById('orderDrawerOverlay');
@@ -1050,6 +1246,7 @@
         const closeBtn = document.getElementById('orderDrawerClose');
         const backBtn = document.getElementById('orderDrawerBack');
         const title = document.getElementById('orderDrawerTitle');
+        const clearModal = document.getElementById('orderDrawerClearModal');
 
         let currentStep = 1;
 
@@ -1071,23 +1268,59 @@
             }, 400);
         }
 
+        function openClearConfirmModal() {
+            if (!clearModal) return;
+            clearModal.classList.add('active');
+            clearModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeClearConfirmModal() {
+            if (!clearModal) return;
+            clearModal.classList.remove('active');
+            clearModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function performClearBasket() {
+            try {
+                localStorage.setItem('quoteBasket', '[]');
+                localStorage.removeItem('orderNotes');
+            } catch (e) {}
+            try {
+                [
+                    'reorderNotice', 'pendingLogoPromptId', 'pendingLogoPromptIndex',
+                    'customizingBasketIndex', 'editingLogoIndex', 'editingPosition',
+                    'returnAfterCustomize', 'basketEditNewColor', 'basketEditSingleItem',
+                    'basketEditItemId', 'occupiedPositions', 'toolReusableLogos',
+                    'toolAskLogoChoice'
+                ].forEach((key) => sessionStorage.removeItem(key));
+            } catch (e) {}
+            window.dispatchEvent(new Event('basketUpdated'));
+            closeClearConfirmModal();
+            closeDrawer();
+            window.location.href = 'home-pc.html';
+        }
+
         closeBtn.addEventListener('click', closeDrawer);
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) closeDrawer();
         });
 
-        // Clear All button — clearing restarts the shopping flow from the home page
+        // Clear All — dedicated confirmation modal (same pattern as basket.html)
         const clearAllBtn = document.getElementById('orderDrawerClearAll');
         if (clearAllBtn) {
-            clearAllBtn.addEventListener('click', function() {
-                if (confirm('Remove all items from your basket?')) {
-                    localStorage.setItem('quoteBasket', '[]');
-                    window.dispatchEvent(new Event('basketUpdated'));
-                    closeDrawer();
-                    window.location.href = 'home-pc.html';
-                }
-            });
+            clearAllBtn.addEventListener('click', openClearConfirmModal);
         }
+        document.getElementById('orderDrawerClearCancel')?.addEventListener('click', closeClearConfirmModal);
+        document.getElementById('orderDrawerClearClose')?.addEventListener('click', closeClearConfirmModal);
+        document.getElementById('orderDrawerClearConfirm')?.addEventListener('click', performClearBasket);
+        clearModal?.addEventListener('click', (e) => {
+            if (e.target === clearModal) closeClearConfirmModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && clearModal?.classList.contains('active')) {
+                closeClearConfirmModal();
+            }
+        });
 
         // Back button
         backBtn.addEventListener('click', () => {
