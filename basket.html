@@ -3214,6 +3214,29 @@
         catch (e) { return []; }
     }
 
+    /** Total garment units for one line (sizes map first, then qty fields). */
+    function getItemQty(item) {
+        if (!item) return 0;
+        const rawSizes = item.sizes || item.quantities;
+        let sum = 0;
+        if (Array.isArray(rawSizes)) {
+            rawSizes.forEach((entry) => {
+                sum += Number(entry?.qty ?? entry?.quantity ?? entry?.value) || 0;
+            });
+        } else if (rawSizes && typeof rawSizes === 'object') {
+            Object.values(rawSizes).forEach((value) => {
+                if (value && typeof value === 'object') {
+                    sum += Number(value.qty ?? value.quantity ?? value.value) || 0;
+                } else {
+                    sum += Number(value) || 0;
+                }
+            });
+        }
+        if (sum > 0) return sum;
+        const fallback = Number(item.qty ?? item.quantity ?? item.totalQty ?? item.totalQuantity);
+        return Number.isFinite(fallback) && fallback > 0 ? fallback : 0;
+    }
+
     // Save basket
     function saveBasket(basket) {
         const compactBasket = (Array.isArray(basket) ? basket : []).map(function (item) {
@@ -3879,13 +3902,16 @@
         const basket = getBasket();
         const headerBadge = document.getElementById('headerBasketBadge');
         if (headerBadge) {
-            const entryCount = new Set(basket.map((item, index) => {
-                const code = String(item?.productCode || item?.code || '').trim().toLowerCase();
-                const color = String(item?.color || item?.selectedColorName || '').trim().toLowerCase();
-                return code ? `${code}::${color}` : String(item?.id || index);
-            })).size;
-            headerBadge.textContent = entryCount > 99 ? '99+' : String(entryCount);
-            headerBadge.style.display = entryCount > 0 ? 'flex' : 'none';
+            // Match home / core: show total garment qty (e.g. 10), not distinct product lines.
+            const totalQty = (typeof window.BrandedCart === 'object' && typeof window.BrandedCart.count === 'function')
+                ? window.BrandedCart.count()
+                : basket.reduce((sum, item) => sum + getItemQty(item), 0);
+            headerBadge.textContent = totalQty > 99 ? '99+' : String(totalQty);
+            headerBadge.setAttribute('data-count', String(totalQty));
+            headerBadge.style.display = totalQty > 0 ? 'flex' : 'none';
+        }
+        if (window.brandedukv15 && typeof window.brandedukv15.updateCartBadge === 'function') {
+            window.brandedukv15.updateCartBadge();
         }
         let hexDirty = false;
         basket.forEach(function (item) {

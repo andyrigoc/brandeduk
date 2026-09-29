@@ -157,7 +157,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260929-basket25">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260929-googlepill4">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260929-flowrail6">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js">
@@ -3794,7 +3794,7 @@
 <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
 <script src="brandedukv15-child/assets/js/account.js?v=20260521-home-auth"></script>
-<script src="brandedukv15-child/assets/js/account-panel.js?v=20260929-googlepill4"></script>
+<script src="brandedukv15-child/assets/js/account-panel.js?v=20260929-topshift60"></script>
 <script src="brandeduk.com/js/hero.js?v=20260927-backreset"></script>
 <script src="brandeduk.com/js/main.js?v=20260929-qtybadge"></script>
 <script src="brandeduk.com/js/uniform-cube.js?v=20260928-cubefluid"></script>
@@ -4522,6 +4522,65 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 <script src="brandedukv15-child/assets/js/header-basket-lottie.js?v=20260927-basketnoflash1"></script>
+<script>
+/* Local-only header adapt preview: Desktop / Tablet landscape / Tablet portrait */
+(function () {
+    var host = location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') return;
+
+    var STYLE_ID = 'buHeaderPreviewToggleStyle';
+    var ROOT_ID = 'buHeaderPreviewToggle';
+    if (document.getElementById(ROOT_ID)) return;
+
+    if (!document.getElementById(STYLE_ID)) {
+        var style = document.createElement('style');
+        style.id = STYLE_ID;
+        style.textContent = ''
+            + '#' + ROOT_ID + '{position:fixed;z-index:99999;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;'
+            + 'padding:12px;border:1px solid #d1d5db;border-radius:14px;background:#fff;color:#111827;'
+            + 'font:600 12px/1.2 Inter,Arial,sans-serif;box-shadow:0 12px 30px rgba(15,23,42,.16);}'
+            + '#' + ROOT_ID + ' strong{display:block;margin:0 0 2px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#6b7280;}'
+            + '#' + ROOT_ID + ' .bu-preview-row{display:flex;gap:6px;}'
+            + '#' + ROOT_ID + ' button{appearance:none;border:1px solid #d1d5db;border-radius:999px;background:#f9fafb;'
+            + 'color:#111827;padding:7px 10px;font:700 11px/1 Inter,Arial,sans-serif;cursor:pointer;}'
+            + '#' + ROOT_ID + ' button.is-active{background:#ff7a00;border-color:#ff7a00;color:#fff;}'
+            + '#' + ROOT_ID + ' .bu-preview-note{color:#6b7280;font-weight:500;max-width:220px;}';
+        document.head.appendChild(style);
+    }
+
+    var root = document.createElement('div');
+    root.id = ROOT_ID;
+    root.innerHTML = ''
+        + '<strong>Header preview</strong>'
+        + '<div class="bu-preview-row">'
+        +   '<button type="button" data-mode="">Desktop</button>'
+        +   '<button type="button" data-mode="tablet-landscape">Tablet H</button>'
+        +   '<button type="button" data-mode="tablet-portrait">Tablet V</button>'
+        + '</div>'
+        + '<div class="bu-preview-note">Mini-basket + laptop share one right wall</div>';
+    document.body.appendChild(root);
+
+    var buttons = root.querySelectorAll('button[data-mode]');
+    function apply(mode) {
+        if (mode) document.documentElement.setAttribute('data-bu-header-preview', mode);
+        else document.documentElement.removeAttribute('data-bu-header-preview');
+        try { sessionStorage.setItem('buHeaderPreview', mode || ''); } catch (e) {}
+        buttons.forEach(function (btn) {
+            btn.classList.toggle('is-active', (btn.getAttribute('data-mode') || '') === (mode || ''));
+        });
+    }
+
+    buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            apply(btn.getAttribute('data-mode') || '');
+        });
+    });
+
+    var saved = '';
+    try { saved = sessionStorage.getItem('buHeaderPreview') || ''; } catch (e) {}
+    apply(saved);
+})();
+</script>
 
 </body>
 </html>
