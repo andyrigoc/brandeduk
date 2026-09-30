@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    var WA_NUMBER = '447447348564';
+    var WA_NUMBER = '447931372126';
     var PHONE_TEL = '02089742722';
     var PHONE_DISPLAY = '020 8974 2722';
     var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
