@@ -5,6 +5,7 @@ DirectoryIndex index.html index.htm
     RewriteEngine On
     RewriteRule ^blog$ /blog/ [R=301,L]
     RewriteRule ^terms-and-conditions/?$ /terms-and-conditions.html [L]
+    RewriteRule ^privacy-policy/?$ /privacy-policy.html [L]
 </IfModule>
 
 # Enable directory listing (optional - remove if you don't want it)

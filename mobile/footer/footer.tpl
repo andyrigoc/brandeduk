@@ -47,6 +47,7 @@
                             <li class="bar-menu-item"><a href="/blog/case-study-500-tshirts-london-event.html">Case Studies</a></li>
                             <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
+                            <li class="bar-menu-item"><a href="/privacy-policy.html">Privacy Policy</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">

@@ -22,7 +22,7 @@
     <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260927-footergap">
-    <script src="footer-dev/pc-footer.js?v=20260927-quoteonly" defer></script>
+    <script src="footer-dev/pc-footer.js?v=20260930-privacy" defer></script>
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
@@ -3623,7 +3623,7 @@
         // API INTEGRATION - Desktop Shop Page
         // ============================================================================
 
-        // Filter value mappings (Frontend HTML values â†’ API values) using API spec exactly
+        // Filter value mappings (Frontend HTML values Ã¢â€ â€™ API values) using API spec exactly
         // Most values pass through directly, but some need special mapping
         const FILTER_MAPPINGS = {
             // Quick filters (flag[] array param) - special mappings
@@ -4855,7 +4855,7 @@
             params.limit = currentState.limit || 100;
 
             // Debug: Log pagination params
-            console.log('ðŸ“„ API Params - Pagination:', {
+            console.log('Ã°Å¸â€œâ€ž API Params - Pagination:', {
                 page: params.page,
                 limit: params.limit,
                 currentStateLimit: currentState.limit,
@@ -4911,22 +4911,22 @@
             // Brand filter (from URL, e.g., ?brand=nike)
             if (currentState.brand) {
                 params.brand = currentState.brand;
-                console.log('ðŸ·ï¸ Adding brand to API params:', params.brand);
+                console.log('Ã°Å¸ÂÂ·Ã¯Â¸Â Adding brand to API params:', params.brand);
             }
 
             // Price range (numeric values)
             // Send priceMin and priceMax if they are set (even if they match the full range)
             if (currentState.priceMin !== null && currentState.priceMin !== undefined) {
                 params.priceMin = Number(currentState.priceMin);
-                console.log('ðŸ’° Adding priceMin to API params:', params.priceMin);
+                console.log('Ã°Å¸â€™Â° Adding priceMin to API params:', params.priceMin);
             } else {
-                console.log('ðŸ’° priceMin is null/undefined, not adding to API params');
+                console.log('Ã°Å¸â€™Â° priceMin is null/undefined, not adding to API params');
             }
             if (currentState.priceMax !== null && currentState.priceMax !== undefined) {
                 params.priceMax = Number(currentState.priceMax);
-                console.log('ðŸ’° Adding priceMax to API params:', params.priceMax);
+                console.log('Ã°Å¸â€™Â° Adding priceMax to API params:', params.priceMax);
             } else {
-                console.log('ðŸ’° priceMax is null/undefined, not adding to API params');
+                console.log('Ã°Å¸â€™Â° priceMax is null/undefined, not adding to API params');
             }
 
             // Build array parameters from filters
@@ -5026,9 +5026,9 @@
             // Log the final params we will send to the API
             try {
                 const cleanParams = JSON.parse(JSON.stringify(params));
-                console.log('ðŸ”§ buildApiParams() -> Final params:', cleanParams);
+                console.log('Ã°Å¸â€Â§ buildApiParams() -> Final params:', cleanParams);
             } catch (e) {
-                console.log('ðŸ”§ buildApiParams() -> Final params:', params);
+                console.log('Ã°Å¸â€Â§ buildApiParams() -> Final params:', params);
             }
             return params;
         }
@@ -5049,7 +5049,7 @@
             // If a request is already in progress, cancel it and start a new one
             // This ensures we always use the latest parameters
             if (pendingRequest && abortController) {
-                console.log('â³ Cancelling previous API request to use latest parameters...');
+                console.log('Ã¢ÂÂ³ Cancelling previous API request to use latest parameters...');
                 abortController.abort();
                 pendingRequest = null;
                 abortController = null;
@@ -5102,7 +5102,7 @@
                     const fullUrl = `${baseUrl}${queryString ? '?' + queryString : ''}`;
 
                     // Log the API call
-                    console.log('ðŸš€ API CALL TRIGGERED:', {
+                    console.log('Ã°Å¸Å¡â‚¬ API CALL TRIGGERED:', {
                         method: 'GET',
                         url: fullUrl,
                         params: params,
@@ -5154,11 +5154,11 @@
                             }
                         });
                         data.total = (data.total || 0) + added;
-                        console.log(`ðŸ¦º Hi-Vis merge complete: +${added} extra products â†’ ${data.total} total`);
+                        console.log(`Ã°Å¸Â¦Âº Hi-Vis merge complete: +${added} extra products Ã¢â€ â€™ ${data.total} total`);
                     }
                     // End Hi-Vis merge.
 
-                    console.log('âœ… API RESPONSE RECEIVED:', {
+                    console.log('Ã¢Å“â€¦ API RESPONSE RECEIVED:', {
                         total: data && data.total,
                         itemsCount: (data && data.items && data.items.length) || 0,
                         priceRange: data && data.priceRange,
@@ -5172,7 +5172,7 @@
                     const isLastPage = data && data.total && currentState.limit &&
                         (data.page >= Math.ceil(data.total / currentState.limit));
                     if (data && data.items && data.items.length !== (data.limit || currentState.limit) && !isLastPage) {
-                        console.warn('âš ï¸ API returned fewer items than requested (this is normal if filters reduce results):', {
+                        console.warn('Ã¢Å¡Â Ã¯Â¸Â API returned fewer items than requested (this is normal if filters reduce results):', {
                             requestedLimit: currentState.limit,
                             apiReturnedLimit: data.limit,
                             actualItemsCount: data.items.length,
@@ -5197,9 +5197,9 @@
                             min: data.priceRange.min || 0,
                             max: data.priceRange.max || 0
                         };
-                        console.log('ðŸ’° API priceRange stored:', currentState.apiPriceRange);
+                        console.log('Ã°Å¸â€™Â° API priceRange stored:', currentState.apiPriceRange);
                     } else {
-                        console.log('âš ï¸ API response has no priceRange');
+                        console.log('Ã¢Å¡Â Ã¯Â¸Â API response has no priceRange');
                     }
 
                     // NOTE: Do NOT set priceMin/priceMax from data.priceRange
@@ -5212,10 +5212,10 @@
                 } catch (error) {
                     // Don't log errors for aborted requests
                     if (error.name === 'AbortError') {
-                        console.log('â¹ï¸ API request was cancelled (new request started)');
+                        console.log('Ã¢ÂÂ¹Ã¯Â¸Â API request was cancelled (new request started)');
                         throw error; // Re-throw so caller knows it was aborted
                     }
-                    console.error('âŒ ERROR fetching products:', error);
+                    console.error('Ã¢ÂÅ’ ERROR fetching products:', error);
                     console.error('Error details:', {
                         message: error.message,
                         stack: error.stack,
@@ -5240,7 +5240,7 @@
                 if (error.name === 'AbortError') {
                     return [];
                 }
-                console.error('âŒ Error awaiting pending request:', error);
+                console.error('Ã¢ÂÅ’ Error awaiting pending request:', error);
                 return [];
             }
         }
@@ -5487,7 +5487,7 @@
         function renderDynamicFilters(filters) {
             const container = document.getElementById('dynamicFiltersContainer');
             if (!container) {
-                console.error('âŒ dynamicFiltersContainer not found');
+                console.error('Ã¢ÂÅ’ dynamicFiltersContainer not found');
                 return;
             }
 
@@ -5692,7 +5692,7 @@
             // Re-attach checkbox change handlers
             setupDynamicFilterCheckboxes();
 
-            console.log('âœ… Dynamic filters rendered successfully');
+            console.log('Ã¢Å“â€¦ Dynamic filters rendered successfully');
         }
 
         // Setup event handlers for dynamically rendered filter checkboxes
@@ -5741,7 +5741,7 @@
         // Legacy updateFilterCounts - now handled by renderDynamicFilters
         function updateFilterCounts(counts) {
             // This function is now deprecated - dynamic filters are rendered by renderDynamicFilters
-            console.log('â„¹ï¸ updateFilterCounts called - filters are now rendered dynamically');
+            console.log('Ã¢â€žÂ¹Ã¯Â¸Â updateFilterCounts called - filters are now rendered dynamically');
         }
 
         // Update URL without reload
@@ -6360,11 +6360,11 @@
 
             const grid = document.getElementById('productsGrid');
             if (!grid) {
-                console.error('âŒ productsGrid element not found!');
+                console.error('Ã¢ÂÅ’ productsGrid element not found!');
                 return;
             }
 
-            console.log('ðŸŽ¨ renderProducts() called - updating product grid...');
+            console.log('Ã°Å¸Å½Â¨ renderProducts() called - updating product grid...');
 
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -6556,11 +6556,11 @@
 
             const grid = document.getElementById('productsGrid');
             if (!grid) {
-                console.error('â Œ productsGrid element not found!');
+                console.error('Ã¢ Å’ productsGrid element not found!');
                 return;
             }
 
-            console.log('ðŸŽ¨ renderProducts() called - updating product grid...');
+            console.log('Ã°Å¸Å½Â¨ renderProducts() called - updating product grid...');
 
             // Get title and count elements
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -6602,7 +6602,7 @@
 
             // Guard against undefined products
             if (!products || !Array.isArray(products)) {
-                console.error('â Œ fetchProducts() returned invalid data:', products);
+                console.error('Ã¢ Å’ fetchProducts() returned invalid data:', products);
                 return;
             }
 
@@ -6612,7 +6612,7 @@
                 if (p && p.code) window.__brandedUkProducts.set(p.code, p);
             });
 
-            console.log(`ðŸ“¦ Received ${products.length} products from API`);
+            console.log(`Ã°Å¸â€œÂ¦ Received ${products.length} products from API`);
 
             // Update title and count (only after data arrives)
             if (categoryTitleEl) {
@@ -6632,7 +6632,7 @@
                     updateCategoryBrandLogo(brandParam, brandDisplayName);
                     updateBrandEditorial(brandParam, brandDisplayName);
                     categoryTitleEl.style.opacity = '1';
-                    console.log('ðŸ ·ï¸  Showing brand title:', brandDisplayName);
+                    console.log('Ã°Å¸ Â·Ã¯Â¸  Showing brand title:', brandDisplayName);
                 } else if (accreditationParam) {
                     document.getElementById('brand-editorial')?.setAttribute('hidden', '');
                     updateCategoryBrandLogo('', '');
@@ -6722,7 +6722,7 @@
             const gridChildrenAfterClear = grid.children.length;
 
             if (products.length === 0) {
-                console.log('âš ï¸  No products found matching criteria');
+                console.log('Ã¢Å¡Â Ã¯Â¸  No products found matching criteria');
 
                 let noResultsHtml = `
                     <div class="no-results-container" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #e2e8f0; margin: 20px 0;">
@@ -6778,8 +6778,8 @@
                 fetchFilterCounts();
             };
 
-            console.log(`âœ… Rendering ${products.length} products to grid...`);
-            console.log('ðŸ“Š Rendering details:', {
+            console.log(`Ã¢Å“â€¦ Rendering ${products.length} products to grid...`);
+            console.log('Ã°Å¸â€œÅ  Rendering details:', {
                 productsReceived: products.length,
                 expectedLimit: currentState.limit,
                 currentPage: currentState.page,
@@ -6789,7 +6789,7 @@
             // Safety check: Only render up to the limit (in case API returns more)
             const productsToRender = products.slice(0, currentState.limit);
             if (products.length > currentState.limit) {
-                console.warn('âš ï¸  API returned more products than limit:', {
+                console.warn('Ã¢Å¡Â Ã¯Â¸  API returned more products than limit:', {
                     received: products.length,
                     limit: currentState.limit,
                     rendering: productsToRender.length
@@ -6814,7 +6814,7 @@
 
                 // Debug: log when search color is detected (only for first product to avoid spam)
                 if (index === 0 && searchColor) {
-                    console.log('ðŸŽ¨ Search color detected:', searchColor, '| Search query:', currentState.search);
+                    console.log('Ã°Å¸Å½Â¨ Search color detected:', searchColor, '| Search query:', currentState.search);
                 }
 
                 // Use the model/lifestyle image as the default thumbnail (not the color variant image)
@@ -7015,7 +7015,7 @@
                 const isLastPage = currentState.page >= Math.ceil(currentState.total / currentState.limit);
                 // Only warn if it's not the last page (last page having fewer items is normal)
                 if (!isLastPage) {
-                    console.warn('âš ï¸  Fewer products rendered than limit (this is normal if filters reduce results):', {
+                    console.warn('Ã¢Å¡Â Ã¯Â¸  Fewer products rendered than limit (this is normal if filters reduce results):', {
                         expected: currentState.limit,
                         rendered: gridChildrenAfterRender,
                         filteredOut: productsFilteredOut,
@@ -7027,7 +7027,7 @@
                 }
             }
 
-            console.log(`âœ… Successfully rendered ${renderedCount} products to grid!`);
+            console.log(`Ã¢Å“â€¦ Successfully rendered ${renderedCount} products to grid!`);
         }
 
         // Toggle switch functionality for special filters
@@ -7061,7 +7061,7 @@
                 }
 
                 if (filterValue) {
-                    console.log('ðŸ”˜ QUICK FILTER TOGGLE CLICKED:', {
+                    console.log('Ã°Å¸â€Ëœ QUICK FILTER TOGGLE CLICKED:', {
                         filterValue: filterValue,
                         isPressed: isPressed,
                         willBeActive: !isPressed,
@@ -7078,20 +7078,20 @@
                         currentState.filters.quickFilters = currentState.filters.quickFilters.filter(v => v !== filterValue);
                     }
 
-                    console.log('ðŸ“Š QUICK FILTER STATE UPDATED:', {
+                    console.log('Ã°Å¸â€œÅ  QUICK FILTER STATE UPDATED:', {
                         quickFilters: currentState.filters.quickFilters,
                         fullState: JSON.parse(JSON.stringify(currentState.filters))
                     });
 
                     // Build API params to show what will be sent
                     const apiParams = buildApiParams();
-                    console.log('ðŸ“¤ API PARAMS BUILT:', apiParams);
+                    console.log('Ã°Å¸â€œÂ¤ API PARAMS BUILT:', apiParams);
 
                     // Reset to page 1 and fetch new products
                     currentState.page = 1;
                     updateURL();
 
-                    console.log('ðŸ”„ Calling renderProducts() to trigger API call...');
+                    console.log('Ã°Å¸â€â€ž Calling renderProducts() to trigger API call...');
                     await renderProducts();
                     await fetchFilterCounts();
                 }
@@ -7140,22 +7140,22 @@
             await renderProducts();
             await fetchFilterCounts();
             initPriceRangeSlider().then(() => {
-                console.log('âœ… initPriceRangeSlider completed');
+                console.log('Ã¢Å“â€¦ initPriceRangeSlider completed');
             }).catch(err => {
-                console.error('â Œ initPriceRangeSlider failed:', err);
+                console.error('Ã¢ Å’ initPriceRangeSlider failed:', err);
             });
         });
 
         // Listen for VAT state changes from main.js (legacy)
         document.addEventListener('vatStateChanged', function (e) {
-            console.log('ðŸ’° vatStateChanged event received');
+            console.log('Ã°Å¸â€™Â° vatStateChanged event received');
             updatePrices(); // Update existing prices immediately (no API call needed)
             updatePriceRangeDisplay();
         });
 
         // Listen for VAT state changes from vat-toggle.js
         document.addEventListener('brandeduk:vat-change', function (e) {
-            console.log('ðŸ’° VAT toggle changed, updating prices...');
+            console.log('Ã°Å¸â€™Â° VAT toggle changed, updating prices...');
             updatePrices(); // Update existing prices immediately (no API call needed)
             updatePriceRangeDisplay(); // Update price range display
             // Note: No renderProducts() call - VAT is a display-only change, not a filter
@@ -7167,7 +7167,7 @@
 
         async function initPriceRangeSlider() {
             try {
-                console.log('ðŸŽšï¸  Initializing price range slider...');
+                console.log('Ã°Å¸Å½Å¡Ã¯Â¸  Initializing price range slider...');
                 const sliderMin = document.getElementById('priceSliderMin');
                 const sliderMax = document.getElementById('priceSliderMax');
                 const rangeSelected = document.getElementById('priceRangeSelected');
@@ -7176,11 +7176,11 @@
                 const inputMax = document.getElementById('priceInputMax');
 
                 if (!sliderMin || !sliderMax) {
-                    console.error('â Œ Price sliders not found!', { sliderMin: !!sliderMin, sliderMax: !!sliderMax });
+                    console.error('Ã¢ Å’ Price sliders not found!', { sliderMin: !!sliderMin, sliderMax: !!sliderMax });
                     return;
                 }
 
-                console.log('âœ… Price sliders found');
+                console.log('Ã¢Å“â€¦ Price sliders found');
 
                 // Declare variables in function scope
                 let catalogMinPrice = 14;
@@ -7194,10 +7194,10 @@
                     // First, check if we have priceRange from the latest API response
                     if (currentState.apiPriceRange) {
                         priceRange = currentState.apiPriceRange;
-                        console.log('ðŸ“¡ Using price range from latest API response:', priceRange);
+                        console.log('Ã°Å¸â€œÂ¡ Using price range from latest API response:', priceRange);
                     } else {
                         // Fallback: fetch price range from API (without filters to get full range)
-                        console.log('ðŸ“¡ Fetching price range from API (no cached range)...');
+                        console.log('Ã°Å¸â€œÂ¡ Fetching price range from API (no cached range)...');
                         const params = { limit: 1 }; // Just to get priceRange metadata
                         const data = await BrandedAPI.getProducts(params);
                         priceRange = data.priceRange || { min: 14, max: 65 };
@@ -7205,7 +7205,7 @@
 
                     catalogMinPrice = Math.floor(priceRange.min || 14);
                     catalogMaxPrice = Math.ceil(priceRange.max || 65);
-                    console.log('âœ… Price range determined:', { catalogMinPrice, catalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
+                    console.log('Ã¢Å“â€¦ Price range determined:', { catalogMinPrice, catalogMaxPrice, source: currentState.apiPriceRange ? 'cached' : 'API' });
 
                     sliderMin.disabled = false;
                     sliderMax.disabled = false;
@@ -7238,7 +7238,7 @@
                         currentState.priceMax = null; // Keep null so API doesn't filter by price
                     }
 
-                    console.log('âœ… Slider values initialized:', {
+                    console.log('Ã¢Å“â€¦ Slider values initialized:', {
                         minValue: sliderMin.value,
                         maxValue: sliderMax.value,
                         minRange: catalogMinPrice,
@@ -7248,7 +7248,7 @@
                     });
 
                 } catch (error) {
-                    console.error('â Œ Error initializing price slider:', error);
+                    console.error('Ã¢ Å’ Error initializing price slider:', error);
                     // Use defaults
                     catalogMinPrice = 14;
                     catalogMaxPrice = 65;
@@ -7297,7 +7297,7 @@
 
                 // Handle price slider change - call API (for change events - when user releases)
                 function handlePriceSliderChange() {
-                    console.log('ðŸŽšï¸  handlePriceSliderChange() called');
+                    console.log('Ã°Å¸Å½Å¡Ã¯Â¸  handlePriceSliderChange() called');
 
                     // Update UI first
                     updatePriceSliderUI();
@@ -7305,7 +7305,7 @@
                     let minVal = parseInt(sliderMin.value);
                     let maxVal = parseInt(sliderMax.value);
 
-                    console.log('ðŸŽšï¸  Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
+                    console.log('Ã°Å¸Å½Å¡Ã¯Â¸  Parsed values:', { minVal, maxVal, catalogMinPrice, catalogMaxPrice });
 
                     // Update state - set to null if full range, otherwise set values
                     if (minVal === catalogMinPrice && maxVal === catalogMaxPrice) {
@@ -7319,11 +7319,11 @@
                     // Call API directly - just like filter checkboxes do
                     currentState.page = 1;
                     updateURL();
-                    console.log('ðŸš€ Calling renderProducts()...');
+                    console.log('Ã°Å¸Å¡â‚¬ Calling renderProducts()...');
                     renderProducts().then(() => {
-                        console.log('âœ… renderProducts() completed');
+                        console.log('Ã¢Å“â€¦ renderProducts() completed');
                     }).catch(err => {
-                        console.error('â Œ renderProducts() error:', err);
+                        console.error('Ã¢ Å’ renderProducts() error:', err);
                     });
                     fetchFilterCounts();
                 }
@@ -7331,36 +7331,36 @@
                 // Simple event listeners - just call the handler on change
                 // Only attach event listeners once to prevent duplicate API calls
                 if (!priceSliderEventListenersAttached) {
-                    console.log('ðŸ”§ Attaching price slider event listeners...');
+                    console.log('Ã°Å¸â€Â§ Attaching price slider event listeners...');
                     if (sliderMin) {
                         sliderMin.addEventListener('change', function (e) {
-                            console.log('ðŸŽšï¸  sliderMin change event fired, value:', sliderMin.value);
+                            console.log('Ã°Å¸Å½Å¡Ã¯Â¸  sliderMin change event fired, value:', sliderMin.value);
                             handlePriceSliderChange();
                         });
                     } else {
-                        console.error('â Œ sliderMin element not found!');
+                        console.error('Ã¢ Å’ sliderMin element not found!');
                     }
 
                     if (sliderMax) {
                         sliderMax.addEventListener('change', function (e) {
-                            console.log('ðŸŽšï¸  sliderMax change event fired, value:', sliderMax.value);
+                            console.log('Ã°Å¸Å½Å¡Ã¯Â¸  sliderMax change event fired, value:', sliderMax.value);
                             handlePriceSliderChange();
                         });
                     } else {
-                        console.error('â Œ sliderMax element not found!');
+                        console.error('Ã¢ Å’ sliderMax element not found!');
                     }
 
                     // Also listen to 'input' events for real-time UI updates while dragging (no API call)
                     if (sliderMin) {
                         sliderMin.addEventListener('input', function (e) {
-                            console.log('ðŸŽšï¸  sliderMin input event fired, value:', sliderMin.value);
+                            console.log('Ã°Å¸Å½Å¡Ã¯Â¸  sliderMin input event fired, value:', sliderMin.value);
                             updatePriceSliderUI(); // Only update UI, don't call API
                         });
                     }
 
                     if (sliderMax) {
                         sliderMax.addEventListener('input', function (e) {
-                            console.log('ðŸŽšï¸  sliderMax input event fired, value:', sliderMax.value);
+                            console.log('Ã°Å¸Å½Å¡Ã¯Â¸  sliderMax input event fired, value:', sliderMax.value);
                             updatePriceSliderUI(); // Only update UI, don't call API
                         });
                     }
@@ -7387,9 +7387,9 @@
                     }
 
                     priceSliderEventListenersAttached = true;
-                    console.log('âœ… All price slider event listeners attached');
+                    console.log('Ã¢Å“â€¦ All price slider event listeners attached');
                 } else {
-                    console.log('â ­ï¸  Price slider event listeners already attached, skipping');
+                    console.log('Ã¢ Â­Ã¯Â¸  Price slider event listeners already attached, skipping');
                 }
 
                 // Initialize display (without triggering API on initial load)
@@ -7410,8 +7410,8 @@
                 }
                 if (inputMin) inputMin.value = POUND_SYMBOL + initMinVal;
                 if (inputMax) inputMax.value = POUND_SYMBOL + initMaxVal;
-                console.log('âœ… Price slider initialization complete');
-                console.log('ðŸ“Š Final slider state:', {
+                console.log('Ã¢Å“â€¦ Price slider initialization complete');
+                console.log('Ã°Å¸â€œÅ  Final slider state:', {
                     sliderMinValue: sliderMin.value,
                     sliderMaxValue: sliderMax.value,
                     statePriceMin: currentState.priceMin,
@@ -7419,7 +7419,7 @@
                     catalogRange: { min: catalogMinPrice, max: catalogMaxPrice }
                 });
             } catch (err) {
-                console.error('â Œ Error in initPriceRangeSlider:', err);
+                console.error('Ã¢ Å’ Error in initPriceRangeSlider:', err);
                 throw err; // Re-throw to maintain error propagation
             }
         }
@@ -7435,14 +7435,14 @@
 
             // Check if we have priceRange from API response
             if (!currentState.apiPriceRange) {
-                console.log('âš ï¸  No API price range available yet');
+                console.log('Ã¢Å¡Â Ã¯Â¸  No API price range available yet');
                 return;
             }
 
             const apiMin = Math.floor(currentState.apiPriceRange.min || 0);
             const apiMax = Math.ceil(currentState.apiPriceRange.max || 100);
 
-            console.log('ðŸ”„ Updating price slider range from API:', { apiMin, apiMax });
+            console.log('Ã°Å¸â€â€ž Updating price slider range from API:', { apiMin, apiMax });
 
             // Update slider min/max attributes
             let rangeMin, rangeMax;
@@ -7478,7 +7478,7 @@
             if (currentState.priceMin === null && currentState.priceMax === null) {
                 currentMin = rangeMin;
                 currentMax = rangeMax;
-                console.log('ðŸ”„ No price filter active - resetting slider handles to full range');
+                console.log('Ã°Å¸â€â€ž No price filter active - resetting slider handles to full range');
             } else {
                 // Price filter is active - preserve user's selection but clamp to valid range
                 currentMin = currentState.priceMin !== null ? currentState.priceMin : rangeMin;
@@ -7513,7 +7513,7 @@
                 rangeSelected.style.width = (percentMax - percentMin) + '%';
             }
 
-            console.log('âœ… Price slider range updated:', {
+            console.log('Ã¢Å“â€¦ Price slider range updated:', {
                 min: apiMin,
                 max: apiMax,
                 currentMin,
@@ -7543,11 +7543,11 @@
 
         // Filter checkbox handlers
         function setupFilterCheckboxes() {
-            console.log('ðŸ”§ Setting up filter checkboxes...');
+            console.log('Ã°Å¸â€Â§ Setting up filter checkboxes...');
 
             // Setup expandable filter rows
             const expandableRows = document.querySelectorAll('.filter-expandable-row');
-            console.log(`ðŸ“‹ Found ${expandableRows.length} expandable filter rows`);
+            console.log(`Ã°Å¸â€œâ€¹ Found ${expandableRows.length} expandable filter rows`);
 
             expandableRows.forEach(row => {
                 row.addEventListener('click', function (e) {
@@ -7597,7 +7597,7 @@
 
                 // Setup checkboxes in this content section
                 const checkboxes = content.querySelectorAll('input[type="checkbox"]');
-                console.log(`  âœ“ ${headerText}: Found ${checkboxes.length} checkboxes`);
+                console.log(`  Ã¢Å“â€œ ${headerText}: Found ${checkboxes.length} checkboxes`);
 
                 checkboxes.forEach((checkbox, index) => {
                     // Check if event listener already attached (avoid duplicates)
@@ -7623,7 +7623,7 @@
                             currentState.color = '';
                         }
 
-                        console.log('ðŸ”˜ FILTER CHECKBOX CLICKED:', {
+                        console.log('Ã°Å¸â€Ëœ FILTER CHECKBOX CLICKED:', {
                             filterKey: filterKey,
                             checkboxValue: checkbox.value,
                             isChecked: checkbox.checked,
@@ -7642,7 +7642,7 @@
                             currentState.filters[filterKey] = [];
                         }
 
-                        console.log('ðŸ“Š FILTER STATE UPDATED:', {
+                        console.log('Ã°Å¸â€œÅ  FILTER STATE UPDATED:', {
                             filterKey: filterKey,
                             checkedValues: checkedBoxes,
                             fullState: JSON.parse(JSON.stringify(currentState.filters))
@@ -7650,26 +7650,26 @@
 
                         // Build API params to show what will be sent
                         const apiParams = buildApiParams();
-                        console.log('ðŸ“¤ API PARAMS BUILT:', apiParams);
+                        console.log('Ã°Å¸â€œÂ¤ API PARAMS BUILT:', apiParams);
 
                         // Reset to page 1 and fetch new products
                         currentState.page = 1;
                         updateURL();
 
-                        console.log('ðŸ”„ Calling renderProducts() to trigger API call...');
+                        console.log('Ã°Å¸â€â€ž Calling renderProducts() to trigger API call...');
                         try {
                             await renderProducts();
                             await fetchFilterCounts();
-                            console.log('âœ… Products updated successfully!');
+                            console.log('Ã¢Å“â€¦ Products updated successfully!');
                         } catch (error) {
-                            console.error('â Œ Error updating products:', error);
+                            console.error('Ã¢ Å’ Error updating products:', error);
                         }
                     });
                 });
             });
 
-            console.log('âœ… Filter checkboxes setup complete!');
-            console.log('ðŸ“  To test: Click any filter checkbox and check the console for API call logs');
+            console.log('Ã¢Å“â€¦ Filter checkboxes setup complete!');
+            console.log('Ã°Å¸â€œ  To test: Click any filter checkbox and check the console for API call logs');
         }
 
         // Debounce utility
@@ -7718,7 +7718,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async function () {
-            console.log('ðŸš€ Page loaded, initializing filters and products...');
+            console.log('Ã°Å¸Å¡â‚¬ Page loaded, initializing filters and products...');
 
             // Show loader immediately when page loads - better UX
             showLoader();
@@ -7743,7 +7743,7 @@
 
             // Verify filter checkboxes are set up
             const totalCheckboxes = document.querySelectorAll('.filter-checkbox-item input[type="checkbox"], .color-swatch-item input[type="checkbox"]').length;
-            console.log(`âœ… Found ${totalCheckboxes} filter checkboxes, event handlers attached`);
+            console.log(`Ã¢Å“â€¦ Found ${totalCheckboxes} filter checkboxes, event handlers attached`);
 
             // Hide title and count initially to prevent flash
             const categoryTitleEl = document.getElementById('categoryTitle');
@@ -7755,41 +7755,41 @@
             try {
                 await renderProducts();
             } catch (err) {
-                console.error('â Œ Error in renderProducts():', err);
+                console.error('Ã¢ Å’ Error in renderProducts():', err);
             }
 
             try {
                 await fetchFilterCounts();
             } catch (err) {
-                console.error('â Œ Error in fetchFilterCounts():', err);
+                console.error('Ã¢ Å’ Error in fetchFilterCounts():', err);
             }
 
             try {
                 await initPriceRangeSlider();
             } catch (err) {
-                console.error('â Œ Error calling initPriceRangeSlider:', err);
+                console.error('Ã¢ Å’ Error calling initPriceRangeSlider:', err);
             }
 
             // Ensure prices match current VAT state on initial load
-            console.log('ðŸ’° Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });
+            console.log('Ã°Å¸â€™Â° Initial VAT state check:', { isVatOn: isVatOn(), storage: localStorage.getItem('brandeduk-vat-mode') });
             updatePrices(); // Update prices to match current VAT state
             updatePriceRangeDisplay();
 
             // Update prices when VAT changes
             window.addEventListener('vatToggleChanged', () => {
-                console.log('ðŸ’° vatToggleChanged event received');
+                console.log('Ã°Å¸â€™Â° vatToggleChanged event received');
                 updatePrices();
                 updatePriceRangeDisplay();
             });
 
-            console.log('âœ… Initialization complete!');
+            console.log('Ã¢Å“â€¦ Initialization complete!');
         });
 
         // Update prices on VAT change
         function updatePrices() {
-            console.log('ðŸ’° updatePrices() called, isVatOn():', isVatOn(), 'localStorage:', localStorage.getItem('brandeduk-vat-mode'));
+            console.log('Ã°Å¸â€™Â° updatePrices() called, isVatOn():', isVatOn(), 'localStorage:', localStorage.getItem('brandeduk-vat-mode'));
             const priceElements = document.querySelectorAll('.product-price');
-            console.log(`ðŸ’° Found ${priceElements.length} product price elements to update`);
+            console.log(`Ã°Å¸â€™Â° Found ${priceElements.length} product price elements to update`);
 
             priceElements.forEach((priceEl, index) => {
                 const min = Number(priceEl.dataset.priceMin);
@@ -7811,12 +7811,12 @@
                     const newSuffix = vatSuffix();
                     suffixEl.textContent = newSuffix;
                     if (index < 3) { // Log first 3 for debugging
-                        console.log(`ðŸ’° Product ${index + 1} suffix: "${oldSuffix}" â†’ "${newSuffix}"`);
+                        console.log(`Ã°Å¸â€™Â° Product ${index + 1} suffix: "${oldSuffix}" Ã¢â€ â€™ "${newSuffix}"`);
                     }
                 }
             });
 
-            console.log('âœ… updatePrices() completed');
+            console.log('Ã¢Å“â€¦ updatePrices() completed');
         }
 
         // Pagination functions
@@ -8016,7 +8016,7 @@
                     const oldLimit = currentState.limit;
                     const oldPage = currentState.page;
 
-                    console.log('ðŸ”„ View limit changed:', {
+                    console.log('Ã°Å¸â€â€ž View limit changed:', {
                         oldLimit: currentState.limit,
                         newLimit: newLimit,
                         selectedValue: e.target.value
@@ -8553,8 +8553,8 @@
                         <!-- PAGE 1: Product Shop View -->
                         <div class="page" style="width: 20%;">
                             <div class="pc-flow-page-nav">
-                                <button type="button" class="pc-step-back" id="p1BackToCatalog"><span aria-hidden="true">←</span> BACK</button>
-                                <button class="btn-continue next">NEXT <span aria-hidden="true">→</span></button>
+                                <button type="button" class="pc-step-back" id="p1BackToCatalog"><span aria-hidden="true">â†</span> BACK</button>
+                                <button class="btn-continue next">NEXT <span aria-hidden="true">â†’</span></button>
                             </div>
                             <div class="product-shop-layout">
                                 <!-- Left: Gallery + accreditations -->
@@ -8586,7 +8586,7 @@
                                         </div>
                                         <h1 class="p1-name" id="productTitle"></h1>
                                         <div class="p1-rating" aria-label="Product rating">
-                                            <span class="p1-rating-stars" aria-hidden="true">★★★★★</span>
+                                            <span class="p1-rating-stars" aria-hidden="true">â˜…â˜…â˜…â˜…â˜…</span>
                                             <span id="productRatingValue">4.8</span>
                                             <span class="p1-rating-reviews" id="productReviewCount">(124 reviews)</span>
                                         </div>
@@ -8608,7 +8608,7 @@
 
                                     <div class="p1-action-row" aria-label="Product actions">
                                         <button type="button" class="p1-action p1-action-primary" id="p1AddToBasket">
-                                            Choose colour &amp; continue →
+                                            Choose colour &amp; continue â†’
                                         </button>
                                         <button type="button" class="p1-action p1-action-secondary" id="p1QuickShop">
                                             Buy it plain
@@ -8695,12 +8695,12 @@
                         <div class="page page-2" style="width: 20%;">
                             <div class="page-content-wrapper p2-choose-colour">
                                 <div class="pc-flow-page-nav">
-                                    <button type="button" class="pc-step-back back" id="p2BackToCatalog"><span aria-hidden="true">←</span> BACK</button>
+                                    <button type="button" class="pc-step-back back" id="p2BackToCatalog"><span aria-hidden="true">â†</span> BACK</button>
                                     <div class="p2-nav-title">
                                         <strong>Choose your colour</strong>
                                         <small>Select a finish to preview your product</small>
                                     </div>
-                                    <button class="btn-nav btn-next next" type="button">Continue to quantity →</button>
+                                    <button class="btn-nav btn-next next" type="button">Continue to quantity â†’</button>
                                 </div>
 
                                 <div class="p2-colour-layout">
@@ -8736,7 +8736,7 @@
                                                     <button type="button" class="p2-filter-chip" data-colour-filter="grey"><span class="p2-filter-dot" style="background:#858585;"></span>Greys</button>
                                                     <button type="button" class="p2-filter-chip" data-colour-filter="pink"><span class="p2-filter-dot" style="background:#ef3c8d;"></span>Pinks</button>
                                                     <button type="button" class="p2-filter-chip" data-colour-filter="white"><span class="p2-filter-dot" style="background:#fff;"></span>Whites</button>
-                                                    <button type="button" class="p2-filter-reset" data-colour-filter="all" aria-label="Reset colour filter">Reset <span aria-hidden="true">↶</span></button>
+                                                    <button type="button" class="p2-filter-reset" data-colour-filter="all" aria-label="Reset colour filter">Reset <span aria-hidden="true">â†¶</span></button>
                                                 </div>
                                             </div>
                                             <label class="p2-select-wrap">
@@ -8768,12 +8768,12 @@
                                 </div>
 
                                 <div class="p2-colour-footer">
-                                    <button type="button" class="pc-step-back back">← Back to product</button>
+                                    <button type="button" class="pc-step-back back">â† Back to product</button>
                                     <div class="p2-selected-pill">
                                         <span class="p2-selected-thumb" id="p2SelectedThumb" hidden></span>
                                         <span id="selectedColourName">No colour selected</span>
                                     </div>
-                                    <button type="button" class="p2-continue-qty next">Continue to quantity →</button>
+                                    <button type="button" class="p2-continue-qty next">Continue to quantity â†’</button>
                                 </div>
 
                                 <div class="p2-identity-bar" hidden>
@@ -8794,13 +8794,13 @@
                             <div class="page-content-wrapper p3-page-wrapper p3-choose-qty">
                                 <div class="pc-flow-page-nav">
                                     <button type="button" class="pc-step-back p3-back-colour" id="p3BackToColour" data-target-page="1">
-                                        <span aria-hidden="true">←</span> BACK
+                                        <span aria-hidden="true">â†</span> BACK
                                     </button>
                                     <div class="p2-nav-title">
                                         <strong>Choose sizes and quantities</strong>
                                         <small>Select sizes to build your order</small>
                                     </div>
-                                    <button type="button" class="p3-continue-customise" id="p3ContinueCustomise">Continue to customise →</button>
+                                    <button type="button" class="p3-continue-customise" id="p3ContinueCustomise">Continue to customise â†’</button>
                                 </div>
 
                                 <div class="p3-qty-layout">
@@ -8848,7 +8848,7 @@
                                     </div>
                                     <div class="p3-action-row">
                                         <button type="button" class="p3-btn-plain" id="btnBuyPlain">Buy it plain</button>
-                                        <button type="button" class="p3-btn-customize" id="btnCustomize">Customise →</button>
+                                        <button type="button" class="p3-btn-customize" id="btnCustomize">Customise â†’</button>
                                     </div>
                                 </div>
 
@@ -8862,12 +8862,12 @@
                         <div class="page page-4" style="width: 20%;">
                             <div class="page-content-wrapper p4-choose">
                                 <div class="pc-flow-page-nav">
-                                    <button type="button" class="pc-step-back back-btn-p4"><span aria-hidden="true">←</span> BACK</button>
+                                    <button type="button" class="pc-step-back back-btn-p4"><span aria-hidden="true">â†</span> BACK</button>
                                     <div class="p2-nav-title p4-nav-title">
                                         <strong>Customise your product</strong>
                                         <small>Choose a position and upload your logo</small>
                                     </div>
-                                    <button class="p4-btn-next" id="btnP4Next" type="button">VIEW BASKET →</button>
+                                    <button class="p4-btn-next" id="btnP4Next" type="button">VIEW BASKET â†’</button>
                                 </div>
                                 <div class="p4-layout">
                                     <aside class="p4-summary-col">
@@ -8883,27 +8883,27 @@
                                         </div>
                                         <div class="p4-order-summary">
                                             <h3>Order summary</h3>
-                                            <div><span>Products</span><strong id="p4SumProducts">£0.00</strong></div>
+                                            <div><span>Products</span><strong id="p4SumProducts">Â£0.00</strong></div>
                                             <div><span>Quantity</span><strong id="p4SumQty">0 items</strong></div>
-                                            <div><span>Logo customisation</span><strong id="p4SumLogo">£0.00</strong></div>
-                                            <div><span>Setup</span><strong id="p4SumSetup">£0.00</strong></div>
-                                            <div class="p4-sum-line"><span>Total (exc. VAT)</span><strong id="p4SumEx">£0.00</strong></div>
-                                            <div><span>VAT</span><strong id="p4SumVat">£0.00</strong></div>
-                                            <div class="p4-sum-total"><span>Total (inc. VAT)</span><strong id="p4SumInc">£0.00</strong></div>
+                                            <div><span>Logo customisation</span><strong id="p4SumLogo">Â£0.00</strong></div>
+                                            <div><span>Setup</span><strong id="p4SumSetup">Â£0.00</strong></div>
+                                            <div class="p4-sum-line"><span>Total (exc. VAT)</span><strong id="p4SumEx">Â£0.00</strong></div>
+                                            <div><span>VAT</span><strong id="p4SumVat">Â£0.00</strong></div>
+                                            <div class="p4-sum-total"><span>Total (inc. VAT)</span><strong id="p4SumInc">Â£0.00</strong></div>
                                             <button type="button" class="p4-confirm" id="p4ConfirmBasket">
                                                 <span class="p4-confirm-text">Confirm &amp; update basket</span>
                                                 <svg class="p4-confirm-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"></polyline></svg>
                                             </button>
-                                            <button type="button" class="p4-view-basket" id="p4ViewBasket">VIEW BASKET →</button>
+                                            <button type="button" class="p4-view-basket" id="p4ViewBasket">VIEW BASKET â†’</button>
                                         </div>
                                         <div class="p4-selected-colour">
                                             <div class="p4-selected-colour-choice">
-                                                <span>✓</span> Selected colour
+                                                <span>âœ“</span> Selected colour
                                                 <i id="p4SelectedSwatch"></i>
                                                 <strong id="p4SelectedName"></strong>
                                             </div>
                                             <div class="p4-artwork-approval">
-                                                <strong>✓ Artwork approval included</strong>
+                                                <strong>âœ“ Artwork approval included</strong>
                                             </div>
                                         </div>
                                     </aside>
@@ -8935,13 +8935,13 @@
                                             <div class="position-prices">
                                                 <button type="button" class="price-badge price-emb"
                                                     data-method="embroidery" data-default-label="EMBROIDERY"
-                                                    data-default-price="£5.00">
+                                                    data-default-price="Â£5.00">
                                                     <span class="price-label">EMBROIDERY</span>
                                                     <span class="price-value">&pound;5.00</span>
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£3.50">
+                                                    data-default-price="Â£3.50">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;3.50</span>
                                                 </button>
@@ -8979,13 +8979,13 @@
                                             <div class="position-prices">
                                                 <button type="button" class="price-badge price-emb"
                                                     data-method="embroidery" data-default-label="EMBROIDERY"
-                                                    data-default-price="£5.00">
+                                                    data-default-price="Â£5.00">
                                                     <span class="price-label">EMBROIDERY</span>
                                                     <span class="price-value">&pound;5.00</span>
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£3.50">
+                                                    data-default-price="Â£3.50">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;3.50</span>
                                                 </button>
@@ -9023,13 +9023,13 @@
                                             <div class="position-prices">
                                                 <button type="button" class="price-badge price-emb"
                                                     data-method="embroidery" data-default-label="EMBROIDERY"
-                                                    data-default-price="£5.00">
+                                                    data-default-price="Â£5.00">
                                                     <span class="price-label">EMBROIDERY</span>
                                                     <span class="price-value">&pound;5.00</span>
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£3.50">
+                                                    data-default-price="Â£3.50">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;3.50</span>
                                                 </button>
@@ -9067,13 +9067,13 @@
                                             <div class="position-prices">
                                                 <button type="button" class="price-badge price-emb"
                                                     data-method="embroidery" data-default-label="EMBROIDERY"
-                                                    data-default-price="£5.00">
+                                                    data-default-price="Â£5.00">
                                                     <span class="price-label">EMBROIDERY</span>
                                                     <span class="price-value">&pound;5.00</span>
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£3.50">
+                                                    data-default-price="Â£3.50">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;3.50</span>
                                                 </button>
@@ -9117,7 +9117,7 @@
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£6.00">
+                                                    data-default-price="Â£6.00">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;6.00</span>
                                                 </button>
@@ -9161,7 +9161,7 @@
                                                 </button>
                                                 <button type="button" class="price-badge price-print"
                                                     data-method="print" data-default-label="PRINT"
-                                                    data-default-price="£5.00">
+                                                    data-default-price="Â£5.00">
                                                     <span class="price-label">PRINT</span>
                                                     <span class="price-value">&pound;5.00</span>
                                                 </button>
@@ -9206,10 +9206,10 @@
                                             <em>Choose File</em>
                                         </button>
                                         <small class="p4-file-types">PNG, JPG, PDF, SVG, EPS or AI<br>Maximum file size: 25 MB</small>
-                                        <p class="p4-file-tip">✓ For best results, use a high-resolution or vector file.</p>
+                                        <p class="p4-file-tip">âœ“ For best results, use a high-resolution or vector file.</p>
                                         <h4>Use a previous logo</h4>
                                         <div id="p4PreviousLogos" class="p4-previous-logos" hidden></div>
-                                        <button type="button" class="p4-saved-logos">View all saved logos →</button>
+                                        <button type="button" class="p4-saved-logos">View all saved logos â†’</button>
                                         <input type="file" id="p4LogoFileInput" accept="image/*,.pdf,.svg,.eps,.ai" hidden>
                                         <div class="p4-artwork-help">
                                             <strong>Not sure about your artwork?</strong>
@@ -9226,8 +9226,8 @@
                         <div class="page page-5" style="width: 20%;">
                             <div class="page-content-wrapper">
                                 <div class="pc-flow-page-nav">
-                                    <button type="button" class="pc-step-back back-btn-p5"><span aria-hidden="true">←</span> BACK</button>
-                                    <button class="p4-btn-next" id="btnP5Next">NEXT <span aria-hidden="true">→</span></button>
+                                    <button type="button" class="pc-step-back back-btn-p5"><span aria-hidden="true">â†</span> BACK</button>
+                                    <button class="p4-btn-next" id="btnP5Next">NEXT <span aria-hidden="true">â†’</span></button>
                                 </div>
 
                                 <!-- Identity bar -->
@@ -9469,7 +9469,7 @@
                         <input type="checkbox" id="contactConsent" name="consent">
                         <span>I agree to be contacted about my enquiry</span>
                     </label>
-                    <button type="submit" class="popup-contact__submit">Send message →</button>
+                    <button type="submit" class="popup-contact__submit">Send message â†’</button>
                     <div class="popup-contact__perks" aria-label="Why choose BrandedUK">
                         <div class="popup-contact__perk">
                             <span class="popup-contact__perk-icon" aria-hidden="true">
@@ -9495,7 +9495,7 @@
                             </span>
                             <div>
                                 <strong>Fast turnaround</strong>
-                                <span>7–10 working days</span>
+                                <span>7â€“10 working days</span>
                             </div>
                         </div>
                     </div>
@@ -9533,7 +9533,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             <div>
                                 <a href="tel:02089742722">0208 974 2722</a>
-                                <small>Mon–Fri, 9:00–18:00</small>
+                                <small>Monâ€“Fri, 9:00â€“18:00</small>
                             </div>
                         </div>
                         <div class="popup-contact__visit-row">

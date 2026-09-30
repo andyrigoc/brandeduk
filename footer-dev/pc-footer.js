@@ -75,7 +75,8 @@
           ["Case Studies", "blog/case-study-500-tshirts-london-event.html"],
           ["Sustainability", "services.html"],
           ["Blog", "blog/index.html"],
-          ["Terms & Conditions", "terms-and-conditions.html"]
+          ["Terms & Conditions", "terms-and-conditions.html"],
+          ["Privacy Policy", "privacy-policy.html"]
         ]
       }
     ],
@@ -166,7 +167,7 @@
     const policies = frame.querySelector(".buk-footer__policies");
     policies.append(
       createLink("Terms & Conditions", "terms-and-conditions.html"),
-      createLink("Privacy Policy", "#privacy"),
+      createLink("Privacy Policy", "privacy-policy.html"),
       createLink("Cookie Policy", "#cookies")
     );
 
