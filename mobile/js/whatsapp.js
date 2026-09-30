@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    BRANDED SUPPORT CHAT – Draggable float + panel
+   Chatbot send/bot flow requires Google / Facebook / Apple sign-in.
    ═══════════════════════════════════════════════════════ */
 (function () {
     'use strict';
@@ -8,6 +9,7 @@
     var PHONE_TEL = '02089742722';
     var PHONE_DISPLAY = '020 8974 2722';
     var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
+    var LOCAL_PREVIEW_TOKEN = 'local-preview-auth';
 
     function assetUrl(relativeFromJs) {
         try {
@@ -28,6 +30,12 @@
         return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
     }
 
+    var WELCOME_TEXT = 'Hi! How can we help you today?';
+    var WELCOME_DELAY_MS = 2500;
+    var welcomeRevealed = false;
+    var welcomeTimer = null;
+    var chatUnlocked = false;
+
     function nowLabel() {
         try {
             return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -36,8 +44,47 @@
         }
     }
 
+    function isLocalHost() {
+        var host = window.location.hostname;
+        return host === 'localhost' || host === '127.0.0.1';
+    }
+
+    function readAuthToken() {
+        if (window.BrandedAccount && typeof window.BrandedAccount.token === 'function') {
+            return window.BrandedAccount.token() || '';
+        }
+        return localStorage.getItem('authToken') || localStorage.getItem('coAuthToken') || '';
+    }
+
+    function isSignedIn() {
+        if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.isSignedIn === 'function') {
+            return !!window.BrandedAccountPanel.isSignedIn();
+        }
+        return !!readAuthToken();
+    }
+
+    function googleIconSvg() {
+        return '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">' +
+            '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>' +
+            '<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>' +
+            '<path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>' +
+            '<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>' +
+            '</svg>';
+    }
+
+    function facebookIconSvg() {
+        return '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>' +
+            '</svg>';
+    }
+
+    function appleIconSvg() {
+        return '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<path fill="#111" d="M16.365 1.43c0 1.14-.42 2.2-1.18 3.02-.78.86-2.06 1.52-3.16 1.43-.14-1.1.42-2.24 1.16-3.04.8-.9 2.2-1.56 3.18-1.41zM20.8 17.2c-.56 1.28-.83 1.85-1.55 2.98-1 1.56-2.41 3.5-4.16 3.52-1.55.02-1.95-1.01-4.06-1-.2.1-2.08.1-3.58 1.02-1.67.02-3.08-1.9-4.08-3.46C1.7 17.1.4 12.6 2.5 9.5c1.05-1.55 2.72-2.53 4.34-2.53 1.62 0 2.64.98 3.98.98 1.3 0 2.1-1 4.02-.98 1.3.02 2.72.74 3.72 2.02-3.26 1.78-2.74 6.42.24 8.21z"/>' +
+            '</svg>';
+    }
+
     function buildPopupHtml() {
-        var time = nowLabel();
         return '' +
             '<div class="wa-popup__card" role="dialog" aria-modal="true" aria-label="Branded support chat">' +
             '  <div class="wa-popup__topbar">' +
@@ -63,16 +110,38 @@
             '      <p>Chat with our team about quotes, products and orders.</p>' +
             '    </div>' +
             '  </div>' +
+            '  <div class="wa-popup__auth-gate" id="waAuthGate" hidden>' +
+            '    <div class="wa-popup__auth-card">' +
+            '      <p class="wa-popup__auth-title">Sign in with Google, Facebook or Apple to chat</p>' +
+            '      <p class="wa-popup__auth-sub">You can browse the chat window — messaging unlocks after sign-in.</p>' +
+            '      <div class="wa-popup__auth-btns">' +
+            '        <button type="button" class="wa-popup__auth-btn wa-popup__auth-btn--google" data-wa-auth="google">' +
+            googleIconSvg() +
+            '          <span>Continue with Google</span>' +
+            '        </button>' +
+            '        <button type="button" class="wa-popup__auth-btn wa-popup__auth-btn--facebook" data-wa-auth="facebook">' +
+            facebookIconSvg() +
+            '          <span>Continue with Facebook</span>' +
+            '        </button>' +
+            '        <button type="button" class="wa-popup__auth-btn wa-popup__auth-btn--apple" data-wa-auth="apple">' +
+            appleIconSvg() +
+            '          <span>Continue with Apple</span>' +
+            '        </button>' +
+            '      </div>' +
+            '      <p class="wa-popup__auth-note" id="waAuthNote">Google sign-in works now. Facebook &amp; Apple open Account sign-in until those providers go live.</p>' +
+            '    </div>' +
+            '  </div>' +
             '  <div class="wa-popup__body" id="waChatBody">' +
-            '    <div class="wa-msg wa-msg--agent">' +
+            '    <div class="wa-msg wa-msg--agent wa-msg--typing" id="waTypingMsg">' +
             '      <img class="wa-msg__avatar" src="' + IMG.mark + '" alt="">' +
             '      <div class="wa-msg__stack">' +
-            '        <div class="wa-msg__bubble">Hi! How can we help you today?</div>' +
-            '        <div class="wa-msg__meta">Branded Support · ' + time + '</div>' +
+            '        <div class="wa-msg__bubble wa-msg__bubble--typing" aria-label="Branded Support is typing">' +
+            '          <span class="wa-typing" aria-hidden="true"><span></span><span></span><span></span></span>' +
+            '        </div>' +
             '      </div>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="wa-popup__composer">' +
+            '  <div class="wa-popup__composer" id="waComposer">' +
             '    <div class="wa-popup__input-wrap">' +
             '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Write a message, then Send opens WhatsApp..." autocomplete="off">' +
             '      <button type="button" class="wa-popup__icon-btn" id="waChatAttach" aria-label="Attach file">' +
@@ -156,6 +225,9 @@
     var chatBody = document.getElementById('waChatBody');
     var fastReplies = document.getElementById('waFastReplies');
     var fastRepliesBtn = document.getElementById('waFastRepliesBtn');
+    var authGate = document.getElementById('waAuthGate');
+    var composer = document.getElementById('waComposer');
+    var authNote = document.getElementById('waAuthNote');
 
     // === Create dismiss zone (inject into DOM) ===
     var dismissZone = document.createElement('div');
@@ -215,12 +287,144 @@
         openBtn.style.bottom = window.matchMedia('(min-width: 700px)').matches ? '24px' : '82px';
     }
 
+    function revealWelcomeMessage() {
+        if (welcomeRevealed || !chatBody || !chatUnlocked) return;
+        welcomeRevealed = true;
+        if (welcomeTimer) {
+            clearTimeout(welcomeTimer);
+            welcomeTimer = null;
+        }
+        var wrap = document.createElement('div');
+        wrap.className = 'wa-msg wa-msg--agent';
+        wrap.id = 'waWelcomeMsg';
+        wrap.innerHTML =
+            '<img class="wa-msg__avatar" src="' + IMG.mark + '" alt="">' +
+            '<div class="wa-msg__stack">' +
+            '  <div class="wa-msg__bubble"></div>' +
+            '  <div class="wa-msg__meta">Branded Support · <span></span></div>' +
+            '</div>';
+        wrap.querySelector('.wa-msg__bubble').textContent = WELCOME_TEXT;
+        wrap.querySelector('.wa-msg__meta span').textContent = nowLabel();
+        var typing = document.getElementById('waTypingMsg');
+        if (typing && typing.parentNode === chatBody) {
+            chatBody.replaceChild(wrap, typing);
+        } else if (chatBody.firstChild) {
+            chatBody.insertBefore(wrap, chatBody.firstChild);
+        } else {
+            chatBody.appendChild(wrap);
+        }
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function scheduleWelcomeMessage() {
+        if (!chatUnlocked || welcomeRevealed || welcomeTimer) return;
+        welcomeTimer = setTimeout(function () {
+            welcomeTimer = null;
+            revealWelcomeMessage();
+        }, WELCOME_DELAY_MS);
+    }
+
+    function applyAuthGateUi() {
+        chatUnlocked = isSignedIn();
+        if (popup) {
+            popup.classList.toggle('is-locked', !chatUnlocked);
+            popup.classList.toggle('is-unlocked', chatUnlocked);
+        }
+        if (authGate) {
+            if (chatUnlocked) {
+                authGate.setAttribute('hidden', '');
+                authGate.setAttribute('aria-hidden', 'true');
+            } else {
+                authGate.removeAttribute('hidden');
+                authGate.setAttribute('aria-hidden', 'false');
+            }
+        }
+        if (composer) {
+            composer.hidden = !chatUnlocked;
+            composer.setAttribute('aria-hidden', chatUnlocked ? 'false' : 'true');
+        }
+        if (inputEl) {
+            inputEl.disabled = !chatUnlocked;
+            inputEl.tabIndex = chatUnlocked ? 0 : -1;
+        }
+        if (sendBtn) sendBtn.disabled = !chatUnlocked;
+        if (attachBtn) attachBtn.disabled = !chatUnlocked;
+        if (fastRepliesBtn) fastRepliesBtn.disabled = !chatUnlocked;
+        if (fastReplies && !chatUnlocked) fastReplies.classList.remove('is-open');
+        var quoteBtn = document.getElementById('waQuoteSupport');
+        var orderBtn = document.getElementById('waOrderHelp');
+        if (quoteBtn) quoteBtn.disabled = !chatUnlocked;
+        if (orderBtn) orderBtn.disabled = !chatUnlocked;
+
+        if (chatUnlocked && popup && popup.classList.contains('is-active')) {
+            scheduleWelcomeMessage();
+        } else if (!chatUnlocked && welcomeTimer) {
+            clearTimeout(welcomeTimer);
+            welcomeTimer = null;
+        }
+    }
+
+    function startGoogleFromChat() {
+        if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.startGoogle === 'function') {
+            window.BrandedAccountPanel.startGoogle();
+            return;
+        }
+        if (isLocalHost()) {
+            var user = {
+                firstName: 'Local',
+                lastName: 'Preview',
+                name: 'Local Preview',
+                email: 'local.preview@brandeduk.test',
+                picture: 'https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png',
+                provider: 'google-local-preview'
+            };
+            localStorage.setItem('authToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('coAuthToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('authUser', JSON.stringify(user));
+            localStorage.setItem('coUser', JSON.stringify(user));
+            try {
+                window.dispatchEvent(new CustomEvent('branded:auth-changed', {
+                    detail: { signedIn: true, user: user }
+                }));
+            } catch (e) {}
+            applyAuthGateUi();
+            return;
+        }
+        var apiBase = (window.BrandedAccount && typeof window.BrandedAccount.apiBaseUrl === 'function')
+            ? window.BrandedAccount.apiBaseUrl()
+            : (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
+        try {
+            var url = new URL(window.location.href);
+            url.searchParams.delete('token');
+            url.searchParams.delete('error');
+            localStorage.setItem('authReturnTo', url.toString());
+        } catch (e) {}
+        window.location.href = apiBase + '/auth/google';
+    }
+
+    function openAccountSignIn(providerLabel) {
+        if (authNote) {
+            authNote.textContent = providerLabel +
+                ' sign-in is not live yet — opening Account so you can continue with Google (or email).';
+        }
+        if (window.BrandedAccountPanel && typeof window.BrandedAccountPanel.openSignIn === 'function') {
+            window.BrandedAccountPanel.openSignIn();
+            return;
+        }
+        var btn = document.getElementById('accountBtn');
+        if (btn) btn.click();
+    }
+
     function openPopup() {
+        applyAuthGateUi();
         popup.classList.remove('is-minimized');
         popup.classList.add('is-active');
         popup.setAttribute('aria-hidden', 'false');
-        if (inputEl) {
-            setTimeout(function () { inputEl.focus(); }, 180);
+        if (chatUnlocked) {
+            scheduleWelcomeMessage();
+            if (inputEl) {
+                setTimeout(function () { inputEl.focus(); }, 180);
+            }
         }
     }
 
@@ -238,7 +442,8 @@
     }
 
     function appendAgentBubble(text) {
-        if (!chatBody || !text) return;
+        if (!chatBody || !text || !chatUnlocked) return;
+        revealWelcomeMessage();
         var wrap = document.createElement('div');
         wrap.className = 'wa-msg wa-msg--agent';
         wrap.innerHTML =
@@ -254,7 +459,8 @@
     }
 
     function appendUserBubble(text) {
-        if (!chatBody || !text) return;
+        if (!chatBody || !text || !chatUnlocked) return;
+        revealWelcomeMessage();
         var wrap = document.createElement('div');
         wrap.className = 'wa-msg wa-msg--user';
         wrap.innerHTML =
@@ -286,6 +492,10 @@
     }
 
     function sendToWhatsApp(text) {
+        if (!chatUnlocked) {
+            applyAuthGateUi();
+            return '';
+        }
         var msg = (text || '').trim();
         if (!msg) msg = 'Hi, I would like some help';
         appendUserBubble(msg);
@@ -296,6 +506,10 @@
     }
 
     function openQuoteContact(message) {
+        if (!chatUnlocked) {
+            applyAuthGateUi();
+            return;
+        }
         closePopup();
         if (typeof window.openContactPopup === 'function') {
             window.openContactPopup(message ? { message: message } : undefined);
@@ -419,8 +633,27 @@
         if (e.key === 'Escape' && popup.classList.contains('is-active')) closePopup();
     });
 
+    if (authGate) {
+        authGate.addEventListener('click', function (e) {
+            var btn = e.target && e.target.closest ? e.target.closest('[data-wa-auth]') : null;
+            if (!btn) return;
+            var provider = btn.getAttribute('data-wa-auth');
+            if (provider === 'google') {
+                startGoogleFromChat();
+            } else if (provider === 'facebook') {
+                openAccountSignIn('Facebook');
+            } else if (provider === 'apple') {
+                openAccountSignIn('Apple');
+            }
+        });
+    }
+
     if (sendBtn) {
         sendBtn.addEventListener('click', function () {
+            if (!chatUnlocked) {
+                applyAuthGateUi();
+                return;
+            }
             sendToWhatsApp(inputEl ? inputEl.value : '');
             if (inputEl) inputEl.value = '';
         });
@@ -429,6 +662,10 @@
         inputEl.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                if (!chatUnlocked) {
+                    applyAuthGateUi();
+                    return;
+                }
                 sendToWhatsApp(inputEl.value);
                 inputEl.value = '';
             }
@@ -436,12 +673,20 @@
     }
     if (attachBtn) {
         attachBtn.addEventListener('click', function () {
+            if (!chatUnlocked) {
+                applyAuthGateUi();
+                return;
+            }
             sendToWhatsApp('Hi, I would like to share a logo / artwork file.');
         });
     }
 
     if (fastRepliesBtn && fastReplies) {
         fastRepliesBtn.addEventListener('click', function () {
+            if (!chatUnlocked) {
+                applyAuthGateUi();
+                return;
+            }
             fastReplies.classList.toggle('is-open');
         });
     }
@@ -449,6 +694,10 @@
         fastReplies.addEventListener('click', function (e) {
             var chip = e.target.closest('[data-wa-reply]');
             if (!chip) return;
+            if (!chatUnlocked) {
+                applyAuthGateUi();
+                return;
+            }
             var text = chip.getAttribute('data-wa-reply') || '';
             if (inputEl) inputEl.value = text;
             sendToWhatsApp(text);
@@ -485,5 +734,18 @@
         callBtn.setAttribute('title', 'Call ' + PHONE_DISPLAY);
     }
 
+    window.addEventListener('branded:auth-changed', function () {
+        applyAuthGateUi();
+    });
+    window.addEventListener('storage', function (e) {
+        if (!e.key || e.key === 'authToken' || e.key === 'coAuthToken' || e.key === 'authUser' || e.key === 'coUser') {
+            applyAuthGateUi();
+        }
+    });
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') applyAuthGateUi();
+    });
+
+    applyAuthGateUi();
     window.openBrandedChat = openPopup;
 })();

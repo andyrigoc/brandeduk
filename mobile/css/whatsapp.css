@@ -304,6 +304,126 @@
     justify-content: flex-end;
 }
 
+/* Typing indicator (3 dots) */
+.wa-msg__bubble--typing {
+    padding: 12px 16px;
+    min-width: 52px;
+}
+.wa-typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 14px;
+}
+.wa-typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #9ca3af;
+    animation: wa-typing-bounce 1.2s infinite ease-in-out both;
+}
+.wa-typing span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+.wa-typing span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+@keyframes wa-typing-bounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    30% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
+/* Auth gate (chatbot locked until Google / Facebook / Apple) */
+.wa-popup__auth-gate {
+    padding: 14px 16px 6px;
+    background: #fff;
+    flex-shrink: 0;
+}
+.wa-popup__auth-gate[hidden] {
+    display: none !important;
+}
+.wa-popup__auth-card {
+    border: 1px solid var(--buk-chat-line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, #fff 0%, var(--buk-chat-soft) 100%);
+    padding: 16px 14px 14px;
+}
+.wa-popup__auth-title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 800;
+    color: var(--buk-chat-navy);
+    letter-spacing: -0.02em;
+}
+.wa-popup__auth-sub {
+    margin: 0 0 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--buk-chat-muted);
+}
+.wa-popup__auth-btns {
+    display: grid;
+    gap: 8px;
+}
+.wa-popup__auth-btn {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--buk-chat-navy);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 0 12px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.wa-popup__auth-btn:hover {
+    background: #f9fafb;
+    border-color: #c4c9d2;
+}
+.wa-popup__auth-btn svg {
+    flex-shrink: 0;
+}
+.wa-popup__auth-btn--facebook {
+    border-color: #d6e4f8;
+}
+.wa-popup__auth-btn--apple {
+    border-color: #d4d4d8;
+}
+.wa-popup__auth-note {
+    margin: 10px 2px 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #9ca3af;
+}
+.wa-popup.is-locked .wa-popup__body {
+    min-height: 72px;
+    max-height: 120px;
+    opacity: 0.55;
+    pointer-events: none;
+}
+.wa-popup.is-locked .wa-popup__quick {
+    opacity: 0.45;
+}
+.wa-popup.is-locked .wa-popup__quick-btn:disabled {
+    cursor: not-allowed;
+}
+.wa-popup__composer[hidden] {
+    display: none !important;
+}
+
 /* Composer */
 .wa-popup__composer {
     padding: 10px 14px 8px;

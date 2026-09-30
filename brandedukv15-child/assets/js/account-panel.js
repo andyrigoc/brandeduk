@@ -2,9 +2,18 @@ window.BrandedAccountPanel = (function () {
     'use strict';
 
     var LOCAL_PREVIEW_TOKEN = 'local-preview-auth';
+    var activeController = null;
 
     function accountScriptLoaded() {
         return !!(window.BrandedAccount && typeof window.BrandedAccount.request === 'function');
+    }
+
+    function notifyAuthChanged(signedIn, user) {
+        try {
+            window.dispatchEvent(new CustomEvent('branded:auth-changed', {
+                detail: { signedIn: !!signedIn, user: user || null }
+            }));
+        } catch (e) { /* older browsers */ }
     }
 
     function isLocalHost() {
@@ -381,6 +390,7 @@ window.BrandedAccountPanel = (function () {
             } catch (error) {
                 Account.clearSession();
                 renderSignedOutView(refs);
+                notifyAuthChanged(false, null);
                 return null;
             }
         }
@@ -392,7 +402,19 @@ window.BrandedAccountPanel = (function () {
             localStorage.setItem('authUser', JSON.stringify(user));
             localStorage.setItem('coUser', JSON.stringify(user));
             renderSignedInView(Account, refs, user);
+            notifyAuthChanged(true, user);
             showToast('Local preview signed in — only the Google profile pill should show.');
+        }
+
+        function startGoogleAuth() {
+            if (isLocalHost()) {
+                applyLocalPreviewSignIn();
+                closePanel();
+                return;
+            }
+            safeReturnUrl(Account);
+            try { sessionStorage.setItem('authPanelWasOpen', '1'); } catch (e) {}
+            window.location.href = Account.apiBaseUrl() + '/auth/google';
         }
 
         function openPanel(preferredCard) {
@@ -473,15 +495,12 @@ window.BrandedAccountPanel = (function () {
         Array.prototype.forEach.call(refs.panel.querySelectorAll('.account-google-btn'), function (googleBtn) {
             googleBtn.addEventListener('click', function () {
                 if (isLocalHost()) {
-                    applyLocalPreviewSignIn();
-                    closePanel();
+                    startGoogleAuth();
                     return;
                 }
-                safeReturnUrl(Account);
                 setButtonLoading(googleBtn, true);
                 googleBtn.querySelector('span').textContent = 'Connecting securely...';
-                try { sessionStorage.setItem('authPanelWasOpen', '1'); } catch (e) {}
-                window.location.href = Account.apiBaseUrl() + '/auth/google';
+                startGoogleAuth();
             });
         });
 
@@ -524,6 +543,7 @@ window.BrandedAccountPanel = (function () {
                     localStorage.setItem('authUser', JSON.stringify(user));
                     localStorage.setItem('coUser', JSON.stringify(user));
                     await refreshSessionUser();
+                    notifyAuthChanged(true, readSessionUser());
                     refs.signinFormData.reset();
                     showToast('Welcome back, ' + firstNameFromUser(readSessionUser()) + '!');
                 } catch (error) {
@@ -570,6 +590,7 @@ window.BrandedAccountPanel = (function () {
                     localStorage.setItem('authUser', JSON.stringify(loginData.user || registeredUser));
                     localStorage.setItem('coUser', JSON.stringify(loginData.user || registeredUser));
                     await refreshSessionUser();
+                    notifyAuthChanged(true, readSessionUser());
                     refs.signupFormData.reset();
                     showToast('Account created. Welcome, ' + firstNameFromUser(readSessionUser()) + '!');
                 } catch (error) {
@@ -585,9 +606,16 @@ window.BrandedAccountPanel = (function () {
                 Account.clearSession();
                 renderSignedOutView(refs);
                 resetForms();
+                notifyAuthChanged(false, null);
                 showToast('You have been signed out.');
             });
         }
+
+        activeController = {
+            openSignIn: function () { openPanel('signin'); },
+            startGoogle: startGoogleAuth,
+            refresh: refreshSessionUser
+        };
 
         refreshSessionUser().then(function (user) {
             var justSignedIn = false;
@@ -597,13 +625,56 @@ window.BrandedAccountPanel = (function () {
                 sessionStorage.removeItem('authPanelWasOpen');
             } catch (e) {}
             if (user && justSignedIn) {
+                notifyAuthChanged(true, user);
                 showToast('You are signed in, ' + firstNameFromUser(user) + '. Your account is ready.');
             }
         });
     }
 
+    function fallbackStartGoogle() {
+        var Account = window.BrandedAccount;
+        if (!Account) {
+            window.location.href = (window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '') + '/auth/google';
+            return;
+        }
+        if (isLocalHost()) {
+            var user = localPreviewUser();
+            localStorage.setItem('authToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('coAuthToken', LOCAL_PREVIEW_TOKEN);
+            localStorage.setItem('authUser', JSON.stringify(user));
+            localStorage.setItem('coUser', JSON.stringify(user));
+            notifyAuthChanged(true, user);
+            return;
+        }
+        try {
+            localStorage.setItem('authReturnTo', currentReturnUrl());
+        } catch (e) {}
+        window.location.href = Account.apiBaseUrl() + '/auth/google';
+    }
+
     return {
-        init: bindPanel
+        init: bindPanel,
+        openSignIn: function () {
+            if (activeController) {
+                activeController.openSignIn();
+                return;
+            }
+            var btn = byId('accountBtn');
+            if (btn) btn.click();
+        },
+        startGoogle: function () {
+            if (activeController) {
+                activeController.startGoogle();
+                return;
+            }
+            fallbackStartGoogle();
+        },
+        isSignedIn: function () {
+            if (window.BrandedAccount && typeof window.BrandedAccount.token === 'function') {
+                return !!window.BrandedAccount.token();
+            }
+            return !!(localStorage.getItem('authToken') || localStorage.getItem('coAuthToken'));
+        }
     };
 })();
 
