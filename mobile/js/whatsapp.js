@@ -5,7 +5,10 @@
 (function () {
     'use strict';
 
+    // Main chat / Send CTA WhatsApp (floating widget composer)
     var WA_NUMBER = '447931372126';
+    // "Speak to a member of our team" — Italian / ops line
+    var SPEAK_WA_NUMBER = '447447348564';
     var PHONE_TEL = '02089742722';
     var PHONE_DISPLAY = '020 8974 2722';
     var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
@@ -25,9 +28,13 @@
         welcome: assetUrl('../../brandedukv15-child/assets/images/ui/chat-welcome-visual.png')
     };
 
-    function waLink(text) {
+    function waLink(text, number) {
         var msg = text || 'Hi, I would like some help';
-        return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
+        return 'https://wa.me/' + (number || WA_NUMBER) + '?text=' + encodeURIComponent(msg);
+    }
+
+    function speakTeamLink(text) {
+        return waLink(text || 'Hi, I would like to speak to a member of your team', SPEAK_WA_NUMBER);
     }
 
     var WELCOME_TEXT = 'Hi! How can we help you today?';
@@ -165,7 +172,7 @@
             '      <span class="wa-popup__action-label">Call our team</span>' +
             '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
             '    </a>' +
-            '    <a class="wa-popup__action wa-popup__action--alt" id="waSpeakTeam" href="' + waLink('Hi, I would like to speak to a member of your team') + '" target="_blank" rel="noopener">' +
+            '    <a class="wa-popup__action wa-popup__action--alt" id="waSpeakTeam" href="' + speakTeamLink() + '" target="_blank" rel="noopener">' +
             '      <span class="wa-popup__action-icon wa-popup__action-icon--chat" aria-hidden="true">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
             '      </span>' +
