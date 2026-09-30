@@ -9,6 +9,8 @@
     --buk-chat-muted: #6b7280;
     --buk-chat-line: #e8eaef;
     --buk-chat-soft: #f5f5f7;
+    --buk-chat-wa-green: #25d366;
+    --buk-chat-wa-green-dark: #1ebe57;
 }
 
 /* Floating button */
@@ -414,11 +416,15 @@
     opacity: 0.55;
     pointer-events: none;
 }
+/* Keep footer tabs fully visible/usable while auth gate is showing */
 .wa-popup.is-locked .wa-popup__quick {
-    opacity: 0.45;
+    opacity: 1;
+    position: relative;
+    z-index: 2;
 }
-.wa-popup.is-locked .wa-popup__quick-btn:disabled {
-    cursor: not-allowed;
+.wa-popup.is-locked .wa-popup__auth-gate {
+    max-height: min(220px, 36vh);
+    overflow-y: auto;
 }
 .wa-popup__composer[hidden] {
     display: none !important;
@@ -527,6 +533,26 @@
 }
 .wa-popup__action--alt:hover {
     background: #ebeeF3;
+}
+/* Speak to a member of our team — WhatsApp green CTA */
+#waSpeakTeam {
+    background: var(--buk-chat-wa-green);
+    border-color: transparent;
+    color: #fff;
+}
+#waSpeakTeam:hover {
+    background: var(--buk-chat-wa-green-dark);
+    border-color: transparent;
+}
+#waSpeakTeam .wa-popup__action-label {
+    color: #fff;
+}
+#waSpeakTeam .wa-popup__action-icon--chat {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+}
+#waSpeakTeam .wa-popup__action-chevron {
+    color: rgba(255, 255, 255, 0.85);
 }
 .wa-popup__action-icon {
     width: 36px;

@@ -356,12 +356,8 @@
         }
         if (sendBtn) sendBtn.disabled = !chatUnlocked;
         if (attachBtn) attachBtn.disabled = !chatUnlocked;
-        if (fastRepliesBtn) fastRepliesBtn.disabled = !chatUnlocked;
-        if (fastReplies && !chatUnlocked) fastReplies.classList.remove('is-open');
-        var quoteBtn = document.getElementById('waQuoteSupport');
-        var orderBtn = document.getElementById('waOrderHelp');
-        if (quoteBtn) quoteBtn.disabled = !chatUnlocked;
-        if (orderBtn) orderBtn.disabled = !chatUnlocked;
+        // Footer tabs (Fast replies / Quote support / Order help) stay usable —
+        // auth gate only locks the message composer, not these actions.
 
         if (chatUnlocked && popup && popup.classList.contains('is-active')) {
             scheduleWelcomeMessage();
@@ -513,10 +509,6 @@
     }
 
     function openQuoteContact(message) {
-        if (!chatUnlocked) {
-            applyAuthGateUi();
-            return;
-        }
         closePopup();
         if (typeof window.openContactPopup === 'function') {
             window.openContactPopup(message ? { message: message } : undefined);
@@ -530,6 +522,17 @@
         document.body.appendChild(trigger);
         trigger.click();
         trigger.remove();
+    }
+
+    function sendFastReply(text) {
+        var msg = (text || '').trim();
+        if (!msg) return;
+        if (chatUnlocked) {
+            sendToWhatsApp(msg);
+            return;
+        }
+        // Logged-out: still open WhatsApp for footer fast-replies (do not require auth)
+        openWhatsAppLink(waLink(msg));
     }
 
     // Touch drag (only if float exists)
@@ -690,10 +693,6 @@
 
     if (fastRepliesBtn && fastReplies) {
         fastRepliesBtn.addEventListener('click', function () {
-            if (!chatUnlocked) {
-                applyAuthGateUi();
-                return;
-            }
             fastReplies.classList.toggle('is-open');
         });
     }
@@ -701,13 +700,9 @@
         fastReplies.addEventListener('click', function (e) {
             var chip = e.target.closest('[data-wa-reply]');
             if (!chip) return;
-            if (!chatUnlocked) {
-                applyAuthGateUi();
-                return;
-            }
             var text = chip.getAttribute('data-wa-reply') || '';
-            if (inputEl) inputEl.value = text;
-            sendToWhatsApp(text);
+            if (inputEl && chatUnlocked) inputEl.value = text;
+            sendFastReply(text);
             if (inputEl) inputEl.value = '';
             fastReplies.classList.remove('is-open');
         });
