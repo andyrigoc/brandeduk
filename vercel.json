@@ -65,6 +65,12 @@
     { "source": "/quote-form.html", "destination": "/?contact=1", "permanent": false },
     { "source": "/brandeduk.com/quote-form-pc", "destination": "/?contact=1", "permanent": false },
     { "source": "/brandeduk.com/quote-form-pc.html", "destination": "/?contact=1", "permanent": false },
+    { "source": "/contact", "destination": "/?contact=1", "permanent": false },
+    { "source": "/contact/", "destination": "/?contact=1", "permanent": false },
+    { "source": "/embroidery", "destination": "/services", "permanent": false },
+    { "source": "/embroidery/", "destination": "/services", "permanent": false },
+    { "source": "/printing", "destination": "/services", "permanent": false },
+    { "source": "/printing/", "destination": "/services", "permanent": false },
     {
       "source": "/mobile",
       "destination": "/",

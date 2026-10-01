@@ -45,6 +45,11 @@ Companion to [ai-search-seo-audit.md](ai-search-seo-audit.md). All changes below
 - `shop.html` was missing an explicit `<meta name="robots">` tag — added for consistency.
 - `shop-pc.html` had **no canonical, no meta description, and no meta robots at all**, despite being directly reachable at `/shop-pc`. Added all three, canonicalizing to `/shop` (the single chosen canonical shop URL, matching the existing home-pc.html/index.html pattern) to prevent duplicate-content risk between the two device-specific shop pages.
 
+## 10. Broken internal links from every blog article (`/embroidery/`, `/printing/`, `/contact/`)
+- All 11 blog articles share the same navigation header, which links to `/embroidery/`, `/printing/`, `/contact/` and `/workwear/`. Verified live: `/workwear/` resolves (200), but `/embroidery/`, `/printing/` and `/contact/` all returned **404**.
+- Added temporary (non-permanent) redirects in `vercel.json` pointing these to the closest genuinely relevant existing content: `/embroidery` and `/printing` → `/services` (which already covers embroidery, DTF, DTG and screen printing), `/contact` → `/?contact=1` (opens the real contact popup, same pattern already used for `/quote`).
+- These are intentionally **non-permanent redirects**, so dedicated `/embroidery/` and `/printing/` landing pages (Phase 4/6 of the brief) can replace them later without an awkward double-redirect.
+
 ## Commit checkpoints (local only, not pushed) — updated
 1. `chore: remove dead/legacy files (old PC prototype, test pages, dated backup)`
 2. `seo: fix robots.txt render-blocking rules, correct business address to Surbiton, dedupe sameAs, remove redirecting URL from sitemap`
