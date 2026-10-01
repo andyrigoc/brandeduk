@@ -27,7 +27,7 @@ These cannot be completed from within this repository — they require access to
 ## 6. Business data needed for remaining SEO phases
 To proceed with Phase 4 (location/service landing pages), Phase 16 (central business-info object), and the About/Contact pages, the following confirmed facts are needed:
 - VAT number / company registration number (for footer + LocalBusiness schema, if you want it displayed).
-- Confirmed opening hours (the contact popup currently shows "Mon–Fri, 9:00–18:00" — confirm this is accurate before it's used in `openingHours` schema).
+- ~~Confirmed opening hours~~ — **Confirmed 2026-10-01: open 7 days a week, 9:00–21:00.** Updated everywhere on the site (popup contact, footer, product/services pages) and added to the `openingHours` schema.org property.
 - Confirmation of which of the brief's suggested landing-page URLs you actually want created (vs. optimising existing category pages instead).
 
 ## 7. OpenAI product feed (Phase 39)

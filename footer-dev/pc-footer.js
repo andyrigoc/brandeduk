@@ -125,7 +125,7 @@
           <section class="buk-footer__contacts" aria-label="Contact information">
             <div><span class="buk-footer__label">Talk to us</span><a class="buk-footer__contact-link buk-footer__contact-link--accent" href="mailto:info@brandeduk.com">info@brandeduk.com &nearr;</a></div>
             <div><span class="buk-footer__label">Call or WhatsApp</span><a class="buk-footer__contact-link" href="tel:+442089742722">0208 974 2722 - 07931 372126</a></div>
-            <div><span class="buk-footer__label">Opening hours</span><p class="buk-footer__contact-text">Monday-Friday - 9:00-18:00</p></div>
+            <div><span class="buk-footer__label">Opening hours</span><p class="buk-footer__contact-text">Open 7 days a week - 9:00-21:00</p></div>
           </section>
           <div class="buk-footer__bottom">
             <div class="buk-footer__company"></div>

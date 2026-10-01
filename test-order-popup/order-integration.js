@@ -682,11 +682,20 @@
         const keyInfo = product.description || product.features || product.keyInfo || '';
         $("#productKeyInfo").text(keyInfo);
 
-        // Optional review data keeps the catalogue presentation useful when the API provides it.
+        // Only show the rating/review block when the API provides genuine review data — never fabricate a fallback.
         const rating = parseFloat(product.rating || product.averageRating || product.reviewRating);
         const reviewCount = parseInt(product.reviewCount || product.reviewsCount || product.reviewTotal, 10);
-        $("#productRatingValue").text(Number.isFinite(rating) ? rating.toFixed(1) : '4.8');
-        $("#productReviewCount").text('(' + (Number.isFinite(reviewCount) ? reviewCount : 124) + ' reviews)');
+        const hasRealReviewData = Number.isFinite(rating) && Number.isFinite(reviewCount) && reviewCount > 0;
+        const $ratingBlock = $("#productRatingValue").closest('.p1-rating');
+        if (hasRealReviewData) {
+            $("#productRatingValue").text(rating.toFixed(1));
+            $("#productReviewCount").text('(' + reviewCount + ' reviews)');
+            $ratingBlock.removeAttr('hidden');
+        } else {
+            $("#productRatingValue").text('');
+            $("#productReviewCount").text('');
+            $ratingBlock.attr('hidden', true);
+        }
         
         // Price — use priceBreaks if available, else basePrice
         const basePrice = parseFloat(product.basePrice) || parseFloat(product.price) || 5.90;

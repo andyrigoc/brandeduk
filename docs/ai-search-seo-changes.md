@@ -50,6 +50,18 @@ Companion to [ai-search-seo-audit.md](ai-search-seo-audit.md). All changes below
 - Added temporary (non-permanent) redirects in `vercel.json` pointing these to the closest genuinely relevant existing content: `/embroidery` and `/printing` → `/services` (which already covers embroidery, DTF, DTG and screen printing), `/contact` → `/?contact=1` (opens the real contact popup, same pattern already used for `/quote`).
 - These are intentionally **non-permanent redirects**, so dedicated `/embroidery/` and `/printing/` landing pages (Phase 4/6 of the brief) can replace them later without an awkward double-redirect.
 
+## 11. Fake review fallback removed (shop-pc.html / test-order-popup/order-integration.js)
+- Product pages showed a hardcoded `4.8 stars (124 reviews)` whenever the product API didn't provide real review data — a fabricated rating shown on every product lacking genuine reviews.
+- Fixed: the rating block is now hidden entirely (`hidden` attribute) unless the API returns genuine `rating` and `reviewCount` values. No fallback numbers are shown.
+
+## 12. Email consistency (services.html)
+- Footer showed `sales@brandeduk.com` while every other page uses `info@brandeduk.com`. Standardised to `info@brandeduk.com`.
+
+## 13. Opening hours corrected everywhere (confirmed 2026-10-01: 7 days a week, 9:00–21:00)
+- Previously showed inconsistent values across the site: "Mon–Fri, 9:00–18:00" (popup contact, mojibake in 2 files), "Monday-Friday - 9:00-18:00" (pc-footer.js), "Mon-Fri 9am-5pm" (product-detail.html, services.html footer).
+- Updated all occurrences to "Open 7 days a week, 9:00–21:00" (or "Open 7 days, 9am-9pm" in the shorter footer blurbs), including regenerating `pc-header-template.js` and `mobile/js/popup-contact-template.js` via `npm run build:pc-header` since they're derived from `home-pc.html`.
+- Added `"openingHours": "Mo-Su 09:00-21:00"` to the Organization JSON-LD in `index.html`, `index-mobile.html` and `home-pc.html`.
+
 ## Commit checkpoints (local only, not pushed) — updated
 1. `chore: remove dead/legacy files (old PC prototype, test pages, dated backup)`
 2. `seo: fix robots.txt render-blocking rules, correct business address to Surbiton, dedupe sameAs, remove redirecting URL from sitemap`
