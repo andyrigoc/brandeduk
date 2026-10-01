@@ -572,6 +572,11 @@ body.popup-open {
     font-size: 13px;
 }
 
+/* Only show when real review data is present — never display the rating UI as a fake fallback. */
+#orderPopup .p1-rating[hidden] {
+    display: none;
+}
+
 #orderPopup .p1-rating-stars {
     color: #f5b400;
     font-size: 18px;
