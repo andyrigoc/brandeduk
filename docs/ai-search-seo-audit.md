@@ -232,6 +232,14 @@ Spot-checked `index.html`, `home-pc.html`, `shop.html`: `og:title`, `og:descript
 
 Not evaluated in depth in this pass — deferred to the dedicated `/docs/openai-product-feed-readiness.md` (Phase 39), since it requires inspecting live product API data (`api.brandeduk.com`), which is a separate backend service outside this repo's direct control.
 
+## 16. Image SEO (Phases 15-22, spot check)
+
+- **Naming convention is largely already good.** `brandedukv15-child/assets/images/services/` uses genuinely descriptive names (`screen-printing-streetwear-graffiti.jpg`, `embroidery-rocket-machine.jpg`, etc.) matching the brief's recommended pattern. No `IMG_1234.jpg` / `Screenshot-...` / `final-copy.jpg` style filenames were found among the ~530 local image assets checked.
+- **Duplicate brand logos with inconsistent naming**: the `brands/` folder has multiple near-duplicate files per brand using different naming conventions for the same logo, e.g. `asquithfox_2020.jpg`, `asquithfox2020.jpg`, and `asquith-and-fox.jpg` all appear to be the same Asquith & Fox logo. This pattern repeats across several brands (AWDis, BC Collection, etc.). Not fixed in this pass — needs a dependency check (which filename each page actually references) before any safe de-duplication, per the brief's explicit renaming-safety rule.
+- **Customizer type-selection icons are hosted externally** on `i.postimg.cc` (a free third-party image host), e.g. `https://i.postimg.cc/bvG3nXgM/Screenshot-2026-06-01-111523.png` used for "DTF Printing" / "Embroidery" / "Screen Printing" / "Vinyl Heat Press" icons in `customization-tool/index.html` and `customization-tool-mobile/index.html`. This isn't primarily a naming problem — it's a reliability/control risk: no SLA, no CDN guarantee, and the filename (date-stamped screenshot) can't be changed since it's not our asset to rename. Recommend migrating these specific icons into `brandedukv15-child/assets/images/` with proper descriptive names if/when there's time for that follow-up.
+
+No image renaming was performed in this pass — only documented as findings, per the brief's Phase 19 safety rule (audit table first, no blind renaming).
+
 ---
 
 ## Summary table
