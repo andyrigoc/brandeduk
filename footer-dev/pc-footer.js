@@ -46,6 +46,14 @@
         ]
       },
       {
+        title: "Industries",
+        links: [
+          ["Hospitality & Cafés", "hospitality-workwear.html"],
+          ["Construction & Trades", "construction-workwear.html"],
+          ["Corporate Uniforms", "corporate-uniforms.html"]
+        ]
+      },
+      {
         title: "Customisation",
         links: [
           ["Embroidery", "services.html#embroidery"],

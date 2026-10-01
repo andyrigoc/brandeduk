@@ -43,6 +43,10 @@
     { "source": "/customize", "destination": "/customize.html" },
     { "source": "/services", "destination": "/services.html" },
 
+    { "source": "/hospitality-workwear", "destination": "/hospitality-workwear.html" },
+    { "source": "/construction-workwear", "destination": "/construction-workwear.html" },
+    { "source": "/corporate-uniforms", "destination": "/corporate-uniforms.html" },
+
     { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
     { "source": "/terms-and-conditions", "destination": "/terms-and-conditions.html" },
 
@@ -169,6 +173,21 @@
     {
       "source": "/services.html",
       "destination": "/services",
+      "permanent": true
+    },
+    {
+      "source": "/hospitality-workwear.html",
+      "destination": "/hospitality-workwear",
+      "permanent": true
+    },
+    {
+      "source": "/construction-workwear.html",
+      "destination": "/construction-workwear",
+      "permanent": true
+    },
+    {
+      "source": "/corporate-uniforms.html",
+      "destination": "/corporate-uniforms",
       "permanent": true
     },
     {
