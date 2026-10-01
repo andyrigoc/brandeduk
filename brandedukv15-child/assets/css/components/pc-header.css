@@ -354,7 +354,7 @@
         position: relative;
         flex: 1 1 auto;
         width: auto !important;
-        max-width: 400px;
+        max-width: 380px;
         min-width: 120px;
         height: 36px;
         margin-right: 0;
@@ -1098,7 +1098,7 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 auto;
         width: auto !important;
-        max-width: 360px;
+        max-width: 342px;
         min-width: 140px;
     }
 }
@@ -1148,7 +1148,7 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 auto;
         width: auto !important;
-        max-width: 320px;
+        max-width: 304px;
         min-width: 120px;
     }
 
@@ -1239,7 +1239,7 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 auto;
         width: auto !important;
-        max-width: 240px;
+        max-width: 228px;
         min-width: 112px;
     }
 }
@@ -1265,7 +1265,7 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 auto;
         width: auto !important;
-        max-width: calc(400px - (120px * var(--bu-adapt)));
+        max-width: calc(380px - (114px * var(--bu-adapt)));
         min-width: 120px;
     }
 
@@ -1292,7 +1292,7 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        max-width: 280px;
+        max-width: 266px;
         min-width: 112px;
     }
 }
