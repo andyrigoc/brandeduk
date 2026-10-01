@@ -15,21 +15,32 @@ Disallow: /*?*customizingProduct=*
 Disallow: /*?*sessionId=*
 
 # Disallow duplicate/old content folders
-Disallow: /brandeduk.com/
-Disallow: /brandeduk.com-pc-OLD/
-Disallow: /mobile/home-mobile.html
-Disallow: /tablet-order-process-v4/
-Disallow: /test-order-page/
+# Note: brandeduk.com/css/* and test-order-popup/*.css|*.js are live production
+# assets loaded by home-pc.html and shop-pc.html, so only legacy HTML/JS pages
+# are blocked below, allowing Googlebot to still render those pages correctly.
+Disallow: /brandeduk.com/*.html
+Disallow: /brandeduk.com/js/
+Allow: /brandeduk.com/css/
+Allow: /test-order-popup/*.css
+Allow: /test-order-popup/*.js
 Disallow: /footer-dev/
 Disallow: /.history/
 Disallow: /tools/
 Disallow: /dist/
 Disallow: /design-assets/
-Disallow: /customization-tool_backup_20260605-060018/
-Disallow: /test-order-popup/
 Disallow: /tests/
 Disallow: /.github/
 Disallow: /.cursor/
+
+# Explicit allow for AI search crawlers (same effect as the wildcard above, kept for clarity)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
 
 # Sitemap location
 Sitemap: https://www.brandeduk.com/sitemap.xml
