@@ -155,7 +155,7 @@ function resolveBrandLogoPath(brandName) {
 
 // Update all pricing displays when VAT changes
 function updateAllPricing() {
-    // Update main price â€” show lowest tier price with "START FROM"
+    // Update main price — show lowest tier price with "START FROM"
     const mainPriceEl = document.getElementById('mainPrice');
     if (mainPriceEl && DISCOUNTS && DISCOUNTS.length > 0) {
         // Find the lowest price across all tiers
@@ -300,7 +300,7 @@ async function loadProductData() {
             if (productData) {
                 sessionStorage.setItem('selectedProductData', JSON.stringify(productData));
             } else {
-                // Both failed â€” try sessionStorage cache
+                // Both failed — try sessionStorage cache
                 const savedProductData = sessionStorage.getItem('selectedProductData');
                 if (savedProductData) {
                     try {
@@ -327,7 +327,7 @@ async function loadProductData() {
 
     if (!productData) {
         console.error('âŒ No product data available!');
-        // No blocking alert â€“ redirect to homepage so user isn't stuck
+        // No blocking alert – redirect to homepage so user isn't stuck
         window.location.replace('index.html');
         return false;
     }
@@ -2200,7 +2200,7 @@ function changeColor(name, url, colorDiv) {
     }
 }
 
-// showColorChangeModal removed â€” auto-save on color change now
+// showColorChangeModal removed — auto-save on color change now
 
 /* ---------------------------------------------------
    MINI SUMMARY
@@ -2217,7 +2217,7 @@ function updateBelowSummary(total, unit) {
     const currentTotal = total;
     const currentPrice = currentTotal > 0 ? (unit * currentTotal) : 0;
 
-    const perItemLabel = currentTotal > 0 ? ` Â· ${formatCurrency(unit)} each ${vatSuffix()}` : '';
+    const perItemLabel = currentTotal > 0 ? ` \u00b7 ${formatCurrency(unit)} each ${vatSuffix()}` : '';
     const summaryMarkup = `
         <div class="summary-text">
             <span class="summary-items"><b>${currentTotal} items</b>${perItemLabel}</span>
@@ -2325,7 +2325,7 @@ function updateTotals() {
     const tier = getCurrentTier(grandProductTotal);
     if (priceInfoEl) {
         if (grandProductTotal === 0) {
-            priceInfoEl.innerHTML = `Price listed for 1â€“9 units`;
+            priceInfoEl.innerHTML = `Price listed for 1–9 units`;
         } else {
             priceInfoEl.innerHTML =
                 `<b>Bulk price applied:</b> ${formatCurrency(tier.price)} ${vatSuffix()} (${tier.min}+ units)`;
@@ -2340,7 +2340,7 @@ function updateTotals() {
     if (continueShoppingButton) continueShoppingButton.disabled = continueDisabled;
     if (addCustomizeButton) addCustomizeButton.disabled = continueDisabled;
 
-    // Sync mobile sticky bar â€” show CURRENT color total + "Add to basket"
+    // Sync mobile sticky bar — show CURRENT color total + "Add to basket"
     const stickyAddToBasket = document.getElementById("stickyAddToBasket");
     const stickyTotal = document.getElementById("stickyTotal");
 
@@ -2760,7 +2760,7 @@ if (popupViewBasketBtn) {
     };
 }
 
-// "Add your logo now" button in popup â€” navigate to customize page
+// "Add your logo now" button in popup — navigate to customize page
 const popupAddLogoBtn = document.getElementById('popupAddLogoBtn');
 if (popupAddLogoBtn) {
     popupAddLogoBtn.onclick = () => {
@@ -2798,7 +2798,7 @@ if (popupAddLogoBtn) {
     };
 }
 
-// "Continue Shopping" link in popup â€” close popup and stay on page
+// "Continue Shopping" link in popup — close popup and stay on page
 const popupContinueShopping = document.getElementById('popupContinueShopping');
 if (popupContinueShopping) {
     popupContinueShopping.onclick = (e) => {

@@ -2323,7 +2323,7 @@ body {
 }
 
 .submit-quote-btn.validate:after {
-    content: "Ã¢Å“â€œ ADDED" !important;
+    content: "✓ ADDED" !important;
 }
 
 @keyframes rotating {

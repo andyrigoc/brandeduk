@@ -1285,7 +1285,7 @@
                                           (item.positions && Object.keys(item.positions).length > 0) ||
                                           (item.positionDesigns && Object.keys(item.positionDesigns).length > 0);
                 const customBadgeClass = hasCustomization ? 'item-customize-badge has-customization' : 'item-customize-badge';
-                const customBadgeText = hasCustomization ? 'Ã¢Å“â€œ Customized' : '+ Add Logo';
+                const customBadgeText = hasCustomization ? '✓ Customized' : '+ Add Logo';
                 
                 // Support both 'sizes' and 'quantities' keys
                 const sizes = item.sizes || item.quantities || {};
@@ -1298,7 +1298,7 @@
                                 <div class="basket-size-row">
                                     <span class="size-label">${size}</span>
                                     <div class="basket-qty-controls">
-                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">Ã¢Ë†â€™</button>
+                                        <button type="button" class="qty-btn minus" data-index="${index}" data-size="${size}">−</button>
                                         <span class="qty-value">${qty}</span>
                                         <button type="button" class="qty-btn plus" data-index="${index}" data-size="${size}">+</button>
                                     </div>
@@ -1328,7 +1328,7 @@
                                 ${sizesHtml}
                             </div>
                             ${getItemLogosSectionHtml(item, garmentHex)}
-                            ${item.note ? `<div class="basket-item-note">Ã°Å¸â€œÂ ${item.note}</div>` : ''}
+                            ${item.note ? `<div class="basket-item-note">Note: ${item.note}</div>` : ''}
                             <span class="${customBadgeClass}">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <path d="M12 20h9"/>
@@ -1746,7 +1746,7 @@
                         
                         if (result.success || result.ok || result.data) {
                             bqSubmitBtn.classList.add('submitted');
-                            bqSubmitBtn.innerHTML = 'Ã¢Å“â€œ Quote Submitted!';
+                            bqSubmitBtn.innerHTML = '✓ Quote Submitted!';
                             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
                             
                             setTimeout(() => {

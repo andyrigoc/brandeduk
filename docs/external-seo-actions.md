@@ -3,7 +3,7 @@
 These cannot be completed from within this repository — they require access to external dashboards, verified business accounts, or information only you can confirm.
 
 ## 1. Vercel dashboard
-- **Apex → www redirect is `307` (temporary) instead of permanent.** Verified live: `https://brandeduk.com/` → 307 → `https://www.brandeduk.com/`. This is controlled by Vercel's Project → Domains settings, not by `vercel.json`. Check whether Vercel allows configuring this as a permanent (301/308) redirect, or whether it's a platform default that can't be changed.
+- ~~Apex → www redirect is `307` (temporary) instead of permanent.~~ — **Fixed 2026-10-01**: changed in Vercel Project → Domains → brandeduk.com → Edit → Redirect to Another Domain → `301 Moved Permanently` → `www.brandeduk.com`. Confirmed live.
 - Confirm whether any **Deployment Protection** (password/SSO gate) is enabled on the production domain — if so, it would block all crawlers including OAI-SearchBot regardless of `robots.txt`.
 - Confirm there is no **Vercel Firewall / rate-limiting rule** configured that could affect bot traffic (nothing is visible in the repo; this can only be checked in the dashboard).
 

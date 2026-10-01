@@ -267,10 +267,10 @@ const ShopManager = (function () {
 
         let defaultThumbImage = product.image;
         if (activeColorSlug && matchedVariant) {
-            // Variant-level color filter â€“ show the matched variant
+            // Variant-level color filter – show the matched variant
             defaultThumbImage = matchedVariant.main || product.image;
         } else if (hasColorFilter && !activeColorSlug) {
-            // primaryColour / colourShade filter active â€“ pick first matching variant
+            // primaryColour / colourShade filter active – pick first matching variant
             const filterColorValues = [
                 ...(currentState.filters.primaryColour || []),
                 ...(currentState.filters.colourShade || [])
@@ -287,7 +287,7 @@ const ShopManager = (function () {
                 if (matched) {
                     defaultThumbImage = matched.main || product.image;
                 } else {
-                    // No exact match â€“ fall back to first color variant (since API already filtered by color)
+                    // No exact match – fall back to first color variant (since API already filtered by color)
                     defaultThumbImage = allColors[0].main || product.image;
                 }
             }
@@ -359,7 +359,7 @@ const ShopManager = (function () {
                     // If a color was explicitly clicked, revert to that color's image
                     if (img) img.src = selectedColor.url;
                 } else {
-                    // No color clicked â€“ revert to the model/lifestyle image
+                    // No color clicked – revert to the model/lifestyle image
                     if (img) img.src = product.image;
                 }
             });
@@ -622,13 +622,13 @@ const ShopManager = (function () {
                         </div>
                     `;
                 } else {
-                    // Check if gender filter is active â€” skip grouping if so
+                    // Check if gender filter is active — skip grouping if so
                     var hasGenderFilter = currentState.filters.gender && currentState.filters.gender.length > 0;
 
                     let rendered = 0;
                     var cardIndex = 0;
 
-                    // Always render flat list â€” no gender grouping
+                    // Always render flat list — no gender grouping
                     result.items.forEach(function(product) {
                         var card = createProductCard(product, cardIndex++);
                         if (!card) return;

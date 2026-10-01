@@ -2764,7 +2764,7 @@ a {
 }
 
 .order-card-item-row::before {
-    content: "Ã¢â€”â€¹";
+    content: "○";
     color: var(--purple);
     font-size: 10px;
 }
@@ -7416,7 +7416,7 @@ a {
 }
 
 .color-dot-mobile.active::after {
-    content: 'Ã¢Å“â€œ';
+    content: '✓';
     position: absolute;
     top: 50%;
     left: 50%;
