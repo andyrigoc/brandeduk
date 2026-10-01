@@ -58,38 +58,26 @@
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 14px;
             height: 100vh;
             margin: 0;
-            padding: 24px;
-            box-sizing: border-box;
             background: #faf7f3;
             color: #333;
-            text-align: center;
         }
-        .splash-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin: 0;
-            color: #273469;
-            max-width: 440px;
+        /* Accessible hiding: present in the DOM/HTML for crawlers and screen readers,
+           but not shown on the loading splash for sighted users. */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
-        .splash-desc {
-            font-size: 12.5px;
-            line-height: 1.5;
-            margin: 0;
-            color: #5b5b5b;
-            max-width: 440px;
-        }
-        .splash-nav {
-            font-size: 12px;
-            max-width: 480px;
-            line-height: 1.8;
-        }
-        .splash-nav a { margin: 0 4px; }
         .loader-container {
             position: relative;
             width: 100px;
@@ -130,8 +118,8 @@
     </style>
 </head>
 <body>
-    <h1 class="splash-title">BrandedUK - Custom Workwear, Uniforms, Embroidery &amp; Printing</h1>
-    <p class="splash-desc">Branded workwear, uniforms, embroidery and printing for trades, schools, hospitality, healthcare, logistics, clubs and business teams across the UK. Fast turnaround and competitive bulk pricing.</p>
+    <h1 class="visually-hidden">BrandedUK - Custom Workwear, Uniforms, Embroidery &amp; Printing</h1>
+    <p class="visually-hidden">Branded workwear, uniforms, embroidery and printing for trades, schools, hospitality, healthcare, logistics, clubs and business teams across the UK. Fast turnaround and competitive bulk pricing.</p>
     <div class="loader-container">
         <div class="upload" role="status" aria-label="Loading BrandedUK">
             <span class="upload1"></span>
@@ -141,12 +129,12 @@
         </div>
         <p id="debugInfo" style="display:none;"></p>
     </div>
-    <nav class="splash-nav" aria-label="Shop categories">
-        <a href="home-pc.html">Shop workwear</a> &middot;
-        <a href="services.html">Embroidery &amp; printing</a> &middot;
-        <a href="polos.html">Polo shirts</a> &middot;
-        <a href="hoodies.html">Hoodies</a> &middot;
-        <a href="hivis.html">Hi-Vis</a> &middot;
+    <nav class="visually-hidden" aria-label="Shop categories">
+        <a href="home-pc.html">Shop workwear</a>
+        <a href="services.html">Embroidery &amp; printing</a>
+        <a href="polos.html">Polo shirts</a>
+        <a href="hoodies.html">Hoodies</a>
+        <a href="hivis.html">Hi-Vis</a>
         <a href="workwear.html">Workwear</a>
     </nav>
     <noscript>
