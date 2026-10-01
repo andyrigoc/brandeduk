@@ -60,7 +60,9 @@
     { "source": "/workwear", "destination": "/workwear.html" },
     { "source": "/jackets", "destination": "/jackets.html" },
     { "source": "/bundles", "destination": "/bundles.html" },
-    { "source": "/bulk-orders", "destination": "/bulk-orders.html" }
+    { "source": "/bulk-orders", "destination": "/bulk-orders.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/contact", "destination": "/contact.html" }
   ],
 
   "redirects": [
@@ -69,8 +71,8 @@
     { "source": "/quote-form.html", "destination": "/?contact=1", "permanent": false },
     { "source": "/brandeduk.com/quote-form-pc", "destination": "/?contact=1", "permanent": false },
     { "source": "/brandeduk.com/quote-form-pc.html", "destination": "/?contact=1", "permanent": false },
-    { "source": "/contact", "destination": "/?contact=1", "permanent": false },
-    { "source": "/contact/", "destination": "/?contact=1", "permanent": false },
+    { "source": "/contact/", "destination": "/contact", "permanent": true },
+    { "source": "/about/", "destination": "/about", "permanent": true },
     { "source": "/embroidery", "destination": "/services", "permanent": false },
     { "source": "/embroidery/", "destination": "/services", "permanent": false },
     { "source": "/printing", "destination": "/services", "permanent": false },

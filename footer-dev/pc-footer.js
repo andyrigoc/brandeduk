@@ -71,13 +71,13 @@
           ["Returns", "terms-and-conditions.html#returns"],
           ["Size Guides", "shop-pc.html"],
           ["FAQs", "home-pc.html#faq"],
-          ["Contact Us", "#contact", "contact"]
+          ["Contact Us", "contact.html"]
         ]
       },
       {
         title: "Business",
         links: [
-          ["About Branded UK", "home-pc.html"],
+          ["About Branded UK", "about.html"],
           ["Bulk & Corporate Orders", "bulk-orders.html"],
           ["Request a Quote", "#", "contact"],
           ["Case Studies", "blog/case-study-500-tshirts-london-event.html"],
