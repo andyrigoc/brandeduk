@@ -62,7 +62,14 @@
     { "source": "/bundles", "destination": "/bundles.html" },
     { "source": "/bulk-orders", "destination": "/bulk-orders.html" },
     { "source": "/about", "destination": "/about.html" },
-    { "source": "/contact", "destination": "/contact.html" }
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/embroidery", "destination": "/embroidery.html" },
+    { "source": "/screen-printing", "destination": "/screen-printing.html" },
+    { "source": "/dtf-printing", "destination": "/dtf-printing.html" },
+    { "source": "/dtg-printing", "destination": "/dtg-printing.html" },
+    { "source": "/school-uniforms", "destination": "/school-uniforms.html" },
+    { "source": "/sports-teamwear", "destination": "/sports-teamwear.html" },
+    { "source": "/outdoor-workwear", "destination": "/outdoor-workwear.html" }
   ],
 
   "redirects": [
@@ -73,10 +80,15 @@
     { "source": "/brandeduk.com/quote-form-pc.html", "destination": "/?contact=1", "permanent": false },
     { "source": "/contact/", "destination": "/contact", "permanent": true },
     { "source": "/about/", "destination": "/about", "permanent": true },
-    { "source": "/embroidery", "destination": "/services", "permanent": false },
-    { "source": "/embroidery/", "destination": "/services", "permanent": false },
+    { "source": "/embroidery/", "destination": "/embroidery", "permanent": true },
     { "source": "/printing", "destination": "/services", "permanent": false },
     { "source": "/printing/", "destination": "/services", "permanent": false },
+    { "source": "/screen-printing/", "destination": "/screen-printing", "permanent": true },
+    { "source": "/dtf-printing/", "destination": "/dtf-printing", "permanent": true },
+    { "source": "/dtg-printing/", "destination": "/dtg-printing", "permanent": true },
+    { "source": "/school-uniforms/", "destination": "/school-uniforms", "permanent": true },
+    { "source": "/sports-teamwear/", "destination": "/sports-teamwear", "permanent": true },
+    { "source": "/outdoor-workwear/", "destination": "/outdoor-workwear", "permanent": true },
     {
       "source": "/mobile",
       "destination": "/",

@@ -50,17 +50,21 @@
         links: [
           ["Hospitality & Cafés", "hospitality-workwear.html"],
           ["Construction & Trades", "construction-workwear.html"],
-          ["Corporate Uniforms", "corporate-uniforms.html"]
+          ["Corporate Uniforms", "corporate-uniforms.html"],
+          ["School Uniforms", "school-uniforms.html"],
+          ["Sports Teamwear", "sports-teamwear.html"],
+          ["Outdoor Workwear", "outdoor-workwear.html"]
         ]
       },
       {
         title: "Customisation",
         links: [
-          ["Embroidery", "services.html#embroidery"],
-          ["Printing", "services.html#printing"],
+          ["Embroidery", "embroidery.html"],
+          ["Screen Printing", "screen-printing.html"],
+          ["DTF Printing", "dtf-printing.html"],
+          ["DTG Printing", "dtg-printing.html"],
           ["Artwork Guidelines", "blog/prepare-logo-printing-embroidery.html"],
-          ["Logo Setup & Pricing", "customization.html"],
-          ["How It Works", "customization.html"]
+          ["Logo Setup & Pricing", "customization.html"]
         ]
       },
       {
