@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260220">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20260927-quotepopup"></script>
-    <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261001-basketrail1"></script>
+    <script src="brandedukv15-child/assets/js/pc-header.js?v=20261001-basketrail1"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
@@ -1616,9 +1616,9 @@
             }
             #basketContent {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) 390px;
+                grid-template-columns: minmax(0, 1fr) clamp(230px, 26.5vw + 20px, 360px);
                 align-items: start;
-                gap: 28px;
+                gap: clamp(12px, 1.5vw + 4px, 28px);
             }
             .basket-main-column,
             .basket-summary-column { min-width: 0; }
@@ -1963,8 +1963,8 @@
                 overflow: hidden;
                 background: #fff;
             }
-            .basket-summary-column { margin-top: 20px; }
-            .order-summary-bottom { max-width: 480px; }
+            .basket-summary-column { margin-top: 0; }
+            .order-summary-bottom { max-width: none; }
         }
 
         @media (min-width: 700px) {
@@ -2020,7 +2020,10 @@
                 font-size: 12px;
             }
             .basket-desktop-title .clear-desktop-btn:hover { color: #7a1710; background: transparent; }
-            #basketContent { grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; }
+            #basketContent {
+                grid-template-columns: minmax(0, 1fr) clamp(230px, 26.5vw + 20px, 360px);
+                gap: clamp(12px, 1.5vw + 4px, 32px);
+            }
 
             .basket-list-toolbar {
                 padding: 15px 20px;
@@ -2282,6 +2285,121 @@
             }
             .basket-footer-brandmark span { color: inherit; }
         }
+
+        /* ── Gradual content scale (tablet → laptop): fonts, pads, thumbs shrink with width.
+               Summary column was fixed at 360/390px so it stayed "100%" while the left squeezed. ── */
+        @media (min-width: 700px) {
+            body.basket-page {
+                --basket-summary-col: clamp(230px, 26.5vw + 20px, 360px);
+                --basket-col-gap: clamp(12px, 1.5vw + 4px, 32px);
+                --basket-pad-x: clamp(12px, 0.9vw + 6px, 20px);
+                --basket-pad-y: clamp(12px, 0.75vw + 6px, 18px);
+                --basket-fs-section: clamp(13px, 0.35vw + 11px, 16px);
+                --basket-fs-item: clamp(12px, 0.28vw + 10.5px, 14px);
+                --basket-fs-meta: clamp(10px, 0.2vw + 9.2px, 12px);
+                --basket-fs-body: clamp(11px, 0.22vw + 10px, 13px);
+                --basket-fs-summary-h: clamp(15px, 0.4vw + 12px, 18px);
+                --basket-fs-price: clamp(13px, 0.35vw + 11px, 16px);
+                --basket-fs-total: clamp(16px, 0.5vw + 12px, 20px);
+                --basket-fs-grand: clamp(18px, 0.7vw + 12px, 24px);
+                --basket-fs-btn: clamp(12px, 0.28vw + 10.5px, 14px);
+                --basket-fs-btn-sm: clamp(11px, 0.25vw + 10px, 13px);
+                --basket-thumb: clamp(48px, 3.2vw + 22px, 64px);
+                --basket-logo-thumb: clamp(44px, 2.8vw + 20px, 58px);
+                --basket-qty: clamp(28px, 1.2vw + 20px, 32px);
+            }
+
+            body.basket-page .basket-content {
+                width: clamp(calc(100% - 28px), calc(100% - 3.5vw), calc(100% - 64px));
+            }
+
+            #basketContent {
+                grid-template-columns: minmax(0, 1fr) var(--basket-summary-col);
+                gap: var(--basket-col-gap);
+            }
+
+            /* Left: Basket items */
+            .basket-list-toolbar {
+                padding: var(--basket-pad-y) var(--basket-pad-x);
+                gap: clamp(10px, 1.2vw, 20px);
+            }
+            .basket-section-title { font-size: var(--basket-fs-section); }
+            .vat-toggle-row { font-size: var(--basket-fs-body); }
+            .basket-list-toolbar .clear-desktop-btn { font-size: var(--basket-fs-meta); }
+
+            .basket-item-row {
+                column-gap: clamp(12px, 1.4vw, 24px);
+                padding: var(--basket-pad-y) var(--basket-pad-x);
+            }
+            .basket-item-row:first-child { padding-top: var(--basket-pad-y); }
+
+            .item-row-image {
+                width: var(--basket-thumb);
+                height: var(--basket-thumb);
+            }
+            .item-row-title { font-size: var(--basket-fs-item); }
+            .item-edit-hint { margin-left: calc(var(--basket-thumb) + 12px); font-size: var(--basket-fs-meta); }
+            .item-row-meta .item-code,
+            .item-row-meta .item-size,
+            .item-row-remove { font-size: var(--basket-fs-meta); }
+            .item-row-price .price-amount { font-size: var(--basket-fs-price); }
+            .item-row-price .price-note { font-size: var(--basket-fs-meta); }
+
+            .qty-controls .qty-btn {
+                width: var(--basket-qty);
+                height: var(--basket-qty);
+            }
+            .qty-controls .qty-value {
+                width: clamp(40px, 3vw + 20px, 50px);
+                height: var(--basket-qty);
+                line-height: var(--basket-qty);
+                font-size: var(--basket-fs-item);
+            }
+
+            .logos-applied-header { font-size: var(--basket-fs-meta); }
+            .logo-thumb-wrap {
+                width: var(--basket-logo-thumb);
+                height: var(--basket-logo-thumb);
+            }
+            .logo-row {
+                grid-template-columns: var(--basket-logo-thumb) minmax(0, 1fr);
+                padding: clamp(8px, 0.6vw + 4px, 12px) 0;
+            }
+            .logo-row .logo-method-label { font-size: var(--basket-fs-item); }
+            .logo-row .logo-position-label,
+            .logo-row .logo-actions a,
+            .logo-row .logo-actions button { font-size: var(--basket-fs-meta); }
+            .add-logo-btn {
+                padding: clamp(8px, 0.5vw + 5px, 10px) clamp(10px, 0.7vw + 6px, 14px);
+                font-size: var(--basket-fs-meta);
+            }
+            .item-row-total { font-size: var(--basket-fs-body); }
+            .item-row-total .total-value { font-size: var(--basket-fs-total); }
+
+            /* Right: Order summary */
+            .order-summary-bottom {
+                max-width: none;
+                padding: clamp(14px, 1.1vw + 8px, 22px);
+            }
+            .order-summary-bottom h3,
+            .order-summary-bottom__header h3 { font-size: var(--basket-fs-summary-h); }
+            .summary-row { font-size: var(--basket-fs-body); padding: clamp(4px, 0.3vw + 2px, 6px) 0; }
+            .summary-grand-total .grand-total-val { font-size: var(--basket-fs-grand); }
+            .summary-assurance strong { font-size: var(--basket-fs-body); }
+            .summary-assurance small { font-size: var(--basket-fs-meta); }
+            .summary-assurance { padding-top: clamp(10px, 0.8vw + 6px, 15px); margin-top: clamp(12px, 1vw + 6px, 16px); }
+            .summary-actions { margin-top: clamp(12px, 1vw + 6px, 16px); gap: clamp(6px, 0.5vw + 4px, 8px); }
+            .btn-checkout-primary {
+                padding: clamp(11px, 0.7vw + 6px, 14px);
+                font-size: var(--basket-fs-btn);
+            }
+            .btn-request-quote,
+            .btn-share-basket {
+                padding: clamp(10px, 0.6vw + 5px, 12px);
+                font-size: var(--basket-fs-btn-sm);
+            }
+            .btn-continue-shopping { font-size: var(--basket-fs-body); }
+        }
     </style>
     <link rel="stylesheet" href="mobile/footer/footer.css?v=20260210">
 </head>
@@ -2370,9 +2488,9 @@
                     </a>
                     <div class="header-top-vat-control" role="group" aria-label="Toggle VAT pricing">
                         <button class="header-top-vat-toggle" type="button" aria-pressed="false" aria-label="Toggle VAT pricing">
-                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc" data-vat-exc>exc vat</span>
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--exc is-active" data-vat-exc>Ex VAT</span>
+                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>Inc VAT</span>
                             <span class="header-top-vat-toggle__thumb" aria-hidden="true"></span>
-                            <span class="header-top-vat-toggle__label header-top-vat-toggle__label--inc" data-vat-inc>inc vat</span>
                         </button>
                     </div>
                     <a class="header-top-basket-link" href="basket.html" aria-label="View quote">
@@ -3848,15 +3966,21 @@
         const sideToggle = document.getElementById('vatToggle');
         const mobileToggle = document.getElementById('vatToggleCheckbox');
         const tabletToggle = document.getElementById('vatToggleTablet');
-        const headerToggles = Array.from(document.querySelectorAll('.header-top-vat-toggle'));
 
         const applyVatUiState = () => {
             if (sideToggle) sideToggle.checked = includeVAT;
             if (mobileToggle) mobileToggle.checked = includeVAT;
             if (tabletToggle) tabletToggle.checked = includeVAT;
-            headerToggles.forEach((btn) => {
+            // Re-query after pc-header.js may have replaced the header markup.
+            const liveHeaderToggles = Array.from(document.querySelectorAll('.header-top-vat-toggle'));
+            liveHeaderToggles.forEach((btn) => {
                 btn.setAttribute('aria-pressed', includeVAT ? 'true' : 'false');
                 btn.classList.toggle('is-on', includeVAT);
+                const excLabel = btn.querySelector('[data-vat-exc]');
+                const incLabel = btn.querySelector('[data-vat-inc]');
+                // pc-header.css hides labels without .is-active
+                if (excLabel) excLabel.classList.toggle('is-active', !includeVAT);
+                if (incLabel) incLabel.classList.toggle('is-active', includeVAT);
             });
         };
 
@@ -3887,7 +4011,10 @@
             });
         }
 
-        headerToggles.forEach((btn) => {
+        // Bind header toggles once (markup may already be from BrandedPcHeader.mount).
+        document.querySelectorAll('.header-top-vat-toggle').forEach((btn) => {
+            if (btn.dataset.basketVatBound === '1') return;
+            btn.dataset.basketVatBound = '1';
             btn.addEventListener('click', () => {
                 setIncludeVat(!includeVAT);
             });

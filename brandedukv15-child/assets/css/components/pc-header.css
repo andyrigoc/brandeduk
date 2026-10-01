@@ -39,7 +39,8 @@
     .site-header {
         --bu-adapt: 0;
         --bu-content-max: 1440px;
-        --bu-hero-width: min(100%, 1440px);
+        /* 100vw (not 100%) — fixed header % basis can exceed the visible viewport. */
+        --bu-hero-width: min(100vw, 1440px);
         --bu-pad-x: 24px;
         --bu-rail-inset: 0px;
         --header-shell-width: 1440px;

@@ -64,7 +64,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261001-shopsmall', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261001-basketrail1', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-search.css?v=20260924-search3', assetsRoot).href, 'search');
     }
 
@@ -114,6 +114,65 @@
         var actions = inner && inner.querySelector('.searchbar-header__actions');
         if (!inner || !dropdown || !actions || dropdown.parentElement === inner) return;
         inner.insertBefore(dropdown, actions);
+    }
+
+    /* Match home-pc: lock header rail to hero width, or viewport when no hero (basket/shop). */
+    function syncHeaderRailWidth() {
+        var header = document.querySelector('.site-header');
+        if (!header) return;
+        var hero = document.querySelector('.hero-banners-container');
+        var width = 0;
+        if (hero) {
+            width = Math.round(hero.getBoundingClientRect().width);
+        }
+        if (!(width > 0)) {
+            width = Math.min(Math.round(window.innerWidth), 1440);
+        }
+        if (width > 0) {
+            header.style.setProperty('--bu-hero-width', width + 'px');
+        }
+    }
+
+    function bindHeaderRailSync() {
+        if (window.__buHeroRailBound) {
+            syncHeaderRailWidth();
+            return;
+        }
+        window.__buHeroRailBound = true;
+        var scheduled = false;
+        function schedule() {
+            if (scheduled) return;
+            scheduled = true;
+            window.requestAnimationFrame(function () {
+                scheduled = false;
+                syncHeaderRailWidth();
+            });
+        }
+        syncHeaderRailWidth();
+        window.addEventListener('resize', schedule, { passive: true });
+        window.addEventListener('load', schedule);
+        if (typeof ResizeObserver === 'function') {
+            var hero = document.querySelector('.hero-banners-container');
+            if (hero) new ResizeObserver(schedule).observe(hero);
+        }
+    }
+
+    /* pc-header.css hides VAT labels without .is-active — seed Ex VAT visible after inject. */
+    function configureVatLabels(header) {
+        header.querySelectorAll('.header-top-vat-control').forEach(function (control) {
+            var button = control.querySelector('.header-top-vat-toggle');
+            var exc = control.querySelector('[data-vat-exc]');
+            var inc = control.querySelector('[data-vat-inc]');
+            if (!button) return;
+            var isOn = button.classList.contains('is-on') || button.getAttribute('aria-pressed') === 'true';
+            if (window.brandedukv15 && window.brandedukv15.vat && typeof window.brandedukv15.vat.isOn === 'function') {
+                isOn = !!window.brandedukv15.vat.isOn();
+            }
+            button.classList.toggle('is-on', isOn);
+            button.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+            if (exc) exc.classList.toggle('is-active', !isOn);
+            if (inc) inc.classList.toggle('is-active', isOn);
+        });
     }
 
     function configureContactActions(header) {
@@ -244,6 +303,7 @@
         configureBasket(newHeader);
         configureContactActions(newHeader);
         relocateShopProducts(newHeader);
+        configureVatLabels(newHeader);
         existingHeader.replaceWith(newHeader);
 
         var existingPromo = document.querySelector('.top-promo-bar');
@@ -272,6 +332,7 @@
         if (standardStyles) document.head.appendChild(standardStyles);
         loadHeaderBehaviour();
         loadPcSearch();
+        bindHeaderRailSync();
         document.documentElement.classList.remove('pc-header-loading');
         document.documentElement.classList.add('pc-header-ready');
         mounted = true;

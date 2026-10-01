@@ -687,14 +687,17 @@ window.BrandedAccountPanel = (function () {
         var header = document.querySelector('.site-header');
         var hero = document.querySelector('.hero-banners-container');
         if (!header) return;
+        var width = 0;
         if (hero) {
-            var width = Math.round(hero.getBoundingClientRect().width);
-            if (width > 0) {
-                header.style.setProperty('--bu-hero-width', width + 'px');
-                return;
-            }
+            width = Math.round(hero.getBoundingClientRect().width);
         }
-        header.style.removeProperty('--bu-hero-width');
+        if (!(width > 0)) {
+            /* Pages without a hero (basket, etc.): match viewport like home rail JS. */
+            width = Math.min(Math.round(window.innerWidth), 1440);
+        }
+        if (width > 0) {
+            header.style.setProperty('--bu-hero-width', width + 'px');
+        }
     }
 
     var scheduled = false;
