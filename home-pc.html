@@ -179,7 +179,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261001-logocombo">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20261001-textsize25">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20261001-shopsmall">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20260929-rotatebeat3">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -449,16 +449,22 @@
             padding-top: 0 !important;
             padding-bottom: 0 !important;
         }
+        .site-header .searchbar-header__brand {
+            gap: 10px !important;
+            margin-right: 0 !important;
+        }
         .site-header .searchbar-header__brand-badge-wrap {
             display: block;
-            border-radius: 50%;
-            overflow: hidden;
+            height: var(--bu-badge-h, 45px);
+            width: auto;
+            border-radius: 0 !important;
+            overflow: visible !important;
         }
         .site-header .searchbar-header__brand-badge {
             height: 100%;
-            width: 100%;
-            object-fit: cover;
-            transform: scale(1.55);
+            width: auto;
+            object-fit: contain !important;
+            transform: none !important;
             display: block;
         }
         .site-header .searchbar-header__brand-text {
@@ -468,7 +474,7 @@
             object-fit: contain;
             background: transparent !important;
             display: block;
-            margin-left: 15px !important;
+            margin-left: 0 !important;
         }
 
         /* Header top phone styling */

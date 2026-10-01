@@ -19,8 +19,8 @@
         background: #fff;
         color: #1f2937;
         font-family: Inter, Arial, sans-serif;
-        --bu-logo-h: 56px;
-        --bu-badge-h: clamp(34px, calc(45px - 11px * var(--bu-adapt, 0)), 45px);
+        --bu-logo-h: 67.2px;
+        --bu-badge-h: clamp(37.4px, calc(49.5px - 12.1px * var(--bu-adapt, 0)), 49.5px);
     }
 
     .site-header .header-top,
@@ -269,35 +269,38 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-right: calc(169px - var(--bu-badge-h, 45px) - (var(--bu-logo-h, 56px) * 2.334));
+        /* Do not use negative margin — it pulls Shop products over the wordmark. */
+        margin-right: 0;
     }
 
+    /* GIF badge: full frame, no circular crop/mask. Wordmark sits to its right. */
     html body .site-header .searchbar-header__brand-badge-wrap {
         display: block;
-        height: var(--bu-badge-h, 45px);
-        width: var(--bu-badge-h, 45px);
+        height: var(--bu-badge-h, 49.5px);
+        width: auto;
         flex: 0 0 auto;
-        border-radius: 50%;
-        overflow: hidden;
+        border-radius: 0;
+        overflow: visible;
     }
 
     html body .site-header .searchbar-header__brand-badge {
         display: block;
         height: 100%;
-        width: 100%;
+        width: auto;
         max-width: none;
-        object-fit: cover;
-        transform: scale(1.55);
+        object-fit: contain;
+        transform: none;
         transform-origin: center;
     }
 
+    /* Side-by-side with badge — never negative margin (stacks GIF on text). */
     html body .site-header .searchbar-header__brand-text {
         display: block;
         width: auto;
-        height: var(--bu-logo-h, 56px);
+        height: var(--bu-logo-h, 67.2px);
         max-width: none;
         object-fit: contain;
-        margin-left: 15px;
+        margin-left: 0;
     }
 
     .site-header .searchbar-header .category-dropdown {
@@ -309,18 +312,19 @@
         z-index: 1;
     }
 
+    /* Smaller Shop products — frees space vs logo without widening search. */
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
-        height: 36px;
-        padding: 0 22px 0 20px;
+        gap: 5px;
+        height: 30px;
+        padding: 0 12px 0 11px;
         border: none;
         border-radius: 6px;
         background: #ff7a00;
         color: #fff;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         letter-spacing: 0;
         line-height: 1;
@@ -339,13 +343,13 @@
     .site-header .shop-products-btn .category-toggle-icon::before {
         content: "";
         display: block;
-        width: 14px;
-        height: 14px;
+        width: 11px;
+        height: 11px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 5px 5px no-repeat,
-            linear-gradient(#fff, #fff) 9px 0 / 5px 5px no-repeat,
-            linear-gradient(#fff, #fff) 0 9px / 5px 5px no-repeat,
-            linear-gradient(#fff, #fff) 9px 9px / 5px 5px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 7px 0 / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 0 7px / 4px 4px no-repeat,
+            linear-gradient(#fff, #fff) 7px 7px / 4px 4px no-repeat;
     }
 
     .site-header .shop-products-btn .category-toggle-caret::before {
@@ -353,6 +357,12 @@
         content: "\25BE";
     }
 
+    /*
+     * Right util cluster: Quote + Account + Laptop.
+     * Search shrinks first; utils never overlap search and keep their labels.
+     * Do NOT use relative left pulls on Quote/Account — those cross the search on squeeze.
+     * Do NOT shift this whole row with --bu-adapt (that desyncs the laptop from the top cart).
+     */
     .site-header .searchbar-header__actions {
         display: flex;
         align-items: center;
@@ -364,7 +374,7 @@
         margin-left: 12px;
         justify-content: flex-start;
         position: relative;
-        left: calc(45px * (1 - var(--bu-adapt, 0)));
+        left: 0;
         padding-right: 0;
     }
 
@@ -376,22 +386,25 @@
 
     .site-header .searchbar-header__search-expand {
         position: relative;
-        flex: 1 1 auto;
+        flex: 1 1 0;
         width: auto !important;
         max-width: 380px;
-        min-width: 120px;
+        min-width: 0;
         height: 36px;
         margin-right: 0;
+        overflow: hidden;
     }
 
     .site-header .searchbar-header__actions > .header-util-link {
         flex: 0 0 auto;
+        flex-shrink: 0;
+        position: relative;
+        left: 0;
     }
 
-    .site-header .header-util-link:first-of-type {
+    /* Push Quote+Account+Laptop to the right; search yields the free space. */
+    .site-header .searchbar-header__actions > .header-util-link:first-of-type {
         margin-left: auto;
-        position: relative;
-        left: -86px;
     }
 
     .site-header .searchbar-header__search-expand .search-input-expand {
@@ -476,19 +489,31 @@
         display: none !important;
     }
 
-    /* Laptop Basket stays in flow as the rightmost search-row control. */
+    /*
+     * Laptop stays pinned on the right edge (same rail as top cart).
+     * Nudge only the icon box so its visual center matches the orange cart above;
+     * the link itself stays in flow so Quote/Account remain beside it.
+     */
     .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link {
         position: relative !important;
         right: auto !important;
-        left: -20px !important;
+        left: 0 !important;
         top: auto !important;
         margin: 0 !important;
         transform: none !important;
         display: inline-flex !important;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         flex: 0 0 auto;
+        flex-shrink: 0;
         z-index: 1;
+    }
+
+    .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link .header-basket-icon--video,
+    .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link > svg {
+        position: relative;
+        left: -1px;
     }
 
     .site-header .searchbar-header__action,
@@ -1100,21 +1125,21 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 32px;
-        padding: 0 16px 0 15px;
-        gap: 5px;
-        font-size: 13px;
+        height: 28px;
+        padding: 0 10px 0 10px;
+        gap: 4px;
+        font-size: 11px;
         border-radius: 6px;
     }
 
     .site-header .shop-products-btn .category-toggle-icon::before {
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 8px 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 0 8px / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 8px 8px / 4px 4px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 7px 0 / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 0 7px / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 7px 7px / 3px 3px no-repeat;
     }
 
     .site-header .searchbar-header__actions {
@@ -1122,10 +1147,11 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        flex: 1 1 auto;
+        flex: 1 1 0;
         width: auto !important;
         max-width: 342px;
-        min-width: 140px;
+        min-width: 0;
+        overflow: hidden;
     }
 }
 
@@ -1141,21 +1167,21 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 30px;
-        padding: 0 14px 0 14px;
+        height: 26px;
+        padding: 0 9px 0 9px;
         gap: 4px;
-        font-size: 12px;
+        font-size: 11px;
         border-radius: 6px;
     }
 
     .site-header .shop-products-btn .category-toggle-icon::before {
-        width: 11px;
-        height: 11px;
+        width: 9px;
+        height: 9px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 7px 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 0 7px / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 7px 7px / 4px 4px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 6px 0 / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 0 6px / 3px 3px no-repeat,
+            linear-gradient(#fff, #fff) 6px 6px / 3px 3px no-repeat;
     }
 
     .site-header .searchbar-header__actions {
@@ -1168,10 +1194,11 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        flex: 1 1 auto;
+        flex: 1 1 0;
         width: auto !important;
         max-width: 304px;
-        min-width: 120px;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .site-header .header-bottom > .header-container {
@@ -1232,37 +1259,37 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 30px;
-        padding: 0 12px;
-        font-size: 12px;
+        height: 26px;
+        padding: 0 8px;
+        font-size: 11px;
     }
 
-    .site-header .header-util-link {
-        gap: 0;
-        font-size: 0;
-        width: 34px;
-        justify-content: center;
-    }
-
-    .site-header .header-util-link.is-signed-in,
-    .site-header .header-util-link:has(> .account-trigger-profile) {
-        width: auto !important;
-        font-size: 0 !important;
+    /* Keep Quote/Account labels visible — shrink search, never icon-only utils. */
+    .site-header .searchbar-header__actions > .header-util-link {
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        width: auto;
+        font-size: 13px;
+        gap: 6px;
+        justify-content: flex-start;
     }
 
     .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link {
         position: relative !important;
         right: auto !important;
-        width: 34px;
+        left: 0 !important;
+        width: auto;
         font-size: 0;
         gap: 0;
+        flex-shrink: 0;
     }
 
     .site-header .searchbar-header__search-expand {
-        flex: 1 1 auto;
+        flex: 1 1 0;
         width: auto !important;
         max-width: 228px;
-        min-width: 112px;
+        min-width: 0;
+        overflow: hidden;
     }
 }
 
@@ -1285,10 +1312,11 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        flex: 1 1 auto;
+        flex: 1 1 0;
         width: auto !important;
-        max-width: calc(380px - (114px * var(--bu-adapt)));
-        min-width: 120px;
+        max-width: calc(380px - (160px * var(--bu-adapt)));
+        min-width: 0;
+        overflow: hidden;
     }
 
     .site-header .header-top-left {
@@ -1314,8 +1342,9 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        max-width: 266px;
-        min-width: 112px;
+        max-width: 220px;
+        min-width: 0;
+        overflow: hidden;
     }
 }
 
