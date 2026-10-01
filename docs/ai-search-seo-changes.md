@@ -36,12 +36,25 @@ Companion to [ai-search-seo-audit.md](ai-search-seo-audit.md). All changes below
 - New location/service landing pages (Phase 4 of the brief), About/Contact standalone pages, Product/CollectionPage schema, and the OpenAI product feed script were **not started** in this pass — they require business data (opening hours, VAT/company registration, confirmed page list) that hasn't been provided yet.
 - Mobile-architecture consolidation (separate brief) is intentionally out of scope here.
 
-## Commit checkpoints (local only, not pushed)
+## 8. Thin JS-redirect category pages (polos, hoodies, jackets, tshirts, workwear, hivis)
+- These pages immediately redirect via JavaScript to `shop.html?productType=X`. Before this fix, most had a body of only `<h1>...</h1><p>Redirecting...</p>` — the same empty-shell problem as the homepage, discovered while implementing the meta-robots consistency fix.
+- Added one real descriptive sentence per page (reused from each page's own existing `<meta name="description">` copy — no new claims invented) plus a plain `<a href="shop.html?productType=...">` fallback link, so non-JS crawlers see genuine content and a working link instead of just "Redirecting...".
+- The JS redirect logic itself and real-user behaviour are unchanged.
+
+## 9. shop.html / shop-pc.html metadata gap
+- `shop.html` was missing an explicit `<meta name="robots">` tag — added for consistency.
+- `shop-pc.html` had **no canonical, no meta description, and no meta robots at all**, despite being directly reachable at `/shop-pc`. Added all three, canonicalizing to `/shop` (the single chosen canonical shop URL, matching the existing home-pc.html/index.html pattern) to prevent duplicate-content risk between the two device-specific shop pages.
+
+## Commit checkpoints (local only, not pushed) — updated
 1. `chore: remove dead/legacy files (old PC prototype, test pages, dated backup)`
 2. `seo: fix robots.txt render-blocking rules, correct business address to Surbiton, dedupe sameAs, remove redirecting URL from sitemap`
 3. `seo: add real visible H1/description/nav links to index.html splash screen so non-JS crawlers see content before device redirect`
 4. `seo: add FAQPage structured data mirroring the visible FAQ content on home-pc.html`
 5. `seo: add clean URL routes for privacy-policy/terms-and-conditions and align their canonical/og:url tags`
 6. `seo: add explicit meta robots tag to category pages for consistency with sibling pages`
+7. `docs: add SEO changes log and external manual actions list (Phase 40 deliverables)`
+8. `seo: restore original splash-screen visual appearance, keep SEO content accessible-hidden instead of visible`
+9. `seo: add real descriptive content and fallback links to thin JS-redirect category pages (same empty-shell issue as homepage)`
+10. `seo: add missing canonical/description/robots meta to shop.html and shop-pc.html`
 
 Roll back any single step with `git reset --hard <commit-before-it>`. Nothing has been pushed, so production (Vercel) is unaffected until you approve and push.
