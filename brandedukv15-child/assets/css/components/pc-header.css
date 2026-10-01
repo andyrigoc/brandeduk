@@ -280,7 +280,7 @@
         /* Sit beside the logo — never overlap the search field. */
         margin-left: 12px;
         position: relative;
-        left: 0;
+        left: 45px;
         z-index: 1;
     }
 
@@ -339,7 +339,7 @@
         margin-left: 12px;
         justify-content: flex-start;
         position: relative;
-        left: 0;
+        left: 45px;
         padding-right: 0;
     }
 
@@ -1071,7 +1071,7 @@
     }
 
     .site-header .searchbar-header .category-dropdown {
-        left: 0;
+        left: 45px;
     }
 
     .site-header .searchbar-header__surface {
@@ -1130,7 +1130,7 @@
     }
 
     .site-header .searchbar-header .category-dropdown {
-        left: 0;
+        left: 45px;
     }
 
     .site-header .shop-products-btn,
@@ -1227,7 +1227,7 @@
 
     .site-header .searchbar-header .category-dropdown {
         margin-left: 0;
-        left: 0;
+        left: 45px;
     }
 
     .site-header .shop-products-btn,
@@ -1282,7 +1282,7 @@
 @media (min-width: 700px) and (max-width: 1199px) {
     .site-header .searchbar-header .category-dropdown {
         margin-left: 10px;
-        left: 0;
+        left: 45px;
     }
 
     .site-header .searchbar-header__search-expand {
@@ -1312,7 +1312,7 @@
 @media (min-width: 700px) and (max-width: 1023px) {
     .site-header .searchbar-header .category-dropdown {
         margin-left: 8px;
-        left: 0;
+        left: 45px;
     }
 
     .site-header .searchbar-header__search-expand {
