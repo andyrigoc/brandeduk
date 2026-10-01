@@ -178,8 +178,8 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20260929-basket25">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20260929-topshift10">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261001-logocombo">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-header.css?v=20261001-textsize25">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20260929-rotatebeat3">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header-basket-lottie.css?v=20260927-basketnoflash1">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -449,13 +449,26 @@
             padding-top: 0 !important;
             padding-bottom: 0 !important;
         }
-        .site-header .searchbar-header__brand-img {
-            height: 58px !important;
+        .site-header .searchbar-header__brand-badge-wrap {
+            display: block;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        .site-header .searchbar-header__brand-badge {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transform: scale(1.55);
+            display: block;
+        }
+        .site-header .searchbar-header__brand-text {
+            height: 56px !important;
             width: auto !important;
             max-width: none !important;
             object-fit: contain;
             background: transparent !important;
             display: block;
+            margin-left: 15px !important;
         }
 
         /* Header top phone styling */
@@ -1461,7 +1474,10 @@
         <div class="searchbar-header__surface">
             <div class="searchbar-header__inner">
                 <a class="searchbar-header__brand" href="index.html" aria-label="brandedUK home">
-                    <img class="searchbar-header__brand-img" src="brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="brandedUK">
+                    <span class="searchbar-header__brand-badge-wrap">
+                        <img class="searchbar-header__brand-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" aria-hidden="true">
+                    </span>
+                    <img class="searchbar-header__brand-text" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261001-combo" alt="brandedUK">
                 </a>
 
                 <div class="searchbar-header__actions">
@@ -1484,7 +1500,6 @@
                     </a>
                     <a class="header-util-link header-top-basket-link" href="#" onclick="event.preventDefault(); openOrderDrawer();" aria-label="View basket">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6L5 3H2"/></svg>
-                        Basket
                     </a>
                 </div>
             </div>

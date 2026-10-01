@@ -2440,22 +2440,11 @@ body {
     width: auto;
     object-fit: contain;
 }
-.searchbar-header__brand-text {
-    display: none !important; /* Text is now part of the logo image */
-}
 
 /* Desktop-only: enlarge brandedUK logo */
 @media (min-width: 700px) {
     .searchbar-header__brand-img {
         height: 162px;
-    }
-
-    .searchbar-header__brand-badge {
-        display: none;
-    }
-
-    .searchbar-header__brand-text {
-        display: none !important;
     }
 }
 
