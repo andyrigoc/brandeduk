@@ -43,6 +43,9 @@
     { "source": "/customize", "destination": "/customize.html" },
     { "source": "/services", "destination": "/services.html" },
 
+    { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
+    { "source": "/terms-and-conditions", "destination": "/terms-and-conditions.html" },
+
     { "source": "/product", "destination": "/product-detail.html" },
     { "source": "/product/:code", "destination": "/product-detail.html" },
 
@@ -160,6 +163,16 @@
     {
       "source": "/services.html",
       "destination": "/services",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy.html",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/terms-and-conditions.html",
+      "destination": "/terms-and-conditions",
       "permanent": true
     },
     {
