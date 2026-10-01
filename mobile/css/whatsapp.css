@@ -501,7 +501,7 @@
 /* Action rows */
 .wa-popup__actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
     padding: 4px 14px 12px;
     background: #fff;
@@ -510,9 +510,10 @@
 .wa-popup__action {
     display: flex;
     align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 14px;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px;
     border-radius: 14px;
     border: 1px solid var(--buk-chat-line);
     background: #fff;
@@ -539,10 +540,13 @@
     background: var(--buk-chat-wa-green);
     border-color: transparent;
     color: #fff;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 #waSpeakTeam:hover {
     background: var(--buk-chat-wa-green-dark);
     border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(30, 190, 87, 0.35);
 }
 #waSpeakTeam .wa-popup__action-label {
     color: #fff;
@@ -551,12 +555,9 @@
     background: rgba(255, 255, 255, 0.22);
     color: #fff;
 }
-#waSpeakTeam .wa-popup__action-chevron {
-    color: rgba(255, 255, 255, 0.85);
-}
 .wa-popup__action-icon {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -577,17 +578,36 @@
 }
 .wa-popup__action-label {
     flex: 1;
-    font-size: 14px;
+    min-width: 0;
+    font-size: 13px;
     font-weight: 700;
     color: var(--buk-chat-navy);
+    white-space: nowrap;
 }
 .wa-popup__action-chevron {
     color: #9ca3af;
     display: inline-flex;
 }
 .wa-popup__action-chevron svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+}
+@media (max-width: 400px) {
+    .wa-popup__action {
+        gap: 5px;
+        padding: 9px 6px;
+    }
+    .wa-popup__action-icon {
+        width: 26px;
+        height: 26px;
+    }
+    .wa-popup__action-label {
+        font-size: 11px;
+    }
+    .wa-popup__action-chevron svg {
+        width: 12px;
+        height: 12px;
+    }
 }
 
 /* Quick links */

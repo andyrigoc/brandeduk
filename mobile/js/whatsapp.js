@@ -96,7 +96,10 @@
             '<div class="wa-popup__card" role="dialog" aria-modal="true" aria-label="Branded support chat">' +
             '  <div class="wa-popup__topbar">' +
             '    <div class="wa-popup__brand">' +
-            '      <img class="wa-popup__brand-logo" src="' + IMG.logo + '" alt="bd" width="32" height="32" decoding="async">' +
+            '      <svg class="wa-popup__brand-logo" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="bd">' +
+            '        <circle cx="16" cy="16" r="14.5" fill="#fff" stroke="#fd7f47" stroke-width="2.5"/>' +
+            '        <text x="16" y="21" text-anchor="middle" font-family="Poppins, system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" fill="#111">bd</text>' +
+            '      </svg>' +
             '    </div>' +
             '    <div class="wa-popup__status"><span class="wa-popup__status-dot" aria-hidden="true"></span><span>We\'re here to help</span></div>' +
             '    <div class="wa-popup__controls">' +
@@ -165,18 +168,17 @@
             '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, can you help with logo placement and pricing?">Logo help</button>' +
             '  </div>' +
             '  <div class="wa-popup__actions">' +
+            '    <a class="wa-popup__action wa-popup__action--alt" id="waSpeakTeam" href="' + speakTeamLink() + '" target="_blank" rel="noopener">' +
+            '      <span class="wa-popup__action-icon wa-popup__action-icon--chat" aria-hidden="true">' +
+            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+            '      </span>' +
+            '      <span class="wa-popup__action-label">Chat with our team</span>' +
+            '    </a>' +
             '    <a class="wa-popup__action" id="waCallTeam" href="tel:' + PHONE_TEL + '">' +
             '      <span class="wa-popup__action-icon wa-popup__action-icon--call" aria-hidden="true">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.68 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.32 1.54.55 2.35.68A2 2 0 0 1 22 16.92z"/></svg>' +
             '      </span>' +
             '      <span class="wa-popup__action-label">Call our team</span>' +
-            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
-            '    </a>' +
-            '    <a class="wa-popup__action wa-popup__action--alt" id="waSpeakTeam" href="' + speakTeamLink() + '" target="_blank" rel="noopener">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--chat" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
-            '      </span>' +
-            '      <span class="wa-popup__action-label">Speak to a member of our team</span>' +
             '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
             '    </a>' +
             '  </div>' +
