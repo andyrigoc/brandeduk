@@ -19,6 +19,7 @@
         background: #fff;
         color: #1f2937;
         font-family: Inter, Arial, sans-serif;
+        --bu-logo-h: clamp(70px, calc(96px - 26px * var(--bu-adapt, 0)), 96px);
     }
 
     .site-header .header-top,
@@ -264,13 +265,13 @@
 
     .site-header .searchbar-header__brand {
         flex: 0 0 auto;
-        margin-right: 8px;
+        margin-right: calc(8px - (var(--bu-logo-h, 96px) - 58px) * 1.777);
     }
 
     html body .site-header .searchbar-header__brand-img {
         display: block;
         width: auto;
-        height: 58px !important;
+        height: var(--bu-logo-h, 96px) !important;
         max-width: none;
         object-fit: contain;
     }
@@ -280,7 +281,7 @@
         /* Sit beside the logo — never overlap the search field. */
         margin-left: 12px;
         position: relative;
-        left: 45px;
+        left: calc(45px * (1 - var(--bu-adapt, 0)));
         z-index: 1;
     }
 
@@ -339,7 +340,7 @@
         margin-left: 12px;
         justify-content: flex-start;
         position: relative;
-        left: 45px;
+        left: calc(45px * (1 - var(--bu-adapt, 0)));
         padding-right: 0;
     }
 
@@ -1066,14 +1067,6 @@
         min-height: 56px;
     }
 
-    html body .site-header .searchbar-header__brand-img {
-        height: 58px !important;
-    }
-
-    .site-header .searchbar-header .category-dropdown {
-        left: 45px;
-    }
-
     .site-header .searchbar-header__surface {
         padding-top: 10px !important;
         padding-bottom: 10px !important;
@@ -1121,16 +1114,7 @@
     }
 
     .site-header .searchbar-header__brand {
-        margin-right: 0;
-    }
-
-    html body .site-header .searchbar-header__brand-img {
-        height: 40px !important;
-        max-width: 158px;
-    }
-
-    .site-header .searchbar-header .category-dropdown {
-        left: 45px;
+        margin-right: calc(8px - (var(--bu-logo-h, 96px) - 58px) * 1.777);
     }
 
     .site-header .shop-products-btn,
@@ -1211,7 +1195,7 @@
     }
 
     .site-header .searchbar-header__inner {
-        min-height: 48px;
+        min-height: 64px;
         gap: 10px;
     }
 
@@ -1220,14 +1204,8 @@
         padding-bottom: 10px !important;
     }
 
-    html body .site-header .searchbar-header__brand-img {
-        height: 36px !important;
-        max-width: 133px;
-    }
-
     .site-header .searchbar-header .category-dropdown {
         margin-left: 0;
-        left: 45px;
     }
 
     .site-header .shop-products-btn,
@@ -1282,7 +1260,6 @@
 @media (min-width: 700px) and (max-width: 1199px) {
     .site-header .searchbar-header .category-dropdown {
         margin-left: 10px;
-        left: 45px;
     }
 
     .site-header .searchbar-header__search-expand {
@@ -1312,7 +1289,6 @@
 @media (min-width: 700px) and (max-width: 1023px) {
     .site-header .searchbar-header .category-dropdown {
         margin-left: 8px;
-        left: 45px;
     }
 
     .site-header .searchbar-header__search-expand {
