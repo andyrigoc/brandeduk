@@ -234,7 +234,11 @@
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(self)" }
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(self)" },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://code.jquery.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://i.postimg.cc https://cdn.pimber.ly https://brandeduk.lon1.cdn.digitaloceanspaces.com https://via.placeholder.com https://www.google.com https://maps.gstatic.com https://maps.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.brandeduk.com https://cdn.pimber.ly https://brandeduk.lon1.cdn.digitaloceanspaces.com https://i.postimg.cc; frame-src 'self' https://www.google.com https://maps.google.com; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'"
+        }
       ]
     },
     {
