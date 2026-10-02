@@ -22,7 +22,7 @@
     <link rel="preload" as="fetch" href="brandedukv15-child/assets/images/ui/cart-icon-loader.json" crossorigin media="(min-width: 700px)">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <script src="brandedukv15-child/assets/js/cart-lottie-icon.js?v=20260927-cartlottie2" data-header-cart></script>
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-cta-equal">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-greettiming">
 
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -43,7 +43,7 @@
             --basket-link-blue: #2563eb;
         }
 
-        /* Never hide the header on basket page — keep it always visible */
+        /* Never hide the header on basket page â€” keep it always visible */
         body.basket-page .site-header.header-hidden {
             transform: none !important;
         }
@@ -60,14 +60,14 @@
             margin-top: 0;
         }
 
-        /* ── MOBILE (< 700px): only basket-header (back + title + clear) — hide site header entirely ── */
+        /* â”€â”€ MOBILE (< 700px): only basket-header (back + title + clear) â€” hide site header entirely â”€â”€ */
         @media (max-width: 699px) {
             body.basket-page .header-top        { display: none !important; }
             body.basket-page .header-bottom     { display: none !important; }
             body.basket-page .top-promo-bar     { display: none !important; }
             /* Hide the entire site header (logo bar) on mobile basket page */
             body.basket-page .searchbar-header  { display: none !important; }
-            /* Browse Categories: mobile basket only — keep visible on tablet/desktop basket and shop/home */
+            /* Browse Categories: mobile basket only â€” keep visible on tablet/desktop basket and shop/home */
             body.basket-page .category-dropdown,
             body.basket-page .category-toggle,
             body.basket-page .header-bottom .category-toggle-label {
@@ -77,7 +77,7 @@
 
         /* Tablets (>= 700px) use the PC header, not the mobile-route header. */
 
-        /* ── FIX: responsive.css collapses searchbar to 44px on 1280px+ — override it ── */
+        /* â”€â”€ FIX: responsive.css collapses searchbar to 44px on 1280px+ â€” override it â”€â”€ */
         /* Match home-pc.html header exactly */
         .header-with-promo .searchbar-header {
             padding: 0 !important;
@@ -359,7 +359,7 @@
             color: #374151;
         }
 
-        /* Minimum order popup — slightly smaller than default confirm modal */
+        /* Minimum order popup â€” slightly smaller than default confirm modal */
         #minOrderModal .confirm-modal {
             max-width: 300px;
             border-radius: 14px;
@@ -793,7 +793,7 @@
             justify-content: center;
             overflow: hidden;
             box-sizing: border-box;
-            /* Garment colour contrast — do not override in mobile.css; set inline + --garment-bg */
+            /* Garment colour contrast â€” do not override in mobile.css; set inline + --garment-bg */
             background:
                 linear-gradient(45deg, #f8fafc 25%, transparent 25%),
                 linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
@@ -1472,7 +1472,7 @@
             /* Outer page */
             body.basket-page { background: #f3f4f6; }
 
-            /* Full-width container — matches header-container width */
+            /* Full-width container â€” matches header-container width */
             .basket-content {
                 max-width: 1240px;
                 width: calc(100% - 48px);
@@ -1929,7 +1929,7 @@
         .basket-desktop-footer,
         .basket-list-toolbar .clear-desktop-btn { display: none; }
 
-        /* ── 700–1023px: PC header is shown; keep the basket toolbar visible (not only at 1024px+). ── */
+        /* â”€â”€ 700â€“1023px: PC header is shown; keep the basket toolbar visible (not only at 1024px+). â”€â”€ */
         @media (min-width: 700px) and (max-width: 1023.98px) {
             .basket-list-toolbar {
                 display: flex;
@@ -2294,8 +2294,8 @@
             .basket-footer-brandmark span { color: inherit; }
         }
 
-        /* ── Gradual content scale (tablet → laptop): fonts, pads, thumbs shrink with width.
-               Summary column was fixed at 360/390px so it stayed "100%" while the left squeezed. ── */
+        /* â”€â”€ Gradual content scale (tablet â†’ laptop): fonts, pads, thumbs shrink with width.
+               Summary column was fixed at 360/390px so it stayed "100%" while the left squeezed. â”€â”€ */
         @media (min-width: 700px) {
             body.basket-page {
                 --basket-summary-col: clamp(230px, 26.5vw + 20px, 360px);
@@ -2416,7 +2416,7 @@
 </head>
 <body class="basket-page">
 
-<!-- Tablet top bar: same homepage mobile-route header (768–1023px) -->
+<!-- Tablet top bar: same homepage mobile-route header (768â€“1023px) -->
 <div class="tablet-top-bar">
     <div class="tablet-top-bar__left">
         <div class="social-icons-container social-icons-mobile">
@@ -2598,7 +2598,7 @@
     </div>
 </header>
 
-    <!-- Homepage mobile-route header (tablet 768–1023): logo + wide search, no action rings -->
+    <!-- Homepage mobile-route header (tablet 768â€“1023): logo + wide search, no action rings -->
     <header class="mobile-header">
         <div class="header-top-row">
             <div class="social-icons-container social-icons-mobile">
@@ -2939,7 +2939,7 @@
                 </div>
                 <div class="form-group quote-popup-note">
                     <label for="quoteCustomerNote">Note <span class="quote-label-optional">(optional)</span></label>
-                    <textarea id="quoteCustomerNote" name="customerNote" rows="3" placeholder="Anything about your order — sizes, colours, deadline, special requests…"></textarea>
+                    <textarea id="quoteCustomerNote" name="customerNote" rows="3" placeholder="Anything about your order â€” sizes, colours, deadline, special requestsâ€¦"></textarea>
                 </div>
                 <button type="submit" class="quote-popup-submit" id="quotePopupSubmitBtn">Submit Quote Request</button>
             </form>
@@ -2984,11 +2984,11 @@
     </div>
 
     <!-- Bottom Action Bar (mobile) -->
-    <!-- Bottom action bar removed — single Send Quote in summary -->
+    <!-- Bottom action bar removed â€” single Send Quote in summary -->
 
     <script>
     // =============================================
-    // BASKET V2 — Per-size rows, Workwear Express style
+    // BASKET V2 â€” Per-size rows, Workwear Express style
     // =============================================
 
     const BASKET_DEBUG = window.BRANDED_DEBUG === true;
@@ -3233,7 +3233,7 @@
         showToast(notice);
     }
 
-    /** After adding a new garment — show quick-logo popup (reuse / choose position) */
+    /** After adding a new garment â€” show quick-logo popup (reuse / choose position) */
     function handlePendingLogoPrompt() {
         const urlWantsPrompt = /(?:\?|&)promptLogo=1/.test(window.location.search);
         let targetId = sessionStorage.getItem('pendingLogoPromptId') || '';
@@ -3265,7 +3265,7 @@
 
         const item = basket[itemIndex];
 
-        // Logo already saved (e.g. from customize) — sync to logos[] and show preview, no modal
+        // Logo already saved (e.g. from customize) â€” sync to logos[] and show preview, no modal
         if (itemHasLogoData(item)) {
             const logos = _extractLogos(item);
             if (logos.length > 0) applyExtractedLogos(item, logos);
@@ -3605,7 +3605,7 @@
         return (code || 'ITEM') + '-' + slug + '-' + (size || 'OS');
     }
 
-    // Single-pass normalization: handles ALL legacy formats &larr;’ V2 per-size rows with logos[]
+    // Single-pass normalization: handles ALL legacy formats &larr;â€™ V2 per-size rows with logos[]
     function normalizeBasket() {
         basketDebug('[normalizeBasket] Called - extracting logos from positions/positionDesigns');
         const basket = getBasket();
@@ -3668,7 +3668,7 @@
                 });
                 changed = true;
             } else if (item.size) {
-                // Already V2 — promote logos from positions/positionDesigns/logos[]
+                // Already V2 â€” promote logos from positions/positionDesigns/logos[]
                 if (logos.length > 0) {
                     if (applyExtractedLogos(item, logos)) changed = true;
                 } else if (item.pendingLogoPrompt) {
@@ -3678,7 +3678,7 @@
                 if (enrichItemColorHex(item)) changed = true;
                 newBasket.push(item);
             } else {
-                // No sizes object and no size field — treat as One Size
+                // No sizes object and no size field â€” treat as One Size
                 if (!item.qty) {
                     item.qty = item.quantity || item.totalQuantity || item.totalQty || 1;
                     changed = true;
@@ -3811,7 +3811,7 @@
             });
         }
 
-        // Priority 1: positions[] — canonical method from customize save
+        // Priority 1: positions[] â€” canonical method from customize save
         if (Array.isArray(item.positions)) {
             item.positions.forEach(function (p) {
                 if (!p || !p.logo) return;
@@ -3830,7 +3830,7 @@
             });
         }
 
-        // Priority 2: positionDesigns — only positions not already taken from positions[]
+        // Priority 2: positionDesigns â€” only positions not already taken from positions[]
         if (item.positionDesigns && typeof item.positionDesigns === 'object') {
             Object.entries(item.positionDesigns).forEach(function ([posKey, d]) {
                 if (!d || !d.logo || seenPos.has(posKey)) return;
@@ -3872,10 +3872,10 @@
         return logos;
     }
 
-    // Keep for backward compat — called by syncLogosFromOldFormat
+    // Keep for backward compat â€” called by syncLogosFromOldFormat
     function migrateBasketV2() { normalizeBasket(); }
 
-    // Position slug &larr;’ readable name
+    // Position slug &larr;â€™ readable name
     function toReadablePosition(slug) {
         const map = {
             'left-chest': 'Left Chest', 'right-chest': 'Right Chest',
@@ -4179,7 +4179,7 @@
                         <p class="item-placement-preview-title">Placement preview</p>
                         <button type="button" class="item-placement-preview-btn" onclick="event.stopPropagation(); openPlacementPreview(${index})">Preview</button>
                     </div>
-                    <p class="item-placement-preview-meta">${escapeAttr(preview.colorName || item.color || '')}${preview.area ? ` · ${escapeAttr(toReadablePosition(preview.area))}` : ''}</p>
+                    <p class="item-placement-preview-meta">${escapeAttr(preview.colorName || item.color || '')}${preview.area ? ` Â· ${escapeAttr(toReadablePosition(preview.area))}` : ''}</p>
                 </div>
             </div>`;
     }
@@ -4608,7 +4608,7 @@
         if (!item) return;
         const src = item.colorImage || item.image || 'brandedukv15-child/assets/images/products/default.jpg';
         const name = item.name || item.productName || 'Product';
-        const details = [item.code, getItemColorLabel(item), item.size].filter(Boolean).join(' · ');
+        const details = [item.code, getItemColorLabel(item), item.size].filter(Boolean).join(' Â· ');
         openImagePreview(src, details ? `${name} - ${details}` : name, name, false);
     }
 
@@ -5209,7 +5209,7 @@
         _openFullCustomizeForItem(itemIndex);
     }
 
-    /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print → embroidery on beanies) */
+    /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print â†’ embroidery on beanies) */
     function _collectAllLogos(basket, targetItemIndex) {
         const seen = new Set();
         const logos = [];
@@ -5305,7 +5305,7 @@
         const newLogo = adaptLogoForTargetItem(logoData, targetItem);
 
         if (!newLogo.logo) {
-            showToast('Logo image missing — upload again from customize', true);
+            showToast('Logo image missing â€” upload again from customize', true);
             return;
         }
 
@@ -5328,11 +5328,11 @@
             if (navigator.vibrate) navigator.vibrate(10);
         } catch (e) {
             console.error('Failed to save basket after quick logo apply:', e);
-            showToast('Could not save logo — storage may be full', true);
+            showToast('Could not save logo â€” storage may be full', true);
         }
     }
 
-    /** Open customize for this basket line — colours, sizes, logos */
+    /** Open customize for this basket line â€” colours, sizes, logos */
     window.editBasketItem = function editBasketItem(itemIndex) {
         const basket = getBasket();
         const item = basket[itemIndex];
@@ -5516,7 +5516,7 @@
         if (iframe) iframe.src = '';
         if (overlay) overlay.classList.remove('is-pc-customizer', 'is-ready');
         document.body.style.overflow = '';
-        // Sync old-format positions/positionDesigns &larr;’ logos[] then re-render
+        // Sync old-format positions/positionDesigns &larr;â€™ logos[] then re-render
         syncLogosFromOldFormat();
         sessionStorage.removeItem('basketEditSingleItem');
         sessionStorage.removeItem('basketEditItemId');
@@ -5572,7 +5572,7 @@
         if (!logo) return;
 
         const method = logo.method || 'embroidery';
-        const methodIcon = method === 'embroidery' ? '' : '';
+        const methodIcon = method === 'embroidery' ? '' : 'Â';
         const posName = logo.positionLabel || toReadablePosition(logo.position);
 
         const sourceEl = document.getElementById('copyLogoSource');
@@ -5731,7 +5731,7 @@
                 window.openContactPopup(message ? { message } : undefined);
             }
         };
-        // "Proceed to Checkout" → 3-step checkout page (min £50 ex. VAT)
+        // "Proceed to Checkout" â†’ 3-step checkout page (min Â£50 ex. VAT)
         if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
@@ -6034,7 +6034,7 @@
             img.crossOrigin = 'anonymous';
             img.onload = () => resolve(img);
             img.onerror = () => {
-                // CORS failed — retry without crossOrigin so image still loads
+                // CORS failed â€” retry without crossOrigin so image still loads
                 // (canvas will be tainted but SVG fallback handles that)
                 const img2 = new Image();
                 img2.onload = () => resolve(img2);
@@ -6458,10 +6458,10 @@
 <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
 <script src="brandedukv15-child/assets/js/color-hex.js?v=20260704a"></script>
 <script src="brandedukv15-child/assets/js/api.js?v=20260731a"></script>
-<script src="mobile/js/whatsapp.js?v=20261002-cta-equal"></script>
+<script src="mobile/js/whatsapp.js?v=20261002-greettiming"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>
-// Basket page: search + shop links → correct shop per device
+// Basket page: search + shop links â†’ correct shop per device
 (function() {
     var isMobile = window.innerWidth < 700;
     var shopAllUrl = isMobile ? '/shop?category=all' : '/shop-pc.html?category=all';
@@ -6497,7 +6497,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Footer (injected from /mobile/footer/footer.html) -->
     <div data-mobile-footer></div>
     <script src="mobile/js/popup-contact.js?v=20260927-quoteonly"></script>
-    <script src="mobile/footer/footer.js?v=20261002-cta-equal" defer></script>
+    <script src="mobile/footer/footer.js?v=20261002-greettiming" defer></script>
     <script src="mobile/js/breadcrumbs.js?v=20260403b"></script>
 </body>
 </html>

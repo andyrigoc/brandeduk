@@ -5,19 +5,19 @@
     <link rel="canonical" href="https://www.brandeduk.com/checkout">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Checkout – BrandedUK</title>
+    <title>Checkout â€“ BrandedUK</title>
     <link rel="stylesheet" href="mobile/css/mobile.css?v=20260102b">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260102b">
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-cta-equal">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-greettiming">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="brandedukv15-child/assets/images/favicon.ico" type="image/x-icon">
     <style>
-        /* ── Reset scoped to checkout ── */
+        /* â”€â”€ Reset scoped to checkout â”€â”€ */
         .co-wrap *, .co-wrap *::before, .co-wrap *::after { box-sizing: border-box; }
 
-        /* ── Variables ── */
+        /* â”€â”€ Variables â”€â”€ */
         :root {
             /* Match basket / order summary palette (no orange) */
             --co-navy:        #273469;
@@ -35,13 +35,13 @@
             --co-focus-ring:  rgba(39, 52, 105, 0.14);
         }
 
-        /* ── Checkout Page wrapper ── */
+        /* â”€â”€ Checkout Page wrapper â”€â”€ */
         body.checkout-v2 {
             background: #f4f5f7;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        /* ── Mobile checkout header (hidden on desktop) ── */
+        /* â”€â”€ Mobile checkout header (hidden on desktop) â”€â”€ */
         .co-mobile-header {
             display: flex;
             align-items: center;
@@ -92,7 +92,7 @@
             white-space: nowrap;
         }
 
-        /* ── Step progress bar ── */
+        /* â”€â”€ Step progress bar â”€â”€ */
         .co-steps-bar {
             background: var(--co-white);
             border-bottom: 1px solid var(--co-border);
@@ -155,7 +155,7 @@
         .co-order-glance__label { font-size: 12px; font-weight: 700; text-align: left; }
         .co-order-glance__total { font-size: 14px; font-weight: 800; white-space: nowrap; }
 
-        /* ── Step content areas ── */
+        /* â”€â”€ Step content areas â”€â”€ */
         .co-step { display: none; }
         .co-step.active { display: block; }
         .co-step-inner {
@@ -164,7 +164,7 @@
             padding: 16px 16px 40px;
         }
 
-        /* ── Card panel (accordion) ── */
+        /* â”€â”€ Card panel (accordion) â”€â”€ */
         .co-card {
             background: var(--co-white);
             border: 1.5px solid var(--co-border);
@@ -220,7 +220,7 @@
             border-top: 1px solid var(--co-light);
         }
 
-        /* ── Social login buttons ── */
+        /* â”€â”€ Social login buttons â”€â”€ */
         .co-social-wrap {
             display: flex;
             flex-direction: column;
@@ -248,7 +248,7 @@
         .co-auth-note { margin: 0 0 8px; color: var(--co-grey); font-size: 13px; line-height: 1.45; }
         .co-hidden { display: none !important; }
 
-        /* ── OR divider ── */
+        /* â”€â”€ OR divider â”€â”€ */
         .co-or {
             display: flex;
             align-items: center;
@@ -265,7 +265,7 @@
             background: var(--co-border);
         }
 
-        /* ── Form fields ── */
+        /* â”€â”€ Form fields â”€â”€ */
         .co-field { margin-bottom: 13px; }
         .co-field-row {
             display: grid;
@@ -329,7 +329,7 @@
         }
         .co-field-err.show { display: block; }
 
-        /* ── Buttons ── */
+        /* â”€â”€ Buttons â”€â”€ */
         .co-btn-primary {
             background: var(--co-primary);
             color: #fff;
@@ -459,7 +459,7 @@
         }
         .co-guest--primary .co-btn-primary { min-height: 44px; }
 
-        /* ── Delivery step card ── */
+        /* â”€â”€ Delivery step card â”€â”€ */
         .co-delivery-wrap {
             background: var(--co-white);
             border: 1.5px solid var(--co-border);
@@ -490,7 +490,7 @@
             font-family: inherit;
         }
 
-        /* ── Payment step ── */
+        /* â”€â”€ Payment step â”€â”€ */
         .co-payment-wrap {
             background: var(--co-white);
             border: 1.5px solid var(--co-border);
@@ -506,7 +506,7 @@
             margin-bottom: 16px;
         }
 
-        /* ── Order summary (collapsible) ── */
+        /* â”€â”€ Order summary (collapsible) â”€â”€ */
         .co-summary {
             background: var(--co-white);
             border: 1.5px solid var(--co-border);
@@ -584,7 +584,7 @@
             margin-bottom: 0;
         }
 
-        /* ── Stripe Checkout redirect ── */
+        /* â”€â”€ Stripe Checkout redirect â”€â”€ */
         .payment-loading { display:flex; flex-direction:column; align-items:center; padding:28px 0; gap:12px; color:#666; font-size:14px; }
         .payment-spinner { width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--co-navy); border-radius:50%; animation:co-spin .7s linear infinite; }
         @keyframes co-spin { to { transform:rotate(360deg); } }
@@ -608,7 +608,7 @@
             line-height: 1.6;
         }
 
-        /* ── Toast ── */
+        /* â”€â”€ Toast â”€â”€ */
         .co-toast {
             position: fixed;
             bottom: 24px;
@@ -628,7 +628,7 @@
         }
         .co-toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* ── Terms footer ── */
+        /* â”€â”€ Terms footer â”€â”€ */
         .co-terms {
             font-size: 11px;
             color: var(--co-grey);
@@ -638,7 +638,7 @@
         }
         .co-terms a { color: var(--co-navy); text-decoration: underline; }
 
-        /* ── Hide full site header on mobile checkout ── */
+        /* â”€â”€ Hide full site header on mobile checkout â”€â”€ */
         @media (max-width: 767px) {
             body.checkout-v2 .tablet-top-bar,
             body.checkout-v2 .promo-banner,
@@ -653,7 +653,7 @@
             .co-steps-bar { position: sticky; top: 57px; z-index: 190; }
         }
 
-        /* ── Desktop / Tablet ── */
+        /* â”€â”€ Desktop / Tablet â”€â”€ */
         @media (min-width: 768px) {
             .co-mobile-header { display: none; }
             .co-wrap { padding-top: 24px; padding-bottom: 48px; }
@@ -672,7 +672,7 @@
 <body class="checkout-v2">
     <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Checkout - BrandedUK</h1>
 
-    <!-- ── Full site header (tablet / desktop only, hidden mobile) ── -->
+    <!-- â”€â”€ Full site header (tablet / desktop only, hidden mobile) â”€â”€ -->
     <div class="tablet-top-bar">
         <div class="tablet-top-bar__left">
             <div class="social-icons-container social-icons-mobile">
@@ -692,11 +692,11 @@
             </a>
         </div>
         <div class="tablet-top-bar__right">
-            <a href="basket.html#orderSummary" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">← Back to Basket</a>
+            <a href="basket.html#orderSummary" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">â† Back to Basket</a>
         </div>
     </div>
 
-    <!-- ── Mobile-only sticky header ── -->
+    <!-- â”€â”€ Mobile-only sticky header â”€â”€ -->
     <header class="co-mobile-header" id="coMobileHeader">
         <button type="button" class="co-mobile-header__back" id="coBackBtn" aria-label="Go back">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -713,16 +713,16 @@
         </span>
     </header>
 
-    <!-- ── Step indicator ── -->
+    <!-- â”€â”€ Step indicator â”€â”€ -->
     <nav class="co-steps-bar" id="coStepsBar" aria-label="Checkout steps">
         <div class="co-step-pill active" id="coNav1" onclick="coJumpBack(1)" role="button" tabindex="0">
             <span class="co-step-dot"></span>Account
         </div>
-        <span class="co-step-sep">›</span>
+        <span class="co-step-sep">â€º</span>
         <div class="co-step-pill" id="coNav2" onclick="coJumpBack(2)" role="button" tabindex="0">
             <span class="co-step-dot"></span>Delivery
         </div>
-        <span class="co-step-sep">›</span>
+        <span class="co-step-sep">â€º</span>
         <div class="co-step-pill" id="coNav3" role="button" tabindex="0">
             <span class="co-step-dot"></span>Payment
         </div>
@@ -735,7 +735,7 @@
 
     <div class="co-wrap">
 
-        <!-- ════════════════ STEP 1 — ACCOUNT ════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STEP 1 â€” ACCOUNT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="co-step active" id="coStep1" aria-label="Account step">
             <div class="co-step-inner">
 
@@ -866,7 +866,7 @@
             </div><!-- /co-step-inner -->
         </section>
 
-        <!-- ════════════════ STEP 2 — DELIVERY ════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STEP 2 â€” DELIVERY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="co-step" id="coStep2" aria-label="Delivery step">
             <div class="co-step-inner">
 
@@ -969,7 +969,7 @@
             </div><!-- /co-step-inner -->
         </section>
 
-        <!-- ════════════════ STEP 3 — PAYMENT ════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STEP 3 â€” PAYMENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="co-step" id="coStep3" aria-label="Payment step">
             <div class="co-step-inner">
 
@@ -986,7 +986,7 @@
                             Order Summary
                             <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </span>
-                        <span class="co-summary-toggle-total" id="coSummaryTotal">£0.00</span>
+                        <span class="co-summary-toggle-total" id="coSummaryTotal">Â£0.00</span>
                     </div>
                     <div class="co-summary-body" id="coSummaryBody">
                         <div class="co-summary-items" id="coSummaryItems">
@@ -995,19 +995,19 @@
                         <div class="co-summary-footer">
                             <div class="co-summary-row">
                                 <span>Product Costs</span>
-                                <span id="coGarmentCost">£0.00</span>
+                                <span id="coGarmentCost">Â£0.00</span>
                             </div>
                             <div class="co-summary-row">
                                 <span>Costs To Add Logo</span>
-                                <span id="coCustomizationCost">£0.00</span>
+                                <span id="coCustomizationCost">Â£0.00</span>
                             </div>
                             <div class="co-summary-row" id="coDigitizingRow" style="display:none">
-                                <span id="coDigitizingLabel">Embroidery digitising (£25 per design)</span>
-                                <span id="coDigitizingFee">£0.00</span>
+                                <span id="coDigitizingLabel">Embroidery digitising (Â£25 per design)</span>
+                                <span id="coDigitizingFee">Â£0.00</span>
                             </div>
                             <div class="co-summary-row">
                                 <span>Total (ex. VAT)</span>
-                                <span id="coSubtotal">£0.00</span>
+                                <span id="coSubtotal">Â£0.00</span>
                             </div>
                             <div class="co-summary-row">
                                 <span>Delivery</span>
@@ -1015,11 +1015,11 @@
                             </div>
                             <div class="co-summary-row" id="coVatRow" style="display:none">
                                 <span>VAT (20%)</span>
-                                <span id="coVat">£0.00</span>
+                                <span id="coVat">Â£0.00</span>
                             </div>
                             <div class="co-summary-row total-row">
                                 <span id="coTotalLabel">Total (ex. VAT)</span>
-                                <span id="coTotal">£0.00</span>
+                                <span id="coTotal">Â£0.00</span>
                             </div>
                         </div>
                     </div>
@@ -1032,7 +1032,7 @@
                     <!-- Loading while creating Stripe Checkout session -->
                     <div id="payment-loading" class="payment-loading" style="display:none">
                         <div class="payment-spinner"></div>
-                        <p>Setting up secure payment…</p>
+                        <p>Setting up secure paymentâ€¦</p>
                     </div>
 
                     <!-- Stripe Checkout redirect -->
@@ -1089,7 +1089,7 @@
 
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
     <script src="brandedukv15-child/assets/js/checkout-auth.js?v=20260530"></script>
-    <!-- ── Checkout 3-step logic ── -->
+    <!-- â”€â”€ Checkout 3-step logic â”€â”€ -->
     <script>
     (function () {
         'use strict';
@@ -1098,7 +1098,7 @@
         var _panel = 'login';
         var _summaryOpen = false;
 
-        /* ── Persistent session helpers ── */
+        /* â”€â”€ Persistent session helpers â”€â”€ */
         var apiBase = (typeof window.resolveBrandedApiBase === 'function'
             ? window.resolveBrandedApiBase()
             : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
@@ -1256,7 +1256,7 @@
             var nm  = document.getElementById('coSignedInName');
             if (bar && nm) {
                 nm.textContent = 'Signed in as '
-                    + (user.firstName ? user.firstName + (user.lastName ? ' ' + user.lastName : '') + '  ·  ' : '')
+                    + (user.firstName ? user.firstName + (user.lastName ? ' ' + user.lastName : '') + '  Â·  ' : '')
                     + (user.email || '');
                 bar.style.display = 'flex';
             }
@@ -1393,7 +1393,7 @@
             if (first) first.focus();
             coToast('Enter a new delivery address');
         };
-        /* Google OAuth: brandedukv15-child/assets/js/checkout-auth.js — do not redefine coStartGoogleAuth here */
+        /* Google OAuth: brandedukv15-child/assets/js/checkout-auth.js â€” do not redefine coStartGoogleAuth here */
         window.coContinueGuest = function () {
             _guestCheckout = true;
             _selectedAddressId = '';
@@ -1427,7 +1427,7 @@
             }
         }
 
-        /* ── Toast ── */
+        /* â”€â”€ Toast â”€â”€ */
         function coToast(msg, ms) {
             var el = document.getElementById('coToastEl');
             el.textContent = msg;
@@ -1437,7 +1437,7 @@
         }
         window.coToast = coToast;
 
-        /* ── Step navigation ── */
+        /* â”€â”€ Step navigation â”€â”€ */
         function coGoStep(n) {
             if (n === 1 && coGetAuthToken()) {
                 window.location.href = coGetBasketHref();
@@ -1507,7 +1507,7 @@
             window.location.href = coGetBasketHref();
         });
 
-        /* ── Panel accordion ── */
+        /* â”€â”€ Panel accordion â”€â”€ */
         window.coPanel = function (p) {
             ['login', 'reg'].forEach(function (id) {
                 var card  = document.getElementById('coCard'  + (id === 'login' ? 'Login' : 'Reg'));
@@ -1532,7 +1532,7 @@
             }
         };
 
-        /* ── Password eye toggle ── */
+        /* â”€â”€ Password eye toggle â”€â”€ */
         window.coEye = function (inputId, btn) {
             var inp = document.getElementById(inputId);
             var isText = inp.type === 'text';
@@ -1540,7 +1540,7 @@
             btn.style.opacity = isText ? '1' : '0.5';
         };
 
-        /* ── Field error helpers ── */
+        /* â”€â”€ Field error helpers â”€â”€ */
         function fieldOk(inputEl, errId, valid) {
             inputEl.classList.toggle('bad', !valid);
             var err = document.getElementById(errId);
@@ -1559,7 +1559,7 @@
             return /^(GIR\s?0AA|(?:[A-Z]{1,2}\d[A-Z\d]?|[A-Z]{1,2}\d{2})\s?\d[A-Z]{2})$/.test(value);
         }
 
-        /* ── Login ── */
+        /* â”€â”€ Login â”€â”€ */
         window.coDoLogin = async function () {
             var email = document.getElementById('coLoginEmail');
             var pwd   = document.getElementById('coLoginPwd');
@@ -1592,7 +1592,7 @@
             }
         };
 
-        /* Register ── */
+        /* Register â”€â”€ */
         window.coDoRegister = function () {
             var first   = document.getElementById('coRegFirst');
             var last    = document.getElementById('coRegLast');
@@ -1628,7 +1628,7 @@
             if (el && !el.value) el.value = val;
         }
 
-        /* ── Delivery ── */
+        /* â”€â”€ Delivery â”€â”€ */
         window.coDoDelivery = function (mode) {
             var required = [
                 ['coDelFirst', 'coDelFirstErr'],
@@ -1674,7 +1674,7 @@
                 });
         };
 
-        /* ── Order summary ── */
+        /* â”€â”€ Order summary â”€â”€ */
         window.coToggleSummary = function () {
             _summaryOpen = !_summaryOpen;
             var body    = document.getElementById('coSummaryBody');
@@ -1719,7 +1719,7 @@
                         return '<div class="co-summary-item">' +
                                '<span class="co-summary-qty">' + qty + '</span>' +
                                '<span class="co-summary-name">' + _esc(name) + '</span>' +
-                               '<span class="co-summary-price">£' + line.toFixed(2) + '</span>' +
+                               '<span class="co-summary-price">Â£' + line.toFixed(2) + '</span>' +
                                '</div>';
                     }).join('');
                 }
@@ -1741,7 +1741,7 @@
 
                     document.getElementById('coSummaryTotal').textContent = totalFmtFromBasket;
                     document.getElementById('coOrderGlanceTotal').textContent = totalFmtFromBasket;
-                    document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' · View basket';
+                    document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' Â· View basket';
                     document.getElementById('coGarmentCost').textContent = '\u00A3' + garmentCost.toFixed(2);
                     document.getElementById('coCustomizationCost').textContent = '\u00A3' + customizationCost.toFixed(2);
                     document.getElementById('coSubtotal').textContent = subtotalFmtFromBasket;
@@ -1751,7 +1751,7 @@
                     var digitizingEl = document.getElementById('coDigitizingFee');
                     if (digitizingRow) digitizingRow.style.display = digitizingFee > 0 ? '' : 'none';
                     if (digitizingLabel && embroideryDesignCount > 0) {
-                        digitizingLabel.textContent = 'Embroidery digitising (£25 × ' + embroideryDesignCount + ' ' + (embroideryDesignCount === 1 ? 'design' : 'designs') + ')';
+                        digitizingLabel.textContent = 'Embroidery digitising (Â£25 Ã— ' + embroideryDesignCount + ' ' + (embroideryDesignCount === 1 ? 'design' : 'designs') + ')';
                     }
                     if (digitizingEl) digitizingEl.textContent = '\u00A3' + digitizingFee.toFixed(2);
 
@@ -1771,19 +1771,19 @@
                 var vat = totalEx * 0.20;
                 var totalInc = totalEx + vat;
 
-                var subtotalFmt = '£' + totalEx.toFixed(2);
-                var totalFmt = '£' + totalInc.toFixed(2);
+                var subtotalFmt = 'Â£' + totalEx.toFixed(2);
+                var totalFmt = 'Â£' + totalInc.toFixed(2);
 
                 document.getElementById('coSummaryTotal').textContent = totalFmt;
                 document.getElementById('coOrderGlanceTotal').textContent = totalFmt;
-                document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' · View basket';
+                document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' Â· View basket';
                 document.getElementById('coSubtotal').textContent     = subtotalFmt;
 
                 var vatRow = document.getElementById('coVatRow');
                 var vatEl = document.getElementById('coVat');
                 var totalLabel = document.getElementById('coTotalLabel');
                 if (vatRow) vatRow.style.display = '';
-                if (vatEl) vatEl.textContent = '£' + vat.toFixed(2);
+                if (vatEl) vatEl.textContent = 'Â£' + vat.toFixed(2);
                 if (totalLabel) totalLabel.textContent = 'Total (inc. VAT)';
 
                 document.getElementById('coTotal').textContent        = totalFmt;
@@ -1806,11 +1806,11 @@
                 .trim();
         }
 
-        /* ── Quote submission fallback ── */
+        /* â”€â”€ Quote submission fallback â”€â”€ */
         window.coSubmitQuote = async function () {
             var btn = document.getElementById('coSubmitQuoteBtn');
             btn.disabled = true;
-            btn.textContent = 'Submitting…';
+            btn.textContent = 'Submittingâ€¦';
 
             var basket   = JSON.parse(localStorage.getItem('quoteBasket') || '[]');
             var customer = coGetCustomer();
@@ -1887,7 +1887,7 @@
             }
         };
 
-        /* ── Customer data (used by checkout.js Stripe Checkout redirect) ── */
+        /* â”€â”€ Customer data (used by checkout.js Stripe Checkout redirect) â”€â”€ */
         function coGetCustomer() {
             return coGetDelivery();
         }
@@ -1908,7 +1908,7 @@
     <script src="mobile/js/checkout.js?v=20260830a"></script>
     <!-- Crisp + original BrandedUK onsite chat panel -->
     <script src="mobile/js/crisp-chat.js?v=20261002-ourpanel" async></script>
-    <script src="mobile/js/whatsapp.js?v=20261002-cta-equal" defer></script>
+    <script src="mobile/js/whatsapp.js?v=20261002-greettiming" defer></script>
 
   </body>
 </html>

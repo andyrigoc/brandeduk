@@ -328,6 +328,10 @@
 }
 
 /* Typing indicator (3 dots) */
+.wa-msg--typing[hidden],
+#waTypingMsg[hidden] {
+    display: none !important;
+}
 .wa-msg__bubble--typing {
     padding: 12px 16px;
     min-width: 52px;
@@ -362,7 +366,7 @@
     }
 }
 
-/* Auth gate (chatbot locked until Google / Facebook / Apple) */
+/* Auth gate (chat locked until Google sign-in — EMAIL/Call stay usable) */
 .wa-popup__auth-gate {
     padding: 14px 16px 6px;
     background: #fff;
@@ -397,7 +401,7 @@
 }
 .wa-popup__auth-btn {
     width: 100%;
-    min-height: 44px;
+    min-height: 46px;
     border: 1px solid #d1d5db;
     border-radius: 12px;
     background: #fff;
@@ -410,7 +414,7 @@
     gap: 10px;
     cursor: pointer;
     padding: 0 12px;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .wa-popup__auth-btn:hover {
     background: #f9fafb;
@@ -419,11 +423,14 @@
 .wa-popup__auth-btn svg {
     flex-shrink: 0;
 }
-.wa-popup__auth-btn--facebook {
-    border-color: #d6e4f8;
+.wa-popup__auth-btn--google {
+    border-color: #dadce0;
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
 }
-.wa-popup__auth-btn--apple {
-    border-color: #d4d4d8;
+.wa-popup__auth-btn--google:hover {
+    background: #f8f9fa;
+    border-color: #c6c9ce;
+    box-shadow: 0 2px 6px rgba(60, 64, 67, 0.12);
 }
 .wa-popup__auth-note {
     margin: 10px 2px 0;
@@ -437,15 +444,24 @@
     opacity: 0.55;
     pointer-events: none;
 }
-/* Keep footer tabs fully visible/usable while auth gate is showing */
+/* EMAIL / Call / Quote stay fully usable while composer is locked */
+.wa-popup.is-locked .wa-popup__actions,
 .wa-popup.is-locked .wa-popup__quick {
     opacity: 1;
     position: relative;
     z-index: 2;
+    pointer-events: auto;
 }
 .wa-popup.is-locked .wa-popup__auth-gate {
-    max-height: min(220px, 36vh);
+    max-height: min(240px, 40vh);
     overflow-y: auto;
+}
+.wa-popup.is-locked .wa-popup__replies {
+    display: none !important;
+}
+.wa-popup.is-locked #waFastRepliesBtn {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 .wa-popup__composer[hidden] {
     display: none !important;

@@ -48,7 +48,7 @@
       {
         title: "Industries",
         links: [
-          ["Hospitality & Cafés", "hospitality-workwear.html"],
+          ["Hospitality & CafÃ©s", "hospitality-workwear.html"],
           ["Construction & Trades", "construction-workwear.html"],
           ["Corporate Uniforms", "corporate-uniforms.html"],
           ["School Uniforms", "school-uniforms.html"],
@@ -240,13 +240,13 @@
   if (!document.querySelector('link[data-buk-whatsapp-css="1"], link[href*="whatsapp.css"]')) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = new URL("/mobile/css/whatsapp.css?v=20261002-cta-equal", window.location.origin).href;
+    link.href = new URL("/mobile/css/whatsapp.css?v=20261002-greettiming", window.location.origin).href;
     link.setAttribute("data-buk-whatsapp-css", "1");
     document.head.appendChild(link);
   }
   if (document.querySelector('script[data-buk-whatsapp="1"], script[src*="whatsapp.js"]')) return;
   var s = document.createElement("script");
-  s.src = new URL("/mobile/js/whatsapp.js?v=20261002-cta-equal", window.location.origin).href;
+  s.src = new URL("/mobile/js/whatsapp.js?v=20261002-greettiming", window.location.origin).href;
   s.defer = true;
   s.setAttribute("data-buk-whatsapp", "1");
   document.head.appendChild(s);

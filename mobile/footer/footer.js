@@ -22,8 +22,8 @@
     window.addEventListener('load', resetScroll);
 })();
 
-﻿/* =============================================
-   BrandedUK Footer – Production JS
+ï»¿/* =============================================
+   BrandedUK Footer â€“ Production JS
    (Template injection + all init functions)
    ============================================= */
 (function () {
@@ -36,7 +36,7 @@
   function injectFooter() {
     var mount = document.querySelector('[data-mobile-footer]');
     if (!mount) {
-      // No mount point — footer HTML is already inline
+      // No mount point â€” footer HTML is already inline
       initAll();
       return;
     }
@@ -294,13 +294,13 @@
   if (!document.querySelector('link[data-buk-whatsapp-css="1"], link[href*="whatsapp.css"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = new URL('/mobile/css/whatsapp.css?v=20261002-cta-equal', window.location.origin).href;
+    link.href = new URL('/mobile/css/whatsapp.css?v=20261002-greettiming', window.location.origin).href;
     link.setAttribute('data-buk-whatsapp-css', '1');
     document.head.appendChild(link);
   }
   if (document.querySelector('script[data-buk-whatsapp="1"], script[src*="whatsapp.js"]')) return;
   var s = document.createElement('script');
-  s.src = new URL('/mobile/js/whatsapp.js?v=20261002-cta-equal', window.location.origin).href;
+  s.src = new URL('/mobile/js/whatsapp.js?v=20261002-greettiming', window.location.origin).href;
   s.defer = true;
   s.setAttribute('data-buk-whatsapp', '1');
   document.head.appendChild(s);
