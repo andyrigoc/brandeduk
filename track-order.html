@@ -62,12 +62,29 @@
                         var detailsUrl = Account.pageHref('orderDetail')
                             + '?id=' + encodeURIComponent(order.id || order.orderNumber || orderNumber)
                             + '&email=' + encodeURIComponent(email);
-                        result.innerHTML = '' +
-                            '<strong>Order ' + (order.orderNumber || orderNumber) + '</strong>' +
-                            '<div>Status: ' + (order.orderStatus || order.status || 'pending') + '</div>' +
-                            '<div>Payment: ' + (order.paymentStatus || 'pending') + '</div>' +
-                            '<div>Total: GBP ' + Number(order.totalAmount || 0).toFixed(2) + '</div>' +
-                            '<a class="link-btn" href="' + detailsUrl + '">Open full order details</a>';
+                        result.textContent = '';
+
+                        var title = document.createElement('strong');
+                        title.textContent = 'Order ' + String(order.orderNumber || orderNumber);
+                        result.appendChild(title);
+
+                        var status = document.createElement('div');
+                        status.textContent = 'Status: ' + String(order.orderStatus || order.status || 'pending');
+                        result.appendChild(status);
+
+                        var payment = document.createElement('div');
+                        payment.textContent = 'Payment: ' + String(order.paymentStatus || 'pending');
+                        result.appendChild(payment);
+
+                        var total = document.createElement('div');
+                        total.textContent = 'Total: GBP ' + Number(order.totalAmount || 0).toFixed(2);
+                        result.appendChild(total);
+
+                        var link = document.createElement('a');
+                        link.className = 'link-btn';
+                        link.href = detailsUrl;
+                        link.textContent = 'Open full order details';
+                        result.appendChild(link);
                     })
                     .catch(function (err) { result.textContent = err.message || 'Unable to track order.'; });
             });

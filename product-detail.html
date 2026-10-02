@@ -3446,11 +3446,9 @@
                         if (config.useExternalImages && positionConfig.imageKey && config.images) {
                             newSrc = config.images[positionConfig.imageKey];
                             // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2892',message:'Setting sleeve image from external config',data:{position:position,imageKey:positionConfig.imageKey,newSrc:newSrc,hasLeftSleeve:!!config.images.leftSleeve,hasRightSleeve:!!config.images.rightSleeve},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
                             // #endregion
                         } else if (positionConfig.image) {
                             // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2894',message:'Setting image from dynamic/local config',data:{position:position,imagePath:positionConfig.image,configImagePath:config.imagePath},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
                             // #endregion
                             // Check if image is already a full path (from dynamic config)
                             // Dynamic config sets full paths like "brandedukv15-child/assets/images/..."
@@ -3521,7 +3519,6 @@
                             // #region agent log
                             setTimeout(() => {
                                 const computed = window.getComputedStyle(logoOverlay);
-                                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'product-detail.html:2958',message:'Logo overlay positioning applied',data:{position:position,cssClass:cssClass,computedTop:computed.top,computedLeft:computed.left,computedWidth:computed.width,computedHeight:computed.height,hasClass:logoOverlay.classList.contains(cssClass)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
                             }, 100);
                             // #endregion
                         } else {

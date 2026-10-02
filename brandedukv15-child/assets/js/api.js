@@ -220,6 +220,8 @@ const BrandedAPI = (function () {
         // Strip ™ ® © symbols that render as boxes in some fonts
         rawName = rawName.replace(/[\u00AE\u2122\u00A9]/g, '');
 
+        // Retail-facing fields only. Do not forward commercial internals from the
+        // public API payload (carton_price, supplier, markup_*) — Guardian #3.
         const result = {
             code: apiProduct.code || apiProduct.style_code || '',
             name: rawName,
@@ -242,6 +244,7 @@ const BrandedAPI = (function () {
             is_best_seller: apiProduct.is_best_seller || apiProduct.isBestSeller || false,
             is_recommended: apiProduct.is_recommended || apiProduct.isRecommended || false,
             is_featured: apiProduct.is_featured || apiProduct.isFeatured || false
+            // intentionally omitted: carton_price, supplier, markup_source, markup_tier, cost
         };
 
         if (typeof window !== 'undefined' && window.BrandedColorHex && result.code) {

@@ -8,11 +8,8 @@ DirectoryIndex index.html index.htm
     RewriteRule ^privacy-policy/?$ /privacy-policy.html [L]
 </IfModule>
 
-# Enable directory listing (optional - remove if you don't want it)
-Options +Indexes
-
-# Show all files in directory listing
-IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable
+# Disable directory listing
+Options -Indexes
 
 # Allow access to all HTML files
 <FilesMatch "\.(html|htm)$">

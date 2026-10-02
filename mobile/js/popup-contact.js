@@ -204,7 +204,6 @@
       e.preventDefault();
       
       // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:42',message:'Form submit started',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
       // #endregion
       
       var submitBtn = form.querySelector('.popup-contact__submit');
@@ -222,7 +221,6 @@
       var postCode = document.getElementById('contactPostCode')?.value.trim() || '';
       
       // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:59',message:'Raw form values extracted',data:{name:name,email:email,interest:interest,phone:phone,message:message,address:address,postCode:postCode},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
       // #endregion
       
       // Log form values for debugging
@@ -284,7 +282,6 @@
       }
       
       // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:113',message:'Contact data object created',data:contactData,jsonPayload:JSON.stringify(contactData),timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
       // #endregion
       
       // Log the data being sent for debugging
@@ -293,19 +290,16 @@
       try {
         // #region agent log
         var hasBrandedAPI = !!(window.BrandedAPI && window.BrandedAPI.submitContactForm);
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:118',message:'Checking BrandedAPI availability',data:{hasBrandedAPI:hasBrandedAPI,brandedAPIType:typeof window.BrandedAPI,submitContactFormType:typeof (window.BrandedAPI?.submitContactForm)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
         // #endregion
         
         // Use BrandedAPI if available, otherwise fallback to direct fetch
         var response;
         if (window.BrandedAPI && window.BrandedAPI.submitContactForm) {
           // #region agent log
-          fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:120',message:'Using BrandedAPI path',data:{contactData:contactData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
           // #endregion
           response = await window.BrandedAPI.submitContactForm(contactData);
         } else {
           // #region agent log
-          fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:122',message:'Using fallback direct fetch path',data:{url:'https://api.brandeduk.com/api/contact',contactData:contactData,jsonBody:JSON.stringify(contactData)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
           // #endregion
           // Fallback: direct fetch
           var apiResponse = await fetch('https://api.brandeduk.com/api/contact', {
@@ -318,7 +312,6 @@
           });
           
           // #region agent log
-          fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:130',message:'API response received',data:{status:apiResponse.status,statusText:apiResponse.statusText,ok:apiResponse.ok,headers:Object.fromEntries(apiResponse.headers.entries())},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
           // #endregion
           
           if (!apiResponse.ok) {
@@ -331,7 +324,6 @@
                 errorData = await apiResponse.json();
                 errorDetails = errorData.error || errorData.message || JSON.stringify(errorData);
                 // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:137',message:'API error response (JSON)',data:{status:apiResponse.status,errorData:errorData,errorDetails:errorDetails},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
                 // #endregion
                 console.error('❌ API Error Response:', errorData);
                 
@@ -349,7 +341,6 @@
                 }
               } catch (e) {
                 // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:142',message:'Failed to parse error as JSON',data:{error:e.message,status:apiResponse.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
                 // #endregion
                 console.error('❌ Failed to parse error as JSON:', e);
                 errorDetails = 'Invalid JSON response';
@@ -359,7 +350,6 @@
                 const errorText = await apiResponse.text();
                 errorDetails = errorText;
                 // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:147',message:'API error response (text)',data:{status:apiResponse.status,errorText:errorText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
                 // #endregion
                 console.error('❌ API Error Text:', errorText);
               } catch (textError) {
@@ -377,12 +367,10 @@
           
           response = await apiResponse.json();
           // #region agent log
-          fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:156',message:'API success response',data:{response:response},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
           // #endregion
         }
         
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:160',message:'Form submission successful',data:{response:response},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
         // #endregion
         
         // Success - show feedback
@@ -419,7 +407,6 @@
         
       } catch (error) {
         // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup-contact.js:192',message:'Form submission error caught',data:{errorMessage:error.message,errorStack:error.stack,errorName:error.name,contactData:contactData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
         // #endregion
         
         console.error('Contact form submission error:', error);

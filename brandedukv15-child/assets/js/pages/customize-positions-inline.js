@@ -892,9 +892,6 @@
             previewImgSrc: previewImg?.src?.substring?.(0, 100),
             isBase64: previewImg?.src?.startsWith?.('data:')
         });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:applyDesignToCard',message:'applyDesignToCard ENTRY',data:{position:position,hasPreviewImg:!!previewImg,srcPrefix:previewImg?.src?.substring?.(0,80),isBase64:previewImg?.src?.startsWith?.('data:'),srcLength:previewImg?.src?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
 
         if (!position) {
             showToast('Please upload a logo first');
@@ -935,9 +932,6 @@
             isBase64: positionCustomizationsMap[position]?.logoData?.startsWith?.('data:'),
             allPositions: Object.keys(positionCustomizationsMap)
         });
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:applyDesignToCard:SAVED',message:'Logo SAVED to positionCustomizationsMap',data:{position:position,hasLogoData:!!positionCustomizationsMap[position]?.logoData,logoDataLength:positionCustomizationsMap[position]?.logoData?.length,isBase64:positionCustomizationsMap[position]?.logoData?.startsWith?.('data:'),allPositions:Object.keys(positionCustomizationsMap)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
 
         const card = document.querySelector(`#step3PositionsSection .position-card input[value="${position}"]`)?.closest('.position-card') ||
                      document.querySelector(`#step3PositionsSection .position-card[data-position="${position}"]`);
@@ -983,18 +977,12 @@
 
     // Submit Quote Button
     function initSubmitQuoteBtn() {
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:ENTRY',message:'initSubmitQuoteBtn called',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         
         const submitBtn = document.getElementById('submitQuoteBtnSidebar') || document.getElementById('submitQuoteBtnInline');
         const popup = document.getElementById('quoteRequestPopup');
         const closeBtn = document.getElementById('closeQuotePopup');
         const form = document.getElementById('quoteRequestForm');
 
-        // #region agent log
-        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:ELEMENTS',message:'Elements found status',data:{hasSubmitBtn:!!submitBtn,hasPopup:!!popup,hasCloseBtn:!!closeBtn,hasForm:!!form,hasBrandedAPI:!!window.BrandedAPI,submitQuoteType:typeof window.BrandedAPI?.submitQuote},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
 
         console.log('ðŸ”§ [initSubmitQuoteBtn] Initializing...', {
             submitBtn: !!submitBtn,
@@ -1006,9 +994,6 @@
         });
 
         if (!submitBtn) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:NO_BTN',message:'submitQuoteBtnInline NOT FOUND - returning early',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.warn('âš ï¸ [initSubmitQuoteBtn] submitQuoteBtnInline not found!');
             return;
         }
@@ -1043,15 +1028,9 @@
 
         // Form submit
         if (form) {
-            // #region agent log
-            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:initSubmitQuoteBtn:FORM_HANDLER_ATTACHED',message:'Form submit handler ATTACHED to quoteRequestForm',data:{formId:form.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
             console.log('âœ… [initSubmitQuoteBtn] Attaching form submit handler to quoteRequestForm');
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                // #region agent log
-                fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:EVENT_FIRED',message:'Form submit EVENT FIRED',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-                // #endregion
                 console.log('ðŸ“ [Form Submit] Form submission triggered!');
 
                 const submitFormBtn = document.getElementById('quoteSubmitBtn');
@@ -1097,9 +1076,6 @@
                     // DEBUG: Log what's in positionCustomizationsMap
                     console.log('ðŸ” DEBUG: positionCustomizationsMap contents:', positionCustomizationsMap);
                     console.log('ðŸ” DEBUG: designModalState.positionDesigns:', designModalState.positionDesigns);
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:ENTRY',message:'Quote submission STARTED',data:{positionCount:customizationsEntries.length,positions:customizationsEntries.map(([p,d])=>({pos:p,hasLogoData:!!d?.logoData,hasLogo:!!d?.logo,logoDataLen:d?.logoData?.length,isBase64:d?.logoData?.startsWith?.('data:')})),designModalPositions:Object.keys(designModalState.positionDesigns||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
-                    // #endregion
                     customizationsEntries.forEach(([pos, data]) => {
                         console.log(`ðŸ” DEBUG: Position "${pos}" data:`, {
                             hasLogoData: !!data?.logoData,
@@ -1126,9 +1102,6 @@
                             logoDataSourcePrefix: logoDataSource?.substring?.(0, 50),
                             isBase64: logoDataSource?.startsWith?.('data:')
                         });
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:CHECK_POS',message:'Checking position for logo',data:{pos:pos,hasDataLogo:!!data?.logo,hasDataLogoData:!!data?.logoData,hasDesignLogo:!!designData?.logo,logoDataSourceLen:logoDataSource?.length,isBase64:logoDataSource?.startsWith?.('data:'),logoDataSourcePrefix:logoDataSource?.substring?.(0,60)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
-                        // #endregion
                         
                         // Check if we have logo data (base64 or file)
                         if (logoDataSource && typeof logoDataSource === 'string' && logoDataSource.startsWith('data:')) {
@@ -1166,9 +1139,6 @@
                             console.log(`ðŸ“Ž Using existing file for position "${pos}":`, data.logoFile.name);
                         }
                     });
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:LOGO_FILES',message:'Logo files collected',data:{logoFilesCount:Object.keys(logoFiles).length,logoPositions:Object.keys(logoFiles),logoFilesDetails:Object.entries(logoFiles).map(([p,f])=>({pos:p,isFile:f instanceof File,name:f?.name,size:f?.size,type:f?.type}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
-                    // #endregion
 
                     // Build comprehensive quote data
                     let basket = [];
@@ -1323,14 +1293,8 @@
                     // Use BrandedAPI to submit quote
                     let result = { success: false };
                     
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:API_CHECK',message:'Checking BrandedAPI availability',data:{hasBrandedAPI:!!window.BrandedAPI,hasSubmitQuote:typeof window.BrandedAPI?.submitQuote,logoFilesCount:Object.keys(quoteData.logoFiles||{}).length,logoPositions:Object.keys(quoteData.logoFiles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H6'})}).catch(()=>{});
-                    // #endregion
                     
                     try {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:API_CHECK',message:'Checking BrandedAPI availability',data:{hasBrandedAPI:!!window.BrandedAPI,submitQuoteType:typeof window.BrandedAPI?.submitQuote,BrandedAPIKeys:window.BrandedAPI?Object.keys(window.BrandedAPI):[]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-                        // #endregion
                         
                         // Check if BrandedAPI is available
                         console.log('ðŸ” [Quote Submit] Checking BrandedAPI:', {
@@ -1340,29 +1304,17 @@
                         });
                         
                         if (window.BrandedAPI && typeof window.BrandedAPI.submitQuote === 'function') {
-                            // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:CALLING_API',message:'CALLING BrandedAPI.submitQuote',data:{customerEmail:quoteData.customer?.email,hasLogoFiles:!!quoteData.logoFiles,logoFilesCount:quoteData.logoFiles?Object.keys(quoteData.logoFiles).length:0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-                            // #endregion
                             console.log('âœ… [Quote Submit] Calling BrandedAPI.submitQuote with data:', {
                                 customerEmail: quoteData.customer?.email,
                                 hasLogoFiles: !!quoteData.logoFiles,
                                 logoFilesCount: quoteData.logoFiles ? Object.keys(quoteData.logoFiles).length : 0
                             });
                             result = await window.BrandedAPI.submitQuote(quoteData);
-                            // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:API_RETURNED',message:'BrandedAPI.submitQuote RETURNED',data:{success:result?.success,message:result?.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-                            // #endregion
                             console.log('âœ… [Quote Submit] BrandedAPI.submitQuote returned:', result);
                         } else {
-                            // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:formSubmit:FALLBACK',message:'BrandedAPI NOT available - using FALLBACK',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-                            // #endregion
                             console.warn('âš ï¸ [Quote Submit] BrandedAPI.submitQuote not available, using fallback');
                             // Fallback: direct fetch to API
                             const API_BASE_URL = 'https://api.brandeduk.com';
-                            // #region agent log
-                            fetch('http://127.0.0.1:7244/ingest/ff4bdadc-0eae-4978-b238-71d56c718ed8',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'customize-positions-inline.js:quoteSubmit:FALLBACK',message:'FALLBACK PATH - BrandedAPI not available - using JSON (logos will NOT upload!)',data:{warning:'Logo files cannot be sent via JSON fallback'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H6'})}).catch(()=>{});
-                            // #endregion
 
                             console.log(quoteData);
                             const response = await fetch(`${API_BASE_URL}/api/quotes`, {

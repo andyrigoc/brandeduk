@@ -13,11 +13,21 @@ const ALLOWED_HOSTS = [
     'brandeduk.lon1.cdn.digitaloceanspaces.com'
 ];
 
-function corsHeaders() {
+const ALLOWED_ORIGINS = new Set([
+    'https://www.brandeduk.com',
+    'https://brandeduk.com',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]);
+
+function corsHeaders(req) {
+    const origin = (req && req.headers && req.headers.origin) || '';
+    const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://www.brandeduk.com';
     return {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': allowed,
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Vary': 'Origin',
     };
 }
 
@@ -154,7 +164,7 @@ async function sampleColorFromUrl(imageUrl) {
 }
 
 async function handler(req, res) {
-    Object.entries(corsHeaders()).forEach(([key, value]) => res.setHeader(key, value));
+    Object.entries(corsHeaders(req)).forEach(([key, value]) => res.setHeader(key, value));
 
     if (req.method === 'OPTIONS') {
         return res.status(204).end();

@@ -149,6 +149,13 @@
                 document.cookie = 'authToken=' + encodeURIComponent(token) + '; Path=/; SameSite=Lax; Max-Age=2592000';
             } catch (e) {}
 
+            // Strip token from the address bar immediately so it is not left in history/referrer
+            try {
+                var cleaned = new URL(window.location.href);
+                cleaned.searchParams.delete('token');
+                window.history.replaceState({}, document.title, cleaned.pathname + cleaned.search + cleaned.hash);
+            } catch (e) {}
+
             setActive('stepProfile', 'Great, Google approved the sign-in. We are loading your account now.');
 
             fetch(API_BASE_URL + '/api/auth/me', {

@@ -2031,7 +2031,7 @@
                         <span>Sign In</span>
                     </div>
                     <div class="account-form-content">
-                        <form id="signinFormData">
+                        <form id="signinFormData" method="post" action="#">
                             <div class="account-input-group">
                                 <input type="email" id="signinEmail" required>
                                 <label for="signinEmail">Email</label>
@@ -2057,7 +2057,7 @@
                         <span>Sign Up</span>
                     </div>
                     <div class="account-form-content">
-                        <form id="signupFormData">
+                        <form id="signupFormData" method="post" action="#">
                             <div class="account-input-row">
                                 <div class="account-input-group half">
                                     <input type="text" id="signupFirstName" required>
@@ -2551,7 +2551,7 @@
             </button>
         </div>
         <div class="popup-contact__body">
-            <form class="popup-contact__form" id="contactQuickForm">
+            <form class="popup-contact__form" id="contactQuickForm" method="post" action="#">
                 <div class="form-row">
                     <div class="form-group">
                         <input type="text" id="contactName" placeholder="Name" aria-label="Name" required>
@@ -3432,12 +3432,26 @@
         featuredLoadStarted = true;
 
         try {
-            var res = await fetch('https://api.brandeduk.com/api/admin/products/featured?type=featured&limit=' + FEATURED_API_LIMIT);
+            // Public catalog only — do not call /api/admin/* from the storefront
+            // (Guardian #1). Prefer sort=featured; map fields to the card shape.
+            var res = await fetch('https://api.brandeduk.com/api/products?sort=featured&limit=' + FEATURED_API_LIMIT);
             if (!res.ok) throw new Error('Network response was not ok');
             var data = await res.json();
 
             carouselContainer.innerHTML = '';
-            var items = (data.items || []).slice(0, FEATURED_RENDER_LIMIT);
+            var items = (data.items || []).slice(0, FEATURED_RENDER_LIMIT).map(function (p) {
+                return {
+                    style_code: p.style_code || p.code || '',
+                    style_name: p.style_name || p.name || '',
+                    brand_name: p.brand_name || p.brand || '',
+                    image: p.image || '',
+                    price: p.price,
+                    is_best_seller: p.is_best_seller,
+                    is_featured: p.is_featured,
+                    is_recommended: p.is_recommended
+                    // intentionally omit carton_price / supplier (Guardian #3)
+                };
+            });
 
             if (items.length === 0) {
                 carouselContainer.parentElement.innerHTML = '<div class="featured-error"><h3>No featured products yet</h3><p>Check back soon for our top picks!</p></div>';
