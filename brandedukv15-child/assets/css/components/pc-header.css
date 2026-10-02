@@ -322,10 +322,11 @@
 
     .site-header .searchbar-header .category-dropdown {
         flex: 0 0 auto;
-        /* Sit beside the logo — never overlap the search field. */
+        /* Invisible 20px barrier before the search. No relative shift — that painted the button into the field. */
         margin-left: 12px;
+        margin-right: 20px;
         position: relative;
-        left: calc(45px * (1 - var(--bu-adapt, 0)));
+        left: 0;
         z-index: 1;
     }
 
@@ -388,7 +389,7 @@
         min-width: 0;
         order: 0;
         gap: 16px;
-        margin-left: 12px;
+        margin-left: 0;
         justify-content: flex-start;
         position: static;
         left: auto;
@@ -409,7 +410,7 @@
         max-width: 494px;
         min-width: 0;
         height: 34.5px;
-        margin-left: 12px;
+        margin-left: 0;
         margin-right: 0;
         overflow: hidden;
     }
