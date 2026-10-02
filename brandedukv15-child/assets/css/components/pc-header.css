@@ -127,14 +127,15 @@
     }
 
     .site-header .header-top .header-top-right {
-        position: relative;
-        left: -10px;
+        position: static;
+        left: auto;
         display: flex;
         justify-content: flex-end;
         align-items: center;
         flex: 0 0 auto;
         margin-left: auto;
-        margin-right: 50px;
+        /* 50px rail inset + cart width, because the cart is pinned out of flow. */
+        margin-right: 98px;
         gap: 0;
     }
 
@@ -216,18 +217,18 @@
         flex: 0 0 auto;
     }
 
-    /* Never hide the top mini-basket. Keep it in normal flow as the rightmost top util. */
+    /* Pinned to the same rail edge as the laptop icon, at every width. */
     .site-header .header-top .header-top-basket-link {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
         visibility: visible !important;
         opacity: 1 !important;
-        position: relative !important;
-        right: auto !important;
+        position: absolute !important;
+        right: 50px !important;
         left: auto !important;
-        top: auto !important;
-        transform: none !important;
+        top: 50% !important;
+        transform: translate(-6px, -50%) !important;
         margin: 0 !important;
         z-index: 1;
     }
@@ -320,14 +321,14 @@
     .site-header .category-toggle.shop-products-btn {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        height: 30px;
-        padding: 0 12px 0 11px;
+        gap: 5.75px;
+        height: 34.5px;
+        padding: 0 13.8px 0 12.65px;
         border: none;
-        border-radius: 6px;
+        border-radius: 6.9px;
         background: #ff7a00;
         color: #fff;
-        font-size: 12px;
+        font-size: 13.8px;
         font-weight: 700;
         letter-spacing: 0;
         line-height: 1;
@@ -346,13 +347,13 @@
     .site-header .shop-products-btn .category-toggle-icon::before {
         content: "";
         display: block;
-        width: 11px;
-        height: 11px;
+        width: 12.65px;
+        height: 12.65px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 7px 0 / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 0 7px / 4px 4px no-repeat,
-            linear-gradient(#fff, #fff) 7px 7px / 4px 4px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 4.6px 4.6px no-repeat,
+            linear-gradient(#fff, #fff) 8.05px 0 / 4.6px 4.6px no-repeat,
+            linear-gradient(#fff, #fff) 0 8.05px / 4.6px 4.6px no-repeat,
+            linear-gradient(#fff, #fff) 8.05px 8.05px / 4.6px 4.6px no-repeat;
     }
 
     .site-header .shop-products-btn .category-toggle-caret::before {
@@ -376,9 +377,10 @@
         gap: 16px;
         margin-left: 12px;
         justify-content: flex-start;
-        position: relative;
-        left: 0;
-        padding-right: 50px;
+        position: static;
+        left: auto;
+        /* 50px rail inset + laptop width, because the laptop is pinned out of flow. */
+        padding-right: 104px;
     }
 
     .site-header .searchbar-header__search,
@@ -391,11 +393,10 @@
         position: relative;
         flex: 1 1 0;
         width: auto !important;
-        max-width: 380px;
+        max-width: 494px;
         min-width: 0;
-        height: 36px;
-        /* Nudge search only — leave Shop products / utils where they are. */
-        margin-left: 50px;
+        height: 34.5px;
+        margin-left: 12px;
         margin-right: 0;
         overflow: hidden;
     }
@@ -417,13 +418,13 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        padding: 10px 16px 10px 42px;
+        padding: 0 16px 0 42px;
         border: 1px solid #6b7280;
         border-radius: 8px;
         outline: none;
         background: #f3f4f6;
         color: #1f2937;
-        font: 500 15px/1.3 Inter, Arial, sans-serif;
+        font: 500 13.8px/1 Inter, Arial, sans-serif;
         box-shadow: none;
     }
 
@@ -495,17 +496,16 @@
     }
 
     /*
-     * Laptop stays pinned on the right edge (same rail as top cart).
-     * Nudge only the icon box so its visual center matches the orange cart above;
-     * the link itself stays in flow so Quote/Account remain beside it.
+     * Laptop sits 10px to the right of the top cart (40px from the rail).
+     * Out of flow so a shrinking search row cannot push it.
      */
     .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link {
-        position: relative !important;
-        right: auto !important;
-        left: 0 !important;
-        top: auto !important;
+        position: absolute !important;
+        right: 40px !important;
+        left: auto !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
         margin: 0 !important;
-        transform: none !important;
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
@@ -1130,21 +1130,21 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 28px;
-        padding: 0 10px 0 10px;
-        gap: 4px;
-        font-size: 11px;
-        border-radius: 6px;
+        height: 32.2px;
+        padding: 0 11.5px 0 11.5px;
+        gap: 4.6px;
+        font-size: 12.65px;
+        border-radius: 6.9px;
     }
 
     .site-header .shop-products-btn .category-toggle-icon::before {
-        width: 10px;
-        height: 10px;
+        width: 11.5px;
+        height: 11.5px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 7px 0 / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 0 7px / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 7px 7px / 3px 3px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 8.05px 0 / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 0 8.05px / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 8.05px 8.05px / 3.45px 3.45px no-repeat;
     }
 
     .site-header .searchbar-header__actions {
@@ -1154,8 +1154,9 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 0;
         width: auto !important;
-        max-width: 342px;
+        max-width: 445px;
         min-width: 0;
+        height: 32.2px;
         overflow: hidden;
     }
 }
@@ -1172,21 +1173,21 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 26px;
-        padding: 0 9px 0 9px;
-        gap: 4px;
-        font-size: 11px;
-        border-radius: 6px;
+        height: 29.9px;
+        padding: 0 10.35px 0 10.35px;
+        gap: 4.6px;
+        font-size: 12.65px;
+        border-radius: 6.9px;
     }
 
     .site-header .shop-products-btn .category-toggle-icon::before {
-        width: 9px;
-        height: 9px;
+        width: 10.35px;
+        height: 10.35px;
         background:
-            linear-gradient(#fff, #fff) 0 0 / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 6px 0 / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 0 6px / 3px 3px no-repeat,
-            linear-gradient(#fff, #fff) 6px 6px / 3px 3px no-repeat;
+            linear-gradient(#fff, #fff) 0 0 / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 6.9px 0 / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 0 6.9px / 3.45px 3.45px no-repeat,
+            linear-gradient(#fff, #fff) 6.9px 6.9px / 3.45px 3.45px no-repeat;
     }
 
     .site-header .searchbar-header__actions {
@@ -1201,8 +1202,9 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 0;
         width: auto !important;
-        max-width: 304px;
+        max-width: 395px;
         min-width: 0;
+        height: 29.9px;
         overflow: hidden;
     }
 
@@ -1264,9 +1266,9 @@
 
     .site-header .shop-products-btn,
     .site-header .category-toggle.shop-products-btn {
-        height: 26px;
-        padding: 0 8px;
-        font-size: 11px;
+        height: 29.9px;
+        padding: 0 9.2px;
+        font-size: 12.65px;
     }
 
     /* Keep Quote/Account labels visible — shrink search, never icon-only utils. */
@@ -1280,20 +1282,23 @@
     }
 
     .site-header .searchbar-header__actions > .header-util-link.header-top-basket-link {
-        position: relative !important;
-        right: auto !important;
-        left: 0 !important;
+        position: absolute !important;
+        right: 40px !important;
+        left: auto !important;
+        top: 50% !important;
         width: auto;
         font-size: 0;
         gap: 0;
         flex-shrink: 0;
+        transform: translateY(-50%) !important;
     }
 
     .site-header .searchbar-header__search-expand {
         flex: 1 1 0;
         width: auto !important;
-        max-width: 228px;
+        max-width: 296px;
         min-width: 0;
+        height: 29.9px;
         overflow: hidden;
     }
 }
@@ -1319,7 +1324,7 @@
     .site-header .searchbar-header__search-expand {
         flex: 1 1 0;
         width: auto !important;
-        max-width: calc(380px - (160px * var(--bu-adapt)));
+        max-width: calc(494px - (208px * var(--bu-adapt)));
         min-width: 0;
         overflow: hidden;
     }
@@ -1347,9 +1352,34 @@
     }
 
     .site-header .searchbar-header__search-expand {
-        max-width: 220px;
+        max-width: 286px;
         min-width: 0;
         overflow: hidden;
+    }
+}
+
+/* Reduced PC widths: Quote + Account become icons, search takes the freed space.
+   Cart and laptop stay pinned at right: 50px (rules above), so they cannot drift. */
+@media (min-width: 700px) and (max-width: 1439px) {
+    .site-header .searchbar-header__actions > .header-util-link:not(.header-top-basket-link) {
+        font-size: 0;
+        gap: 0;
+    }
+
+    .site-header .searchbar-header__actions > .header-util-link:not(.header-top-basket-link) svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .site-header .searchbar-header__actions {
+        gap: 8px;
+    }
+
+    .site-header .searchbar-header__search-expand {
+        flex: 1 1 auto;
+        width: auto !important;
+        max-width: none;
+        min-width: 0;
     }
 }
 
