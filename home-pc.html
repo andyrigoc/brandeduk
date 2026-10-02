@@ -3184,6 +3184,10 @@
             scroll-snap-type: x mandatory;
             scrollbar-width: none;
         }
+        .tb-track.is-auto {
+            scroll-behavior: auto;
+            scroll-snap-type: none;
+        }
         .tb-track::-webkit-scrollbar {
             display: none;
         }
@@ -3374,6 +3378,40 @@
                 }
             });
         });
+
+        // PC only: logos drift left → right. Hover pauses so a brand can be clicked.
+        var reduceMotion = false;
+        try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+        var isPc = false;
+        try { isPc = window.matchMedia('(min-width: 700px)').matches; } catch (e2) { isPc = window.innerWidth >= 700; }
+        if (isPc && !reduceMotion && track) {
+            Array.prototype.slice.call(track.children).forEach(function (card) {
+                track.appendChild(card.cloneNode(true));
+            });
+            function halfWidth() {
+                return track.scrollWidth / 2;
+            }
+            track.scrollLeft = halfWidth();
+            track.classList.add('is-auto');
+            var paused = false;
+            var last = 0;
+            var pixelsPerSecond = 28;
+            var logoBar = track.closest('.tb-logos') || track;
+            logoBar.addEventListener('mouseenter', function () { paused = true; });
+            logoBar.addEventListener('mouseleave', function () { paused = false; last = 0; });
+            function step(now) {
+                if (!last) last = now;
+                var dt = (now - last) / 1000;
+                last = now;
+                if (!paused && dt > 0 && dt < 0.1) {
+                    var half = halfWidth();
+                    track.scrollLeft -= pixelsPerSecond * dt;
+                    if (track.scrollLeft <= 1) track.scrollLeft += half;
+                }
+                requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
     })();
     </script>
 
