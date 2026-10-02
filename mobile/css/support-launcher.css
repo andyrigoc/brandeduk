@@ -1,0 +1,525 @@
+/* ═══════════════════════════════════════════════════════
+   BRANDED UK — Custom support launcher (Crisp Live Chat)
+   Visual language matches the previous orange onsite chat FAB.
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  --buk-support-orange: #ff7a00;
+  --buk-support-orange-dark: #e86e00;
+  --buk-support-navy: #273469;
+  --buk-support-text: #111827;
+  --buk-support-muted: #6b7280;
+  --buk-support-line: #e8eaef;
+  --buk-support-soft: #f5f5f7;
+  --buk-support-online: #22c55e;
+}
+
+/* Floating action button — same size/shadow language as old .whatsapp-float */
+.buk-support-fab {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: max(82px, calc(82px + env(safe-area-inset-bottom, 0px)));
+  width: 56px;
+  height: 56px;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--buk-support-orange);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(255, 122, 0, 0.38);
+  z-index: 10050;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  padding: 0;
+}
+
+.buk-support-fab svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.buk-support-fab:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 26px rgba(255, 122, 0, 0.48);
+  background: var(--buk-support-orange-dark);
+}
+
+.buk-support-fab:focus-visible {
+  outline: 3px solid var(--buk-support-navy);
+  outline-offset: 3px;
+}
+
+.buk-support-fab[aria-expanded="true"] {
+  background: var(--buk-support-navy);
+  box-shadow: 0 8px 22px rgba(39, 52, 105, 0.35);
+}
+
+.buk-support-fab[aria-expanded="true"] .buk-support-fab__icon-chat {
+  display: none;
+}
+
+.buk-support-fab[aria-expanded="true"] .buk-support-fab__icon-close {
+  display: block;
+}
+
+.buk-support-fab__icon-close {
+  display: none;
+}
+
+/* Launcher disabled — hide any leftover .buk-support-fab so it cannot
+   conflict with the BrandedUK orange FAB (.whatsapp-float). */
+.buk-support-fab,
+.buk-support-menu,
+.buk-support-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* Never show a second orange bubble under Crisp (launcher is disabled, but
+   keep CSS safety if a stale .buk-support-fab is left in the DOM). */
+html.buk-crisp-chat-open .buk-support-fab,
+body.buk-crisp-chat-open .buk-support-fab,
+.buk-support-fab.is-hidden-for-crisp {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* Compact help menu */
+.buk-support-menu {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(150px, calc(150px + env(safe-area-inset-bottom, 0px)));
+  width: calc(100vw - 32px);
+  max-width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+  z-index: 10060;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.98);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+  color: var(--buk-support-text);
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
+}
+
+.buk-support-menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+@media (min-width: 768px) {
+  .buk-support-fab {
+    right: max(24px, env(safe-area-inset-right, 0px));
+    width: 62px;
+    height: 62px;
+  }
+  .buk-support-fab svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Match previous orange FAB: sit lower once past mobile bottom nav */
+@media (min-width: 700px) {
+  .buk-support-fab {
+    bottom: max(24px, calc(24px + env(safe-area-inset-bottom, 0px)));
+  }
+  .buk-support-menu {
+    bottom: max(96px, calc(96px + env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+.buk-support-menu__header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--buk-support-line);
+  background: var(--buk-support-soft);
+}
+
+.buk-support-menu__title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--buk-support-navy);
+  line-height: 1.3;
+}
+
+.buk-support-menu__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--buk-support-muted);
+}
+
+.buk-support-menu__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--buk-support-online);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+  flex-shrink: 0;
+}
+
+.buk-support-menu__actions {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 4px;
+}
+
+.buk-support-menu__btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--buk-support-text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.buk-support-menu__btn:hover,
+.buk-support-menu__btn:focus-visible {
+  background: var(--buk-support-soft);
+  outline: none;
+}
+
+.buk-support-menu__btn:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--buk-support-navy);
+}
+
+.buk-support-menu__btn-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.buk-support-menu__btn-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.buk-support-menu__btn-icon--chat {
+  background: rgba(255, 122, 0, 0.12);
+  color: var(--buk-support-orange);
+}
+
+.buk-support-menu__btn-icon--quote {
+  background: rgba(39, 52, 105, 0.1);
+  color: var(--buk-support-navy);
+}
+
+.buk-support-menu__btn-icon--email {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.buk-support-menu__btn-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.buk-support-menu__btn-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--buk-support-navy);
+}
+
+.buk-support-menu__btn-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--buk-support-muted);
+  line-height: 1.35;
+}
+
+.buk-support-menu__chevron {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.buk-support-menu__chevron svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* Quote modal overlay */
+.buk-support-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10070;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  background: rgba(17, 24, 39, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.buk-support-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .buk-support-modal {
+    align-items: center;
+  }
+}
+
+.buk-support-modal__card {
+  width: calc(100vw - 32px);
+  max-width: 440px;
+  max-height: min(88vh, 720px);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(16px);
+  transition: transform 0.2s ease;
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
+  color: var(--buk-support-text);
+}
+
+.buk-support-modal.is-open .buk-support-modal__card {
+  transform: translateY(0);
+}
+
+.buk-support-modal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--buk-support-line);
+  flex-shrink: 0;
+}
+
+.buk-support-modal__top h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--buk-support-navy);
+}
+
+.buk-support-modal__close {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.buk-support-modal__close:hover,
+.buk-support-modal__close:focus-visible {
+  background: #f3f4f6;
+  color: #374151;
+  outline: none;
+}
+
+.buk-support-modal__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.buk-support-modal__body {
+  padding: 14px 16px 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.buk-support-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buk-support-form__row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.buk-support-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .buk-support-form__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.buk-support-form label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--buk-support-navy);
+}
+
+.buk-support-form label .req {
+  color: var(--buk-support-orange);
+}
+
+.buk-support-form input,
+.buk-support-form select,
+.buk-support-form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--buk-support-line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--buk-support-text);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.buk-support-form textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.buk-support-form input:focus,
+.buk-support-form select:focus,
+.buk-support-form textarea:focus {
+  outline: none;
+  border-color: var(--buk-support-orange);
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
+}
+
+.buk-support-form__note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--buk-support-muted);
+  background: var(--buk-support-soft);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.buk-support-form__hp {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.buk-support-form__error {
+  margin: 0;
+  font-size: 13px;
+  color: #b91c1c;
+  display: none;
+}
+
+.buk-support-form__error.is-visible {
+  display: block;
+}
+
+.buk-support-form__success {
+  margin: 0;
+  font-size: 13px;
+  color: #15803d;
+  display: none;
+}
+
+.buk-support-form__success.is-visible {
+  display: block;
+}
+
+.buk-support-modal__footer {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--buk-support-line);
+  flex-shrink: 0;
+}
+
+.buk-support-form__submit {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: var(--buk-support-orange);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(255, 122, 0, 0.28);
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.buk-support-form__submit:hover:not(:disabled) {
+  background: var(--buk-support-orange-dark);
+}
+
+.buk-support-form__submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.buk-support-form__submit:focus-visible {
+  outline: 3px solid var(--buk-support-navy);
+  outline-offset: 2px;
+}
+
+/* When menu open, prevent body scroll only if needed — modal handles its own */
+body.buk-support-modal-open {
+  overflow: hidden;
+}

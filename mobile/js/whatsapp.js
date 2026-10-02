@@ -1,13 +1,50 @@
 /* ═══════════════════════════════════════════════════════
-   BRANDED SUPPORT CHAT – Draggable float + panel
-   Chatbot send/bot flow requires Google / Facebook / Apple sign-in.
+   BRANDED SUPPORT CHAT – Original orange FAB + panel UI
+   Visible UI = BrandedUK panel only. Crisp = backend inbox only
+   (operators reply in Crisp app; replies render here — never show Crisp UI).
    ═══════════════════════════════════════════════════════ */
 (function () {
     'use strict';
 
-    // Main chat / Send CTA WhatsApp (floating widget composer)
+    if (window.__bukOnsiteChatInit) return;
+    window.__bukOnsiteChatInit = true;
+
+    // Original BrandedUK onsite chat panel (only visible chat UI).
+    // Messages go to Crisp via SDK; WhatsApp deep-links stay OFF.
+    var BUK_ONSITE_CHAT_ENABLED = true;
+    var BUK_WHATSAPP_SEND_ENABLED = false;
+    // Crisp handles its own visitor capture — keep composer unlocked
+    // to match the original panel look (no Google auth gate).
+    var BUK_REQUIRE_AUTH_FOR_COMPOSER = false;
+
+    if (!BUK_ONSITE_CHAT_ENABLED) {
+        document.documentElement.classList.add('buk-onsite-chat--hidden');
+        function hideExistingOnsiteChat() {
+            document.documentElement.classList.add('buk-onsite-chat--hidden');
+            if (document.body) document.body.classList.add('buk-onsite-chat--hidden');
+            var btn = document.getElementById('openWhatsappPopup');
+            if (btn) {
+                btn.hidden = true;
+                btn.setAttribute('aria-hidden', 'true');
+            }
+            var popup = document.getElementById('waPopup');
+            if (popup) {
+                popup.hidden = true;
+                popup.setAttribute('aria-hidden', 'true');
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', hideExistingOnsiteChat, { once: true });
+        } else {
+            hideExistingOnsiteChat();
+        }
+        return;
+    }
+
+    document.documentElement.classList.remove('buk-onsite-chat--hidden');
+    if (document.body) document.body.classList.remove('buk-onsite-chat--hidden');
+
     var WA_NUMBER = '447931372126';
-    // "Speak to a member of our team" — Italian / ops line
     var SPEAK_WA_NUMBER = '447447348564';
     var PHONE_TEL = '02089742722';
     var PHONE_DISPLAY = '020 8974 2722';
@@ -35,6 +72,122 @@
 
     function speakTeamLink(text) {
         return waLink(text || 'Hi, I would like to speak to a member of your team', SPEAK_WA_NUMBER);
+    }
+
+    // Crisp = backend only. Never open/show Crisp chatbox UI.
+    // Operator replies arrive via message:received and render in OUR panel.
+    var crispHooksBound = false;
+    var recentOutbound = [];
+    var RECENT_OUTBOUND_TTL_MS = 8000;
+
+    function rememberOutbound(text) {
+        var t = (text || '').trim();
+        if (!t) return;
+        recentOutbound.push({ text: t, at: Date.now() });
+        if (recentOutbound.length > 20) recentOutbound.shift();
+    }
+
+    function wasRecentOutbound(text) {
+        var t = (text || '').trim();
+        if (!t) return false;
+        var now = Date.now();
+        recentOutbound = recentOutbound.filter(function (item) {
+            return now - item.at < RECENT_OUTBOUND_TTL_MS;
+        });
+        for (var i = 0; i < recentOutbound.length; i++) {
+            if (recentOutbound[i].text === t) {
+                recentOutbound.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function extractCrispText(data) {
+        if (!data) return '';
+        if (typeof data === 'string') return data.trim();
+        var type = data.type || '';
+        var content = data.content;
+        if (type === 'text' || !type) {
+            if (typeof content === 'string') return content.trim();
+            if (content && typeof content === 'object' && typeof content.text === 'string') {
+                return content.text.trim();
+            }
+        }
+        if (type === 'file' && content && typeof content === 'object') {
+            var name = content.name || content.url || 'File';
+            return '[File] ' + name;
+        }
+        if (typeof content === 'string') return content.trim();
+        return '';
+    }
+
+    function forceHideCrispUi() {
+        try {
+            window.$crisp = window.$crisp || [];
+            window.$crisp.push(['do', 'chat:hide']);
+            window.$crisp.push(['do', 'chat:close']);
+            window.$crisp.push(['config', 'hide:chat:on']);
+        } catch (e) {}
+    }
+
+    function sendToCrispBackend(text) {
+        var msg = (text || '').trim();
+        if (!msg) return false;
+        try {
+            window.$crisp = window.$crisp || [];
+            // Send only — never chat:open / chat:show
+            rememberOutbound(msg);
+            window.$crisp.push(['do', 'message:send', ['text', msg]]);
+            forceHideCrispUi();
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function bindCrispMessageHooks() {
+        if (crispHooksBound) return;
+        crispHooksBound = true;
+        window.$crisp = window.$crisp || [];
+
+        window.$crisp.push(['on', 'message:received', function (data) {
+            forceHideCrispUi();
+            var text = extractCrispText(data);
+            if (!text) return;
+            // Ignore echoes of our own outbound if SDK surfaces them here
+            if (wasRecentOutbound(text)) return;
+            appendAgentBubble(text);
+            // Soft nudge: reopen our panel if closed so visitor sees the reply
+            if (popup && !popup.classList.contains('is-active')) {
+                openPopup();
+            }
+        }]);
+
+        // message:sent = visitor message acknowledged by Crisp.
+        // We already render our own bubble on Send — skip duplicates.
+        window.$crisp.push(['on', 'message:sent', function (data) {
+            forceHideCrispUi();
+            var text = extractCrispText(data);
+            if (text) wasRecentOutbound(text);
+        }]);
+
+        window.$crisp.push(['on', 'chat:opened', function () {
+            forceHideCrispUi();
+        }]);
+    }
+
+    // Keep a harmless alias for any leftover callers; does NOT open Crisp UI.
+    function openCrispChat(optionalMessage) {
+        var msg = (optionalMessage || '').trim();
+        if (msg) {
+            if (chatUnlocked) appendUserBubble(msg);
+            if (!sendToCrispBackend(msg) && chatUnlocked) {
+                appendAgentBubble('Could not reach live chat. Please try again or use Call our team.');
+            }
+        }
+        forceHideCrispUi();
+        if (popup && !popup.classList.contains('is-active')) openPopup();
     }
 
     var WELCOME_TEXT = 'Hi! How can we help you today?';
@@ -153,11 +306,11 @@
             '  </div>' +
             '  <div class="wa-popup__composer" id="waComposer">' +
             '    <div class="wa-popup__input-wrap">' +
-            '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Write a message, then Send opens WhatsApp..." autocomplete="off">' +
+            '      <input class="wa-popup__input" id="waChatInput" type="text" placeholder="Write a message…" autocomplete="off">' +
             '      <button type="button" class="wa-popup__icon-btn" id="waChatAttach" aria-label="Attach file">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
             '      </button>' +
-            '      <button type="button" class="wa-popup__send" id="waChatSend" aria-label="Send on WhatsApp" title="Opens WhatsApp — tap Send there to deliver">' +
+            '      <button type="button" class="wa-popup__send" id="waChatSend" aria-label="Send message" title="Send to our team">' +
             '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>' +
             '      </button>' +
             '    </div>' +
@@ -168,11 +321,12 @@
             '    <button type="button" class="wa-popup__reply-chip" data-wa-reply="Hi, can you help with logo placement and pricing?">Logo help</button>' +
             '  </div>' +
             '  <div class="wa-popup__actions">' +
-            '    <a class="wa-popup__action wa-popup__action--alt" id="waSpeakTeam" href="' + speakTeamLink() + '" target="_blank" rel="noopener">' +
-            '      <span class="wa-popup__action-icon wa-popup__action-icon--chat" aria-hidden="true">' +
-            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+            '    <a class="wa-popup__action wa-popup__action--alt" id="waEmailTeam" href="mailto:info@brandeduk.com?subject=BrandedUK%20Website%20Enquiry">' +
+            '      <span class="wa-popup__action-icon wa-popup__action-icon--email" aria-hidden="true">' +
+            '        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' +
             '      </span>' +
-            '      <span class="wa-popup__action-label">Chat with our team</span>' +
+            '      <span class="wa-popup__action-label">EMAIL</span>' +
+            '      <span class="wa-popup__action-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>' +
             '    </a>' +
             '    <a class="wa-popup__action" id="waCallTeam" href="tel:' + PHONE_TEL + '">' +
             '      <span class="wa-popup__action-icon wa-popup__action-icon--call" aria-hidden="true">' +
@@ -199,6 +353,40 @@
             '</div>';
     }
 
+    function lockEqualCtaButtons(root) {
+        /* Belt+suspenders: inline size lock so CSS cache cannot leave CTAs unequal/tall */
+        var actions = root && root.querySelector
+            ? root.querySelector('.wa-popup__actions')
+            : document.getElementById('waFastReplies') && document.querySelector('.wa-popup__actions');
+        if (!actions) actions = document.querySelector('.wa-popup__actions');
+        if (!actions) return;
+        actions.style.cssText =
+            'display:flex!important;flex-direction:row!important;justify-content:center!important;' +
+            'align-items:stretch!important;gap:8px!important;padding:2px 14px 10px!important;' +
+            'box-sizing:border-box!important;width:100%!important;';
+        var btns = actions.querySelectorAll('#waEmailTeam, #waCallTeam, a.wa-popup__action');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].style.cssText =
+                'display:flex!important;align-items:center!important;gap:6px!important;' +
+                'flex:1 1 0!important;width:calc(50% - 4px)!important;max-width:calc(50% - 4px)!important;' +
+                'min-width:0!important;height:34px!important;min-height:34px!important;max-height:34px!important;' +
+                'padding:4px 10px!important;box-sizing:border-box!important;border-radius:10px!important;' +
+                'text-decoration:none!important;line-height:1!important;';
+        }
+        var email = document.getElementById('waEmailTeam');
+        if (email) {
+            email.style.setProperty('background', '#1a1c2e', 'important');
+            email.style.setProperty('border-color', 'transparent', 'important');
+            email.style.setProperty('color', '#fff', 'important');
+        }
+        var call = document.getElementById('waCallTeam');
+        if (call) {
+            call.style.setProperty('background', '#fff', 'important');
+            call.style.setProperty('border', '1px solid #e8eaef', 'important');
+            call.style.setProperty('color', '#1a1c2e', 'important');
+        }
+    }
+
     function ensurePopup() {
         var popup = document.getElementById('waPopup');
         if (!popup) {
@@ -210,21 +398,43 @@
         }
         popup.innerHTML = buildPopupHtml();
         popup.dataset.bukChat = '1';
+        lockEqualCtaButtons(popup);
         return popup;
     }
 
     function styleFloatButton(btn) {
         if (!btn) return;
+        btn.hidden = false;
+        btn.removeAttribute('aria-hidden');
+        btn.classList.remove('is-hidden-for-crisp');
+        btn.style.removeProperty('display');
+        btn.style.removeProperty('visibility');
+        btn.style.removeProperty('pointer-events');
+        btn.style.removeProperty('opacity');
+        btn.removeAttribute('hidden');
         btn.setAttribute('aria-label', 'Open support chat');
+        btn.tabIndex = 0;
         btn.innerHTML =
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
             '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' +
             '</svg>';
     }
 
-    var openBtn = document.getElementById('openWhatsappPopup');
+    function ensureFloatButton() {
+        var btn = document.getElementById('openWhatsappPopup');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'whatsapp-float';
+            btn.id = 'openWhatsappPopup';
+            document.body.appendChild(btn);
+        }
+        styleFloatButton(btn);
+        return btn;
+    }
+
+    var openBtn = ensureFloatButton();
     var popup = ensurePopup();
-    styleFloatButton(openBtn);
 
     var closeBtn = document.getElementById('closeWhatsappPopup');
     var minimizeBtn = document.getElementById('minimizeWhatsappPopup');
@@ -289,11 +499,23 @@
     function restoreFloatingButton() {
         if (!openBtn) return;
         openBtn.classList.remove('is-dismissed');
+        openBtn.classList.remove('is-hidden-for-crisp');
         sessionStorage.removeItem(dismissKey);
         openBtn.style.left = 'auto';
         openBtn.style.right = '18px';
         openBtn.style.top = 'auto';
         openBtn.style.bottom = window.matchMedia('(min-width: 700px)').matches ? '24px' : '82px';
+        openBtn.style.removeProperty('display');
+        openBtn.style.removeProperty('visibility');
+        openBtn.style.removeProperty('pointer-events');
+        openBtn.style.removeProperty('opacity');
+        openBtn.removeAttribute('hidden');
+        openBtn.removeAttribute('aria-hidden');
+        openBtn.tabIndex = 0;
+        try {
+            document.documentElement.classList.remove('buk-crisp-chat-open');
+            if (document.body) document.body.classList.remove('buk-crisp-chat-open');
+        } catch (e) {}
     }
 
     function revealWelcomeMessage() {
@@ -334,13 +556,13 @@
     }
 
     function applyAuthGateUi() {
-        chatUnlocked = isSignedIn();
+        chatUnlocked = BUK_REQUIRE_AUTH_FOR_COMPOSER ? isSignedIn() : true;
         if (popup) {
             popup.classList.toggle('is-locked', !chatUnlocked);
             popup.classList.toggle('is-unlocked', chatUnlocked);
         }
         if (authGate) {
-            if (chatUnlocked) {
+            if (chatUnlocked || !BUK_REQUIRE_AUTH_FOR_COMPOSER) {
                 authGate.setAttribute('hidden', '');
                 authGate.setAttribute('aria-hidden', 'true');
             } else {
@@ -358,8 +580,6 @@
         }
         if (sendBtn) sendBtn.disabled = !chatUnlocked;
         if (attachBtn) attachBtn.disabled = !chatUnlocked;
-        // Footer tabs (Fast replies / Quote support / Order help) stay usable —
-        // auth gate only locks the message composer, not these actions.
 
         if (chatUnlocked && popup && popup.classList.contains('is-active')) {
             scheduleWelcomeMessage();
@@ -504,6 +724,15 @@
         var msg = (text || '').trim();
         if (!msg) msg = 'Hi, I would like some help';
         appendUserBubble(msg);
+
+        // Live path: Crisp backend only — keep our panel open, never open Crisp UI.
+        if (!BUK_WHATSAPP_SEND_ENABLED) {
+            if (!sendToCrispBackend(msg)) {
+                appendAgentBubble('Could not reach live chat. Please try again or use Call our team.');
+            }
+            return '';
+        }
+
         var url = waLink(msg);
         openWhatsAppLink(url);
         appendAgentBubble('Opening WhatsApp… Please tap Send there so our team receives your message. If nothing opened, use Speak to a member of our team below.');
@@ -516,7 +745,6 @@
             window.openContactPopup(message ? { message: message } : undefined);
             return;
         }
-        // Fallback: let data-open-contact handler / contact page take over
         var trigger = document.createElement('a');
         trigger.href = '#';
         trigger.setAttribute('data-open-contact', '1');
@@ -529,11 +757,21 @@
     function sendFastReply(text) {
         var msg = (text || '').trim();
         if (!msg) return;
+        if (!BUK_WHATSAPP_SEND_ENABLED) {
+            if (chatUnlocked) {
+                appendUserBubble(msg);
+                if (!sendToCrispBackend(msg)) {
+                    appendAgentBubble('Could not reach live chat. Please try again or use Call our team.');
+                }
+            } else {
+                sendToCrispBackend(msg);
+            }
+            return;
+        }
         if (chatUnlocked) {
             sendToWhatsApp(msg);
             return;
         }
-        // Logged-out: still open WhatsApp for footer fast-replies (do not require auth)
         openWhatsAppLink(waLink(msg));
     }
 
@@ -725,11 +963,10 @@
         });
     }
 
-    var speakBtn = document.getElementById('waSpeakTeam');
-    if (speakBtn) {
-        speakBtn.addEventListener('click', function () {
-            closePopup();
-        });
+    // Email link opens mailto:; no Crisp UI open.
+    var emailBtn = document.getElementById('waEmailTeam');
+    if (emailBtn) {
+        emailBtn.setAttribute('title', 'Email info@brandeduk.com');
     }
 
     // Call link keeps tel:; call-modal.js intercepts on desktop.
@@ -751,5 +988,9 @@
     });
 
     applyAuthGateUi();
+    // Listen for operator replies → render in OUR panel; never open Crisp UI.
+    bindCrispMessageHooks();
+    forceHideCrispUi();
     window.openBrandedChat = openPopup;
+    window.openBrandedCrispChat = openCrispChat;
 })();

@@ -276,3 +276,32 @@
     injectFooter();
   }
 })();
+
+/* Crisp backend + BrandedUK onsite chat panel (whatsapp.js UI only; Crisp UI hidden) */
+(function loadBrandedCrisp() {
+  if (window.__brandedCrispLoaded) return;
+  if (document.querySelector('script[data-branded-crisp="1"]')) return;
+  var s = document.createElement('script');
+  s.src = new URL('/mobile/js/crisp-chat.js?v=20261002-ourpanel', window.location.origin).href;
+  s.async = true;
+  s.setAttribute('data-branded-crisp', '1');
+  document.head.appendChild(s);
+})();
+
+(function loadBrandedOnsiteChat() {
+  if (window.__bukOnsiteChatAssetsLoaded) return;
+  window.__bukOnsiteChatAssetsLoaded = true;
+  if (!document.querySelector('link[data-buk-whatsapp-css="1"], link[href*="whatsapp.css"]')) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = new URL('/mobile/css/whatsapp.css?v=20261002-cta-equal', window.location.origin).href;
+    link.setAttribute('data-buk-whatsapp-css', '1');
+    document.head.appendChild(link);
+  }
+  if (document.querySelector('script[data-buk-whatsapp="1"], script[src*="whatsapp.js"]')) return;
+  var s = document.createElement('script');
+  s.src = new URL('/mobile/js/whatsapp.js?v=20261002-cta-equal', window.location.origin).href;
+  s.defer = true;
+  s.setAttribute('data-buk-whatsapp', '1');
+  document.head.appendChild(s);
+})();
