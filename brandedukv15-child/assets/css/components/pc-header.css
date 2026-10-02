@@ -306,6 +306,8 @@
         width: auto;
         max-width: none;
         object-fit: contain;
+        border: none;
+        border-radius: 0;
         transform: none;
         transform-origin: center;
     }

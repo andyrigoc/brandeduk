@@ -169,9 +169,22 @@
 .mobile-logo-center {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
     text-decoration: none;
     flex-shrink: 0;
+}
+
+.mobile-logo-center .mobile-logo-badge {
+    height: 44px;
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+}
+
+.mobile-logo-center .mobile-logo-word {
+    height: 38px;
+    width: auto;
+    display: block;
 }
 
 .logo-badge-img {
