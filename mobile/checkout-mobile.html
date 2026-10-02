@@ -267,7 +267,7 @@
                 <form id="addressForm">
                     <div class="form-group">
                         <label>Country/Region</label>
-                        <select class="form-select" id="country">
+                        <select class="form-select" id="country" autocomplete="shipping country">
                             <option value="uk" selected>United Kingdom</option>
                             <option value="us">United States</option>
                             <option value="ca">Canada</option>
@@ -282,15 +282,15 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <input type="text" class="form-input" placeholder="First name" value="Anderson">
+                            <input type="text" class="form-input" placeholder="First name" value="Anderson" autocomplete="shipping given-name">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-input" placeholder="Last name" value="Ricotta">
+                            <input type="text" class="form-input" placeholder="Last name" value="Ricotta" autocomplete="shipping family-name">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <input type="tel" class="form-input" placeholder="Phone" value="+44 7447348564">
+                        <input type="tel" class="form-input" placeholder="Phone" value="+44 7447348564" autocomplete="shipping tel">
                     </div>
 
                     <div class="form-section-title">Address</div>
@@ -301,16 +301,16 @@
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <input type="text" placeholder="ADDRESS FINDER: Search by postcode, street">
+                            <input type="text" placeholder="ADDRESS FINDER: Search by postcode, street" autocomplete="off">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Address line 1" value="Red Lion Business Center">
+                        <input type="text" class="form-input" placeholder="Address line 1" value="Red Lion Business Center" autocomplete="shipping address-line1">
                     </div>
 
                     <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Apartment, Suite, Unit etc. (optional)">
+                        <input type="text" class="form-input" placeholder="Apartment, Suite, Unit etc. (optional)" autocomplete="shipping address-line2">
                     </div>
 
                     <div class="form-row">
@@ -322,7 +322,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <select class="form-select">
+                            <select class="form-select" autocomplete="shipping address-level2">
                                 <option value="surbiton" selected>Surbiton</option>
                                 <option value="london">London</option>
                             </select>
@@ -330,11 +330,11 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="text" class="form-input" placeholder="County" value="Greater London">
+                        <input type="text" class="form-input" placeholder="County" value="Greater London" autocomplete="shipping address-level1">
                     </div>
 
                     <div class="form-group">
-                        <input type="text" class="form-input" placeholder="Postcode" value="KT6 7QD">
+                        <input type="text" class="form-input" placeholder="Postcode" value="KT6 7QD" autocomplete="shipping postal-code">
                     </div>
 
                     <div class="form-checkbox">
@@ -368,7 +368,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
-                        <input type="text" placeholder="Search for the name">
+                        <input type="text" placeholder="Search for the name" autocomplete="off">
                     </div>
                     <button class="add-address-btn" onclick="openAddressModal()">Add new address</button>
                 </div>

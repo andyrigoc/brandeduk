@@ -2924,18 +2924,18 @@
             <form id="quoteRequestForm" class="quote-popup-form" method="post" action="#">
                 <div class="form-group">
                     <label for="quoteName">Full Name</label>
-                    <input type="text" id="quoteName" name="name" placeholder="John Smith" required>
+                    <input type="text" id="quoteName" name="name" placeholder="John Smith" required autocomplete="name">
                 </div>
                 <div class="form-group">
                     <label for="quotePhone">Phone Number</label>
                     <div class="phone-input-wrapper">
                         <span class="phone-prefix">+44</span>
-                        <input type="tel" id="quotePhone" name="phone" placeholder="7700 900000" pattern="[0-9\s]{10,11}" inputmode="numeric" required>
+                        <input type="tel" id="quotePhone" name="phone" placeholder="7700 900000" pattern="[0-9\s]{10,11}" inputmode="numeric" required autocomplete="tel">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="quoteEmail">E-mail</label>
-                    <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required>
+                    <input type="email" id="quoteEmail" name="email" placeholder="john@company.com" required autocomplete="email">
                 </div>
                 <div class="form-group quote-popup-note">
                     <label for="quoteCustomerNote">Note <span class="quote-label-optional">(optional)</span></label>

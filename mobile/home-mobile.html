@@ -1087,11 +1087,11 @@
                     <div class="account-form-content">
                         <form id="signinFormData">
                             <div class="account-input-group">
-                                <input type="email" id="signinEmail" required>
+                                <input type="email" id="signinEmail" required autocomplete="username">
                                 <label for="signinEmail">Email</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="password" id="signinPassword" required>
+                                <input type="password" id="signinPassword" required autocomplete="current-password">
                                 <label for="signinPassword">Password</label>
                             </div>
                             <div class="account-form-actions">
@@ -1114,28 +1114,28 @@
                         <form id="signupFormData">
                             <div class="account-input-row">
                                 <div class="account-input-group half">
-                                    <input type="text" id="signupFirstName" required>
+                                    <input type="text" id="signupFirstName" required autocomplete="given-name">
                                     <label for="signupFirstName">First Name</label>
                                 </div>
                                 <div class="account-input-group half">
-                                    <input type="text" id="signupLastName" required>
+                                    <input type="text" id="signupLastName" required autocomplete="family-name">
                                     <label for="signupLastName">Last Name</label>
                                 </div>
                             </div>
                             <div class="account-input-group">
-                                <input type="email" id="signupEmail" required>
+                                <input type="email" id="signupEmail" required autocomplete="email">
                                 <label for="signupEmail">Email</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="tel" id="signupPhone" required>
+                                <input type="tel" id="signupPhone" required autocomplete="tel">
                                 <label for="signupPhone">Phone Number</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="text" id="signupCompany">
+                                <input type="text" id="signupCompany" autocomplete="organization">
                                 <label for="signupCompany">Company Name (optional)</label>
                             </div>
                             <div class="account-input-group">
-                                <input type="password" id="signupPassword" required>
+                                <input type="password" id="signupPassword" required autocomplete="new-password">
                                 <label for="signupPassword">Password</label>
                             </div>
                             <div class="account-form-actions">
@@ -1613,10 +1613,10 @@
             <form class="popup-contact__form" id="contactQuickForm">
                 <div class="form-row">
                     <div class="form-group">
-                        <input type="text" id="contactName" placeholder="Name" required>
+                        <input type="text" id="contactName" placeholder="Name" required autocomplete="name">
                     </div>
                     <div class="form-group">
-                        <input type="email" id="contactEmail" placeholder="Email address" required>
+                        <input type="email" id="contactEmail" placeholder="Email address" required autocomplete="email">
                     </div>
                 </div>
                 <div class="form-row">
@@ -1632,7 +1632,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <input type="tel" id="contactPhone" placeholder="Phone number">
+                        <input type="tel" id="contactPhone" placeholder="Phone number" autocomplete="tel">
                     </div>
                 </div>
                 <div class="form-group">

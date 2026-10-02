@@ -118,21 +118,21 @@
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label>Name *</label>
-                                                <input type="text" name="name" required placeholder="Your name">
+                                                <input type="text" name="name" required placeholder="Your name" autocomplete="name">
                                             </div>
                                             <div class="form-group">
                                                 <label>Company</label>
-                                                <input type="text" name="company" placeholder="Company name">
+                                                <input type="text" name="company" placeholder="Company name" autocomplete="organization">
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label>Email *</label>
-                                                <input type="email" name="email" required placeholder="email@example.com">
+                                                <input type="email" name="email" required placeholder="email@example.com" autocomplete="email">
                                             </div>
                                             <div class="form-group">
                                                 <label>Phone *</label>
-                                                <input type="tel" name="phone" required placeholder="020 1234 5678">
+                                                <input type="tel" name="phone" required placeholder="020 1234 5678" autocomplete="tel">
                                             </div>
                                         </div>
                                     </div>
@@ -141,20 +141,20 @@
                                         <h3>Delivery Address</h3>
                                         <div class="form-group">
                                             <label>Address Line 1 *</label>
-                                            <input type="text" name="address1" required placeholder="Street address">
+                                            <input type="text" name="address1" required placeholder="Street address" autocomplete="shipping address-line1">
                                         </div>
                                         <div class="form-group">
                                             <label>Address Line 2</label>
-                                            <input type="text" name="address2" placeholder="Apartment, suite, etc.">
+                                            <input type="text" name="address2" placeholder="Apartment, suite, etc." autocomplete="shipping address-line2">
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label>City *</label>
-                                                <input type="text" name="city" required placeholder="City">
+                                                <input type="text" name="city" required placeholder="City" autocomplete="shipping address-level2">
                                             </div>
                                             <div class="form-group">
                                                 <label>Postcode *</label>
-                                                <input type="text" name="postcode" required placeholder="SW1A 1AA">
+                                                <input type="text" name="postcode" required placeholder="SW1A 1AA" autocomplete="shipping postal-code">
                                             </div>
                                         </div>
                                     </div>

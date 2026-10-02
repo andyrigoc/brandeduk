@@ -27,9 +27,9 @@
         <p>Use the guest tracking endpoint to check a real account order without signing in.</p>
         <form id="trackForm">
             <label for="orderNumber">Order number</label>
-            <input id="orderNumber" name="orderNumber" required>
+            <input id="orderNumber" name="orderNumber" required autocomplete="off">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" required>
+            <input id="email" name="email" type="email" required autocomplete="email">
             <button type="submit">Track order</button>
         </form>
         <div class="result" id="trackResult" style="display:none"></div>

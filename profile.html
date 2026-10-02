@@ -302,7 +302,7 @@
                             </div>
                             <div class="field">
                                 <label for="profileEmail">Email</label>
-                                <input id="profileEmail" name="email" readonly>
+                                <input id="profileEmail" name="email" readonly autocomplete="email">
                             </div>
                             <div class="field" style="align-self:end">
                                 <button type="submit" class="btn-accent">Save profile</button>
@@ -354,35 +354,35 @@
                             <div class="form-grid">
                                 <div class="field">
                                     <label for="addressFullName">Full name</label>
-                                    <input id="addressFullName" required>
+                                    <input id="addressFullName" required autocomplete="shipping name">
                                 </div>
                                 <div class="field">
                                     <label for="addressPhone">Phone</label>
-                                    <input id="addressPhone" required>
+                                    <input id="addressPhone" required autocomplete="shipping tel">
                                 </div>
                             </div>
                             <div class="field" style="margin-top:14px">
                                 <label for="addressLine1">Address line 1</label>
-                                <input id="addressLine1" required>
+                                <input id="addressLine1" required autocomplete="shipping address-line1">
                             </div>
                             <div class="field" style="margin-top:14px">
                                 <label for="addressLine2">Address line 2</label>
-                                <input id="addressLine2">
+                                <input id="addressLine2" autocomplete="shipping address-line2">
                             </div>
                             <div class="form-grid" style="margin-top:14px">
                                 <div class="field">
                                     <label for="addressCity">City</label>
-                                    <input id="addressCity" required>
+                                    <input id="addressCity" required autocomplete="shipping address-level2">
                                 </div>
                                 <div class="field">
                                     <label for="addressPostalCode">Postal code</label>
-                                    <input id="addressPostalCode" required>
+                                    <input id="addressPostalCode" required autocomplete="shipping postal-code">
                                 </div>
                             </div>
                             <div class="form-grid" style="margin-top:14px">
                                 <div class="field">
                                     <label for="addressCountry">Country</label>
-                                    <input id="addressCountry" required value="United Kingdom">
+                                    <input id="addressCountry" required value="United Kingdom" autocomplete="shipping country-name">
                                 </div>
                                 <div class="field">
                                     <label for="addressIsDefault">Default</label>
