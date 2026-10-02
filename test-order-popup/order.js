@@ -856,6 +856,72 @@ function page4ApplyLocalImagesToCards(product) {
 }
 
 var page4PositionRequest = 0;
+
+function page4ApiBases() {
+    var bases = [];
+    function add(base) {
+        base = String(base || '').replace(/\/+$/, '');
+        if (base && bases.indexOf(base) === -1) bases.push(base);
+    }
+    if (typeof window.resolveBrandedApiBase === 'function') add(window.resolveBrandedApiBase());
+    if (window.API_BASE_URL) add(window.API_BASE_URL);
+    var host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') {
+        add(location.origin + '/__api');
+        add('http://127.0.0.1:3005');
+    }
+    add('https://api.brandeduk.com');
+    return bases;
+}
+
+function page4FetchCustomizationConfig(target) {
+    var path = '/api/customization-config/' + encodeURIComponent(target.slug);
+    if (target.subtype) path += '?subtype=' + encodeURIComponent(target.subtype);
+    var bases = page4ApiBases();
+    function attempt(index) {
+        if (index >= bases.length) return Promise.reject(new Error('customization config unavailable'));
+        return fetch(bases[index] + path)
+            .then(function (response) {
+                if (!response.ok) throw new Error('status ' + response.status);
+                return response.json();
+            })
+            .catch(function () { return attempt(index + 1); });
+    }
+    return attempt(0);
+}
+
+function page4ApiPositionImage(position) {
+    var remote = String((position && (position.imageUrl || position.image_url)) || '').trim();
+    return /\/uploads\/customization\//i.test(remote) ? remote : '';
+}
+
+function page4ApplyApiImagesToCards(product, positions) {
+    var host = document.getElementById('p4PositionOptions');
+    if (!host) return;
+    var slug = customizationConfigTarget(product || {}).slug;
+    var byKey = {};
+    (positions || []).forEach(function (position) {
+        var key = page4NormalizePositionKey(position.slug || position.label || '');
+        if (key) byKey[key] = position;
+    });
+    host.querySelectorAll('.position-card').forEach(function (card) {
+        var key = page4NormalizePositionKey(card.getAttribute('data-position') || '');
+        var labelEl = card.querySelector('.position-checkbox span');
+        if (!key && labelEl) key = page4NormalizePositionKey(labelEl.textContent || '');
+        var position = byKey[key];
+        var apiImage = page4ApiPositionImage(position);
+        var photo = card.querySelector('.position-placeholder');
+        var local = page4LocalPositionImage(slug, key);
+        if (!photo || !apiImage) return;
+        photo.alt = (labelEl && labelEl.textContent) || key;
+        photo.onerror = function () {
+            photo.onerror = null;
+            if (local) photo.src = local;
+        };
+        photo.src = apiImage;
+    });
+}
+
 function loadPage4PositionImages(product) {
     var host = document.getElementById('p4PositionOptions');
     if (!host) return;
@@ -863,45 +929,18 @@ function loadPage4PositionImages(product) {
     // Always paint fixed local assets first so localhost never shows dead postimg placeholders.
     page4ApplyLocalImagesToCards(product);
     var requestId = ++page4PositionRequest;
-    var url = 'https://api.brandeduk.com/api/customization-config/' + encodeURIComponent(target.slug);
-    if (target.subtype) url += '?subtype=' + encodeURIComponent(target.subtype);
-    fetch(url)
-        .then(function (response) { return response.ok ? response.json() : null; })
+    page4FetchCustomizationConfig(target)
         .then(function (body) {
             if (requestId !== page4PositionRequest) return;
-            if (!body) {
-                page4ApplyLocalImagesToCards(product);
-                return;
-            }
-            var config = body.data || body;
-            var positions = (config.positions || []).filter(function (position) {
+            var config = body && (body.data || body);
+            var positions = config && (config.positions || []).filter(function (position) {
                 return position && position.isActive !== false;
             });
-            if (!positions.length) {
+            if (!positions || !positions.length) {
                 page4ApplyLocalImagesToCards(product);
                 return;
             }
-            host.innerHTML = positions.map(function (position) { return page4PositionCard(product, position); }).join('');
-            p4PaintPrintButtons();
-            host.querySelectorAll('.position-card').forEach(function (card, index) {
-                var position = positions[index];
-                var label = position.label || position.slug || '';
-                var local = page4LocalPositionImage(target.slug, position.slug || label);
-                var remote = position.imageUrl || position.image_url || '';
-                var name = card.querySelector('.position-checkbox span');
-                var photo = card.querySelector('.position-placeholder');
-                if (name) name.textContent = label;
-                if (photo) {
-                    photo.src = local || remote;
-                    photo.alt = label;
-                    if (local && remote) {
-                        photo.onerror = function () {
-                            photo.onerror = null;
-                            photo.src = remote;
-                        };
-                    }
-                }
-            });
+            page4ApplyApiImagesToCards(product, positions);
             p4LoadBackendPrices().then(function () {
                 p4ApplyBackendPricesToCards();
                 p4PaintPrintButtons();
@@ -914,6 +953,7 @@ function loadPage4PositionImages(product) {
             });
         })
         .catch(function () {
+            if (requestId !== page4PositionRequest) return;
             page4ApplyLocalImagesToCards(product);
         });
 }

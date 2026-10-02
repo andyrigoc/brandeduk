@@ -2530,7 +2530,7 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
-  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b/.test(text);
+  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b(?!\s+(?:green|orange|yellow|red|pink|blue))\b/.test(text);
   if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
   if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
   if (/\bdog\b/.test(text)) return "dog-jackets";
@@ -2604,7 +2604,7 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
-  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b/.test(text);
+  const hiVis = /\bhi[\s-]?vi[sz](?:ibility)?\b|\bhigh[\s-]?vi[sz](?:ibility)?\b|\bsafety\b(?!\s+(?:green|orange|yellow|red|pink|blue))\b/.test(text);
   const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
   if (exactTemplate) return exactTemplate[1];
   if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {

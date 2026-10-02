@@ -584,7 +584,12 @@ function syncViewThumbTint() {
     }
 
     const thumbSrc = thumbImg.currentSrc || thumbImg.getAttribute("src") || "";
-    const shouldTint = Boolean(safeHex && thumbSrc && !isConfiguredTemplateImageUrl(thumbSrc));
+    const shouldTint = Boolean(
+      safeHex
+      && thumbSrc
+      && !isConfiguredTemplateImageUrl(thumbSrc)
+      && !isApiCustomizationImageUrl(thumbSrc)
+    );
     colourLayer.style.opacity = shouldTint ? "1" : "0";
     if (shouldTint) {
       colourLayer.style.backgroundColor = safeHex;
@@ -653,7 +658,14 @@ const FALLBACK_COLOURS = [
 
 let colours = [...FALLBACK_COLOURS];
 let colourImageByName = new Map();
-const API_BASE_URL = "https://api.brandeduk.com/api";
+const API_BASE_URL = (() => {
+  const host = location.hostname;
+  const isLocal = host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+  if (isLocal && window.API_USE_LOCAL_PROXY !== false) {
+    return `${location.origin}/__api/api`;
+  }
+  return "https://api.brandeduk.com/api";
+})();
 
 // Quantity-tiered application pricing (Consigliato column, IVA esclusa).
 const APPLICATION_PRICE_TIERS = {
@@ -2741,10 +2753,37 @@ function preferLocalPositionImage(productSlug, positionKey, remoteUrl) {
   return "";
 }
 
+function isApiCustomizationImageUrl(url) {
+  return /\/uploads\/customization\//i.test(String(url || ""));
+}
+
+function rememberApiPositionImage(position) {
+  if (!position) return "";
+  const saved = String(position.apiImageUrl || "").trim();
+  if (isApiCustomizationImageUrl(saved) && !isUnreliableRemoteImageUrl(saved)) return saved;
+  const remote = String(position.imageUrl || position.image_url || "").trim();
+  if (isApiCustomizationImageUrl(remote) && !isUnreliableRemoteImageUrl(remote)) {
+    position.apiImageUrl = remote;
+    return remote;
+  }
+  return "";
+}
+
+function resolveApiPositionImage(positionSlug) {
+  const slug = normalizeProductTypeSlug(positionSlug);
+  if (!slug) return "";
+  const positions = Array.isArray(state.customizationConfig?.positions)
+    ? state.customizationConfig.positions
+    : [];
+  const match = positions.find((position) => normalizeProductTypeSlug(position?.slug) === slug);
+  return match ? rememberApiPositionImage(match) : "";
+}
+
 function rewriteCustomizationConfigImages(config, productSlug) {
   if (!config || !Array.isArray(config.positions)) return config;
   const slug = normalizeAssetProductSlug(productSlug) || currentLocalAssetProductSlug();
   config.positions.forEach((position) => {
+    rememberApiPositionImage(position);
     const key = position?.slug || position?.label || "";
     const remote = String(position?.imageUrl || position?.image_url || "").trim();
     const preferred = preferLocalPositionImage(slug, key, remote);
@@ -2905,7 +2944,7 @@ function resolveCustomizationProductTypeSlug(name, productType) {
   if (CUSTOMIZATION_PRODUCT_TYPE_SLUGS.has(explicit)) return explicit;
 
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
-  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b(?!\s+(?:green|orange|yellow|red|pink|blue))\b/.test(text);
   if (/\bdog\b/.test(text) && /hood/.test(text)) return "dog-hoodies";
   if (/\bdog\b/.test(text) && /t[\s-]?shirt|\btee\b/.test(text)) return "dog-t-shirts";
   if (/\bdog\b/.test(text)) return "dog-jackets";
@@ -2981,7 +3020,7 @@ function resolveCustomizationVariantKey(name, productType, explicitVariantKey = 
   const explicit = normalizeProductTypeSlug(explicitVariantKey);
   const text = `${productType || ""} ${name || ""}`.toLowerCase();
   const slug = resolveCustomizationProductTypeSlug(name, productType);
-  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b/.test(text);
+  const hiVis = /\bhi[\s-]?vis(?:ibility)?\b|\bhigh[\s-]?vis(?:ibility)?\b|\bsafety\b(?!\s+(?:green|orange|yellow|red|pink|blue))\b/.test(text);
   const exactTemplate = CUSTOMIZATION_EXACT_TEMPLATES[normalizeProductTypeSlug(productType)];
   if (exactTemplate) return exactTemplate[1];
   if (slug === "aprons" && /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b|\bserver apron\b|\bmoney pouch\b|\b(?:three|3)[\s-]?pocket apron\b|\bpocket apron\b/.test(text)) {
@@ -5718,16 +5757,20 @@ function syncPositionCardImages() {
     const image = card.querySelector(".position-thumb-wrap img");
     if (!image) return;
 
+    const apiSource = resolveApiPositionImage(card.dataset.position);
     const localSource = resolveLocalPositionImage(productSlug, card.dataset.position || area);
     const configuredSource = resolveConfiguredGarmentImage(area, card.dataset.position);
-    const source = localSource
+    const source = apiSource
+      || localSource
       || configuredSource
       || resolveNeutralGarmentPngForArea(area);
     if (source) image.src = source;
+    if (apiSource) card.dataset.apiMockup = "1";
+    else delete card.dataset.apiMockup;
 
     const guide = card.querySelector(".position-print-area-guide");
     if (guide) {
-      guide.hidden = Boolean(localSource || configuredSource);
+      guide.hidden = Boolean(apiSource || localSource || configuredSource);
       if (guide.hidden) return;
       guide.dataset.position = card.dataset.position || "centre-front";
       const guidePosition = getPreviewGuideGeometry(

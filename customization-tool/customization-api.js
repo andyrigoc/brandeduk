@@ -1,7 +1,14 @@
 (function initializeCustomizationApi(global) {
   "use strict";
 
-  const API_BASE_URL = "https://api.brandeduk.com/api";
+  const API_BASE_URL = (() => {
+    const host = location.hostname;
+    const isLocal = host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+    if (isLocal && window.API_USE_LOCAL_PROXY !== false) {
+      return `${location.origin}/__api/api`;
+    }
+    return "https://api.brandeduk.com/api";
+  })();
   const REQUEST_TIMEOUT_MS = 3000;
   const FEATURE_FLAG_KEY = "brandeduk-customization-api";
   const capabilityCache = new Map();

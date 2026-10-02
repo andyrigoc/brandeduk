@@ -1200,10 +1200,10 @@
   // extensionless document URL, whose native relative base is the site root.
   (function loadCustomizationToolApp() {
     var apiScript = document.createElement("script");
-    apiScript.src = new URL("customization-api.js?v=20260922-api-integration", document.baseURI).href;
+    apiScript.src = new URL("customization-api.js?v=20261002-api-positions", document.baseURI).href;
     apiScript.onload = function () {
       var appScript = document.createElement("script");
-      appScript.src = new URL("app.js?v=20260929-touchdnd5", document.baseURI).href;
+      appScript.src = new URL("app.js?v=20261002-api-positions2", document.baseURI).href;
       appScript.async = false;
       document.body.appendChild(appScript);
     };

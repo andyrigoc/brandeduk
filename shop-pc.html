@@ -2251,7 +2251,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="?productType=hoodies" data-product-type="hoodies">
+                                <a href="?productType[]=hoodies&amp;productType[]=sweatshirts" data-product-type="hoodies">
                                     <img class="category-icon"
                                         src="../brandedukv15-child/assets/images/ui/icons/categories/icon-hoodies-71%201.png"
                                         alt="" aria-hidden="true">
@@ -2274,7 +2274,7 @@
                                 </ul>
                             </li>
                             <li class="has-children">
-                                <a href="?productType=jackets" data-product-type="jackets">
+                                <a href="?productType[]=jackets&amp;productType[]=softshells" data-product-type="jackets">
                                     <img class="category-icon"
                                         src="../brandedukv15-child/assets/images/ui/icons/categories/Jacket.png" alt=""
                                         aria-hidden="true">
@@ -4151,15 +4151,18 @@
                 flagValues
             );
             if (matchedLanding) currentState.landingTitle = matchedLanding.title;
-        } else if (productTypeValues.length > 1 && !landingSectorValues.length) {
-            const typeKey = productTypeValues.map(value => value.toLowerCase()).sort().join('|');
-            if (typeKey === 'beanies|caps|hats') currentState.landingTitle = 'Headwear';
         } else if (landingSectorValues.length === 1 && productTypeValues.length > 1) {
             currentState.landingTitle = resolveApiSector(landingSectorValues[0]);
         } else if (hasOffersFlag && !productTypeValues.length) {
             currentState.landingTitle = 'Deals';
         } else if (productTypeValues.length === 1) {
             currentState.landingTitle = resolveApiProductType(productTypeValues[0]);
+        }
+        if (!currentState.landingTitle && productTypeValues.length > 1 && !landingSectorValues.length) {
+            const typeKey = productTypeValues.map(value => value.toLowerCase()).sort().join('|');
+            if (typeKey === 'beanies|caps|hats') currentState.landingTitle = 'Headwear';
+            if (typeKey === 'hoodies|sweatshirts') currentState.landingTitle = 'Hoodies / Sweatshirts';
+            if (typeKey === 'jackets|softshells') currentState.landingTitle = 'Jackets / Softshell';
         }
 
 
@@ -5131,38 +5134,53 @@
 
                     }
 
-                    // Hi-Vis merge: combine Safety Vests, high visibility, hi-viz and Yoko products.
-                    // The API stores hi-vis products across different productTypes, names and brands,
-                    // so we run parallel searches and deduplicate by product code.
-                    const isHiVisCategory = (params.productType === 'Safety Vests' || params.productType === 'safety-vests');
-                    if (isHiVisCategory && data && data.items) {
-                        console.log('Hi-Vis merge: fetching additional matching products');
-                        const extraUrls = [
-                            `${baseUrl}?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
-                            `${baseUrl}?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
-                            `${baseUrl}?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
-                        ];
-                        const extraResults = await Promise.allSettled(
-                            extraUrls.map(url => fetch(url, { signal: abortController.signal }).then(r => r.json()))
-                        );
-                        // Collect existing codes for dedup
-                        const seenCodes = new Set(data.items.map(item => item.code));
-                        let added = 0;
-                        extraResults.forEach((result, idx) => {
-                            if (result.status === 'fulfilled' && result.value && result.value.items) {
-                                result.value.items.forEach(item => {
-                                    if (!seenCodes.has(item.code)) {
-                                        seenCodes.add(item.code);
-                                        data.items.push(item);
-                                        added++;
-                                    }
-                                });
+                    // Parent Hi-Vis click, with no subcategory: the API type plus every
+                    // product whose name or description says hi-vis / hi-viz.
+                    const bareCategoryKeys = ['page', 'limit', 'sort', 'productType', 'productType[]'];
+                    const isBareCategory = Object.keys(params).every(key => bareCategoryKeys.includes(key));
+                    const hiVisType = String(params.productType || '');
+                    const isHiVisCategory = isBareCategory && /^(hi[\s-]?vis|safety[\s-]?vests)$/i.test(hiVisType);
+                    if (isHiVisCategory && data) {
+                        const seenCodes = new Set();
+                        const merged = [];
+                        const addItems = (items) => {
+                            (items || []).forEach(item => {
+                                const code = item && (item.code || item.sku || item.style_code);
+                                if (!code || seenCodes.has(code)) return;
+                                seenCodes.add(code);
+                                merged.push(item);
+                            });
+                        };
+                        const fetchAllMatches = async (search) => {
+                            const collected = [];
+                            for (let matchPage = 1; matchPage <= 8; matchPage += 1) {
+                                const matchUrl = new URL(baseUrl);
+                                Object.entries(search).forEach(([key, value]) => matchUrl.searchParams.set(key, value));
+                                matchUrl.searchParams.set('limit', '100');
+                                matchUrl.searchParams.set('page', String(matchPage));
+                                if (params.sort) matchUrl.searchParams.set('sort', params.sort);
+                                const matchResponse = await fetch(matchUrl.toString(), { signal: abortController.signal });
+                                if (!matchResponse.ok) break;
+                                const matchData = await matchResponse.json();
+                                const batch = matchData.items || [];
+                                collected.push(...batch);
+                                if (!batch.length || collected.length >= (matchData.total || collected.length)) break;
                             }
-                        });
-                        data.total = (data.total || 0) + added;
-                        console.log(`Ã°Å¸Â¦Âº Hi-Vis merge complete: +${added} extra products Ã¢â€ â€™ ${data.total} total`);
+                            return collected;
+                        };
+                        addItems(await fetchAllMatches({ productType: 'Hi Vis' }));
+                        const textQueries = ['hi-vis', 'hi vis', 'hi-viz', 'hi viz', 'high visibility'];
+                        for (const query of textQueries) {
+                            addItems(await fetchAllMatches({ q: query }));
+                        }
+                        const pageSize = Number(params.limit) || 100;
+                        const pageNumber = Number(params.page) || 1;
+                        const start = (pageNumber - 1) * pageSize;
+                        data.items = merged.slice(start, start + pageSize);
+                        data.total = merged.length;
+                        data.page = pageNumber;
+                        data.limit = pageSize;
                     }
-                    // End Hi-Vis merge.
 
                     console.log('Ã¢Å“â€¦ API RESPONSE RECEIVED:', {
                         total: data && data.total,
@@ -9574,7 +9592,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20261002-localpos"></script>
+    <script src="test-order-popup/order.js?v=20261002-api-positions3"></script>
     <script src="test-order-popup/order-integration.js?v=20260929-openrotate1"></script>
     <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20260929-rotatebeat3"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>
@@ -9643,9 +9661,28 @@
             var ALL_PRODUCTS = { title: 'Explore Our Full Product Range', desc: 'Browse over 9,000 customisable products from leading workwear, uniform and promotional clothing brands. Use the filters to narrow your search by product type, brand, colour, size, fabric, style and features, then find the right garments to personalise with embroidery or print.' };
 
             var params = new URLSearchParams(window.location.search);
-            var type = (params.get('productType') || '').toLowerCase().trim();
+            var typeValues = []
+                .concat(params.getAll('productType') || [])
+                .concat(params.getAll('productType[]') || [])
+                .map(function (value) { return String(value || '').toLowerCase().trim(); })
+                .filter(Boolean);
+            var type = typeValues[0] || '';
+            var typeKey = typeValues.slice().sort().join('|');
+            var hasSubcategory = ['feature', 'feature[]', 'gender', 'gender[]', 'sleeve', 'sleeve[]', 'sector', 'sector[]', 'style', 'style[]', 'fit', 'fit[]', 'ageGroup', 'ageGroup[]', 'fabric', 'fabric[]', 'neckline', 'neckline[]', 'q', 'brand', 'accreditation', 'flag', 'flag[]'].some(function (key) {
+                return params.get(key);
+            });
+            var COMBINED = {
+                'hoodies|sweatshirts': {
+                    title: 'Hoodies / Sweatshirts',
+                    desc: 'Warm layers for teams, staff and branded uniforms. Hoodies and sweatshirts together, from classic pullovers and crew necks to heavyweight and performance styles, ready for embroidery or print.'
+                },
+                'jackets|softshells': {
+                    title: 'Jackets / Softshell',
+                    desc: 'Outerwear for work, travel and outdoor teams. Jackets and softshells together, from lightweight and waterproof styles to insulated and technical layers, ready to brand.'
+                }
+            };
             var compactKey = function (value) { return value.replace(/[^a-z0-9]/g, ''); };
-            var data = DESCRIPTIONS[type];
+            var data = !hasSubcategory && COMBINED[typeKey] ? COMBINED[typeKey] : DESCRIPTIONS[type];
             if (!data && type) {
                 var match = Object.keys(DESCRIPTIONS).find(function (key) { return compactKey(key) === compactKey(type); });
                 data = match ? DESCRIPTIONS[match] : null;

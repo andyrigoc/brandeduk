@@ -2326,6 +2326,11 @@
     transform: scaleX(-1);
   }
 
+  .position-card[data-api-mockup="1"] .position-thumb-wrap > img,
+  .position-card[data-api-mockup="1"] .position-thumb-colour-layer {
+    transform: none;
+  }
+
   .position-thumb-wrap .position-logo-preview {
     position: absolute;
     z-index: 2;
