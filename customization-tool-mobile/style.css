@@ -41,140 +41,46 @@ body {
   pointer-events: none;
 }
 
-.container {
-  width: 140px;
-  height: 70px;
-  padding-top: 4px;
-  margin: 0 auto;
+/* Original BrandedUK splash loader (gold / orange / grey / brown orbiting squares) */
+.branded-orbit-loader {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  contain: layout paint;
 }
 
-.ball {
-  width: 8px;
-  height: 8px;
-  margin: 6px auto;
-  border-radius: 50px;
-  background: #7c3aed;
+.branded-orbit-loader span {
+  display: block;
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+  -webkit-animation: branded-orbit-run 2s infinite ease-in-out;
+  animation: branded-orbit-run 2s infinite ease-in-out;
 }
 
-.ball:nth-child(1) {
-  background: #7c3aed;
-  -webkit-animation: right 1s infinite ease-in-out;
-  -moz-animation: right 1s infinite ease-in-out;
-  animation: right 1s infinite ease-in-out;
+.branded-orbit-loader .branded-orbit-1 { background: #f3b222; animation-delay: 1.5s; }
+.branded-orbit-loader .branded-orbit-2 { background: #f0653e; animation-delay: 1s; }
+.branded-orbit-loader .branded-orbit-3 { background: #b9c0c0; animation-delay: 0.5s; }
+.branded-orbit-loader .branded-orbit-4 { background: #8f7473; }
+
+@-webkit-keyframes branded-orbit-run {
+  0% { transform: translate(0%); border-radius: 50%; }
+  25% { transform: translate(150%) scale(0.5); border-radius: 0%; }
+  50% { transform: translate(150%, 150%); border-radius: 50%; }
+  75% { transform: translate(0%, 150%) scale(0.5); border-radius: 0%; }
 }
 
-.ball:nth-child(2) {
-  background: #7c3aed;
-  -webkit-animation: left 1.1s infinite ease-in-out;
-  -moz-animation: left 1.1s infinite ease-in-out;
-  animation: left 1.1s infinite ease-in-out;
+@keyframes branded-orbit-run {
+  0% { transform: translate(0%); border-radius: 50%; }
+  25% { transform: translate(150%) scale(0.5); border-radius: 0%; }
+  50% { transform: translate(150%, 150%); border-radius: 50%; }
+  75% { transform: translate(0%, 150%) scale(0.5); border-radius: 0%; }
 }
 
-.ball:nth-child(3) {
-  background: #7c3aed;
-  -webkit-animation: right 1.05s infinite ease-in-out;
-  -moz-animation: right 1.05s infinite ease-in-out;
-  animation: right 1.05s infinite ease-in-out;
-}
-
-.ball:nth-child(4) {
-  background: #7c3aed;
-  -webkit-animation: left 1.15s infinite ease-in-out;
-  -moz-animation: left 1.15s infinite ease-in-out;
-  animation: left 1.15s infinite ease-in-out;
-}
-
-.ball:nth-child(5) {
-  background: #7c3aed;
-  -webkit-animation: right 1.1s infinite ease-in-out;
-  -moz-animation: right 1.1s infinite ease-in-out;
-  animation: right 1.1s infinite ease-in-out;
-}
-
-.ball:nth-child(6) {
-  background: #7c3aed;
-  -webkit-animation: left 1.05s infinite ease-in-out;
-  -moz-animation: left 1.05s infinite ease-in-out;
-  animation: left 1.05s infinite ease-in-out;
-}
-
-.ball:nth-child(7) {
-  background: #7c3aed;
-  -webkit-animation: right 1s infinite ease-in-out;
-  -moz-animation: right 1s infinite ease-in-out;
-  animation: right 1s infinite ease-in-out;
-}
-
-@-webkit-keyframes right {
-  0% {
-    -webkit-transform: translate(-10px);
-  }
-  50% {
-    -webkit-transform: translate(10px);
-  }
-  100% {
-    -webkit-transform: translate(-10px);
-  }
-}
-
-@-webkit-keyframes left {
-  0% {
-    -webkit-transform: translate(10px);
-  }
-  50% {
-    -webkit-transform: translate(-10px);
-  }
-  100% {
-    -webkit-transform: translate(10px);
-  }
-}
-
-@-moz-keyframes right {
-  0% {
-    -moz-transform: translate(-10px);
-  }
-  50% {
-    -moz-transform: translate(10px);
-  }
-  100% {
-    -moz-transform: translate(-10px);
-  }
-}
-
-@-moz-keyframes left {
-  0% {
-    -moz-transform: translate(10px);
-  }
-  50% {
-    -moz-transform: translate(-10px);
-  }
-  100% {
-    -moz-transform: translate(10px);
-  }
-}
-
-@keyframes right {
-  0% {
-    transform: translate(-10px);
-  }
-  50% {
-    transform: translate(10px);
-  }
-  100% {
-    transform: translate(-10px);
-  }
-}
-
-@keyframes left {
-  0% {
-    transform: translate(10px);
-  }
-  50% {
-    transform: translate(-10px);
-  }
-  100% {
-    transform: translate(10px);
-  }
+@media (prefers-reduced-motion: reduce) {
+  .branded-orbit-loader span { animation-duration: 4s; }
 }
 
 button,
@@ -974,12 +880,12 @@ textarea {
   opacity: 1;
   pointer-events: none;
 
-  -webkit-mask-image: url("https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png");
+  -webkit-mask-image: url("../brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-polo/left-chest.png");
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center center;
 
-  mask-image: url("https://i.postimg.cc/J4H7k7N0/vecteezy-white-polo-mockup-47872842.png");
+  mask-image: url("../brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-polo/left-chest.png");
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center center;

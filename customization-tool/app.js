@@ -330,7 +330,7 @@ function resolveNeutralGarmentPngForArea(area) {
 
   if (isDogOrPetProduct()) {
     const catalogImage = resolveDogOrPetCatalogImage();
-    if (catalogImage) return catalogImage;
+    if (catalogImage && !isUnreliableRemoteImageUrl(catalogImage)) return catalogImage;
   }
 
   if (state.product === "beanie") {
@@ -342,11 +342,18 @@ function resolveNeutralGarmentPngForArea(area) {
     return categoryFallback;
   }
 
+  const configured = resolveConfiguredGarmentImage(normalizedArea);
+  if (configured && !isUnreliableRemoteImageUrl(configured)) {
+    return configured;
+  }
+
   const tabThumb = document.querySelector(
     `.view-tabs-side .view-tab[data-area="${normalizedArea}"] .view-thumb`
   );
   const tabSrc = tabThumb?.getAttribute("src") || tabThumb?.currentSrc || "";
-  if (tabSrc && !isConfiguredTemplateImageUrl(tabSrc)) return tabSrc;
+  if (tabSrc && !isConfiguredTemplateImageUrl(tabSrc) && !isUnreliableRemoteImageUrl(tabSrc)) {
+    return tabSrc;
+  }
 
   if (state.product === "tshirt" && normalizedArea === "front") {
     return tshirtFrontCustomImage;
@@ -2581,34 +2588,192 @@ function renderColours() {
   });
 }
 
+// Fixed local mockup assets (not postimg / remote hosting).
+const LOCAL_POSITION_ASSET_BASE = "../brandedukv15-child/assets/images/customization/positions/";
+const LOCAL_PRODUCT_ASSET_FOLDER = {
+  tshirts: "adult-tops/short-sleeve-crew-neck",
+  shirts: "adult-tops/short-sleeve-crew-neck",
+  polos: "adult-tops/short-sleeve-polo",
+  hoodies: "adult-tops/hoodies",
+  sweatshirts: "adult-tops/hoodies",
+  fleece: "adult-tops/hoodies",
+  softshells: "adult-tops/soft-shell-jacket",
+  jackets: "adult-tops/soft-shell-jacket",
+  "gilets-body-warmers": "adult-tops/soft-shell-jacket",
+  "safety-vests": "adult-tops/hivis-jacket",
+  aprons: "aprons/bib-apron",
+  bags: "bags/gym-bag",
+  caps: "headwear/baseball-cap",
+  hats: "headwear/baseball-cap",
+  beanies: "headwear/beanie",
+  trousers: "pants/workwear-long-trousers",
+  shorts: "pants/workwear-shorts",
+  sweatpants: "pants/workwear-shorts"
+};
+const LOCAL_POSITION_ASSET_FILE = {
+  "left-chest": "left-chest.png",
+  "left-breast": "left-chest.png",
+  "right-chest": "right-chest.png",
+  "right-breast": "right-chest.png",
+  "left-sleeve": "left-sleeve.png",
+  "left-arm": "left-sleeve.png",
+  left: "left-sleeve.png",
+  "right-sleeve": "right-sleeve.png",
+  "right-arm": "right-sleeve.png",
+  right: "right-sleeve.png",
+  "large-back": "back.png",
+  "upper-back": "back.png",
+  back: "back.png",
+  "large-front": "left-chest.png",
+  "centre-chest": "left-chest.png",
+  "center-chest": "left-chest.png",
+  "front-center": "left-chest.png",
+  "front-centre": "left-chest.png",
+  "centre-front": "left-chest.png",
+  "center-front": "center-front.png",
+  "nape-of-neck": "back.png",
+  "low-left": "low-left.png",
+  "low-right": "low-right.png",
+  front: "front.png",
+  "front-logo": "front-logo.png",
+  "left-side": "left-side.jpg",
+  "right-side": "right-side.jpg"
+};
+
+function isUnreliableRemoteImageUrl(url) {
+  return /(?:^https?:)?\/\/(?:i\.)?postimg\.cc\b|(?:^https?:)?\/\/(?:www\.)?postimages?\.org\b/i.test(
+    String(url || "")
+  );
+}
+
+function normalizeAssetProductSlug(slug) {
+  const raw = String(slug || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (raw === "hoodie" || raw === "hoodies") return "hoodies";
+  if (raw === "tshirt" || raw === "t-shirt" || raw === "tshirts") return "tshirts";
+  if (raw === "polo" || raw === "polos") return "polos";
+  if (raw === "beanie" || raw === "beanies") return "beanies";
+  if (raw === "cap" || raw === "caps" || raw === "hat" || raw === "hats") return "caps";
+  if (raw === "sweatshirt" || raw === "sweatshirts") return "sweatshirts";
+  if (raw === "jacket" || raw === "jackets") return "jackets";
+  if (raw === "softshell" || raw === "softshells") return "softshells";
+  if (raw === "apron" || raw === "aprons") return "aprons";
+  if (raw === "bag" || raw === "bags") return "bags";
+  if (raw === "shirt" || raw === "shirts") return "shirts";
+  if (raw === "fleece") return "fleece";
+  return raw;
+}
+
+function currentLocalAssetProductSlug() {
+  return normalizeAssetProductSlug(
+    state.customizationProductTypeSlug || state.product || "tshirts"
+  );
+}
+
+function resolveLocalPositionImage(productSlug, positionKey) {
+  const slug = normalizeAssetProductSlug(productSlug) || "tshirts";
+  const folder = LOCAL_PRODUCT_ASSET_FOLDER[slug] || "adult-tops/short-sleeve-crew-neck";
+  const key = String(positionKey || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  let file = LOCAL_POSITION_ASSET_FILE[key];
+  if (!file) {
+    if (/left/.test(key) && /chest|breast/.test(key)) file = "left-chest.png";
+    else if (/right/.test(key) && /chest|breast/.test(key)) file = "right-chest.png";
+    else if (/left/.test(key) && /sleeve|arm|side/.test(key)) file = "left-sleeve.png";
+    else if (/right/.test(key) && /sleeve|arm|side/.test(key)) file = "right-sleeve.png";
+    else if (/back|nape|neck/.test(key)) file = "back.png";
+    else if (/front|centre|center|chest/.test(key)) file = "front.png";
+  }
+  if (!file) return "";
+
+  if (folder === "adult-tops/hivis-jacket") {
+    if (file === "left-sleeve.png") file = "left-sleeve.jpg";
+    if (file === "right-sleeve.png") file = "right-sleeve.jpg";
+    if (file === "back.png") file = "back.jpg";
+  }
+  if (folder === "adult-tops/soft-shell-jacket") {
+    if (file === "left-chest.png" || file === "right-chest.png" || file === "front.png") {
+      file = "front-right.png";
+    }
+  }
+  if (folder === "adult-tops/long-sleeve-polo" && file === "left-chest.png") {
+    file = "right-chest.png";
+  }
+  // Crew-neck / short polo folders have no dedicated front.png.
+  if (
+    (folder === "adult-tops/short-sleeve-crew-neck" || folder === "adult-tops/short-sleeve-polo")
+    && file === "front.png"
+  ) {
+    file = "left-chest.png";
+  }
+  if (folder === "aprons/bib-apron") {
+    if (/left/.test(key)) file = "low-left.png";
+    else if (/right/.test(key)) file = "low-right.png";
+    else file = "center-front.png";
+  }
+  if (folder === "headwear/beanie") file = "front-logo.png";
+  if (folder === "headwear/baseball-cap") {
+    if (/left/.test(key)) file = "left-side.jpg";
+    else if (/right/.test(key)) file = "right-side.jpg";
+    else if (/back/.test(key)) file = "back.png";
+    else file = "front.png";
+  }
+  if (folder === "bags/gym-bag") {
+    if (/left/.test(key)) file = "Gym Bag Left.png";
+    else if (/right/.test(key)) file = "Gym Bag Right.png";
+    else if (/back|side/.test(key)) file = "Gym Bag Side.png";
+    else file = "Gym Bag Centered.png";
+  }
+  if (folder.indexOf("pants/") === 0) {
+    file = folder.indexOf("shorts") >= 0 ? "Blank Work short.png" : "Blank Work Trouser.png";
+  }
+  return `${LOCAL_POSITION_ASSET_BASE}${folder}/${encodeURI(file)}`;
+}
+
+function preferLocalPositionImage(productSlug, positionKey, remoteUrl) {
+  const local = resolveLocalPositionImage(productSlug, positionKey);
+  if (local) return local;
+  const remote = String(remoteUrl || "").trim();
+  if (remote && !isUnreliableRemoteImageUrl(remote)) return remote;
+  return "";
+}
+
+function rewriteCustomizationConfigImages(config, productSlug) {
+  if (!config || !Array.isArray(config.positions)) return config;
+  const slug = normalizeAssetProductSlug(productSlug) || currentLocalAssetProductSlug();
+  config.positions.forEach((position) => {
+    const key = position?.slug || position?.label || "";
+    const remote = String(position?.imageUrl || position?.image_url || "").trim();
+    const preferred = preferLocalPositionImage(slug, key, remote);
+    if (preferred) {
+      position.imageUrl = preferred;
+      position.image_url = preferred;
+    } else if (isUnreliableRemoteImageUrl(remote)) {
+      position.imageUrl = "";
+      position.image_url = "";
+    }
+  });
+  return config;
+}
+
 const tshirtImages = {
-  front: "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png",
-  back:  "https://i.postimg.cc/cHZG0qVh/BAck-T-shirt.png",
-  "left-sleeve": "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
-  "right-sleeve": "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
-  right: "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png",
-  left:  "https://i.postimg.cc/gJRjBP34/Left-Sleeve-T-shirt.png"
+  front: resolveLocalPositionImage("tshirts", "front"),
+  back: resolveLocalPositionImage("tshirts", "back"),
+  "left-sleeve": resolveLocalPositionImage("tshirts", "left-sleeve"),
+  "right-sleeve": resolveLocalPositionImage("tshirts", "right-sleeve"),
+  right: resolveLocalPositionImage("tshirts", "right"),
+  left: resolveLocalPositionImage("tshirts", "left")
 };
 
-const tshirtFrontCustomImage = "https://i.postimg.cc/rp4qqNzw/Front-T-shirt.png";
-const beanieFrontImage = "https://i.postimg.cc/xdX8y8Mr/beanie-folding.png";
-
-// Plain sweatshirt mockups, used whenever the API hasn't supplied a configured
-// garment photo — without this a sweatshirt silently falls back to the t-shirt PNG.
-const sweatshirtImages = {
-  front: "../customization_templates/sweatshirts/sweatshirt-front.png",
-  back: "../customization_templates/sweatshirts/sweatshirt-back.jpg",
-  left: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
-  right: "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
-  "left-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png",
-  "right-sleeve": "../customization_templates/sweatshirts/sweatshirt-sleeve.png"
-};
+const tshirtFrontCustomImage = resolveLocalPositionImage("tshirts", "front");
+const beanieFrontImage = resolveLocalPositionImage("beanies", "front");
 
 function resolveCategoryFallbackGarmentImage(area) {
-  if (state.customizationProductTypeSlug === "sweatshirts") {
-    return sweatshirtImages[area] || sweatshirtImages.front;
-  }
-  return "";
+  const slug = currentLocalAssetProductSlug();
+  return resolveLocalPositionImage(slug, area) || "";
 }
 
 const garmentImageLoadCache = new Map();
@@ -2904,10 +3069,12 @@ function getConfiguredPositionMap() {
   const positions = Array.isArray(state.customizationConfig?.positions)
     ? state.customizationConfig.positions
     : [];
+  const productSlug = currentLocalAssetProductSlug();
   const map = {};
   positions.forEach((position) => {
     const slug = normalizeProductTypeSlug(position?.slug);
-    const imageUrl = String(position?.imageUrl || position?.image_url || "").trim();
+    const remote = String(position?.imageUrl || position?.image_url || "").trim();
+    const imageUrl = preferLocalPositionImage(productSlug, slug || position?.label, remote);
     if (slug && imageUrl) map[slug] = imageUrl;
   });
   return map;
@@ -2958,13 +3125,20 @@ function resolveConfiguredGarmentImage(area, positionSlug = "") {
     configuredPositionArea(position) === normalizedArea
     && String(position?.imageUrl || position?.image_url || "").trim()
   );
-  if (areaMatch) return String(areaMatch.imageUrl || areaMatch.image_url).trim();
+  if (areaMatch) {
+    const remote = String(areaMatch.imageUrl || areaMatch.image_url).trim();
+    return preferLocalPositionImage(
+      currentLocalAssetProductSlug(),
+      areaMatch.slug || areaMatch.label || normalizedArea,
+      remote
+    );
+  }
   if (normalizedArea === "left") return images.left || images.sleeve || images.side || "";
   if (normalizedArea === "right") return images.right || images.sleeve || images.side || images.left || "";
   if (normalizedArea === "left-sleeve" || normalizedArea === "right-sleeve") {
     return images.sleeve || images.side || images[normalizedArea] || "";
   }
-  return "";
+  return resolveLocalPositionImage(currentLocalAssetProductSlug(), normalizedArea) || "";
 }
 
 function getConfiguredViewAreas() {
@@ -3056,7 +3230,7 @@ async function loadCustomizationConfigForCurrentProduct() {
       if (requestId !== customizationConfigRequestId || configKey !== currentKey) {
         return false;
       }
-      state.customizationConfig = config;
+      state.customizationConfig = rewriteCustomizationConfigImages(config, slug);
       state.customizationConfigKey = configKey;
       configureViewTabsForProduct();
 
@@ -3282,9 +3456,14 @@ async function applyArea() {
     productPreview.classList.add("custom-tshirt-front");
   }
 
-  const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea);
+  const neutralPngSrc = resolveNeutralGarmentPngForArea(state.selectedArea)
+    || resolveCategoryFallbackGarmentImage(state.selectedArea)
+    || tshirtImages.front;
   const selectedProductImageCandidate = state.selectedColorImage || getColourImageForName(state.colourName);
-  const selectedProductImage = isConfiguredTemplateImageUrl(selectedProductImageCandidate)
+  const selectedProductImage = (
+    isConfiguredTemplateImageUrl(selectedProductImageCandidate)
+    || isUnreliableRemoteImageUrl(selectedProductImageCandidate)
+  )
     ? ""
     : selectedProductImageCandidate;
   const garmentPreviewSrc = selectedProductImage || neutralPngSrc;
@@ -5532,34 +5711,23 @@ function ensurePendingPositionLogoTarget() {
 }
 
 function syncPositionCardImages() {
-  const sweatshirtPositionImages = {
-    "left-chest": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_left_chest.png",
-    "right-chest": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_right_chest.png",
-    "centre-chest": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_centre_chest.png",
-    "large-front": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_large_front.png",
-    "upper-back": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_upper_back.png",
-    "large-back": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_large_back.png",
-    "left-sleeve": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_left_sleeve.png",
-    "right-sleeve": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_right_sleeve.png",
-    "nape-of-neck": "../brandedukv15-child/assets/images/logo-positions/sweatshirt_girocollo_nape_of_neck.png"
-  };
-  const useSweatshirtPositionImages = state.customizationProductTypeSlug === "sweatshirts";
+  const productSlug = currentLocalAssetProductSlug();
 
   document.querySelectorAll(".position-card").forEach((card) => {
     const area = normalizeAreaForPicker(card.dataset.area) || "front";
     const image = card.querySelector(".position-thumb-wrap img");
     if (!image) return;
 
+    const localSource = resolveLocalPositionImage(productSlug, card.dataset.position || area);
     const configuredSource = resolveConfiguredGarmentImage(area, card.dataset.position);
-    const source = configuredSource
-      || (useSweatshirtPositionImages
-        ? sweatshirtPositionImages[card.dataset.position]
-        : resolveNeutralGarmentPngForArea(area));
+    const source = localSource
+      || configuredSource
+      || resolveNeutralGarmentPngForArea(area);
     if (source) image.src = source;
 
     const guide = card.querySelector(".position-print-area-guide");
     if (guide) {
-      guide.hidden = Boolean(configuredSource) || useSweatshirtPositionImages;
+      guide.hidden = Boolean(localSource || configuredSource);
       if (guide.hidden) return;
       guide.dataset.position = card.dataset.position || "centre-front";
       const guidePosition = getPreviewGuideGeometry(

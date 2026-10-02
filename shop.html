@@ -30,14 +30,14 @@
     <meta name="twitter:image" content="https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png">
 
     <title>Shop Custom Workwear &amp; Uniforms - BrandedUK</title>
-    <link rel="stylesheet" href="mobile/css/mobile.css?v=20260221">
-    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20260116a">
-    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-greettiming">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260329c">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20251230">
+    <link rel="stylesheet" href="mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
     <link rel="stylesheet" href="mobile/css/breadcrumbs.css?v=20260403d">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20260114">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/shop-api.css?v=20260107">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -2254,7 +2254,7 @@
         <div class="header-logo-row">
             <a href="index.html" class="mobile-logo-center">
                 <img class="mobile-logo-badge" src="brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261001-combo" alt="brandedUK" width="1916" height="821">
+                <img class="mobile-logo-word" src="brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="brandedUK" width="120" height="52">
             </a>
             <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
@@ -3088,7 +3088,7 @@
 
     <script src="brandedukv15-child/assets/js/header.js?v=20251230"></script>
     <!-- API Integration Scripts (api-config.js â†’ same API as LIVE) -->
-    <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
     <script src="brandedukv15-child/assets/js/color-eyedropper.js?v=20260610n"></script>
     <script src="brandedukv15-child/assets/js/color-hex.js?v=20260610n"></script>
     <script src="brandedukv15-child/assets/js/api.js?v=20260824a"></script>
@@ -3473,9 +3473,9 @@
                 if (isHiVisCategory && data && data.items) {
                     shopDebug('Hi-Vis merge (mobile): fetching additional hi-vis/high-visibility/yoko products...');
                     const extraUrls = [
-                        `https://api.brandeduk.com/api/products?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
-                        `https://api.brandeduk.com/api/products?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
-                        `https://api.brandeduk.com/api/products?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
+                        `${(typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')}/api/products?q=${encodeURIComponent('high visibility')}&limit=100&page=1`,
+                        `${(typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')}/api/products?q=${encodeURIComponent('hi-viz')}&limit=100&page=1`,
+                        `${(typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')}/api/products?brand=${encodeURIComponent('yoko')}&limit=100&page=1`
                     ];
                     const extraResults = await Promise.allSettled(
                         extraUrls.map(url => fetch(url).then(r => r.json()))
@@ -3565,7 +3565,7 @@
         }
 
         async function requestFilterCounts(params) {
-            const response = await fetch(`https://api.brandeduk.com/api/products/filters?${params.toString()}`);
+            const response = await fetch(`${(typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')}/api/products/filters?${params.toString()}`);
             if (!response.ok) throw new Error(`Filter API error: ${response.status}`);
             const data = await response.json();
             return data.filters || {};
@@ -5092,7 +5092,7 @@
             </div>
         </div>
     </div>
-    <script src="mobile/js/whatsapp.js?v=20261002-greettiming"></script>
+    <script src="mobile/js/whatsapp.js?v=20261002-chatlogo"></script>
 
     <!-- â”€â”€ Desktop Sidebar: restructure DOM at 1280px+ â”€â”€ -->
     <script>

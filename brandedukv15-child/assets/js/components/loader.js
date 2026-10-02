@@ -16,6 +16,21 @@
 
 const BrandedLoader = {
     /**
+     * Orbiting-squares markup (original index.html splash animation).
+     * @returns {string}
+     */
+    getOrbitHtml: function() {
+        return `
+            <div class="branded-orbit-loader" aria-hidden="true">
+                <span class="branded-orbit-1"></span>
+                <span class="branded-orbit-2"></span>
+                <span class="branded-orbit-3"></span>
+                <span class="branded-orbit-4"></span>
+            </div>
+        `;
+    },
+
+    /**
      * Get the HTML for the loader animation
      * @param {string} text - Optional loading text (default: "Loading...")
      * @returns {string} HTML string for the loader
@@ -23,13 +38,7 @@ const BrandedLoader = {
     getHtml: function(text = 'Loading...') {
         return `
             <div class="products-loader">
-                <section class="dots-container">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </section>
+                ${this.getOrbitHtml()}
                 <div class="loader-text">${text}</div>
             </div>
         `;
@@ -42,13 +51,7 @@ const BrandedLoader = {
     getInlineHtml: function() {
         return `
             <div class="loader-container">
-                <section class="dots-container">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </section>
+                ${this.getOrbitHtml()}
             </div>
         `;
     },

@@ -171,20 +171,34 @@
     align-items: center;
     gap: 5px;
     text-decoration: none;
-    flex-shrink: 0;
+    flex: 0 1 auto;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: min(58vw, 220px);
+    max-height: 44px;
+    overflow: hidden;
 }
 
+/* Beat global mobile.css `img { height: auto; max-width: 100% }` — wordmark is 1916×821 intrinsic. */
 .mobile-logo-center .mobile-logo-badge {
-    height: 44px;
-    width: auto;
+    height: 36px !important;
+    max-height: 36px !important;
+    width: auto !important;
+    max-width: 36px !important;
     display: block;
     flex: 0 0 auto;
+    object-fit: contain;
 }
 
 .mobile-logo-center .mobile-logo-word {
-    height: 38px;
-    width: auto;
+    height: 30px !important;
+    max-height: 30px !important;
+    width: auto !important;
+    max-width: 160px !important;
     display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    object-fit: contain;
 }
 
 .logo-badge-img {

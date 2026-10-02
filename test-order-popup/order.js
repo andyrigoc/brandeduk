@@ -734,35 +734,172 @@ function page4PositionCard(product, position) {
         '<div class="p4-logo-under" hidden><img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button></div></div>';
 }
 
+// Fixed local mockup assets (not postimg / remote hosting).
+var P4_POSITION_ASSET_BASE = 'brandedukv15-child/assets/images/customization/positions/';
+var P4_PRODUCT_ASSET_FOLDER = {
+    tshirts: 'adult-tops/short-sleeve-crew-neck',
+    shirts: 'adult-tops/short-sleeve-crew-neck',
+    polos: 'adult-tops/short-sleeve-polo',
+    hoodies: 'adult-tops/hoodies',
+    sweatshirts: 'adult-tops/hoodies',
+    fleece: 'adult-tops/hoodies',
+    softshells: 'adult-tops/soft-shell-jacket',
+    jackets: 'adult-tops/soft-shell-jacket',
+    'gilets-body-warmers': 'adult-tops/soft-shell-jacket',
+    'safety-vests': 'adult-tops/hivis-jacket',
+    aprons: 'aprons/bib-apron',
+    bags: 'bags/gym-bag',
+    caps: 'headwear/baseball-cap',
+    hats: 'headwear/baseball-cap',
+    beanies: 'headwear/beanie',
+    trousers: 'pants/workwear-long-trousers',
+    shorts: 'pants/workwear-shorts',
+    sweatpants: 'pants/workwear-shorts'
+};
+var P4_POSITION_ASSET_FILE = {
+    'left-chest': 'left-chest.png',
+    'left-breast': 'left-chest.png',
+    'right-chest': 'right-chest.png',
+    'right-breast': 'right-chest.png',
+    'left-sleeve': 'left-sleeve.png',
+    'left-arm': 'left-sleeve.png',
+    'right-sleeve': 'right-sleeve.png',
+    'right-arm': 'right-sleeve.png',
+    'large-back': 'back.png',
+    'upper-back': 'back.png',
+    'back': 'back.png',
+    'large-front': 'left-chest.png',
+    'centre-chest': 'left-chest.png',
+    'center-chest': 'left-chest.png',
+    'front-center': 'left-chest.png',
+    'front-centre': 'left-chest.png',
+    'nape-of-neck': 'back.png',
+    'center-front': 'center-front.png',
+    'low-left': 'low-left.png',
+    'low-right': 'low-right.png',
+    'front': 'front.png',
+    'front-logo': 'front-logo.png',
+    'left-side': 'left-side.jpg',
+    'right-side': 'right-side.jpg'
+};
+
+function page4NormalizePositionKey(value) {
+    return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function page4LocalPositionImage(productSlug, positionKey) {
+    var folder = P4_PRODUCT_ASSET_FOLDER[productSlug] || 'adult-tops/short-sleeve-crew-neck';
+    var key = page4NormalizePositionKey(positionKey);
+    var file = P4_POSITION_ASSET_FILE[key];
+    if (!file) {
+        if (/left/.test(key) && /chest|breast/.test(key)) file = 'left-chest.png';
+        else if (/right/.test(key) && /chest|breast/.test(key)) file = 'right-chest.png';
+        else if (/left/.test(key) && /sleeve|arm/.test(key)) file = 'left-sleeve.png';
+        else if (/right/.test(key) && /sleeve|arm/.test(key)) file = 'right-sleeve.png';
+        else if (/back/.test(key)) file = 'back.png';
+        else if (/front|centre|center/.test(key)) file = 'left-chest.png';
+    }
+    if (!file) return '';
+    // Folder-specific filename variants that exist on disk
+    if (folder === 'adult-tops/hivis-jacket') {
+        if (file === 'left-sleeve.png') file = 'left-sleeve.jpg';
+        if (file === 'right-sleeve.png') file = 'right-sleeve.jpg';
+        if (file === 'back.png') file = 'back.jpg';
+    }
+    if (folder === 'adult-tops/soft-shell-jacket' && (file === 'left-chest.png' || file === 'right-chest.png')) {
+        file = 'front-right.png';
+    }
+    if (folder === 'adult-tops/long-sleeve-polo' && file === 'left-chest.png') {
+        file = 'right-chest.png';
+    }
+    if (folder === 'aprons/bib-apron') {
+        if (/left/.test(key)) file = 'low-left.png';
+        else if (/right/.test(key)) file = 'low-right.png';
+        else file = 'center-front.png';
+    }
+    if (folder === 'headwear/beanie') file = 'front-logo.png';
+    if (folder === 'headwear/baseball-cap') {
+        if (/left/.test(key)) file = 'left-side.jpg';
+        else if (/right/.test(key)) file = 'right-side.jpg';
+        else if (/back/.test(key)) file = 'back.png';
+        else file = 'front.png';
+    }
+    if (folder === 'bags/gym-bag') {
+        if (/left/.test(key)) file = 'Gym Bag Left.png';
+        else if (/right/.test(key)) file = 'Gym Bag Right.png';
+        else if (/back|side/.test(key)) file = 'Gym Bag Side.png';
+        else file = 'Gym Bag Centered.png';
+    }
+    if (folder.indexOf('pants/') === 0) {
+        file = folder.indexOf('shorts') >= 0 ? 'Blank Work short.png' : 'Blank Work Trouser.png';
+    }
+    return P4_POSITION_ASSET_BASE + folder + '/' + encodeURI(file);
+}
+
+function page4ApplyLocalImagesToCards(product) {
+    var host = document.getElementById('p4PositionOptions');
+    if (!host) return;
+    var slug = customizationConfigTarget(product || {}).slug;
+    host.querySelectorAll('.position-card').forEach(function (card) {
+        var key = card.getAttribute('data-position') || '';
+        var labelEl = card.querySelector('.position-checkbox span');
+        if (!key && labelEl) key = labelEl.textContent || '';
+        var local = page4LocalPositionImage(slug, key);
+        var photo = card.querySelector('.position-placeholder');
+        if (photo && local) {
+            photo.src = local;
+            photo.alt = (labelEl && labelEl.textContent) || key;
+            photo.style.removeProperty('transform');
+            photo.classList.remove('mirrored');
+        }
+    });
+}
+
 var page4PositionRequest = 0;
 function loadPage4PositionImages(product) {
     var host = document.getElementById('p4PositionOptions');
     if (!host) return;
     var target = customizationConfigTarget(product || {});
+    // Always paint fixed local assets first so localhost never shows dead postimg placeholders.
+    page4ApplyLocalImagesToCards(product);
     var requestId = ++page4PositionRequest;
     var url = 'https://api.brandeduk.com/api/customization-config/' + encodeURIComponent(target.slug);
     if (target.subtype) url += '?subtype=' + encodeURIComponent(target.subtype);
     fetch(url)
         .then(function (response) { return response.ok ? response.json() : null; })
         .then(function (body) {
-            if (requestId !== page4PositionRequest || !body) return;
+            if (requestId !== page4PositionRequest) return;
+            if (!body) {
+                page4ApplyLocalImagesToCards(product);
+                return;
+            }
             var config = body.data || body;
             var positions = (config.positions || []).filter(function (position) {
-                return position && position.isActive !== false && (position.imageUrl || position.image_url);
+                return position && position.isActive !== false;
             });
-            if (!positions.length) return;
+            if (!positions.length) {
+                page4ApplyLocalImagesToCards(product);
+                return;
+            }
             host.innerHTML = positions.map(function (position) { return page4PositionCard(product, position); }).join('');
             p4PaintPrintButtons();
             host.querySelectorAll('.position-card').forEach(function (card, index) {
                 var position = positions[index];
                 var label = position.label || position.slug || '';
-                var image = position.imageUrl || position.image_url || '';
+                var local = page4LocalPositionImage(target.slug, position.slug || label);
+                var remote = position.imageUrl || position.image_url || '';
                 var name = card.querySelector('.position-checkbox span');
                 var photo = card.querySelector('.position-placeholder');
                 if (name) name.textContent = label;
                 if (photo) {
-                    photo.src = image;
+                    photo.src = local || remote;
                     photo.alt = label;
+                    if (local && remote) {
+                        photo.onerror = function () {
+                            photo.onerror = null;
+                            photo.src = remote;
+                        };
+                    }
                 }
             });
             p4LoadBackendPrices().then(function () {
@@ -776,7 +913,9 @@ function loadPage4PositionImages(product) {
                 p4UpdateSummary();
             });
         })
-        .catch(function () {});
+        .catch(function () {
+            page4ApplyLocalImagesToCards(product);
+        });
 }
 
 window.p4Assignments = window.p4Assignments || {};

@@ -385,14 +385,14 @@
     
     // Default fallback images (hoodie images)
     const DEFAULT_POSITION_IMAGES = {
-        'left-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
-        'right-breast': 'https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png',
-        'small-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-        'large-front-center': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-        'large-centre-front': 'https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png',
-        'large-back': 'https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png',
-        'left-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png',
-        'right-arm': 'https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png'
+        'left-breast': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'right-breast': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-chest.png',
+        'small-centre-front': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-front-center': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-centre-front': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png',
+        'large-back': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/back.png',
+        'left-arm': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-sleeve.png',
+        'right-arm': 'brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-sleeve.png'
     };
     
     // Quantity-tiered application pricing (Consigliato column, IVA esclusa).
@@ -878,8 +878,8 @@
         'adult-tops/hivis-jacket': ['back.jpg', 'front.png', 'left-chest.png', 'left-sleeve.jpg', 'right-chest.png', 'right-sleeve.jpg'],
         'adult-tops/hoodies': ['back.png', 'front.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/long-sleeve-polo': ['back.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
-        // 'adult-tops/short-sleeve-polo': [],   // no images yet — falls back to static HTML cards
-        // 'adult-tops/short-sleeve-crew-neck': [], // no images yet — falls back to static HTML cards
+        'adult-tops/short-sleeve-polo': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
+        'adult-tops/short-sleeve-crew-neck': ['back.png', 'left-chest.png', 'left-sleeve.png', 'right-chest.png', 'right-sleeve.png'],
         'adult-tops/soft-shell-jacket': ['back.png', 'front-right.png', 'left-sleeve.png', 'right-sleeve.png'],
         'headwear/baseball-cap': ['back.png', 'front.png', 'left-side.jpg', 'right-side.jpg'],
         'headwear/beanie': ['front-logo.png'],

@@ -172,15 +172,27 @@
 .wa-popup__brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     min-width: 0;
+    flex: 0 1 auto;
 }
-.wa-popup__brand-logo {
-    width: 32px;
-    height: 32px;
+.wa-popup__brand-badge {
+    width: 28px;
+    height: 28px;
     object-fit: contain;
     display: block;
     border-radius: 50%;
+    flex-shrink: 0;
+}
+.wa-popup__brand-word {
+    height: 22px;
+    width: auto;
+    max-width: 110px;
+    object-fit: contain;
+    object-position: left center;
+    display: block;
+    flex-shrink: 1;
+    min-width: 0;
 }
 .wa-popup__status {
     display: inline-flex;

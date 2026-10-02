@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "BrandedUK – custom workwear e-commerce",
   "scripts": {
+    "dev": "node --use-system-ca scripts/dev-server.js",
+    "api-proxy": "node --use-system-ca scripts/api-cors-proxy.js",
     "eyedropper-api": "node scripts/sample-color-server.js",
     "build:pc-header": "node maintenance/build-pc-header-template.js"
   },

@@ -18,11 +18,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
     <title>Shop - BrandedUK</title>
-    <link rel="stylesheet" href="css/mobile.css?v=20251230">
+    <link rel="stylesheet" href="css/mobile.css?v=20261002-logocombo">
     <link rel="stylesheet" href="css/breadcrumbs.css?v=20260403d">
-    <link rel="stylesheet" href="css/social-buttons.css?v=20251230">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20260114">
-    <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20260104A">
+    <link rel="stylesheet" href="css/social-buttons.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
+    <link rel="stylesheet" href="../brandedukv15-child/assets/css/responsive.css?v=20261002-logocombo">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css?v=20251230">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -99,9 +99,26 @@
                 margin-top: 0;
             }
 
-            /* Bigger logo */
+            /* Logo combo stays compact on mobile (GIF + wordmark) */
+            .mobile-logo-center {
+                max-height: 44px !important;
+                overflow: hidden !important;
+            }
+            .mobile-logo-center .mobile-logo-badge {
+                height: 36px !important;
+                max-height: 36px !important;
+                width: auto !important;
+                max-width: 36px !important;
+            }
+            .mobile-logo-center .mobile-logo-word {
+                height: 30px !important;
+                max-height: 30px !important;
+                width: auto !important;
+                max-width: 160px !important;
+                object-fit: contain !important;
+            }
             .mobile-logo-center .logo-badge-img {
-                height: 75px !important;
+                height: 36px !important;
                 width: auto !important;
             }
 
@@ -215,7 +232,7 @@
         <div class="header-logo-row">
             <a href="../index.html" class="mobile-logo-center">
                 <img class="mobile-logo-badge" src="../brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261001-newgif" alt="" width="64" height="64">
-                <img class="mobile-logo-word" src="../brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261001-combo" alt="brandedUK" width="1916" height="821">
+                <img class="mobile-logo-word" src="../brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-logocombo" alt="brandedUK" width="120" height="52">
             </a>
             <!-- Search Bar inline -->
             <div class="search-wrapper-expand">
@@ -374,13 +391,12 @@
         <div class="products-grid-shop" id="productsGrid">
             <!-- Products will be loaded from API -->
             <div class="products-loader">
-                <section class="dots-container">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </section>
+                <div class="branded-orbit-loader" aria-hidden="true">
+                    <span class="branded-orbit-1"></span>
+                    <span class="branded-orbit-2"></span>
+                    <span class="branded-orbit-3"></span>
+                    <span class="branded-orbit-4"></span>
+                </div>
             </div>
         </div>
 
@@ -867,7 +883,7 @@
     </div>
 
     <!-- API Integration Scripts -->
-    <script src="../brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="../brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260820a"></script>
     <script>
         console.log('=== MOBILE SHOP SCRIPT STARTED (API MODE) ===');
@@ -1473,13 +1489,12 @@
             // Show loading
             grid.innerHTML = `
                 <div class="products-loader">
-                    <section class="dots-container">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </section>
+                    <div class="branded-orbit-loader" aria-hidden="true">
+                        <span class="branded-orbit-1"></span>
+                        <span class="branded-orbit-2"></span>
+                        <span class="branded-orbit-3"></span>
+                        <span class="branded-orbit-4"></span>
+                    </div>
                 </div>
             `;
             updateShopLoadingMeta({ mode: 'search', title: `Search: "${query}"`, query });
@@ -1558,13 +1573,12 @@
             // Show loading
             grid.innerHTML = `
                 <div class="products-loader">
-                    <section class="dots-container">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </section>
+                    <div class="branded-orbit-loader" aria-hidden="true">
+                        <span class="branded-orbit-1"></span>
+                        <span class="branded-orbit-2"></span>
+                        <span class="branded-orbit-3"></span>
+                        <span class="branded-orbit-4"></span>
+                    </div>
                 </div>
             `;
             const loadingBaseTitle = isBestsellerMode ? 'Recommended For You' : (landingTitle || CATEGORY_TITLES[currentCategory] || 'Products');
@@ -1932,7 +1946,7 @@
             dropdown.innerHTML = '<div class="ac-loading">Searching...</div>';
             dropdown.classList.add('open');
             try {
-                var res = await fetch('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(query) + '&limit=20', { signal: controller.signal });
+                var res = await fetch(((typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')) + '/api/products?q=' + encodeURIComponent(query) + '&limit=20', { signal: controller.signal });
                 if (!res.ok) throw new Error('API error');
                 var data = await res.json();
                 var items = (data.items || []).map(function(p) {

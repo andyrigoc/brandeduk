@@ -26,7 +26,7 @@
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20260927-quoteonly"></script>
     <link rel="stylesheet" href="footer-dev/pc-footer.css?v=20260927-footergap">
     <script src="footer-dev/pc-footer.js?v=20261002-cta-equal" defer></script>
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20251230">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/loader.css?v=20261002-orbitloader">
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20251230">
     <link rel="stylesheet" href="mobile/css/popup-contact.css?v=20260927-quoteonly">
     <link rel="stylesheet" href="brandeduk.com/css/style.css?v=20251230">
@@ -3617,7 +3617,7 @@
     <script src="brandedukv15-child/assets/data/category-descriptions.js?v=20260927"></script>
     <script src="brandedukv15-child/assets/data/brand-hq-logos.js?v=20260915"></script>
     <script src="brandedukv15-child/assets/js/vat-toggle.js?v=20251230"></script>
-    <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
     <script src="brandedukv15-child/assets/js/api.js?v=20260726b"></script>
     <script src="brandeduk.com/js/main.js?v=20260730a"></script>
     <script src="brandeduk.com/js/product-types-menu.js?v=20260912a"></script>
@@ -5067,7 +5067,10 @@
                     const params = buildApiParams();
 
                     // Always use the standard /api/products endpoint (works with all sidebar filters)
-                    const baseUrl = 'https://api.brandeduk.com/api/products';
+                    const apiBase = (typeof window.resolveBrandedApiBase === 'function'
+                        ? window.resolveBrandedApiBase()
+                        : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+                    const baseUrl = apiBase + '/api/products';
 
                     // Note: productType and accreditation are already handled in buildApiParams()
                     // from currentState, so no need to check URL here again
@@ -5254,7 +5257,10 @@
                 const params = new URLSearchParams();
 
                 // Determine which filters API to use: brand-specific or general
-                let filterApiUrl = 'https://api.brandeduk.com/api/products/filters';
+                const filtersApiBase = (typeof window.resolveBrandedApiBase === 'function'
+                    ? window.resolveBrandedApiBase()
+                    : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
+                let filterApiUrl = filtersApiBase + '/api/products/filters';
 
                 // Use the brand-specific endpoint only for a dedicated brand page.
                 // Sidebar brand choices stay on the general endpoint so multi-select works.
@@ -5263,7 +5269,7 @@
                 let facetRoute = null;
 
                 if (activeBrandFilter) {
-                    filterApiUrl = `https://api.brandeduk.com/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
+                    filterApiUrl = `${filtersApiBase}/api/filters/brands/${encodeURIComponent(activeBrandFilter)}/filters`;
                     console.log('Using brand-specific filters API for:', activeBrandFilter);
                 } else {
                     facetRoute = getLandingRoute();
@@ -5955,7 +5961,9 @@
             }
 
             try {
-                const BASE_URL = 'https://api.brandeduk.com';
+                const BASE_URL = (typeof window.resolveBrandedApiBase === 'function'
+                    ? window.resolveBrandedApiBase()
+                    : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '');
                 const response = await fetch(`${BASE_URL}/api/filters/product-types`);
 
                 if (!response.ok) {
@@ -6741,7 +6749,7 @@
                 // If there's a search query, try to get "Did you mean" suggestions
                 if (currentState.search) {
                     const suggestionContainer = document.getElementById('noResultsSuggestions');
-                    fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(currentState.search)}`)
+                    fetch(`${(typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')}/api/products/suggest?q=${encodeURIComponent(currentState.search)}`)
                         .then(res => res.json())
                         .then(data => {
                             const { brands = [], types = [] } = data;
@@ -8358,7 +8366,7 @@
             'use strict';
 
             const EXCLUDED = ['absolute', 'ralawise'];
-            const API_URL = 'https://api.brandeduk.com/api/filters/brands';
+            const API_URL = ((typeof window.resolveBrandedApiBase === 'function' ? window.resolveBrandedApiBase() : (window.API_BASE_URL || 'https://api.brandeduk.com')).replace(/\/+$/, '')) + '/api/filters/brands';
             let allBrands = [];   // [{name:'Adidas', slug:'adidas'}, ...]
             let fetched = false;
 
@@ -8952,7 +8960,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png"
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png"
                                                 alt="Left Chest">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -8996,7 +9004,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/fTVKLHLj/Chat_GPT_Image_Jan_11_2026_04_51_46_PM.png"
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-chest.png"
                                                 alt="Right Chest">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9040,7 +9048,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png"
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-sleeve.png"
                                                 alt="Left Sleeve">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9084,8 +9092,8 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/hPXrjCjm/Chat_GPT_Image_Jan_11_2026_04_51_53_PM.png"
-                                                alt="Right Sleeve" style="transform:scaleX(-1);">
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/right-sleeve.png"
+                                                alt="Right Sleeve">>
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
                                             <div class="uploaded-logo-box">
@@ -9128,7 +9136,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/RFng3DGw/Chat_GPT_Image_Dec_19_2025_08_06_23_PM.png"
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/left-chest.png"
                                                 alt="Large Front">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9172,7 +9180,7 @@
                                         </div>
                                         <div class="position-preview">
                                             <img class="position-placeholder"
-                                                src="https://i.postimg.cc/4NY5d8dt/Chat_GPT_Image_Jan_11_2026_04_51_51_PM.png"
+                                                src="brandedukv15-child/assets/images/customization/positions/adult-tops/short-sleeve-crew-neck/back.png"
                                                 alt="Large Back">
                                         </div>
                                         <div class="uploaded-logo-container" hidden>
@@ -9566,7 +9574,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20260929-touchdnd5"></script>
+    <script src="test-order-popup/order.js?v=20261002-localpos"></script>
     <script src="test-order-popup/order-integration.js?v=20260929-openrotate1"></script>
     <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20260929-rotatebeat3"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>

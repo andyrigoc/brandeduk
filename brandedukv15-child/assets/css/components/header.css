@@ -2446,22 +2446,41 @@ body {
     }
 }
 
-/* Mobile logo (header-logo-row pattern) */
+/* Mobile logo (header-logo-row pattern) — compact GIF + wordmark combo */
+.mobile-logo-center {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(58vw, 220px);
+    max-height: 44px;
+    overflow: hidden;
+}
 .mobile-logo-center .logo-badge-img {
-    height: 50px;
+    height: 36px;
+    max-height: 36px;
     width: auto;
     object-fit: contain;
 }
 .mobile-logo-center .mobile-logo-badge {
-    height: 44px;
-    width: auto;
+    height: 36px !important;
+    max-height: 36px !important;
+    width: auto !important;
+    max-width: 36px !important;
     display: block;
     flex: 0 0 auto;
+    object-fit: contain;
 }
 .mobile-logo-center .mobile-logo-word {
-    height: 38px;
-    width: auto;
+    height: 30px !important;
+    max-height: 30px !important;
+    width: auto !important;
+    max-width: 160px !important;
     display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    object-fit: contain;
 }
 .mobile-logo-center .logo-text-styled {
     display: none !important; /* Text is now part of the logo image */

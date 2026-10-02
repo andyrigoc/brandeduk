@@ -516,6 +516,37 @@ img {
     display: block;
 }
 
+/* Header logo combo (GIF + black wordmark): never inherit global img height:auto */
+.mobile-logo-center {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(58vw, 220px);
+    max-height: 44px;
+    overflow: hidden;
+}
+
+.mobile-logo-center .mobile-logo-badge {
+    height: 36px !important;
+    max-height: 36px !important;
+    width: auto !important;
+    max-width: 36px !important;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.mobile-logo-center .mobile-logo-word {
+    height: 30px !important;
+    max-height: 30px !important;
+    width: auto !important;
+    max-width: 160px !important;
+    object-fit: contain;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
 button {
     font-family: inherit;
     font-size: inherit;
@@ -555,7 +586,12 @@ a {
 .mobile-logo-center {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 0;
+    max-width: min(58vw, 220px);
+    max-height: 44px;
+    overflow: hidden;
 }
 
 .mobile-logo-center .logo-badge {

@@ -59,7 +59,8 @@
     }
 
     var IMG = {
-        logo: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png'),
+        logoGif: assetUrl('../../brandedukv15-child/assets/videos/use-the-provided-circular-1727756126.gif?v=20261002-chatlogo'),
+        wordmark: assetUrl('../../brandedukv15-child/assets/images/ui/Branded UK Logo on Transparent Background.png?v=20261002-chatlogo'),
         mark: assetUrl('../../brandedukv15-child/assets/images/ui/bd-mark-circle.png'),
         welcome: assetUrl('../../brandedukv15-child/assets/images/ui/chat-welcome-visual.png')
     };
@@ -289,10 +290,8 @@
             '<div class="wa-popup__card" role="dialog" aria-modal="true" aria-label="Branded support chat">' +
             '  <div class="wa-popup__topbar">' +
             '    <div class="wa-popup__brand">' +
-            '      <svg class="wa-popup__brand-logo" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="bd">' +
-            '        <circle cx="16" cy="16" r="14.5" fill="#fff" stroke="#fd7f47" stroke-width="2.5"/>' +
-            '        <text x="16" y="21" text-anchor="middle" font-family="Poppins, system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" fill="#111">bd</text>' +
-            '      </svg>' +
+            '      <img class="wa-popup__brand-badge" src="' + IMG.logoGif + '" alt="" width="36" height="36" aria-hidden="true">' +
+            '      <img class="wa-popup__brand-word" src="' + IMG.wordmark + '" alt="Branded UK" width="120" height="32">' +
             '    </div>' +
             '    <div class="wa-popup__status"><span class="wa-popup__status-dot" aria-hidden="true"></span><span>We\'re here to help</span></div>' +
             '    <div class="wa-popup__controls">' +

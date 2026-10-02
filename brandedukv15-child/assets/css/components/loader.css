@@ -4,6 +4,9 @@
    
    To change the loader animation, edit only this file.
    Used across all pages for consistent loading experience.
+
+   Animation: original splash orbiting squares from index.html
+   (gold / orange / grey / brown) — not the old purple dots.
    
    ============================================ */
 
@@ -29,67 +32,76 @@
 }
 
 /* ============================================
-   DOTS ANIMATION (Branded Purple)
+   ORBITING SQUARES (original BrandedUK splash)
    ============================================ */
 
+.branded-orbit-loader {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    contain: layout paint;
+}
+
+.branded-orbit-loader span {
+    display: block;
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+    -webkit-animation: branded-orbit-run 2s infinite ease-in-out;
+    animation: branded-orbit-run 2s infinite ease-in-out;
+}
+
+.branded-orbit-loader .branded-orbit-1 { background: #f3b222; animation-delay: 1.5s; }
+.branded-orbit-loader .branded-orbit-2 { background: #f0653e; animation-delay: 1s; }
+.branded-orbit-loader .branded-orbit-3 { background: #b9c0c0; animation-delay: 0.5s; }
+.branded-orbit-loader .branded-orbit-4 { background: #8f7473; }
+
+@-webkit-keyframes branded-orbit-run {
+    0% { transform: translate(0%); border-radius: 50%; }
+    25% { transform: translate(150%) scale(0.5); border-radius: 0%; }
+    50% { transform: translate(150%, 150%); border-radius: 50%; }
+    75% { transform: translate(0%, 150%) scale(0.5); border-radius: 0%; }
+}
+
+@keyframes branded-orbit-run {
+    0% { transform: translate(0%); border-radius: 50%; }
+    25% { transform: translate(150%) scale(0.5); border-radius: 0%; }
+    50% { transform: translate(150%, 150%); border-radius: 50%; }
+    75% { transform: translate(0%, 150%) scale(0.5); border-radius: 0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .branded-orbit-loader span { animation-duration: 4s; }
+}
+
+/* Back-compat: old purple-dots markup still renders the branded orbit */
 .dots-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    contain: layout paint;
 }
 
 .dots-container .dot {
-    height: 20px;
-    width: 20px;
-    margin-right: 10px;
-    border-radius: 10px;
-    background-color: #c4b5fd;
-    animation: pulse 1.5s infinite ease-in-out;
+    display: block;
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    margin: 0;
+    border-radius: 50%;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+    background-color: #8f7473;
+    animation: branded-orbit-run 2s infinite ease-in-out;
 }
 
-.dots-container .dot:last-child {
-    margin-right: 0;
-}
-
-.dots-container .dot:nth-child(1) {
-    animation-delay: -0.3s;
-}
-
-.dots-container .dot:nth-child(2) {
-    animation-delay: -0.1s;
-}
-
-.dots-container .dot:nth-child(3) {
-    animation-delay: 0.1s;
-}
-
-.dots-container .dot:nth-child(4) {
-    animation-delay: 0.3s;
-}
-
-.dots-container .dot:nth-child(5) {
-    animation-delay: 0.5s;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(0.8);
-        background-color: #c4b5fd;
-        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
-    }
-    50% {
-        transform: scale(1.2);
-        background-color: #273469;
-        box-shadow: 0 0 0 10px rgba(167, 139, 250, 0);
-    }
-    100% {
-        transform: scale(0.8);
-        background-color: #c4b5fd;
-        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
-    }
-}
+.dots-container .dot:nth-child(1) { background-color: #f3b222; animation-delay: 1.5s; }
+.dots-container .dot:nth-child(2) { background-color: #f0653e; animation-delay: 1s; }
+.dots-container .dot:nth-child(3) { background-color: #b9c0c0; animation-delay: 0.5s; }
+.dots-container .dot:nth-child(4) { background-color: #8f7473; animation-delay: 0s; }
+.dots-container .dot:nth-child(n+5) { display: none; }
 
 /* Loader Text */
 .loader-text {
