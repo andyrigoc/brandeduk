@@ -152,6 +152,19 @@
         color: #0f172a;
     }
 
+    .site-header .header-top-mail {
+        color: #0f172a;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .site-header .header-top-mail:hover {
+        color: #0f172a;
+        opacity: 0.7;
+    }
+
     .site-header .header-top-vat-control {
         margin-left: 0;
         flex: 0 0 auto;
@@ -1359,8 +1372,11 @@
 }
 
 /* Reduced PC widths: Quote + Account become icons, search takes the freed space.
-   Cart and laptop stay pinned at right: 50px (rules above), so they cannot drift. */
+   The email stays on the full PC header only. */
 @media (min-width: 700px) and (max-width: 1439px) {
+    .site-header .header-top-mail {
+        display: none !important;
+    }
     .site-header .searchbar-header__actions > .header-util-link:not(.header-top-basket-link) {
         font-size: 0;
         gap: 0;
