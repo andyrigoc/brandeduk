@@ -12,6 +12,8 @@
     -webkit-backdrop-filter: blur(14px) saturate(1.15);
     backdrop-filter: blur(14px) saturate(1.15);
     pointer-events: auto;
+    touch-action: none;
+    overscroll-behavior: none;
 }
 
 .bu-tablet-rotate-hint[hidden] {
@@ -20,7 +22,7 @@
 
 .bu-tablet-rotate-hint__glass {
     width: min(440px, 92vw);
-    padding: 18px 18px 22px;
+    padding: 18px;
     border-radius: 28px;
     border: 1px solid rgba(255, 255, 255, 0.38);
     background: linear-gradient(
@@ -36,11 +38,12 @@
     color: #fff;
     -webkit-backdrop-filter: blur(22px) saturate(1.35);
     backdrop-filter: blur(22px) saturate(1.35);
+    pointer-events: none;
 }
 
 .bu-tablet-rotate-hint__media {
     width: 100%;
-    margin: 0 auto 16px;
+    margin: 0 auto;
     border-radius: 20px;
     background: #070a12;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -58,30 +61,19 @@
     -webkit-user-drag: none;
 }
 
-.bu-tablet-rotate-hint__continue {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.42);
-    background: rgba(255, 255, 255, 0.14);
-    color: #fff;
-    font-family: Inter, Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 650;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.18s ease, border-color 0.18s ease;
+/* Lock vertical browsing while the portrait gate is up. */
+html.bu-tablet-rotate-hint-active,
+body.bu-tablet-rotate-hint-active {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+    touch-action: none;
 }
 
-.bu-tablet-rotate-hint__continue:hover,
-.bu-tablet-rotate-hint__continue:focus-visible {
-    background: rgba(255, 255, 255, 0.24);
-    border-color: rgba(255, 255, 255, 0.62);
-    outline: none;
+body.bu-tablet-rotate-hint-active {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 @media (orientation: landscape), (pointer: fine) and (hover: hover) {

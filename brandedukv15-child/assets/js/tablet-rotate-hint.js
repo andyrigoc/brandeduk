@@ -6,6 +6,9 @@
  * Tablets are part of the PC experience; this overlay only helps them
  * rotate to landscape on PC pages.
  *
+ * No dismiss / "Continue anyway": portrait tablets stay locked on the
+ * blurry gate until they rotate to landscape.
+ *
  * Video beat (rotate-device-hint.mp4):
  *  0–1s → only “Rotate / Your / Phone” + divider
  *  1s+  → tablet appears and rotates
@@ -20,8 +23,8 @@
     window.__buTabletRotateHintInit = true;
 
     var HINT_ID = 'buTabletRotateHint';
-    var DISMISS_KEY = 'buTabletRotateHintDismissed';
     var PC_MIN = 700;
+    var scrollLockY = 0;
 
     function assetUrl(relPath) {
         try {
@@ -34,20 +37,6 @@
             }
         } catch (error) { /* fall through */ }
         return 'brandedukv15-child/assets/images/ui/' + relPath;
-    }
-
-    function wasDismissed() {
-        try {
-            return sessionStorage.getItem(DISMISS_KEY) === '1';
-        } catch (error) {
-            return false;
-        }
-    }
-
-    function markDismissed() {
-        try {
-            sessionStorage.setItem(DISMISS_KEY, '1');
-        } catch (error) { /* ignore */ }
     }
 
     function playVideo(vid) {
@@ -80,7 +69,6 @@
             '      disablepictureinpicture',
             '      controlslist="nodownload noplaybackrate noremoteplayback"></video>',
             '  </div>',
-            '  <button type="button" class="bu-tablet-rotate-hint__continue">Continue anyway</button>',
             '</div>'
         ].join('');
         document.body.appendChild(el);
@@ -89,13 +77,13 @@
             vid.setAttribute('muted', '');
             vid.addEventListener('loadeddata', function () { playVideo(vid); }, { once: true });
         }
-        var btn = el.querySelector('.bu-tablet-rotate-hint__continue');
-        if (btn) {
-            btn.addEventListener('click', function () {
-                markDismissed();
-                syncTabletRotateHint();
-            });
-        }
+        // Block scroll/gesture bleed-through to the page behind the overlay.
+        el.addEventListener('touchmove', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+        el.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
         return el;
     }
 
@@ -125,14 +113,35 @@
         return true;
     }
 
+    function lockPageScroll(lock) {
+        var root = document.documentElement;
+        if (!document.body || !root) return;
+        if (lock) {
+            if (!document.body.classList.contains('bu-tablet-rotate-hint-active')) {
+                scrollLockY = window.scrollY || window.pageYOffset || 0;
+            }
+            root.classList.add('bu-tablet-rotate-hint-active');
+            document.body.classList.add('bu-tablet-rotate-hint-active');
+            document.body.style.top = '-' + scrollLockY + 'px';
+        } else {
+            root.classList.remove('bu-tablet-rotate-hint-active');
+            document.body.classList.remove('bu-tablet-rotate-hint-active');
+            document.body.style.top = '';
+            if (scrollLockY) {
+                window.scrollTo(0, scrollLockY);
+                scrollLockY = 0;
+            }
+        }
+    }
+
     function syncTabletRotateHint() {
         if (!document.body) return;
         var el = ensureHint();
-        var show = !wasDismissed() && isTabletPortrait();
+        var show = isTabletPortrait();
         var wasHidden = el.hidden;
         el.hidden = !show;
         el.setAttribute('aria-hidden', show ? 'false' : 'true');
-        document.body.classList.toggle('bu-tablet-rotate-hint-active', show);
+        lockPageScroll(show);
         var vid = el.querySelector('.bu-tablet-rotate-hint__video');
         if (show && vid) {
             // Restart from text-only intro whenever the hint opens.
@@ -148,6 +157,9 @@
     window.syncTabletRotateHint = syncTabletRotateHint;
 
     function bind() {
+        // Clear any legacy dismiss so a previous "Continue anyway" cannot stick.
+        try { sessionStorage.removeItem('buTabletRotateHintDismissed'); } catch (error) { /* ignore */ }
+
         window.addEventListener('orientationchange', function () {
             window.setTimeout(syncTabletRotateHint, 60);
             window.setTimeout(syncTabletRotateHint, 280);
