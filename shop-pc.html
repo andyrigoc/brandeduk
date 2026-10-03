@@ -2052,7 +2052,7 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20261003-whiteimg">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261003-logo-grab12">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261003-view-basket-orange">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20260929-rotatebeat3">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-cattitle">
@@ -8860,13 +8860,27 @@
 
                                     <div class="sizes-section-p3 p3-qty-col" tabindex="0" aria-label="Available sizes and quantities">
                                         <div class="p3-from-price">From <strong id="p3BasePrice">&pound;0.00</strong> per unit excl. VAT</div>
-                                        <div class="size-qty-grid" id="sizeQtyGridP3"></div>
-                                        <div class="p3-volume-head">
-                                            <h3>Volume pricing</h3>
-                                            <span>Price per item, ex. VAT</span>
+                                        <div class="p3-size-scroll-wrap">
+                                            <div class="p3-size-scroll" id="p3SizeScroll">
+                                                <div class="size-qty-grid" id="sizeQtyGridP3"></div>
+                                            </div>
+                                            <div class="p3-size-scroll-arrows" id="p3SizeScrollArrows" hidden>
+                                                <button type="button" class="p3-size-scroll-btn p3-size-scroll-up" id="p3SizeScrollUp" aria-label="Scroll sizes up" hidden>
+                                                    <span aria-hidden="true">▲</span>
+                                                </button>
+                                                <button type="button" class="p3-size-scroll-btn p3-size-scroll-down" id="p3SizeScrollDown" aria-label="Scroll sizes down" hidden>
+                                                    <span aria-hidden="true">▼</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="discount-tiers" id="p3DiscountTiers"></div>
-                                        <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
+                                        <div class="p3-volume-anchor">
+                                            <div class="p3-volume-head">
+                                                <h3>Volume pricing</h3>
+                                                <span>Price per item, ex. VAT</span>
+                                            </div>
+                                            <div class="discount-tiers" id="p3DiscountTiers"></div>
+                                            <p class="sizes-hint">Use +/- or tap quantities to type directly</p>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -9593,7 +9607,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20261003-logo-grab12"></script>
+    <script src="test-order-popup/order.js?v=20261003-p3-3col"></script>
     <script src="test-order-popup/order-integration.js?v=20260929-openrotate1"></script>
     <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20260929-rotatebeat3"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>

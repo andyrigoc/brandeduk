@@ -309,6 +309,31 @@ main.main-content {
     outline-offset: 4px;
 }
 
+/* Invisible hotspot over a baked-in hero CTA (e.g. Hospitality "Get a Quote"). */
+.hero-banner--cta-only {
+    cursor: default;
+}
+
+.hero-banner-cta {
+    position: absolute;
+    z-index: 2;
+    border-radius: 999px;
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hero-banner-cta:focus-visible {
+    outline: 3px solid #111827;
+    outline-offset: 4px;
+}
+
+.hero-banner--cta-only .onlyboards-banner-image {
+    pointer-events: none;
+}
+
 #heroBannerOnlyBoards .onlyboards-banner-image {
     object-fit: cover;
     object-position: center center;

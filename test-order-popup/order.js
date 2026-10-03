@@ -392,6 +392,56 @@ function populatePage3() {
             '</div>');
         grid.append(box);
     });
+
+    initP3SizeScrollAffordance();
+}
+
+function getP3SizeScrollEl() {
+    return document.getElementById('p3SizeScroll');
+}
+
+function updateP3SizeScrollAffordance() {
+    var scroller = getP3SizeScrollEl();
+    var arrows = document.getElementById('p3SizeScrollArrows');
+    var upBtn = document.getElementById('p3SizeScrollUp');
+    var downBtn = document.getElementById('p3SizeScrollDown');
+    if (!scroller || !arrows || !upBtn || !downBtn) return;
+
+    var overflow = scroller.scrollHeight - scroller.clientHeight > 4;
+    var atTop = scroller.scrollTop <= 2;
+    var atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+
+    arrows.hidden = !overflow;
+    upBtn.hidden = !overflow || atTop;
+    downBtn.hidden = !overflow || atBottom;
+}
+
+function initP3SizeScrollAffordance() {
+    var scroller = getP3SizeScrollEl();
+    var upBtn = document.getElementById('p3SizeScrollUp');
+    var downBtn = document.getElementById('p3SizeScrollDown');
+    if (!scroller || !upBtn || !downBtn) return;
+
+    if (!scroller.dataset.p3ScrollBound) {
+        scroller.dataset.p3ScrollBound = '1';
+        scroller.addEventListener('scroll', updateP3SizeScrollAffordance, { passive: true });
+        upBtn.addEventListener('click', function() {
+            var step = Math.max(72, Math.round(scroller.clientHeight * 0.55));
+            scroller.scrollBy({ top: -step, behavior: 'smooth' });
+        });
+        downBtn.addEventListener('click', function() {
+            var step = Math.max(72, Math.round(scroller.clientHeight * 0.55));
+            scroller.scrollBy({ top: step, behavior: 'smooth' });
+        });
+        window.addEventListener('resize', updateP3SizeScrollAffordance);
+    }
+
+    // Wait for layout (and the page slide) so overflow measurement is accurate.
+    requestAnimationFrame(function() {
+        requestAnimationFrame(updateP3SizeScrollAffordance);
+    });
+    setTimeout(updateP3SizeScrollAffordance, 80);
+    setTimeout(updateP3SizeScrollAffordance, 760);
 }
 
 $(document).on("click", ".next", function(){

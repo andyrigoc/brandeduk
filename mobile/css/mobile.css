@@ -6119,6 +6119,27 @@ a {
     background: #eeeae2;
 }
 
+/* Invisible hotspot over baked-in hero CTAs (Hospitality / Premier Aprons). */
+.hero-banner--cta-only {
+    cursor: default;
+}
+
+.hero-banner-cta {
+    position: absolute;
+    z-index: 2;
+    border-radius: 999px;
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hero-banner-cta:focus-visible {
+    outline: 3px solid #111827;
+    outline-offset: 4px;
+}
+
 .hero-banner-regatta-mobile > a,
 .hero-banner-regatta-mobile > a > img {
     display: block;

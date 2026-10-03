@@ -636,6 +636,45 @@ window.BrandedConfig = (function () {
             label: 'Show Branded banner'
         },
         {
+            id: 'leonart',
+            enabled: true,
+            views: ['pc', 'mobile'],
+            kind: 'image',
+            hrefPc: '#',
+            hrefMobile: '#',
+            openContact: true,
+            label: 'Show Leonart banner',
+            alt: 'Professional workwear for building teams — Leonart Building Interiors',
+            pc: { src: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.png' },
+            // Keep left-side copy and Get a Quote button in frame on the tall mobile crop.
+            mobile: {
+                src: 'brandeduk.com/assets/Professional%20Workwear%20for%20Building%20Teams.png',
+                objectPosition: '18% center'
+            }
+        },
+        {
+            id: 'hospitality',
+            enabled: true,
+            views: ['pc', 'mobile'],
+            kind: 'image',
+            // Slide itself is not a link — only the CTA hotspot below is clickable.
+            label: 'Show Hospitality banner',
+            alt: 'Custom hospitality uniforms in a warm café',
+            pc: { src: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.png' },
+            // Keep the baked-in "Get a Quote" button in frame on the tall mobile crop.
+            mobile: {
+                src: 'brandeduk.com/assets/Custom%20Hospitality%20Uniforms%20in%20a%20Warm%20Caf%C3%A9.png',
+                objectPosition: '78% center'
+            },
+            cta: {
+                label: 'Shop Premier Aprons',
+                hrefPc: 'shop-pc.html?productType=aprons&brand=premier',
+                hrefMobile: 'shop.html?category=aprons&brand=premier',
+                pc: { left: '67.2%', top: '58.5%', width: '23.2%', height: '12%' },
+                mobile: { left: '11%', top: '58%', width: '82%', height: '13%' }
+            }
+        },
+        {
             id: 'branded-digital',
             enabled: true,
             views: ['pc', 'mobile'],
@@ -858,10 +897,30 @@ window.BrandedConfig = (function () {
         var media = (view === 'mobile' ? banner.mobile : banner.pc) || banner.pc || banner.mobile || {};
         var src = resolveBannerAsset(media.src);
         var alt = escapeBannerText(banner.alt || '');
+        var imgStyle = media.objectPosition ? ' style="object-position: ' + escapeBannerText(media.objectPosition) + ';"' : '';
         if (view === 'pc' && media.srcNarrow) {
-            return '<picture><source media="(max-width: 767px)" srcset="' + escapeBannerText(resolveBannerAsset(media.srcNarrow)) + '"><img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"></picture>';
+            return '<picture><source media="(max-width: 767px)" srcset="' + escapeBannerText(resolveBannerAsset(media.srcNarrow)) + '"><img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '></picture>';
         }
-        return '<img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '">';
+        return '<img class="onlyboards-banner-image" src="' + escapeBannerText(src) + '" alt="' + alt + '"' + imgStyle + '>';
+    }
+
+    function renderHeroBannerCta(banner, view) {
+        if (!banner || !banner.cta) return '';
+        var href = resolveBannerHref({
+            hrefPc: banner.cta.hrefPc,
+            hrefMobile: banner.cta.hrefMobile
+        }, view);
+        if (!href) return '';
+        var box = (view === 'mobile' ? banner.cta.mobile : banner.cta.pc) || banner.cta.pc || banner.cta.mobile || {};
+        var styleParts = [];
+        if (box.left != null) styleParts.push('left:' + box.left);
+        if (box.top != null) styleParts.push('top:' + box.top);
+        if (box.width != null) styleParts.push('width:' + box.width);
+        if (box.height != null) styleParts.push('height:' + box.height);
+        var label = escapeBannerText(banner.cta.label || 'Open link');
+        var extra = banner.cta.external ? ' target="_blank" rel="noopener"' : '';
+        var styleAttr = styleParts.length ? ' style="' + escapeBannerText(styleParts.join(';')) + '"' : '';
+        return '<a class="hero-banner-cta" href="' + escapeBannerText(href) + '" aria-label="' + label + '"' + extra + styleAttr + '></a>';
     }
 
     function renderHeroBanner(banner, view, isFirst) {
@@ -872,16 +931,19 @@ window.BrandedConfig = (function () {
         if (banner.id === 'regatta' && view === 'mobile') classes.push('hero-banner-regatta-mobile');
         if (banner.kind === 'contact') classes.push('hero-banner--clickable');
         if (banner.kind === 'halloween') classes.push('hero-banner-halloween');
+        if (banner.cta && !href) classes.push('hero-banner--cta-only');
         if (isFirst) classes.push('hero-banner--active');
         var attrs = ' class="' + classes.join(' ') + '" data-hero-id="' + escapeBannerText(banner.id) + '"';
         if (banner.id === 'onlyboards') attrs += ' id="heroBannerOnlyBoards"';
         if (banner.label) attrs += ' aria-label="' + escapeBannerText(banner.label.replace(/^Show\s+/i, '').replace(/\s+banner$/i, '')) + '"';
         var inner = renderHeroBannerInner(banner, view);
+        var cta = renderHeroBannerCta(banner, view);
         if (!href) {
-            return '<div' + attrs + '>' + inner + '</div>';
+            return '<div' + attrs + '>' + inner + cta + '</div>';
         }
         var extra = banner.external ? ' target="_blank" rel="noopener"' : '';
         if (banner.openContact) attrs += ' data-open-contact="1"';
+        // Nested links are invalid HTML — skip CTA overlay when the whole slide is already an <a>.
         return '<a' + attrs + ' href="' + escapeBannerText(href) + '"' + extra + '>' + inner + '</a>';
     }
 
