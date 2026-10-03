@@ -36,6 +36,154 @@ window.productData = null;
 
 let total = 5; // 5 pages now
 
+/* Shared elegant scroll affordance for order popup panels (Colour + Customise). */
+window.__orderPopupScrollAffordances = window.__orderPopupScrollAffordances || {};
+
+window.bindOrderPopupScrollAffordance = function (ids) {
+    if (!ids || !ids.scroll) return null;
+    var scroll = document.getElementById(ids.scroll);
+    var shell = scroll && scroll.closest('.op-scroll-shell');
+    var rail = document.getElementById(ids.rail);
+    var track = document.getElementById(ids.track);
+    var thumb = document.getElementById(ids.thumb);
+    var upBtn = document.getElementById(ids.up);
+    var downBtn = document.getElementById(ids.down);
+    var moreBelow = document.getElementById(ids.more);
+    if (!scroll || !shell || !rail || !track || !thumb || !upBtn || !downBtn || !moreBelow) return null;
+
+    var key = ids.scroll;
+    var state = window.__orderPopupScrollAffordances[key];
+    if (!state) {
+        state = { bound: false, dragging: false, dragStartY: 0, dragStartTop: 0 };
+        window.__orderPopupScrollAffordances[key] = state;
+    }
+
+    function maxScroll() {
+        return Math.max(0, scroll.scrollHeight - scroll.clientHeight);
+    }
+
+    function scrollStep() {
+        return Math.max(120, Math.round(scroll.clientHeight * 0.72));
+    }
+
+    function sync() {
+        var overflow = scroll.scrollHeight > scroll.clientHeight + 2;
+        var top = scroll.scrollTop;
+        var max = maxScroll();
+        var atTop = top <= 1;
+        var atBottom = top >= max - 2;
+        var hasMore = overflow && !atBottom;
+
+        rail.hidden = !overflow;
+        rail.setAttribute('aria-hidden', overflow ? 'false' : 'true');
+        shell.classList.toggle('is-overflowing', overflow);
+        shell.classList.toggle('has-more-below', hasMore);
+        moreBelow.hidden = !hasMore;
+
+        upBtn.disabled = !overflow || atTop;
+        downBtn.disabled = !overflow || atBottom;
+
+        if (!overflow) {
+            thumb.style.height = '100%';
+            thumb.style.transform = 'translateY(0)';
+            return;
+        }
+
+        var trackHeight = track.clientHeight;
+        var thumbHeight = Math.max(28, Math.round((scroll.clientHeight / scroll.scrollHeight) * trackHeight));
+        var travel = Math.max(0, trackHeight - thumbHeight);
+        var ratio = max > 0 ? top / max : 0;
+        thumb.style.height = thumbHeight + 'px';
+        thumb.style.transform = 'translateY(' + Math.round(travel * ratio) + 'px)';
+    }
+
+    function scrollByDir(dir) {
+        scroll.scrollBy({ top: dir * scrollStep(), behavior: 'smooth' });
+    }
+
+    if (!state.bound) {
+        scroll.addEventListener('scroll', sync, { passive: true });
+        upBtn.addEventListener('click', function () { scrollByDir(-1); });
+        downBtn.addEventListener('click', function () { scrollByDir(1); });
+        moreBelow.addEventListener('click', function () { scrollByDir(1); });
+
+        track.addEventListener('pointerdown', function (event) {
+            if (event.target === thumb || state.dragging) return;
+            var rect = track.getBoundingClientRect();
+            var thumbHeight = thumb.offsetHeight;
+            var travel = Math.max(0, track.clientHeight - thumbHeight);
+            var y = event.clientY - rect.top - thumbHeight / 2;
+            var ratio = travel > 0 ? Math.min(1, Math.max(0, y / travel)) : 0;
+            scroll.scrollTop = ratio * maxScroll();
+            sync();
+        });
+
+        thumb.addEventListener('pointerdown', function (event) {
+            event.preventDefault();
+            state.dragging = true;
+            state.dragStartY = event.clientY;
+            state.dragStartTop = scroll.scrollTop;
+            thumb.classList.add('is-dragging');
+            thumb.setPointerCapture(event.pointerId);
+        });
+
+        thumb.addEventListener('pointermove', function (event) {
+            if (!state.dragging) return;
+            var travel = Math.max(0, track.clientHeight - thumb.offsetHeight);
+            if (travel <= 0 || maxScroll() <= 0) return;
+            var delta = event.clientY - state.dragStartY;
+            scroll.scrollTop = state.dragStartTop + (delta / travel) * maxScroll();
+        });
+
+        function endDrag(event) {
+            if (!state.dragging) return;
+            state.dragging = false;
+            thumb.classList.remove('is-dragging');
+            try { thumb.releasePointerCapture(event.pointerId); } catch (err) { /* ignore */ }
+        }
+
+        thumb.addEventListener('pointerup', endDrag);
+        thumb.addEventListener('pointercancel', endDrag);
+
+        if (typeof ResizeObserver === 'function') {
+            var ro = new ResizeObserver(function () { sync(); });
+            ro.observe(scroll);
+            ro.observe(shell);
+        }
+
+        window.addEventListener('resize', sync);
+        state.bound = true;
+    }
+
+    state.refresh = sync;
+    requestAnimationFrame(function () {
+        sync();
+        requestAnimationFrame(sync);
+    });
+    return state;
+};
+
+window.refreshOrderPopupScrollAffordances = function () {
+    window.bindOrderPopupScrollAffordance({
+        scroll: 'p2ColourScroll',
+        rail: 'p2ColourScrollRail',
+        track: 'p2ColourScrollTrack',
+        thumb: 'p2ColourScrollThumb',
+        up: 'p2ColourScrollUp',
+        down: 'p2ColourScrollDown',
+        more: 'p2ColourMoreBelow'
+    });
+    window.bindOrderPopupScrollAffordance({
+        scroll: 'p4PositionsScroll',
+        rail: 'p4PositionsScrollRail',
+        track: 'p4PositionsScrollTrack',
+        thumb: 'p4PositionsScrollThumb',
+        up: 'p4PositionsScrollUp',
+        down: 'p4PositionsScrollDown',
+        more: 'p4PositionsMoreBelow'
+    });
+};
+
 // Sample product data (will be loaded from API)
 const sampleProduct = {
     code: "GD002",
@@ -65,6 +213,9 @@ $(document).ready(function() {
         loadProductData();
         setupSizeQuantityControls();
         setupUploadBox();
+    }
+    if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+        window.refreshOrderPopupScrollAffordances();
     }
 });
 
@@ -111,11 +262,21 @@ window.goToPage = function(index) {
         { left: target },
         {
             duration: 700,
-            easing: "easeInOutBack"
+            easing: "easeInOutBack",
+            complete: function () {
+                if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+                    window.refreshOrderPopupScrollAffordances();
+                }
+            }
         }
     );
     
     window.current = index;
+    if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+        requestAnimationFrame(function () {
+            window.refreshOrderPopupScrollAffordances();
+        });
+    }
 };
 
 // Load product data - exposed globally for integration
@@ -629,6 +790,11 @@ function fillPage4Summary() {
     p4RenderPreviousLogos();
     if (Object.keys(window.p4Assignments || {}).length) p4UpdateSummary();
     loadPage4PositionImages(product);
+    if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+        requestAnimationFrame(function () {
+            window.refreshOrderPopupScrollAffordances();
+        });
+    }
 }
 
 var P4_METHOD_RANK = { yes: 0, poa: 1, no: 2 };
@@ -1007,6 +1173,13 @@ function loadPage4PositionImages(product) {
     // Show any restored/selected logos immediately (static cards), then again after API rebuild.
     p4ReapplyAssignedLogos();
     var requestId = ++page4PositionRequest;
+    function refreshP4Scroll() {
+        if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+            requestAnimationFrame(function () {
+                window.refreshOrderPopupScrollAffordances();
+            });
+        }
+    }
     page4FetchCustomizationConfig(target)
         .then(function (body) {
             if (requestId !== page4PositionRequest) return;
@@ -1017,6 +1190,7 @@ function loadPage4PositionImages(product) {
             if (!positions || !positions.length) {
                 page4ApplyLocalImagesToCards(product);
                 p4ReapplyAssignedLogos();
+                refreshP4Scroll();
                 return;
             }
             // Rebuild cards so each position has slug data-position + .p4-logo-under preview slot.
@@ -1026,17 +1200,20 @@ function loadPage4PositionImages(product) {
             p4PaintPrintButtons();
             page4ApplyLocalImagesToCards(product);
             page4ApplyApiImagesToCards(product, positions);
+            refreshP4Scroll();
             p4LoadBackendPrices().then(function () {
                 if (requestId !== page4PositionRequest) return;
                 p4ApplyBackendPricesToCards();
                 p4PaintPrintButtons();
                 p4ReapplyAssignedLogos();
+                refreshP4Scroll();
             });
         })
         .catch(function () {
             if (requestId !== page4PositionRequest) return;
             page4ApplyLocalImagesToCards(product);
             p4ReapplyAssignedLogos();
+            refreshP4Scroll();
         });
 }
 

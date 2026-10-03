@@ -2052,8 +2052,8 @@
     <link rel="stylesheet" href="test-order-popup/order-shop.css?v=20261003-whiteimg">
     <link rel="stylesheet" href="test-order-popup/order-overlay.css">
     <link rel="stylesheet" href="test-order-popup/customizer-embed.css?v=20260922-poa-contact">
-    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261003-upload-navy">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-nodismiss">
+    <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261003-scroll-affordance">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-screen">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-cattitle">
 
@@ -8777,22 +8777,42 @@
                                             </label>
                                         </div>
 
-                                        <div class="colour-section p2-popular-section">
-                                            <h3 class="p2-grid-title">Popular colours</h3>
-                                            <div id="p2PopularColours" class="p2-popular-grid"></div>
-                                        </div>
+                                        <div class="op-scroll-shell p2-colour-scroll-shell">
+                                            <div class="op-scroll p2-colour-scroll" id="p2ColourScroll" tabindex="0" aria-label="Colour list">
+                                                <div class="colour-section p2-popular-section">
+                                                    <h3 class="p2-grid-title">Popular colours</h3>
+                                                    <div id="p2PopularColours" class="p2-popular-grid"></div>
+                                                </div>
 
-                                        <div class="colour-section p2-all-section">
-                                            <h3 class="p2-grid-title">All colours</h3>
-                                            <div class="p2-all-carousel">
-                                                <button type="button" class="p2-colour-arrow p2-colour-arrow-prev" id="p2ColourPrev" aria-label="Previous colours" hidden>
-                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                <div class="colour-section p2-all-section">
+                                                    <h3 class="p2-grid-title">All colours</h3>
+                                                    <div class="p2-all-carousel">
+                                                        <button type="button" class="p2-colour-arrow p2-colour-arrow-prev" id="p2ColourPrev" aria-label="Previous colours" hidden>
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                        </button>
+                                                        <div id="colourSwatches"></div>
+                                                        <button type="button" class="p2-colour-arrow p2-colour-arrow-next" id="p2ColourNext" aria-label="Next colours" hidden>
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="op-scroll-rail" id="p2ColourScrollRail" hidden aria-hidden="true">
+                                                <button type="button" class="op-scroll-btn op-scroll-up" id="p2ColourScrollUp" aria-label="Scroll colours up">
+                                                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 7.5L6 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                 </button>
-                                                <div id="colourSwatches"></div>
-                                                <button type="button" class="p2-colour-arrow p2-colour-arrow-next" id="p2ColourNext" aria-label="Next colours" hidden>
-                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                <div class="op-scroll-track" id="p2ColourScrollTrack">
+                                                    <div class="op-scroll-thumb" id="p2ColourScrollThumb"></div>
+                                                </div>
+                                                <button type="button" class="op-scroll-btn op-scroll-down" id="p2ColourScrollDown" aria-label="Scroll colours down">
+                                                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                                 </button>
                                             </div>
+
+                                            <button type="button" class="op-scroll-more-below" id="p2ColourMoreBelow" aria-label="More colours below" hidden>
+                                                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -8966,7 +8986,9 @@
                                 </div>
 
                                 <!-- Position Cards Grid -->
-                                <div class="positions-grid" id="p4PositionOptions">
+                                <div class="op-scroll-shell p4-positions-scroll-shell">
+                                    <div class="op-scroll" id="p4PositionsScroll" tabindex="0" aria-label="Decoration positions">
+                                        <div class="positions-grid" id="p4PositionOptions">
 
                                     <!-- Left Chest -->
                                     <div class="position-card" data-position="Left Chest" data-embroidery="5.00"
@@ -9232,6 +9254,24 @@
                                         </div>
                                     </div>
 
+                                        </div>
+                                    </div>
+
+                                    <div class="op-scroll-rail" id="p4PositionsScrollRail" hidden aria-hidden="true">
+                                        <button type="button" class="op-scroll-btn op-scroll-up" id="p4PositionsScrollUp" aria-label="Scroll positions up">
+                                            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 7.5L6 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                        <div class="op-scroll-track" id="p4PositionsScrollTrack">
+                                            <div class="op-scroll-thumb" id="p4PositionsScrollThumb"></div>
+                                        </div>
+                                        <button type="button" class="op-scroll-btn op-scroll-down" id="p4PositionsScrollDown" aria-label="Scroll positions down">
+                                            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </div>
+
+                                    <button type="button" class="op-scroll-more-below" id="p4PositionsMoreBelow" aria-label="More positions below" hidden>
+                                        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.5L8 10.5L12 6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </button>
                                 </div>
                                         <label class="p4-notes">
                                             <span>Notes</span>
@@ -9607,9 +9647,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
     <!-- Order Popup Scripts -->
-    <script src="test-order-popup/order.js?v=20261003-quoteshare2"></script>
-    <script src="test-order-popup/order-integration.js?v=20260929-openrotate1"></script>
-    <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20261003-nodismiss"></script>
+    <script src="test-order-popup/order.js?v=20261003-scroll-affordance"></script>
+    <script src="test-order-popup/order-integration.js?v=20261003-scroll-affordance"></script>
+    <script src="brandedukv15-child/assets/js/tablet-rotate-hint.js?v=20261003-screen"></script>
     <script src="test-order-popup/customizer-embed.js?v=20260929-touchdnd5"></script>
     <script src="test-order-popup/pc-product-routing.js?v=20260924-basket-loader"></script>
     <script src="test-order-popup/pc-product-popup.js?v=20260923-qty-green"></script>

@@ -752,6 +752,22 @@
     var ALL_COLOUR_PAGE_SIZE = 20;
     var colourPagerBusy = false;
 
+    function refreshColourScrollAffordance() {
+        if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
+            window.refreshOrderPopupScrollAffordances();
+        } else if (typeof window.bindOrderPopupScrollAffordance === 'function') {
+            window.bindOrderPopupScrollAffordance({
+                scroll: 'p2ColourScroll',
+                rail: 'p2ColourScrollRail',
+                track: 'p2ColourScrollTrack',
+                thumb: 'p2ColourScrollThumb',
+                up: 'p2ColourScrollUp',
+                down: 'p2ColourScrollDown',
+                more: 'p2ColourMoreBelow'
+            });
+        }
+    }
+
     function visibleAllColourItems() {
         return Array.from(document.querySelectorAll('#colourSwatches .colour-swatch-item')).filter(function (item) {
             return !item.hidden;
@@ -859,6 +875,7 @@
             next.hidden = !showArrows;
             next.disabled = allColourPage >= pages - 1;
         }
+        refreshColourScrollAffordance();
     }
 
     function bindAllColourPager() {
@@ -1011,6 +1028,7 @@
             setupColourToolbar(colors);
             bindAllColourPager();
             updateAllColourPager(0, { rebuild: true, animate: false });
+            refreshColourScrollAffordance();
             
             // View button handler only (selection handled by order.js)
             grid[0].querySelectorAll('.swatch-view-btn').forEach(function(btn) {
@@ -1062,6 +1080,7 @@
                 colourGrid.append(swatchPage2);
             });
             setupColourToolbar(defaultColours);
+            refreshColourScrollAffordance();
         }
     }
     

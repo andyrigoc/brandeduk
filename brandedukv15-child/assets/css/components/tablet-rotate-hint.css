@@ -21,8 +21,8 @@
 }
 
 .bu-tablet-rotate-hint__glass {
-    width: min(440px, 92vw);
-    padding: 18px;
+    width: min(520px, 94vw);
+    padding: 22px;
     border-radius: 28px;
     border: 1px solid rgba(255, 255, 255, 0.38);
     background: linear-gradient(
@@ -41,24 +41,164 @@
     pointer-events: none;
 }
 
-.bu-tablet-rotate-hint__media {
+/* Dark stage — overflow hidden only for radius; inner padding keeps rotate clear. */
+.bu-tablet-rotate-hint__stage {
     width: 100%;
+    aspect-ratio: 524 / 420;
     margin: 0 auto;
     border-radius: 20px;
     background: #070a12;
     border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
-    line-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* Extra inset so rotated corners / arrow tips never meet the clipped edge. */
+    padding: 44px 48px;
 }
 
-.bu-tablet-rotate-hint__video {
+.bu-tablet-rotate-hint__rail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
     width: 100%;
-    height: auto;
+    height: 100%;
+    max-width: 440px;
+    transform-origin: center center;
+}
+
+.bu-tablet-rotate-hint__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.08em;
+    flex: 0 0 auto;
+    line-height: 1.05;
+    font-family: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.55rem, 4.2vw, 2.15rem);
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-align: left;
+}
+
+.bu-tablet-rotate-hint__line {
     display: block;
-    object-fit: cover;
+}
+
+.bu-tablet-rotate-hint__line--accent {
+    color: #ffaf49;
+}
+
+.bu-tablet-rotate-hint__divider {
+    width: 2px;
+    align-self: stretch;
+    min-height: 7.2em;
+    max-height: 160px;
+    border-radius: 2px;
+    background: rgba(148, 163, 184, 0.55);
+    flex: 0 0 auto;
+}
+
+/* Motion well — sized for diagonal of device (√2) so spin never clips. */
+.bu-tablet-rotate-hint__motion {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: min(100%, 240px);
+    aspect-ratio: 1 / 1;
+    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.bu-tablet-rotate-hint__spin {
+    position: relative;
+    width: 52%;
+    height: 52%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    opacity: 0;
+    transform: rotate(0deg) scale(0.92);
+}
+
+.bu-tablet-rotate-hint__device {
+    position: relative;
+    z-index: 1;
+    width: 40%;
+    height: auto;
+    max-height: 70%;
+    color: #ffaf49;
+    display: block;
+    overflow: visible;
+}
+
+.bu-tablet-rotate-hint__arrows {
+    position: absolute;
+    inset: -14%;
+    width: 128%;
+    height: 128%;
+    color: #fff;
+    opacity: 0.95;
     pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
+    overflow: visible;
+}
+
+/* Beat: text alone → device in → rotate 90° → hold → reset. */
+.bu-tablet-rotate-hint__stage--run .bu-tablet-rotate-hint__spin {
+    animation: buTabletRotateSpin 5.6s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+}
+
+.bu-tablet-rotate-hint__stage--run .bu-tablet-rotate-hint__rail {
+    animation: buTabletRotateRail 5.6s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+}
+
+@keyframes buTabletRotateSpin {
+    0%,
+    17% {
+        opacity: 0;
+        transform: rotate(0deg) scale(0.9);
+    }
+    22% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+    48% {
+        opacity: 1;
+        transform: rotate(90deg) scale(1);
+    }
+    72% {
+        opacity: 1;
+        transform: rotate(90deg) scale(1);
+    }
+    86%,
+    100% {
+        opacity: 0;
+        transform: rotate(90deg) scale(0.92);
+    }
+}
+
+/* Subtle group tilt during the rotate beat — kept small so padding still covers it. */
+@keyframes buTabletRotateRail {
+    0%,
+    22% {
+        transform: rotate(0deg);
+    }
+    48%,
+    72% {
+        transform: rotate(-8deg);
+    }
+    86%,
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 /* Lock vertical browsing while the portrait gate is up. */
@@ -79,5 +219,19 @@ body.bu-tablet-rotate-hint-active {
 @media (orientation: landscape), (pointer: fine) and (hover: hover) {
     body:not(.bu-tablet-rotate-hint-active) .bu-tablet-rotate-hint {
         display: none !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .bu-tablet-rotate-hint__glass {
+        padding: 14px;
+    }
+
+    .bu-tablet-rotate-hint__stage {
+        padding: 28px 24px;
+    }
+
+    .bu-tablet-rotate-hint__rail {
+        gap: 14px;
     }
 }

@@ -9,9 +9,9 @@
  * No dismiss / "Continue anyway": portrait tablets stay locked on the
  * blurry gate until they rotate to landscape.
  *
- * Video beat (rotate-device-hint.mp4):
- *  0–1s → only “Rotate / Your / Phone” + divider
- *  1s+  → tablet appears and rotates
+ * Animation beat (CSS):
+ *  0–1s → only “Rotate / Your / Screen” + divider
+ *  1s+  → device appears and rotates with room so edges never clip
  */
 (function setupTabletRotateHint() {
     if (window.__buTabletRotateHintInit) return;
@@ -26,28 +26,6 @@
     var PC_MIN = 700;
     var scrollLockY = 0;
 
-    function assetUrl(relPath) {
-        try {
-            var scripts = document.getElementsByTagName('script');
-            for (var i = scripts.length - 1; i >= 0; i--) {
-                var src = scripts[i].src || '';
-                if (src.indexOf('tablet-rotate-hint.js') !== -1) {
-                    return new URL('../images/ui/' + relPath, src).href;
-                }
-            }
-        } catch (error) { /* fall through */ }
-        return 'brandedukv15-child/assets/images/ui/' + relPath;
-    }
-
-    function playVideo(vid) {
-        if (!vid) return;
-        vid.muted = true;
-        try {
-            var p = vid.play();
-            if (p && p.catch) p.catch(function () { /* autoplay blocked */ });
-        } catch (error) { /* ignore */ }
-    }
-
     function ensureHint() {
         var el = document.getElementById(HINT_ID);
         if (el) return el;
@@ -59,24 +37,40 @@
         el.setAttribute('role', 'dialog');
         el.setAttribute('aria-modal', 'true');
         el.setAttribute('aria-live', 'polite');
-        el.setAttribute('aria-label', 'Rotate your tablet for the best experience');
+        el.setAttribute('aria-label', 'Rotate your screen for the best experience');
         el.innerHTML = [
             '<div class="bu-tablet-rotate-hint__glass">',
-            '  <div class="bu-tablet-rotate-hint__media" aria-hidden="true">',
-            '    <video class="bu-tablet-rotate-hint__video"',
-            '      src="' + assetUrl('rotate-device-hint.mp4') + '"',
-            '      autoplay muted loop playsinline preload="auto"',
-            '      disablepictureinpicture',
-            '      controlslist="nodownload noplaybackrate noremoteplayback"></video>',
+            '  <div class="bu-tablet-rotate-hint__stage" aria-hidden="true">',
+            '    <div class="bu-tablet-rotate-hint__rail">',
+            '      <div class="bu-tablet-rotate-hint__copy">',
+            '        <span class="bu-tablet-rotate-hint__line">Rotate</span>',
+            '        <span class="bu-tablet-rotate-hint__line">Your</span>',
+            '        <span class="bu-tablet-rotate-hint__line bu-tablet-rotate-hint__line--accent">Screen</span>',
+            '      </div>',
+            '      <div class="bu-tablet-rotate-hint__divider"></div>',
+            '      <div class="bu-tablet-rotate-hint__motion">',
+            '        <div class="bu-tablet-rotate-hint__spin">',
+            '          <svg class="bu-tablet-rotate-hint__device" viewBox="0 0 120 200" width="120" height="200" focusable="false">',
+            '            <rect x="14" y="10" width="92" height="180" rx="16" ry="16" fill="none" stroke="currentColor" stroke-width="6"/>',
+            '            <rect x="38" y="22" width="44" height="8" rx="4" ry="4" fill="currentColor"/>',
+            '            <rect x="46" y="168" width="28" height="6" rx="3" ry="3" fill="currentColor" opacity="0.55"/>',
+            '            <rect x="4" y="52" width="8" height="28" rx="3" ry="3" fill="currentColor" opacity="0.7"/>',
+            '            <rect x="4" y="92" width="8" height="42" rx="3" ry="3" fill="currentColor" opacity="0.7"/>',
+            '            <rect x="108" y="70" width="8" height="48" rx="3" ry="3" fill="currentColor" opacity="0.7"/>',
+            '          </svg>',
+            '          <svg class="bu-tablet-rotate-hint__arrows" viewBox="0 0 220 220" width="220" height="220" focusable="false">',
+            '            <path d="M150 42c34 10 58 42 58 78" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>',
+            '            <path d="M198 102l18 18-28 4z" fill="currentColor"/>',
+            '            <path d="M70 178c-34-10-58-42-58-78" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>',
+            '            <path d="M22 118L4 100l28-4z" fill="currentColor"/>',
+            '          </svg>',
+            '        </div>',
+            '      </div>',
+            '    </div>',
             '  </div>',
             '</div>'
         ].join('');
         document.body.appendChild(el);
-        var vid = el.querySelector('.bu-tablet-rotate-hint__video');
-        if (vid) {
-            vid.setAttribute('muted', '');
-            vid.addEventListener('loadeddata', function () { playVideo(vid); }, { once: true });
-        }
         // Block scroll/gesture bleed-through to the page behind the overlay.
         el.addEventListener('touchmove', function (event) {
             event.preventDefault();
@@ -134,6 +128,15 @@
         }
     }
 
+    function restartAnim(el) {
+        var stage = el.querySelector('.bu-tablet-rotate-hint__stage');
+        if (!stage) return;
+        stage.classList.remove('bu-tablet-rotate-hint__stage--run');
+        // Force reflow so the CSS animation restarts cleanly.
+        void stage.offsetWidth;
+        stage.classList.add('bu-tablet-rotate-hint__stage--run');
+    }
+
     function syncTabletRotateHint() {
         if (!document.body) return;
         var el = ensureHint();
@@ -142,15 +145,11 @@
         el.hidden = !show;
         el.setAttribute('aria-hidden', show ? 'false' : 'true');
         lockPageScroll(show);
-        var vid = el.querySelector('.bu-tablet-rotate-hint__video');
-        if (show && vid) {
-            // Restart from text-only intro whenever the hint opens.
-            if (wasHidden) {
-                try { vid.currentTime = 0; } catch (error) { /* ignore */ }
-            }
-            playVideo(vid);
-        } else if (vid) {
-            try { vid.pause(); } catch (error) { /* ignore */ }
+        if (show) {
+            if (wasHidden) restartAnim(el);
+        } else {
+            var stage = el.querySelector('.bu-tablet-rotate-hint__stage');
+            if (stage) stage.classList.remove('bu-tablet-rotate-hint__stage--run');
         }
     }
 
