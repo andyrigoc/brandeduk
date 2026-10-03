@@ -221,6 +221,12 @@ $(document).ready(function() {
 
 // Navigation function - exposed globally
 window.goToPage = function(index) {
+    // Persist page-3 size quantities whenever leaving that step (BACK or forward),
+    // so populatePage3 can restore them instead of rebuilding inputs at 0.
+    if (window.current === 2 && index !== 2) {
+        syncPage3Quantities();
+    }
+
     // Validation before moving forward
     if (index > window.current) {
         // Page 2 (colour) -> Page 3: Must select colour
@@ -524,8 +530,11 @@ function populatePage3() {
     // Run once immediately in case qty already set
     updateP3TierHighlight();
     
-    // Populate size grid
+    // Populate size grid — restore saved quantities for this product session
+    // so BACK/forward navigation does not zero the customer's choices.
     var sizes = product.sizes || ['S','M','L','XL','2XL','3XL'];
+    var savedQuantities = window.quantities || {};
+    var restoredQuantities = {};
     var basePrice = tierData.length
         ? Number(tierData[0].price) || 0
         : Number(product.price || product.basePrice) || 0;
@@ -542,17 +551,27 @@ function populatePage3() {
             var sel = colours.find(function(c) { return (c.name || '') === window.selectedColour; });
             if (sel && sel.sizes && sel.sizes[size]) stock = sel.sizes[size].stock || '';
         }
+
+        var qty = parseInt(savedQuantities[size], 10) || 0;
+        if (qty < 0) qty = 0;
+        if (qty > 0) restoredQuantities[size] = qty;
+        var hasQty = qty > 0;
         
-        var box = $('<div class="size-quantity__row size-qty-box-p3" data-size="' + size + '" data-selected="false"></div>');
+        var box = $('<div class="size-quantity__row size-qty-box-p3' + (hasQty ? ' has-qty' : '') + '" data-size="' + size + '" data-selected="' + (hasQty ? 'true' : 'false') + '"></div>');
         box.html('<label class="size-quantity__label size-name-p3" for="quantity-' + size + '">' + size + '</label>' +
             (stock ? '<div class="size-stock-p3">Stock: <strong>' + stock + '</strong></div>' : '') +
             '<div class="size-quantity__counter qty-controls">' +
-            '<button type="button" class="size-quantity__button qty-btn minus" data-action="decrease" data-size="' + size + '" aria-label="Remove one ' + size + '" disabled>−</button>' +
-            '<input type="number" class="size-quantity__input qty-input" id="quantity-' + size + '" data-size="' + size + '" value="0" min="0" max="9999" step="1" inputmode="numeric" aria-label="Quantity for size ' + size + '">' +
+            '<button type="button" class="size-quantity__button qty-btn minus" data-action="decrease" data-size="' + size + '" aria-label="Remove one ' + size + '"' + (hasQty ? '' : ' disabled') + '>−</button>' +
+            '<input type="number" class="size-quantity__input qty-input" id="quantity-' + size + '" data-size="' + size + '" value="' + qty + '" min="0" max="9999" step="1" inputmode="numeric" aria-label="Quantity for size ' + size + '">' +
             '<button type="button" class="size-quantity__button qty-btn plus" data-action="increase" data-size="' + size + '" aria-label="Add one ' + size + '">+</button>' +
             '</div>');
         grid.append(box);
     });
+
+    // Keep only sizes that still exist on this product (colour change may drop some).
+    window.quantities = restoredQuantities;
+    updateP3TierHighlight();
+    updateP3QuantitySummary();
 
     initP3SizeScrollAffordance();
 }

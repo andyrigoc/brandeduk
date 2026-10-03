@@ -462,6 +462,13 @@
         if (typeof window.goToPage === 'function') {
             window.goToPage(0);
         }
+
+        // Fresh popup session AFTER goToPage so a leftover page-3 DOM cannot
+        // re-sync old qtys. In-session BACK/forward still restores via
+        // window.quantities; same-product partial→full reload keeps qty
+        // because setupProductSizes only resets on product change.
+        window.quantities = {};
+        window._orderQtyProductKey = '';
         
         // Load partial data immediately if available (image, name, price)
         if (productData) {
@@ -1095,10 +1102,22 @@
         gridPage2.empty();
         
         const sizes = product.sizes || ["S", "M", "L", "XL", "2XL", "3XL"];
-        window.quantities = {};
+        // Reset quantities only when the product changes. Same-product reloads
+        // (partial then full data on open) must keep any in-session size qty.
+        const productKey = String((product && (product.code || product.sku)) || '').trim().toUpperCase();
+        const prevKey = String(window._orderQtyProductKey || '').trim().toUpperCase();
+        const productChanged = !productKey || productKey !== prevKey;
+        window._orderQtyProductKey = productKey;
+        if (productChanged) {
+            window.quantities = {};
+        } else {
+            window.quantities = window.quantities || {};
+        }
         
         sizes.forEach(function(size) {
-            window.quantities[size] = 0;
+            if (productChanged || !window.quantities[size]) {
+                window.quantities[size] = window.quantities[size] || 0;
+            }
             
             // Old size box (if old grid exists)
             const box = $(`
