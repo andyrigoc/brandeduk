@@ -5,7 +5,7 @@
   if (window.__brandedContactPopupLoaded) return;
   window.__brandedContactPopupLoaded = true;
 
-  var ASSET_VERSION = '20260927-quoteonly';
+  var ASSET_VERSION = '20261003-consent';
   var scriptSrc = (document.currentScript && document.currentScript.src) || window.location.href;
   var popup = null;
   var overlay = null;
@@ -109,10 +109,12 @@
 
   function showPopup(options) {
     if (!popup) return;
-    var message = options && options.message;
-    if (message) {
+    // When a caller passes message (e.g. ASK FOR QUOTE with Basket share link),
+    // always apply it. Skipping when the field already had leftover text was
+    // dropping the basket URL from both the popup and the submitted email.
+    if (options && Object.prototype.hasOwnProperty.call(options, 'message')) {
       var messageField = document.getElementById('contactMessage');
-      if (messageField && !messageField.value.trim()) messageField.value = message;
+      if (messageField) messageField.value = options.message == null ? '' : String(options.message);
     }
     popup.classList.add('active');
     if (overlay) overlay.classList.add('active');
@@ -141,6 +143,7 @@
   // Close popup
   function closePopup() {
     if (!popup) return;
+    dismissConsentNotice();
     popup.classList.remove('active');
     if (overlay) overlay.classList.remove('active');
     document.body.style.overflow = '';
@@ -198,6 +201,51 @@
     boot();
   }
   
+  function dismissConsentNotice() {
+    var notice = document.getElementById('popupContactConsentNotice');
+    if (notice && notice.parentNode) notice.parentNode.removeChild(notice);
+  }
+
+  // Small in-popup notice when the Agree checkbox is unchecked.
+  function showConsentNotice() {
+    dismissConsentNotice();
+    var host = popup || document.getElementById('popupContact') || document.body;
+    var notice = document.createElement('div');
+    notice.id = 'popupContactConsentNotice';
+    notice.className = 'popup-contact__notice';
+    notice.setAttribute('role', 'alertdialog');
+    notice.setAttribute('aria-modal', 'true');
+    notice.setAttribute('aria-labelledby', 'popupContactConsentNoticeTitle');
+    notice.innerHTML =
+      '<div class="popup-contact__notice-card">' +
+        '<p class="popup-contact__notice-title" id="popupContactConsentNoticeTitle">Please confirm we can contact you</p>' +
+        '<p class="popup-contact__notice-text">Tick “I agree to be contacted about my enquiry” before sending your message.</p>' +
+        '<button type="button" class="popup-contact__notice-ok" id="popupContactConsentNoticeOk">OK</button>' +
+      '</div>';
+    host.appendChild(notice);
+
+    var consent = document.getElementById('contactConsent');
+    if (consent) {
+      var label = consent.closest('.popup-contact__consent');
+      if (label) label.classList.add('popup-contact__consent--highlight');
+      try { consent.focus(); } catch (error) { /* ignore */ }
+    }
+
+    function closeNotice() {
+      dismissConsentNotice();
+      if (consent) {
+        var label = consent.closest('.popup-contact__consent');
+        if (label) label.classList.remove('popup-contact__consent--highlight');
+      }
+    }
+
+    var okBtn = document.getElementById('popupContactConsentNoticeOk');
+    if (okBtn) okBtn.addEventListener('click', closeNotice);
+    notice.addEventListener('click', function (event) {
+      if (event.target === notice) closeNotice();
+    });
+  }
+
   // Form submit handler
   function bindForm(form) {
     form.addEventListener('submit', async function(e) {
@@ -215,6 +263,7 @@
       var interest = document.getElementById('contactInterest')?.value || '';
       var phone = document.getElementById('contactPhone')?.value.trim() || '';
       var message = document.getElementById('contactMessage')?.value.trim();
+      var consent = document.getElementById('contactConsent');
       
       // Desktop-only fields (may not exist on mobile) — phone & post code are optional
       var address = document.getElementById('contactAddress')?.value.trim() || '';
@@ -224,7 +273,7 @@
       // #endregion
       
       // Log form values for debugging
-      console.log('📝 Form values:', { name, email, interest, phone, message, address, postCode });
+      console.log('📝 Form values:', { name, email, interest, phone, message, address, postCode, consent: !!(consent && consent.checked) });
       
       // Required: name, email, message. Interest, phone, and post code are optional.
       if (!name || !email || !message) {
@@ -233,6 +282,12 @@
         if (!email) missingFields.push('Email');
         if (!message) missingFields.push('Message');
         alert('Please fill in all required fields: ' + missingFields.join(', '));
+        return;
+      }
+
+      // Agree checkbox must be ticked before send
+      if (consent && !consent.checked) {
+        showConsentNotice();
         return;
       }
       

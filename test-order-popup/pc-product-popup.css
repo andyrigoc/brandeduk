@@ -3407,18 +3407,28 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-upload-box {
+    position: relative;
     width: 100%;
     margin: 10px 0;
-    padding: 16px 14px;
+    padding: 18px 16px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     border: 0;
-    border-radius: 12px;
-    background: #e5e7eb;
-    color: #111;
+    border-radius: 14px;
+    background: #1c2e65;
+    color: #fff;
     text-align: left;
     cursor: pointer;
+}
+
+#orderPopup .page-4 .p4-upload-box::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1.5px dashed rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+    pointer-events: none;
 }
 
 #orderPopup .page-4 .p4-upload-icon {
@@ -3427,9 +3437,9 @@ body.popup-open {
     height: 36px;
     display: grid;
     place-items: center;
-    border: 2px solid #111;
+    border: 2px solid rgba(255, 255, 255, 0.9);
     border-radius: 50%;
-    color: #111;
+    color: #fff;
     font-size: 18px;
     line-height: 1;
 }
@@ -3443,22 +3453,22 @@ body.popup-open {
 
 #orderPopup .page-4 .p4-upload-copy strong {
     font-size: 15px;
-    color: #111;
+    color: #fff;
 }
 
 #orderPopup .page-4 .p4-upload-copy span {
     font-size: 12px;
     line-height: 1.3;
-    color: #111;
+    color: #fff;
 }
 
 #orderPopup .page-4 .p4-upload-box em {
     flex: 0 0 auto;
     margin-left: auto;
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-radius: 8px;
-    background: #f97316;
-    color: #fff;
+    background: #fff;
+    color: #1c2e65;
     font-style: normal;
     font-weight: 700;
 }

@@ -211,7 +211,7 @@
     });
     if (loaded) return;
     var script = document.createElement('script');
-    script.src = new URL('../js/popup-contact.js?v=20260927-quoteonly', footerScriptUrl).href;
+    script.src = new URL('../js/popup-contact.js?v=20261003-consent', footerScriptUrl).href;
     document.body.appendChild(script);
   }
 

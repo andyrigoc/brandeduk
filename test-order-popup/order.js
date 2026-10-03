@@ -2053,8 +2053,8 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     p4OpenFilePicker(card.dataset.position, method);
 });
 
-// PAGE 4: Save the current state before opening the basket.
-$(document).on('click', '#btnP4Next, #p4ViewBasket', function() {
+// PAGE 4 header: Save state then open the basket.
+$(document).on('click', '#btnP4Next', function() {
     p4SaveLogosToBasket();
     var params = new URLSearchParams(window.location.search);
     if (params.get('basketEmbed') === '1' && window.parent !== window) {
@@ -2062,6 +2062,124 @@ $(document).on('click', '#btnP4Next, #p4ViewBasket', function() {
     } else {
         window.location.href = 'basket.html';
     }
+});
+
+// PAGE 4 sidebar: Ask for quote → save logos, then open site-wide contact/quote popup.
+function p4BuildQuoteMessage() {
+    var product = window.productData || window.currentOrderProduct || {};
+    var name = product.name || 'product';
+    var code = product.code || product.sku || '';
+    var colour = window.selectedColour || '';
+    var qty = 0;
+    try {
+        qty = Object.keys(window.quantities || {}).reduce(function (sum, size) {
+            return sum + (Number(window.quantities[size]) || 0);
+        }, 0);
+    } catch (e) {}
+    if (!qty) {
+        var qtyEl = document.getElementById('p4SumQty');
+        var qtyMatch = qtyEl && (qtyEl.textContent || '').match(/(\d+)/);
+        if (qtyMatch) qty = parseInt(qtyMatch[1], 10) || 0;
+    }
+    var logoCount = Object.keys(window.p4Assignments || {}).length;
+    var parts = ['Hi, I would like a quote for'];
+    if (qty) parts.push(qty + ' x');
+    parts.push(name);
+    var details = [code, colour].filter(Boolean).join(', ');
+    if (details) parts.push('(' + details + ')');
+    var message = parts.join(' ').replace(/\s+/g, ' ').trim() + '.';
+    if (logoCount) message += '\nLogo positions selected: ' + logoCount + '.';
+    else message += '\n(I am still finalising logo / artwork.)';
+    return message;
+}
+
+function p4QuoteShareApiBase() {
+    var resolved = typeof window.resolveBrandedApiBase === 'function'
+        ? window.resolveBrandedApiBase()
+        : (window.API_BASE_URL || 'https://api.brandeduk.com');
+    return String(resolved || 'https://api.brandeduk.com').replace(/\/+$/, '');
+}
+
+function p4BasketShareUrl(token) {
+    // Match basket.html share URLs so staff can open the same shared basket.
+    var local = /^(?:localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname);
+    var pathname = local ? '/brandeduk/basket.html' : '/basket';
+    return window.location.origin + pathname + '?share=' + encodeURIComponent(token);
+}
+
+function p4EnsureQuoteBasketForShare() {
+    var basket = [];
+    try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (e) {}
+    if (basket.length) return basket;
+    // Page 4 can be reached with sizes selected but an empty quoteBasket
+    // (e.g. logos saved without a prior Add to Quote). Re-save sizes first.
+    if (typeof savePage3SelectionToBasket === 'function') {
+        try { savePage3SelectionToBasket(); } catch (e) {}
+        try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (e2) {}
+    }
+    return basket;
+}
+
+async function p4CreateBasketShareUrl() {
+    var basket = p4EnsureQuoteBasketForShare();
+    if (!basket.length) {
+        throw new Error('Basket is empty — add sizes before asking for a quote.');
+    }
+
+    var response = await fetch(p4QuoteShareApiBase() + '/api/basket-shares', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ basket: basket })
+    });
+    var result = await response.json().catch(function () { return {}; });
+    if (!response.ok || !result.success || !result.token) {
+        throw new Error(result.message || 'Unable to share this basket.');
+    }
+    return p4BasketShareUrl(result.token);
+}
+
+function p4OpenQuoteContact(message) {
+    if (typeof window.openContactPopup === 'function') {
+        window.openContactPopup({ message: message });
+        return;
+    }
+    // Fallback: same data-open-contact path used elsewhere on the PC site.
+    var trigger = document.createElement('a');
+    trigger.href = '#';
+    trigger.setAttribute('data-open-contact', '1');
+    trigger.setAttribute('data-contact-message', message);
+    document.body.appendChild(trigger);
+    trigger.click();
+    trigger.remove();
+}
+
+$(document).on('click', '#p4ViewBasket', async function() {
+    var button = this;
+    var originalLabel = button && (button.textContent || '');
+    p4SaveLogosToBasket();
+    var message = p4BuildQuoteMessage();
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'PREPARING…';
+    }
+
+    try {
+        var shareUrl = await p4CreateBasketShareUrl();
+        if (shareUrl) {
+            message += '\n\nBasket: ' + shareUrl;
+        }
+    } catch (error) {
+        // Still open the quote form — staff can request the basket separately.
+        message += '\n\n(Basket link could not be generated right now.)';
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalLabel || 'ASK FOR QUOTE';
+        }
+    }
+
+    p4OpenQuoteContact(message);
 });
 
 // PAGE 4: Skip logo → close popup after saving

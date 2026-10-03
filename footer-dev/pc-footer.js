@@ -115,7 +115,7 @@
     const loaded = Array.from(document.querySelectorAll("script[src]")).some((script) => /\/popup-contact\.js(?:\?|$)/.test(script.src));
     if (loaded || !footerScriptUrl) return;
     const script = document.createElement("script");
-    script.src = new URL("../mobile/js/popup-contact.js?v=20260927-quoteonly", footerScriptUrl).href;
+    script.src = new URL("../mobile/js/popup-contact.js?v=20261003-consent", footerScriptUrl).href;
     document.body.appendChild(script);
   }
 

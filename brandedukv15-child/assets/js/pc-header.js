@@ -233,7 +233,7 @@
             }
             if (typeof window.openContactPopup !== 'function' && !hasAsset('script[src]', 'src', 'popup-contact.js')) {
                 var script = document.createElement('script');
-                script.src = new URL('mobile/js/popup-contact.js?v=20260927-quoteonly', projectRoot).href;
+                script.src = new URL('mobile/js/popup-contact.js?v=20261003-consent', projectRoot).href;
                 script.dataset.pcContactPopup = 'true';
                 document.body.appendChild(script);
             }
@@ -248,7 +248,7 @@
         }
         var link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = new URL('mobile/css/popup-contact.css?v=20260927-quoteonly', projectRoot).href;
+        link.href = new URL('mobile/css/popup-contact.css?v=20261003-consent', projectRoot).href;
         link.dataset.pcHeaderStyle = 'contact';
         link.addEventListener('load', injectMarkup);
         link.addEventListener('error', injectMarkup);
