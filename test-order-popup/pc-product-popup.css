@@ -80,7 +80,7 @@ body.popup-open {
     min-height: 82px;
     padding: 15px 74px 14px 24px;
     display: grid;
-    grid-template-columns: 210px minmax(560px, 1fr) 150px;
+    grid-template-columns: 236px minmax(560px, 1fr) 150px;
     align-items: center;
     gap: 24px;
     flex: 0 0 auto;
@@ -95,8 +95,8 @@ body.popup-open {
     justify-content: center;
     gap: 0;
     min-width: 0;
-    min-height: 50px;
-    padding: 0 24px 0 0;
+    min-height: 56px;
+    padding: 0 20px 0 0;
     border-right: 1px solid var(--pc-flow-line);
 }
 
@@ -108,8 +108,8 @@ body.popup-open {
 }
 
 .pc-product-flow-logo {
-    width: 148px;
-    height: 44px;
+    width: 198px;
+    height: 58px;
     display: block;
     flex: 0 0 auto;
     object-fit: contain;
@@ -387,8 +387,9 @@ body.popup-open {
     height: 260px;
     max-height: 260px;
     padding: 8px;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
-    background: #f7f8fa;
+    background: #ffffff;
 }
 
 #orderPopup .product-main-image img {
@@ -978,7 +979,8 @@ body.popup-open {
 }
 
 #orderPopup .p2-preview-frame {
-    background: #f4f5f7;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 16px;
     padding: 12px;
     display: flex;
@@ -1653,12 +1655,12 @@ body.popup-open {
 }
 
 #orderPopup .page-3 .discount-tier-card {
-    min-height: 102px;
-    padding: 10px 4px 7px;
+    min-height: 72px;
+    padding: 8px 4px 6px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 5px;
+    gap: 4px;
     border: 1px solid #d9e1ed;
     border-radius: 8px;
     background: #fff;
@@ -1666,43 +1668,43 @@ body.popup-open {
 }
 
 #orderPopup .page-3 .discount-tier-card.tier-active {
-    border-color: var(--pc-flow-brand);
-    background: var(--pc-flow-brand);
+    border: 2px solid #9ca3af;
+    background: #f3f4f6;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-qty,
 #orderPopup .page-3 .discount-tier-card .tier-price,
 #orderPopup .page-3 .discount-tier-card .tier-label,
 #orderPopup .page-3 .discount-tier-card .tier-save {
-    color: var(--pc-flow-brand);
+    color: #122961;
 }
 
 #orderPopup .page-3 .discount-tier-card.tier-active .tier-qty,
 #orderPopup .page-3 .discount-tier-card.tier-active .tier-price,
 #orderPopup .page-3 .discount-tier-card.tier-active .tier-label {
-    color: #fff;
+    color: #122961;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-qty {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-price {
-    font-size: 21px;
+    font-size: 16px;
     font-weight: 900;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-label {
-    font-size: 10px;
+    font-size: 9px;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-save {
-    padding: 5px 7px;
+    padding: 2px 6px;
     border-radius: 7px;
     background: #ffc400;
     color: #122961;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 900;
 }
 
@@ -2042,15 +2044,15 @@ body.popup-open {
 
 #orderPopup .discount-tier-card.tier-active {
     transform: none;
-    border-color: var(--pc-flow-accent-dark);
-    background: linear-gradient(135deg, var(--pc-flow-accent), var(--pc-flow-accent-dark));
+    border: 2px solid #9ca3af;
+    background: #f3f4f6;
     box-shadow: none;
 }
 
 #orderPopup .discount-tier-card.tier-active .tier-qty,
 #orderPopup .discount-tier-card.tier-active .tier-pct,
 #orderPopup .discount-tier-card.tier-active .tier-label {
-    color: #fff;
+    color: #122961;
 }
 
 #orderPopup .size-qty-box-p3 {
@@ -2059,10 +2061,15 @@ body.popup-open {
     border-radius: 8px;
 }
 
-#orderPopup .size-qty-box-p3:hover,
+#orderPopup .size-qty-box-p3:hover {
+    border-color: #9baac0;
+    box-shadow: none;
+}
+
 #orderPopup .size-qty-box-p3.has-qty {
-    border-color: var(--pc-flow-accent);
-    box-shadow: inset 0 0 0 1px var(--pc-flow-accent);
+    border: 2px solid #6b7280;
+    background: #f3f4f6;
+    box-shadow: none;
 }
 
 #orderPopup .qty-btn {
@@ -2162,15 +2169,16 @@ body.popup-open {
 
 @media (max-width: 1180px) {
     .pc-product-flow-header {
-        grid-template-columns: 195px 1fr;
+        grid-template-columns: 220px 1fr;
     }
 
     .pc-product-flow-brand {
-        padding-right: 18px;
+        padding-right: 16px;
     }
 
     .pc-product-flow-logo {
-        width: 128px;
+        width: 172px;
+        height: 52px;
     }
 
     .pc-product-flow-help {
@@ -2378,10 +2386,10 @@ body.popup-open {
 #orderPopup .page-3 .discount-tier-card {
     display: flex;
     min-width: 0;
-    min-height: 76px;
+    min-height: 64px;
     flex-direction: column;
     justify-content: center;
-    padding: 8px 6px;
+    padding: 6px 5px;
     border: 1px solid #dfe5ed;
     border-radius: 8px;
     background: #fff;
@@ -2389,7 +2397,7 @@ body.popup-open {
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-qty {
-    margin: 0 0 3px;
+    margin: 0 0 2px;
     font-size: 10px;
     letter-spacing: .02em;
 }
@@ -2397,32 +2405,32 @@ body.popup-open {
 #orderPopup .page-3 .discount-tier-card .tier-price {
     margin: 0;
     color: #202939;
-    font-size: 18px;
+    font-size: 15px;
     line-height: 1.15;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-label {
-    margin: 2px 0 0;
+    margin: 1px 0 0;
     font-size: 9px;
 }
 
 #orderPopup .page-3 .discount-tier-card .tier-save {
-    margin: 3px 0 0;
+    margin: 2px 0 0;
     color: #667085;
-    font-size: 10px;
+    font-size: 9px;
     line-height: 1.1;
 }
 
 #orderPopup .page-3 .discount-tier-card.tier-active {
     transform: none;
-    border-color: var(--pc-flow-brand);
-    background: var(--pc-flow-brand);
-    box-shadow: 0 3px 8px rgba(39, 52, 105, .16);
+    border: 2px solid #9ca3af;
+    background: #f3f4f6;
+    box-shadow: none;
 }
 
 #orderPopup .page-3 .discount-tier-card.tier-active .tier-price,
 #orderPopup .page-3 .discount-tier-card.tier-active .tier-save {
-    color: #fff;
+    color: #122961;
 }
 
 #orderPopup .page-3 #sizeQtyGridP3,
@@ -2457,8 +2465,8 @@ body.popup-open {
 #orderPopup .page-3 .size-qty-box-p3.has-qty,
 #orderPopup .page-3 .size-quantity__row[data-selected="true"],
 #orderPopup .page-3 .size-qty-box-p3.has-qty:hover {
-    border-color: color-mix(in srgb, var(--pc-selected-colour, #64748b) 48%, #cbd5e1);
-    background: color-mix(in srgb, var(--pc-selected-colour, #64748b) 12%, #fff);
+    border: 2px solid #6b7280;
+    background: #f3f4f6;
     box-shadow: none;
 }
 
@@ -2791,8 +2799,8 @@ body.popup-open {
     }
 
     #orderPopup .pc-product-flow-logo {
-        width: 120px;
-        height: 32px;
+        width: 160px;
+        height: 46px;
     }
 
     #orderPopup .pc-flow-page-nav {
@@ -3034,8 +3042,9 @@ body.popup-open {
     min-height: 168px;
     margin-bottom: 12px;
     padding: 10px;
+    border: 1px solid #d1d5db;
     border-radius: 16px;
-    background: #f4f5f7;
+    background: #ffffff;
 }
 
 #orderPopup .page-4 .p4-preview-frame img {
@@ -3725,7 +3734,7 @@ body.popup-open {
     gap: 28px;
     min-height: 0;
     flex: 1 1 auto;
-    padding: 8px 24px 10px;
+    padding: 8px 24px 14px;
     overflow: hidden;
 }
 
@@ -3778,8 +3787,9 @@ body.popup-open {
     min-height: 260px;
     flex: 1 1 auto;
     padding: 12px;
+    border: 2px solid #9ca3af;
     border-radius: 16px;
-    background: #f4f5f7;
+    background: #fff;
 }
 
 #orderPopup .page-3 .p3-choose-qty #p3ProductImage {
@@ -3813,7 +3823,7 @@ body.popup-open {
     grid-row: auto;
     min-height: 0;
     margin: 0;
-    padding: 8px 0 0;
+    padding: 8px 0 18px;
     overflow: auto;
     border: 0;
     border-radius: 0;
@@ -3821,7 +3831,7 @@ body.popup-open {
     box-shadow: none;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
 }
 
 #orderPopup .page-3 .p3-from-price {
@@ -3856,6 +3866,14 @@ body.popup-open {
     box-shadow: none;
 }
 
+#orderPopup .page-3 .p3-choose-qty .size-qty-box-p3.has-qty,
+#orderPopup .page-3 .p3-choose-qty .size-quantity__row[data-selected="true"],
+#orderPopup .page-3 .p3-choose-qty .size-qty-box-p3.has-qty:hover {
+    border: 2px solid #6b7280;
+    background: #f3f4f6;
+    box-shadow: none;
+}
+
 #orderPopup .page-3 .p3-choose-qty .size-name-p3,
 #orderPopup .page-3 .p3-choose-qty .size-quantity__label {
     margin: 0;
@@ -3869,39 +3887,50 @@ body.popup-open {
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
+    flex: 0 0 auto;
 }
 
 #orderPopup .page-3 .p3-volume-head h3 {
     margin: 0;
     color: #111827;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
 }
 
 #orderPopup .page-3 .p3-volume-head span {
     color: #6b7280;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tiers {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 8px;
+    gap: 6px;
     margin: 0;
+    margin-top: 0;
+    padding-bottom: 6px;
+    flex: 0 0 auto;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card {
     position: relative;
-    min-height: 96px;
-    padding: 14px 10px 12px;
-    border: 1px solid #e8edf4;
-    border-radius: 12px;
+    min-height: 0;
+    padding: 7px 5px 6px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
     background: #fff;
     box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
 }
 
+#orderPopup .page-3 .p3-choose-qty .discount-tier-card::before,
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card::after {
     content: none;
+    display: none;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card .tier-qty,
@@ -3912,80 +3941,69 @@ body.popup-open {
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card .tier-qty {
-    font-size: 12px;
-    font-weight: 600;
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.15;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card .tier-price {
-    font-size: 20px;
+    margin: 0;
+    font-size: 15px;
     font-weight: 800;
+    line-height: 1.15;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card .tier-label {
-    font-size: 11px;
+    margin: 0;
+    color: #9ca3af;
+    font-size: 9px;
     font-weight: 500;
+    line-height: 1.1;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card .tier-save {
-    margin-top: 4px;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    font-size: 11px;
-    font-weight: 700;
+    display: inline-block;
+    margin-top: 3px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #fbbf24;
+    color: #122961;
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: nowrap;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active {
-    border-color: #f97316;
-    background: #f97316;
+    border: 2px solid #9ca3af;
+    background: #f3f4f6;
 }
 
-#orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active::before {
-    content: '';
-    position: absolute;
-    inset: 0.65mm;
-    z-index: 0;
-    border: 0.6mm solid #fff;
-    border-radius: calc(12px - 0.65mm);
-    pointer-events: none;
+#orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active::before,
+#orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active::after {
+    content: none;
+    display: none;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active .tier-qty,
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active .tier-price,
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active .tier-label {
-    color: #fff;
+    color: #122961;
 }
 
 #orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active .tier-save {
     position: relative;
     z-index: 1;
     display: inline-block;
-    margin-top: 6px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: #fff;
+    margin-top: 3px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #fbbf24;
     color: #122961;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: 800;
-}
-
-#orderPopup .page-3 .p3-choose-qty .discount-tier-card.tier-active::after {
-    content: '\2713';
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 2;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #fff;
-    color: #f97316;
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1;
+    line-height: 1.15;
 }
 
 #orderPopup .page-3 .p3-choose-qty .p3-bottom-bar,
@@ -4064,6 +4082,10 @@ body.popup-open {
     grid-column: 2 !important;
     grid-row: 1 !important;
     height: auto !important;
+    max-height: 100%;
+    min-height: 0 !important;
+    overflow: auto !important;
+    padding-bottom: 18px !important;
 }
 
 #orderPopup .page-3 .p3-choose-qty .p3-preview-header {
@@ -4104,6 +4126,8 @@ body.popup-open {
     height: 220px;
     min-height: 0;
     overflow: hidden;
+    border: 2px solid #9ca3af;
+    background: #fff;
 }
 
 #orderPopup .page-3 .p3-choose-qty #p3ProductImage {
@@ -4152,6 +4176,19 @@ body.popup-open {
     border: 0;
     object-fit: contain;
     background: transparent;
+    transform: scale(1);
+    transform-origin: center center;
+}
+
+/* Soft-shrink: drop settles from the +20% grab size into the under-shirt slot. */
+#orderPopup .page-4 .p4-logo-under img.is-soft-shrinking {
+    transform: scale(1.2);
+    transition: none;
+}
+
+#orderPopup .page-4 .p4-logo-under img.is-soft-shrinking.is-settled {
+    transform: scale(1);
+    transition: transform 0.45s ease;
 }
 
 #orderPopup .page-4 .p4-logo-remove {

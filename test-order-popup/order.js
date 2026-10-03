@@ -577,6 +577,7 @@ function fillPage4Summary() {
     $('#p4SumInc').text(money(ex + vat));
     p4ReadLibrary();
     p4RenderPreviousLogos();
+    if (Object.keys(window.p4Assignments || {}).length) p4UpdateSummary();
     loadPage4PositionImages(product);
 }
 
@@ -723,13 +724,16 @@ function p4PaintPrintButtons() {
 }
 
 function page4PositionCard(product, position) {
-    var slug = String(position.slug || position.label || '').replace(/"/g, '');
+    var label = String(position.label || position.slug || '').replace(/</g, '');
+    var slug = page4NormalizePositionKey(position.slug || position.label || '') || String(position.slug || position.label || '').replace(/"/g, '');
     var methods = page4AllowedMethods(product, position);
     var embroideryPrice = methods.embroidery.price != null ? methods.embroidery.price.toFixed(2) : '0';
     var printPrice = methods.print.price != null ? methods.print.price.toFixed(2) : '0';
-    return '<div class="position-card" data-position="' + slug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '">' +
-        '<div class="position-preview"><img class="position-placeholder" alt=""></div>' +
-        '<div class="position-card-header"><label class="position-checkbox"><input type="checkbox" name="p4position" value="' + slug + '"><span></span></label></div>' +
+    var safeSlug = String(slug).replace(/"/g, '');
+    var safeLabel = label.replace(/"/g, '&quot;');
+    return '<div class="position-card" data-position="' + safeSlug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '">' +
+        '<div class="position-preview"><img class="position-placeholder" alt="' + safeLabel + '"></div>' +
+        '<div class="position-card-header"><label class="position-checkbox"><input type="checkbox" name="p4position" value="' + safeSlug + '"><span>' + label.replace(/</g, '') + '</span></label></div>' +
         '<div class="position-prices">' + page4MethodButton('embroidery', methods.embroidery) + page4MethodButton('print', methods.print) + '</div>' +
         '<div class="p4-logo-under" hidden><img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button></div></div>';
 }
@@ -892,7 +896,19 @@ function page4FetchCustomizationConfig(target) {
 
 function page4ApiPositionImage(position) {
     var remote = String((position && (position.imageUrl || position.image_url)) || '').trim();
-    return /\/uploads\/customization\//i.test(remote) ? remote : '';
+    if (!/\/uploads\/customization\//i.test(remote)) return '';
+    if (/^(https?:|data:|blob:)/i.test(remote)) return remote;
+    var bases = page4ApiBases();
+    var base = bases.length ? bases[bases.length - 1] : 'https://api.brandeduk.com';
+    // Prefer the public API host for absolute asset URLs; localhost proxy may not serve uploads.
+    for (var i = 0; i < bases.length; i += 1) {
+        if (/api\.brandeduk\.com/i.test(bases[i])) {
+            base = bases[i];
+            break;
+        }
+    }
+    if (remote.charAt(0) === '/') return base.replace(/\/+$/, '') + remote;
+    return base.replace(/\/+$/, '') + '/' + remote;
 }
 
 function page4ApplyApiImagesToCards(product, positions) {
@@ -922,12 +938,24 @@ function page4ApplyApiImagesToCards(product, positions) {
     });
 }
 
+function p4ReapplyAssignedLogos() {
+    Object.keys(window.p4Assignments || {}).forEach(function (pos) {
+        var assignment = window.p4Assignments[pos];
+        if (!assignment || !assignment.dataUrl) return;
+        p4AssignLogo(pos, assignment.dataUrl, assignment.method, assignment.filename, assignment.sourceMethod);
+    });
+    p4RenderPreviousLogos();
+    p4UpdateSummary();
+}
+
 function loadPage4PositionImages(product) {
     var host = document.getElementById('p4PositionOptions');
     if (!host) return;
     var target = customizationConfigTarget(product || {});
     // Always paint fixed local assets first so localhost never shows dead postimg placeholders.
     page4ApplyLocalImagesToCards(product);
+    // Show any restored/selected logos immediately (static cards), then again after API rebuild.
+    p4ReapplyAssignedLogos();
     var requestId = ++page4PositionRequest;
     page4FetchCustomizationConfig(target)
         .then(function (body) {
@@ -938,23 +966,27 @@ function loadPage4PositionImages(product) {
             });
             if (!positions || !positions.length) {
                 page4ApplyLocalImagesToCards(product);
+                p4ReapplyAssignedLogos();
                 return;
             }
+            // Rebuild cards so each position has slug data-position + .p4-logo-under preview slot.
+            host.innerHTML = positions.map(function (position) {
+                return page4PositionCard(product, position);
+            }).join('');
+            p4PaintPrintButtons();
+            page4ApplyLocalImagesToCards(product);
             page4ApplyApiImagesToCards(product, positions);
             p4LoadBackendPrices().then(function () {
+                if (requestId !== page4PositionRequest) return;
                 p4ApplyBackendPricesToCards();
                 p4PaintPrintButtons();
-                Object.keys(window.p4Assignments || {}).forEach(function (pos) {
-                    var assignment = window.p4Assignments[pos];
-                    p4AssignLogo(pos, assignment.dataUrl, assignment.method, assignment.filename, assignment.sourceMethod);
-                });
-                p4RenderPreviousLogos();
-                p4UpdateSummary();
+                p4ReapplyAssignedLogos();
             });
         })
         .catch(function () {
             if (requestId !== page4PositionRequest) return;
             page4ApplyLocalImagesToCards(product);
+            p4ReapplyAssignedLogos();
         });
 }
 
@@ -1008,8 +1040,9 @@ function p4RememberLogo(src, method, filename, sourceMethod) {
 function p4CreateDragPreview(image) {
     if (!image || !image.complete || !image.naturalWidth || !image.naturalHeight) return null;
     var rect = image.getBoundingClientRect();
-    var width = Math.max(1, Math.round((rect.width || 64) * 1.25));
-    var height = Math.max(1, Math.round((rect.height || 64) * 1.25));
+    // Grab feedback: +20% so the user immediately sees they picked it up.
+    var width = Math.max(1, Math.round((rect.width || 64) * 1.2));
+    var height = Math.max(1, Math.round((rect.height || 64) * 1.2));
     var pixelRatio = window.devicePixelRatio || 1;
     var canvas = document.createElement('canvas');
     canvas.width = Math.round(width * pixelRatio);
@@ -1079,9 +1112,14 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         if (!dragState.dragging) {
             if (Math.hypot(dx, dy) < dragThreshold) return;
             dragState.dragging = true;
+            window.p4PendingSoftShrink = true;
             document.body.classList.add('bu-logo-touch-dragging');
+            // Touch ghost starts at +20% so grab feedback matches mouse DnD.
+            var ghostSize = 110;
+            var ghostHalf = ghostSize / 2;
+            dragState.ghostHalf = ghostHalf;
             dragState.ghost = document.createElement('div');
-            dragState.ghost.style.cssText = 'position:fixed;left:0;top:0;width:110px;height:110px;z-index:2147483646;pointer-events:none;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 10px 24px rgba(37,99,235,.28);display:grid;place-items:center;padding:8px;box-sizing:border-box;';
+            dragState.ghost.style.cssText = 'position:fixed;left:0;top:0;width:' + ghostSize + 'px;height:' + ghostSize + 'px;z-index:2147483646;pointer-events:none;border:2px solid #2563eb;border-radius:10px;background:#fff;box-shadow:0 10px 24px rgba(37,99,235,.28);display:grid;place-items:center;padding:8px;box-sizing:border-box;transform:translate(-9999px,-9999px) scale(1.2);transform-origin:center center;';
             var img = document.createElement('img');
             img.src = logoSrc;
             img.alt = '';
@@ -1092,7 +1130,8 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
             button.classList.add('is-dragging');
         }
         event.preventDefault();
-        dragState.ghost.style.transform = 'translate(' + (event.clientX - 55) + 'px,' + (event.clientY - 55) + 'px)';
+        var half = dragState.ghostHalf || 55;
+        dragState.ghost.style.transform = 'translate(' + (event.clientX - half) + 'px,' + (event.clientY - half) + 'px) scale(1.2)';
         clearCards();
         dragState.card = hitCard(event.clientX, event.clientY);
         if (dragState.card) dragState.card.classList.add('is-drop-ready');
@@ -1107,7 +1146,12 @@ function p4EnableLogoGalleryMouseDrag(button, logoSrc, sourceMethod, onDragStart
         if (wasDragging) {
             event.preventDefault();
             event.stopPropagation();
-            if (card) p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+            if (card) {
+                window.p4PendingSoftShrink = true;
+                p4ApplyDroppedLogo(card, logoSrc, '', '', sourceMethod);
+            } else {
+                window.p4PendingSoftShrink = false;
+            }
             return;
         }
         // Tap / long-press without drag → select logo (stay on Customise).
@@ -1177,6 +1221,7 @@ function p4RenderPreviousLogos() {
             event.dataTransfer.setData('application/x-brandeduk-source-method', button.dataset.sourceMethod);
             event.dataTransfer.setData('text/plain', 'brandeduk-logo');
             event.dataTransfer.effectAllowed = 'copy';
+            window.p4PendingSoftShrink = true;
             var dragPreview = p4CreateDragPreview(button.querySelector('img'));
             if (dragPreview) {
                 event.dataTransfer.setDragImage(dragPreview.element, dragPreview.width / 2, dragPreview.height / 2);
@@ -1188,6 +1233,11 @@ function p4RenderPreviousLogos() {
             button.classList.remove('is-dragging');
             document.querySelectorAll('#p4PositionOptions .position-card.is-drop-ready')
                 .forEach(function (card) { card.classList.remove('is-drop-ready'); });
+            // Drop runs before dragend; if settle already consumed the flag, leave it.
+            // If the drag was cancelled mid-air, clear so the next show is static.
+            window.setTimeout(function () {
+                if (window.p4PendingSoftShrink) window.p4PendingSoftShrink = false;
+            }, 0);
         });
         button.addEventListener('click', function (event) {
             if (event.target.closest('.p4-previous-remove')) {
@@ -1202,26 +1252,112 @@ function p4RenderPreviousLogos() {
     });
 }
 
+function p4FindPositionCard(position) {
+    if (!position) return null;
+    var host = document.getElementById('p4PositionOptions');
+    if (!host) return null;
+    var raw = String(position).replace(/"/g, '');
+    var exact = host.querySelector('.position-card[data-position="' + raw + '"]');
+    if (exact) return exact;
+    var want = page4NormalizePositionKey(position);
+    if (!want) return null;
+    var cards = host.querySelectorAll('.position-card');
+    for (var i = 0; i < cards.length; i += 1) {
+        var card = cards[i];
+        var key = page4NormalizePositionKey(card.getAttribute('data-position') || '');
+        var labelEl = card.querySelector('.position-checkbox span');
+        if (!key && labelEl) key = page4NormalizePositionKey(labelEl.textContent || '');
+        if (key === want) return card;
+    }
+    return null;
+}
+
+function p4EnsureLogoUnder(card) {
+    if (!card) return null;
+    var under = card.querySelector('.p4-logo-under');
+    if (under) return under;
+    under = document.createElement('div');
+    under.className = 'p4-logo-under';
+    under.hidden = true;
+    under.innerHTML = '<img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button>';
+    card.appendChild(under);
+    return under;
+}
+
+function p4SoftShrinkLogoUnder(img) {
+    if (!img) return;
+    img.classList.remove('is-soft-shrinking', 'is-settled');
+    // Force reflow so the 1.2 → 1 transition always restarts after card rebuilds.
+    void img.offsetWidth;
+    img.classList.add('is-soft-shrinking');
+    window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+            img.classList.add('is-settled');
+        });
+    });
+    window.setTimeout(function () {
+        img.classList.remove('is-soft-shrinking', 'is-settled');
+    }, 520);
+}
+
+function p4ShowCardLogoPreview(card, src, softShrink) {
+    if (!card || !src) return;
+    var under = p4EnsureLogoUnder(card);
+    var img = under && under.querySelector('img');
+    var shouldSoftShrink = softShrink === true || window.p4PendingSoftShrink === true;
+    if (shouldSoftShrink) window.p4PendingSoftShrink = false;
+    if (img) img.src = src;
+    if (under) under.hidden = false;
+    if (img && shouldSoftShrink) p4SoftShrinkLogoUnder(img);
+    var thumb = card.querySelector('.uploaded-logo-thumb');
+    var box = card.querySelector('.uploaded-logo-container');
+    if (thumb) thumb.src = src;
+    if (box) {
+        box.hidden = false;
+        box.removeAttribute('hidden');
+        box.style.display = '';
+    }
+}
+
+function p4HideCardLogoPreview(card) {
+    if (!card) return;
+    var under = card.querySelector('.p4-logo-under');
+    if (under) under.hidden = true;
+    var box = card.querySelector('.uploaded-logo-container');
+    if (box) {
+        box.hidden = true;
+        box.setAttribute('hidden', '');
+    }
+}
+
 function p4AssignLogo(position, src, method, filename, sourceMethod) {
     if (!position || !src) return;
-    var cardForPrice = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
-    var unitPrice = p4MethodUnitPrice(method, cardForPrice ? cardForPrice.getAttribute('data-' + method) : 0);
-    window.p4Assignments[position] = {
+    var key = page4NormalizePositionKey(position) || String(position);
+    var card = p4FindPositionCard(position);
+    var unitPrice = p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0);
+    // Keep a single normalized key so basket restore (left-chest) matches live cards.
+    if (window.p4Assignments[position] && position !== key) delete window.p4Assignments[position];
+    window.p4Assignments[key] = {
         dataUrl: src,
         method: method,
         sourceMethod: String(sourceMethod || method || '').toLowerCase(),
         filename: filename || '',
         unitPrice: unitPrice
     };
-    var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
-    if (!card) return;
+    if (!card) {
+        p4UpdateSummary();
+        p4SaveLogosToBasket();
+        p4ResetConfirmState();
+        return;
+    }
+    if (card.dataset.position !== key) card.dataset.position = key;
     card.classList.add('selected', 'has-logo');
     var box = card.querySelector('input[type="checkbox"]');
-    if (box) box.checked = true;
-    var under = card.querySelector('.p4-logo-under img');
-    if (under) under.src = src;
-    var preview = card.querySelector('.p4-logo-under');
-    if (preview) preview.hidden = false;
+    if (box) {
+        box.checked = true;
+        box.value = key;
+    }
+    p4ShowCardLogoPreview(card, src);
     p4ApplyMethodUI(card, method);
     p4UpdateSummary();
     p4SaveLogosToBasket();
@@ -1229,14 +1365,20 @@ function p4AssignLogo(position, src, method, filename, sourceMethod) {
 }
 
 function p4ClearCardLogo(position) {
+    var key = page4NormalizePositionKey(position) || String(position);
     delete window.p4Assignments[position];
-    var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + position + '"]');
-    if (!card) return;
+    delete window.p4Assignments[key];
+    var card = p4FindPositionCard(position);
+    if (!card) {
+        p4UpdateSummary();
+        p4SaveLogosToBasket();
+        p4ResetConfirmState();
+        return;
+    }
     card.classList.remove('has-logo', 'selected');
     var box = card.querySelector('input[type="checkbox"]');
     if (box) box.checked = false;
-    var preview = card.querySelector('.p4-logo-under');
-    if (preview) preview.hidden = true;
+    p4HideCardLogoPreview(card);
     p4ResetBadge(card.querySelector('.price-emb'));
     p4ResetBadge(card.querySelector('.price-print'));
     p4UpdateSummary();
@@ -1365,7 +1507,7 @@ function p4UpdateSummary() {
     var logoUnit = 0;
     Object.keys(window.p4Assignments || {}).forEach(function (pos) {
         var assignment = window.p4Assignments[pos];
-        var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + pos + '"]');
+        var card = p4FindPositionCard(pos);
         var fallback = card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0;
         logoUnit += assignment.unitPrice != null ? Number(assignment.unitPrice) : p4MethodUnitPrice(assignment.method, fallback);
     });
@@ -1431,15 +1573,25 @@ function p4ShowMethodPopup(card, src, filename, sourceMethod) {
         });
         choices.appendChild(button);
     });
-    overlay.querySelector('.p4-method-cancel').addEventListener('click', function () { overlay.remove(); });
+    function cancelMethodChoice() {
+        overlay.remove();
+        var key = page4NormalizePositionKey(card.dataset.position) || card.dataset.position;
+        if (!window.p4Assignments[key] && !window.p4Assignments[card.dataset.position]) {
+            p4HideCardLogoPreview(card);
+        }
+    }
+    overlay.querySelector('.p4-method-cancel').addEventListener('click', cancelMethodChoice);
     overlay.addEventListener('click', function (event) {
-        if (event.target === overlay) overlay.remove();
+        if (event.target === overlay) cancelMethodChoice();
     });
     document.body.appendChild(overlay);
 }
 
 function p4ApplyDroppedLogo(card, src, method, filename, sourceMethod) {
     if (!card || !src) return;
+    // Drop settle: soft-shrink from the +20% grab size into .p4-logo-under.
+    window.p4PendingSoftShrink = true;
+    p4ShowCardLogoPreview(card, src, true);
     if (method) {
         p4AssignLogo(card.dataset.position, src, p4CardMethod(card, method), filename || '', sourceMethod || method);
         return;
@@ -1483,15 +1635,17 @@ function p4SaveLogosToBasket() {
     try { basket = JSON.parse(localStorage.getItem('quoteBasket') || '[]'); } catch (error) {}
     var logos = Object.keys(window.p4Assignments || {}).map(function (pos) {
         var assignment = window.p4Assignments[pos];
-        var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + pos + '"]');
+        var card = p4FindPositionCard(pos);
         var price = assignment.unitPrice != null
             ? Number(assignment.unitPrice)
             : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0);
+        var labelEl = card && card.querySelector('.position-checkbox span');
+        var positionLabel = (labelEl && labelEl.textContent) || String(pos).replace(/-/g, ' ');
         return {
             method: assignment.method,
             sourceMethod: assignment.sourceMethod || assignment.method,
-            position: pos,
-            positionLabel: pos.replace(/-/g, ' '),
+            position: page4NormalizePositionKey(pos) || pos,
+            positionLabel: positionLabel,
             logo: assignment.dataUrl,
             notes: notes,
             unitPrice: price,
@@ -1606,7 +1760,8 @@ $(document).on('drop', '#p4PositionOptions .position-card', function (e) {
     // included, always opens the Embroidery / Print choice.
     if (/^(data:|blob:|https?:\/\/)/i.test(saved)) {
         p4RememberLogo(saved, sourceMethod || '', '', sourceMethod || '');
-        p4ShowMethodPopup(card, saved, '', sourceMethod || '');
+        window.p4PendingSoftShrink = true;
+        p4ApplyDroppedLogo(card, saved, '', '', sourceMethod || '');
         return;
     }
     if (!file) return;
