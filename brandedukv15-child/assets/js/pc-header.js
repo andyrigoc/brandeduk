@@ -64,8 +64,8 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261002-noborder', assetsRoot).href, 'standard');
-        addStylesheet(new URL('css/components/pc-search.css?v=20261003-suggest1', assetsRoot).href, 'search');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261005-searchoverflow', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-search.css?v=20261005-searchgrid2', assetsRoot).href, 'search');
     }
 
     function resolveTemplateUrls(root) {
@@ -281,7 +281,7 @@
     function loadPcSearch() {
         if (window.BrandedPcSearchInitialized || document.querySelector('script[data-pc-search]')) return;
         var script = document.createElement('script');
-        script.src = new URL('js/pc-search.js?v=20261003-suggest1', assetsRoot).href;
+        script.src = new URL('js/pc-search.js?v=20261005-searchgrid2', assetsRoot).href;
         script.dataset.pcSearch = 'true';
         document.head.appendChild(script);
     }

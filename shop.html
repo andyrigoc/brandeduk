@@ -3266,10 +3266,8 @@
             q = q.replace(/\bsports?[\s\-]?kit\b/gi,  'sports-teamwear'); // sports kit
 
             // â”€â”€ Bags â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            q = q.replace(/\bback[\s\-]?packs?\b/gi,  'bags'); // backpack
-            q = q.replace(/\btote[\s\-]?bags?\b/gi,   'bags'); // tote bag
-            q = q.replace(/\bholdalls?\b/gi,           'bags'); // holdall
-            q = q.replace(/\bduffel[\s\-]?bags?\b/gi,  'bags'); // duffel bag
+            // Keep specific bag types (backpack, tote, holdall, duffel) as q= for API
+            // search — rewriting them to "bags" broadened results incorrectly.
 
             // â”€â”€ Chefswear â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             q = q.replace(/\bchef[\s\-]?jackets?\b/gi, 'chefswear'); // chef jacket

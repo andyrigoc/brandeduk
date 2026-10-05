@@ -4729,6 +4729,156 @@ body.bu-logo-touch-dragging #p4PositionOptions .position-card.is-drop-ready {
     cursor: pointer;
 }
 
+/* EMBROIDERY VOA — request path (customer note → staff confirm) */
+#orderPopup .page-4 .price-emb-voa {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 28px;
+    margin: 0;
+    padding: 0 8px;
+    border: 0 !important;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #fbbf24, #d97706) !important;
+    color: #1e2749 !important;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 18%);
+    cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+}
+
+#orderPopup .page-4 .price-emb-voa .price-label,
+#orderPopup .page-4 .price-emb-voa .price-value {
+    font-family: Poppins, Inter, sans-serif;
+    font-size: 10px !important;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #1e2749 !important;
+}
+
+#orderPopup .page-4 .price-emb-voa:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 14px rgb(15 23 42 / 28%) !important;
+    filter: brightness(1.08);
+}
+
+#orderPopup .page-4 .price-emb-voa:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 1px 4px rgb(15 23 42 / 22%) !important;
+    filter: brightness(0.96);
+}
+
+#orderPopup .page-4 .price-emb-voa.active {
+    position: relative;
+    z-index: 1;
+    transform: translateY(0) scale(1.04);
+    box-shadow:
+        0 0 0 3px #142456,
+        0 0 0 6px rgb(255 255 255 / 95%),
+        0 8px 18px rgb(15 23 42 / 32%) !important;
+    filter: brightness(1.04);
+}
+
+#p4VoaModal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, .45);
+}
+
+#p4VoaModal .p4-voa-card {
+    width: min(440px, 92vw);
+    padding: 28px 26px 22px;
+    border-radius: 18px;
+    background: #fff;
+    text-align: left;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, .22);
+}
+
+#p4VoaModal .p4-voa-card strong {
+    display: block;
+    font-family: Poppins, Inter, sans-serif;
+    font-size: 20px;
+    letter-spacing: -.025em;
+    color: #111827;
+    text-align: center;
+}
+
+#p4VoaModal .p4-voa-card > p {
+    margin: 10px 0 16px;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.45;
+    text-align: center;
+}
+
+#p4VoaModal .p4-voa-label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: Poppins, Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+}
+
+#p4VoaModal .p4-voa-notes {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 96px;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    font-family: Poppins, Inter, sans-serif;
+    font-size: 14px;
+    color: #111827;
+    resize: vertical;
+}
+
+#p4VoaModal .p4-voa-notes:focus {
+    outline: none;
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+}
+
+#p4VoaModal .p4-voa-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+#p4VoaModal .p4-voa-confirm {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: #f97316;
+    color: #fff;
+    font-family: Poppins, Inter, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#p4VoaModal .p4-voa-confirm:hover {
+    background: #ea6c0a;
+}
+
+#p4VoaModal .p4-voa-cancel {
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    font-size: 14px;
+    cursor: pointer;
+}
+
 /* Tablet rotate hint styles live in:
    brandedukv15-child/assets/css/components/tablet-rotate-hint.css
 */

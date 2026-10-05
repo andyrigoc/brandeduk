@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="mobile/css/social-buttons.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/header.css?v=20261002-logocombo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/promo-bar.css?v=20260425a">
-    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261002-headermail"></script>
+    <script src="brandedukv15-child/assets/js/pc-header-template.js?v=20261005-megafit"></script>
     <script src="brandedukv15-child/assets/js/pc-header.js?v=20261001-basketrail1"></script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" media="(min-width: 700px)">
@@ -854,6 +854,7 @@
         }
         .logo-method-badge--embroidery { color: #7a4d00; background: #ffe29a; }
         .logo-method-badge--print { color: #174ea6; background: #dbeafe; }
+        .logo-method-badge--embroidery-voa { color: #7a4d00; background: #fdba74; }
         .logo-row .logo-row-remove {
             color: var(--basket-orange);
             font-size: 13px;
@@ -4670,13 +4671,25 @@
                             itemSetupTotal += setupCharge;
                         }
                     }
-                    const methodLabel = methodNorm === 'embroidery'
-                        ? 'Embroidery'
-                        : methodNorm === 'dtf'
-                            ? 'DTF Print'
-                            : methodNorm === 'screen'
-                                ? 'Screen Print'
-                                : 'Print';
+                    const methodLabel = methodNorm === 'embroidery-voa'
+                        ? 'Embroidery VOA'
+                        : methodNorm === 'embroidery'
+                            ? 'Embroidery'
+                            : methodNorm === 'dtf'
+                                ? 'DTF Print'
+                                : methodNorm === 'screen'
+                                    ? 'Screen Print'
+                                    : 'Print';
+                    const methodBadgeClass = methodNorm === 'embroidery-voa'
+                        ? 'embroidery-voa'
+                        : methodNorm === 'embroidery'
+                            ? 'embroidery'
+                            : 'print';
+                    const methodBadgeText = methodNorm === 'embroidery-voa'
+                        ? 'VOA'
+                        : methodNorm === 'embroidery'
+                            ? 'EMB'
+                            : 'PRINT';
                     const logoTotal = (logo.unitPrice || 0) * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
@@ -4688,10 +4701,10 @@
                             ${thumbSrc ? `<button type="button" class="${thumbWrapClass} is-zoomable" title="View logo larger" aria-label="View logo larger" onclick="openLogoImagePreview(${index}, ${logoIdx})"><img class="logo-thumb" src="${thumbSrc}" alt="Logo" onerror="this.style.display='none'"></button>` : ''}
                             <div class="logo-info">
                                 <div class="logo-title-line">
-                                    <div class="logo-method-label">${methodLabel}<span class="logo-method-badge logo-method-badge--${methodNorm === 'embroidery' ? 'embroidery' : 'print'}">${methodNorm === 'embroidery' ? 'EMB' : 'PRINT'}</span></div>
+                                    <div class="logo-method-label">${methodLabel}<span class="logo-method-badge logo-method-badge--${methodBadgeClass}">${methodBadgeText}</span></div>
                                     <div class="logo-price">
-                                        <span class="logo-customisation-cost">${formatCurrency(logoTotal)}</span>
-                                        <small>customisation, exc. VAT</small>
+                                        <span class="logo-customisation-cost">${methodNorm === 'embroidery-voa' ? 'On request' : formatCurrency(logoTotal)}</span>
+                                        <small>${methodNorm === 'embroidery-voa' ? 'confirmed after contact' : 'customisation, exc. VAT'}</small>
                                     </div>
                                 </div>
                                 <div class="logo-meta-actions">
@@ -4838,12 +4851,17 @@
     }
 
     function normalizeDecorationMethod(method) {
-        return String(method || '').toLowerCase() === 'embroidery' ? 'embroidery' : 'print';
+        const key = String(method || '').toLowerCase();
+        if (key === 'embroidery' || key === 'embroidery-voa') return 'embroidery';
+        return 'print';
     }
 
     function requiresEmbroiderySetup(logo) {
         // Charge from the placement itself. A print copy of the same artwork
         // must not cancel the one-off setup on the embroidery line.
+        // VOA requests are confirmed after contact — no setup fee until then.
+        const method = String(logo && logo.method || '').toLowerCase();
+        if (method === 'embroidery-voa') return false;
         return normalizeDecorationMethod(logo && logo.method) === 'embroidery';
     }
 

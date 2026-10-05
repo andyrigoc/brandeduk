@@ -64,7 +64,7 @@
           ["DTF Printing", "dtf-printing.html"],
           ["DTG Printing", "dtg-printing.html"],
           ["Artwork Guidelines", "blog/prepare-logo-printing-embroidery.html"],
-          ["Logo Setup & Pricing", "customization.html"]
+          ["Price guide and Logo Set-up", "pricing-guide.html"]
         ]
       },
       {

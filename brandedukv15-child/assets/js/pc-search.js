@@ -94,28 +94,31 @@
         );
     }
 
-    function productRow(product, query) {
+    function productCard(product, query) {
         var code = product.code || product.value || product.style_code || '';
         var name = product.label || product.name || product.product_name || code;
         var brand = product.brand || '';
         var image = product.image || product.main_image || fallbackImage();
-        var price = Number(product.price);
-        var priceHtml = Number.isFinite(price)
-            ? '<span class="pc-search-suggest__price">From <strong>£' + price.toFixed(2) + '</strong> ex. VAT</span>'
+        var priceVal = Number(product.price);
+        var priceHtml = Number.isFinite(priceVal)
+            ? '<span class="pc-search-product__price">From <strong>£' + priceVal.toFixed(2) + '</strong> ex. VAT</span>'
             : '';
+        var brandLine = brand
+            ? escapeHtml(brand) + (code ? ' · ' + escapeHtml(code) : '')
+            : (code ? escapeHtml(code) : '');
 
         if (code) {
             window.BrandedPcProductCache[String(code)] = product;
         }
 
-        return '<a class="pc-search-suggest__item pc-search-suggest__item--product" href="' +
-            escapeHtml(productUrl(code)) + '" data-code="' + escapeHtml(code) + '" role="option">' +
-            '<span class="pc-search-suggest__media"><img src="' + escapeHtml(image) + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'' +
+        return '<a class="pc-search-product" href="' + escapeHtml(productUrl(code)) +
+            '" data-code="' + escapeHtml(code) + '" role="option">' +
+            '<span class="pc-search-product__media"><img src="' + escapeHtml(image) +
+            '" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'' +
             escapeHtml(fallbackImage()) + '\'"></span>' +
-            '<span class="pc-search-suggest__copy">' +
-                '<span class="pc-search-suggest__label">' + highlight(name, query) + '</span>' +
-                (brand ? '<span class="pc-search-suggest__sub">' + escapeHtml(brand) +
-                    (code ? ' · ' + escapeHtml(code) : '') + '</span>' : (code ? '<span class="pc-search-suggest__sub">' + escapeHtml(code) + '</span>' : '')) +
+            '<span class="pc-search-product__copy">' +
+                '<span class="pc-search-product__name">' + highlight(name, query) + '</span>' +
+                (brandLine ? '<span class="pc-search-product__brand">' + brandLine + '</span>' : '') +
                 priceHtml +
             '</span>' +
         '</a>';
@@ -146,27 +149,33 @@
         }
 
         if (brands.length) {
-            html += '<div class="pc-search-suggest__group"><div class="pc-search-suggest__title">Brands</div>';
+            html += '<div class="pc-search-suggest__group">' +
+                '<div class="pc-search-suggest__title">Brands</div>' +
+                '<div class="pc-search-suggest__grid">';
             brands.forEach(function (brand) {
                 html += textRow(brand, brandUrl(brand.value || brand.slug || ''), 'B');
             });
-            html += '</div>';
+            html += '</div></div>';
         }
 
         if (types.length) {
-            html += '<div class="pc-search-suggest__group"><div class="pc-search-suggest__title">Categories</div>';
+            html += '<div class="pc-search-suggest__group">' +
+                '<div class="pc-search-suggest__title">Categories</div>' +
+                '<div class="pc-search-suggest__grid">';
             types.forEach(function (type) {
                 html += textRow(type, typeUrl(type.value || type.slug || ''), 'C');
             });
-            html += '</div>';
+            html += '</div></div>';
         }
 
         if (products.length) {
-            html += '<div class="pc-search-suggest__group"><div class="pc-search-suggest__title">Products</div>';
+            html += '<div class="pc-search-suggest__group pc-search-suggest__group--products">' +
+                '<div class="pc-search-suggest__title">Products</div>' +
+                '<div class="pc-search-grid">';
             products.forEach(function (product) {
-                html += productRow(product, query);
+                html += productCard(product, query);
             });
-            html += '</div>';
+            html += '</div></div>';
         }
 
         html += '<a class="pc-search-suggest__view-all" href="' + escapeHtml(shopUrl(query)) +
@@ -286,7 +295,7 @@
     });
 
     dropdown.addEventListener('click', function (event) {
-        var product = event.target.closest('.pc-search-suggest__item--product');
+        var product = event.target.closest('.pc-search-product');
         if (product && product.dataset.code) {
             sessionStorage.setItem('selectedProduct', product.dataset.code);
             var cachedProduct = window.BrandedPcProductCache[product.dataset.code];

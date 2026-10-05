@@ -56,6 +56,7 @@
                             <li class="bar-menu-item"><a href="/track-order.html">Track Your Order</a></li>
                             <li class="bar-menu-item"><a href="/services.html">Delivery &amp; Lead Times</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html#returns">Returns</a></li>
+                            <li class="bar-menu-item"><a href="/pricing-guide.html">Price guide and Logo Set-up</a></li>
                             <li class="bar-menu-item"><a href="/index-mobile.html?force=mobile#faq">FAQs</a></li>
                         </ul>
                     </div>

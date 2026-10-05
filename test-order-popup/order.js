@@ -817,14 +817,17 @@ function fillPage4Summary() {
 }
 
 var P4_METHOD_RANK = { yes: 0, poa: 1, no: 2 };
+// embroideryVoa: special request path (customer note first; staff confirms — e.g. back embroidery).
 var P4_CATEGORY_METHODS = {
     tshirts: { dtf: 'yes', screen: 'yes', embroidery: 'poa' },
+    'vests-t-shirt': { dtf: 'yes', screen: 'yes', embroidery: 'poa' },
     polos: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
-    sweatshirts: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
+    sweatshirts: { dtf: 'yes', screen: 'yes', embroidery: 'yes', embroideryVoa: 'yes' },
     hoodies: { dtf: 'yes', screen: 'yes', embroidery: 'yes' },
     shirts: { dtf: 'yes', screen: 'poa', embroidery: 'yes' },
-    fleece: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
-    jackets: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
+    fleece: { dtf: 'poa', screen: 'no', embroidery: 'yes', embroideryVoa: 'yes' },
+    softshells: { dtf: 'yes', screen: 'no', embroidery: 'yes', embroideryVoa: 'yes' },
+    jackets: { dtf: 'poa', screen: 'no', embroidery: 'yes', embroideryVoa: 'yes' },
     'gilets-body-warmers': { dtf: 'poa', screen: 'no', embroidery: 'yes' },
     'safety-vests': { dtf: 'yes', screen: 'yes', embroidery: 'poa' },
     trousers: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
@@ -835,6 +838,78 @@ var P4_CATEGORY_METHODS = {
     caps: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
     hats: { dtf: 'poa', screen: 'no', embroidery: 'yes' },
     beanies: { dtf: 'no', screen: 'no', embroidery: 'yes' }
+};
+var P4_EMBROIDERY_VOA_BACK_SLUGS = {
+    'large-back': true,
+    'upper-back': true,
+    back: true,
+    'lower-back': true,
+    'nape-of-neck': true,
+    'centre-back': true,
+    'center-back': true
+};
+
+// Shop/API aliases → customization-config productType slugs (aligned with customization-tool/app.js).
+var P4_PRODUCT_TYPE_ALIASES = {
+    't-shirt': 'tshirts',
+    't-shirts': 'tshirts',
+    tshirt: 'tshirts',
+    tshirts: 'tshirts',
+    tee: 'tshirts',
+    tees: 'tshirts',
+    'vests-t-shirt': 'vests-t-shirt',
+    'vests-tshirt': 'vests-t-shirt',
+    'vests-t-shirts': 'vests-t-shirt',
+    polo: 'polos',
+    polos: 'polos',
+    hoodie: 'hoodies',
+    hoodies: 'hoodies',
+    sweatshirt: 'sweatshirts',
+    sweatshirts: 'sweatshirts',
+    fleece: 'fleece',
+    fleeces: 'fleece',
+    softshell: 'softshells',
+    softshells: 'softshells',
+    'soft-shell': 'softshells',
+    'soft-shells': 'softshells',
+    jacket: 'jackets',
+    jackets: 'jackets',
+    gilet: 'gilets-body-warmers',
+    gilets: 'gilets-body-warmers',
+    bodywarmer: 'gilets-body-warmers',
+    bodywarmers: 'gilets-body-warmers',
+    'body-warmer': 'gilets-body-warmers',
+    'body-warmers': 'gilets-body-warmers',
+    'gilets-body-warmers': 'gilets-body-warmers',
+    'gilets-bodywarmers': 'gilets-body-warmers',
+    'gilets-and-body-warmers': 'gilets-body-warmers',
+    hivis: 'safety-vests',
+    'hi-vis': 'safety-vests',
+    'hi-viz': 'safety-vests',
+    'high-vis': 'safety-vests',
+    'high-viz': 'safety-vests',
+    'safety-vest': 'safety-vests',
+    'safety-vests': 'safety-vests',
+    'safetywear-hivis': 'safety-vests',
+    apron: 'aprons',
+    aprons: 'aprons',
+    bag: 'bags',
+    bags: 'bags',
+    cap: 'caps',
+    caps: 'caps',
+    hat: 'hats',
+    hats: 'hats',
+    beanie: 'beanies',
+    beanies: 'beanies',
+    shirt: 'shirts',
+    shirts: 'shirts',
+    trouser: 'trousers',
+    trousers: 'trousers',
+    short: 'shorts',
+    shorts: 'shorts',
+    sweatpant: 'sweatpants',
+    sweatpants: 'sweatpants',
+    joggers: 'sweatpants'
 };
 var P4_NAME_METHOD_OVERRIDES = [
     { pattern: /premium|heavy|ultra|ring ?spun/i, rules: { embroidery: 'yes' } },
@@ -862,36 +937,149 @@ function p4BetterRule(first, second) {
     return (P4_METHOD_RANK[second] || 0) < (P4_METHOD_RANK[first] || 0) ? second : first;
 }
 
+function page4NormalizeProductTypeSlug(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function page4ResolveExplicitProductTypeSlug(product) {
+    var fields = [product.productType, product.category, product.type];
+    for (var i = 0; i < fields.length; i += 1) {
+        var raw = page4NormalizeProductTypeSlug(fields[i]);
+        if (!raw) continue;
+        if (P4_PRODUCT_TYPE_ALIASES[raw]) return P4_PRODUCT_TYPE_ALIASES[raw];
+        if (P4_CATEGORY_METHODS[raw] || P4_PRODUCT_ASSET_FOLDER[raw]) return raw;
+    }
+    return '';
+}
+
+function page4GiletSubtype(text, hiVis) {
+    if (hiVis) return 'hi-vis-bodywarmer';
+    return /padded|puffer|quilted|insulated/.test(text) ? 'padded' : 'standard';
+}
+
+function page4JacketSubtype(text, hiVis) {
+    if (hiVis) return 'hi-vis-jacket';
+    if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return 'padded-puffer';
+    if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return 'waterproof-parka';
+    if (/bomber/.test(text)) return 'bomber';
+    return 'workwear';
+}
+
 function customizationConfigTarget(product) {
+    product = product || {};
     var text = [product.name, product.productType, product.category, product.type].join(' ').toLowerCase();
-    if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text)) {
+    var hiVis = /\bhi[\s\-_]?vi[sz](?:ibility)?\b|\bhigh[\s\-_]?vi[sz](?:ibility)?\b|\bhivis\b|\bhiviz\b|\bsafety[\s\-]?vest/.test(text);
+    var explicit = page4ResolveExplicitProductTypeSlug(product);
+
+    // Name-based specifics must beat a broad/wrong explicit type (e.g. tanks before tshirts,
+    // bodywarmers before jackets, softshell before jackets).
+    // Tanks/vests must win before /t-?shirt/ — productType slug "vests-t-shirt" contains "t-shirt".
+    if (/vests[\s-]?t[\s-]?shirt|sports? vest|running vest|vest tops?|tank tops?|racer[\s-]?back|sleeveless t[\s-]?shirt/.test(text)) {
+        return { slug: 'vests-t-shirt', subtype: 'sports-vest' };
+    }
+
+    // Hi-vis bodywarmers/gilets before blanket hi-vis → safety-vests, and before softshell/jacket.
+    if (/gilet|body[\s\-_]?warmers?/.test(text)) {
+        return { slug: 'gilets-body-warmers', subtype: page4GiletSubtype(text, hiVis) };
+    }
+    if (explicit === 'gilets-body-warmers') {
+        return { slug: 'gilets-body-warmers', subtype: page4GiletSubtype(text, hiVis) };
+    }
+
+    // Hi-vis garment branches (aligned with customization-tool/app.js) before broad jacket/tshirt.
+    // Use word boundaries so "waistcoat" does not match /coat/.
+    if (hiVis && /\bjacket\b|\bparka\b|\bcoats?\b|\banorak\b|\bbomber\b/.test(text)) {
+        return { slug: 'jackets', subtype: 'hi-vis-jacket' };
+    }
+    if (hiVis && /hoodie|hooded|zoodie/.test(text)) {
+        return { slug: 'hoodies', subtype: 'hi-vis-hoodie' };
+    }
+    if (hiVis && /sweatshirt|sweater/.test(text)) {
+        return { slug: 'sweatshirts', subtype: 'hi-vis-sweatshirt' };
+    }
+    if (hiVis && /polo/.test(text)) {
+        return { slug: 'polos', subtype: 'hi-vis-polo' };
+    }
+    if (hiVis && /t[\s-]?shirt|\btee\b/.test(text)) {
+        return { slug: 'tshirts', subtype: 'hi-vis-tshirt' };
+    }
+    if (hiVis || /waistcoat/.test(text)) {
+        return { slug: 'safety-vests', subtype: 'waistcoat' };
+    }
+    if (explicit === 'safety-vests') {
+        return { slug: 'safety-vests', subtype: 'waistcoat' };
+    }
+
+    if (/soft[\s\-_]?shells?/.test(text) || explicit === 'softshells') {
+        return { slug: 'softshells', subtype: 'softshell-jacket' };
+    }
+    if (/fleece|microfleece/.test(text) || explicit === 'fleece') {
+        return { slug: 'fleece', subtype: /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? 'quarter-zip' : 'full-zip' };
+    }
+    if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text) || explicit === 'beanies') {
         return { slug: 'beanies', subtype: /bobble|pom/.test(text) ? 'bobble' : 'cuffed' };
     }
-    if (/fedora|trilby|bucket hat|outback hat|wide[\s-]?brim|sun hat/.test(text)) return { slug: 'hats', subtype: 'bucket' };
-    if (/\bcap\b|baseball|snapback|trucker|visor/.test(text)) {
+    if (/fedora|trilby|bucket hat|outback hat|wide[\s-]?brim|sun hat/.test(text) || explicit === 'hats') {
+        return { slug: 'hats', subtype: 'bucket' };
+    }
+    if (/\bcap\b|baseball|snapback|trucker|visor/.test(text) || explicit === 'caps') {
         return { slug: 'caps', subtype: /trucker/.test(text) ? 'trucker' : 'baseball' };
     }
-    if (/polo/.test(text)) return { slug: 'polos', subtype: '' };
-    if (/hoodie|hooded|zoodie/.test(text)) return { slug: 'hoodies', subtype: '' };
-    if (/sweatshirt/.test(text)) return { slug: 'sweatshirts', subtype: '' };
-    if (/fleece/.test(text)) return { slug: 'fleece', subtype: '' };
-    if (/soft[\s-]?shell/.test(text)) return { slug: 'softshells', subtype: '' };
-    if (/gilet|body[\s-]?warmer/.test(text)) return { slug: 'gilets-body-warmers', subtype: '' };
-    if (/hi[\s-]?vis|safety vest|waistcoat/.test(text)) return { slug: 'safety-vests', subtype: 'waistcoat' };
-    if (/jacket|parka|coat|anorak/.test(text)) return { slug: 'jackets', subtype: '' };
-    if (/apron/.test(text)) return { slug: 'aprons', subtype: '' };
-    if (/\bbag\b|tote|backpack|rucksack|holdall/.test(text)) return { slug: 'bags', subtype: '' };
-    if (/\bshirt|\bblouse/.test(text) && !/t[\s-]?shirt/.test(text)) return { slug: 'shirts', subtype: '' };
-    if (/t[\s-]?shirt|\btee\b/.test(text)) return { slug: 'tshirts', subtype: '' };
+    if (/polo/.test(text) || explicit === 'polos') {
+        return { slug: 'polos', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+    }
+    if (/hoodie|hooded|zoodie/.test(text) || explicit === 'hoodies') {
+        return { slug: 'hoodies', subtype: /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? 'full-zip' : 'pullover' };
+    }
+    if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text) || explicit === 'sweatpants') {
+        return { slug: 'sweatpants', subtype: 'joggers' };
+    }
+    if (/sweatshirt/.test(text) || explicit === 'sweatshirts') {
+        return { slug: 'sweatshirts', subtype: /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? 'quarter-zip' : 'crewneck' };
+    }
+    if (/\bjacket\b|\bparka\b|\bcoats?\b|\banorak\b|\bwindbreaker\b/.test(text) || explicit === 'jackets') {
+        return { slug: 'jackets', subtype: page4JacketSubtype(text, false) };
+    }
+    if (/apron/.test(text) || explicit === 'aprons') {
+        return { slug: 'aprons', subtype: /\b(?:short\s+)?waist(?:er)?\b|\bbar apron\b|\bbistro apron\b/.test(text) ? 'waist' : 'bib' };
+    }
+    if (/\bbag\b|tote|backpack|rucksack|holdall|duffle|duffel/.test(text) || explicit === 'bags') {
+        return { slug: 'bags', subtype: '' };
+    }
+    if (/\btrouser|\bchino|\bpants?\b/.test(text) || explicit === 'trousers') {
+        return { slug: 'trousers', subtype: 'work-trousers' };
+    }
+    if (/\bshorts?\b/.test(text) && !/\bshirt/.test(text) || explicit === 'shorts') {
+        return { slug: 'shorts', subtype: 'shorts' };
+    }
+    if (/\bshirt|\bblouse/.test(text) && !/t[\s-]?shirt/.test(text) || explicit === 'shirts') {
+        return { slug: 'shirts', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+    }
+    if (/t[\s-]?shirt|\btee\b/.test(text) || explicit === 'tshirts') {
+        return { slug: 'tshirts', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+    }
+    if (explicit) return { slug: explicit, subtype: '' };
     return { slug: 'tshirts', subtype: '' };
 }
 
 function page4CustomiseTitle(product) {
     var slug = customizationConfigTarget(product || {}).slug;
     if (slug === 'beanies') return 'Customise your beanie';
+    if (slug === 'vests-t-shirt') return 'Customise your tank top';
     if (slug === 'tshirts') return 'Customise your t-shirt';
     if (slug === 'polos') return 'Customise your polo';
     if (slug === 'hoodies') return 'Customise your hoodie';
+    if (slug === 'gilets-body-warmers') return 'Customise your bodywarmer';
+    if (slug === 'safety-vests') return 'Customise your hi-vis';
+    if (slug === 'softshells') return 'Customise your softshell';
+    if (slug === 'fleece') return 'Customise your fleece';
+    if (slug === 'jackets') return 'Customise your jacket';
+    if (slug === 'aprons') return 'Customise your apron';
     return 'Customise your product';
 }
 
@@ -903,6 +1091,12 @@ function page4CategoryRules(product) {
         if (item.pattern.test(name)) Object.assign(rules, item.rules);
     });
     return rules;
+}
+
+function page4IsBackPositionSlug(slug) {
+    var key = page4NormalizePositionKey(slug) || String(slug || '').toLowerCase();
+    if (P4_EMBROIDERY_VOA_BACK_SLUGS[key]) return true;
+    return /(^|-)back($|-)|nape/.test(key);
 }
 
 function page4AllowedMethods(product, position) {
@@ -930,14 +1124,30 @@ function page4AllowedMethods(product, position) {
         };
     }
 
+    // VOA: customer note + staff confirmation. Shown on VOA categories for back
+    // positions (where embroidery is often blocked) or whenever embroidery is 'no'.
+    var embroideryVoa = { status: 'no', price: null };
+    if (category.embroideryVoa === 'yes') {
+        var backPos = page4IsBackPositionSlug(slug || position.label);
+        if (backPos || matrix.embroidery === 'no') {
+            embroideryVoa = { status: 'voa', price: null };
+        }
+    }
+
     return {
         embroidery: fromApi('embroidery'),
-        print: fromApi('print')
+        print: fromApi('print'),
+        embroideryVoa: embroideryVoa
     };
 }
 
 function page4MethodButton(kind, info) {
     if (!info || info.status === 'no') return '';
+    if (kind === 'embroidery-voa' || kind === 'embroideryVoa') {
+        return '<button type="button" class="price-badge price-emb-voa" data-method="embroidery-voa" data-default-label="EMBROIDERY VOA" data-default-price="Request">' +
+            '<span class="price-label">EMBROIDERY VOA</span>' +
+            '<span class="price-value">Request</span></button>';
+    }
     var isPoa = info.status === 'poa';
     var label = kind === 'embroidery' ? 'EMBROIDERY' : 'PRINT';
     var price = isPoa ? 'POA' : ('£' + Number(info.price || 0).toFixed(2));
@@ -966,10 +1176,14 @@ function page4PositionCard(product, position) {
     var printPrice = methods.print.price != null ? methods.print.price.toFixed(2) : '0';
     var safeSlug = String(slug).replace(/"/g, '');
     var safeLabel = label.replace(/"/g, '&quot;');
-    return '<div class="position-card" data-position="' + safeSlug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '">' +
+    return '<div class="position-card" data-position="' + safeSlug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '" data-embroidery-voa="0">' +
         '<div class="position-preview"><img class="position-placeholder" alt="' + safeLabel + '"></div>' +
         '<div class="position-card-header"><label class="position-checkbox"><input type="checkbox" name="p4position" value="' + safeSlug + '"><span>' + label.replace(/</g, '') + '</span></label></div>' +
-        '<div class="position-prices">' + page4MethodButton('embroidery', methods.embroidery) + page4MethodButton('print', methods.print) + '</div>' +
+        '<div class="position-prices">' +
+            page4MethodButton('embroidery', methods.embroidery) +
+            page4MethodButton('print', methods.print) +
+            page4MethodButton('embroidery-voa', methods.embroideryVoa) +
+        '</div>' +
         '<div class="p4-logo-under" hidden><img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button></div></div>';
 }
 
@@ -977,6 +1191,8 @@ function page4PositionCard(product, position) {
 var P4_POSITION_ASSET_BASE = 'brandedukv15-child/assets/images/customization/positions/';
 var P4_PRODUCT_ASSET_FOLDER = {
     tshirts: 'adult-tops/short-sleeve-crew-neck',
+    // No dedicated local tank silhouettes yet; API images for vests-t-shirt override after fetch.
+    'vests-t-shirt': 'adult-tops/short-sleeve-crew-neck',
     shirts: 'adult-tops/short-sleeve-crew-neck',
     polos: 'adult-tops/short-sleeve-polo',
     hoodies: 'adult-tops/hoodies',
@@ -1576,11 +1792,13 @@ function p4HideCardLogoPreview(card) {
     }
 }
 
-function p4AssignLogo(position, src, method, filename, sourceMethod) {
+function p4AssignLogo(position, src, method, filename, sourceMethod, notes) {
     if (!position || !src) return;
     var key = page4NormalizePositionKey(position) || String(position);
     var card = p4FindPositionCard(position);
-    var unitPrice = p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0);
+    var unitPrice = method === 'embroidery-voa'
+        ? 0
+        : p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0);
     // Keep a single normalized key so basket restore (left-chest) matches live cards.
     if (window.p4Assignments[position] && position !== key) delete window.p4Assignments[position];
     window.p4Assignments[key] = {
@@ -1588,7 +1806,8 @@ function p4AssignLogo(position, src, method, filename, sourceMethod) {
         method: method,
         sourceMethod: String(sourceMethod || method || '').toLowerCase(),
         filename: filename || '',
-        unitPrice: unitPrice
+        unitPrice: unitPrice,
+        notes: notes != null ? String(notes) : ((window.p4Assignments[key] && window.p4Assignments[key].notes) || '')
     };
     if (!card) {
         p4UpdateSummary();
@@ -1610,6 +1829,109 @@ function p4AssignLogo(position, src, method, filename, sourceMethod) {
     p4ResetConfirmState();
 }
 
+function p4AssignEmbroideryVoa(position, notes) {
+    if (!position) return;
+    var key = page4NormalizePositionKey(position) || String(position);
+    var card = p4FindPositionCard(position);
+    var existing = window.p4Assignments[key] || window.p4Assignments[position] || {};
+    if (window.p4Assignments[position] && position !== key) delete window.p4Assignments[position];
+    window.p4Assignments[key] = {
+        dataUrl: existing.dataUrl || '',
+        method: 'embroidery-voa',
+        sourceMethod: 'embroidery-voa',
+        filename: existing.filename || '',
+        unitPrice: 0,
+        notes: String(notes || '').trim()
+    };
+    if (!card) {
+        p4UpdateSummary();
+        p4SaveLogosToBasket();
+        p4ResetConfirmState();
+        return;
+    }
+    if (card.dataset.position !== key) card.dataset.position = key;
+    card.classList.add('selected');
+    if (window.p4Assignments[key].dataUrl) card.classList.add('has-logo');
+    var box = card.querySelector('input[type="checkbox"]');
+    if (box) {
+        box.checked = true;
+        box.value = key;
+    }
+    if (window.p4Assignments[key].dataUrl) {
+        p4ShowCardLogoPreview(card, window.p4Assignments[key].dataUrl);
+    } else {
+        p4HideCardLogoPreview(card);
+    }
+    p4ApplyMethodUI(card, 'embroidery-voa');
+    p4UpdateSummary();
+    p4SaveLogosToBasket();
+    p4ResetConfirmState();
+}
+
+function p4EscapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function p4ShowEmbroideryVoaPopup(card) {
+    if (!card) return;
+    var existing = document.getElementById('p4VoaModal');
+    if (existing) existing.remove();
+    var pos = card.querySelector('.position-checkbox span');
+    var posName = pos ? pos.textContent : String(card.dataset.position || '').replace(/-/g, ' ');
+    var key = page4NormalizePositionKey(card.dataset.position) || card.dataset.position;
+    var saved = (window.p4Assignments[key] || window.p4Assignments[card.dataset.position] || {}).notes || '';
+    var overlay = document.createElement('div');
+    overlay.id = 'p4VoaModal';
+    overlay.innerHTML = '<div class="p4-voa-card">' +
+        '<strong>Embroidery request</strong>' +
+        '<p>Back embroidery may be available after we confirm with you. Please describe your request for <b>' +
+        p4EscapeHtml(posName) +
+        '</b> below — our team will contact you before proceeding.</p>' +
+        '<label class="p4-voa-label" for="p4VoaNotes">Your comment / request</label>' +
+        '<textarea id="p4VoaNotes" class="p4-voa-notes" rows="4" placeholder="e.g. logo size, placement details, or special requirements…">' +
+        p4EscapeHtml(saved) +
+        '</textarea>' +
+        '<div class="p4-voa-actions">' +
+        '<button type="button" class="p4-voa-confirm">Send request</button>' +
+        '<button type="button" class="p4-voa-cancel">Cancel</button>' +
+        '</div></div>';
+    function closeVoa() {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+    overlay.querySelector('.p4-voa-cancel').addEventListener('click', closeVoa);
+    overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) closeVoa();
+    });
+    overlay.querySelector('.p4-voa-confirm').addEventListener('click', function () {
+        var notes = (overlay.querySelector('#p4VoaNotes').value || '').trim();
+        if (!notes) {
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('Please leave a short comment so we can review your embroidery request.');
+            }
+            return;
+        }
+        closeVoa();
+        p4AssignEmbroideryVoa(card.dataset.position, notes);
+        var artwork = document.getElementById('p4ArtworkNotes');
+        if (artwork) {
+            var prefix = 'EMBROIDERY VOA (' + posName + '): ' + notes;
+            var current = (artwork.value || '').trim();
+            if (!current) artwork.value = prefix;
+            else if (current.indexOf(prefix) === -1) artwork.value = current + '\n' + prefix;
+        }
+    });
+    document.body.appendChild(overlay);
+    var ta = overlay.querySelector('#p4VoaNotes');
+    if (ta) {
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+    }
+}
+
 function p4ClearCardLogo(position) {
     var key = page4NormalizePositionKey(position) || String(position);
     delete window.p4Assignments[position];
@@ -1627,14 +1949,16 @@ function p4ClearCardLogo(position) {
     p4HideCardLogoPreview(card);
     p4ResetBadge(card.querySelector('.price-emb'));
     p4ResetBadge(card.querySelector('.price-print'));
+    p4ResetBadge(card.querySelector('.price-emb-voa'));
     p4UpdateSummary();
     p4SaveLogosToBasket();
     p4ResetConfirmState();
 }
 
 function p4CardMethod(card, preferred) {
-    if (preferred && card.querySelector('.price-badge[data-method="' + preferred + '"]:not(.poa-badge)')) return preferred;
-    var first = card.querySelector('.price-badge:not(.poa-badge)');
+    if (preferred === 'embroidery-voa') preferred = '';
+    if (preferred && card.querySelector('.price-badge[data-method="' + preferred + '"]:not(.poa-badge):not(.price-emb-voa)')) return preferred;
+    var first = card.querySelector('.price-badge:not(.poa-badge):not(.price-emb-voa)');
     return first ? first.dataset.method : 'embroidery';
 }
 
@@ -1753,6 +2077,7 @@ function p4UpdateSummary() {
     var logoUnit = 0;
     Object.keys(window.p4Assignments || {}).forEach(function (pos) {
         var assignment = window.p4Assignments[pos];
+        if (!assignment || assignment.method === 'embroidery-voa') return;
         var card = p4FindPositionCard(pos);
         var fallback = card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0;
         logoUnit += assignment.unitPrice != null ? Number(assignment.unitPrice) : p4MethodUnitPrice(assignment.method, fallback);
@@ -1774,9 +2099,9 @@ function p4UpdateSummary() {
 function p4CardMethods(card) {
     var methods = [];
     if (!card) return methods;
-    card.querySelectorAll('.price-badge:not(.poa-badge)').forEach(function (badge) {
+    card.querySelectorAll('.price-badge:not(.poa-badge):not(.price-emb-voa)').forEach(function (badge) {
         var method = badge.dataset.method;
-        if (!method) return;
+        if (!method || method === 'embroidery-voa') return;
         methods.push({
             method: method,
             label: badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT'),
@@ -1857,14 +2182,18 @@ function p4SyncLogoState() {
     window.logoPositions = [];
     Object.keys(window.p4Assignments || {}).forEach(function (pos) {
         var assignment = window.p4Assignments[pos];
+        var sharedNotes = $('#p4ArtworkNotes').val() || '';
         window.pendingLogos[pos] = {
             dataUrl: assignment.dataUrl,
             filename: assignment.filename || '',
-            notes: $('#p4ArtworkNotes').val() || ''
+            notes: assignment.notes || sharedNotes
         };
+        var appLabel = assignment.method === 'embroidery-voa'
+            ? 'Embroidery VOA'
+            : (assignment.method.charAt(0).toUpperCase() + assignment.method.slice(1));
         window.logoPositions.push({
             position: pos,
-            application: assignment.method.charAt(0).toUpperCase() + assignment.method.slice(1)
+            application: appLabel
         });
     });
     window.logoData = window.pendingLogos;
@@ -1882,22 +2211,24 @@ function p4SaveLogosToBasket() {
     var logos = Object.keys(window.p4Assignments || {}).map(function (pos) {
         var assignment = window.p4Assignments[pos];
         var card = p4FindPositionCard(pos);
-        var price = assignment.unitPrice != null
-            ? Number(assignment.unitPrice)
-            : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0);
+        var price = assignment.method === 'embroidery-voa'
+            ? 0
+            : (assignment.unitPrice != null
+                ? Number(assignment.unitPrice)
+                : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0));
         var labelEl = card && card.querySelector('.position-checkbox span');
         var positionLabel = (labelEl && labelEl.textContent) || String(pos).replace(/-/g, ' ');
+        var logoNotes = assignment.notes || notes;
         return {
             method: assignment.method,
             sourceMethod: assignment.sourceMethod || assignment.method,
             position: page4NormalizePositionKey(pos) || pos,
             positionLabel: positionLabel,
-            logo: assignment.dataUrl,
-            notes: notes,
+            logo: assignment.dataUrl || '',
+            notes: logoNotes,
             unitPrice: price,
-            digitisingFeePerDesign: assignment.method === 'embroidery' && (assignment.sourceMethod || assignment.method) === 'embroidery'
-                ? (Number(window.p4Pricing.embroidery.digitisingFeePerDesign) || 25)
-                : 0
+            digitisingFeePerDesign: 0,
+            setupCharge: 0
         };
     });
     var setup = p4EmbroiderySetupCost();
@@ -2205,15 +2536,17 @@ $(document).on("click", ".pc-step-back:not(#p1BackToCatalog):not(#p2BackToCatalo
     window.goToPage(parseInt($(this).data('target-page'), 10) || 0);
 });
 
-// PAGE 4: Helper — reset badge back to original EMBROIDERY/PRINT label
+// PAGE 4: Helper — reset badge back to original EMBROIDERY/PRINT/VOA label
 function p4ResetBadge(badge) {
     if (!badge) return;
     badge.classList.remove('active', 'add-logo-btn', 'logo-added');
     badge.dataset.role = 'method';
     delete badge.dataset.activeMethod;
     var method = badge.dataset.method;
-    var label = badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT');
-    var price = badge.dataset.defaultPrice || (method === 'embroidery' ? '£5.00' : '£3.50');
+    var label = badge.dataset.defaultLabel ||
+        (method === 'embroidery-voa' ? 'EMBROIDERY VOA' : (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT'));
+    var price = badge.dataset.defaultPrice ||
+        (method === 'embroidery-voa' ? 'Request' : (method === 'embroidery' ? '£5.00' : '£3.50'));
     if (badge.classList.contains('poa-badge') && label.indexOf('POA') === -1) label += ' · POA';
     badge.innerHTML = '<span class="price-label">' + label + '</span><span class="price-value">' + price + '</span>';
 }
@@ -2235,6 +2568,11 @@ $(document).on('click', '#p4PositionOptions .price-badge', function(e) {
     var card = $(badge).closest('.position-card')[0];
     var method = badge.dataset.method;
     if (!method || !card) return;
+    if (method === 'embroidery-voa') {
+        p4ApplyMethodUI(card, method);
+        p4ShowEmbroideryVoaPopup(card);
+        return;
+    }
     if (badge.classList.contains('poa-badge') || (badge.querySelector('.price-value') && badge.querySelector('.price-value').textContent === 'POA')) {
         return;
     }

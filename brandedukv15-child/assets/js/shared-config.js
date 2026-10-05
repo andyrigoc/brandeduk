@@ -507,6 +507,7 @@ window.BrandedConfig = (function () {
             icon: 'fa-solid fa-shirt',
             icons: {
                 fit: 'fa-solid fa-user-group',
+                type: 'fa-solid fa-shirt',
                 style: 'fa-solid fa-shirt',
                 industry: 'fa-solid fa-building',
                 brands: 'fa-solid fa-star'
@@ -518,6 +519,7 @@ window.BrandedConfig = (function () {
             icon: 'fa-solid fa-shirt',
             icons: {
                 fit: 'fa-solid fa-user-group',
+                type: 'fa-solid fa-shirt',
                 style: 'fa-solid fa-shirt',
                 industry: 'fa-solid fa-building',
                 brands: 'fa-solid fa-star'
@@ -529,6 +531,7 @@ window.BrandedConfig = (function () {
             icon: 'fa-solid fa-shirt',
             icons: {
                 fit: 'fa-solid fa-user-group',
+                type: 'fa-solid fa-shirt',
                 style: 'fa-solid fa-shirt',
                 industry: 'fa-solid fa-building',
                 brands: 'fa-solid fa-star'
@@ -540,6 +543,7 @@ window.BrandedConfig = (function () {
             icon: 'fa-solid fa-shirt',
             icons: {
                 fit: 'fa-solid fa-user-group',
+                type: 'fa-solid fa-shirt',
                 style: 'fa-solid fa-shirt',
                 industry: 'fa-solid fa-building',
                 brands: 'fa-solid fa-star'
@@ -583,6 +587,16 @@ window.BrandedConfig = (function () {
             icon: 'fa-solid fa-hat-cowboy',
             icons: {
                 type: 'fa-solid fa-hat-cowboy',
+                fit: 'fa-solid fa-user-group',
+                brands: 'fa-solid fa-star'
+            }
+        },
+        accessories: {
+            heroImage: 'blog/images/custom-branded-caps-bucket-hats-team.webp',
+            heroAlt: '',
+            icon: 'fa-solid fa-bag-shopping',
+            icons: {
+                type: 'fa-solid fa-bag-shopping',
                 fit: 'fa-solid fa-user-group',
                 brands: 'fa-solid fa-star'
             }

@@ -414,7 +414,8 @@
         height: 34.5px;
         margin-left: 0;
         margin-right: 0;
-        overflow: hidden;
+        /* visible: suggest dropdown is position:absolute and must escape the 34px bar */
+        overflow: visible;
     }
 
     .site-header .searchbar-header__actions > .header-util-link {
@@ -1173,7 +1174,7 @@
         max-width: 445px;
         min-width: 0;
         height: 32.2px;
-        overflow: hidden;
+        overflow: visible;
     }
 }
 
@@ -1221,7 +1222,7 @@
         max-width: 395px;
         min-width: 0;
         height: 29.9px;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .site-header .header-bottom > .header-container {
@@ -1315,7 +1316,7 @@
         max-width: 296px;
         min-width: 0;
         height: 29.9px;
-        overflow: hidden;
+        overflow: visible;
     }
 }
 
@@ -1342,7 +1343,7 @@
         width: auto !important;
         max-width: calc(494px - (208px * var(--bu-adapt)));
         min-width: 0;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .site-header .header-top-left {
@@ -1370,7 +1371,7 @@
     .site-header .searchbar-header__search-expand {
         max-width: 286px;
         min-width: 0;
-        overflow: hidden;
+        overflow: visible;
     }
 }
 
