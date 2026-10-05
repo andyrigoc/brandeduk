@@ -563,7 +563,13 @@ body {
     background-size: 12px 8px;
 }
 
+#paginationBottom {
+    justify-content: flex-end;
+    margin: 28px 0 8px;
+}
+
 .products-header #paginationTop .pagination-button,
+#paginationBottom .pagination-button,
 .pagination-container .pagination-button {
     color: #ff7a00;
     font-size: 18px;
@@ -572,6 +578,7 @@ body {
 }
 
 .products-header #paginationTop .pagination-button:hover:not(:disabled),
+#paginationBottom .pagination-button:hover:not(:disabled),
 .pagination-container .pagination-button:hover:not(:disabled) {
     background: #fff4ea;
     border-color: #ff7a00;
@@ -579,6 +586,7 @@ body {
 }
 
 .products-header #paginationTop .pagination-button:disabled,
+#paginationBottom .pagination-button:disabled,
 .pagination-container .pagination-button:disabled {
     background: #fff;
     color: #ff7a00;

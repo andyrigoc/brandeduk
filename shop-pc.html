@@ -2055,7 +2055,7 @@
     <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261003-scroll-affordance">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-screen">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20260927-cattitle">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20261005-pagerbottom">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -3600,6 +3600,19 @@
                 <!-- Products will be rendered by JavaScript -->
             </div>
 
+            <div class="pagination-pages" id="paginationBottom" style="display: none;" aria-label="Product pages">
+                <button type="button" class="pagination-button" id="paginationBottomFirst" title="First page"
+                    aria-label="First page">&laquo;</button>
+                <button type="button" class="pagination-button" id="paginationBottomPrev" title="Previous page"
+                    aria-label="Previous page">&lsaquo;</button>
+                <div id="paginationBottomPageNumbers" class="pagination-page-numbers" aria-label="Pagination pages">
+                </div>
+                <button type="button" class="pagination-button" id="paginationBottomNext" title="Next page"
+                    aria-label="Next page">&rsaquo;</button>
+                <button type="button" class="pagination-button" id="paginationBottomLast" title="Last page"
+                    aria-label="Last page">&raquo;</button>
+            </div>
+
             <!-- Pagination Bottom (keep for backward compatibility, but hide it) -->
             <div class="pagination-container" id="paginationContainer" style="display: none;">
                 <button type="button" class="pagination-button" id="prevPage" disabled>Previous</button>
@@ -5135,45 +5148,107 @@
 
                     }
 
-                    // Parent Hi-Vis click, with no subcategory: the API type plus every
-                    // product whose name or description says hi-vis / hi-viz.
-                    const bareCategoryKeys = ['page', 'limit', 'sort', 'productType', 'productType[]'];
-                    const isBareCategory = Object.keys(params).every(key => bareCategoryKeys.includes(key));
-                    const hiVisType = String(params.productType || '');
-                    const isHiVisCategory = isBareCategory && /^(hi[\s-]?vis|safety[\s-]?vests)$/i.test(hiVisType);
-                    if (isHiVisCategory && data) {
+                    // Generic Hi-Vis (Shop Hi-Vis): the API type is only vests.
+                    // Also include every product whose name or description says hi-vis / hi-viz.
+                    const hiVisPattern = /hi[\s\-_]*vi[sz]|high[\s\-_]*visib|high[\s\-_]*vi[sz]|hivis/i;
+                    const pagingKeys = { page: 1, limit: 1, sort: 1, productType: 1, 'productType[]': 1 };
+                    const typeValues = [].concat(params.productType || [], params['productType[]'] || []);
+                    const hasOtherFilters = Object.keys(params).some(function (key) { return !pagingKeys[key]; });
+                    const isGenericHiVis = !hasOtherFilters && typeValues.length > 0 && typeValues.every(function (value) {
+                        return hiVisPattern.test(String(value || ''));
+                    });
+                    if (isGenericHiVis && data) try {
                         const seenCodes = new Set();
                         const merged = [];
-                        const addItems = (items) => {
-                            (items || []).forEach(item => {
-                                const code = item && (item.code || item.sku || item.style_code);
+                        const itemText = function (item) {
+                            if (!item) return '';
+                            return [
+                                item.name, item.title, item.productName, item.description,
+                                item.code, item.sku, item.style_code, item.styleCode,
+                                item.productType, item.category, item.type
+                            ].filter(Boolean).join(' ');
+                        };
+                        const itemCode = function (item) {
+                            return item && (item.code || item.sku || item.style_code || item.styleCode);
+                        };
+                        const addItems = function (items, requireText) {
+                            (items || []).forEach(function (item) {
+                                const code = itemCode(item);
                                 if (!code || seenCodes.has(code)) return;
+                                if (requireText && !hiVisPattern.test(itemText(item))) return;
                                 seenCodes.add(code);
                                 merged.push(item);
                             });
                         };
-                        const fetchAllMatches = async (search) => {
+                        const fetchAllMatches = async function (search) {
                             const collected = [];
                             for (let matchPage = 1; matchPage <= 8; matchPage += 1) {
-                                const matchUrl = new URL(baseUrl);
-                                Object.entries(search).forEach(([key, value]) => matchUrl.searchParams.set(key, value));
-                                matchUrl.searchParams.set('limit', '100');
-                                matchUrl.searchParams.set('page', String(matchPage));
-                                if (params.sort) matchUrl.searchParams.set('sort', params.sort);
-                                const matchResponse = await fetch(matchUrl.toString(), { signal: abortController.signal });
-                                if (!matchResponse.ok) break;
-                                const matchData = await matchResponse.json();
-                                const batch = matchData.items || [];
-                                collected.push(...batch);
-                                if (!batch.length || collected.length >= (matchData.total || collected.length)) break;
+                                let matchData;
+                                if (window.BrandedAPI && window.BrandedAPI.getProducts) {
+                                    matchData = await window.BrandedAPI.getProducts(Object.assign({
+                                        page: matchPage,
+                                        limit: 100,
+                                        sort: params.sort,
+                                        signal: abortController.signal
+                                    }, search));
+                                } else {
+                                    const matchUrl = new URL(baseUrl);
+                                    Object.entries(search).forEach(function (entry) {
+                                        matchUrl.searchParams.set(entry[0], entry[1]);
+                                    });
+                                    matchUrl.searchParams.set('limit', '100');
+                                    matchUrl.searchParams.set('page', String(matchPage));
+                                    if (params.sort) matchUrl.searchParams.set('sort', params.sort);
+                                    const matchResponse = await fetch(matchUrl.toString(), { signal: abortController.signal });
+                                    if (!matchResponse.ok) break;
+                                    matchData = await matchResponse.json();
+                                }
+                                const batch = (matchData && matchData.items) || [];
+                                collected.push.apply(collected, batch);
+                                const total = matchData && matchData.total;
+                                if (!batch.length || (total && collected.length >= total)) break;
                             }
                             return collected;
                         };
-                        addItems(await fetchAllMatches({ productType: 'Hi Vis' }));
-                        const textQueries = ['hi-vis', 'hi vis', 'hi-viz', 'hi viz', 'high visibility'];
-                        for (const query of textQueries) {
-                            addItems(await fetchAllMatches({ q: query }));
+                        addItems(await fetchAllMatches({ productType: 'Hi Vis' }), false);
+                        const textQueries = ['hi-vis', 'hi vis', 'hi-viz', 'hi viz', 'hivis', 'high vis', 'high visibility', 'high-visibility'];
+                        for (let i = 0; i < textQueries.length; i += 1) {
+                            addItems(await fetchAllMatches({ q: textQueries[i] }), true);
                         }
+                        const itemPrice = function (item) {
+                            const price = parseFloat(item && item.price);
+                            if (price > 0) return price;
+                            const breaks = (item && item.priceBreaks) || [];
+                            let lowest = 0;
+                            breaks.forEach(function (step) {
+                                const value = Number(step && step.price);
+                                if (value > 0 && (!lowest || value < lowest)) lowest = value;
+                            });
+                            return lowest;
+                        };
+                        const compareText = function (a, b) {
+                            return String(a || '').localeCompare(String(b || ''), undefined, { numeric: true, sensitivity: 'base' });
+                        };
+                        const sortKey = params.sort || 'best';
+                        if (sortKey === 'price-hl' || sortKey === 'price-lh' || sortKey === 'brand-az' || sortKey === 'brand-za' || sortKey === 'code-az' || sortKey === 'code-za') {
+                            merged.sort(function (a, b) {
+                                let diff = 0;
+                                if (sortKey === 'price-hl' || sortKey === 'price-lh') diff = itemPrice(a) - itemPrice(b);
+                                else if (sortKey === 'brand-az' || sortKey === 'brand-za') diff = compareText(a && a.brand, b && b.brand);
+                                else diff = compareText(itemCode(a), itemCode(b));
+                                if (sortKey === 'price-hl' || sortKey === 'brand-za' || sortKey === 'code-za') diff = -diff;
+                                return diff || compareText(itemCode(a), itemCode(b));
+                            });
+                        }
+                        let rangeMin = 0;
+                        let rangeMax = 0;
+                        merged.forEach(function (item) {
+                            const price = itemPrice(item);
+                            if (!(price > 0)) return;
+                            if (!rangeMin || price < rangeMin) rangeMin = price;
+                            if (price > rangeMax) rangeMax = price;
+                        });
+                        if (rangeMax) data.priceRange = { min: rangeMin, max: rangeMax };
                         const pageSize = Number(params.limit) || 100;
                         const pageNumber = Number(params.page) || 1;
                         const start = (pageNumber - 1) * pageSize;
@@ -5181,6 +5256,8 @@
                         data.total = merged.length;
                         data.page = pageNumber;
                         data.limit = pageSize;
+                    } catch (hiVisError) {
+                        console.warn('Hi-Vis merge failed, keeping the category results', hiVisError);
                     }
 
                     console.log('Ã¢Å“â€¦ API RESPONSE RECEIVED:', {
@@ -7874,7 +7951,65 @@
             updateURL();
             await renderProducts();
             updatePagination();
+            scrollToProductsSectionTop();
 
+        }
+
+        function paintCataloguePager(pager, ids, totalPages) {
+            if (!pager) return;
+
+            const firstBtn = document.getElementById(ids.first);
+            const prevBtn = document.getElementById(ids.prev);
+            const nextBtn = document.getElementById(ids.next);
+            const lastBtn = document.getElementById(ids.last);
+            const pageNumbersContainer = document.getElementById(ids.numbers);
+
+            if (totalPages <= 1) {
+                pager.style.display = 'none';
+                return;
+            }
+
+            pager.style.display = 'flex';
+            if (firstBtn) firstBtn.disabled = currentState.page === 1;
+            if (prevBtn) prevBtn.disabled = currentState.page === 1;
+            if (nextBtn) nextBtn.disabled = currentState.page === totalPages;
+            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
+
+            if (!pageNumbersContainer) return;
+            pageNumbersContainer.innerHTML = '';
+
+            const maxVisible = 3;
+            let startPage = 1;
+            let endPage = totalPages;
+
+            if (totalPages > maxVisible) {
+                startPage = currentState.page - 1;
+                endPage = currentState.page + 1;
+
+                if (startPage < 1) {
+                    startPage = 1;
+                    endPage = maxVisible;
+                }
+                if (endPage > totalPages) {
+                    endPage = totalPages;
+                    startPage = totalPages - (maxVisible - 1);
+                }
+            }
+
+            for (let page = startPage; page <= endPage; page++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'pagination-page' + (page === currentState.page ? ' active' : '');
+                btn.textContent = String(page);
+                if (page === currentState.page) {
+                    btn.setAttribute('aria-current', 'page');
+                } else {
+                    btn.addEventListener('click', async () => {
+                        await goToCataloguePage(page);
+                    });
+                }
+                pageNumbersContainer.appendChild(btn);
+            }
         }
 
         function updatePagination() {
@@ -7896,65 +8031,20 @@
                 if (nextBtn) nextBtn.disabled = currentState.page === totalPages || totalPages === 0;
             }
 
-            // Update new pagination (inline in header)
-            if (!paginationTop) return;
-
-            const firstBtn = document.getElementById('paginationFirst');
-            const prevTopBtn = document.getElementById('paginationPrev');
-            const nextTopBtn = document.getElementById('paginationNext');
-            const lastBtn = document.getElementById('paginationLast');
-            const pageNumbersContainer = document.getElementById('paginationPageNumbers');
-
-            if (totalPages <= 1) {
-                paginationTop.style.display = 'none';
-                return;
-            }
-
-            paginationTop.style.display = 'flex';
-
-            // Enable/disable navigation buttons
-            if (firstBtn) firstBtn.disabled = currentState.page === 1;
-            if (prevTopBtn) prevTopBtn.disabled = currentState.page === 1;
-            if (nextTopBtn) nextTopBtn.disabled = currentState.page === totalPages;
-            if (lastBtn) lastBtn.disabled = currentState.page === totalPages;
-
-            // Render page numbers (show up to 3 pages as a sliding window)
-            if (pageNumbersContainer) {
-                pageNumbersContainer.innerHTML = '';
-
-                const maxVisible = 3;
-                let startPage = 1;
-                let endPage = totalPages;
-
-                if (totalPages > maxVisible) {
-                    startPage = currentState.page - 1;
-                    endPage = currentState.page + 1;
-
-                    if (startPage < 1) {
-                        startPage = 1;
-                        endPage = maxVisible;
-                    }
-                    if (endPage > totalPages) {
-                        endPage = totalPages;
-                        startPage = totalPages - (maxVisible - 1);
-                    }
-                }
-
-                for (let page = startPage; page <= endPage; page++) {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'pagination-page' + (page === currentState.page ? ' active' : '');
-                    btn.textContent = String(page);
-                    if (page === currentState.page) {
-                        btn.setAttribute('aria-current', 'page');
-                    } else {
-                        btn.addEventListener('click', async () => {
-                            await goToCataloguePage(page);
-                        });
-                    }
-                    pageNumbersContainer.appendChild(btn);
-                }
-            }
+            paintCataloguePager(paginationTop, {
+                first: 'paginationFirst',
+                prev: 'paginationPrev',
+                next: 'paginationNext',
+                last: 'paginationLast',
+                numbers: 'paginationPageNumbers'
+            }, totalPages);
+            paintCataloguePager(document.getElementById('paginationBottom'), {
+                first: 'paginationBottomFirst',
+                prev: 'paginationBottomPrev',
+                next: 'paginationBottomNext',
+                last: 'paginationBottomLast',
+                numbers: 'paginationBottomPageNumbers'
+            }, totalPages);
         }
 
         // Pagination button handlers
@@ -8017,6 +8107,34 @@
                     if (currentState.page < totalPages) {
                         await goToCataloguePage(totalPages);
                     }
+                });
+            }
+
+            const bottomFirstBtn = document.getElementById('paginationBottomFirst');
+            const bottomPrevBtn = document.getElementById('paginationBottomPrev');
+            const bottomNextBtn = document.getElementById('paginationBottomNext');
+            const bottomLastBtn = document.getElementById('paginationBottomLast');
+
+            if (bottomFirstBtn) {
+                bottomFirstBtn.addEventListener('click', async () => {
+                    if (currentState.page > 1) await goToCataloguePage(1);
+                });
+            }
+            if (bottomPrevBtn) {
+                bottomPrevBtn.addEventListener('click', async () => {
+                    if (currentState.page > 1) await goToCataloguePage(currentState.page - 1);
+                });
+            }
+            if (bottomNextBtn) {
+                bottomNextBtn.addEventListener('click', async () => {
+                    const totalPages = Math.ceil(currentState.total / currentState.limit);
+                    if (currentState.page < totalPages) await goToCataloguePage(currentState.page + 1);
+                });
+            }
+            if (bottomLastBtn) {
+                bottomLastBtn.addEventListener('click', async () => {
+                    const totalPages = Math.ceil(currentState.total / currentState.limit);
+                    if (currentState.page < totalPages) await goToCataloguePage(totalPages);
                 });
             }
 
