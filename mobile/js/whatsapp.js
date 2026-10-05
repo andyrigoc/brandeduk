@@ -79,6 +79,43 @@
     var crispHooksBound = false;
     var recentOutbound = [];
     var RECENT_OUTBOUND_TTL_MS = 8000;
+    var CRISP_READY_WAIT_MS = 6000;
+    var pendingCrispWatchdogs = {};
+
+    // Self-heal: if footer.js failed to parse/inject crisp-chat.js, load it here.
+    function ensureCrispBackendLoader() {
+        if (window.__brandedCrispLoaded) return;
+        if (document.querySelector('script[data-branded-crisp="1"], script[src*="crisp-chat.js"]')) return;
+        var s = document.createElement('script');
+        try {
+            s.src = new URL('crisp-chat.js?v=20261005-mobilefix', SCRIPT_SRC || window.location.href).href;
+        } catch (e) {
+            s.src = '/mobile/js/crisp-chat.js?v=20261005-mobilefix';
+        }
+        s.async = true;
+        s.setAttribute('data-branded-crisp', '1');
+        (document.head || document.documentElement).appendChild(s);
+    }
+
+    function isCrispSdkReady() {
+        try {
+            return !!(window.$crisp && typeof window.$crisp.is === 'function');
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function watchCrispDelivery(msg) {
+        var key = String(Date.now()) + ':' + (msg || '').slice(0, 40);
+        if (isCrispSdkReady()) return;
+        pendingCrispWatchdogs[key] = window.setTimeout(function () {
+            delete pendingCrispWatchdogs[key];
+            if (isCrispSdkReady()) return;
+            if (chatUnlocked) {
+                appendAgentBubble('Could not reach live chat. Please try again or use Call our team.');
+            }
+        }, CRISP_READY_WAIT_MS);
+    }
 
     function rememberOutbound(text) {
         var t = (text || '').trim();
@@ -185,12 +222,16 @@
         var msg = (text || '').trim();
         if (!msg) return false;
         try {
+            ensureCrispBackendLoader();
             window.$crisp = window.$crisp || [];
             syncCrispVisitorProfile();
             // Send only — never chat:open / chat:show
             rememberOutbound(msg);
             window.$crisp.push(['do', 'message:send', ['text', msg]]);
             forceHideCrispUi();
+            // Queue always "succeeds"; warn if Crisp SDK never becomes ready (common when
+            // footer.js failed to inject crisp-chat.js on mobile).
+            watchCrispDelivery(msg);
             return true;
         } catch (e) {
             return false;
@@ -1048,6 +1089,7 @@
 
     applyAuthGateUi();
     // Listen for operator replies → render in OUR panel; never open Crisp UI.
+    ensureCrispBackendLoader();
     bindCrispMessageHooks();
     forceHideCrispUi();
     window.openBrandedChat = openPopup;

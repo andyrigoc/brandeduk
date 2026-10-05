@@ -22,8 +22,8 @@
     window.addEventListener('load', resetScroll);
 })();
 
-ï»¿/* =============================================
-   BrandedUK Footer â€“ Production JS
+/* =============================================
+   BrandedUK Footer - Production JS
    (Template injection + all init functions)
    ============================================= */
 (function () {
@@ -36,7 +36,7 @@
   function injectFooter() {
     var mount = document.querySelector('[data-mobile-footer]');
     if (!mount) {
-      // No mount point â€” footer HTML is already inline
+      // No mount point - footer HTML is already inline
       initAll();
       return;
     }
@@ -282,7 +282,7 @@
   if (window.__brandedCrispLoaded) return;
   if (document.querySelector('script[data-branded-crisp="1"]')) return;
   var s = document.createElement('script');
-  s.src = new URL('/mobile/js/crisp-chat.js?v=20261002-ourpanel', window.location.origin).href;
+  s.src = new URL('/mobile/js/crisp-chat.js?v=20261005-mobilefix', window.location.origin).href;
   s.async = true;
   s.setAttribute('data-branded-crisp', '1');
   document.head.appendChild(s);
@@ -300,7 +300,7 @@
   }
   if (document.querySelector('script[data-buk-whatsapp="1"], script[src*="whatsapp.js"]')) return;
   var s = document.createElement('script');
-  s.src = new URL('/mobile/js/whatsapp.js?v=20261002-chatlogo', window.location.origin).href;
+  s.src = new URL('/mobile/js/whatsapp.js?v=20261005-mobilefix', window.location.origin).href;
   s.defer = true;
   s.setAttribute('data-buk-whatsapp', '1');
   document.head.appendChild(s);
