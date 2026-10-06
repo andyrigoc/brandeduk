@@ -115,5 +115,99 @@
     D['sports-teamwear'] = D['sports-overtops'];
     D['footwear'] = D['boots'];
 
+    /* Industry / sector intro copy for Industries header landings.
+       Keys are canonical sector names; aliases below map nav labels and URL variants. */
+    var INDUSTRIES = {
+        corporate: {
+            title: 'Corporate',
+            headline: 'Professional Workwear That Represents Your Business',
+            desc: 'Create a consistent, professional image with customised corporate clothing. Embroidered polos, shirts, blouses, jackets and fleeces help your team look clean, organised and instantly recognisable, giving customers confidence in your business from the first impression.'
+        },
+        hospitality: {
+            title: 'Hospitality',
+            headline: 'Smart Uniforms for a Professional Customer Experience',
+            desc: 'In hospitality, presentation matters. Customised shirts, polos, aprons, chef jackets and tunics keep your team looking smart, coordinated and professional while making staff easy to identify. A well-presented team reinforces your brand and helps create a polished customer experience.'
+        },
+        school: {
+            title: 'School',
+            headline: 'Custom Schoolwear That Builds Identity and Belonging',
+            desc: 'Personalised school clothing creates a consistent appearance while strengthening a sense of identity and community. From T-shirts and hoodies to sweatshirts, customised garments are ideal for school teams, clubs, events, trips and leavers, keeping students looking coordinated and representing the school professionally.'
+        },
+        safety: {
+            title: 'Safety',
+            headline: 'Branded Workwear That Keeps Your Team Visible and Professional',
+            desc: 'Safety clothing should protect your workforce while also representing your company. Customised hi-vis, jackets, trousers and workwear make employees easy to identify on site, reinforce company standards and help your team present a professional image when working around customers, contractors and the public.'
+        },
+        sport: {
+            title: 'Sport',
+            headline: 'Custom Sportswear That Brings the Team Together',
+            desc: 'Create a strong team identity with personalised sportswear. Custom T-shirts, polos, hoodies, shorts, overtops and caps give players, coaches and staff a coordinated, professional appearance while helping clubs and organisations promote their colours, logo and identity wherever they compete.'
+        },
+        outdoor: {
+            title: 'Outdoor',
+            headline: 'Branded Outdoor Clothing Built for Work and Everyday Use',
+            desc: 'Customised jackets, fleeces and bodywarmers keep your team comfortable while maintaining a consistent company image outdoors. Adding your logo transforms practical clothing into professional branded workwear, helping staff remain recognisable, presentable and on-brand in changing conditions.'
+        }
+    };
+
+    var INDUSTRY_ALIASES = {
+        corporate: 'corporate',
+        'corporate-office': 'corporate',
+        'corporate-office-teams': 'corporate',
+        office: 'corporate',
+        hospitality: 'hospitality',
+        'hospitality-restaurants': 'hospitality',
+        restaurants: 'hospitality',
+        restaurant: 'hospitality',
+        school: 'school',
+        schools: 'school',
+        schoolwear: 'school',
+        'schools-leavers': 'school',
+        leavers: 'school',
+        safety: 'safety',
+        trades: 'safety',
+        construction: 'safety',
+        'trades-construction': 'safety',
+        ppe: 'safety',
+        sport: 'sport',
+        sports: 'sport',
+        'sports-teamwear': 'sport',
+        'sports-clubs': 'sport',
+        outdoor: 'outdoor'
+    };
+
+    function resolveIndustryKey(raw) {
+        var key = String(raw || '').toLowerCase().trim()
+            .replace(/&/g, ' ')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        if (!key) return null;
+        if (INDUSTRIES[key]) return key;
+        if (INDUSTRY_ALIASES[key]) return INDUSTRY_ALIASES[key];
+        // Compact match: "hospitalityrestaurants" → hospitality, etc.
+        var compact = key.replace(/-/g, '');
+        var aliasKeys = Object.keys(INDUSTRY_ALIASES);
+        for (var i = 0; i < aliasKeys.length; i++) {
+            if (aliasKeys[i].replace(/-/g, '') === compact) {
+                return INDUSTRY_ALIASES[aliasKeys[i]];
+            }
+        }
+        return null;
+    }
+
+    function getIndustryDescription(sectorValue) {
+        var key = resolveIndustryKey(sectorValue);
+        if (!key || !INDUSTRIES[key]) return null;
+        var item = INDUSTRIES[key];
+        return {
+            title: item.title,
+            desc: item.headline + '. ' + item.desc,
+            headline: item.headline,
+            key: key
+        };
+    }
+
     window.BrandedCategoryDescriptions = D;
+    window.BrandedIndustryDescriptions = INDUSTRIES;
+    window.BrandedResolveIndustryDescription = getIndustryDescription;
 })();

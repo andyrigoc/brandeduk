@@ -2792,7 +2792,7 @@ function p4OpenQuoteContact(message) {
 
 $(document).on('click', '#p4ViewBasket', async function() {
     var button = this;
-    var originalLabel = button && (button.textContent || '');
+    var originalHtml = button && (button.innerHTML || '');
     p4SaveLogosToBasket();
     var message = p4BuildQuoteMessage();
 
@@ -2812,7 +2812,7 @@ $(document).on('click', '#p4ViewBasket', async function() {
     } finally {
         if (button) {
             button.disabled = false;
-            button.textContent = originalLabel || 'ASK FOR QUOTE';
+            button.innerHTML = originalHtml || 'ASK FOR QUOTE <span aria-hidden="true">&rarr;</span>';
         }
     }
 

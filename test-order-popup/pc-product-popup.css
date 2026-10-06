@@ -3372,22 +3372,35 @@ body.popup-open {
     transform: translate(-50%, -50%) scale(1);
 }
 
+/* Secondary CTA: match mega-menu Shop CTA (black + white + orange arrow) */
 #orderPopup .page-4 .p4-view-basket {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     width: 100%;
     min-height: 36px;
     margin-top: 4px;
     border: 0;
     border-radius: 8px;
-    background: #f97316;
+    background: #111827;
     color: #fff;
     font-weight: 800;
     letter-spacing: .04em;
     cursor: pointer;
 }
 
+#orderPopup .page-4 .p4-view-basket span {
+    color: #ff7a00;
+}
+
 #orderPopup .page-4 .p4-view-basket:hover {
-    background: #ea6c0a;
+    background: #0b1220;
     color: #fff;
+}
+
+#orderPopup .page-4 .p4-view-basket:hover span {
+    color: #ff7a00;
 }
 
 #orderPopup .page-4 .p4-selected-colour {

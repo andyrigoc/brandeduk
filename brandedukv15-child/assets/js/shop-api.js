@@ -312,6 +312,10 @@ const ShopManager = (function () {
         const brandName = product.brand || 'Brand';
         const brandLogo = getBrandLogo(brandName);
 
+        const ecoLeafHtml = (window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
+            ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
+            : '';
+
         card.innerHTML = `
             <div class="product-media">
                 <div class="product-badges">
@@ -322,6 +326,7 @@ const ShopManager = (function () {
                 </div>
                 <div class="product-figure">
                     <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-main-img" loading="lazy">
+                    ${ecoLeafHtml}
                 </div>
             </div>
             <div class="product-info">

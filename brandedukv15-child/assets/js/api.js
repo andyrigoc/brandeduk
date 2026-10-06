@@ -243,7 +243,12 @@ const BrandedAPI = (function () {
             // Product badges
             is_best_seller: apiProduct.is_best_seller || apiProduct.isBestSeller || false,
             is_recommended: apiProduct.is_recommended || apiProduct.isRecommended || false,
-            is_featured: apiProduct.is_featured || apiProduct.isFeatured || false
+            is_featured: apiProduct.is_featured || apiProduct.isFeatured || false,
+            // Eco / organic markers when the API includes them on list or detail payloads
+            accreditations: apiProduct.accreditations || apiProduct.accreditation || [],
+            flags: apiProduct.flags || apiProduct.flag || [],
+            features: apiProduct.features || apiProduct.feature || [],
+            tags: apiProduct.tags || apiProduct.tag || []
             // intentionally omitted: carton_price, supplier, markup_source, markup_tier, cost
         };
 

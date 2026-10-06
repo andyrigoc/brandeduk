@@ -64,7 +64,7 @@
         }
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
-        addStylesheet(new URL('css/components/pc-header.css?v=20261005-searchoverflow', assetsRoot).href, 'standard');
+        addStylesheet(new URL('css/components/pc-header.css?v=20261006-shopcta3', assetsRoot).href, 'standard');
         addStylesheet(new URL('css/components/pc-search.css?v=20261005-searchgrid2', assetsRoot).href, 'search');
     }
 
@@ -157,7 +157,7 @@
         }
     }
 
-    /* pc-header.css hides VAT labels without .is-active — seed Ex VAT visible after inject. */
+    /* pc-header.css hides VAT labels without .is-active â€” seed Ex VAT visible after inject. */
     function configureVatLabels(header) {
         header.querySelectorAll('.header-top-vat-control').forEach(function (control) {
             var button = control.querySelector('.header-top-vat-toggle');
@@ -280,10 +280,46 @@
 
     function loadPcSearch() {
         if (window.BrandedPcSearchInitialized || document.querySelector('script[data-pc-search]')) return;
-        var script = document.createElement('script');
-        script.src = new URL('js/pc-search.js?v=20261005-searchgrid2', assetsRoot).href;
-        script.dataset.pcSearch = 'true';
-        document.head.appendChild(script);
+
+        function appendScript(src, attrs) {
+            return new Promise(function (resolve, reject) {
+                var existing = attrs && attrs['data-pc-search']
+                    ? document.querySelector('script[data-pc-search]')
+                    : null;
+                if (existing) {
+                    resolve(existing);
+                    return;
+                }
+                var script = document.createElement('script');
+                script.src = new URL(src, assetsRoot).href;
+                if (attrs) {
+                    Object.keys(attrs).forEach(function (key) {
+                        script.setAttribute(key, attrs[key]);
+                    });
+                }
+                script.onload = function () { resolve(script); };
+                script.onerror = function () { reject(new Error('Failed to load ' + src)); };
+                document.head.appendChild(script);
+            });
+        }
+
+        var chain = Promise.resolve();
+        if (!window.BrandedOrganicSustainableCodes && !document.querySelector('script[data-organic-codes]')) {
+            chain = chain.then(function () {
+                return appendScript('data/organic-sustainable-codes.js?v=20261006-leaf3', { 'data-organic-codes': 'true' });
+            });
+        }
+        if (!window.BrandedOrganicLeaf && !document.querySelector('script[data-organic-leaf]')) {
+            chain = chain.then(function () {
+                return appendScript('js/organic-leaf.js?v=20261006-leaf4', { 'data-organic-leaf': 'true' });
+            });
+        }
+        chain.then(function () {
+            return appendScript('js/pc-search.js?v=20261006-leaf3', { 'data-pc-search': 'true' });
+        }).catch(function () {
+            // Search should still work even if the eco badge assets fail to load.
+            appendScript('js/pc-search.js?v=20261006-leaf3', { 'data-pc-search': 'true' });
+        });
     }
 
     function mount() {

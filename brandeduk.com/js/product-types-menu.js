@@ -2,8 +2,16 @@
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://api.brandeduk.com';
-    const API_BASE = `${BASE_URL}/api/filters/product-types`;
+    function resolveApiBase() {
+        if (typeof window.resolveBrandedApiBase === 'function') {
+            return String(window.resolveBrandedApiBase()).replace(/\/+$/, '');
+        }
+        if (window.API_BASE_URL) {
+            return String(window.API_BASE_URL).replace(/\/+$/, '');
+        }
+        return 'https://api.brandeduk.com';
+    }
+
     const scriptElement = document.currentScript;
     const SHOP_PAGE_URL = scriptElement && scriptElement.src
         ? new URL('../../shop-pc.html', scriptElement.src).href
@@ -11,6 +19,35 @@
     
     // Cache for product types
     let productTypesCache = null;
+
+    function slugifyName(name) {
+        return String(name || '')
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+
+    function normalizeProductTypes(list) {
+        return (list || []).map(function (type) {
+            if (typeof type === 'string') {
+                return { name: type, slug: slugifyName(type) };
+            }
+            var name = type.name || type.title || type.productType || '';
+            var slug = type.slug || type.id || slugifyName(name);
+            return Object.assign({}, type, { name: name, slug: slug });
+        }).filter(function (type) {
+            return !!type.name;
+        });
+    }
+
+    function getFallbackProductTypes() {
+        var configTypes = window.BrandedConfig && Array.isArray(window.BrandedConfig.PRODUCT_TYPES)
+            ? window.BrandedConfig.PRODUCT_TYPES
+            : [];
+        return normalizeProductTypes(configTypes);
+    }
     
     /**
      * Fetch product types from API
@@ -20,6 +57,8 @@
             console.log('📦 Using cached product types');
             return productTypesCache;
         }
+
+        var API_BASE = resolveApiBase() + '/api/filters/product-types';
         
         try {
             console.log('🔄 Fetching product types from:', API_BASE);
@@ -53,22 +92,13 @@
                 console.warn('⚠️ Unexpected response format:', data);
             }
             
-            // Generate slugs from names if not present
-            productTypes = productTypes.map(type => {
-                if (!type.slug && type.name) {
-                    type.slug = type.name
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                        .replace(/[^a-z0-9-]/g, '')
-                        .replace(/-+/g, '-')
-                        .replace(/^-|-$/g, '');
-                }
-                return type;
-            });
+            productTypes = normalizeProductTypes(productTypes);
             
             console.log(`✅ Parsed ${productTypes.length} product types`);
-            productTypesCache = productTypes;
-            return productTypes;
+            if (productTypes.length) {
+                productTypesCache = productTypes;
+                return productTypes;
+            }
         } catch (error) {
             console.error('❌ Error fetching product types:', error);
             console.error('Error details:', {
@@ -76,8 +106,15 @@
                 stack: error.stack,
                 url: API_BASE
             });
-            return [];
         }
+
+        var fallback = getFallbackProductTypes();
+        if (fallback.length) {
+            console.warn('⚠️ Using BrandedConfig.PRODUCT_TYPES fallback (' + fallback.length + ' items)');
+            productTypesCache = fallback;
+            return fallback;
+        }
+        return [];
     }
     
     /**
@@ -134,7 +171,7 @@
     function generateDropdownHTML(productTypes) {
         const { grouped, sortedLetters } = groupByAlphabet(productTypes);
         const shopUrl = getShopPageUrl();
-        let html = '';
+        let html = '<li class="allprod-view-all"><a href="' + shopUrl + '">View all products</a></li>';
         
         sortedLetters.forEach(letter => {
             html += `<li class="brand-heading">${letter}</li>`;
@@ -146,6 +183,24 @@
         });
         
         return html;
+    }
+
+    function bindMenuLinks(menuContainer) {
+        const links = menuContainer.querySelectorAll('a[data-slug]');
+        console.log(`🔗 Added ${links.length} click handlers`);
+        
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const slug = this.getAttribute('data-slug');
+                if (slug) {
+                    const shopUrl = getShopPageUrl();
+                    const targetUrl = `${shopUrl}?productType=${encodeURIComponent(slug)}`;
+                    console.log('🔗 Navigating to shop with productType:', slug, '→', targetUrl);
+                    window.location.href = targetUrl;
+                }
+            });
+        });
     }
     
     /**
@@ -159,11 +214,14 @@
             console.warn('⚠️ Product types menu container not found ([data-product-types-menu])');
             return;
         }
-        
+
+        const hadStaticItems = menuContainer.children.length > 0;
         console.log('🎯 Found menu container, starting population...');
         
-        // Show loading state
-        menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #6b7280;">Loading...</li>';
+        // Keep any static template items visible until we have a replacement list.
+        if (!hadStaticItems) {
+            menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #6b7280;">Loading...</li>';
+        }
         
         try {
             const productTypes = await fetchProductTypes();
@@ -176,7 +234,9 @@
             
             if (!productTypes || productTypes.length === 0) {
                 console.warn('⚠️ No product types available');
-                menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #6b7280;">No product types available. Check console for details.</li>';
+                if (!hadStaticItems) {
+                    menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #6b7280;">No product types available. Check console for details.</li>';
+                }
                 return;
             }
             
@@ -193,28 +253,13 @@
             console.log('🔍 T-shirts in HTML:', html.includes('T-shirts') || html.includes('tshirts'));
             
             menuContainer.innerHTML = html;
-            
-            // Add click handlers for navigation
-            const links = menuContainer.querySelectorAll('a[data-slug]');
-            console.log(`🔗 Added ${links.length} click handlers`);
-            
-            links.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const slug = this.getAttribute('data-slug');
-                    if (slug) {
-                        const shopUrl = getShopPageUrl();
-                        const targetUrl = `${shopUrl}?productType=${encodeURIComponent(slug)}`;
-                        console.log('🔗 Navigating to shop with productType:', slug, '→', targetUrl);
-                        // Navigate to shop page with product type filter
-                        window.location.href = targetUrl;
-                    }
-                });
-            });
+            bindMenuLinks(menuContainer);
             
         } catch (error) {
             console.error('❌ Error populating product types menu:', error);
-            menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #ef4444;">Error loading product types. Check console for details.</li>';
+            if (!hadStaticItems) {
+                menuContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #ef4444;">Error loading product types. Check console for details.</li>';
+            }
         }
     }
     
@@ -228,4 +273,3 @@
     // Export for manual refresh if needed
     window.refreshProductTypesMenu = populateProductTypesMenu;
 })();
-

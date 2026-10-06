@@ -115,7 +115,11 @@
             '" data-code="' + escapeHtml(code) + '" role="option">' +
             '<span class="pc-search-product__media"><img src="' + escapeHtml(image) +
             '" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'' +
-            escapeHtml(fallbackImage()) + '\'"></span>' +
+            escapeHtml(fallbackImage()) + '\'">' +
+            ((window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
+                ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
+                : '') +
+            '</span>' +
             '<span class="pc-search-product__copy">' +
                 '<span class="pc-search-product__name">' + highlight(name, query) + '</span>' +
                 (brandLine ? '<span class="pc-search-product__brand">' + brandLine + '</span>' : '') +

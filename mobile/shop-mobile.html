@@ -70,7 +70,7 @@
         }
         .ac-view-all:hover { background: #e07f00; }
         .ac-loading, .ac-no-results { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
-        /* â• â• â•  MOBILE ONLY (max 767px) â• â• â•  */
+        /* Ã¢â€¢ Ã¢â€¢ Ã¢â€¢  MOBILE ONLY (max 767px) Ã¢â€¢ Ã¢â€¢ Ã¢â€¢  */
         @media (max-width: 767px) {
             /* MOBILE SOCIAL ICONS - FORCE SMALL SIZE */
             .mobile-header .social-icons-mobile {
@@ -885,6 +885,8 @@
     <!-- API Integration Scripts -->
     <script src="../brandedukv15-child/assets/js/api-config.js?v=20261002-localproxy"></script>
     <script src="../brandedukv15-child/assets/js/api.js?v=20260820a"></script>
+    <script src="../brandedukv15-child/assets/data/organic-sustainable-codes.js?v=20261006-leaf3"></script>
+    <script src="../brandedukv15-child/assets/js/organic-leaf.js?v=20261006-leaf4"></script>
     <script>
         console.log('=== MOBILE SHOP SCRIPT STARTED (API MODE) ===');
 
@@ -1138,7 +1140,7 @@
             if (vatOn) {
                 value = value * (1 + VAT_RATE);
             }
-            return '£' + value.toFixed(2);
+            return 'Â£' + value.toFixed(2);
         }
 
         function vatSuffix() {
@@ -1400,6 +1402,10 @@
             // Price range
             const { min: minPrice, max: maxPrice } = getProductPriceRange(product);
 
+            const ecoLeafHtml = (window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
+                ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
+                : '';
+
             card.innerHTML = `
                 <div class="product-media">
                     <div class="product-badges">
@@ -1407,6 +1413,7 @@
                     </div>
                     <div class="product-figure">
                         <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-main-img" loading="lazy">
+                        ${ecoLeafHtml}
                     </div>
                 </div>
                 <div class="product-info">
@@ -1866,7 +1873,7 @@
         window.addEventListener('basketUpdated', syncBasketBadge);
     </script>
     <script>
-    // â”€â”€ Search Autocomplete (API-powered with product images) â”€â”€
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Search Autocomplete (API-powered with product images) Ã¢â€â‚¬Ã¢â€â‚¬
     (function() {
         var PRODUCT_TYPES = window.BrandedConfig ? window.BrandedConfig.PRODUCT_TYPES : [];
         var HIDDEN_BRANDS = ['absolute apparel', 'ralawise'];

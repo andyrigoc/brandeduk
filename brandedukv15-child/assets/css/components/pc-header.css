@@ -850,8 +850,10 @@
         line-height: 1.5;
     }
 
+    /* Category mega left Shop CTA: black pill, white text, orange arrow */
     .site-header .mega-hero-cta,
-    .site-header .main-nav .menu a.mega-hero-cta {
+    .site-header .main-nav .menu a.mega-hero-cta,
+    .site-header .nav-megamenu a.mega-hero-cta {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
@@ -860,7 +862,7 @@
         height: 32px;
         padding: 0 18px 1px;
         border-radius: 999px;
-        background: #ff7a00;
+        background: #111827 !important;
         color: #fff !important;
         font-size: 14px;
         font-weight: 700;
@@ -868,9 +870,23 @@
         text-decoration: none;
     }
 
-    .site-header .mega-hero-cta:hover {
-        background: #e86e00;
+    .site-header .mega-hero-cta span,
+    .site-header .main-nav .menu a.mega-hero-cta span,
+    .site-header .nav-megamenu a.mega-hero-cta span {
+        color: #ff7a00 !important;
+    }
+
+    .site-header .mega-hero-cta:hover,
+    .site-header .main-nav .menu a.mega-hero-cta:hover,
+    .site-header .nav-megamenu a.mega-hero-cta:hover {
+        background: #0b1220 !important;
         color: #fff !important;
+    }
+
+    .site-header .mega-hero-cta:hover span,
+    .site-header .main-nav .menu a.mega-hero-cta:hover span,
+    .site-header .nav-megamenu a.mega-hero-cta:hover span {
+        color: #ff7a00 !important;
     }
 
     .site-header .mega-cols {
@@ -889,6 +905,38 @@
 
     .site-header .mega-col li {
         margin: 0 0 7px;
+    }
+
+    /* Popular brands: monochrome gray logos (replace text + chevrons) */
+    .site-header .mega-col li a.mega-brand-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 3px 0;
+        color: #6b7280;
+    }
+
+    .site-header .mega-col li a.mega-brand-link::before {
+        content: none;
+        margin: 0;
+    }
+
+    .site-header .mega-brand-logo {
+        display: block;
+        height: 26px;
+        width: auto;
+        max-width: 132px;
+        object-fit: contain;
+        object-position: left center;
+        /* Single gray look: desaturate + soften toward menu text gray */
+        filter: grayscale(1) brightness(0.92) contrast(0.92);
+        opacity: 0.78;
+        transition: opacity .15s ease, filter .15s ease;
+    }
+
+    .site-header .mega-col li a.mega-brand-link:hover .mega-brand-logo {
+        opacity: 1;
+        filter: grayscale(1) brightness(0.85) contrast(1);
     }
 
     .site-header .mega-col-title,
