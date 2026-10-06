@@ -1175,6 +1175,11 @@ function page4PositionCard(product, position) {
     var embroideryPrice = methods.embroidery.price != null ? methods.embroidery.price.toFixed(2) : '0';
     var printPrice = methods.print.price != null ? methods.print.price.toFixed(2) : '0';
     var safeSlug = String(slug).replace(/"/g, '');
+    // Large Front / Large Back print always show flat £7.70 (not API position flats).
+    if (p4IsLargePrintPosition(safeSlug) && methods.print && methods.print.status === 'yes') {
+        printPrice = LARGE_PRINT_FLAT_RATE.toFixed(2);
+        methods.print = Object.assign({}, methods.print, { price: LARGE_PRINT_FLAT_RATE });
+    }
     var safeLabel = label.replace(/"/g, '&quot;');
     return '<div class="position-card" data-position="' + safeSlug + '" data-embroidery="' + embroideryPrice + '" data-print="' + printPrice + '" data-embroidery-voa="0">' +
         '<div class="position-preview"><img class="position-placeholder" alt="' + safeLabel + '"></div>' +
@@ -1240,6 +1245,27 @@ var P4_POSITION_ASSET_FILE = {
 
 function page4NormalizePositionKey(value) {
     return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// Large Front + Large Back Print — flat £7.70 (pricing-guide Large Back Print column).
+var LARGE_PRINT_FLAT_RATE = 7.70;
+
+function p4IsLargePrintPosition(position) {
+    var candidates = [];
+    if (position && typeof position === 'object') {
+        candidates.push(position.position, position.posKey, position.area, position.positionLabel, position.name, position.slug, position.label);
+    } else {
+        candidates.push(position);
+    }
+    for (var i = 0; i < candidates.length; i++) {
+        var key = page4NormalizePositionKey(candidates[i]);
+        if (!key) continue;
+        if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
+        if (/^large-(front|back)/.test(key)) return true;
+        if (/^(front|back)-large/.test(key)) return true;
+        if (/^large-(front|back)-print/.test(key)) return true;
+    }
+    return false;
 }
 
 function page4LocalPositionImage(productSlug, positionKey) {
@@ -1424,8 +1450,12 @@ function loadPage4PositionImages(product) {
             });
             if (!positions || !positions.length) {
                 page4ApplyLocalImagesToCards(product);
-                p4ReapplyAssignedLogos();
-                refreshP4Scroll();
+                p4LoadBackendPrices().then(function () {
+                    if (requestId !== page4PositionRequest) return;
+                    p4ApplyBackendPricesToCards();
+                    p4ReapplyAssignedLogos();
+                    refreshP4Scroll();
+                });
                 return;
             }
             // Rebuild cards so each position has slug data-position + .p4-logo-under preview slot.
@@ -1447,8 +1477,12 @@ function loadPage4PositionImages(product) {
         .catch(function () {
             if (requestId !== page4PositionRequest) return;
             page4ApplyLocalImagesToCards(product);
-            p4ReapplyAssignedLogos();
-            refreshP4Scroll();
+            p4LoadBackendPrices().then(function () {
+                if (requestId !== page4PositionRequest) return;
+                p4ApplyBackendPricesToCards();
+                p4ReapplyAssignedLogos();
+                refreshP4Scroll();
+            });
         });
 }
 
@@ -1798,7 +1832,7 @@ function p4AssignLogo(position, src, method, filename, sourceMethod, notes) {
     var card = p4FindPositionCard(position);
     var unitPrice = method === 'embroidery-voa'
         ? 0
-        : p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0);
+        : p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0, key);
     // Keep a single normalized key so basket restore (left-chest) matches live cards.
     if (window.p4Assignments[position] && position !== key) delete window.p4Assignments[position];
     window.p4Assignments[key] = {
@@ -1967,6 +2001,53 @@ window.p4Pricing = window.p4Pricing || {
     print: { unitPrice: null, digitisingFeePerDesign: 0 }
 };
 
+// Official Standard application rates (ex VAT) — same bands as basket / pricing guide.
+// Used when the customization-pricing API is unavailable; never fall back to legacy
+// position flats (e.g. Centre Front print £6.50).
+var APPLICATION_PRICE_TIERS = {
+    print: [
+        { min: 1, max: 8, price: 7.50 },
+        { min: 9, max: 24, price: 5.25 },
+        { min: 25, max: 99, price: 4.00 },
+        { min: 100, max: 249, price: 3.00 },
+        { min: 250, max: 499, price: 2.50 },
+        { min: 500, max: 749, price: 2.25 },
+        { min: 750, max: 999, price: 2.00 },
+        { min: 1000, max: Infinity, price: 1.75 }
+    ],
+    embroidery: [
+        { min: 1, max: 8, price: 8.00 },
+        { min: 9, max: 24, price: 6.00 },
+        { min: 25, max: 99, price: 4.75 },
+        { min: 100, max: 249, price: 3.75 },
+        { min: 250, max: 499, price: 2.50 },
+        { min: 500, max: 749, price: 2.25 },
+        { min: 750, max: 999, price: 2.00 },
+        { min: 1000, max: Infinity, price: 1.75 }
+    ]
+};
+
+// Large Front + Large Back Print — flat £7.70 (pricing-guide Large Back Print column).
+// Helpers: LARGE_PRINT_FLAT_RATE + p4IsLargePrintPosition (defined near page4NormalizePositionKey).
+
+function p4ApplicationTierPrice(method, quantity, position) {
+    var key = String(method || '').toLowerCase();
+    if (key === 'embroidery-voa') return 0;
+    var bucket = key === 'embroidery' ? 'embroidery' : 'print';
+    if (bucket === 'print' && p4IsLargePrintPosition(position)) return LARGE_PRINT_FLAT_RATE;
+    var tiers = APPLICATION_PRICE_TIERS[bucket] || APPLICATION_PRICE_TIERS.print;
+    var qty = Math.max(1, Number(quantity) || 1);
+    var tier = null;
+    for (var i = 0; i < tiers.length; i++) {
+        if (qty >= tiers[i].min && qty <= tiers[i].max) {
+            tier = tiers[i];
+            break;
+        }
+    }
+    if (!tier) tier = tiers[tiers.length - 1];
+    return Number(tier.price) || 0;
+}
+
 function p4FetchPricing(method, qty) {
     var apiMethod = method === 'print' ? 'dtf' : method;
     return fetch('https://api.brandeduk.com/api/customization-pricing?method=' + encodeURIComponent(apiMethod) + '&quantity=' + encodeURIComponent(qty) + '&priceClass=standard')
@@ -1991,27 +2072,40 @@ function p4LoadBackendPrices() {
             window.p4Pricing.embroidery.digitisingFeePerDesign = Number.isFinite(rows[0].digitisingFeePerDesign)
                 ? rows[0].digitisingFeePerDesign
                 : 25;
+        } else {
+            window.p4Pricing.embroidery.unitPrice = p4ApplicationTierPrice('embroidery', qty);
         }
         if (rows[1]) {
             window.p4Pricing.print.unitPrice = rows[1].unitPrice;
             window.p4Pricing.print.digitisingFeePerDesign = Number.isFinite(rows[1].digitisingFeePerDesign)
                 ? rows[1].digitisingFeePerDesign
                 : 0;
+        } else {
+            window.p4Pricing.print.unitPrice = p4ApplicationTierPrice('print', qty);
         }
         return window.p4Pricing;
     });
 }
 
-function p4MethodUnitPrice(method, fallback) {
-    var record = window.p4Pricing[method === 'print' ? 'print' : method];
+function p4MethodUnitPrice(method, fallback, position) {
+    var key = String(method || '').toLowerCase();
+    if (key === 'embroidery-voa') return 0;
+    // Large Front / Large Back print always flat £7.70 — never qty ladder or stale card flat.
+    if ((key === 'print' || key === 'dtf' || key === 'screen' || key === 'vinyl') && p4IsLargePrintPosition(position)) {
+        return LARGE_PRINT_FLAT_RATE;
+    }
+    var record = window.p4Pricing[key === 'print' || key === 'dtf' || key === 'screen' || key === 'vinyl' ? 'print' : key];
     if (record && record.unitPrice != null && !isNaN(record.unitPrice)) return Number(record.unitPrice);
+    var tierPrice = p4ApplicationTierPrice(key, p4ProductQty(), position);
+    if (tierPrice > 0) return tierPrice;
     return Number(fallback) || 0;
 }
 
 function p4ApplyBackendPricesToCards() {
     document.querySelectorAll('#p4PositionOptions .position-card').forEach(function (card) {
-        var embroidery = p4MethodUnitPrice('embroidery', card.getAttribute('data-embroidery'));
-        var print = p4MethodUnitPrice('print', card.getAttribute('data-print'));
+        var pos = card.getAttribute('data-position') || '';
+        var embroidery = p4MethodUnitPrice('embroidery', card.getAttribute('data-embroidery'), pos);
+        var print = p4MethodUnitPrice('print', card.getAttribute('data-print'), pos);
         if (card.querySelector('.price-emb')) {
             card.setAttribute('data-embroidery', embroidery.toFixed(2));
             var emb = card.querySelector('.price-emb');
@@ -2020,7 +2114,11 @@ function p4ApplyBackendPricesToCards() {
         if (card.querySelector('.price-print')) {
             card.setAttribute('data-print', print.toFixed(2));
             var prnt = card.querySelector('.price-print');
-            if (prnt) prnt.dataset.defaultPrice = '£' + print.toFixed(2);
+            if (prnt) {
+                prnt.dataset.defaultPrice = '£' + print.toFixed(2);
+                var valueEl = prnt.querySelector('.price-value');
+                if (valueEl && !prnt.classList.contains('poa-badge')) valueEl.textContent = '£' + print.toFixed(2);
+            }
         }
     });
 }
@@ -2080,7 +2178,9 @@ function p4UpdateSummary() {
         if (!assignment || assignment.method === 'embroidery-voa') return;
         var card = p4FindPositionCard(pos);
         var fallback = card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0;
-        logoUnit += assignment.unitPrice != null ? Number(assignment.unitPrice) : p4MethodUnitPrice(assignment.method, fallback);
+        var rate = p4MethodUnitPrice(assignment.method, fallback, pos);
+        assignment.unitPrice = rate;
+        logoUnit += rate;
     });
     var logo = logoUnit * qty;
     var setup = p4EmbroiderySetupCost();
@@ -2105,7 +2205,7 @@ function p4CardMethods(card) {
         methods.push({
             method: method,
             label: badge.dataset.defaultLabel || (method === 'embroidery' ? 'EMBROIDERY' : 'PRINT'),
-            price: p4MethodUnitPrice(method, card.getAttribute('data-' + method))
+            price: p4MethodUnitPrice(method, card.getAttribute('data-' + method), card.dataset.position)
         });
     });
     return methods;
@@ -2211,11 +2311,12 @@ function p4SaveLogosToBasket() {
     var logos = Object.keys(window.p4Assignments || {}).map(function (pos) {
         var assignment = window.p4Assignments[pos];
         var card = p4FindPositionCard(pos);
+        // Always stamp from current API/tiers (or APPLICATION_PRICE_TIERS fallback).
+        // Never persist a frozen assignment.unitPrice or legacy position flat.
         var price = assignment.method === 'embroidery-voa'
             ? 0
-            : (assignment.unitPrice != null
-                ? Number(assignment.unitPrice)
-                : (card ? parseFloat(card.getAttribute('data-' + assignment.method)) || 0 : 0));
+            : p4MethodUnitPrice(assignment.method, card ? card.getAttribute('data-' + assignment.method) : 0, pos);
+        assignment.unitPrice = price;
         var labelEl = card && card.querySelector('.position-checkbox span');
         var positionLabel = (labelEl && labelEl.textContent) || String(pos).replace(/-/g, ' ');
         var logoNotes = assignment.notes || notes;
@@ -2386,8 +2487,9 @@ function finalSaveToBasket(redirectUrl) {
                     var posData = (window.logoData || {})[lp.position] || {};
                     var method = lp.application.toLowerCase();
                     var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + lp.position + '"]');
-                    var price = 0;
-                    if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
+                    var price = method === 'embroidery-voa'
+                        ? 0
+                        : p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0, lp.position);
                     return {
                         method: method,
                         sourceMethod: String((window.p4Assignments[lp.position] || {}).sourceMethod || method).toLowerCase(),
@@ -2414,10 +2516,11 @@ function finalSaveToBasket(redirectUrl) {
             item.logos = window.logoPositions.map(function(lp) {
                 var posData = (window.logoData || {})[lp.position] || {};
                 var method = lp.application.toLowerCase();
-                // Get price from position card on page 4
+                // Resolve from API/tiers — never stamp legacy position flats from the card alone.
                 var card = document.querySelector('#p4PositionOptions .position-card[data-position="' + lp.position + '"]');
-                var price = 0;
-                if (card) price = parseFloat(card.getAttribute('data-' + method)) || 0;
+                var price = method === 'embroidery-voa'
+                    ? 0
+                    : p4MethodUnitPrice(method, card ? card.getAttribute('data-' + method) : 0, lp.position);
                 return {
                     method: method,
                     sourceMethod: String((window.p4Assignments[lp.position] || {}).sourceMethod || method).toLowerCase(),

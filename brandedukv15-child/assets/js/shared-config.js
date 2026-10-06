@@ -712,7 +712,8 @@ window.BrandedConfig = (function () {
         },
         {
             id: 'awdis',
-            enabled: true,
+            // Hidden for now (homepage thumb strip) — JH501 / "THE BEST, NOW BETTER"
+            enabled: false,
             views: ['pc', 'mobile'],
             kind: 'image',
             hrefPc: 'shop-pc.html?brand=awdis',
@@ -806,7 +807,8 @@ window.BrandedConfig = (function () {
         },
         {
             id: 'awesome',
-            enabled: true,
+            // Hidden for now (homepage thumb strip) — MAKE WORK AWESOME!
+            enabled: false,
             views: ['pc', 'mobile'],
             kind: 'awesome',
             hrefPc: 'shop-pc.html',

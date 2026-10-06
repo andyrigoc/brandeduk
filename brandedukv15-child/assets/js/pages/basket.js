@@ -42,7 +42,21 @@ const APPLICATION_PRICE_TIERS = {
     ]
 };
 
-function getApplicationUnitPrice(method, quantity) {
+const LARGE_PRINT_FLAT_RATE = 7.70;
+
+function isLargePrintPosition(position) {
+    const key = String(position || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!key) return false;
+    if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
+    if (/^large-(front|back)/.test(key)) return true;
+    if (/^(front|back)-large/.test(key)) return true;
+    return false;
+}
+
+function getApplicationUnitPrice(method, quantity, position) {
+    if (String(method || '').toLowerCase() !== 'embroidery' && isLargePrintPosition(position)) {
+        return LARGE_PRINT_FLAT_RATE;
+    }
     const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
     const qty = Math.max(1, Number(quantity) || 1);
     const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
@@ -423,7 +437,7 @@ function calculateBreakdown() {
         const customizationType = customization.type || 'logo';
         
         if (method === 'print' || method === 'embroidery') {
-            const price = getApplicationUnitPrice(method, totalQuantity);
+            const price = getApplicationUnitPrice(method, totalQuantity, positionName || customization.positionKey || customization.posKey);
             const positionTotal = price * totalQuantity;
             applicationTotal += positionTotal;
             

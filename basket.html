@@ -700,8 +700,23 @@
             gap: 6px;
         }
         .item-row-meta .item-code { font-size: 11px; color: #9ca3af; }
-        .item-row-meta .item-color,
-        .item-row-meta .item-size { font-size: 12px; color: #6b7280; }
+        .item-row-meta .item-color { font-size: 12px; color: #6b7280; }
+        .item-row-meta .item-size {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 650;
+            line-height: 1;
+            border: 1.5px solid #f97316;
+            border-radius: 50%;
+            background: transparent;
+            padding: 2px 5px;
+            min-width: 1.55em;
+            aspect-ratio: 1;
+            box-sizing: border-box;
+        }
         .item-meta-separator { color: #c5c7cc; font-size: 11px; }
         .item-row-meta .item-row-remove { margin-left: 2px; }
         .item-edit-hint {
@@ -894,10 +909,10 @@
             cursor: pointer;
         }
         .logo-meta-actions button:hover { text-decoration: underline; }
-        .logo-meta-actions .edit-btn,
-        .logo-meta-actions .copy-btn { color: #111827; }
-        .logo-meta-actions .edit-btn:hover,
-        .logo-meta-actions .copy-btn:hover { color: #000; }
+        .logo-meta-actions .edit-btn { color: #111827; }
+        .logo-meta-actions .edit-btn:hover { color: #000; }
+        .logo-meta-actions .copy-btn { color: #f97316; }
+        .logo-meta-actions .copy-btn:hover { color: #f97316; }
         .logo-action-separator { color: #c5c7cc; font-size: 11px; }
         .logo-notes { font-size: 11px; color: #9ca3af; margin-top: 2px; font-style: italic; }
         .logos-applied-header {
@@ -4660,6 +4675,8 @@
                 logosHtml += `<div class="logos-applied-header"><span>Decorations applied to this item</span><button type="button" class="add-logo-btn" onclick="addLogoToItem(${index})"><i class="fas fa-plus" aria-hidden="true"></i> Add another logo to this item</button></div>`;
             }
             if (item.logos && item.logos.length > 0) {
+                const itemCode = item.code || item.productCode || '';
+                const logoQtyBasis = getProductGrandQty(basket, itemCode) || qty;
                 item.logos.forEach((logo, logoIdx) => {
                     const methodNorm = (logo.method || 'embroidery').toLowerCase();
                     let setupCharge = 0;
@@ -4690,7 +4707,9 @@
                         : methodNorm === 'embroidery'
                             ? 'EMB'
                             : 'PRINT';
-                    const logoTotal = (logo.unitPrice || 0) * qty;
+                    const logoUnit = resolveLogoUnitPrice(logo, logoQtyBasis);
+                    logo.unitPrice = logoUnit;
+                    const logoTotal = logoUnit * qty;
                     const thumbSrc = logo.logo || '';
                     const posLabel = logo.positionLabel || toReadablePosition(logo.position);
                     const thumbWrapClass = 'logo-thumb-wrap' + (garmentHexLight ? ' logo-thumb-wrap--light' : '');
@@ -4754,11 +4773,17 @@
                 `;
             });
 
-            // Item total = garment + logos
+            // Item total = garment + logos (logo rates already resolved from tiers above)
             const garmentTotal = unitPrice * qty;
             let logosCostTotal = 0;
             if (item.logos) {
-                item.logos.forEach(l => { logosCostTotal += (l.unitPrice || 0) * qty; });
+                const itemCodeForTotal = item.code || item.productCode || '';
+                const logoQtyForTotal = getProductGrandQty(basket, itemCodeForTotal) || qty;
+                item.logos.forEach((l) => {
+                    const rate = resolveLogoUnitPrice(l, logoQtyForTotal);
+                    l.unitPrice = rate;
+                    logosCostTotal += rate * qty;
+                });
             }
             const itemTotal = garmentTotal + logosCostTotal + itemSetupTotal;
 
@@ -4822,6 +4847,111 @@
     const BASKET_VAT_RATE = 0.20;
     const DIGITIZING_FEE_PER_DESIGN = 25;
 
+    // Official Standard application rates (ex VAT) — must match pricing-guide / API.
+    // Basket must reprice logos from this table; never trust a frozen logo.unitPrice
+    // stamped at add-to-basket (legacy Centre Front print was hard-coded at £6.50).
+    const APPLICATION_PRICE_TIERS = {
+        print: [
+            { min: 1, max: 8, price: 7.50 },
+            { min: 9, max: 24, price: 5.25 },
+            { min: 25, max: 99, price: 4.00 },
+            { min: 100, max: 249, price: 3.00 },
+            { min: 250, max: 499, price: 2.50 },
+            { min: 500, max: 749, price: 2.25 },
+            { min: 750, max: 999, price: 2.00 },
+            { min: 1000, max: Infinity, price: 1.75 }
+        ],
+        embroidery: [
+            { min: 1, max: 8, price: 8.00 },
+            { min: 9, max: 24, price: 6.00 },
+            { min: 25, max: 99, price: 4.75 },
+            { min: 100, max: 249, price: 3.75 },
+            { min: 250, max: 499, price: 2.50 },
+            { min: 500, max: 749, price: 2.25 },
+            { min: 750, max: 999, price: 2.00 },
+            { min: 1000, max: Infinity, price: 1.75 }
+        ]
+    };
+
+    // Large Front + Large Back Print — flat rate (pricing-guide "Large Back Print" column).
+    const LARGE_PRINT_FLAT_RATE = 7.70;
+
+    function normalizePositionSlug(value) {
+        return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function isLargePrintPosition(position) {
+        const candidates = [];
+        if (position && typeof position === 'object') {
+            candidates.push(
+                position.position,
+                position.posKey,
+                position.area,
+                position.positionLabel,
+                position.name,
+                position.slug,
+                position.label
+            );
+        } else {
+            candidates.push(position);
+        }
+        return candidates.some(function (value) {
+            const key = normalizePositionSlug(value);
+            if (!key) return false;
+            // Explicit large front/back placements (not small-centre-front / left-breast).
+            if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
+            if (/^large-(front|back)/.test(key)) return true;
+            if (/^(front|back)-large/.test(key)) return true;
+            // Labels like "Large Front Print" / "Large Back Print"
+            if (/^large-(front|back)-print/.test(key)) return true;
+            return false;
+        });
+    }
+
+    function getApplicationUnitPrice(method, quantity, position) {
+        const methodKey = String(method || '').toLowerCase();
+        if (methodKey === 'embroidery-voa') return 0;
+        const bucket = normalizeDecorationMethod(method) === 'embroidery' ? 'embroidery' : 'print';
+        // Large Front / Large Back print: fixed £7.70 regardless of qty.
+        if (bucket === 'print' && isLargePrintPosition(position)) {
+            return LARGE_PRINT_FLAT_RATE;
+        }
+        const tiers = APPLICATION_PRICE_TIERS[bucket] || APPLICATION_PRICE_TIERS.print;
+        const qty = Math.max(1, Number(quantity) || 1);
+        const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
+        return tier.price;
+    }
+
+    function applyApplicationUnitPrice(entry, totalQty, positionHint) {
+        if (!entry || typeof entry !== 'object') return;
+        const method = String(entry.method || '').toLowerCase();
+        if (!method) return;
+        if (method === 'embroidery-voa') {
+            entry.unitPrice = 0;
+            return;
+        }
+        const position = positionHint || entry;
+        entry.unitPrice = getApplicationUnitPrice(method, totalQty, position);
+    }
+
+    function getProductGrandQty(basket, productCode) {
+        if (!productCode) return 0;
+        return (basket || [])
+            .filter((item) => (item.code || item.productCode) === productCode)
+            .reduce((sum, item) => sum + (item.qty || 0), 0);
+    }
+
+    // Live logo rate for display/totals — never trust a frozen stamped unitPrice alone.
+    function resolveLogoUnitPrice(logo, totalQty) {
+        const method = String(logo && logo.method || '').toLowerCase();
+        if (method === 'embroidery-voa') return 0;
+        if (method === 'print' || method === 'dtf' || method === 'screen' || method === 'vinyl' || method === 'embroidery') {
+            return getApplicationUnitPrice(method, totalQty, logo);
+        }
+        const stored = parseFloat(logo && logo.unitPrice);
+        return Number.isFinite(stored) ? stored : 0;
+    }
+
     function getEmbroideryDesignKey(logo, fallbackKey) {
         if (!logo || typeof logo !== 'object') return fallbackKey || 'embroidery-design';
 
@@ -4871,16 +5001,27 @@
         const uniqueEmbroideryDesigns = new Set();
         const customisationGroups = new Map();
         const setupBreakdown = [];
+        const grandQtyByCode = new Map();
+
+        (basket || []).forEach((item) => {
+            const code = item.code || item.productCode || '';
+            if (!code) return;
+            grandQtyByCode.set(code, (grandQtyByCode.get(code) || 0) + (item.qty || 0));
+        });
 
         (basket || []).forEach((item, itemIndex) => {
             const qty = item.qty || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
             productCosts += unitPrice * qty;
 
+            const itemCode = item.code || item.productCode || '';
+            const logoQtyBasis = grandQtyByCode.get(itemCode) || qty;
+
             _extractLogos(item).forEach((logo, logoIndex) => {
                 const method = String(logo.method || '').toLowerCase();
-                const unitPrice = parseFloat(logo.unitPrice) || 0;
-                const applicationCost = unitPrice * qty;
+                const logoUnit = resolveLogoUnitPrice(logo, logoQtyBasis);
+                if (logo && typeof logo === 'object') logo.unitPrice = logoUnit;
+                const applicationCost = logoUnit * qty;
                 logoCosts += applicationCost;
                 // Aggregate by decoration method across all cart lines.
                 // count = total garments with that method (not number of size/colour lines).
@@ -5028,19 +5169,23 @@
         basket[index].qty = Number.isFinite(parsed) ? Math.min(99999, Math.max(1, parsed)) : (basket[index].qty || 1);
 
         // Recalculate tier pricing across all items with the same product code
-        recalcTierPricing(basket, basket[index].code);
+        recalcTierPricing(basket, basket[index].code || basket[index].productCode);
 
         saveBasket(basket);
         renderBasket();
     }
 
-    // Recalculate tier pricing for all rows sharing the same product code
+    // Recalculate garment + decoration pricing for all rows sharing the same product code.
+    // Decoration use priceBreaks; logos always use APPLICATION_PRICE_TIERS by combined qty
+    // so stale stamped rates (e.g. legacy Centre Front print £6.50) cannot stick.
     function recalcTierPricing(basket, productCode) {
         if (!productCode) return;
         const related = basket.filter(i => (i.code || i.productCode) === productCode);
         if (related.length === 0) return;
 
-        // Find priceBreaks from any related item
+        const grandQty = related.reduce((sum, item) => sum + (item.qty || 0), 0);
+
+        // Garment volume breaks (optional — skip if missing)
         let priceBreaks = null;
         for (const item of related) {
             if (item.priceBreaks && item.priceBreaks.length > 0) {
@@ -5048,26 +5193,37 @@
                 break;
             }
         }
-        if (!priceBreaks || priceBreaks.length === 0) return;
-
-        // Sort tiers descending by min quantity so we find the best tier first
-        const sortedTiers = priceBreaks.slice().sort((a, b) => (b.min || 0) - (a.min || 0));
-
-        // Aggregate total qty across all colors/sizes of this product
-        const grandQty = related.reduce((sum, item) => sum + (item.qty || 0), 0);
-
-        // Find the tier price (highest min that qty meets)
-        let tierPrice = sortedTiers[sortedTiers.length - 1].price; // fallback: lowest tier
-        for (const tier of sortedTiers) {
-            if (grandQty >= (tier.min || 0)) {
-                tierPrice = tier.price;
-                break;
+        if (priceBreaks && priceBreaks.length > 0) {
+            const sortedTiers = priceBreaks.slice().sort((a, b) => (b.min || 0) - (a.min || 0));
+            let tierPrice = sortedTiers[sortedTiers.length - 1].price;
+            for (const tier of sortedTiers) {
+                if (grandQty >= (tier.min || 0)) {
+                    tierPrice = tier.price;
+                    break;
+                }
             }
+            related.forEach(item => {
+                item.unitPrice = parseFloat(tierPrice);
+            });
         }
 
-        // Apply to all related items
+        // Decoration: always reprice from official qty bands
+        // (Large Front/Back print stays flat £7.70 — not the Standard Print ladder)
         related.forEach(item => {
-            item.unitPrice = parseFloat(tierPrice);
+            if (Array.isArray(item.logos)) {
+                item.logos.forEach(logo => applyApplicationUnitPrice(logo, grandQty));
+            }
+            if (Array.isArray(item.positions)) {
+                item.positions.forEach(pos => applyApplicationUnitPrice(pos, grandQty, pos && pos.position));
+            } else if (item.positions && typeof item.positions === 'object') {
+                Object.entries(item.positions).forEach(([posKey, pos]) => applyApplicationUnitPrice(pos, grandQty, posKey));
+            }
+            if (item.positionDesigns && typeof item.positionDesigns === 'object') {
+                Object.entries(item.positionDesigns).forEach(([posKey, design]) => applyApplicationUnitPrice(design, grandQty, posKey));
+            }
+            if (Array.isArray(item.customizations)) {
+                item.customizations.forEach(custom => applyApplicationUnitPrice(custom, grandQty));
+            }
         });
     }
 
@@ -5075,7 +5231,7 @@
     function recalcAllTierPricing() {
         let basket = getBasket();
         if (basket.length === 0) return;
-        const codes = [...new Set(basket.map(i => i.code).filter(Boolean))];
+        const codes = [...new Set(basket.map(i => (i.code || i.productCode)).filter(Boolean))];
         codes.forEach(code => recalcTierPricing(basket, code));
         saveBasket(basket);
     }
@@ -5091,7 +5247,7 @@
 
         // Recalc prices after removal (fewer items may change the tier)
         if (basket.length > 0) {
-            const codes = [...new Set(basket.map(i => i.code).filter(Boolean))];
+            const codes = [...new Set(basket.map(i => (i.code || i.productCode)).filter(Boolean))];
             codes.forEach(code => recalcTierPricing(basket, code));
         }
 
@@ -5673,6 +5829,10 @@
         });
 
         saveBasket(basket);
+        // Reprice decorations on every source + target product after replicate
+        const codes = [...new Set(basket.map(i => (i.code || i.productCode)).filter(Boolean))];
+        codes.forEach(code => recalcTierPricing(basket, code));
+        saveBasket(basket);
         closeCopyLogoModal();
         renderBasket();
         showToast(`Logo replicated to ${count} item${count !== 1 ? 's' : ''}`);
@@ -5810,6 +5970,7 @@
                     // Ensure older basket entries have per-view garment
                     // previews before rendering the email attachments.
                     await hydrateMissingPositionPreviews();
+                    recalcAllTierPricing();
                     const basket = getBasket();
                     let totalGarmentCost = 0, totalQuantity = 0, customizationTotal = 0, digitizingFee = 0;
                     const basketItems = [];
@@ -5845,8 +6006,11 @@
                         });
 
                         if (item.logos) {
+                            const itemCode = item.code || item.productCode || '';
+                            const logoQtyBasis = getProductGrandQty(basket, itemCode) || qty;
                             item.logos.forEach(logo => {
-                                const logoUp = logo.unitPrice || 0;
+                                const logoUp = resolveLogoUnitPrice(logo, logoQtyBasis);
+                                logo.unitPrice = logoUp;
                                 const lineTotal = logoUp * qty;
                                 customizationTotal += lineTotal;
                                 customizationsList.push({

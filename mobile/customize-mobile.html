@@ -596,7 +596,7 @@
                         </div>
                     </div>
                     <!-- Back Large -->
-                    <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="8.00">
+                    <div class="position-card" data-position="large-back" data-embroidery="POA" data-print="7.70">
                         <div class="position-card-header">
                             <label class="position-checkbox">
                                 <input type="checkbox" name="position" value="large-back">
@@ -607,9 +607,9 @@
                                     <span class="price-label">EMBROIDERY</span>
                                     <span class="price-value">POA</span>
                                 </button>
-                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�8.00">
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£7.70">
                                     <span class="price-label">PRINT</span>
-                                    <span class="price-value">�8.00</span>
+                                    <span class="price-value">£7.70</span>
                                 </button>
                             </div>
                         </div>
@@ -642,20 +642,20 @@
                     </div>
 
                     <!-- Front Center -->
-                    <div class="position-card" data-position="small-centre-front" data-embroidery="5.00" data-print="6.50">
+                    <div class="position-card" data-position="small-centre-front" data-embroidery="8.00" data-print="7.50">
                         <div class="position-card-header">
                             <label class="position-checkbox">
                                 <input type="checkbox" name="position" value="small-centre-front">
                                 <span>Front Center</span>
                             </label>
                             <div class="position-prices">
-                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="�5.00">
+                                <button type="button" class="price-badge price-emb" data-method="embroidery" data-default-label="Embroidery" data-default-price="£8.00">
                                     <span class="price-label">EMBROIDERY</span>
-                                    <span class="price-value">�5.00</span>
+                                    <span class="price-value">£8.00</span>
                                 </button>
-                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�6.50">
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£7.50">
                                     <span class="price-label">PRINT</span>
-                                    <span class="price-value">�6.50</span>
+                                    <span class="price-value">£7.50</span>
                                 </button>
                             </div>
                         </div>
@@ -688,7 +688,7 @@
                     </div>
 
                     <!-- Large Front -->
-                    <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="8.00">
+                    <div class="position-card" data-position="large-front-center" data-embroidery="POA" data-print="7.70">
                         <div class="position-card-header">
                             <label class="position-checkbox">
                                 <input type="checkbox" name="position" value="large-front-center">
@@ -699,9 +699,9 @@
                                     <span class="price-label">EMBROIDERY</span>
                                     <span class="price-value">POA</span>
                                 </button>
-                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="�8.00">
+                                <button type="button" class="price-badge price-print" data-method="print" data-default-label="Print" data-default-price="£7.70">
                                     <span class="price-label">PRINT</span>
-                                    <span class="price-value">�8.00</span>
+                                    <span class="price-value">£7.70</span>
                                 </button>
                             </div>
                         </div>
@@ -1173,7 +1173,21 @@
             ]
         };
 
-        function getApplicationUnitPrice(method, quantity) {
+        const LARGE_PRINT_FLAT_RATE = 7.70;
+
+        function isLargePrintPosition(position) {
+            const key = String(position || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            if (!key) return false;
+            if (key === 'large-back' || key === 'large-front' || key === 'back-large' || key === 'front-large') return true;
+            if (/^large-(front|back)/.test(key)) return true;
+            if (/^(front|back)-large/.test(key)) return true;
+            return false;
+        }
+
+        function getApplicationUnitPrice(method, quantity, position) {
+            if (String(method || '').toLowerCase() !== 'embroidery' && isLargePrintPosition(position)) {
+                return LARGE_PRINT_FLAT_RATE.toFixed(2);
+            }
             const tiers = APPLICATION_PRICE_TIERS[method] || APPLICATION_PRICE_TIERS.print;
             const qty = Math.max(1, Number(quantity) || 1);
             const tier = tiers.find((item) => qty >= item.min && qty <= item.max) || tiers[tiers.length - 1];
@@ -1184,13 +1198,14 @@
         function getDefaultPositionPrices(quantity) {
             const embroidery = getApplicationUnitPrice('embroidery', quantity);
             const print = getApplicationUnitPrice('print', quantity);
+            const largePrint = LARGE_PRINT_FLAT_RATE.toFixed(2);
             return {
                 'left-breast': { embroidery, print },
                 'right-breast': { embroidery, print },
                 'small-centre-front': { embroidery, print },
-                'large-front-center': { embroidery, print },
-                'large-centre-front': { embroidery, print },
-                'large-back': { embroidery, print },
+                'large-front-center': { embroidery, print: largePrint },
+                'large-centre-front': { embroidery, print: largePrint },
+                'large-back': { embroidery, print: largePrint },
                 'left-arm': { embroidery, print },
                 'right-arm': { embroidery, print }
             };
