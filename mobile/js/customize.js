@@ -157,6 +157,17 @@
     }
 
     function resolveCustomizationTemplate(productData) {
+        const template = productData && typeof productData === 'object'
+            ? (productData.customizationTemplate || {})
+            : {};
+        const configuredSlug = customizationSlugify(template.productTypeSlug || productData?.customizationProductTypeSlug);
+        const configuredSubtype = customizationSlugify(
+            template.subtypeKey || productData?.customizationSubtypeKey || productData?.customizationVariantKey
+        );
+        if (configuredSlug && configuredSubtype) {
+            return { slug: configuredSlug, subtype: configuredSubtype };
+        }
+
         const context = customizationProductContext(productData);
         const explicit = customizationSlugify(context.productType);
         if (CUSTOMIZATION_EXACT_TEMPLATES[explicit]) {

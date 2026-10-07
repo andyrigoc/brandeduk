@@ -40,6 +40,10 @@
         if (window.API_USE_LOCAL === true) {
             return LOCAL_API;
         }
+        // The bundled development server exposes a same-origin API bridge.
+        if (isLocalHost() && window.location && window.location.port === '5510') {
+            return window.location.origin + '/__api';
+        }
         // Local static pages (Live Server etc.): CORS bridge on :3005
         if (isLocalHost() && window.API_USE_LOCAL_PROXY !== false) {
             return LOCAL_CORS_PROXY;

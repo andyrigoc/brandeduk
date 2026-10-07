@@ -718,7 +718,10 @@
                 }
 
                 try {
-                    const response = await fetch(`https://api.brandeduk.com/api/products/suggest?q=${encodeURIComponent(query)}`);
+                    const apiBase = typeof window.resolveBrandedApiBase === 'function'
+                        ? window.resolveBrandedApiBase()
+                        : (window.API_BASE_URL || 'https://api.brandeduk.com');
+                    const response = await fetch(`${String(apiBase).replace(/\/+$/, '')}/api/products/suggest?q=${encodeURIComponent(query)}`);
                     if (!response.ok) throw new Error('API Error');
                     const data = await response.json();
                     renderSuggestions(data, query);

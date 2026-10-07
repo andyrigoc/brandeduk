@@ -61,8 +61,9 @@
         var API_BASE = resolveApiBase() + '/api/filters/product-types';
         
         try {
-            console.log('🔄 Fetching product types from:', API_BASE);
-            const response = await fetch(API_BASE);
+            const apiUrl = `${resolveApiBase()}/api/filters/product-types`;
+            console.log('🔄 Fetching product types from:', apiUrl);
+            const response = await fetch(apiUrl);
             
             console.log('📡 Response status:', response.status, response.statusText);
             
@@ -104,7 +105,7 @@
             console.error('Error details:', {
                 message: error.message,
                 stack: error.stack,
-                url: API_BASE
+                url: `${resolveApiBase()}/api/filters/product-types`
             });
         }
 

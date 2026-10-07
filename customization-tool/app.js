@@ -1470,6 +1470,7 @@ function applySelectedProductContext() {
   state.productName = selectedProductData?.name || selectedProductData?.title || selectedProductData?.productName || state.productName;
   const selectedProductType =
     selectedProductData?.productType || selectedProductData?.category || selectedProductData?.type;
+  const selectedTemplate = selectedProductData?.customizationTemplate || {};
   const selectedProductContext = [
     state.productName,
     selectedProductData?.description,
@@ -1483,12 +1484,16 @@ function applySelectedProductContext() {
   // With only a URL code, wait for the product API to identify the type. Using
   // the hard-coded initial "Polo" context here starts the wrong mockup request.
   const selectedCustomizationSlug = selectedProductData
-    ? resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
+    ? selectedTemplate.productTypeSlug
+      || selectedProductData?.customizationProductTypeSlug
+      || resolveCustomizationProductTypeSlug(state.productName, selectedProductType)
     : (urlCode ? "" : resolveCustomizationProductTypeSlug(state.productName, selectedProductType));
   const selectedCustomizationVariant = resolveCustomizationVariantKey(
     selectedProductContext || state.productName,
     selectedProductType,
-    selectedProductData?.customizationVariantKey
+    selectedTemplate.subtypeKey
+      || selectedProductData?.customizationSubtypeKey
+      || selectedProductData?.customizationVariantKey
   );
   if (
     selectedCustomizationSlug !== state.customizationProductTypeSlug
@@ -1599,8 +1604,11 @@ async function hydrateSelectedProductFromApi() {
     state.brandLogo = resolveBrandLogoUrl(state.brandName, productData);
 
     const apiProductType = productData.productType || productData.category || productData.type;
+    const apiTemplate = productData.customizationTemplate || {};
     const apiCustomizationSlug =
-      resolveCustomizationProductTypeSlug(state.productName, apiProductType);
+      apiTemplate.productTypeSlug
+      || productData.customizationProductTypeSlug
+      || resolveCustomizationProductTypeSlug(state.productName, apiProductType);
     const apiProductContext = [state.productName, productData.description, productData.details, productData.features]
       .filter(Boolean)
       .map(value => typeof value === "string" ? value : JSON.stringify(value))
@@ -1608,7 +1616,10 @@ async function hydrateSelectedProductFromApi() {
     state.productDecorationContext = apiProductContext;
     const apiCustomizationVariant = resolveCustomizationVariantKey(
       apiProductContext,
-      apiProductType
+      apiProductType,
+      apiTemplate.subtypeKey
+        || productData.customizationSubtypeKey
+        || productData.customizationVariantKey
     );
     if (
       apiCustomizationSlug !== state.customizationProductTypeSlug

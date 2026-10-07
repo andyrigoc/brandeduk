@@ -816,6 +816,8 @@ function fillPage4Summary() {
     }
 }
 
+window.refreshPage4Summary = fillPage4Summary;
+
 var P4_METHOD_RANK = { yes: 0, poa: 1, no: 2 };
 // embroideryVoa: special request path (customer note first; staff confirms — e.g. back embroidery).
 var P4_CATEGORY_METHODS = {
@@ -952,7 +954,7 @@ function page4ResolveExplicitProductTypeSlug(product) {
         var raw = page4NormalizeProductTypeSlug(fields[i]);
         if (!raw) continue;
         if (P4_PRODUCT_TYPE_ALIASES[raw]) return P4_PRODUCT_TYPE_ALIASES[raw];
-        if (P4_CATEGORY_METHODS[raw] || P4_PRODUCT_ASSET_FOLDER[raw]) return raw;
+        if (P4_CATEGORY_METHODS[raw]) return raw;
     }
     return '';
 }
@@ -965,15 +967,78 @@ function page4GiletSubtype(text, hiVis) {
 function page4JacketSubtype(text, hiVis) {
     if (hiVis) return 'hi-vis-jacket';
     if (/puffer|padded|quilted|insulated|down jacket/.test(text)) return 'padded-puffer';
-    if (/waterproof|parka|rain|storm|anorak|long coat/.test(text)) return 'waterproof-parka';
+    if (/\bwaterproof\b|\bparka\b|\brain(?:coat|suit)?\b|\brainwear\b|\bstorm\b|\banorak\b|\blong coat\b/.test(text)) return 'waterproof-parka';
     if (/bomber/.test(text)) return 'bomber';
     return 'workwear';
 }
 
+function page4IsPartialZip(value) {
+    return /(?:quarter|half)(?:[\s-]?neck)?[\s-]?zip|1\s*[\/\u2044]\s*[24](?:[\s-]?neck)?[\s-]?zip|[\u00bc\u00bd](?:[\s-]?neck)?[\s-]?zip|one[\s-]?(?:quarter|half)(?:[\s-]?neck)?[\s-]?zip|zip[\s-]?neck/.test(String(value || '').toLowerCase());
+}
+
+function page4ResolveSleeveSubtype(product) {
+    product = product || {};
+    var longSleevePattern = /\blong[\s-]?(?:sleeve|sleeved)\b|\bl\/s\b/i;
+    var shortSleevePattern = /\bshort[\s-]?(?:sleeve|sleeved)\b|\bs\/s\b/i;
+    var name = String(product.name || '');
+    if (longSleevePattern.test(name)) return 'long-sleeve';
+    if (shortSleevePattern.test(name)) return 'short-sleeve';
+
+    var sleeveValues = product.sleeves || product.sleeveSlugs || product.sleeve || [];
+    if (!Array.isArray(sleeveValues)) sleeveValues = String(sleeveValues).replace(/[{}[\]"]/g, '').split(',');
+    var normalizedSleeves = sleeveValues.map(page4NormalizeProductTypeSlug).filter(Boolean);
+    var hasLongSleeve = normalizedSleeves.some(function (value) {
+        return value === 'long-sleeve' || value.indexOf('long-sleeve-') === 0;
+    });
+    var hasShortSleeve = normalizedSleeves.some(function (value) {
+        return value === 'short-sleeve' || value.indexOf('short-sleeve-') === 0;
+    });
+    if (hasLongSleeve !== hasShortSleeve) return hasLongSleeve ? 'long-sleeve' : 'short-sleeve';
+
+    var description = String(product.description || '');
+    var descriptionHasLongSleeve = longSleevePattern.test(description);
+    var descriptionHasShortSleeve = shortSleevePattern.test(description);
+    if (descriptionHasLongSleeve !== descriptionHasShortSleeve) {
+        return descriptionHasLongSleeve ? 'long-sleeve' : 'short-sleeve';
+    }
+    return '';
+}
+
 function customizationConfigTarget(product) {
     product = product || {};
+    var template = product.customizationTemplate || {};
+    var configuredSlug = page4NormalizeProductTypeSlug(template.productTypeSlug || product.customizationProductTypeSlug);
+    var configuredSubtype = page4NormalizeProductTypeSlug(
+        template.subtypeKey || product.customizationSubtypeKey || product.customizationVariantKey
+    );
     var text = [product.name, product.productType, product.category, product.type].join(' ').toLowerCase();
+    var nameText = String(product.name || '').toLowerCase();
+    var normalizedProductType = page4NormalizeProductTypeSlug(product.productType || product.category || product.type);
+    var isPartialZip = page4IsPartialZip(text);
+    var sleeveSubtype = page4ResolveSleeveSubtype(product);
     var hiVis = /\bhi[\s\-_]?vi[sz](?:ibility)?\b|\bhigh[\s\-_]?vi[sz](?:ibility)?\b|\bhivis\b|\bhiviz\b|\bsafety[\s\-]?vest/.test(text);
+    if (isPartialZip && !hiVis && configuredSlug === 'fleece') {
+        return { slug: 'fleece', subtype: 'quarter-zip' };
+    }
+    if (isPartialZip && !hiVis && configuredSlug === 'sweatshirts') {
+        return { slug: 'sweatshirts', subtype: 'quarter-zip' };
+    }
+    if (isPartialZip && !hiVis && configuredSlug === 'hoodies') {
+        return { slug: 'hoodies', subtype: 'pullover' };
+    }
+    if (normalizedProductType === 'rain-suits' || normalizedProductType === 'rain-suit') {
+        var isStandaloneRainTrousers = /\btrousers?\b/.test(nameText) && !/\bjacket\b|\bset\b|\bsuit\b/.test(nameText);
+        if (isStandaloneRainTrousers) return { slug: 'trousers', subtype: 'work-trousers' };
+        return { slug: 'jackets', subtype: hiVis ? 'hi-vis-jacket' : 'waterproof-parka' };
+    }
+    if ((configuredSlug === 'shirts' || configuredSlug === 'polos' || configuredSlug === 'tshirts') && sleeveSubtype) {
+        if (configuredSubtype === 'long-sleeve' || configuredSubtype === 'short-sleeve' || !configuredSubtype) {
+            return { slug: configuredSlug, subtype: sleeveSubtype };
+        }
+    }
+    if (configuredSlug && configuredSubtype) {
+        return { slug: configuredSlug, subtype: configuredSubtype };
+    }
     var explicit = page4ResolveExplicitProductTypeSlug(product);
 
     // Name-based specifics must beat a broad/wrong explicit type (e.g. tanks before tshirts,
@@ -1018,8 +1083,11 @@ function customizationConfigTarget(product) {
     if (/soft[\s\-_]?shells?/.test(text) || explicit === 'softshells') {
         return { slug: 'softshells', subtype: 'softshell-jacket' };
     }
+    if (/\brain[\s-]?(?:coat|suit)\b|\brainwear\b|\bwaterproof[\s-]?(?:jacket|coat|suit|shell)\b/.test(text)) {
+        return { slug: 'jackets', subtype: hiVis ? 'hi-vis-jacket' : 'waterproof-parka' };
+    }
     if (/fleece|microfleece/.test(text) || explicit === 'fleece') {
-        return { slug: 'fleece', subtype: /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? 'quarter-zip' : 'full-zip' };
+        return { slug: 'fleece', subtype: isPartialZip ? 'quarter-zip' : 'full-zip' };
     }
     if (/beanie|bobble hat|knit(?:ted)? hat|wool hat/.test(text) || explicit === 'beanies') {
         return { slug: 'beanies', subtype: /bobble|pom/.test(text) ? 'bobble' : 'cuffed' };
@@ -1031,16 +1099,19 @@ function customizationConfigTarget(product) {
         return { slug: 'caps', subtype: /trucker/.test(text) ? 'trucker' : 'baseball' };
     }
     if (/polo/.test(text) || explicit === 'polos') {
-        return { slug: 'polos', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+        return { slug: 'polos', subtype: sleeveSubtype || 'short-sleeve' };
     }
     if (/hoodie|hooded|zoodie/.test(text) || explicit === 'hoodies') {
-        return { slug: 'hoodies', subtype: /full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? 'full-zip' : 'pullover' };
+        return {
+            slug: 'hoodies',
+            subtype: hiVis ? 'hi-vis-hoodie' : (isPartialZip ? 'pullover' : (/full[\s-]?zip|zip[\s-]?through|zipped|zip hoodie/.test(text) ? 'full-zip' : 'pullover'))
+        };
     }
     if (/sweat[\s-]?pant|jogger|jogging bottom/.test(text) || explicit === 'sweatpants') {
         return { slug: 'sweatpants', subtype: 'joggers' };
     }
     if (/sweatshirt/.test(text) || explicit === 'sweatshirts') {
-        return { slug: 'sweatshirts', subtype: /quarter[\s-]?zip|1\/4[\s-]?zip|half[\s-]?zip/.test(text) ? 'quarter-zip' : 'crewneck' };
+        return { slug: 'sweatshirts', subtype: hiVis ? 'hi-vis-sweatshirt' : (isPartialZip ? 'quarter-zip' : 'crewneck') };
     }
     if (/\bjacket\b|\bparka\b|\bcoats?\b|\banorak\b|\bwindbreaker\b/.test(text) || explicit === 'jackets') {
         return { slug: 'jackets', subtype: page4JacketSubtype(text, false) };
@@ -1058,10 +1129,10 @@ function customizationConfigTarget(product) {
         return { slug: 'shorts', subtype: 'shorts' };
     }
     if (/\bshirt|\bblouse/.test(text) && !/t[\s-]?shirt/.test(text) || explicit === 'shirts') {
-        return { slug: 'shirts', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+        return { slug: 'shirts', subtype: sleeveSubtype || 'short-sleeve' };
     }
     if (/t[\s-]?shirt|\btee\b/.test(text) || explicit === 'tshirts') {
-        return { slug: 'tshirts', subtype: /long[\s-]?sleeve|long sleeved|l\/s\b/.test(text) ? 'long-sleeve' : 'short-sleeve' };
+        return { slug: 'tshirts', subtype: sleeveSubtype || 'short-sleeve' };
     }
     if (explicit) return { slug: explicit, subtype: '' };
     return { slug: 'tshirts', subtype: '' };
@@ -1080,6 +1151,17 @@ function page4CustomiseTitle(product) {
     if (slug === 'fleece') return 'Customise your fleece';
     if (slug === 'jackets') return 'Customise your jacket';
     if (slug === 'aprons') return 'Customise your apron';
+    if (slug === 'bodysuits') return 'Customise your bodysuit';
+    if (slug === 'coveralls') return 'Customise your coverall';
+    if (slug === 'dungarees') return 'Customise your dungarees';
+    if (slug === 'trousers') return 'Customise your trousers';
+    if (slug === 'shorts') return 'Customise your shorts';
+    if (slug === 'shirts') return 'Customise your shirt';
+    if (slug === 'blouses') return 'Customise your blouse';
+    if (slug === 'chef-jackets') return 'Customise your chef jacket';
+    if (slug === 'tunics') return 'Customise your tunic';
+    if (slug === 'caps') return 'Customise your cap';
+    if (slug === 'bags' || slug === 'laptop-cases') return 'Customise your bag';
     return 'Customise your product';
 }
 
@@ -1192,57 +1274,6 @@ function page4PositionCard(product, position) {
         '<div class="p4-logo-under" hidden><img alt="Logo"><button type="button" class="p4-logo-remove" aria-label="Remove logo">&times;</button></div></div>';
 }
 
-// Fixed local mockup assets (not postimg / remote hosting).
-var P4_POSITION_ASSET_BASE = 'brandedukv15-child/assets/images/customization/positions/';
-var P4_PRODUCT_ASSET_FOLDER = {
-    tshirts: 'adult-tops/short-sleeve-crew-neck',
-    // No dedicated local tank silhouettes yet; API images for vests-t-shirt override after fetch.
-    'vests-t-shirt': 'adult-tops/short-sleeve-crew-neck',
-    shirts: 'adult-tops/short-sleeve-crew-neck',
-    polos: 'adult-tops/short-sleeve-polo',
-    hoodies: 'adult-tops/hoodies',
-    sweatshirts: 'adult-tops/hoodies',
-    fleece: 'adult-tops/hoodies',
-    softshells: 'adult-tops/soft-shell-jacket',
-    jackets: 'adult-tops/soft-shell-jacket',
-    'gilets-body-warmers': 'adult-tops/soft-shell-jacket',
-    'safety-vests': 'adult-tops/hivis-jacket',
-    aprons: 'aprons/bib-apron',
-    bags: 'bags/gym-bag',
-    caps: 'headwear/baseball-cap',
-    hats: 'headwear/baseball-cap',
-    beanies: 'headwear/beanie',
-    trousers: 'pants/workwear-long-trousers',
-    shorts: 'pants/workwear-shorts',
-    sweatpants: 'pants/workwear-shorts'
-};
-var P4_POSITION_ASSET_FILE = {
-    'left-chest': 'left-chest.png',
-    'left-breast': 'left-chest.png',
-    'right-chest': 'right-chest.png',
-    'right-breast': 'right-chest.png',
-    'left-sleeve': 'left-sleeve.png',
-    'left-arm': 'left-sleeve.png',
-    'right-sleeve': 'right-sleeve.png',
-    'right-arm': 'right-sleeve.png',
-    'large-back': 'back.png',
-    'upper-back': 'back.png',
-    'back': 'back.png',
-    'large-front': 'left-chest.png',
-    'centre-chest': 'left-chest.png',
-    'center-chest': 'left-chest.png',
-    'front-center': 'left-chest.png',
-    'front-centre': 'left-chest.png',
-    'nape-of-neck': 'back.png',
-    'center-front': 'center-front.png',
-    'low-left': 'low-left.png',
-    'low-right': 'low-right.png',
-    'front': 'front.png',
-    'front-logo': 'front-logo.png',
-    'left-side': 'left-side.jpg',
-    'right-side': 'right-side.jpg'
-};
-
 function page4NormalizePositionKey(value) {
     return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -1266,74 +1297,6 @@ function p4IsLargePrintPosition(position) {
         if (/^large-(front|back)-print/.test(key)) return true;
     }
     return false;
-}
-
-function page4LocalPositionImage(productSlug, positionKey) {
-    var folder = P4_PRODUCT_ASSET_FOLDER[productSlug] || 'adult-tops/short-sleeve-crew-neck';
-    var key = page4NormalizePositionKey(positionKey);
-    var file = P4_POSITION_ASSET_FILE[key];
-    if (!file) {
-        if (/left/.test(key) && /chest|breast/.test(key)) file = 'left-chest.png';
-        else if (/right/.test(key) && /chest|breast/.test(key)) file = 'right-chest.png';
-        else if (/left/.test(key) && /sleeve|arm/.test(key)) file = 'left-sleeve.png';
-        else if (/right/.test(key) && /sleeve|arm/.test(key)) file = 'right-sleeve.png';
-        else if (/back/.test(key)) file = 'back.png';
-        else if (/front|centre|center/.test(key)) file = 'left-chest.png';
-    }
-    if (!file) return '';
-    // Folder-specific filename variants that exist on disk
-    if (folder === 'adult-tops/hivis-jacket') {
-        if (file === 'left-sleeve.png') file = 'left-sleeve.jpg';
-        if (file === 'right-sleeve.png') file = 'right-sleeve.jpg';
-        if (file === 'back.png') file = 'back.jpg';
-    }
-    if (folder === 'adult-tops/soft-shell-jacket' && (file === 'left-chest.png' || file === 'right-chest.png')) {
-        file = 'front-right.png';
-    }
-    if (folder === 'adult-tops/long-sleeve-polo' && file === 'left-chest.png') {
-        file = 'right-chest.png';
-    }
-    if (folder === 'aprons/bib-apron') {
-        if (/left/.test(key)) file = 'low-left.png';
-        else if (/right/.test(key)) file = 'low-right.png';
-        else file = 'center-front.png';
-    }
-    if (folder === 'headwear/beanie') file = 'front-logo.png';
-    if (folder === 'headwear/baseball-cap') {
-        if (/left/.test(key)) file = 'left-side.jpg';
-        else if (/right/.test(key)) file = 'right-side.jpg';
-        else if (/back/.test(key)) file = 'back.png';
-        else file = 'front.png';
-    }
-    if (folder === 'bags/gym-bag') {
-        if (/left/.test(key)) file = 'Gym Bag Left.png';
-        else if (/right/.test(key)) file = 'Gym Bag Right.png';
-        else if (/back|side/.test(key)) file = 'Gym Bag Side.png';
-        else file = 'Gym Bag Centered.png';
-    }
-    if (folder.indexOf('pants/') === 0) {
-        file = folder.indexOf('shorts') >= 0 ? 'Blank Work short.png' : 'Blank Work Trouser.png';
-    }
-    return P4_POSITION_ASSET_BASE + folder + '/' + encodeURI(file);
-}
-
-function page4ApplyLocalImagesToCards(product) {
-    var host = document.getElementById('p4PositionOptions');
-    if (!host) return;
-    var slug = customizationConfigTarget(product || {}).slug;
-    host.querySelectorAll('.position-card').forEach(function (card) {
-        var key = card.getAttribute('data-position') || '';
-        var labelEl = card.querySelector('.position-checkbox span');
-        if (!key && labelEl) key = labelEl.textContent || '';
-        var local = page4LocalPositionImage(slug, key);
-        var photo = card.querySelector('.position-placeholder');
-        if (photo && local) {
-            photo.src = local;
-            photo.alt = (labelEl && labelEl.textContent) || key;
-            photo.style.removeProperty('transform');
-            photo.classList.remove('mirrored');
-        }
-    });
 }
 
 var page4PositionRequest = 0;
@@ -1391,7 +1354,6 @@ function page4ApiPositionImage(position) {
 function page4ApplyApiImagesToCards(product, positions) {
     var host = document.getElementById('p4PositionOptions');
     if (!host) return;
-    var slug = customizationConfigTarget(product || {}).slug;
     var byKey = {};
     (positions || []).forEach(function (position) {
         var key = page4NormalizePositionKey(position.slug || position.label || '');
@@ -1404,15 +1366,40 @@ function page4ApplyApiImagesToCards(product, positions) {
         var position = byKey[key];
         var apiImage = page4ApiPositionImage(position);
         var photo = card.querySelector('.position-placeholder');
-        var local = page4LocalPositionImage(slug, key);
-        if (!photo || !apiImage) return;
+        if (!photo || !apiImage) {
+            if (photo) photo.classList.add('is-missing');
+            return;
+        }
         photo.alt = (labelEl && labelEl.textContent) || key;
         photo.onerror = function () {
             photo.onerror = null;
-            if (local) photo.src = local;
+            photo.removeAttribute('src');
+            photo.classList.add('is-missing');
         };
+        photo.onload = function () { photo.classList.remove('is-missing'); };
         photo.src = apiImage;
     });
+}
+
+function page4ShowTemplateState(host, message, retryProduct) {
+    host.innerHTML = '';
+    var state = document.createElement('div');
+    state.className = 'p4-template-state';
+    state.setAttribute('role', retryProduct ? 'alert' : 'status');
+    var copy = document.createElement('span');
+    copy.textContent = message;
+    state.appendChild(copy);
+    if (retryProduct) {
+        var retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'p4-template-retry';
+        retry.textContent = 'Retry';
+        retry.addEventListener('click', function () {
+            loadPage4PositionImages(retryProduct);
+        });
+        state.appendChild(retry);
+    }
+    host.appendChild(state);
 }
 
 function p4ReapplyAssignedLogos() {
@@ -1429,10 +1416,7 @@ function loadPage4PositionImages(product) {
     var host = document.getElementById('p4PositionOptions');
     if (!host) return;
     var target = customizationConfigTarget(product || {});
-    // Always paint fixed local assets first so localhost never shows dead postimg placeholders.
-    page4ApplyLocalImagesToCards(product);
-    // Show any restored/selected logos immediately (static cards), then again after API rebuild.
-    p4ReapplyAssignedLogos();
+    page4ShowTemplateState(host, 'Loading customisation positions…');
     var requestId = ++page4PositionRequest;
     function refreshP4Scroll() {
         if (typeof window.refreshOrderPopupScrollAffordances === 'function') {
@@ -1449,13 +1433,8 @@ function loadPage4PositionImages(product) {
                 return position && position.isActive !== false;
             });
             if (!positions || !positions.length) {
-                page4ApplyLocalImagesToCards(product);
-                p4LoadBackendPrices().then(function () {
-                    if (requestId !== page4PositionRequest) return;
-                    p4ApplyBackendPricesToCards();
-                    p4ReapplyAssignedLogos();
-                    refreshP4Scroll();
-                });
+                page4ShowTemplateState(host, 'Customisation positions could not be loaded.', product);
+                refreshP4Scroll();
                 return;
             }
             // Rebuild cards so each position has slug data-position + .p4-logo-under preview slot.
@@ -1463,7 +1442,6 @@ function loadPage4PositionImages(product) {
                 return page4PositionCard(product, position);
             }).join('');
             p4PaintPrintButtons();
-            page4ApplyLocalImagesToCards(product);
             page4ApplyApiImagesToCards(product, positions);
             refreshP4Scroll();
             p4LoadBackendPrices().then(function () {
@@ -1476,13 +1454,8 @@ function loadPage4PositionImages(product) {
         })
         .catch(function () {
             if (requestId !== page4PositionRequest) return;
-            page4ApplyLocalImagesToCards(product);
-            p4LoadBackendPrices().then(function () {
-                if (requestId !== page4PositionRequest) return;
-                p4ApplyBackendPricesToCards();
-                p4ReapplyAssignedLogos();
-                refreshP4Scroll();
-            });
+            page4ShowTemplateState(host, 'Customisation positions could not be loaded.', product);
+            refreshP4Scroll();
         });
 }
 

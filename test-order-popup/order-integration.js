@@ -16,6 +16,13 @@
     const productDetailRequests = new Map();
     let activeProductRequest = 0;
 
+    function getApiBase() {
+        if (typeof window.resolveBrandedApiBase === 'function') {
+            return window.resolveBrandedApiBase();
+        }
+        return String(window.API_BASE_URL || 'https://api.brandeduk.com').replace(/\/+$/, '');
+    }
+
     function fetchJson(url) {
         return fetch(url).then(function (response) {
             if (!response.ok) throw new Error('Product request failed');
@@ -27,7 +34,7 @@
         const cached = window.BrandedPcProductCache && window.BrandedPcProductCache[code];
         if (cached) return Promise.resolve(cached);
 
-        return fetchJson('https://api.brandeduk.com/api/products?q=' + encodeURIComponent(code) + '&limit=1')
+        return fetchJson(getApiBase() + '/api/products?q=' + encodeURIComponent(code) + '&limit=1')
             .then(function (payload) {
                 const items = Array.isArray(payload && payload.items)
                     ? payload.items
@@ -48,7 +55,7 @@
         if (productDetailRequests.has(cacheKey)) return productDetailRequests.get(cacheKey);
 
         const request = Promise.allSettled([
-            fetchJson('https://api.brandeduk.com/api/products/' + encodeURIComponent(code)),
+            fetchJson(getApiBase() + '/api/products/' + encodeURIComponent(code)),
             includeCatalogue ? getCatalogueProduct(code) : Promise.resolve(null)
         ]).then(function (results) {
             return {
@@ -490,7 +497,7 @@
                 return;
             }
 
-            const merged = Object.assign({}, productData || {}, fullData || {}, catalogueProduct || {});
+            const merged = Object.assign({}, catalogueProduct || {}, productData || {}, fullData || {});
             if (fullData && String(fullData.description || '').trim()) {
                 merged.description = fullData.description;
             }
@@ -511,6 +518,9 @@
             window.BrandedPcProductCache[code] = merged;
             sessionStorage.setItem('selectedProductData', JSON.stringify(merged));
             loadProductIntoPopup(merged);
+            if (window.current === 3 && typeof window.refreshPage4Summary === 'function') {
+                window.refreshPage4Summary();
+            }
         });
 
     };
