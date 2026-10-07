@@ -5894,20 +5894,23 @@
         // Checkout / Quote
         const checkoutBtn = document.getElementById('checkoutBtn');
         const quoteBtn = document.getElementById('requestQuoteBtn');
-        // "Request a quote" opens the site-wide Get in touch popup, prefilled with a basket summary.
+        // "Request a quote" must use the dedicated basket quote form so the
+        // full basket and customisation details are submitted to /api/quotes.
         const openQuotePopup = () => {
             const basket = getBasket();
-            saveOrderNotes();
-            const MAX_LINES = 12;
-            const lines = basket.slice(0, MAX_LINES).map((item) => {
-                const details = [item.code, item.color, item.size].filter(Boolean).join(', ');
-                return `- ${item.qty || 1} x ${item.name || 'Product'}${details ? ` (${details})` : ''}`;
-            });
-            if (basket.length > MAX_LINES) lines.push(`- ...and ${basket.length - MAX_LINES} more item(s)`);
-            const message = lines.length ? `Hi, I would like a quote for the items in my basket:\n${lines.join('\n')}` : '';
-            if (typeof window.openContactPopup === 'function') {
-                window.openContactPopup(message ? { message } : undefined);
+            if (basket.length === 0) {
+                alert('Please add items to your basket first');
+                return;
             }
+            saveOrderNotes();
+            const overlay = document.getElementById('quotePopupOverlay');
+            if (!overlay) {
+                alert('Unable to open the quote form. Please try again.');
+                return;
+            }
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('quoteName')?.focus();
         };
         // "Proceed to Checkout" â†’ 3-step checkout page (min Â£50 ex. VAT)
         if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
