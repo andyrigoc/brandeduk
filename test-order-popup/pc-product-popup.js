@@ -174,6 +174,7 @@
 
     progressItems.forEach(function (item) {
         item.addEventListener('click', function () {
+            if (window.pcIgnoreFlowStepClicksUntil && Date.now() < window.pcIgnoreFlowStepClicksUntil) return;
             var requested = Number(item.dataset.flowStep);
             var current = Number(window.current) || 0;
             if (requested <= current && requested <= 2 && typeof window.goToPage === 'function') {

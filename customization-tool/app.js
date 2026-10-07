@@ -6954,6 +6954,21 @@ function clearPersistedPendingLogoTarget() {
 
 function openLogoFilePicker() {
   persistPendingLogoTarget();
+  if (logoFileInput) {
+    // iPad ignores a display:none file input, and focusing one inside a
+    // transformed page scrolls the order wizard back to the product step.
+    logoFileInput.removeAttribute("hidden");
+    logoFileInput.style.position = "fixed";
+    logoFileInput.style.left = "50%";
+    logoFileInput.style.top = "50%";
+    logoFileInput.style.width = "1px";
+    logoFileInput.style.height = "1px";
+    logoFileInput.style.opacity = "0";
+    logoFileInput.style.pointerEvents = "none";
+  }
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: "pcFilePickerArmed" }, window.location.origin);
+  }
   logoFileInput?.click();
 }
 

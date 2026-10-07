@@ -191,11 +191,65 @@
         var code = cleanCode(new URL(window.location.href).searchParams.get('product'));
         var popup = document.getElementById('orderPopup');
         var isOpen = popup && window.getComputedStyle(popup).display !== 'none';
+        var openProduct = window.currentOrderProduct || window.productData || {};
+        var openCode = cleanCode(openProduct.code || openProduct.sku || openProduct.style_code);
+
+        // A tablet file picker, and an edge swipe while choosing a photo,
+        // fires popstate without leaving this product. openOrderPopup always
+        // restarts the wizard at the first step and drops the file.
+        if (code && isOpen && openCode === code) return;
 
         if (code) {
             baseOpen(code, getCachedProduct(code));
         } else if (isOpen) {
             baseClose();
+        }
+    });
+
+    function restoreTabletUploadStep(url, code) {
+        if (url.searchParams.get('from') === 'basket') return;
+        var saved = null;
+        try {
+            saved = JSON.parse(sessionStorage.getItem('pcOrderResume') || 'null');
+        } catch (error) {
+            saved = null;
+        }
+        sessionStorage.removeItem('pcOrderResume');
+        if (!saved || cleanCode(saved.code) !== code) return;
+        if (!saved.at || Date.now() - saved.at > 180000) return;
+
+        if (saved.colour) window.selectedColour = saved.colour;
+        if (saved.quantities && typeof saved.quantities === 'object') {
+            window.quantities = saved.quantities;
+        }
+        var step = Number(saved.step);
+        if (step > 0 && step < 5 && typeof window.goToPage === 'function') {
+            window.goToPage(step);
+        }
+        if (saved.customizer && typeof window.openPcOrderCustomizer === 'function') {
+            window.openPcOrderCustomizer();
+        }
+    }
+
+    window.addEventListener('pagehide', function () {
+        var popup = document.getElementById('orderPopup');
+        if (!popup || window.getComputedStyle(popup).display === 'none') return;
+        if (typeof window.current !== 'number' || window.current < 1) return;
+        var product = window.currentOrderProduct || window.productData || {};
+        var code = cleanCode(product.code || product.sku || product.style_code);
+        if (!code) return;
+        var panel = document.getElementById('pcCustomizerPanel');
+        try {
+            sessionStorage.setItem('pcOrderResume', JSON.stringify({
+                code: code,
+                step: window.current,
+                colour: window.selectedColour || '',
+                quantities: window.quantities || {},
+                customizer: !!(panel && !panel.hidden),
+                at: Date.now()
+            }));
+        } catch (error) {
+            /* sessionStorage can be unavailable in private mode */
         }
     });
 
@@ -210,6 +264,7 @@
         });
         Promise.resolve(request).then(function () {
             openBasketCustomization(url, code);
+            restoreTabletUploadStep(url, code);
             notifyBasketWhenReady(url);
         });
     }

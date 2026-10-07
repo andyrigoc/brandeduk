@@ -640,10 +640,33 @@ $(document).on("click", ".back", function(){
 // basket.html) can leave the sliding .track mid-animation with no visible
 // Next/Back button. Snap it back to whatever page window.current says is
 // active, with no animation, so navigation always works immediately.
-window.addEventListener("pageshow", function() {
+function snapOrderTrackToCurrent() {
     if (typeof window.current !== "number") return;
+    var popup = document.getElementById("orderPopup");
+    if (!popup || window.getComputedStyle(popup).display === "none") return;
     var target = -(window.current * 100) + "%";
     $(".track").stop(true, true).css("left", target);
+}
+
+window.addEventListener("pageshow", snapOrderTrackToCurrent);
+window.addEventListener("focus", snapOrderTrackToCurrent);
+document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") snapOrderTrackToCurrent();
+});
+
+// iPad/Android deliver a second click on the step bar when the photo sheet
+// closes, and focusing a file input inside the sliding track scrolls it back
+// to the product step. Hold the step bar briefly and keep the track put.
+function armTabletFilePickerGuard() {
+    window.pcIgnoreFlowStepClicksUntil = Date.now() + 2500;
+    [0, 60, 240, 700, 1200].forEach(function (delay) {
+        window.setTimeout(snapOrderTrackToCurrent, delay);
+    });
+}
+
+window.addEventListener("message", function (event) {
+    if (event.origin !== window.location.origin) return;
+    if (event.data && event.data.type === "pcFilePickerArmed") armTabletFilePickerGuard();
 });
 
 // Existing basket rows are one-per-size (see basket.html normalizeBasket, the
@@ -1465,13 +1488,23 @@ window.p4PendingUpload = null;
 
 function p4EnsureFileInput() {
     var input = document.getElementById('p4LogoFileInput');
-    if (input) return input;
-    input = document.createElement('input');
-    input.type = 'file';
-    input.id = 'p4LogoFileInput';
-    input.accept = 'image/*,.pdf,.svg,.eps,.ai';
-    input.hidden = true;
-    document.body.appendChild(input);
+    if (!input) {
+        input = document.createElement('input');
+        input.type = 'file';
+        input.id = 'p4LogoFileInput';
+        input.accept = 'image/*,.pdf,.svg,.eps,.ai';
+    }
+    // display:none / hidden is ignored by iPad when opening the photo library,
+    // and an input inside the sliding track makes iOS scroll back to step 1.
+    input.removeAttribute('hidden');
+    input.style.position = 'fixed';
+    input.style.left = '50%';
+    input.style.top = '50%';
+    input.style.width = '1px';
+    input.style.height = '1px';
+    input.style.opacity = '0';
+    input.style.pointerEvents = 'none';
+    if (input.parentElement !== document.body) document.body.appendChild(input);
     return input;
 }
 
@@ -2247,6 +2280,7 @@ function p4OpenFilePicker(position, method) {
     window.p4PendingUpload = { position: position, method: method };
     var input = p4EnsureFileInput();
     input.value = '';
+    armTabletFilePickerGuard();
     input.click();
 }
 
