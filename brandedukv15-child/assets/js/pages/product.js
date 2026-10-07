@@ -280,7 +280,7 @@ async function loadProductData() {
                 if (listingPrice > 0) {
                     const detailPrice = Number(productData.price) || 0;
                     if (listingPrice !== detailPrice) {
-                        console.log(`ðŸ’° Price correction: detail \u00A3${detailPrice} â†’ listing \u00A3${listingPrice}`);
+                        console.log(`ðŸ’° Price correction: detail \u00A3${detailPrice} → listing \u00A3${listingPrice}`);
                     }
                     productData.price = listingProduct.price;
                     productData.basePrice = listingProduct.price;

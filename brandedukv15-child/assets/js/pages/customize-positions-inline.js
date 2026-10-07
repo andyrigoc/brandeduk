@@ -1256,7 +1256,7 @@
                         basket: basketItems,
                         // Customizations (no logo data, just hasLogo boolean)
                         customizations: customizationsList,
-                        // Logo files for FormData upload (position â†’ File)
+                        // Logo files for FormData upload (position → File)
                         logoFiles: Object.keys(logoFiles).length > 0 ? logoFiles : undefined,
                         timestamp: new Date().toISOString()
                     };

@@ -2310,7 +2310,7 @@
             .basket-footer-brandmark span { color: inherit; }
         }
 
-        /* â”€â”€ Gradual content scale (tablet â†’ laptop): fonts, pads, thumbs shrink with width.
+        /* â”€â”€ Gradual content scale (tablet → laptop): fonts, pads, thumbs shrink with width.
                Summary column was fixed at 360/390px so it stayed "100%" while the left squeezed. â”€â”€ */
         @media (min-width: 700px) {
             body.basket-page {
@@ -5383,7 +5383,7 @@
         _openFullCustomizeForItem(itemIndex);
     }
 
-    /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print â†’ embroidery on beanies) */
+    /** Collect unique logos from the entire basket, adapted for the target garment (e.g. print → embroidery on beanies) */
     function _collectAllLogos(basket, targetItemIndex) {
         const seen = new Set();
         const logos = [];
@@ -5912,7 +5912,7 @@
             document.body.style.overflow = 'hidden';
             document.getElementById('quoteName')?.focus();
         };
-        // "Proceed to Checkout" â†’ 3-step checkout page (min Â£50 ex. VAT)
+        // "Proceed to Checkout" → 3-step checkout page (min Â£50 ex. VAT)
         if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
@@ -6646,7 +6646,7 @@
 <script src="mobile/js/whatsapp.js?v=20261002-chatlogo"></script>
 <script src="brandedukv15-child/assets/js/upload/logo-upload.js"></script>
 <script>
-// Basket page: search + shop links â†’ correct shop per device
+// Basket page: search + shop links → correct shop per device
 (function() {
     var isMobile = window.innerWidth < 700;
     var shopAllUrl = isMobile ? '/shop?category=all' : '/shop-pc.html?category=all';
