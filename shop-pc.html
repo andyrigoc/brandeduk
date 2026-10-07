@@ -1590,28 +1590,28 @@
         .products-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: nowrap;
         }
 
         .control-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .control-group label {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             color: #374151;
             white-space: nowrap;
         }
 
         .control-select {
-            padding: 6px 32px 6px 10px;
+            padding: 3px 24px 3px 8px;
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 5px;
+            font-size: 12px;
             font-weight: 500;
             color: #1f2937;
             background: white;
@@ -1619,9 +1619,9 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 10px center;
+            background-position: right 8px center;
             transition: all 0.2s ease;
-            min-width: 112px;
+            min-width: 0;
         }
 
         .control-select:hover {
@@ -1675,16 +1675,50 @@
             flex-shrink: 0;
         }
 
-        .product-badges {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+        .product-method-row {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            z-index: 10;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 4px;
+            min-height: 18px;
+            margin: 0 0 8px;
         }
+
+        .product-method-row .method-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            line-height: 1;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .product-method-row .method-item svg {
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0;
+        }
+
+        .product-method-row .method-item.embroidery svg {
+            width: 22px;
+            height: 16px;
+        }
+
+        .product-method-row .method-sep {
+            width: 1px;
+            height: 14px;
+            background: #d1d5db;
+            flex-shrink: 0;
+        }
+
+        .product-method-row .method-item.best-seller { color: #e11d2e; }
+        .product-method-row .method-item.embroidery { color: #2563eb; }
+        .product-method-row .method-item.print { color: #f5a623; }
+        .product-method-row .method-item.recommended { color: #059669; }
 
         .badge {
             padding: 4px 10px;
@@ -1927,16 +1961,16 @@
         }
 
         .pagination-button {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
+            border-radius: 5px;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -1962,20 +1996,20 @@
         }
 
         .pagination-page {
-            min-width: 32px;
-            height: 32px;
+            min-width: 26px;
+            height: 26px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
+            border-radius: 5px;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 0 8px;
+            padding: 0 6px;
         }
 
         .pagination-page:hover {
@@ -1985,10 +2019,11 @@
         }
 
         .pagination-page.active {
-            background: #1f2937;
-            border-color: #1f2937;
-            color: white;
+            background: #fff;
+            border-color: #273469;
+            color: #273469;
             font-weight: 600;
+            box-shadow: inset 0 0 0 1px #273469;
         }
 
         .pagination-info {
@@ -2055,7 +2090,7 @@
     <link rel="stylesheet" href="test-order-popup/pc-product-popup.css?v=20261006-quote-cta">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/tablet-rotate-hint.css?v=20261003-screen">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/components/cart-lottie-icon.css?v=20260927-cartlottie2">
-    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20261005-pagerbottom">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/pc-shop.css?v=20261007-pageoutline">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -7109,20 +7144,27 @@
                 const visibleColors = 7;
                 const progressPercent = Math.min(100, (visibleColors / displayColors.length) * 100);
 
-                let badgesHtml = '';
-
+                const methods = Array.isArray(product.customization) ? product.customization : [];
+                const isBeanie = (product.name || '').toLowerCase().includes('beanie');
+                const methodIcon = {
+                    crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 17.5h17"/><path d="M4 17.5 6.2 9.2 10 13.2 12 6.2 14 13.2 17.8 9.2 20 17.5"/><circle cx="6.2" cy="7.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="12" cy="4.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="17.8" cy="7.4" r="1.15" fill="currentColor" stroke="none"/></svg>',
+                    needle: '<svg viewBox="0 0 40 28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8c2.2-3 4-2 5.2.6"/><path d="M2 7.5h12"/><path d="M3 7.5v13M13 7.5v13"/><path d="M2 20.5h12"/><path d="M3.4 11h9.2M3.4 14.2h9.2M3.4 17.2h9.2"/><path d="M13.5 9.5c3-1.4 4.6.4 5.2 2.4"/><path d="M22 5.2 35.2 24"/><circle cx="23.6" cy="7.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="27.2" cy="13" r="0.85" fill="currentColor" stroke="none"/><circle cx="30.4" cy="17.6" r="0.85" fill="currentColor" stroke="none"/><circle cx="33.6" cy="22.2" r="0.85" fill="currentColor" stroke="none"/></svg>',
+                    shirt: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.2 4.2 4 7.2l2.1 2.6 2-1.1V20h7.8V8.7l2 1.1L20 7.2l-4.2-3-1.6 2.2H9.8L8.2 4.2z"/></svg>'
+                };
+                const methodItems = [];
                 if (product.is_best_seller === true || product.is_best_seller === 'true' || product.is_best_seller === 1) {
-                    badgesHtml += '<span class="badge best-seller">BEST SELLER</span>';
+                    methodItems.push(`<span class="method-item best-seller">${methodIcon.crown}<span>Best Seller</span></span>`);
                 }
                 if (product.is_recommended === true || product.is_recommended === 'true' || product.is_recommended === 1) {
-                    badgesHtml += '<span class="badge recommended">RECOMMENDED</span>';
+                    methodItems.push('<span class="method-item recommended"><span>Recommended</span></span>');
                 }
-                if (product.customization && product.customization.includes('embroidery')) {
-                    badgesHtml += '<span class="badge embroidery">EMBROIDERY</span>';
+                if (methods.includes('embroidery')) {
+                    methodItems.push(`<span class="method-item embroidery">${methodIcon.needle}<span>EMB</span></span>`);
                 }
-                if (product.customization && product.customization.includes('print')) {
-                    badgesHtml += '<span class="badge print">PRINT</span>';
+                if (methods.includes('print') && !isBeanie) {
+                    methodItems.push(`<span class="method-item print">${methodIcon.shirt}<span>Print</span></span>`);
                 }
+                const methodRowHtml = methodItems.join('<span class="method-sep" aria-hidden="true"></span>');
 
                 const ecoLeafHtml = (window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
                     ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
@@ -7130,13 +7172,11 @@
 
                 card.innerHTML = `
             <div class="product-media">
-                <div class="product-badges">
-                    ${badgesHtml}
-                </div>
                 <img src="${defaultThumbImage || product.image}" alt="${product.name}" class="product-image">
                 ${ecoLeafHtml}
             </div>
             <div class="product-info">
+                ${methodRowHtml ? `<div class="product-method-row">${methodRowHtml}</div>` : '<div class="product-method-row"></div>'}
                 <div class="product-code-row">
                     <span class="product-code">${product.code}</span>
                     ${(() => { const bn = product.brand || ''; if (!bn || ['absolute', 'ralawise'].some(ex => bn.toLowerCase().includes(ex))) return ''; const logo = getBrandLogo(bn); return logo ? `<img src="${logo}" alt="${bn}" class="brand-logo" title="${bn}">` : `<span class="brand-name">${bn}</span>`; })()}
