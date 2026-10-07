@@ -1,0 +1,11 @@
+---
+description: Never commit or push unless the user explicitly asks
+alwaysApply: true
+---
+
+# No commit without approval
+
+- NEVER run `git commit` or `git push` unless the user explicitly asks for it in that message.
+- NEVER tell a subagent to commit or push.
+- Finishing a task is not approval. Do not assume the work is correct or ready to ship.
+- Show the result and wait. Commit only after a clear request such as "commit", "push", or "commit and push".

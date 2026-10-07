@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uniform Story — Scroll Cube</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap");
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{background:radial-gradient(circle at 72% 18%,#ead0ae 0,#f1dfc7 24%,#f6ead9 52%,#fbf5eb 100%);color:#10243b;font-family:"DM Mono",monospace;overflow-x:hidden}
+:root{--accent:#e75b1b;--muted:#806f60;--card:rgba(255,250,241,.82)}
+
+#scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:1100px;pointer-events:none;z-index:0}
+#cube{--s:min(70vw,70vh,560px);position:relative;width:var(--s);height:var(--s);transform-style:preserve-3d;transform:rotateX(90deg) rotateY(0deg);will-change:transform}
+.face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;background:#e7d2b7;box-shadow:inset 0 0 0 1px rgba(84,55,31,.10)}
+.face img{width:100%;height:100%;object-fit:cover;display:block}
+.face:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.25))}
+.face[data-face="front"]{transform:translateZ(calc(var(--s)/2))}
+.face[data-face="back"]{transform:rotateY(180deg) translateZ(calc(var(--s)/2))}
+.face[data-face="right"]{transform:rotateY(90deg) translateZ(calc(var(--s)/2))}
+.face[data-face="left"]{transform:rotateY(-90deg) translateZ(calc(var(--s)/2))}
+.face[data-face="top"]{transform:rotateX(-90deg) translateZ(calc(var(--s)/2))}
+.face[data-face="bottom"]{transform:rotateX(90deg) translateZ(calc(var(--s)/2))}
+
+#content{position:relative;z-index:2}
+.scene{min-height:100vh;display:flex;align-items:center;padding:6rem clamp(2rem,7vw,7rem)}
+.card{width:min(390px,100%);padding:2rem;background:var(--card);border-left:1px solid rgba(121,88,57,.22);backdrop-filter:blur(12px);box-shadow:0 24px 70px rgba(91,58,31,.10)}
+.card.right{margin-left:auto;text-align:right;border-left:0;border-right:1px solid rgba(121,88,57,.22)}
+.tag{color:var(--accent);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:1rem}
+h1,h2{font-family:"Bebas Neue",sans-serif;font-weight:400;line-height:.9;letter-spacing:.02em}
+h1{font-size:clamp(4rem,8vw,7rem)}
+h2{font-size:clamp(3rem,6vw,5rem)}
+p{margin-top:1.35rem;color:rgba(16,36,59,.72);font-size:.78rem;line-height:1.7}
+.line{width:48px;height:1px;background:var(--accent);margin-bottom:1.2rem}
+.right .line{margin-left:auto}
+.next{display:inline-block;margin-top:1.6rem;padding:.7rem 1rem;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase}
+.next:hover{background:var(--accent);color:#fffaf2}
+
+#hud{position:fixed;top:2rem;right:2rem;z-index:10;text-align:right;font-size:.62rem;letter-spacing:.15em;color:var(--muted)}
+#bar{width:120px;height:1px;background:rgba(65,43,25,.16);margin:.5rem 0 .4rem auto}
+#fill{height:100%;width:0;background:var(--accent)}
+#name{color:var(--accent)}
+#dots{position:fixed;left:2rem;top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:.8rem}
+.dot{width:5px;height:5px;border-radius:50%;background:#aa9784;border:0;cursor:pointer}
+.dot.active{background:var(--accent);transform:scale(1.8)}
+
+.reveal{opacity:0;transform:translateY(14px);transition:.55s ease}
+.scene.visible .reveal{opacity:1;transform:none}
+.scene.visible .reveal:nth-child(2){transition-delay:.08s}
+.scene.visible .reveal:nth-child(3){transition-delay:.16s}
+.scene.visible .reveal:nth-child(4){transition-delay:.24s}
+
+@media(max-width:850px){
+  #cube{--s:min(82vw,52vh,460px)}
+  .scene{min-height:130vh;align-items:flex-end;padding:3rem 1.2rem}
+  .scene:first-child{min-height:100vh;align-items:center}
+  .card,.card.right{width:100%;margin:0;text-align:left;border-right:0;border-left:1px solid rgba(121,88,57,.22)}
+  .right .line{margin-left:0}
+  #dots{display:none}
+  #hud{top:1rem;right:1rem}
+}
+</style>
+</head>
+<body>
+
+<div id="scene" aria-hidden="true">
+  <div id="cube">
+    <div class="face" data-face="top"></div>
+    <div class="face" data-face="front"></div>
+    <div class="face" data-face="right"></div>
+    <div class="face" data-face="back"></div>
+    <div class="face" data-face="left"></div>
+    <div class="face" data-face="bottom"></div>
+  </div>
+</div>
+
+<div id="hud"><div id="pct">000%</div><div id="bar"><div id="fill"></div></div><div id="name">LEAVERS</div></div>
+<div id="dots"></div>
+
+<main id="content">
+<section class="scene">
+ <div class="card">
+  <div class="tag reveal">01 — Leavers</div>
+  <h1 class="reveal">MORE THAN<br>A HOODIE.<br>A MEMORY.</h1>
+  <p class="reveal">Bring the whole year together with something students actually want to wear.<br><br>Custom leavers wear creates a shared identity — and turns the final year into something they can take with them.</p>
+  <a class="next reveal" href="#s2">Discover →</a>
+ </div>
+</section>
+
+<section class="scene" id="s2">
+ <div class="card right">
+  <div class="line reveal"></div>
+  <div class="tag reveal">02 — Together</div>
+  <h2 class="reveal">YOUR PEOPLE.<br>YOUR IDENTITY.<br>YOUR UNIFORM.</h2>
+  <p class="reveal">A consistent uniform does more than make people look professional.<br><br>It brings different roles together, strengthens team identity and gives everyone a shared sense of belonging.</p>
+  <a class="next reveal" href="#s3">Turn →</a>
+ </div>
+</section>
+
+<section class="scene" id="s3">
+ <div class="card">
+  <div class="line reveal"></div>
+  <div class="tag reveal">03 — Warehouse Polos</div>
+  <h2 class="reveal">BUILT FOR<br>BUSY<br>TEAMS.</h2>
+  <p class="reveal">Warehouse teams need workwear that feels practical while keeping everyone looking consistent and organised.<br><br>Branded polos create a clean, professional image across every shift.</p>
+  <a class="next reveal" href="#s4">Turn →</a>
+ </div>
+</section>
+
+<section class="scene" id="s4">
+ <div class="card right">
+  <div class="line reveal"></div>
+  <div class="tag reveal">04 — Hi-Vis Workwear</div>
+  <h2 class="reveal">VISIBLE.<br>READY.<br>PROFESSIONAL.</h2>
+  <p class="reveal">On site, workwear has a job to do.<br><br>The right hi-vis clothing helps your team stay visible while presenting a consistent, professional image from builders to engineers.</p>
+  <a class="next reveal" href="#s5">Turn →</a>
+ </div>
+</section>
+
+<section class="scene" id="s5">
+ <div class="card">
+  <div class="line reveal"></div>
+  <div class="tag reveal">05 — Aprons</div>
+  <h2 class="reveal">FRONT OF HOUSE.<br>FRONT OF<br>BRAND.</h2>
+  <p class="reveal">In hospitality, your team is part of the customer experience.<br><br>Coordinated aprons create a welcoming, recognisable look while giving busy teams the practicality they need.</p>
+  <a class="next reveal" href="#s6">Turn →</a>
+ </div>
+</section>
+
+<section class="scene" id="s6">
+ <div class="card right">
+  <div class="line reveal"></div>
+  <div class="tag reveal">06 — Chefwear</div>
+  <h2 class="reveal">LOOK SHARP.<br>FEEL<br>READY.</h2>
+  <p class="reveal">Professional chefwear combines comfort, durability and a polished image for every service.<br><br>Coordinated uniforms help kitchen teams look confident, work as one and represent the business behind every plate.</p>
+ </div>
+</section>
+</main>
+
+<script>
+const IMAGES=[
+ "ASSET",
+ "ASSET",
+ "ASSET",
+ "ASSET",
+ "ASSET",
+ "ASSET"
+];
+const NAMES=["LEAVERS","TOGETHER","WAREHOUSE POLOS","HI-VIS WORKWEAR","APRONS","CHEFWEAR"];
+const STOPS=[
+ {x:90,y:0},{x:0,y:0},{x:0,y:-90},{x:0,y:-180},{x:0,y:-270},{x:-90,y:-360}
+];
+const cube=document.querySelector("#cube");
+const faces=[...document.querySelectorAll(".face")];
+const scenes=[...document.querySelectorAll(".scene")];
+const dots=document.querySelector("#dots");
+const pct=document.querySelector("#pct");
+const fill=document.querySelector("#fill");
+const nameEl=document.querySelector("#name");
+
+faces.forEach((f,i)=>{
+ const img=new Image();
+ img.src=IMAGES[i];
+ img.alt="";
+ f.appendChild(img);
+ const b=document.createElement("button");
+ b.className="dot"+(i===0?" active":"");
+ b.setAttribute("aria-label",NAMES[i]);
+ b.onclick=()=>scenes[i].scrollIntoView({behavior:"smooth"});
+ dots.appendChild(b);
+});
+const dotEls=[...document.querySelectorAll(".dot")];
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ease=t=>t<.5?2*t*t:-1+(4-2*t)*t;
+
+function progress(){
+ const max=document.documentElement.scrollHeight-innerHeight;
+ return max>0?clamp(scrollY/max,0,1):0;
+}
+function activeScene(){
+ const mid=innerHeight/2;
+ let best=0,dist=Infinity;
+ scenes.forEach((s,i)=>{
+   const r=s.getBoundingClientRect();
+   const d=Math.abs(r.top+r.height/2-mid);
+   if(d<dist){dist=d;best=i}
+ });
+ return best;
+}
+function updateCube(p){
+ const t=p*(STOPS.length-1);
+ const i=Math.min(Math.floor(t),STOPS.length-2);
+ const f=ease(t-i);
+ const a=STOPS[i],b=STOPS[i+1];
+ const x=a.x+(b.x-a.x)*f;
+ const y=a.y+(b.y-a.y)*f;
+ cube.style.transform=`rotateX(${x}deg) rotateY(${y}deg)`;
+}
+let smooth=progress(), last=-1;
+function frame(){
+ const target=progress();
+ smooth+=(target-smooth)*.1;
+ updateCube(smooth);
+ const i=activeScene();
+ pct.textContent=String(Math.round(smooth*100)).padStart(3,"0")+"%";
+ fill.style.width=(smooth*100)+"%";
+ if(i!==last){
+   last=i; nameEl.textContent=NAMES[i];
+   dotEls.forEach((d,n)=>d.classList.toggle("active",n===i));
+ }
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+const io=new IntersectionObserver(entries=>{
+ entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("visible")});
+},{threshold:.25});
+scenes.forEach(s=>io.observe(s));
+
+document.addEventListener("click",e=>{
+ const a=e.target.closest('a[href^="#"]');
+ if(!a)return;
+ const target=document.querySelector(a.getAttribute("href"));
+ if(!target)return;
+ e.preventDefault();
+ target.scrollIntoView({behavior:"smooth"});
+});
+</script>
+</body>
+</html>

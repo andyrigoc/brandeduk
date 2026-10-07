@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bozza header da approvare — Branded UK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap">
+    <style>
+        :root {
+            --orange: #ff7a00;
+            --navy: #111827;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --search: #f3f4f6;
+            --gap-logo-shop: 35px;
+            --board: #eceff3;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            background: var(--board);
+            color: var(--navy);
+            font-family: Inter, Arial, sans-serif;
+        }
+        .page {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 28px 20px 64px;
+        }
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 10px;
+            color: var(--orange);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.03em;
+        }
+        .lede {
+            max-width: 820px;
+            margin: 0 0 18px;
+            color: #374151;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+        .rule {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            align-items: center;
+            margin: 0 0 28px;
+            padding: 14px 16px;
+            border: 1px solid #f3d5b3;
+            border-radius: 10px;
+            background: #fff7f0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .rule strong { color: var(--orange); }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .pill-fix { background: #ecfdf3; color: #047857; }
+        .pill-flex { background: #fff7ed; color: #c2410c; }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+            margin: 0 0 12px;
+        }
+        .controls label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .controls input[type="range"] {
+            width: min(420px, 100%);
+            accent-color: var(--orange);
+        }
+        .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+        .presets button {
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #fff;
+            color: var(--navy);
+            font: 700 12px/1 Inter, Arial, sans-serif;
+            cursor: pointer;
+        }
+        .presets button.is-on {
+            border-color: var(--orange);
+            background: #fff7f0;
+            color: #c2410c;
+        }
+        .metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin: 0 0 14px;
+            color: #374151;
+            font-size: 13px;
+        }
+        .metrics b { font-variant-numeric: tabular-nums; }
+        .live-shell {
+            overflow: visible;
+            margin-bottom: 36px;
+            border: 1px dashed #c4c9d2;
+            border-radius: 12px;
+            background: #d7dbe2;
+        }
+        .live-label {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            color: #4b5563;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .mock-stage {
+            width: 1440px;
+            margin: 0 auto 16px;
+            background: #fff;
+            container-type: inline-size;
+            container-name: header;
+        }
+        .mock-header {
+            position: relative;
+            width: 100%;
+            background: #fff;
+            overflow: visible;
+        }
+        .mock-inner {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            min-width: 0;
+            margin: 0 auto;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+        .align-guide {
+            position: absolute;
+            top: 6px;
+            right: 24px;
+            bottom: 6px;
+            z-index: 5;
+            width: 0;
+            border-right: 1px dashed #fb7185;
+            pointer-events: none;
+        }
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 40px;
+            border-bottom: 1px solid #eef0f3;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .trust {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+        .trust svg {
+            width: 16px;
+            height: 16px;
+            color: #16a34a;
+            flex: 0 0 auto;
+        }
+        .top-right {
+            display: flex;
+            align-items: center;
+            flex: 0 0 auto;
+            gap: 14px;
+        }
+        .phone {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0f172a;
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .vat {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #111827;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .vat-track {
+            width: 36px;
+            height: 20px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            position: relative;
+        }
+        .vat-track span {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #d1d5db;
+        }
+        .mini-cart {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            color: #111827;
+            flex: 0 0 auto;
+        }
+        .mini-cart svg { display: block; }
+        .badge {
+            position: absolute;
+            top: -7px;
+            right: -9px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 999px;
+            background: var(--orange);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 16px;
+            text-align: center;
+        }
+        .annot {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            min-height: 22px;
+            padding-top: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+        .annot span { white-space: nowrap; }
+        .annot-fix { color: #047857; }
+        .annot-flex { color: #c2410c; text-align: center; }
+        .annot-right { text-align: right; }
+        .main {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            min-height: 64px;
+            gap: 16px;
+            min-width: 0;
+        }
+        .left-pair {
+            display: flex;
+            align-items: center;
+            flex: 0 0 auto;
+            gap: var(--gap-logo-shop);
+        }
+        .logo {
+            display: block;
+            height: 52px;
+            width: auto;
+            max-width: none;
+        }
+        .shop {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            height: 36px;
+            padding: 0 16px 0 14px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--orange);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: 5px 5px;
+            gap: 2px;
+            width: 12px;
+            height: 12px;
+            flex: 0 0 auto;
+        }
+        .shop-grid i {
+            display: block;
+            width: 5px;
+            height: 5px;
+            margin: 0;
+            border-radius: 1px;
+            background: #fff;
+            font-style: normal;
+        }
+        .shop-label {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 0.3em;
+            white-space: nowrap;
+        }
+        .shop-l2 { text-transform: lowercase; }
+        .shop-caret {
+            width: 0;
+            height: 0;
+            margin-left: 2px;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #fff;
+            flex: 0 0 auto;
+        }
+        .annot-shop-narrow,
+        .note-more,
+        .note-more-jackets { display: none; }
+        .search {
+            position: relative;
+            flex: 1 1 auto;
+            min-width: 72px;
+            height: 36px;
+            overflow: hidden;
+        }
+        .search svg {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            width: 16px;
+            height: 16px;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        .search input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: 100%;
+            padding: 0 12px 0 40px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--search);
+            color: #1f2937;
+            font: 500 15px/1.3 Inter, Arial, sans-serif;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .right-pair {
+            display: flex;
+            align-items: center;
+            flex: 0 0 auto;
+            gap: 16px;
+        }
+        .icon-btn {
+            display: inline-flex;
+            width: 22px;
+            height: 22px;
+            color: #111827;
+            flex: 0 0 auto;
+        }
+        .icon-btn svg { width: 100%; height: 100%; }
+        .basket {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #111827;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .basket svg { width: 22px; height: 22px; }
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+            min-height: 40px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+            font-weight: 600;
+            overflow: visible;
+            box-sizing: border-box;
+        }
+        .nav a {
+            color: #1f2937;
+            text-decoration: none;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .nav a.is-on {
+            color: var(--orange);
+            box-shadow: inset 0 -2px 0 var(--orange);
+        }
+        .nav-more {
+            display: none;
+            position: relative;
+            flex: 0 0 auto;
+        }
+        .nav-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: #1f2937;
+            font: inherit;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .nav-more-btn::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid currentColor;
+        }
+        .nav-more-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            z-index: 30;
+            min-width: 168px;
+            padding: 8px 0;
+            border: 1px solid #eef0f3;
+            border-radius: 12px;
+            background: #fff;
+        }
+        .nav-more:hover .nav-more-menu,
+        .nav-more:focus-within .nav-more-menu,
+        .nav-more.is-open .nav-more-menu {
+            display: block;
+        }
+        .nav-more-menu a {
+            display: block;
+            padding: 8px 14px;
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .nav-more-menu a:hover { background: #fff7f0; color: var(--orange); }
+        .promo {
+            overflow: hidden;
+            padding: 8px 0;
+            background: #1e293b;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .promo-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+            white-space: nowrap;
+        }
+        .mock-note {
+            padding: 8px 0 12px;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        h2 {
+            margin: 8px 0 6px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+        .compare {
+            display: grid;
+            gap: 28px;
+        }
+        .frame {
+            padding: 12px;
+            border-radius: 12px;
+            background: #d7dbe2;
+        }
+        .frame h3 {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+            margin: 0 0 8px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .frame p {
+            margin: 0 0 10px;
+            color: #374151;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        .frame-scroll { overflow: visible; }
+        @container header (max-width: 1439px) {
+            .mock-inner { padding-left: 20px; padding-right: 28px; }
+            .align-guide { right: 28px; }
+            .main { gap: 12px; min-height: 56px; }
+            .right-pair { gap: 12px; }
+            .nav { gap: 14px; font-size: 13px; }
+            .phone { font-size: 13px; }
+        }
+        @container header (max-width: 1199px) {
+            .shop {
+                height: 32px;
+                padding: 0 12px 0 11px;
+                font-size: 13px;
+            }
+            .nav { font-size: 13px; }
+        }
+        @container header (max-width: 1099px) {
+            .mock-inner { padding-left: 16px; padding-right: 24px; }
+            .align-guide { right: 24px; }
+            .main { gap: 10px; }
+            .right-pair { gap: 10px; }
+            .search input { font-size: 13px; }
+        }
+        @container header (max-width: 899px) {
+            .mock-inner { padding-left: 12px; padding-right: 20px; }
+            .align-guide { right: 20px; }
+            .main { gap: 8px; min-height: 48px; }
+            .right-pair { gap: 8px; }
+            .logo { height: 44px; }
+        }
+        .foot {
+            margin-top: 28px;
+            color: #4b5563;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <p class="kicker">Bozza visiva — non è il sito live</p>
+        <h1>Header da approvare</h1>
+        <p class="lede">
+            Questa è una proposta di layout, copiata dallo stile Branded UK, per confermare
+            la regola <em>prima</em> di toccare il CSS del sito. Niente è stato pubblicato.
+        </p>
+        <div class="rule">
+            <span>Quando la finestra si stringe: <strong>solo la search</strong> perde larghezza; Shop resta <strong>una riga</strong> “Shop products”; la nav usa <strong>tutta la barra</strong> (More solo se gli item non ci stanno, e resta all’estrema destra).</span>
+            <span class="legend">
+                <span class="pill pill-fix">Fisso · logo–Shop 35px</span>
+                <span class="pill pill-flex">Si accorcia · search</span>
+                <span class="pill pill-fix">Shop · una riga</span>
+                <span class="pill pill-fix">Nav · tutta la barra</span>
+            </span>
+        </div>
+
+        <div class="controls">
+            <label for="width">Stringi il viewport</label>
+            <input id="width" type="range" min="700" max="1920" value="1440" step="1">
+            <div class="presets">
+                <button type="button" data-w="1920">1920</button>
+                <button type="button" data-w="1440" class="is-on">1440</button>
+                <button type="button" data-w="1024">1024</button>
+                <button type="button" data-w="768">768</button>
+            </div>
+        </div>
+        <div class="metrics" id="metrics"></div>
+
+        <div class="live-shell">
+            <div class="live-label">
+                <span>Prova live</span>
+                <span id="wlabel">1440 px</span>
+            </div>
+            <div id="live-stage" class="mock-stage"></div>
+        </div>
+
+        <h2>Tre stati da approvare</h2>
+        <p class="lede">Stesso header, tre larghezze. La riga categorie usa tutta la larghezza: niente vuoto bianco dopo More. Deals (PC largo) o More (stringendo) stanno a destra.</p>
+
+        <div class="compare">
+            <section class="frame" id="frame-1440">
+                <h3>1. PC largo · 1440 / 1920 <span class="pill pill-flex">search lunga</span></h3>
+                <p>Shop in una riga. Nav completa su tutta la barra, Deals all’estrema destra, niente More. Gap logo–Shop 35px. Search lunga. Quote, account e Basket a destra.</p>
+                <div class="frame-scroll"><div class="mock-stage" data-fixed="1440"></div></div>
+            </section>
+            <section class="frame" id="frame-1024">
+                <h3>2. Stringendo · 1024 <span class="pill pill-flex">Shop 1 riga · nav piena</span></h3>
+                <p>Shop in una riga, gap 35px. Search più corta. Quante più voci possibile restano visibili. Solo ciò che non entra va in More, e More è l’ultimo controllo a destra — niente striscia bianca vuota.</p>
+                <div class="frame-scroll"><div class="mock-stage" data-fixed="1024"></div></div>
+            </section>
+            <section class="frame" id="frame-768">
+                <h3>3. Tablet · 768 <span class="pill pill-flex">Shop 1 riga · More a destra</span></h3>
+                <p>Shop in una riga, gap 35px, search ancora più corta. La nav riempie comunque tutta la riga: More ancorato a destra. Jackets entra in More solo se non ci sta.</p>
+                <div class="frame-scroll"><div class="mock-stage" data-fixed="768"></div></div>
+            </section>
+        </div>
+
+        <p class="foot">
+            Approva questa logica e dopo la applichiamo al header vero.
+            File di sola bozza: <code>maintenance/header-squeeze-approval.html</code>
+        </p>
+    </div>
+
+    <template id="header-tpl">
+        <div class="mock-header">
+            <div class="mock-inner">
+                <div class="align-guide" title="Stesso bordo destro: carrello alto e Basket"></div>
+                <div class="top">
+                    <div class="trust">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16 9"/></svg>
+                            Free artwork check
+                        </div>
+                    <div class="top-right">
+                        <span class="phone">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.5a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>
+                            0208 974 2722
+                        </span>
+                        <span class="vat">Ex VAT <span class="vat-track"><span></span></span></span>
+                        <span class="mini-cart">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+                            <span class="badge">11</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="annot">
+                    <span class="annot-fix">Fisso · 35px <span class="annot-shop-narrow">· Shop 2 righe</span></span>
+                    <span class="annot-flex">Si accorcia</span>
+                    <span class="annot-fix annot-right">Fisso</span>
+                </div>
+                <div class="main">
+                    <div class="left-pair">
+                        <img class="logo" src="../brandedukv15-child/assets/images/ui/branded-uk-header-logo-black.png?v=20260927-logoblack" alt="branded UK">
+                        <span class="shop">
+                            <span class="shop-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                            <span class="shop-label">
+                                <span class="shop-l1">Shop</span>
+                                <span class="shop-l2">Products</span>
+                            </span>
+                            <span class="shop-caret" aria-hidden="true"></span>
+                        </span>
+                    </div>
+                    <div class="search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" readonly value="" placeholder="Search products, brands or categories...">
+                    </div>
+                    <div class="right-pair">
+                        <span class="icon-btn" title="Get a quote">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>
+                        </span>
+                        <span class="icon-btn" title="Account">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </span>
+                        <span class="basket">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+                            Basket
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="mock-inner">
+                <nav class="nav">
+                    <a class="is-on" href="#">All Products</a>
+                    <a href="#">Industries</a>
+                    <a href="#">T-Shirts</a>
+                    <a href="#">Polo Shirts</a>
+                    <a href="#">Hoodies</a>
+                    <a href="#">Sweatshirts</a>
+                    <a data-nav="overflow" href="#">Jackets</a>
+                    <a data-nav="overflow" href="#">Hi-Vis</a>
+                    <a data-nav="overflow" href="#">Workwear</a>
+                    <a data-nav="overflow" href="#">Headwear</a>
+                    <a data-nav="overflow" href="#">Deals</a>
+                    <div class="nav-more">
+                        <button class="nav-more-btn" type="button">More</button>
+                        <div class="nav-more-menu"></div>
+                    </div>
+                </nav>
+            </div>
+            <div class="promo">
+                <div class="mock-inner promo-inner">
+                    <span>Printing</span>
+                    <span>Vinyl Heat Transfer</span>
+                    <span>Trades &amp; Construction</span>
+                    <span>Schools &amp; Leavers</span>
+                    <span>Hospitality</span>
+                    <span>Corporate</span>
+                </div>
+            </div>
+            <div class="mock-inner"><p class="mock-note">BOZZA · linea tratteggiata rosa = stesso bordo destro di carrello alto e Basket<span class="note-more"></span></p></div>
+        </div>
+    </template>
+
+    <script>
+        (function () {
+            var tpl = document.getElementById("header-tpl");
+            var live = document.getElementById("live-stage");
+            var slider = document.getElementById("width");
+            var wlabel = document.getElementById("wlabel");
+            var metrics = document.getElementById("metrics");
+            var buttons = Array.prototype.slice.call(document.querySelectorAll(".presets button"));
+
+            function bindMore(stage) {
+                stage.querySelectorAll(".nav-more").forEach(function (more) {
+                    var btn = more.querySelector(".nav-more-btn");
+                    if (!btn || btn.dataset.bound) return;
+                    btn.dataset.bound = "1";
+                    btn.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        more.classList.toggle("is-open");
+                    });
+                });
+            }
+
+            function layoutNav(stage) {
+                var nav = stage.querySelector(".nav");
+                if (!nav) return;
+                var more = nav.querySelector(".nav-more");
+                var menu = more.querySelector(".nav-more-menu");
+                var items = Array.prototype.filter.call(nav.children, function (el) {
+                    return el.tagName === "A";
+                });
+                var hideOrder = items.filter(function (a) {
+                    return a.getAttribute("data-nav") === "overflow";
+                }).reverse();
+                var note = stage.querySelector(".note-more");
+                var minGap = 16;
+
+                items.forEach(function (a) { a.style.display = ""; });
+                more.style.display = "none";
+                more.classList.remove("is-open");
+                menu.innerHTML = "";
+
+                function visibleLinks() {
+                    return items.filter(function (a) {
+                        return a.style.display !== "none";
+                    });
+                }
+
+                function usedWidth(withMore) {
+                    var vis = visibleLinks();
+                    var w = 0;
+                    vis.forEach(function (a) { w += a.offsetWidth; });
+                    var slots = vis.length + (withMore ? 1 : 0);
+                    if (slots > 1) w += minGap * (slots - 1);
+                    if (withMore) {
+                        more.style.display = "inline-flex";
+                        w += more.offsetWidth;
+                    }
+                    return w;
+                }
+
+                if (usedWidth(false) > nav.clientWidth + 1) {
+                    hideOrder.forEach(function (a) {
+                        if (usedWidth(true) <= nav.clientWidth + 1) return;
+                        a.style.display = "none";
+                        var clone = document.createElement("a");
+                        clone.href = "#";
+                        clone.textContent = a.textContent.trim();
+                        menu.appendChild(clone);
+                    });
+                    more.style.display = menu.childNodes.length ? "inline-flex" : "none";
+                }
+
+                var hidden = hideOrder.filter(function (a) {
+                    return a.style.display === "none";
+                }).map(function (a) { return a.textContent.trim(); });
+
+                if (note) {
+                    if (hidden.length) {
+                        note.style.display = "inline";
+                        note.textContent = " · More a destra = " + hidden.join(", ");
+                    } else {
+                        note.style.display = "none";
+                        note.textContent = "";
+                    }
+                }
+            }
+
+            function fill(stage, width) {
+                stage.innerHTML = "";
+                stage.appendChild(tpl.content.cloneNode(true));
+                stage.style.width = width + "px";
+                bindMore(stage);
+                layoutNav(stage);
+            }
+
+            function fitFixed(stage) {
+                var w = parseInt(stage.getAttribute("data-fixed"), 10);
+                var parent = stage.parentElement;
+                var avail = parent.clientWidth || w;
+                var scale = Math.min(1, avail / w);
+                stage.style.transform = "scale(" + scale + ")";
+                stage.style.transformOrigin = "top left";
+                var h = stage.scrollHeight || 180;
+                if (stage.querySelector(".nav-more.is-open")) h += 200;
+                parent.style.height = Math.ceil(h * scale) + "px";
+            }
+
+            function measure(stage) {
+                var search = stage.querySelector(".search");
+                var shop = stage.querySelector(".shop");
+                var logo = stage.querySelector(".logo");
+                var right = stage.querySelector(".right-pair");
+                var gap = 35;
+                if (logo && shop) {
+                    var lr = logo.getBoundingClientRect();
+                    var sr = shop.getBoundingClientRect();
+                    gap = Math.round(sr.left - lr.right);
+                }
+                return {
+                    gap: gap,
+                    search: search ? Math.round(search.getBoundingClientRect().width) : 0,
+                    right: right ? Math.round(right.getBoundingClientRect().width) : 0,
+                    shopW: shop ? Math.round(shop.getBoundingClientRect().width) : 0,
+                    shopMode: shop && getComputedStyle(shop.querySelector(".shop-label")).flexDirection === "column" ? "2 righe" : "1 riga"
+                };
+            }
+
+            function renderMetrics() {
+                var m = measure(live);
+                metrics.innerHTML =
+                    '<span>Gap logo–Shop: <b>' + m.gap + 'px</b> (fisso)</span>' +
+                    '<span>Shop: <b>' + m.shopMode + '</b> (' + m.shopW + 'px)</span>' +
+                    '<span>Search: <b>' + m.search + 'px</b> (si accorcia)</span>' +
+                    '<span>Cluster destro: <b>' + m.right + 'px</b> (fisso)</span>';
+            }
+
+            function setLive(width) {
+                var w = String(width);
+                live.style.width = w + "px";
+                slider.value = w;
+                wlabel.textContent = w + " px";
+                buttons.forEach(function (btn) {
+                    btn.classList.toggle("is-on", btn.getAttribute("data-w") === w);
+                });
+                layoutNav(live);
+                renderMetrics();
+            }
+
+            fill(live, 1440);
+            document.querySelectorAll(".mock-stage[data-fixed]").forEach(function (stage) {
+                fill(stage, stage.getAttribute("data-fixed"));
+                fitFixed(stage);
+            });
+            window.addEventListener("resize", function () {
+                document.querySelectorAll(".mock-stage[data-fixed]").forEach(fitFixed);
+            });
+
+            slider.addEventListener("input", function () { setLive(slider.value); });
+            buttons.forEach(function (btn) {
+                btn.addEventListener("click", function () { setLive(btn.getAttribute("data-w")); });
+            });
+            window.addEventListener("load", renderMetrics);
+            if (typeof ResizeObserver === "function") {
+                new ResizeObserver(function () {
+                    layoutNav(live);
+                    renderMetrics();
+                }).observe(live);
+            }
+        })();
+    </script>
+</body>
+</html>

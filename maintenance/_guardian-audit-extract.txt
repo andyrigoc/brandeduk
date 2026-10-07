@@ -1,0 +1,119 @@
+G U A R D I A N  ·  W E B  O P S
+SECURITY ASSESSMENT
+BrandedUK
+External Security Audit — Web Frontend & Public API
+Targets  www.brandeduk.com · api.brandeduk.com
+Date  1 October 2026
+Assessment type External, black-box (unauthenticated)
+Prepared by  Guardian Web Ops · S. Rukavina
+CONFIDENTIAL. Prepared for BrandedUK's internal review.
+Findings describe security weaknesses that could be abused if
+left unaddressed. No data was modified and no
+authentication was bypassed during this assessment.
+1. Executive Summary
+BrandedUK runs a decoupled architecture: a static storefront served from Vercel ( www.brandeduk.com ) that talks to a
+separate Node/Express API ( api.brandeduk.com ) backed by PostgreSQL. The frontend is clean — no cookies, no local
+storage, no third-party tracking on the homepage. The risk concentration is the API.
+During a non-intrusive external review we identified one critical, two high, three medium and two lower-severity
+issues. The headline concern is that the API's /api/admin/*  namespace is reachable without any authentication, and
+the cross-origin policy is set to a permissive-plus-credentials combination. Together these expose business-sensitive
+data (wholesale/carton pricing and supplier names) and leave administrative write routes without a visible
+authorization gate.
+Risk scorecard
+# Finding Severity Area
+1 Admin API namespace exposed without authentication CRITICAL Access control
+2 CORS wildcard combined with credentials HIGH Access control
+3 Business-sensitive data leaked via public API HIGH Data exposure
+4 Verbose server errors leak backend internals MEDIUM Info disclosure
+5 Technology & version disclosure in headers MEDIUM Info disclosure
+6 Missing browser security headers on frontend MEDIUM Hardening
+7 Forms submit via HTTP GET LOW Data handling
+8 Full catalog enumerable (incl. pricing) INFO Data exposure
+2. Scope & Methodology
+Item Detail
+In scope Public web frontend and the publicly reachable REST API that it calls.
+Approach Passive reconnaissance (Guardian deep scan of the homepage: DOM, scripts, network, forms, storage)
+followed by read-only verification of endpoints the site itself already calls.
+Explicitly NOT
+done
+No authentication bypass, no password/credential testing, no injection payloads, no write/delete operations,
+no denial-of-service, no scanning of infrastructure outside the two hostnames.
+Backend
+fingerprint
+Frontend: Server: Vercel . API: nginx/1.24.0 (Ubuntu) , X-Powered-By: Express  (Node.js),
+PostgreSQL (confirmed via error output).
+Note: the frontend carries a WordPress-style child-theme name ( brandedukv15-child ) in its asset paths, but it is served as a
+static/headless bundle on Vercel — there is no live WordPress admin exposed on the frontend host.
+3. Detailed Findings
+CRITICAL 1. Admin API namespace reachable without authentication
+Endpoint(s)  GET /api/admin/products , GET /api/admin/products/featured
+Status  Confirmed — returns HTTP 200  with JSON data, no auth required.
+The homepage JavaScript calls api.brandeduk.com/api/admin/products/featured  directly from the browser. Any
+endpoint under an /api/admin/  path should be gated behind authentication; here it serves data to anonymous
+callers. A write probe ( POST /api/admin/products  with an empty body) returned HTTP 400  (input validation)
+rather than 401/403  — meaning the request reached application logic past any auth layer. We did not attempt
+an actual create/modify.
+Why it matters: if administrative write routes are genuinely unauthenticated, an attacker could alter catalog data,
+pricing, or content. This must be verified against the server code immediately.
+Fix  Move all mutating and admin routes behind authentication middleware (JWT/session + role
+check). Confirm write routes return 401  when unauthenticated. Rename browser-facing read endpoints out of
+the /admin/  namespace.
+HIGH 2. CORS wildcard combined with credentials
+Evidence  Access-Control-Allow-Origin: *  + Access-Control-Allow-Credentials: true
+The API returns a wildcard origin together with credentials-allowed. This is an invalid/unsafe combination: it
+signals the CORS policy was never scoped. If the API ever authenticates via cookies, any website a logged-in user
+visits could read authenticated responses.
+Fix  Replace *  with an explicit allow-list ( https://www.brandeduk.com ). Only send Allow-
+Credentials: true  for those exact origins; otherwise drop it entirely.
+HIGH 3. Business-sensitive data leaked via public API
+Endpoint  GET /api/products?q=…
+Public product responses include wholesale/bulk fields such as carton_price  (e.g. 7.12  against a retail 14.58 )
+and supplier identifiers (e.g. ralawise ). This is commercially sensitive: competitors can scrape margins and
+sourcing relationships at scale.
+Fix  Strip internal commercial fields (cost, carton price, supplier) from any response served to the
+public storefront. Expose only retail-facing data.
+MEDIUM 4. Verbose server errors leak backend internals
+Evidence  GET /api/admin/orders  → 500 {"message":"relation \"orders\" does not exist"}
+Several endpoints return raw database errors, confirming a PostgreSQL backend and leaking internal
+table/relation expectations. Error text that reaches the client is reconnaissance fuel.
+Fix  Return generic error bodies ( {"error":"Not found"}  / 404/403) to clients; log full detail server-
+side only. Disable stack/DB detail in production.
+MEDIUM 5. Technology & version disclosure in headers
+Evidence  Server: nginx/1.24.0 (Ubuntu) , X-Powered-By: Express
+Exact server software and framework (and OS) are advertised, letting attackers match known CVEs quickly.
+Fix  Remove X-Powered-By  ( app.disable('x-powered-by') ), set server_tokens off;  in nginx.
+MEDIUM 6. Missing browser security headers on frontend
+Present  Strict-Transport-Security  only.
+Missing  Content-Security-Policy , X-Frame-Options , X-Content-Type-Options , Referrer-Policy ,
+Permissions-Policy .
+Without these, the site has weaker defenses against clickjacking, MIME-sniffing and injected-script execution.
+Fix  Add the headers via Vercel config ( vercel.json  headers / middleware). Start with X-Content-
+Type-Options: nosniff , X-Frame-Options: SAMEORIGIN , Referrer-Policy: strict-origin-when-cross-origin ,
+then a scoped CSP.
+LOW 7. Forms submit via HTTP GET
+Affected  contact, sign-in, sign-up, checkout forms ( method="get" ).
+Submission is handled by JavaScript, but the declared method is GET. If the JS fails or is bypassed, fields including
+email and password can land in URLs, browser history, proxy and server logs.
+Fix  Set method="post"  on all forms that carry personal data or credentials.
+INFO 8. Full catalog enumerable via public API
+Endpoints  /api/products?q= , /api/filters/product-types
+The entire catalog (thousands of SKUs, with pricing) can be paginated and scraped anonymously. This is normal
+for a storefront, but combined with finding 3 it enables complete price/margin harvesting. Mitigated largely by
+fixing finding 3 plus basic rate-limiting.
+Fix  Add rate-limiting / basic bot mitigation on the API gateway.
+4. Remediation Priorities
+Priority Action Finding
+NOW Verify and enforce auth on all /api/admin/*  and write routes #1
+NOW Scope CORS to the storefront origin; fix credentials flag #2
+This week Remove cost/carton/supplier fields from public responses #3, #8
+This week Sanitise error output; hide server/framework versions #4, #5
+Next sprint Add frontend security headers; switch forms to POST; add API rate-limiting #6, #7, #8
+5. Positive Observations
+Clean frontend: no cookies, no local/session storage, no third-party tracking pixels on the homepage.
+HTTPS enforced with HSTS on both hosts ( includeSubDomains  on the API).
+Decoupled architecture (Vercel static front + isolated API) is a sound foundation — the issues are
+configuration/authorization, not structural.
+No live WordPress admin exposed on the frontend host despite theme-derived asset paths.
+Guardian Web Ops · External security assessment of BrandedUK · 1 October 2026. This report reflects the state observed on the assessment date and
+is limited to externally observable behaviour. Several findings (notably #1) should be confirmed against the server source code by the development
+team. Prepared for internal use — handle as confidential.
