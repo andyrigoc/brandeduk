@@ -1278,7 +1278,9 @@
             width: 100%; height: 100%; max-width: none; max-height: none;
             border-radius: 0; overflow: hidden; background: transparent;
         }
-        .customize-popup-overlay.is-pc-customizer .customize-popup-close { display: none; }
+        .customize-popup-overlay.is-pc-customizer .customize-popup-close {
+            display: flex; z-index: 5;
+        }
         .customize-popup-overlay.is-pc-customizer #customizePopupIframe {
             opacity: 0;
             transition: opacity .3s ease;
@@ -5666,9 +5668,30 @@
         pcCustomizerOpenedAt = isPcCustomizer ? performance.now() : 0;
         overlay.classList.toggle('is-pc-customizer', Boolean(isPcCustomizer));
         overlay.classList.remove('is-ready');
+        iframe.onload = () => {
+            if (!overlay.classList.contains('is-pc-customizer') || overlay.hidden) return;
+            let blocked = false;
+            try {
+                const doc = iframe.contentDocument;
+                blocked = !doc || !doc.getElementById('orderPopup');
+            } catch (error) {
+                blocked = true;
+            }
+            if (blocked) {
+                clearTimeout(pcCustomizerRevealTimer);
+                pcCustomizerRevealTimer = null;
+                overlay.classList.add('is-ready');
+            }
+        };
         iframe.src = url;
         overlay.hidden = false;
         document.body.style.overflow = 'hidden';
+        if (isPcCustomizer) {
+            pcCustomizerRevealTimer = setTimeout(() => {
+                overlay.classList.add('is-ready');
+                pcCustomizerRevealTimer = null;
+            }, 8000);
+        }
     }
 
     window.closeCustomizePopup = closeCustomizePopup;
@@ -5723,12 +5746,9 @@
         if (e.data && e.data.type === 'pcCustomizerReady') {
             const overlay = document.getElementById('customizePopupOverlay');
             if (overlay && !overlay.hidden && overlay.classList.contains('is-pc-customizer')) {
-                const remainingTime = Math.max(0, 3000 - (performance.now() - pcCustomizerOpenedAt));
                 clearTimeout(pcCustomizerRevealTimer);
-                pcCustomizerRevealTimer = setTimeout(() => {
-                    overlay.classList.add('is-ready');
-                    pcCustomizerRevealTimer = null;
-                }, remainingTime);
+                pcCustomizerRevealTimer = null;
+                overlay.classList.add('is-ready');
             }
         }
         if (e.data && e.data.type === 'closeCustomizePopup') closeCustomizePopup();

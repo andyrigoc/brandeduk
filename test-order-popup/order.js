@@ -2608,7 +2608,7 @@ $(document).on("click", "#p2BackToCatalog", function() {
     window.goToPage(0);
 });
 
-$(document).on("click", ".pc-step-back:not(#p1BackToCatalog):not(#p2BackToCatalog):not(#p3BackToColour)", function() {
+$(document).on("click", ".pc-step-back:not(#p1BackToCatalog):not(#p2BackToCatalog):not(#p3BackToColour):not(.back-btn-p4)", function() {
     window.goToPage(parseInt($(this).data('target-page'), 10) || 0);
 });
 
@@ -2802,8 +2802,15 @@ $(document).on('click', '#btnSkipLogo', function() {
     window.goToPage(0);
 });
 
-// PAGE 4: Back
+// PAGE 4: Back. From the basket this step is logo-only, so Back
+// returns to the basket instead of the size step.
 $(document).on('click', '.back-btn-p4', function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('basketEmbed') === '1' && window.parent !== window) {
+        if (typeof window.closeOrderPopup === 'function') window.closeOrderPopup();
+        else window.parent.postMessage({ type: 'closeCustomizePopup' }, window.location.origin);
+        return;
+    }
     window.goToPage(2);
 });
 
