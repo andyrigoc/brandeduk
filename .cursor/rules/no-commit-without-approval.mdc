@@ -9,3 +9,9 @@ alwaysApply: true
 - NEVER tell a subagent to commit or push.
 - Finishing a task is not approval. Do not assume the work is correct or ready to ship.
 - Show the result and wait. Commit only after a clear request such as "commit", "push", or "commit and push".
+
+## Always pull before push
+
+- Other people and other terminals push to `main`. Before every `git push`, run `git pull --rebase origin main`.
+- If the rebase has conflicts, stop and show them to the user. Do not resolve them by guessing.
+- NEVER force-push.
