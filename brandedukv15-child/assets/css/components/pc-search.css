@@ -52,6 +52,7 @@
     }
 
     .pc-search-product {
+        position: relative;
         display: flex;
         align-items: center;
         min-width: 0;
@@ -128,6 +129,17 @@
     .pc-search-product__price strong {
         color: #273469;
         font-size: 13px;
+    }
+
+    .pc-search-product.has-eco-leaf .pc-search-product__copy {
+        padding-right: 30px;
+    }
+
+    .pc-search-product > .pc-search-product__leaf {
+        right: 10px;
+        bottom: 10px;
+        width: 24px;
+        height: 24px;
     }
 
     .pc-search-footer {

@@ -111,20 +111,23 @@
             window.BrandedPcProductCache[String(code)] = product;
         }
 
-        return '<a class="pc-search-product" href="' + escapeHtml(productUrl(code)) +
+        var leafHtml = (window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
+            ? window.BrandedOrganicLeaf.maybeLeafHtml(product, 'pc-search-product__leaf')
+            : '';
+
+        return '<a class="pc-search-product' + (leafHtml ? ' has-eco-leaf' : '') +
+            '" href="' + escapeHtml(productUrl(code)) +
             '" data-code="' + escapeHtml(code) + '" role="option">' +
             '<span class="pc-search-product__media"><img src="' + escapeHtml(image) +
             '" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'' +
             escapeHtml(fallbackImage()) + '\'">' +
-            ((window.BrandedOrganicLeaf && window.BrandedOrganicLeaf.maybeLeafHtml)
-                ? window.BrandedOrganicLeaf.maybeLeafHtml(product)
-                : '') +
             '</span>' +
             '<span class="pc-search-product__copy">' +
                 '<span class="pc-search-product__name">' + highlight(name, query) + '</span>' +
                 (brandLine ? '<span class="pc-search-product__brand">' + brandLine + '</span>' : '') +
                 priceHtml +
             '</span>' +
+            leafHtml +
         '</a>';
     }
 

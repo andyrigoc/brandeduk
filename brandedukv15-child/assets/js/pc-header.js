@@ -65,7 +65,7 @@
         addStylesheet(new URL('css/components/header.css?v=20260220', assetsRoot).href, 'base');
         addStylesheet(new URL('css/components/promo-bar.css?v=20260425a', assetsRoot).href, 'promo');
         addStylesheet(new URL('css/components/pc-header.css?v=20261006-shopcta3', assetsRoot).href, 'standard');
-        addStylesheet(new URL('css/components/pc-search.css?v=20261005-searchgrid2', assetsRoot).href, 'search');
+        addStylesheet(new URL('css/components/pc-search.css?v=20261008-searchleaf1', assetsRoot).href, 'search');
     }
 
     function resolveTemplateUrls(root) {
@@ -315,10 +315,10 @@
             });
         }
         chain.then(function () {
-            return appendScript('js/pc-search.js?v=20261006-leaf3', { 'data-pc-search': 'true' });
+            return appendScript('js/pc-search.js?v=20261008-searchleaf1', { 'data-pc-search': 'true' });
         }).catch(function () {
             // Search should still work even if the eco badge assets fail to load.
-            appendScript('js/pc-search.js?v=20261006-leaf3', { 'data-pc-search': 'true' });
+            appendScript('js/pc-search.js?v=20261008-searchleaf1', { 'data-pc-search': 'true' });
         });
     }
 
