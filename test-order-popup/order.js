@@ -1158,6 +1158,7 @@ function customizationConfigTarget(product) {
         return { slug: 'tshirts', subtype: sleeveSubtype || 'short-sleeve' };
     }
     if (explicit) return { slug: explicit, subtype: '' };
+    if (normalizedProductType) return { slug: normalizedProductType, subtype: '' };
     return { slug: 'tshirts', subtype: '' };
 }
 
@@ -1177,6 +1178,7 @@ function page4CustomiseTitle(product) {
     if (slug === 'bodysuits') return 'Customise your bodysuit';
     if (slug === 'coveralls') return 'Customise your coverall';
     if (slug === 'dungarees') return 'Customise your dungarees';
+    if (slug === 'scarves') return 'Customise your scarf';
     if (slug === 'trousers') return 'Customise your trousers';
     if (slug === 'shorts') return 'Customise your shorts';
     if (slug === 'shirts') return 'Customise your shirt';
@@ -1359,7 +1361,7 @@ function page4FetchCustomizationConfig(target) {
 
 function page4ApiPositionImage(position) {
     var remote = String((position && (position.imageUrl || position.image_url)) || '').trim();
-    if (!/\/uploads\/customization\//i.test(remote)) return '';
+    if (!/(?:^|\/)(?:uploads\/customization|assets\/customization\/new-categories)\//i.test(remote)) return '';
     if (/^(https?:|data:|blob:)/i.test(remote)) return remote;
     var bases = page4ApiBases();
     var base = bases.length ? bases[bases.length - 1] : 'https://api.brandeduk.com';
@@ -1456,7 +1458,7 @@ function loadPage4PositionImages(product) {
                 return position && position.isActive !== false;
             });
             if (!positions || !positions.length) {
-                page4ShowTemplateState(host, 'Customisation positions could not be loaded.', product);
+                page4ShowTemplateState(host, 'This product\'s customisation template is being prepared. Please request a quote and our team will help.', null);
                 refreshP4Scroll();
                 return;
             }
