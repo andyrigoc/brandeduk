@@ -717,6 +717,14 @@
             aspect-ratio: 1;
             box-sizing: border-box;
         }
+        .item-row-meta .item-size.is-label {
+            aspect-ratio: auto;
+            min-width: 0;
+            height: auto;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
         .item-meta-separator { color: #c5c7cc; font-size: 11px; }
         .item-row-meta .item-row-remove { margin-left: 2px; }
         .item-edit-hint {
@@ -4804,7 +4812,7 @@
                                     <span class="item-meta-separator" aria-hidden="true">&middot;</span>
                                     <span class="item-color">${getItemColorLabel(item)}</span>
                                     <span class="item-meta-separator" aria-hidden="true">&middot;</span>
-                                    <span class="item-size">${item.size || ''}</span>
+                                    <span class="item-size${/one\s*size|onesize/i.test(String(item.size || '')) ? ' is-label' : ''}">${item.size || ''}</span>
                                     <span class="item-meta-separator" aria-hidden="true">&middot;</span>
                                     <button type="button" class="item-row-remove" onclick="event.stopPropagation(); removeItem(${index})">Remove</button>
                                 </div>
