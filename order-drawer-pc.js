@@ -1209,6 +1209,30 @@
             .order-drawer-clear-btn--danger:hover {
                 background: #ea580c;
             }
+
+            /* Tablet landscape only. A mouse desktop never matches pointer: coarse
+               and hover: none, so the drawer summary stays at the bottom on PC. */
+            @media (hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 700px) and (max-width: 1200px) {
+                .order-drawer-overlay.is-tablet-side .order-drawer {
+                    max-width: min(440px, 48vw);
+                }
+
+                .order-drawer-overlay.is-tablet-side #basketSummary {
+                    position: fixed;
+                    z-index: 2;
+                    top: 12px;
+                    left: 12px;
+                    width: calc(100vw - min(440px, 48vw) - 28px);
+                    max-width: 520px;
+                    max-height: calc(100vh - 24px);
+                    overflow: auto;
+                    margin: 0;
+                    padding: 12px;
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+                }
+            }
         </style>
     `;
 
@@ -1422,6 +1446,28 @@
 
             // Show/hide back button
             backBtn.classList.toggle('is-hidden', !(step > 1 && step < 3));
+            syncTabletSideSummary();
+        }
+
+        const tabletSideQuery = window.matchMedia('(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 700px) and (max-width: 1200px)');
+
+        function syncTabletSideSummary() {
+            const summary = document.getElementById('basketSummary');
+            const step = document.querySelector('#orderDrawer .order-drawer-step[data-step="1"]');
+            if (!summary || !step || !overlay) return;
+            const side = tabletSideQuery.matches && currentStep === 1;
+            overlay.classList.toggle('is-tablet-side', side);
+            if (side) {
+                if (summary.parentElement !== overlay) overlay.appendChild(summary);
+            } else if (summary.parentElement !== step) {
+                step.appendChild(summary);
+            }
+        }
+
+        if (typeof tabletSideQuery.addEventListener === 'function') {
+            tabletSideQuery.addEventListener('change', syncTabletSideSummary);
+        } else if (typeof tabletSideQuery.addListener === 'function') {
+            tabletSideQuery.addListener(syncTabletSideSummary);
         }
 
         function getItemQuantityDetails(item) {
