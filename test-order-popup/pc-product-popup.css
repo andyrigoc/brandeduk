@@ -3713,13 +3713,49 @@ body.popup-open {
     vertical-align: -2px;
 }
 
+#orderPopup .page-4 .p4-upload-col {
+    display: flex;
+    flex-direction: column;
+}
+
 #orderPopup .page-4 .p4-saved-logos,
 #orderPopup .page-4 .p4-btn-skip {
+    align-self: flex-start;
+    width: auto;
     margin-top: 8px;
     border: 0;
     background: transparent;
     color: #1d4ed8;
+    text-align: left;
     cursor: pointer;
+}
+
+#orderPopup .page-4 .p4-continue-shopping {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 42px;
+    margin-top: auto;
+    padding: 0 14px;
+    border: 1px solid #d8deea;
+    border-radius: 8px;
+    background: #fff;
+    color: #1c2e65;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    cursor: pointer;
+}
+
+#orderPopup .page-4 .p4-continue-shopping:hover {
+    border-color: #aeb8cb;
+    background: #f8fafc;
+    color: #1c2e65;
 }
 
 #orderPopup .page-4 .p4-artwork-help {
