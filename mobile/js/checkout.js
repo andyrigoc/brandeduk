@@ -672,4 +672,9 @@ function startPromoTimer() {
 document.addEventListener('DOMContentLoaded', () => {
     startPromoTimer();
     console.log('[CHECKOUT] Basket items:', readBasket().length);
+    try {
+        if (window.self === window.top && typeof window.brandedAdsConversion === 'function') {
+            window.brandedAdsConversion('begin_checkout');
+        }
+    } catch (e) {}
 });

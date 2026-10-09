@@ -178,7 +178,7 @@
     function configureContactActions(header) {
         var whatsapp = header.querySelector('[data-open-whatsapp="1"]');
         if (whatsapp) {
-            whatsapp.href = 'https://wa.me/447931372126';
+            whatsapp.href = 'https://wa.me/447447348564';
             whatsapp.target = '_blank';
             whatsapp.rel = 'noopener';
         }

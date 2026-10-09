@@ -4,6 +4,50 @@
     <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://www.brandeduk.com/payment-success">
     <meta charset="UTF-8">
+    <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      (function () {
+        try {
+          var c = JSON.parse(localStorage.getItem('brandedukCookieConsent') || 'null');
+          if (c && c.timestamp && Date.now() - c.timestamp < 31536000000) {
+            var ads = c.advertising ? 'granted' : 'denied';
+            gtag('consent', 'update', { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: c.analytics ? 'granted' : 'denied' });
+          }
+        } catch (e) {}
+        try {
+          var u = new URL(location.href), strip = false;
+          ['token', 'email', 'session_id', 'access_token', 'id_token', 'refresh_token'].forEach(function (k) {
+            if (u.searchParams.has(k)) { u.searchParams.delete(k); strip = true; }
+          });
+          if (strip) gtag('set', 'page_location', u.href);
+        } catch (e) {}
+      })();
+      window.brandedAdsConversion = window.brandedAdsConversion || function () { (window.brandedAdsQueue = window.brandedAdsQueue || []).push(arguments); };
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-438771987"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-438771987');
+    </script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Successful - BrandedUK</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -73,30 +117,112 @@
             font-weight: 700;
             text-decoration: none;
         }
+        .icon.is-pending { background: var(--border); color: var(--navy); }
+        .order-facts {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 16px;
+            margin: 0 0 22px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f9fafb;
+            text-align: left;
+        }
+        .order-facts[hidden] { display: none; }
+        .order-facts dt { color: var(--grey); font-size: 14px; }
+        .order-facts dd { margin: 0; font-weight: 700; text-align: right; word-break: break-all; }
     </style>
 </head>
 <body>
-    <main>
-        <div class="icon">✓</div>
-        <h1>Payment Successful</h1>
-        <p>Your payment has been received. We will confirm your order details by email shortly.</p>
+    <main aria-live="polite">
+        <div class="icon is-pending" id="psIcon" aria-hidden="true">…</div>
+        <h1 id="psTitle">Checking your payment…</h1>
+        <p id="psText">This only takes a moment.</p>
+        <dl class="order-facts" id="psFacts" hidden>
+            <dt>Order number</dt><dd id="psOrder"></dd>
+            <dt>Total paid</dt><dd id="psTotal"></dd>
+        </dl>
         <a href="/">Back to Home</a>
     </main>
 
     <script>
         (function () {
             var params = new URLSearchParams(window.location.search);
-            var sessionId = params.get('session_id');
+            var sessionId = params.get('session_id') || '';
+            var pendingOrderNumber = '';
             if (sessionId) {
-                // Keep for internal tracking only; do not display any codes to the customer.
                 try { sessionStorage.setItem('paidStripeCheckoutSessionId', sessionId); } catch (e) {}
             }
-            try {
-                localStorage.setItem('quoteBasket', '[]');
-                localStorage.removeItem('orderNotes');
-                sessionStorage.removeItem('pendingStripeQuoteId');
-                sessionStorage.removeItem('pendingStripeCheckoutSessionId');
-            } catch (e) {}
+            try { pendingOrderNumber = sessionStorage.getItem('pendingCustomerOrderNumber') || ''; } catch (e) {}
+
+            function clearBasket() {
+                try {
+                    localStorage.setItem('quoteBasket', '[]');
+                    localStorage.removeItem('orderNotes');
+                    sessionStorage.removeItem('pendingStripeQuoteId');
+                    sessionStorage.removeItem('pendingStripeCheckoutSessionId');
+                } catch (e) {}
+            }
+
+            function show(state, data) {
+                var icon = document.getElementById('psIcon');
+                var title = document.getElementById('psTitle');
+                var text = document.getElementById('psText');
+                if (state === 'paid') {
+                    icon.textContent = '✓';
+                    icon.classList.remove('is-pending');
+                    title.textContent = 'Payment Successful';
+                    text.textContent = 'Thank you, your payment has been received. We will confirm your order details by email shortly.';
+                    var total = Number(data.total);
+                    document.getElementById('psOrder').textContent = data.orderNumber || pendingOrderNumber || data.transactionId || '-';
+                    document.getElementById('psTotal').textContent = isFinite(total)
+                        ? new Intl.NumberFormat('en-GB', { style: 'currency', currency: data.currency || 'GBP' }).format(total)
+                        : '-';
+                    document.getElementById('psFacts').hidden = false;
+                } else if (state === 'unpaid') {
+                    icon.textContent = '!';
+                    title.textContent = 'Payment not confirmed yet';
+                    text.innerHTML = 'We could not confirm this payment. If money has left your account, please contact us at <a href="mailto:info@brandeduk.com" style="all:revert">info@brandeduk.com</a> or 0208 974 2722.';
+                } else {
+                    icon.textContent = '✓';
+                    title.textContent = 'Thank you';
+                    text.textContent = 'If your payment went through, you will receive a confirmation email shortly. Questions? Call 0208 974 2722 or email info@brandeduk.com.';
+                }
+            }
+
+            function verify() {
+                if (!/^cs_(test|live)_/.test(sessionId)) {
+                    clearBasket();
+                    show('unknown');
+                    return;
+                }
+                fetch('/api/orders/verify-payment?session_id=' + encodeURIComponent(sessionId), { cache: 'no-store' })
+                    .then(function (res) { return res.json().catch(function () { return {}; }); })
+                    .then(function (data) {
+                        if (!data || data.verified !== true) {
+                            clearBasket();
+                            show('unknown');
+                            return;
+                        }
+                        if (!data.paid) {
+                            show('unpaid');
+                            return;
+                        }
+                        clearBasket();
+                        show('paid', data);
+                        if (data.conversionEligible === true && typeof window.brandedAdsPurchase === 'function') {
+                            window.brandedAdsPurchase(data);
+                        }
+                    })
+                    .catch(function () {
+                        clearBasket();
+                        show('unknown');
+                    });
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', verify);
+            else verify();
         })();
     </script>
 </body>

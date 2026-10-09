@@ -2,6 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      (function () {
+        try {
+          var c = JSON.parse(localStorage.getItem('brandedukCookieConsent') || 'null');
+          if (c && c.timestamp && Date.now() - c.timestamp < 31536000000) {
+            var ads = c.advertising ? 'granted' : 'denied';
+            gtag('consent', 'update', { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: c.analytics ? 'granted' : 'denied' });
+          }
+        } catch (e) {}
+        try {
+          var u = new URL(location.href), strip = false;
+          ['token', 'email', 'session_id', 'access_token', 'id_token', 'refresh_token'].forEach(function (k) {
+            if (u.searchParams.has(k)) { u.searchParams.delete(k); strip = true; }
+          });
+          if (strip) gtag('set', 'page_location', u.href);
+        } catch (e) {}
+      })();
+      window.brandedAdsConversion = window.brandedAdsConversion || function () { (window.brandedAdsQueue = window.brandedAdsQueue || []).push(arguments); };
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-438771987"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-438771987');
+    </script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DTF vs Screen Printing: Which Is Better for Bulk Orders? - BrandedUK</title>
     <meta name="description" content="DTF vs Screen Printing comparison for bulk orders. Cost, quality and turnaround for businesses in Kingston and South West London.">

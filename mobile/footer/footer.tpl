@@ -48,6 +48,7 @@
                             <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
                             <li class="bar-menu-item"><a href="/privacy-policy.html">Privacy Policy</a></li>
+                            <li class="bar-menu-item"><a href="#cookie-settings" data-cookie-settings="1">Cookie settings</a></li>
                         </ul>
                     </div>
                     <div class="bar-menu-column">

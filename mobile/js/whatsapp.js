@@ -44,7 +44,7 @@
     document.documentElement.classList.remove('buk-onsite-chat--hidden');
     if (document.body) document.body.classList.remove('buk-onsite-chat--hidden');
 
-    var WA_NUMBER = '447931372126';
+    var WA_NUMBER = '447447348564';
     var SPEAK_WA_NUMBER = '447447348564';
     var PHONE_TEL = '02089742722';
     var PHONE_DISPLAY = '020 8974 2722';

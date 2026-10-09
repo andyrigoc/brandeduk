@@ -3428,6 +3428,23 @@ body.popup-open {
     font-weight: 800;
 }
 
+#orderPopup .page-4 .p4-bar-icon {
+    display: inline-flex;
+    flex: 0 0 16px;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #00a84a;
+    line-height: 0;
+}
+
+#orderPopup .page-4 .p4-bar-icon svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+}
+
 #orderPopup .page-4 #p4SelectedSwatch {
     width: 28px;
     height: 28px;
@@ -3436,6 +3453,9 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-artwork-approval {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     min-width: 0;
     padding-left: 10px;
     border-left: 1px solid #b9e8cd;
@@ -3683,6 +3703,14 @@ body.popup-open {
 
 #orderPopup .page-4 .p4-file-tip {
     color: #159a58;
+}
+
+#orderPopup .page-4 .p4-file-tip .p4-bar-icon {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: -2px;
 }
 
 #orderPopup .page-4 .p4-saved-logos,

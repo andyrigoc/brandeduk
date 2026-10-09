@@ -2,6 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      (function () {
+        try {
+          var c = JSON.parse(localStorage.getItem('brandedukCookieConsent') || 'null');
+          if (c && c.timestamp && Date.now() - c.timestamp < 31536000000) {
+            var ads = c.advertising ? 'granted' : 'denied';
+            gtag('consent', 'update', { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: c.analytics ? 'granted' : 'denied' });
+          }
+        } catch (e) {}
+        try {
+          var u = new URL(location.href), strip = false;
+          ['token', 'email', 'session_id', 'access_token', 'id_token', 'refresh_token'].forEach(function (k) {
+            if (u.searchParams.has(k)) { u.searchParams.delete(k); strip = true; }
+          });
+          if (strip) gtag('set', 'page_location', u.href);
+        } catch (e) {}
+      })();
+      window.brandedAdsConversion = window.brandedAdsConversion || function () { (window.brandedAdsQueue = window.brandedAdsQueue || []).push(arguments); };
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-438771987"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-438771987');
+    </script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#273469">
     <meta name="mobile-web-app-capable" content="yes">
@@ -995,7 +1039,7 @@
             <span class="nav-badge" id="navCartBadge">0</span>
             <span class="nav-item-label">Basket</span>
         </a>
-        <a href="https://wa.me/447931372126?text=Hi%20I%20would%20like%20a%20quote" target="_blank" rel="noopener" class="nav-item" id="chatNavBtn">
+        <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" target="_blank" rel="noopener" class="nav-item" id="chatNavBtn">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 80 80">
                 <g fill="none" stroke="currentColor" stroke-width="3">
                     <path d="M30,59C27.794,59,26,60.794,26,63C26,65.206,27.794,67,30,67C32.206,67,34,65.206,34,63C34,60.794,32.206,59,30,59zM30,65C28.897,65,28,64.103,28,63C28,61.897,28.897,61,30,61C31.103,61,32,61.897,32,63C32,64.103,31.103,65,30,65zM27,15L31,15C31.552,15,32,14.553,32,14C32,13.447,31.552,13,31,13L27,13C26.448,13,26,13.447,26,14C26,14.553,26.448,15,27,15zM34,15L35,15C35.552,15,36,14.553,36,14C36,13.447,35.552,13,35,13L34,13C33.448,13,33,13.447,33,14C33,14.553,33.448,15,34,15z" fill="currentColor"/>
@@ -1177,7 +1221,7 @@
                 <div class="wa-message">Hi, how can we help you?</div>
             </div>
             <div class="wa-popup__footer">
-                <a href="https://wa.me/447931372126?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
+                <a href="https://wa.me/447447348564?text=Hi%20I%20would%20like%20a%20quote" class="wa-popup__cta" target="_blank" rel="noopener">
                     <i class="fa-brands fa-whatsapp"></i> Start chat on WhatsApp
                 </a>
             </div>
