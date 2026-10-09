@@ -143,8 +143,9 @@
 
   .buk-footer__contacts {
     display: grid;
-    grid-template-columns: 1.2fr 1.25fr 1fr;
-    gap: 48px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr) minmax(0, 0.95fr);
+    gap: 28px 36px;
+    align-items: end;
     padding: 29px 0;
     border-top: 1px solid var(--footer-line);
     border-bottom: 1px solid var(--footer-line);
@@ -171,6 +172,50 @@
 
   .buk-footer__contact-link--accent {
     color: var(--footer-orange);
+  }
+
+  .buk-footer__phones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 18px;
+    row-gap: 8px;
+    margin: 0;
+    color: #f3f3f1;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .buk-footer__phone {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    white-space: nowrap;
+  }
+
+  .buk-footer__phone-word {
+    color: #f3f3f1;
+    font-weight: 600;
+  }
+
+  .buk-footer__phone-sep {
+    display: inline-block;
+    margin-right: 12px;
+    color: #f3f3f1;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .buk-footer__phones .buk-footer__contact-link {
+    color: #f3f3f1;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .buk-footer__phones .buk-footer__contact-link:hover {
+    color: #ffffff;
   }
 
   .buk-footer__bottom {

@@ -2396,7 +2396,7 @@ $(document).on('change', '#p4LogoFileInput', function () {
     }
 });
 
-$(document).on('click', '#p4ChooseFile', function () {
+$(document).on('click', '#p4ChooseFileBtn', function () {
     p4OpenFilePicker('', '');
 });
 

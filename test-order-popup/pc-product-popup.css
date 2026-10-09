@@ -3407,19 +3407,21 @@ body.popup-open {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     margin-top: 8px;
     padding: 8px 10px;
     border-radius: 10px;
     background: #e8f8ef;
     color: #1f2937;
-    font-size: 13px;
+    font-size: 11px;
+    line-height: 1.15;
 }
 
 #orderPopup .page-4 .p4-selected-colour-choice {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 10px;
+    flex: 1 1 auto;
     min-width: 0;
 }
 
@@ -3445,9 +3447,20 @@ body.popup-open {
     height: 16px;
 }
 
+#orderPopup .page-4 #p4SelectedName {
+    flex: 0 1 auto;
+    min-width: min-content;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
 #orderPopup .page-4 #p4SelectedSwatch {
-    width: 28px;
-    height: 28px;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: 6px;
     background: #f3f4f6 center/cover no-repeat;
 }
@@ -3455,17 +3468,23 @@ body.popup-open {
 #orderPopup .page-4 .p4-artwork-approval {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    flex: 0 1 112px;
+    width: 112px;
+    max-width: 42%;
     min-width: 0;
-    padding-left: 10px;
+    padding-left: 8px;
     border-left: 1px solid #b9e8cd;
     color: #159a58;
-    font-size: 10px;
-    line-height: 1.2;
+    font-size: 9px;
+    line-height: 1.15;
 }
 
 #orderPopup .page-4 .p4-artwork-approval strong {
     display: block;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.15;
 }
 
 #orderPopup .page-4 .positions-grid {
@@ -3616,7 +3635,7 @@ body.popup-open {
 }
 
 #orderPopup .page-4 .p4-upload-col h4 {
-    margin-top: 16px;
+    margin-top: 10px;
     font-size: 15px;
     color: #111827;
 }
@@ -3630,68 +3649,98 @@ body.popup-open {
 #orderPopup .page-4 .p4-upload-box {
     position: relative;
     width: 100%;
-    margin: 10px 0;
-    padding: 18px 16px;
-    display: flex;
+    margin: 6px 0 4px;
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 14px;
+    column-gap: 8px;
+    row-gap: 1px;
     border: 0;
-    border-radius: 14px;
+    border-radius: 12px;
     background: #1c2e65;
     color: #fff;
     text-align: left;
-    cursor: pointer;
+    cursor: default;
+    flex: 0 0 auto;
 }
 
 #orderPopup .page-4 .p4-upload-box::after {
     content: "";
     position: absolute;
-    inset: 6px;
+    inset: 4px;
     border: 1.5px dashed rgba(255, 255, 255, 0.55);
-    border-radius: 10px;
+    border-radius: 8px;
     pointer-events: none;
 }
 
 #orderPopup .page-4 .p4-upload-icon {
+    grid-row: 1 / span 2;
     flex: 0 0 auto;
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     display: grid;
     place-items: center;
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     color: #fff;
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1;
 }
 
 #orderPopup .page-4 .p4-upload-copy {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
+    display: contents;
 }
 
 #orderPopup .page-4 .p4-upload-copy strong {
-    font-size: 15px;
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 14px;
+    line-height: 1.15;
     color: #fff;
 }
 
 #orderPopup .page-4 .p4-upload-copy span {
-    font-size: 12px;
-    line-height: 1.3;
+    grid-column: 2 / -1;
+    grid-row: 2;
+    font-size: 11px;
+    line-height: 1.25;
     color: #fff;
 }
 
-#orderPopup .page-4 .p4-upload-box em {
+#orderPopup .page-4 .p4-upload-box .p4-choose-file {
+    position: relative;
+    z-index: 1;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
     flex: 0 0 auto;
-    margin-left: auto;
-    padding: 8px 14px;
+    margin-left: 0;
+    padding: 6px 12px;
+    border: 0;
     border-radius: 8px;
     background: #fff;
     color: #1c2e65;
+    font-family: inherit;
+    font-size: 13px;
     font-style: normal;
     font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #0a1636;
+    transform: translateY(-1px);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+#orderPopup .page-4 .p4-upload-box .p4-choose-file:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 #0a1636;
+}
+
+#orderPopup .page-4 .p4-upload-box .p4-choose-file:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #0a1636;
 }
 
 #orderPopup .page-4 .p4-file-types,
@@ -3716,6 +3765,12 @@ body.popup-open {
 #orderPopup .page-4 .p4-upload-col {
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Small clearance so the continue-shopping border stays inside the popup. */
+    padding-bottom: 2px;
+    scroll-padding-bottom: 8px;
 }
 
 #orderPopup .page-4 .p4-saved-logos,
@@ -3730,15 +3785,23 @@ body.popup-open {
     cursor: pointer;
 }
 
+#orderPopup .page-4 .p4-upload-col > .p4-btn-skip {
+    margin-bottom: 12px;
+}
+
 #orderPopup .page-4 .p4-continue-shopping {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-self: stretch;
+    box-sizing: border-box;
     width: 100%;
+    flex: 0 0 auto;
     min-height: 42px;
     margin-top: auto;
+    margin-bottom: 0;
     padding: 0 14px;
-    border: 1px solid #d8deea;
+    border: 1.5px dashed #f97316;
     border-radius: 8px;
     background: #fff;
     color: #1c2e65;
@@ -3750,17 +3813,39 @@ body.popup-open {
     text-decoration: none;
     text-transform: none;
     cursor: pointer;
+    box-shadow: none;
+    transform: none;
+    transition: none;
 }
 
 #orderPopup .page-4 .p4-continue-shopping:hover {
-    border-color: #aeb8cb;
-    background: #f8fafc;
+    border-style: solid;
+    border-color: #f97316;
+    background: #fff7ed;
     color: #1c2e65;
+    box-shadow: none;
+    transform: none;
+}
+
+#orderPopup .page-4 .p4-continue-shopping:active {
+    border-style: solid;
+    border-color: #f97316;
+    background: #ffedd5;
+    color: #1c2e65;
+    box-shadow: none;
+    transform: none;
+}
+
+#orderPopup .page-4 .p4-continue-shopping:focus,
+#orderPopup .page-4 .p4-continue-shopping:focus-visible {
+    box-shadow: none;
+    transform: none;
 }
 
 #orderPopup .page-4 .p4-artwork-help {
-    margin-top: 14px;
-    padding: 10px;
+    flex: 0 0 auto;
+    margin-top: 8px;
+    padding: 8px;
     border-radius: 10px;
     background: #f5f3ff;
     font-size: 12px;
