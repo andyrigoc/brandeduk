@@ -92,7 +92,21 @@ document.querySelector('.request-quote-btn')?.addEventListener('click', () => {
 
 document.getElementById('stripe-payment-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    await startStripeCheckout();
+    if (checkoutSessionPending) {
+        if (typeof window.focusCenteredStripeCheckout === 'function') {
+            window.focusCenteredStripeCheckout();
+        }
+        return;
+    }
+    if (!readBasket().length) {
+        showPaymentError('Your basket is empty. Please add items before paying.');
+        return;
+    }
+    // Open before any await so the browser still treats this as the click.
+    const payWindow = typeof window.openCenteredStripeCheckout === 'function'
+        ? window.openCenteredStripeCheckout()
+        : null;
+    await startStripeCheckout(payWindow);
 });
 
 document.getElementById('payment-retry-btn')?.addEventListener('click', () => {
@@ -117,11 +131,21 @@ async function initStripePayment() {
     showPaymentStart();
 }
 
-async function startStripeCheckout() {
-    if (checkoutSessionPending) return;
+function closePayWindow(payWindow) {
+    try {
+        if (payWindow && !payWindow.closed) payWindow.close();
+    } catch (e) {}
+}
+
+async function startStripeCheckout(payWindow) {
+    if (checkoutSessionPending) {
+        closePayWindow(payWindow);
+        return;
+    }
 
     const basket = readBasket();
     if (!basket.length) {
+        closePayWindow(payWindow);
         showPaymentError('Your basket is empty. Please add items before paying.');
         return;
     }
@@ -166,15 +190,28 @@ async function startStripeCheckout() {
             sessionStorage.setItem('pendingCustomerOrderNumber', mirroredOrder.orderNumber || '');
         } catch (storageError) {}
 
-        if (typeof window.mountCenteredStripeCheckout === 'function') {
-            checkoutSessionPending = false;
-            setCheckoutButtonLoading(false);
-            setPaymentView('form');
-            window.mountCenteredStripeCheckout(result.data.checkoutUrl);
-        } else {
+        setCheckoutButtonLoading(false);
+        setPaymentView('form');
+        const usingWindow = typeof window.mountCenteredStripeCheckout === 'function'
+            ? window.mountCenteredStripeCheckout(result.data.checkoutUrl, payWindow) === true
+            : false;
+        if (!usingWindow && typeof window.mountCenteredStripeCheckout !== 'function') {
+            closePayWindow(payWindow);
             window.location.href = result.data.checkoutUrl;
         }
+        checkoutSessionPending = usingWindow;
+        if (usingWindow) {
+            const buttonText = document.getElementById('stripe-btn-text');
+            if (buttonText) buttonText.textContent = 'Show secure payment';
+            window.onCenteredStripeCheckoutClosed = function () {
+                checkoutSessionPending = false;
+                if (buttonText) buttonText.textContent = 'Continue to Secure Payment';
+            };
+        } else {
+            checkoutSessionPending = false;
+        }
     } catch (err) {
+        closePayWindow(payWindow);
         checkoutSessionPending = false;
         setCheckoutButtonLoading(false);
         showPaymentError(err.message || 'Unable to start secure checkout. Please try again.');

@@ -545,7 +545,7 @@
         }
         .co-payment-title {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 400;
             color: var(--co-navy);
             margin-bottom: 16px;
         }
@@ -569,7 +569,7 @@
         }
         .co-summary-toggle-lbl {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 400;
             color: var(--co-navy);
             display: flex;
             align-items: center;
@@ -577,7 +577,7 @@
         }
         .co-summary-toggle-total {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 400;
             color: var(--co-navy);
         }
         .co-summary-chevron { transition: transform .2s; }
@@ -586,6 +586,17 @@
         .co-summary-items {
             border-top: 1px solid var(--co-border);
             padding: 10px 16px;
+            max-height: 240px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6b7280 #f3f4f6;
+        }
+        .co-summary-items::-webkit-scrollbar { width: 10px; }
+        .co-summary-items::-webkit-scrollbar-track { background: #f3f4f6; }
+        .co-summary-items::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 8px;
+            border: 2px solid #f3f4f6;
         }
         .co-summary-item {
             display: flex;
@@ -602,11 +613,11 @@
             border-radius: 5px;
             padding: 2px 7px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 400;
             flex-shrink: 0;
         }
-        .co-summary-name { flex: 1; color: var(--co-navy); }
-        .co-summary-price { color: var(--co-grey); font-weight: 600; }
+        .co-summary-name { flex: 1; color: var(--co-navy); font-weight: 400; }
+        .co-summary-price { color: var(--co-grey); font-weight: 400; }
         .co-summary-footer {
             padding: 12px 16px;
             border-top: 1px solid var(--co-border);
@@ -620,7 +631,7 @@
         }
         .co-summary-row.total-row {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 400;
             color: var(--co-navy);
             margin-top: 6px;
             padding-top: 8px;
@@ -633,8 +644,8 @@
         .payment-spinner { width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--co-navy); border-radius:50%; animation:co-spin .7s linear infinite; }
         @keyframes co-spin { to { transform:rotate(360deg); } }
         .stripe-checkout-note { background:#f8f9fa; border:1.5px solid var(--co-border); border-radius:8px; padding:14px; margin-bottom:14px; color:var(--co-grey); font-size:13px; line-height:1.55; text-align:center; }
-        .stripe-pay-btn { width:100%; background:var(--co-navy); color:#fff; border:none; border-radius:8px; padding:15px; font-size:16px; font-weight:700; cursor:pointer; transition:background .2s; font-family:inherit; }
-        .stripe-pay-btn:hover { background:#1e2749; }
+        .stripe-pay-btn { width:100%; background:#013365; color:#fff; border:none; border-radius:999px; padding:15px; font-size:16px; font-weight:400; cursor:pointer; transition:background .2s; font-family:inherit; }
+        .stripe-pay-btn:hover { background:#01284f; }
         .stripe-pay-btn:disabled { opacity:.65; cursor:not-allowed; }
         .payment-success { text-align:center; padding:36px 16px; }
         .payment-success-icon { width:60px; height:60px; background:var(--co-success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; margin:0 auto 14px; }
@@ -1024,15 +1035,15 @@
 
                 <!-- Order summary -->
                 <div class="co-summary" id="coSummary">
-                    <div class="co-summary-toggle" onclick="coToggleSummary()" role="button" tabindex="0" aria-expanded="false" id="coSummaryToggle">
+                    <div class="co-summary-toggle" onclick="coToggleSummary()" role="button" tabindex="0" aria-expanded="true" id="coSummaryToggle">
                         <span class="co-summary-toggle-lbl">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                             Order Summary
-                            <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>
                         </span>
                         <span class="co-summary-toggle-total" id="coSummaryTotal">£0.00</span>
                     </div>
-                    <div class="co-summary-body" id="coSummaryBody">
+                    <div class="co-summary-body open" id="coSummaryBody">
                         <div class="co-summary-items" id="coSummaryItems">
                             <!-- populated by JS -->
                         </div>
@@ -1082,7 +1093,7 @@
                     <!-- Stripe Checkout redirect -->
                     <form id="stripe-payment-form" method="post" action="#" style="display:none">
                         <div class="stripe-checkout-note">
-                            You will be redirected to Stripe's secure checkout. Delivery is confirmed separately and is not charged today.
+                            Stripe's secure checkout opens in a centred window. Delivery is confirmed separately and is not charged today.
                         </div>
                         <button type="submit" id="stripe-pay-btn" class="stripe-pay-btn">
                             <span id="stripe-btn-text">Continue to Secure Payment</span>
@@ -1140,7 +1151,7 @@
 
         var _step = 1;
         var _panel = 'login';
-        var _summaryOpen = false;
+        var _summaryOpen = true;
 
         /* ── Persistent session helpers ── */
         var apiBase = (typeof window.resolveBrandedApiBase === 'function'
@@ -1949,8 +1960,8 @@
 
     <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
     <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
-    <script src="mobile/js/stripe-checkout-frame.js?v=20261010-center"></script>
-    <script src="mobile/js/checkout.js?v=20261010-center"></script>
+    <script src="mobile/js/stripe-checkout-frame.js?v=20261010-load"></script>
+    <script src="mobile/js/checkout.js?v=20261010-load"></script>
     <!-- Crisp + original BrandedUK onsite chat panel -->
     <script src="mobile/js/crisp-chat.js?v=20261002-ourpanel" async></script>
     <script src="mobile/js/whatsapp.js?v=20261002-chatlogo" defer></script>

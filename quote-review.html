@@ -253,7 +253,7 @@
 
 <!-- API config (resolves api.brandeduk.com or local) -->
 <script src="brandedukv15-child/assets/js/api-config.js"></script>
-<script src="mobile/js/stripe-checkout-frame.js?v=20261010-center"></script>
+<script src="mobile/js/stripe-checkout-frame.js?v=20261010-load"></script>
 
 <script>
 (function(){
@@ -487,6 +487,9 @@
   // ---------- actions ----------
   async function approveAndPay(){
     if (!quote){ return; }
+    var payWindow = (typeof window.openCenteredStripeCheckout === 'function')
+      ? window.openCenteredStripeCheckout()
+      : null;
     var btn = $('qr-btn-approve');
     var txt = $('qr-btn-approve-text');
     btn.disabled = true;
@@ -513,11 +516,13 @@
       if (typeof window.mountCenteredStripeCheckout === 'function') {
         btn.disabled = false;
         txt.textContent = prev;
-        window.mountCenteredStripeCheckout(checkoutUrl);
+        window.mountCenteredStripeCheckout(checkoutUrl, payWindow);
       } else {
+        try { if (payWindow && !payWindow.closed) payWindow.close(); } catch (err) {}
         window.location.href = checkoutUrl;
       }
     } catch (e){
+      try { if (payWindow && !payWindow.closed) payWindow.close(); } catch (err) {}
       console.warn('[quote-review] approve failed', e);
       btn.disabled = false;
       txt.textContent = prev;
