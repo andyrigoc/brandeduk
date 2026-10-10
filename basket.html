@@ -4898,7 +4898,7 @@
     // ========================
 
     const MIN_ORDER_EX_VAT = 50;
-    // temporary, for a test order, turn back on after the test
+    // temporary for a payment test, turn back on afterwards
     const MIN_ORDER_BLOCK = false;
     const BASKET_VAT_RATE = 0.20;
     const DIGITIZING_FEE_PER_DESIGN = 25;
@@ -5132,11 +5132,13 @@
             subtotalExVat,
             vatAmount,
             grandTotalIncVat,
-            meetsMinOrder: subtotalExVat >= MIN_ORDER_EX_VAT
+            meetsMinOrder: !MIN_ORDER_BLOCK || subtotalExVat >= MIN_ORDER_EX_VAT
         };
     }
 
     function openMinOrderModal(totals) {
+        // temporary for a payment test, turn back on afterwards
+        if (!MIN_ORDER_BLOCK) return;
         const overlay = document.getElementById('minOrderModal');
         const currentEl = document.getElementById('minOrderModalCurrent');
         if (!overlay) return;
