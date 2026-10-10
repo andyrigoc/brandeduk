@@ -17,7 +17,7 @@
  *   STRIPE_SECRET_KEY  - same Stripe account that creates the Checkout Sessions
  */
 
-const CONVERSION_MIN_GBP = 150;
+const CONVERSION_MIN_GBP = 50;
 
 function pickOrderNumber(session) {
     const meta = session.metadata || {};

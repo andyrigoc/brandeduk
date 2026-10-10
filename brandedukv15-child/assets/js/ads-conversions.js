@@ -18,7 +18,8 @@
  * window.brandedAdsPurchase(verified) is called only by payment-success.html with
  * the response of /api/orders/verify-payment. It sends the Purchase conversion
  * once per transaction, and only when the server answered conversionEligible
- * (Stripe confirmed the payment, GBP, total >= 150).
+ * (Stripe confirmed the payment, GBP, total >= 50). The value sent is the amount
+ * Stripe actually charged (inc VAT, inc delivery).
  *
  * Enhanced conversions: email / phone from the submitted form are passed with
  * gtag('set', 'user_data', ...) only when the visitor accepted Advertising cookies
@@ -46,7 +47,7 @@
   };
 
   var CURRENCY = 'GBP';
-  var PURCHASE_MIN_GBP = 150;
+  var PURCHASE_MIN_GBP = 50;
   var PENDING_USER_KEY = 'bukAdsUserData';
   var SENT_TX_KEY = 'bukAdsSentTransactions';
 
