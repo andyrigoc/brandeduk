@@ -166,7 +166,14 @@ async function startStripeCheckout() {
             sessionStorage.setItem('pendingCustomerOrderNumber', mirroredOrder.orderNumber || '');
         } catch (storageError) {}
 
-        window.location.href = result.data.checkoutUrl;
+        if (typeof window.mountCenteredStripeCheckout === 'function') {
+            checkoutSessionPending = false;
+            setCheckoutButtonLoading(false);
+            setPaymentView('form');
+            window.mountCenteredStripeCheckout(result.data.checkoutUrl);
+        } else {
+            window.location.href = result.data.checkoutUrl;
+        }
     } catch (err) {
         checkoutSessionPending = false;
         setCheckoutButtonLoading(false);

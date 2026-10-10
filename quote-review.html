@@ -253,6 +253,7 @@
 
 <!-- API config (resolves api.brandeduk.com or local) -->
 <script src="brandedukv15-child/assets/js/api-config.js"></script>
+<script src="mobile/js/stripe-checkout-frame.js?v=20261010-center"></script>
 
 <script>
 (function(){
@@ -490,7 +491,7 @@
     var txt = $('qr-btn-approve-text');
     btn.disabled = true;
     var prev = txt.textContent;
-    txt.textContent = 'Redirecting to Stripe…';
+    txt.textContent = 'Opening secure payment…';
 
     try {
       var url = apiBase() + '/api/quotes/stripe/checkout-session';
@@ -508,7 +509,14 @@
       if (!res.ok || !(data.url || data.checkoutUrl)){
         throw new Error(data.message || ('Stripe session error '+res.status));
       }
-      window.location.href = data.url || data.checkoutUrl;
+      var checkoutUrl = data.url || data.checkoutUrl;
+      if (typeof window.mountCenteredStripeCheckout === 'function') {
+        btn.disabled = false;
+        txt.textContent = prev;
+        window.mountCenteredStripeCheckout(checkoutUrl);
+      } else {
+        window.location.href = checkoutUrl;
+      }
     } catch (e){
       console.warn('[quote-review] approve failed', e);
       btn.disabled = false;
