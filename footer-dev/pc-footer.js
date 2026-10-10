@@ -48,7 +48,7 @@
       {
         title: "Industries",
         links: [
-          ["Hospitality & CafÃ©s", "hospitality-workwear.html"],
+          ["Hospitality & Cafés", "hospitality-workwear.html"],
           ["Construction & Trades", "construction-workwear.html"],
           ["Corporate Uniforms", "corporate-uniforms.html"],
           ["School Uniforms", "school-uniforms.html"],
