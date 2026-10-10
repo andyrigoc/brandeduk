@@ -46,7 +46,7 @@
     </script>
     <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
-    <script src="brandedukv15-child/assets/js/delivery-config.js?v=20261010"></script>
+    <script src="brandedukv15-child/assets/js/delivery-config.js?v=20261010-minorder"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4903,9 +4903,7 @@
     // RENDER SUMMARY (bottom)
     // ========================
 
-    const MIN_ORDER_EX_VAT = 50;
-    // temporary for a payment test, turn back on afterwards
-    const MIN_ORDER_BLOCK = false;
+    const MIN_ORDER_BLOCK = true;
     const BASKET_VAT_RATE = 0.20;
     const DIGITIZING_FEE_PER_DESIGN = 25;
 
@@ -5127,6 +5125,7 @@
         // Goods only: the minimum order check must not count delivery.
         const subtotalExVat = productCosts + logoCosts + digitizingFee;
         const order = window.brandedOrderTotals(subtotalExVat, basket.length);
+        const orderRules = window.brandedCheckOrderRules(basket, subtotalExVat);
 
         return {
             productCosts,
@@ -5142,20 +5141,24 @@
             totalExVat: order.totalExVat,
             vatAmount: order.vatAmount,
             grandTotalIncVat: order.totalIncVat,
-            meetsMinOrder: !MIN_ORDER_BLOCK || subtotalExVat >= MIN_ORDER_EX_VAT
+            orderRules,
+            meetsMinOrder: !MIN_ORDER_BLOCK || orderRules.ok
         };
     }
 
     function openMinOrderModal(totals) {
-        // temporary for a payment test, turn back on afterwards
-        if (!MIN_ORDER_BLOCK) return;
         const overlay = document.getElementById('minOrderModal');
+        const messageEl = document.getElementById('minOrderModalMessage');
         const currentEl = document.getElementById('minOrderModalCurrent');
         if (!overlay) return;
-        if (currentEl && totals) {
-            currentEl.innerHTML =
-                'Your order total (ex. VAT): <strong>\u00A3' + totals.subtotalExVat.toFixed(2) + '</strong><br>' +
-                'Minimum required: <strong>\u00A3' + MIN_ORDER_EX_VAT.toFixed(2) + ' + VAT</strong>';
+        const rules = totals && totals.orderRules;
+        if (messageEl && rules && rules.message) messageEl.textContent = rules.message;
+        if (currentEl && rules) {
+            currentEl.innerHTML = rules.rule === 'embroidery'
+                ? 'Embroidered pieces in your basket: <strong>' + rules.embroideredQty + '</strong><br>' +
+                  'Minimum required: <strong>' + rules.embroideryMinPieces + ' pieces</strong>'
+                : 'Your goods total (ex. VAT, delivery not included): <strong>\u00A3' + rules.goodsExVat.toFixed(2) + '</strong><br>' +
+                  'Minimum required: <strong>\u00A3' + rules.minGoodsExVat.toFixed(2) + ' + VAT</strong>';
         }
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
@@ -6000,7 +6003,7 @@
             document.body.style.overflow = 'hidden';
             document.getElementById('quoteName')?.focus();
         };
-        // "Proceed to Checkout" → 3-step checkout page (min Â£50 ex. VAT)
+        // "Proceed to Checkout" → 3-step checkout page (minimum order rules in delivery-config.js)
         if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
@@ -6672,7 +6675,7 @@
                 <h3 class="confirm-modal__title" id="minOrderModalTitle">Minimum order not reached</h3>
             </div>
             <div class="confirm-modal__body" id="minOrderModalBody">
-                <p>Minimum order <strong>&pound;50 + VAT</strong> not reached.</p>
+                <p id="minOrderModalMessage">Minimum order <strong>&pound;50 + VAT</strong> not reached.</p>
                 <p>Try <strong>Request a Quote</strong> to discuss your order with our team.</p>
                 <div class="min-order-modal__current" id="minOrderModalCurrent"></div>
             </div>

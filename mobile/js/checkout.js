@@ -12,6 +12,7 @@ const CHECKOUT_SESSION_ENDPOINT = `${API_BASE_URL}/api/quotes/stripe/checkout-se
 const CREATE_ORDER_ENDPOINT = `${API_BASE_URL}/api/checkout/create-order`;
 const VAT_RATE = 0.20;
 const DIGITIZING_FEE_PER_DESIGN = 25;
+const BASKET_URL = '/basket.html';
 
 function isLocalApiBase() {
     try {
@@ -23,6 +24,7 @@ function isLocalApiBase() {
 }
 
 let checkoutSessionPending = false;
+let minOrderBlocked = false;
 
 function isQuoteMode() {
     try {
@@ -98,8 +100,14 @@ document.getElementById('stripe-payment-form')?.addEventListener('submit', async
         }
         return;
     }
-    if (!readBasket().length) {
+    const basket = readBasket();
+    if (!basket.length) {
         showPaymentError('Your basket is empty. Please add items before paying.');
+        return;
+    }
+    const orderRules = checkMinimumOrder(basket);
+    if (!orderRules.ok) {
+        showMinOrderBlock(orderRules);
         return;
     }
     // Open before any await so the browser still treats this as the click.
@@ -110,6 +118,10 @@ document.getElementById('stripe-payment-form')?.addEventListener('submit', async
 });
 
 document.getElementById('payment-retry-btn')?.addEventListener('click', () => {
+    if (minOrderBlocked) {
+        window.location.href = BASKET_URL;
+        return;
+    }
     setCheckoutButtonLoading(false);
     showPaymentStart();
 });
@@ -147,6 +159,12 @@ async function startStripeCheckout(payWindow) {
     if (!basket.length) {
         closePayWindow(payWindow);
         showPaymentError('Your basket is empty. Please add items before paying.');
+        return;
+    }
+    const orderRules = checkMinimumOrder(basket);
+    if (!orderRules.ok) {
+        closePayWindow(payWindow);
+        showMinOrderBlock(orderRules);
         return;
     }
 
@@ -307,7 +325,25 @@ function showPaymentStart() {
     }
     const qf = document.getElementById('coQuoteForm');
     if (qf) qf.style.display = 'none';
+    const basket = readBasket();
+    const orderRules = basket.length ? checkMinimumOrder(basket) : { ok: true };
+    if (!orderRules.ok) {
+        showMinOrderBlock(orderRules);
+        return;
+    }
     setPaymentView('form');
+}
+
+function checkMinimumOrder(basket) {
+    if (typeof window.brandedCheckOrderRules !== 'function') return { ok: true };
+    return window.brandedCheckOrderRules(basket, calculateBasketTotals(basket).goodsExVat);
+}
+
+function showMinOrderBlock(orderRules) {
+    showPaymentError(orderRules.message || 'Minimum order not reached.');
+    minOrderBlocked = true;
+    const retry = document.getElementById('payment-retry-btn');
+    if (retry) retry.textContent = 'Back to basket';
 }
 
 function setPaymentView(view) {
@@ -323,6 +359,9 @@ function setPaymentView(view) {
 }
 
 function showPaymentError(msg) {
+    minOrderBlocked = false;
+    const retry = document.getElementById('payment-retry-btn');
+    if (retry) retry.textContent = 'Try again';
     const err = document.getElementById('payment-error-msg');
     if (err) err.textContent = msg;
     setPaymentView('error');
