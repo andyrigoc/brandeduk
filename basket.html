@@ -4898,6 +4898,8 @@
     // ========================
 
     const MIN_ORDER_EX_VAT = 50;
+    // temporary, for a test order, turn back on after the test
+    const MIN_ORDER_BLOCK = false;
     const BASKET_VAT_RATE = 0.20;
     const DIGITIZING_FEE_PER_DESIGN = 25;
 
@@ -5989,7 +5991,7 @@
             const basket = getBasket();
             if (basket.length === 0) { alert('Please add items to your basket first'); return; }
             const totals = computeBasketTotals(basket);
-            if (!totals.meetsMinOrder) {
+            if (MIN_ORDER_BLOCK && !totals.meetsMinOrder) {
                 openMinOrderModal(totals);
                 return;
             }
