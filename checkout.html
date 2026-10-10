@@ -55,7 +55,7 @@
     <link rel="stylesheet" href="mobile/css/whatsapp.css?v=20261002-chatlogo">
     <link rel="stylesheet" href="brandedukv15-child/assets/css/responsive.css?v=20260102b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="brandedukv15-child/assets/images/favicon.ico" type="image/x-icon">
     <style>
         /* ── Reset scoped to checkout ── */
@@ -63,25 +63,36 @@
 
         /* ── Variables ── */
         :root {
-            /* Match basket / order summary palette (no orange) */
-            --co-navy:        #273469;
-            --co-navy-dark:   #1E2749;
-            --co-primary:     #16a34a;
-            --co-primary-dark:#15803d;
-            --co-grey:        #6b7280;
-            --co-light:       #f3f4f6;
-            --co-border:      #e5e7eb;
+            /* Same navy as the Stripe pay button: one calm palette, no green */
+            --co-navy:        #0f2a44;
+            --co-navy-dark:   #0a1f33;
+            --co-primary:     #013365;
+            --co-primary-dark:#01284f;
+            --co-grey:        #6b7785;
+            --co-light:       #f5f7fa;
+            --co-field-bg:    #f7f8fa;
+            --co-border:      #e3e7ec;
             --co-white:       #ffffff;
-            --co-error:       #ef4444;
-            --co-success:     #22c55e;
-            --co-radius:      12px;
-            --co-shadow:      0 2px 10px rgba(0,0,0,0.07);
-            --co-focus-ring:  rgba(39, 52, 105, 0.14);
+            --co-error:       #d64545;
+            --co-success:     #013365;
+            --co-radius:      16px;
+            --co-shadow:      0 1px 3px rgba(15, 42, 68, 0.05);
+            --co-focus-ring:  rgba(1, 51, 101, 0.12);
         }
 
         /* ── Checkout Page wrapper ── */
         body.checkout-v2 {
-            background: #f4f5f7;
+            background: #f4f6f9;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-weight: 300;
+            color: var(--co-navy);
+        }
+        body.checkout-v2 .co-wrap,
+        body.checkout-v2 .co-wrap button,
+        body.checkout-v2 .co-wrap input,
+        body.checkout-v2 .co-wrap select,
+        body.checkout-v2 .co-steps-bar,
+        body.checkout-v2 .co-order-glance {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
@@ -111,7 +122,7 @@
         .co-mobile-header__back:hover { background: var(--co-light); }
         .co-mobile-header__title {
             font-size: 17px;
-            font-weight: 700;
+            font-weight: 500;
             color: var(--co-navy);
         }
         .co-mobile-header__brand {
@@ -130,9 +141,9 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            color: #166534;
-            font-size: 11px;
-            font-weight: 700;
+            color: var(--co-grey);
+            font-size: 12px;
+            font-weight: 400;
             white-space: nowrap;
         }
 
@@ -151,8 +162,8 @@
             align-items: center;
             gap: 6px;
             font-size: 13px;
-            font-weight: 600;
-            color: #9ca3af;
+            font-weight: 400;
+            color: #9aa3ae;
             cursor: default;
             padding: 4px 8px;
             border-radius: 20px;
@@ -173,8 +184,8 @@
             flex-shrink: 0;
             transition: background .2s;
         }
-        .co-step-pill.active .co-step-dot  { background: var(--co-navy); }
-        .co-step-pill.done  .co-step-dot  { background: var(--co-navy); }
+        .co-step-pill.active .co-step-dot  { background: var(--co-primary); }
+        .co-step-pill.done  .co-step-dot  { background: var(--co-primary); }
         .co-step-sep { color: #d1d5db; font-size: 15px; }
 
         .co-order-glance {
@@ -184,20 +195,34 @@
             margin: 12px auto 0;
             padding: 10px 13px;
             border: 1px solid var(--co-border);
-            border-radius: 10px;
+            border-radius: 999px;
             background: var(--co-white);
             color: var(--co-navy);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            box-shadow: 0 1px 5px rgba(0,0,0,.04);
+            box-shadow: var(--co-shadow);
             font: inherit;
             cursor: pointer;
         }
         .co-order-glance[hidden] { display: none; }
-        .co-order-glance__label { font-size: 12px; font-weight: 700; text-align: left; }
-        .co-order-glance__total { font-size: 14px; font-weight: 800; white-space: nowrap; }
+        .co-order-glance__label { font-size: 13px; font-weight: 300; text-align: left; color: var(--co-grey); }
+        .co-order-glance__total { font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+        /* ── Two-column layout: steps left, order summary right ── */
+        .co-layout {
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+        .co-main { min-width: 0; }
+        .co-aside {
+            display: none;
+            padding: 16px 16px 0;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .co-layout:has(#coStep3.active) .co-aside { display: block; }
 
         /* ── Step content areas ── */
         .co-step { display: none; }
@@ -211,27 +236,27 @@
         /* ── Card panel (accordion) ── */
         .co-card {
             background: var(--co-white);
-            border: 1.5px solid var(--co-border);
+            border: 1px solid var(--co-border);
             border-radius: var(--co-radius);
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             box-shadow: var(--co-shadow);
             transition: border-color .2s;
         }
-        .co-card.open { border-color: var(--co-navy); }
+        .co-card.open { border-color: #c9d3de; }
 
         .co-card-head {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 15px 16px;
+            gap: 14px;
+            padding: 18px 22px;
             cursor: pointer;
             user-select: none;
         }
-        .co-card-head:hover { background: #fafafa; }
+        .co-card-head:hover { background: #fafbfc; }
         .co-card-title {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 400;
             color: var(--co-navy);
             flex: 1;
         }
@@ -241,7 +266,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            border: 2px solid #d1d5db;
+            border: 1.5px solid #c3cbd5;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -256,11 +281,11 @@
             background: transparent;
             transition: background .2s;
         }
-        .co-radio.on { border-color: var(--co-navy); }
-        .co-radio.on::after { background: var(--co-navy); }
+        .co-radio.on { border-color: var(--co-primary); }
+        .co-radio.on::after { background: var(--co-primary); }
 
         .co-card-body {
-            padding: 4px 16px 18px;
+            padding: 6px 22px 22px;
             border-top: 1px solid var(--co-light);
         }
 
@@ -277,19 +302,19 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 8px;
+            min-height: 48px;
+            padding: 0 20px;
+            border-radius: 999px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 400;
             cursor: pointer;
             border: none;
-            transition: opacity .15s, transform .1s;
+            transition: border-color .15s, background .15s;
         }
-        .co-social-btn:hover  { opacity: .92; transform: translateY(-1px); }
-        .co-social-btn:active { transform: translateY(0); }
-        .co-btn-google   { background: #fff; border: 1.5px solid #d1d5db !important; color: #3c4043; }
+        .co-btn-google   { background: #fff; border: 1px solid var(--co-border) !important; color: var(--co-navy); }
+        .co-btn-google:hover { border-color: #b9c3cf !important; background: #fafbfc; }
         .co-btn-facebook { background: #1877f2; color: #fff; }
-        .co-auth-note { margin: 0 0 8px; color: var(--co-grey); font-size: 13px; line-height: 1.45; }
+        .co-auth-note { margin: 0 0 8px; color: var(--co-grey); font-size: 13px; font-weight: 300; line-height: 1.5; }
         .co-hidden { display: none !important; }
 
         /* ── OR divider ── */
@@ -297,10 +322,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 14px 0;
+            margin: 18px 0;
             color: var(--co-grey);
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 300;
         }
         .co-or::before, .co-or::after {
             content: '';
@@ -310,40 +335,47 @@
         }
 
         /* ── Form fields ── */
-        .co-field { margin-bottom: 13px; }
+        .co-field { margin-bottom: 14px; }
         .co-field-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 14px;
         }
         .co-label {
             display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--co-grey);
-            text-transform: uppercase;
-            letter-spacing: .05em;
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--co-navy);
             margin-bottom: 6px;
         }
         .co-input {
             width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid var(--co-border);
-            border-radius: 8px;
+            min-height: 46px;
+            padding: 11px 14px;
+            border: 1px solid var(--co-border);
+            border-radius: 10px;
             font-size: 15px;
+            font-weight: 300;
             color: var(--co-navy);
-            background: var(--co-white);
-            transition: border-color .2s, box-shadow .2s;
+            background: var(--co-field-bg);
+            transition: border-color .2s, box-shadow .2s, background .2s;
             -webkit-appearance: none;
             appearance: none;
             font-family: inherit;
         }
+        select.co-input {
+            padding-right: 38px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7785' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
         .co-input:focus {
             outline: none;
-            border-color: var(--co-navy);
+            border-color: var(--co-primary);
+            background-color: var(--co-white);
             box-shadow: 0 0 0 3px var(--co-focus-ring);
         }
-        .co-input::placeholder { color: #9ca3af; }
+        .co-input::placeholder { color: #a3acb7; font-weight: 300; }
         .co-input.bad { border-color: var(--co-error); }
         .co-input-pw-wrap { position: relative; }
         .co-input-pw-wrap .co-input { padding-right: 44px; }
@@ -360,13 +392,15 @@
             padding: 4px;
         }
         .co-hint {
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 300;
             color: var(--co-grey);
-            margin-top: 4px;
-            line-height: 1.4;
+            margin-top: 5px;
+            line-height: 1.45;
         }
         .co-field-err {
             font-size: 12px;
+            font-weight: 400;
             color: var(--co-error);
             margin-top: 4px;
             display: none;
@@ -378,10 +412,11 @@
             background: var(--co-primary);
             color: #fff;
             border: none;
-            padding: 12px 22px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
+            min-height: 48px;
+            padding: 0 28px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 400;
             cursor: pointer;
             transition: background .2s;
             white-space: nowrap;
@@ -389,35 +424,95 @@
         }
         .co-btn-primary:hover    { background: var(--co-primary-dark); }
         .co-btn-primary:disabled { opacity: .65; cursor: not-allowed; }
-        .co-btn-primary.full     { width: 100%; padding: 14px; font-size: 16px; }
+        .co-btn-primary.full     { width: 100%; min-height: 52px; font-size: 16px; }
 
         .co-btn-outline {
-            background: #fff;
-            color: var(--co-navy);
-            border: 1.5px solid var(--co-navy);
-            padding: 12px 22px;
-            border-radius: 8px;
+            background: transparent;
+            color: var(--co-primary);
+            border: 1px solid #cfd6df;
+            min-height: 48px;
+            padding: 0 24px;
+            border-radius: 999px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 400;
             cursor: pointer;
-            transition: background .2s;
+            transition: border-color .2s, background .2s;
             font-family: inherit;
         }
-        .co-btn-outline:hover { background: var(--co-light); }
-        .co-btn-outline.full  { width: 100%; padding: 14px; font-size: 15px; }
+        .co-btn-outline:hover { border-color: var(--co-primary); background: var(--co-white); }
+        .co-btn-outline.full  { width: 100%; min-height: 48px; font-size: 15px; }
+
+        .co-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .co-secured {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin: 14px 0 0;
+            color: var(--co-grey);
+            font-size: 13px;
+            font-weight: 300;
+        }
+        .co-card-brands {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .co-card-brands svg { display: block; opacity: .92; }
 
         /* login actions row */
         .co-login-row {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px 12px;
+            gap: 14px 12px;
             margin-top: 16px;
         }
+        .co-login-links {
+            display: flex;
+            align-items: center;
+            gap: 8px 12px;
+            flex-wrap: wrap;
+        }
+        .co-login-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .co-login-actions .co-btn-primary { order: -1; }
+        @media (min-width: 560px) {
+            .co-login-actions { flex-direction: row; width: auto; margin-left: auto; }
+            .co-login-actions .co-btn-primary { order: 0; }
+        }
+        .co-btn-secondary {
+            background: var(--co-white);
+            color: var(--co-primary);
+            border: 1px solid #d9dee5;
+            min-height: 48px;
+            padding: 0 24px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background .2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .co-btn-secondary:hover { background: #f5f7fa; border-color: #b9c3cf; }
         .co-link {
             font-size: 13px;
+            font-weight: 300;
             color: var(--co-navy);
             text-decoration: underline;
+            text-underline-offset: 3px;
             cursor: pointer;
             white-space: nowrap;
             background: none;
@@ -425,55 +520,100 @@
             font-family: inherit;
             padding: 0;
         }
-        .co-link-accent { color: var(--co-navy); font-weight: 600; }
+        .co-link-accent { color: var(--co-primary); font-weight: 400; }
         .co-sep { color: #d1d5db; font-size: 12px; }
+
+        .co-signed-in {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--co-border);
+            border-radius: var(--co-radius);
+            background: var(--co-white);
+            color: var(--co-navy);
+            font-size: 13px;
+            font-weight: 300;
+        }
+        .co-signed-in button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--co-grey);
+            font-size: 13px;
+            font-weight: 300;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+        }
 
         .co-address-book {
             display: none;
-            border: 1.5px solid var(--co-border);
-            border-radius: 10px;
-            background: #f0f1f8;
-            padding: 12px;
+            border: 1px solid var(--co-border);
+            border-radius: var(--co-radius);
+            background: var(--co-white);
+            padding: 20px 22px;
             margin-bottom: 14px;
+            box-shadow: var(--co-shadow);
         }
         .co-address-book.show { display: block; }
-        .co-address-book-title { margin: 0 0 8px; font-size: 13px; font-weight: 800; color: var(--co-navy); }
-        .co-address-list { display: grid; gap: 8px; }
+        .co-address-book-title { margin: 0 0 14px; font-size: 16px; font-weight: 500; color: var(--co-navy); }
+        .co-address-list { display: grid; gap: 10px; margin-bottom: 14px; }
         .co-address-option {
+            position: relative;
             display: grid;
-            gap: 8px;
-            padding: 10px;
+            gap: 6px;
+            padding: 16px 18px 16px 50px;
             border: 1px solid var(--co-border);
-            border-radius: 8px;
-            background: #fff;
+            border-radius: 12px;
+            background: var(--co-white);
             color: var(--co-navy);
             font-size: 13px;
-            line-height: 1.45;
+            font-weight: 300;
+            line-height: 1.5;
+            transition: border-color .2s;
         }
-        .co-address-option.is-selected { border-color: var(--co-navy); background: #fffaf0; }
-        .co-address-option strong { color: var(--co-navy); font-size: 13px; }
+        .co-address-option::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 17px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid #c3cbd5;
+            background: var(--co-white);
+        }
+        .co-address-option.is-selected { border-color: var(--co-primary); background: var(--co-white); }
+        .co-address-option.is-selected::before {
+            border-color: var(--co-primary);
+            background: radial-gradient(circle, var(--co-primary) 0 4.5px, var(--co-white) 5px);
+        }
+        .co-address-option strong { color: var(--co-navy); font-size: 14px; font-weight: 400; }
         .co-address-option span { color: var(--co-grey); }
         .co-address-use {
             width: max-content;
-            min-height: 34px;
-            border: 1px solid var(--co-navy);
+            min-height: 36px;
+            margin-top: 4px;
+            border: 1px solid #cfd6df;
             border-radius: 999px;
-            padding: 0 14px;
-            background: var(--co-navy);
-            color: #fff;
-            font-weight: 900;
-            font-size: 12px;
-            box-shadow: 0 6px 14px rgba(39, 52, 105, 0.2);
+            padding: 0 18px;
+            background: transparent;
+            color: var(--co-primary);
+            font-weight: 400;
+            font-size: 13px;
             cursor: pointer;
+            transition: background .2s, border-color .2s, color .2s;
         }
-        .co-address-use:hover { background: var(--co-navy-dark); border-color: var(--co-navy-dark); }
+        .co-address-use:hover { border-color: var(--co-primary); }
         .co-address-option.is-selected .co-address-use {
             background: var(--co-primary);
             border-color: var(--co-primary);
             color: #fff;
-            box-shadow: 0 6px 14px rgba(22, 163, 74, 0.24);
         }
-        .co-address-empty { margin: 0; color: var(--co-grey); font-size: 13px; }
+        .co-address-empty { margin: 0; color: var(--co-grey); font-size: 13px; font-weight: 300; }
 
         /* register actions */
         .co-reg-actions {
@@ -484,39 +624,29 @@
             margin-top: 18px;
         }
 
-        /* guest section */
-        .co-guest {
-            text-align: center;
-            padding: 10px 0 4px;
-        }
-        .co-guest > p {
-            font-size: 13px;
-            color: var(--co-grey);
-            margin-bottom: 10px;
-        }
-        .co-guest--primary {
-            margin-bottom: 12px;
-            padding: 12px;
-            border: 1px solid #bbf7d0;
-            border-radius: var(--co-radius);
-            background: #f0fdf4;
-        }
-        .co-guest--primary .co-btn-primary { min-height: 44px; }
-
         /* ── Delivery step card ── */
         .co-delivery-wrap {
             background: var(--co-white);
-            border: 1.5px solid var(--co-border);
+            border: 1px solid var(--co-border);
             border-radius: var(--co-radius);
-            padding: 20px 16px;
+            padding: 22px 20px;
             box-shadow: var(--co-shadow);
         }
         .co-step-title {
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 500;
             color: var(--co-navy);
             margin-bottom: 18px;
         }
+
+        /* Delivery fields: 6-track grid so rows can hold 2 or 3 fields */
+        .co-del-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            column-gap: 14px;
+        }
+        .co-del-grid > .co-field { grid-column: span 6; }
+        .co-del-grid > .co-span-half { grid-column: span 3; }
 
         /* back link */
         .co-back-link {
@@ -524,8 +654,10 @@
             align-items: center;
             gap: 5px;
             font-size: 13px;
-            color: var(--co-navy);
+            font-weight: 300;
+            color: var(--co-grey);
             text-decoration: underline;
+            text-underline-offset: 3px;
             cursor: pointer;
             background: none;
             border: none;
@@ -537,15 +669,15 @@
         /* ── Payment step ── */
         .co-payment-wrap {
             background: var(--co-white);
-            border: 1.5px solid var(--co-border);
+            border: 1px solid var(--co-border);
             border-radius: var(--co-radius);
-            padding: 20px 16px;
+            padding: 22px 20px;
             box-shadow: var(--co-shadow);
             margin-bottom: 14px;
         }
         .co-payment-title {
-            font-size: 15px;
-            font-weight: 400;
+            font-size: 18px;
+            font-weight: 500;
             color: var(--co-navy);
             margin-bottom: 16px;
         }
@@ -553,7 +685,7 @@
         /* ── Order summary (collapsible) ── */
         .co-summary {
             background: var(--co-white);
-            border: 1.5px solid var(--co-border);
+            border: 1px solid var(--co-border);
             border-radius: var(--co-radius);
             overflow: hidden;
             margin-bottom: 14px;
@@ -563,21 +695,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 16px;
+            padding: 18px 20px;
             cursor: pointer;
             user-select: none;
         }
         .co-summary-toggle-lbl {
-            font-size: 13px;
-            font-weight: 400;
+            font-size: 16px;
+            font-weight: 500;
             color: var(--co-navy);
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 8px;
         }
         .co-summary-toggle-total {
             font-size: 15px;
-            font-weight: 400;
+            font-weight: 500;
             color: var(--co-navy);
         }
         .co-summary-chevron { transition: transform .2s; }
@@ -585,78 +717,87 @@
         .co-summary-body.open { display: block; }
         .co-summary-items {
             border-top: 1px solid var(--co-border);
-            padding: 10px 16px;
+            padding: 8px 20px;
             max-height: 240px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #6b7280 #f3f4f6;
+            scrollbar-color: #b9c3cf transparent;
         }
-        .co-summary-items::-webkit-scrollbar { width: 10px; }
-        .co-summary-items::-webkit-scrollbar-track { background: #f3f4f6; }
+        .co-summary-items::-webkit-scrollbar { width: 8px; }
+        .co-summary-items::-webkit-scrollbar-track { background: transparent; }
         .co-summary-items::-webkit-scrollbar-thumb {
-            background: #6b7280;
+            background: #b9c3cf;
             border-radius: 8px;
-            border: 2px solid #f3f4f6;
+            border: 2px solid var(--co-white);
         }
         .co-summary-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 0;
+            gap: 12px;
+            padding: 10px 0;
             border-bottom: 1px solid var(--co-light);
             font-size: 13px;
+            font-weight: 300;
         }
         .co-summary-item:last-child { border-bottom: none; }
         .co-summary-qty {
-            background: var(--co-navy);
-            color: #fff;
-            border-radius: 5px;
-            padding: 2px 7px;
+            background: var(--co-light);
+            color: var(--co-navy);
+            border: 1px solid var(--co-border);
+            border-radius: 999px;
+            min-width: 28px;
+            padding: 2px 8px;
+            text-align: center;
             font-size: 12px;
             font-weight: 400;
             flex-shrink: 0;
         }
-        .co-summary-name { flex: 1; color: var(--co-navy); font-weight: 400; }
-        .co-summary-price { color: var(--co-grey); font-weight: 400; }
+        .co-summary-name { flex: 1; color: var(--co-navy); font-weight: 300; line-height: 1.4; }
+        .co-summary-price { color: var(--co-navy); font-weight: 400; white-space: nowrap; }
         .co-summary-footer {
-            padding: 12px 16px;
+            padding: 14px 20px 18px;
             border-top: 1px solid var(--co-border);
         }
         .co-summary-row {
             display: flex;
             justify-content: space-between;
+            gap: 12px;
             font-size: 13px;
+            font-weight: 300;
             color: var(--co-grey);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .co-summary-row.total-row {
-            font-size: 15px;
-            font-weight: 400;
+            font-size: 16px;
+            font-weight: 500;
             color: var(--co-navy);
-            margin-top: 6px;
-            padding-top: 8px;
+            margin-top: 8px;
+            padding-top: 12px;
             border-top: 1px solid var(--co-border);
             margin-bottom: 0;
         }
 
         /* ── Stripe Checkout redirect ── */
-        .payment-loading { display:flex; flex-direction:column; align-items:center; padding:28px 0; gap:12px; color:#666; font-size:14px; }
-        .payment-spinner { width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--co-navy); border-radius:50%; animation:co-spin .7s linear infinite; }
+        .payment-loading { display:flex; flex-direction:column; align-items:center; padding:28px 0; gap:12px; color:var(--co-grey); font-size:14px; font-weight:300; }
+        .payment-spinner { width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--co-primary); border-radius:50%; animation:co-spin .7s linear infinite; }
         @keyframes co-spin { to { transform:rotate(360deg); } }
-        .stripe-checkout-note { background:#f8f9fa; border:1.5px solid var(--co-border); border-radius:8px; padding:14px; margin-bottom:14px; color:var(--co-grey); font-size:13px; line-height:1.55; text-align:center; }
-        .stripe-pay-btn { width:100%; background:#013365; color:#fff; border:none; border-radius:999px; padding:15px; font-size:16px; font-weight:400; cursor:pointer; transition:background .2s; font-family:inherit; }
+        .stripe-checkout-note { background:var(--co-field-bg); border:1px solid var(--co-border); border-radius:12px; padding:14px 16px; margin-bottom:16px; color:var(--co-grey); font-size:13px; font-weight:300; line-height:1.55; text-align:center; }
+        .stripe-pay-btn { width:100%; min-height:52px; background:#013365; color:#fff; border:none; border-radius:999px; padding:0 24px; font-size:16px; font-weight:400; cursor:pointer; transition:background .2s; font-family:inherit; }
         .stripe-pay-btn:hover { background:#01284f; }
         .stripe-pay-btn:disabled { opacity:.65; cursor:not-allowed; }
         .payment-success { text-align:center; padding:36px 16px; }
-        .payment-success-icon { width:60px; height:60px; background:var(--co-success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; margin:0 auto 14px; }
-        .payment-success p { font-size:15px; color:#374151; margin-top:8px; }
+        .payment-success-icon { width:60px; height:60px; background:var(--co-success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:400; margin:0 auto 14px; }
+        .payment-success p { font-size:15px; font-weight:300; color:var(--co-navy); margin-top:8px; }
+        .payment-success p strong { font-weight:500; }
+        .co-quote-review-link { display:inline-block; background:var(--co-primary); color:#fff; padding:12px 24px; border-radius:999px; font-weight:400; text-decoration:none; }
         .payment-error-state { text-align:center; padding:20px 0; }
-        .payment-error-state p { color:var(--co-error); font-size:14px; margin-bottom:12px; }
-        .payment-retry-btn { background:transparent; border:1.5px solid var(--co-navy); border-radius:8px; padding:10px 22px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+        .payment-error-state p { color:var(--co-error); font-size:14px; font-weight:400; margin-bottom:12px; }
+        .payment-retry-btn { background:transparent; color:var(--co-primary); border:1px solid #cfd6df; border-radius:999px; min-height:44px; padding:0 24px; font-size:14px; font-weight:400; cursor:pointer; font-family:inherit; }
 
         /* quote form fallback */
         .co-quote-note {
             font-size: 13px;
+            font-weight: 300;
             color: var(--co-grey);
             text-align: center;
             margin-bottom: 16px;
@@ -685,7 +826,8 @@
 
         /* ── Terms footer ── */
         .co-terms {
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 300;
             color: var(--co-grey);
             text-align: center;
             line-height: 1.7;
@@ -708,6 +850,15 @@
             .co-steps-bar { position: sticky; top: 57px; z-index: 190; }
         }
 
+        @media (max-width: 899px) {
+            .co-layout { display: flex; flex-direction: column; }
+            .co-aside { order: -1; width: 100%; }
+        }
+        @media (max-width: 479px) {
+            .co-del-grid > .co-span-half { grid-column: span 6; }
+            .co-del-grid > .co-span-pair { grid-column: span 3; }
+        }
+
         /* ── Desktop / Tablet ── */
         @media (min-width: 768px) {
             .co-mobile-header { display: none; }
@@ -715,11 +866,53 @@
             .co-steps-bar {
                 max-width: 620px;
                 margin: 0 auto 0;
-                border: 1.5px solid var(--co-border);
-                border-radius: var(--co-radius);
+                border: 1px solid var(--co-border);
+                border-radius: 999px;
                 margin-bottom: 16px;
             }
             .co-step-inner { padding: 24px 0 48px; }
+            .co-actions { flex-direction: row; align-items: center; }
+            .co-actions .co-btn-primary.full { flex: 1 1 auto; }
+            .co-actions .co-btn-outline.full { flex: 0 0 auto; width: auto; }
+        }
+
+        /* ── Wide screens: steps left, order summary right ── */
+        @media (min-width: 900px) {
+            .co-steps-bar { max-width: 1112px; }
+            .co-order-glance { display: none; }
+            .co-layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 380px;
+                gap: 28px;
+                align-items: start;
+                padding: 0 24px;
+            }
+            .co-step-inner { max-width: none; padding: 8px 0 48px; }
+            /* Offset and height come from the active step's cards (set by script below) */
+            .co-aside {
+                display: block;
+                position: sticky;
+                top: 24px;
+                max-width: none;
+                margin: var(--co-aside-offset, 8px) 0 0;
+                padding: 0;
+                height: var(--co-aside-height, auto);
+            }
+            .co-aside .co-summary:has(.co-summary-body.open) {
+                height: 100%;
+                margin-bottom: 0;
+                display: flex;
+                flex-direction: column;
+            }
+            .co-summary-body.open { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+            .co-summary-items { flex: 1 1 auto; min-height: 96px; max-height: none; }
+            .co-summary-footer { flex: 0 0 auto; }
+            .co-card-body, .co-delivery-wrap, .co-payment-wrap { padding-left: 28px; padding-right: 28px; }
+            .co-delivery-wrap, .co-payment-wrap { padding-top: 26px; padding-bottom: 26px; }
+            .co-del-grid { column-gap: 16px; }
+            .co-del-grid > .co-span-third { grid-column: span 2; }
+            .co-address-list { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+            .co-login-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         }
     </style>
 </head>
@@ -747,7 +940,7 @@
             </a>
         </div>
         <div class="tablet-top-bar__right">
-            <a href="basket.html#orderSummary" style="font-weight:700;color:#273469;font-size:13px;text-decoration:none;">← Back to Basket</a>
+            <a href="basket.html#orderSummary" style="font-weight:400;color:#0f2a44;font-size:13px;text-decoration:none;">← Back to Basket</a>
         </div>
     </div>
 
@@ -789,14 +982,12 @@
     </button>
 
     <div class="co-wrap">
+      <div class="co-layout">
+        <div class="co-main">
 
         <!-- ════════════════ STEP 1 — ACCOUNT ════════════════ -->
         <section class="co-step active" id="coStep1" aria-label="Account step">
             <div class="co-step-inner">
-
-                <div class="co-guest co-guest--primary">
-                    <button type="button" class="co-btn-primary full" onclick="coContinueGuest()">Continue as Guest &rarr;</button>
-                </div>
 
                 <!-- LOGIN panel (open by default) -->
                 <div class="co-card open" id="coCardLogin">
@@ -824,8 +1015,9 @@
 
                         <div class="co-or">or sign in with email</div>
 
+                        <div class="co-login-fields">
                         <div class="co-field">
-                            <label class="co-label" for="coLoginEmail">Email Address *</label>
+                            <label class="co-label" for="coLoginEmail">Email address *</label>
                             <input type="email" id="coLoginEmail" class="co-input" placeholder="your@email.com" autocomplete="username">
                             <span class="co-field-err" id="coLoginEmailErr">Please enter a valid email address</span>
                         </div>
@@ -840,12 +1032,18 @@
                             </div>
                             <span class="co-field-err" id="coLoginPwdErr">Please enter your password</span>
                         </div>
+                        </div>
 
                         <div class="co-login-row">
-                            <button type="button" class="co-link" onclick="coToast('Password reset coming soon')">Forgot Password?</button>
-                            <span class="co-sep">|</span>
-                            <button type="button" class="co-link co-link-accent" onclick="coToast('Passwordless login coming soon')">Passwordless Login</button>
-                            <button type="button" class="co-btn-primary" onclick="coDoLogin()">Login</button>
+                            <div class="co-login-links">
+                                <button type="button" class="co-link" onclick="coToast('Password reset coming soon')">Forgot Password?</button>
+                                <span class="co-sep">|</span>
+                                <button type="button" class="co-link co-link-accent" onclick="coToast('Passwordless login coming soon')">Passwordless Login</button>
+                            </div>
+                            <div class="co-login-actions">
+                                <button type="button" class="co-btn-secondary" onclick="coDoLogin()">Log in</button>
+                                <button type="button" class="co-btn-primary" onclick="coContinueGuest()">Continue as Guest &rarr;</button>
+                            </div>
                         </div>
                     </div><!-- /co-card-body login -->
                 </div><!-- /co-card login -->
@@ -859,37 +1057,37 @@
                     <div class="co-card-body" id="coBodyReg" style="display:none">
 
                         <div class="co-field" style="margin-top:12px">
-                            <label class="co-label" for="coRegCompany">Company Name</label>
+                            <label class="co-label" for="coRegCompany">Company name</label>
                             <input type="text" id="coRegCompany" class="co-input" placeholder="Company (optional)" autocomplete="organization">
                         </div>
 
                         <div class="co-field-row">
                             <div class="co-field">
-                                <label class="co-label" for="coRegFirst">First Name *</label>
+                                <label class="co-label" for="coRegFirst">First name *</label>
                                 <input type="text" id="coRegFirst" class="co-input" placeholder="First name" autocomplete="given-name">
                                 <span class="co-field-err" id="coRegFirstErr">Required</span>
                             </div>
                             <div class="co-field">
-                                <label class="co-label" for="coRegLast">Last Name *</label>
+                                <label class="co-label" for="coRegLast">Last name *</label>
                                 <input type="text" id="coRegLast" class="co-input" placeholder="Last name" autocomplete="family-name">
                                 <span class="co-field-err" id="coRegLastErr">Required</span>
                             </div>
                         </div>
 
                         <div class="co-field">
-                            <label class="co-label" for="coRegEmail">Email Address *</label>
+                            <label class="co-label" for="coRegEmail">Email address *</label>
                             <input type="email" id="coRegEmail" class="co-input" placeholder="your@email.com" autocomplete="email">
                             <span class="co-field-err" id="coRegEmailErr">Please enter a valid email address</span>
                         </div>
 
                         <div class="co-field">
-                            <label class="co-label" for="coRegEmailC">Confirm Email *</label>
+                            <label class="co-label" for="coRegEmailC">Confirm email *</label>
                             <input type="email" id="coRegEmailC" class="co-input" placeholder="Confirm email" autocomplete="email">
                             <span class="co-field-err" id="coRegEmailCErr">Emails do not match</span>
                         </div>
 
                         <div class="co-field">
-                            <label class="co-label" for="coRegPwd">New Password *</label>
+                            <label class="co-label" for="coRegPwd">New password *</label>
                             <div class="co-input-pw-wrap">
                                 <input type="password" id="coRegPwd" class="co-input" placeholder="Create a password" autocomplete="new-password">
                                 <button class="co-eye-btn" type="button" onclick="coEye('coRegPwd',this)" aria-label="Toggle password visibility">
@@ -901,7 +1099,7 @@
                         </div>
 
                         <div class="co-field">
-                            <label class="co-label" for="coRegPwdC">Confirm Password *</label>
+                            <label class="co-label" for="coRegPwdC">Confirm password *</label>
                             <div class="co-input-pw-wrap">
                                 <input type="password" id="coRegPwdC" class="co-input" placeholder="Confirm password" autocomplete="new-password">
                                 <button class="co-eye-btn" type="button" onclick="coEye('coRegPwdC',this)" aria-label="Toggle password visibility">
@@ -931,9 +1129,9 @@
                 </button>
 
                 <!-- Signed-in bar (shown when session is restored from localStorage) -->
-                <div id="coSignedInBar" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#166534;align-items:center;justify-content:space-between">
+                <div id="coSignedInBar" class="co-signed-in" style="display:none">
                     <span id="coSignedInName"></span>
-                    <button type="button" onclick="coSignOut()" style="background:none;border:none;color:#dc2626;font-size:12px;cursor:pointer;text-decoration:underline;padding:0;margin-left:12px">Sign out</button>
+                    <button type="button" onclick="coSignOut()">Sign out</button>
                 </div>
 
                 <div id="coAddressBook" class="co-address-book" aria-live="polite">
@@ -943,63 +1141,60 @@
                 </div>
 
                 <div class="co-delivery-wrap">
-                    <p class="co-step-title">Delivery Address</p>
+                    <p class="co-step-title">Delivery address</p>
 
-                    <div class="co-field-row">
-                        <div class="co-field">
-                            <label class="co-label" for="coDelFirst">First Name *</label>
-                            <input type="text" id="coDelFirst" class="co-input" placeholder="First name" autocomplete="shipping given-name">
-                            <span class="co-field-err" id="coDelFirstErr">Required</span>
-                        </div>
-                        <div class="co-field">
-                            <label class="co-label" for="coDelLast">Last Name *</label>
-                            <input type="text" id="coDelLast" class="co-input" placeholder="Last name" autocomplete="shipping family-name">
-                            <span class="co-field-err" id="coDelLastErr">Required</span>
-                        </div>
+                    <div class="co-del-grid">
+                    <div class="co-field co-span-half co-span-pair">
+                        <label class="co-label" for="coDelFirst">First name *</label>
+                        <input type="text" id="coDelFirst" class="co-input" placeholder="First name" autocomplete="shipping given-name">
+                        <span class="co-field-err" id="coDelFirstErr">Required</span>
+                    </div>
+                    <div class="co-field co-span-half co-span-pair">
+                        <label class="co-label" for="coDelLast">Last name *</label>
+                        <input type="text" id="coDelLast" class="co-input" placeholder="Last name" autocomplete="shipping family-name">
+                        <span class="co-field-err" id="coDelLastErr">Required</span>
                     </div>
 
-                    <div class="co-field">
-                        <label class="co-label" for="coDelCompany">Company Name</label>
+                    <div class="co-field co-span-third">
+                        <label class="co-label" for="coDelCompany">Company name</label>
                         <input type="text" id="coDelCompany" class="co-input" placeholder="Company (optional)" autocomplete="shipping organization">
                     </div>
 
-                    <div class="co-field">
-                        <label class="co-label" for="coDelEmail">Email Address *</label>
+                    <div class="co-field co-span-half co-span-third">
+                        <label class="co-label" for="coDelEmail">Email address *</label>
                         <input type="email" id="coDelEmail" class="co-input" placeholder="Email" autocomplete="shipping email">
                         <span class="co-field-err" id="coDelEmailErr">Please enter a valid email address</span>
                     </div>
 
-                    <div class="co-field">
-                        <label class="co-label" for="coDelPhone">Phone Number *</label>
-                            <input type="tel" id="coDelPhone" class="co-input" placeholder="Phone" autocomplete="shipping tel" inputmode="tel">
-                            <span class="co-field-err" id="coDelPhoneErr">Enter a valid phone number</span>
+                    <div class="co-field co-span-half co-span-third">
+                        <label class="co-label" for="coDelPhone">Phone number *</label>
+                        <input type="tel" id="coDelPhone" class="co-input" placeholder="Phone" autocomplete="shipping tel" inputmode="tel">
+                        <span class="co-field-err" id="coDelPhoneErr">Enter a valid phone number</span>
                     </div>
 
-                    <div class="co-field">
-                        <label class="co-label" for="coDelAddr1">Address Line 1 *</label>
+                    <div class="co-field co-span-half">
+                        <label class="co-label" for="coDelAddr1">Address line 1 *</label>
                         <input type="text" id="coDelAddr1" class="co-input" placeholder="Address line 1" autocomplete="shipping address-line1">
                         <span class="co-field-err" id="coDelAddr1Err">Required</span>
                     </div>
 
-                    <div class="co-field">
-                        <label class="co-label" for="coDelAddr2">Address Line 2</label>
+                    <div class="co-field co-span-half">
+                        <label class="co-label" for="coDelAddr2">Address line 2</label>
                         <input type="text" id="coDelAddr2" class="co-input" placeholder="Apartment, suite, unit (optional)" autocomplete="shipping address-line2">
                     </div>
 
-                    <div class="co-field-row">
-                        <div class="co-field">
-                            <label class="co-label" for="coDelCity">City *</label>
-                            <input type="text" id="coDelCity" class="co-input" placeholder="City" autocomplete="shipping address-level2">
-                            <span class="co-field-err" id="coDelCityErr">Required</span>
-                        </div>
-                        <div class="co-field">
-                            <label class="co-label" for="coDelPost">Postcode *</label>
-                            <input type="text" id="coDelPost" class="co-input" placeholder="Postcode" autocomplete="shipping postal-code" autocapitalize="characters">
-                            <span class="co-field-err" id="coDelPostErr">Enter a valid postcode</span>
-                        </div>
+                    <div class="co-field co-span-half co-span-third co-span-pair">
+                        <label class="co-label" for="coDelCity">City *</label>
+                        <input type="text" id="coDelCity" class="co-input" placeholder="City" autocomplete="shipping address-level2">
+                        <span class="co-field-err" id="coDelCityErr">Required</span>
+                    </div>
+                    <div class="co-field co-span-half co-span-third co-span-pair">
+                        <label class="co-label" for="coDelPost">Postcode *</label>
+                        <input type="text" id="coDelPost" class="co-input" placeholder="Postcode" autocomplete="shipping postal-code" autocapitalize="characters">
+                        <span class="co-field-err" id="coDelPostErr">Enter a valid postcode</span>
                     </div>
 
-                    <div class="co-field">
+                    <div class="co-field co-span-third">
                         <label class="co-label" for="coDelCountry">Country *</label>
                         <select id="coDelCountry" class="co-input" autocomplete="shipping country-name">
                             <option value="GB" selected>United Kingdom</option>
@@ -1014,11 +1209,12 @@
                             <option value="NL">Netherlands</option>
                         </select>
                     </div>
+                    </div><!-- /co-del-grid -->
                 </div><!-- /co-delivery-wrap -->
 
-                <div style="margin-top:16px">
+                <div class="co-actions">
                     <button type="button" class="co-btn-primary full" onclick="coDoDelivery('payment')">Continue to Payment &rarr;</button>
-                    <button type="button" class="co-btn-outline full" style="margin-top:10px" onclick="coDoDelivery('quote')">Continue to Quote Request &rarr;</button>
+                    <button type="button" class="co-btn-outline full" onclick="coDoDelivery('quote')">Continue to Quote Request &rarr;</button>
                 </div>
 
             </div><!-- /co-step-inner -->
@@ -1033,56 +1229,9 @@
                     Back to Delivery
                 </button>
 
-                <!-- Order summary -->
-                <div class="co-summary" id="coSummary">
-                    <div class="co-summary-toggle" onclick="coToggleSummary()" role="button" tabindex="0" aria-expanded="true" id="coSummaryToggle">
-                        <span class="co-summary-toggle-lbl">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                            Order Summary
-                            <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>
-                        </span>
-                        <span class="co-summary-toggle-total" id="coSummaryTotal">£0.00</span>
-                    </div>
-                    <div class="co-summary-body open" id="coSummaryBody">
-                        <div class="co-summary-items" id="coSummaryItems">
-                            <!-- populated by JS -->
-                        </div>
-                        <div class="co-summary-footer">
-                            <div class="co-summary-row">
-                                <span>Product Costs</span>
-                                <span id="coGarmentCost">£0.00</span>
-                            </div>
-                            <div class="co-summary-row">
-                                <span>Costs To Add Logo</span>
-                                <span id="coCustomizationCost">£0.00</span>
-                            </div>
-                            <div class="co-summary-row" id="coDigitizingRow" style="display:none">
-                                <span id="coDigitizingLabel">Embroidery digitising (£25 per design)</span>
-                                <span id="coDigitizingFee">£0.00</span>
-                            </div>
-                            <div class="co-summary-row">
-                                <span>Total (ex. VAT)</span>
-                                <span id="coSubtotal">£0.00</span>
-                            </div>
-                            <div class="co-summary-row">
-                                <span>Delivery</span>
-                                <span>Confirmed separately</span>
-                            </div>
-                            <div class="co-summary-row" id="coVatRow" style="display:none">
-                                <span>VAT (20%)</span>
-                                <span id="coVat">£0.00</span>
-                            </div>
-                            <div class="co-summary-row total-row">
-                                <span id="coTotalLabel">Total (ex. VAT)</span>
-                                <span id="coTotal">£0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- /co-summary -->
-
                 <!-- Payment card -->
                 <div class="co-payment-wrap">
-                    <p class="co-payment-title">Payment Details</p>
+                    <p class="co-payment-title">Payment details</p>
 
                     <!-- Loading while creating Stripe Checkout session -->
                     <div id="payment-loading" class="payment-loading" style="display:none">
@@ -1099,6 +1248,30 @@
                             <span id="stripe-btn-text">Continue to Secure Payment</span>
                             <span id="stripe-btn-spinner" style="display:none">Redirecting...</span>
                         </button>
+                        <p class="co-secured">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+                            Payment secured
+                        </p>
+                        <div class="co-card-brands" role="img" aria-label="Accepted cards: Visa, Mastercard, Maestro">
+                            <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true" focusable="false">
+                                <rect x="0.5" y="0.5" width="39" height="25" rx="4.5" fill="#fff" stroke="#e3e7ec"/>
+                                <text x="20" y="17.2" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" font-style="italic" letter-spacing="0.3" fill="#1a1f71">VISA</text>
+                            </svg>
+                            <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true" focusable="false">
+                                <defs><clipPath id="coBrandMcLeft"><circle cx="16.5" cy="13" r="7"/></clipPath></defs>
+                                <rect x="0.5" y="0.5" width="39" height="25" rx="4.5" fill="#fff" stroke="#e3e7ec"/>
+                                <circle cx="16.5" cy="13" r="7" fill="#eb001b"/>
+                                <circle cx="23.5" cy="13" r="7" fill="#f79e1b"/>
+                                <circle cx="23.5" cy="13" r="7" fill="#ff5f00" clip-path="url(#coBrandMcLeft)"/>
+                            </svg>
+                            <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true" focusable="false">
+                                <defs><clipPath id="coBrandMaLeft"><circle cx="16.5" cy="13" r="7"/></clipPath></defs>
+                                <rect x="0.5" y="0.5" width="39" height="25" rx="4.5" fill="#fff" stroke="#e3e7ec"/>
+                                <circle cx="16.5" cy="13" r="7" fill="#eb001b"/>
+                                <circle cx="23.5" cy="13" r="7" fill="#00a2e5"/>
+                                <circle cx="23.5" cy="13" r="7" fill="#7375cf" clip-path="url(#coBrandMaLeft)"/>
+                            </svg>
+                        </div>
                     </form>
 
                     <!-- Quote request fallback (shown when Stripe not configured) -->
@@ -1117,7 +1290,7 @@
                         <p><strong>Order Request Received!</strong></p>
                         <p>You will receive a confirmation email shortly.<br>We'll be in touch with your personalised quote and payment details.</p>
                         <p id="co-quote-review-link-wrap" style="display:none;margin-top:14px;">
-                            <a id="co-quote-review-link" href="#" style="display:inline-block;background:#1c4d8f;color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;text-decoration:none;">Review &amp; pay your quote</a>
+                            <a id="co-quote-review-link" class="co-quote-review-link" href="#">Review &amp; pay your quote</a>
                         </p>
                     </div>
 
@@ -1137,6 +1310,57 @@
             </div><!-- /co-step-inner -->
         </section>
 
+        </div><!-- /co-main -->
+
+        <aside class="co-aside" aria-label="Order summary">
+            <div class="co-summary" id="coSummary">
+                <div class="co-summary-toggle" onclick="coToggleSummary()" role="button" tabindex="0" aria-expanded="true" id="coSummaryToggle">
+                    <span class="co-summary-toggle-lbl">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                        Order summary
+                        <svg class="co-summary-chevron" id="coChevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>
+                    </span>
+                    <span class="co-summary-toggle-total" id="coSummaryTotal">£0.00</span>
+                </div>
+                <div class="co-summary-body open" id="coSummaryBody">
+                    <div class="co-summary-items" id="coSummaryItems">
+                        <!-- populated by JS -->
+                    </div>
+                    <div class="co-summary-footer">
+                        <div class="co-summary-row">
+                            <span>Product costs</span>
+                            <span id="coGarmentCost">£0.00</span>
+                        </div>
+                        <div class="co-summary-row">
+                            <span>Costs to add logo</span>
+                            <span id="coCustomizationCost">£0.00</span>
+                        </div>
+                        <div class="co-summary-row" id="coDigitizingRow" style="display:none">
+                            <span id="coDigitizingLabel">Embroidery digitising (£25 per design)</span>
+                            <span id="coDigitizingFee">£0.00</span>
+                        </div>
+                        <div class="co-summary-row">
+                            <span>Total (ex. VAT)</span>
+                            <span id="coSubtotal">£0.00</span>
+                        </div>
+                        <div class="co-summary-row">
+                            <span>Delivery</span>
+                            <span>Confirmed separately</span>
+                        </div>
+                        <div class="co-summary-row" id="coVatRow" style="display:none">
+                            <span>VAT (20%)</span>
+                            <span id="coVat">£0.00</span>
+                        </div>
+                        <div class="co-summary-row total-row">
+                            <span id="coTotalLabel">Total (ex. VAT)</span>
+                            <span id="coTotal">£0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /co-summary -->
+        </aside>
+
+      </div><!-- /co-layout -->
     </div><!-- /co-wrap -->
 
     <!-- Toast -->
@@ -1955,6 +2179,60 @@
         /* Patch getCustomerData for checkout.js compatibility */
         window.getCustomerData = coGetCustomer;
 
+    })();
+    </script>
+    <!-- ── Desktop: level the order summary with the active step's cards ── -->
+    <script>
+    (function () {
+        'use strict';
+        var MIN_HEIGHT = 380;
+        var BOX_SELECTOR = '.co-card, .co-signed-in, .co-address-book, .co-delivery-wrap, .co-payment-wrap';
+        var layout = document.querySelector('.co-layout');
+        if (!layout) return;
+        var wide = window.matchMedia('(min-width: 900px)');
+        var frame = 0;
+
+        function visible(el) {
+            return el.offsetParent !== null && el.getBoundingClientRect().height > 0;
+        }
+
+        function align() {
+            frame = 0;
+            if (!wide.matches) {
+                layout.style.removeProperty('--co-aside-offset');
+                layout.style.removeProperty('--co-aside-height');
+                return;
+            }
+            var inner = document.querySelector('.co-step.active .co-step-inner');
+            if (!inner) return;
+            var boxes = Array.prototype.filter.call(inner.querySelectorAll(BOX_SELECTOR), function (el) {
+                return el.parentElement === inner && visible(el);
+            });
+            if (!boxes.length) return;
+            var top = Infinity, bottom = -Infinity;
+            boxes.forEach(function (el) {
+                var r = el.getBoundingClientRect();
+                top = Math.min(top, r.top);
+                bottom = Math.max(bottom, r.bottom);
+            });
+            var base = layout.getBoundingClientRect().top;
+            layout.style.setProperty('--co-aside-offset', Math.round(top - base) + 'px');
+            layout.style.setProperty('--co-aside-height', Math.max(MIN_HEIGHT, Math.round(bottom - top)) + 'px');
+        }
+
+        function schedule() {
+            if (!frame) frame = requestAnimationFrame(align);
+        }
+
+        if ('ResizeObserver' in window) {
+            var ro = new ResizeObserver(schedule);
+            Array.prototype.forEach.call(document.querySelectorAll('.co-step-inner'), function (el) { ro.observe(el); });
+        }
+        if (wide.addEventListener) wide.addEventListener('change', schedule);
+        window.addEventListener('resize', schedule);
+        window.addEventListener('load', schedule);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+        schedule();
     })();
     </script>
 
