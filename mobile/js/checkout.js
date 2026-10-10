@@ -372,46 +372,74 @@ function calculateBasketTotals(basket) {
     let totalQuantity = 0;
     const customizations = [];
     const uniqueEmbLogos = new Set();
+    const quantitiesByCode = getQuantitiesByProductCode(basket);
 
     basket.forEach(item => {
         const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
-        const unitPrice = number(item.unitPrice || item.price || 0, 0);
+        const textDesigns = Array.isArray(item.texts) ? item.texts : [];
+        const textUnitTotal = textDesigns.reduce((sum, textDesign) => (
+            sum + number(textDesign.unitPrice || 1.5, 1.5)
+        ), 0);
+        const unitPrice = Math.max(0, number(item.unitPrice || item.price || 0, 0) - textUnitTotal);
         const itemTotal = unitPrice * qty;
+        const productCode = item.code || item.productCode || '';
+        const pricingQuantity = quantitiesByCode.get(String(productCode).toUpperCase()) || qty;
         garmentCost += itemTotal;
         totalQuantity += qty;
 
         extractItemCustomizations(item).forEach(customization => {
-            const unit = number(customization.unitPrice || customization.price || 0, 0);
-            const lineTotal = number(customization.lineTotal || (unit * qty), 0);
+            const unit = getCheckoutCustomizationUnitPrice(customization, pricingQuantity);
+            const lineTotal = unit * qty;
             customizationCost += lineTotal;
+            const designKey = getLogoKey(customization);
 
             if (
                 String(customization.method || '').toLowerCase() === 'embroidery'
                 && (customization.logo || customization.logoData || customization.hasLogo)
             ) {
-                uniqueEmbLogos.add(getLogoKey(customization));
+                uniqueEmbLogos.add(designKey);
             }
 
             customizations.push({
                 productName: cleanCheckoutText(item.productName || item.name || 'Product'),
-                productCode: item.code || item.productCode || '',
+                productCode,
                 position: customization.positionLabel || customization.position || '',
                 method: normalizeMethod(customization.method),
                 hasLogo: Boolean(customization.logo || customization.logoData),
                 logo: safeLogoRef(customization.logo || customization.logoData),
+                designKey,
                 unitPrice: unit,
                 lineTotal,
                 quantity: qty,
             });
         });
 
-        (Array.isArray(item.texts) ? item.texts : []).forEach(textDesign => {
-            if (
-                String(textDesign?.method || '').toLowerCase() === 'embroidery'
-                && String(textDesign?.text || '').trim()
-            ) {
-                uniqueEmbLogos.add(getEmbroideryTextKey(textDesign));
+        textDesigns.forEach(textDesign => {
+            const text = String(textDesign?.text || '').trim();
+            if (!text) return;
+            const method = String(textDesign?.method || '').toLowerCase();
+            const designKey = getEmbroideryTextKey(textDesign);
+            const unit = number(textDesign.unitPrice || 1.5, 1.5);
+            const lineTotal = unit * qty;
+            customizationCost += lineTotal;
+
+            if (method === 'embroidery') {
+                uniqueEmbLogos.add(designKey);
             }
+
+            customizations.push({
+                productName: cleanCheckoutText(item.productName || item.name || 'Product'),
+                productCode,
+                position: textDesign.positionLabel || textDesign.position || textDesign.area || '',
+                method: method === 'embroidery' ? 'Embroidery' : 'Text',
+                type: 'text',
+                text,
+                designKey,
+                hasLogo: false,
+                unitPrice: unit,
+                lineTotal,
+                quantity: qty,
+            });
         });
     });
 
@@ -436,7 +464,10 @@ function calculateBasketTotals(basket) {
 function buildBasketItems(basket) {
     return basket.map(item => {
         const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
-        const unitPrice = number(item.unitPrice || item.price || 0, 0);
+        const textUnitTotal = (Array.isArray(item.texts) ? item.texts : []).reduce((sum, textDesign) => (
+            sum + number(textDesign.unitPrice || 1.5, 1.5)
+        ), 0);
+        const unitPrice = Math.max(0, number(item.unitPrice || item.price || 0, 0) - textUnitTotal);
         return {
             name: cleanCheckoutText(item.name || item.productName || 'Product'),
             code: item.code || item.productCode || '',
@@ -494,11 +525,56 @@ function normalizeMethod(method) {
     return method || '';
 }
 
+function getQuantitiesByProductCode(basket) {
+    const quantities = new Map();
+    basket.forEach(item => {
+        const code = String(item.code || item.productCode || '').toUpperCase();
+        if (!code) return;
+        const qty = number(item.qty || item.quantity || item.totalQty || 1, 1);
+        quantities.set(code, (quantities.get(code) || 0) + qty);
+    });
+    return quantities;
+}
+
+function normalizePositionSlug(value) {
+    return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function isLargePrintPosition(customization) {
+    return [
+        customization.position,
+        customization.positionLabel,
+        customization.posKey,
+        customization.area,
+        customization.name,
+        customization.slug,
+    ].some(value => ['large-front', 'large-back', 'front-large', 'back-large'].includes(normalizePositionSlug(value)));
+}
+
+function getCheckoutCustomizationUnitPrice(customization, quantity) {
+    const method = String(customization?.method || '').toLowerCase();
+    if (method === 'embroidery-voa') return 0;
+    if (method !== 'embroidery' && isLargePrintPosition(customization)) return 7.70;
+
+    const tiers = method === 'embroidery'
+        ? [[1, 8], [9, 6], [25, 4.75], [100, 3.75], [250, 2.5], [500, 2.25], [750, 2], [1000, 1.75]]
+        : [[1, 7.5], [9, 5.25], [25, 4], [100, 3], [250, 2.5], [500, 2.25], [750, 2], [1000, 1.75]];
+    let price = tiers[0][1];
+    tiers.forEach(([minimum, tierPrice]) => {
+        if (quantity >= minimum) price = tierPrice;
+    });
+    return price;
+}
+
 function sanitizeCustomizations(customizations) {
     return customizations.map(customization => ({
+        productCode: customization.productCode || '',
         position: customization.positionLabel || customization.position || '',
         positionLabel: customization.positionLabel || customization.position || '',
         method: normalizeMethod(customization.method),
+        type: customization.type || 'logo',
+        text: customization.text || '',
+        designKey: customization.designKey || '',
         hasLogo: Boolean(customization.logo || customization.logoData),
         logo: safeLogoRef(customization.logo || customization.logoData),
         unitPrice: number(customization.unitPrice || customization.price, 0),
