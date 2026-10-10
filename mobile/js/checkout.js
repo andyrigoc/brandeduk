@@ -239,8 +239,8 @@ async function createMirroredCustomerOrder(quoteData, basket) {
 
     const body = {
         items: buildOrderItems(basket),
-        subtotal: roundMoney(quoteData.summary?.totalExVat || 0),
-        deliveryFee: 0,
+        subtotal: roundMoney(quoteData.summary?.goodsExVat || 0),
+        deliveryFee: roundMoney(quoteData.summary?.deliveryFee || 0),
         discount: 0,
         totalAmount: roundMoney(quoteData.summary?.totalIncVat || quoteData.summary?.displayTotal || 0),
         paymentMethod: 'stripe',
@@ -358,6 +358,22 @@ function buildQuoteData(basket) {
             totalIncVat: roundMoney(totals.totalIncVat),
             displayTotal: roundMoney(totals.totalIncVat),
             vatMode: 'inc',
+            goodsExVat: roundMoney(totals.goodsExVat),
+            goodsVatAmount: roundMoney(totals.goodsVatAmount),
+            goodsIncVat: roundMoney(totals.goodsIncVat),
+            deliveryFee: roundMoney(totals.deliveryIncVat),
+            deliveryIncVat: roundMoney(totals.deliveryIncVat),
+            deliveryExVat: roundMoney(totals.deliveryExVat),
+            deliveryVatAmount: roundMoney(totals.deliveryVatAmount),
+        },
+        delivery: {
+            name: 'Delivery',
+            description: 'Fixed UK delivery (inc. VAT)',
+            quantity: 1,
+            unitAmountIncVat: roundMoney(totals.deliveryIncVat),
+            amountExVat: roundMoney(totals.deliveryExVat),
+            vatAmount: roundMoney(totals.deliveryVatAmount),
+            currency: 'gbp',
         },
         basket: buildBasketItems(basket),
         customizations: totals.customizations,
@@ -489,8 +505,7 @@ function calculateBasketTotals(basket) {
 
     const embroideryDesignCount = uniqueEmbLogos.size;
     const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
-    const totalExVat = garmentCost + customizationCost + digitizingFee;
-    const vatAmount = totalExVat * VAT_RATE;
+    const order = window.brandedOrderTotals(garmentCost + customizationCost + digitizingFee, totalQuantity);
 
     return {
         garmentCost,
@@ -498,9 +513,15 @@ function calculateBasketTotals(basket) {
         digitizingFee,
         embroideryDesignCount,
         totalQuantity,
-        totalExVat,
-        vatAmount,
-        totalIncVat: totalExVat + vatAmount,
+        goodsExVat: order.goodsExVat,
+        goodsVatAmount: order.goodsVatAmount,
+        goodsIncVat: order.goodsIncVat,
+        deliveryIncVat: order.deliveryIncVat,
+        deliveryExVat: order.deliveryExVat,
+        deliveryVatAmount: order.deliveryVatAmount,
+        totalExVat: order.totalExVat,
+        vatAmount: order.vatAmount,
+        totalIncVat: order.totalIncVat,
         customizations,
     };
 }

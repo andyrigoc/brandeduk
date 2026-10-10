@@ -767,6 +767,7 @@
             color: var(--co-grey);
             margin-bottom: 8px;
         }
+        .co-summary-note { font-size: 11px; font-weight: 300; color: var(--co-grey); }
         .co-summary-row.total-row {
             font-size: 16px;
             font-weight: 500;
@@ -1242,7 +1243,7 @@
                     <!-- Stripe Checkout redirect -->
                     <form id="stripe-payment-form" method="post" action="#" style="display:none">
                         <div class="stripe-checkout-note">
-                            Stripe's secure checkout opens in a centred window. Delivery is confirmed separately and is not charged today.
+                            Stripe's secure checkout opens in a centred window.
                         </div>
                         <button type="submit" id="stripe-pay-btn" class="stripe-pay-btn">
                             <span id="stripe-btn-text">Continue to Secure Payment</span>
@@ -1340,12 +1341,12 @@
                             <span id="coDigitizingFee">£0.00</span>
                         </div>
                         <div class="co-summary-row">
-                            <span>Total (ex. VAT)</span>
-                            <span id="coSubtotal">£0.00</span>
+                            <span>Delivery</span>
+                            <span><span id="coDeliveryFee">£0.00</span> <small class="co-summary-note">inc. VAT</small></span>
                         </div>
                         <div class="co-summary-row">
-                            <span>Delivery</span>
-                            <span>Confirmed separately</span>
+                            <span>Total (ex. VAT)</span>
+                            <span id="coSubtotal">£0.00</span>
                         </div>
                         <div class="co-summary-row" id="coVatRow" style="display:none">
                             <span>VAT (20%)</span>
@@ -1367,6 +1368,7 @@
     <div class="co-toast" id="coToastEl" role="status" aria-live="polite"></div>
 
     <script src="brandedukv15-child/assets/js/api-config.js?v=20260530"></script>
+    <script src="brandedukv15-child/assets/js/delivery-config.js?v=20261010"></script>
     <script src="brandedukv15-child/assets/js/checkout-auth.js?v=20260530"></script>
     <!-- ── Checkout 3-step logic ── -->
     <script>
@@ -2024,6 +2026,7 @@
                     document.getElementById('coGarmentCost').textContent = '\u00A3' + garmentCost.toFixed(2);
                     document.getElementById('coCustomizationCost').textContent = '\u00A3' + customizationCost.toFixed(2);
                     document.getElementById('coSubtotal').textContent = subtotalFmtFromBasket;
+                    document.getElementById('coDeliveryFee').textContent = '\u00A3' + _num(totals.deliveryIncVat, 0).toFixed(2);
 
                     var digitizingRow = document.getElementById('coDigitizingRow');
                     var digitizingLabel = document.getElementById('coDigitizingLabel');
@@ -2045,10 +2048,11 @@
                     return;
                 }
 
-                var totalEx = total;
                 // Business rule: checkout charges VAT, so always present totals including VAT.
-                var vat = totalEx * 0.20;
-                var totalInc = totalEx + vat;
+                var order = window.brandedOrderTotals(total, totalQuantity);
+                var totalEx = order.totalExVat;
+                var vat = order.vatAmount;
+                var totalInc = order.totalIncVat;
 
                 var subtotalFmt = '£' + totalEx.toFixed(2);
                 var totalFmt = '£' + totalInc.toFixed(2);
@@ -2057,6 +2061,7 @@
                 document.getElementById('coOrderGlanceTotal').textContent = totalFmt;
                 document.getElementById('coOrderGlanceLabel').textContent = totalQuantity + ' piece' + (totalQuantity === 1 ? '' : 's') + ' · View basket';
                 document.getElementById('coSubtotal').textContent     = subtotalFmt;
+                document.getElementById('coDeliveryFee').textContent  = '£' + order.deliveryIncVat.toFixed(2);
 
                 var vatRow = document.getElementById('coVatRow');
                 var vatEl = document.getElementById('coVat');
@@ -2239,7 +2244,7 @@
     <script src="brandedukv15-child/assets/js/api.js?v=20260702"></script>
     <!-- Stripe Checkout redirect flow (uses resolveBrandedApiBase = same API as LIVE) -->
     <script src="mobile/js/stripe-checkout-frame.js?v=20261010-load"></script>
-    <script src="mobile/js/checkout.js?v=20261010-load"></script>
+    <script src="mobile/js/checkout.js?v=20261010-delivery"></script>
     <!-- Crisp + original BrandedUK onsite chat panel -->
     <script src="mobile/js/crisp-chat.js?v=20261002-ourpanel" async></script>
     <script src="mobile/js/whatsapp.js?v=20261002-chatlogo" defer></script>

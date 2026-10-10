@@ -46,6 +46,7 @@
     </script>
     <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
     <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
+    <script src="brandedukv15-child/assets/js/delivery-config.js?v=20261010"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1100,6 +1101,7 @@
             font-size: 14px; color: #6b7280;
         }
         .summary-row .summary-val { font-weight: 600; color: #1f2937; }
+        .summary-delivery-note { font-size: 11px; color: #98a2b3; }
         .summary-breakdown-section { border-top: 1px solid #e5e7eb; }
         .summary-breakdown-heading {
             display: flex; align-items: center; justify-content: space-between;
@@ -2845,6 +2847,10 @@
                         <span class="summary-breakdown-total" id="summaryDigitizingFee">&#163;25.00</span>
                     </div>
                     <div class="summary-breakdown-list" id="summarySetupBreakdown"></div>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery <small class="summary-delivery-note">(inc. VAT)</small></span>
+                    <span class="summary-val" id="summaryDelivery">&#163;0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Total (exc. VAT)</span>
@@ -5118,9 +5124,9 @@
 
         const embroideryDesignCount = uniqueEmbroideryDesigns.size;
         const digitizingFee = embroideryDesignCount * DIGITIZING_FEE_PER_DESIGN;
+        // Goods only: the minimum order check must not count delivery.
         const subtotalExVat = productCosts + logoCosts + digitizingFee;
-        const vatAmount = subtotalExVat * BASKET_VAT_RATE;
-        const grandTotalIncVat = subtotalExVat + vatAmount;
+        const order = window.brandedOrderTotals(subtotalExVat, basket.length);
 
         return {
             productCosts,
@@ -5130,8 +5136,12 @@
             customisationBreakdown: Array.from(customisationGroups.values()),
             setupBreakdown,
             subtotalExVat,
-            vatAmount,
-            grandTotalIncVat,
+            deliveryIncVat: order.deliveryIncVat,
+            deliveryExVat: order.deliveryExVat,
+            deliveryVatAmount: order.deliveryVatAmount,
+            totalExVat: order.totalExVat,
+            vatAmount: order.vatAmount,
+            grandTotalIncVat: order.totalIncVat,
             meetsMinOrder: !MIN_ORDER_BLOCK || subtotalExVat >= MIN_ORDER_EX_VAT
         };
     }
@@ -5168,7 +5178,8 @@
             embroideryDesignCount,
             customisationBreakdown,
             setupBreakdown,
-            subtotalExVat,
+            deliveryIncVat,
+            totalExVat,
             vatAmount,
             grandTotalIncVat: grandTotal
         } = computeBasketTotals(basket);
@@ -5200,7 +5211,8 @@
             }
         }
         
-        if (el('summaryExcVat')) el('summaryExcVat').textContent = '\u00A3' + subtotalExVat.toFixed(2);
+        if (el('summaryDelivery')) el('summaryDelivery').textContent = '\u00A3' + deliveryIncVat.toFixed(2);
+        if (el('summaryExcVat')) el('summaryExcVat').textContent = '\u00A3' + totalExVat.toFixed(2);
         if (el('summaryVat')) el('summaryVat').textContent = '\u00A3' + vatAmount.toFixed(2);
         if (el('summaryGrandTotal')) el('summaryGrandTotal').textContent = '\u00A3' + grandTotal.toFixed(2);
 
@@ -6124,10 +6136,12 @@
 
                     const basketTotals = computeBasketTotals(basket);
                     digitizingFee = basketTotals.digitizingFee;
-                    const totalExVat = totalGarmentCost + customizationTotal + digitizingFee;
-                    const vatAmount = totalExVat * 0.20;
+                    const goodsExVat = totalGarmentCost + customizationTotal + digitizingFee;
+                    const order = window.brandedOrderTotals(goodsExVat, basket.length);
+                    const totalExVat = order.totalExVat;
+                    const vatAmount = order.vatAmount;
 
-                    const totalIncVat = totalExVat + vatAmount;
+                    const totalIncVat = order.totalIncVat;
                     const displayTotal = includeVAT ? totalIncVat : totalExVat;
                     const notesList = [];
                     const orderNotes = document.getElementById('orderNotesTextarea')?.value.trim() || localStorage.getItem('orderNotes') || '';
@@ -6146,6 +6160,9 @@
                             embroideryDesignCount: basketTotals.embroideryDesignCount,
                             subtotal: totalExVat,
                             vatRate: 0.20, vatAmount, totalExVat, totalIncVat,
+                            goodsExVat: order.goodsExVat, goodsVatAmount: order.goodsVatAmount, goodsIncVat: order.goodsIncVat,
+                            deliveryFee: order.deliveryIncVat, deliveryIncVat: order.deliveryIncVat,
+                            deliveryExVat: order.deliveryExVat, deliveryVatAmount: order.deliveryVatAmount,
                             displayTotal, vatMode: includeVAT ? 'inc' : 'ex',
                             belowMinimumOrder: !computeBasketTotals(basket).meetsMinOrder
                         },
