@@ -42,7 +42,7 @@
     // > Tag setup > the part after "AW-438771987/"). Do not invent one.
     // Until this is filled, payment-success sends gtag('event','purchase') only,
     // not gtag('event','conversion',{send_to:...}).
-    purchase: ''
+    purchase: 'PzEFCL7kkpgdEJPCnNEB'
   };
 
   var CURRENCY = 'GBP';
