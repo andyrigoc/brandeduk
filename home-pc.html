@@ -237,6 +237,7 @@
     <link rel="stylesheet" href="brandeduk.com/css/halloween-banner.css?v=20260925-halloween">
     <link rel="stylesheet" href="brandeduk.com/css/hero.css?v=20260921-face-focus">
     <link rel="stylesheet" href="brandeduk.com/css/uniform-cube.css?v=20260928-air2">
+    <link rel="stylesheet" href="brandedukv15-child/assets/css/components/split-flap.css?v=20261011-sf1">
     <link rel="stylesheet" href="brandeduk.com/css/embroidery-scroll.css?v=20260928-air2">
     <style>
         /* ============================================
@@ -2594,7 +2595,7 @@
             padding: 32px;
             border: 1px solid #efe9df;
             border-radius: 20px;
-            background: #fbf8f3;
+            background: linear-gradient(120deg, #fffaf5 0%, #fbf8f3 55%, #f8f0e7 100%);
             box-sizing: border-box;
         }
         .sbc-intro {
@@ -2622,7 +2623,7 @@
             margin: 0 0 16px;
             color: #0f1b3d;
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(28px, 2.6vw, 38px);
+            font-size: clamp(30px, 2.9vw, 42px);
             font-weight: 800;
             line-height: 1.08;
         }
@@ -2636,18 +2637,20 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 13px 22px;
+            padding: 14px 24px;
             border-radius: 999px;
-            background: #f25c19;
+            background: linear-gradient(90deg, #ff8a1f 0%, #f25c19 100%);
+            box-shadow: 0 10px 22px -10px rgba(242, 92, 25, .75);
             color: #fff;
             font-size: 14px;
             font-weight: 700;
             text-decoration: none;
-            transition: background .2s ease, transform .2s ease;
+            transition: filter .2s ease, transform .2s ease, box-shadow .2s ease;
         }
         .sbc-cta:hover {
-            background: #db4f10;
+            filter: brightness(.96);
             transform: translateY(-1px);
+            box-shadow: 0 14px 26px -12px rgba(242, 92, 25, .85);
         }
         .sbc-features {
             display: grid;
@@ -2658,11 +2661,17 @@
         }
         .sbc-features li {
             display: grid;
-            grid-template-columns: 26px 1fr;
+            grid-template-columns: 36px 1fr;
             gap: 12px;
             align-items: center;
         }
-        .sbc-features svg {
+        .sbc-features__icon {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fde9dc;
             color: #0f1b3d;
         }
         .sbc-features strong {
@@ -2676,46 +2685,176 @@
             color: #6b7280;
             font-size: 11.5px;
         }
-        .shop-by-category .hero-expanding-wrapper {
-            position: relative;
-            left: auto;
-            width: auto;
-            height: 380px;
+
+        /* Sector strips: collapsed = person crop + vertical label; open = full landscape image. */
+        .sbc-sectors {
+            --sbc-height: 380px;
+            --sbc-open: min(calc(var(--sbc-height) * 1.78), 64%);
+            display: flex;
+            gap: 8px;
+            height: var(--sbc-height);
             margin: 0;
-            overflow: hidden;
-            border-radius: 16px;
-        }
-        .shop-by-category .hero-cont {
-            height: 100%;
             padding: 0;
+            list-style: none;
         }
-        .shop-by-category .hero-cont__inner {
-            max-width: none;
+        .sbc-sectors > li {
+            flex: 1 1 0;
+            min-width: 0;
+            transition: flex .42s cubic-bezier(.4, 0, .2, 1);
         }
-        .shop-by-category .hero-el:not(.s--active) {
-            width: calc((100% - 96px) / 9);
+        .sbc-sector {
+            position: relative;
+            display: block;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #e9e4dc;
+            box-shadow: 0 8px 18px -12px rgba(15, 27, 61, .55);
+            isolation: isolate;
+            container-type: inline-size;
+            text-decoration: none;
         }
-        .shop-by-category .hero-el__preview-cont {
-            box-sizing: border-box;
-            padding-bottom: 14px;
+        .sbc-sector:focus-visible {
+            outline: 3px solid #f25c19;
+            outline-offset: -3px;
         }
-        .shop-by-category .hero-el__heading {
-            margin: 0;
-            padding: 6px 10px;
-            border-radius: 8px;
-            background: rgba(17, 17, 17, .72);
-            font-size: 10px;
-            letter-spacing: .06em;
+        .sbc-sector__img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sbc-sector__img--strip {
+            object-position: var(--sbc-pos, 22%) 50%;
+            transition: opacity .2s ease;
+        }
+        .sbc-sector__img--full {
+            object-position: 75% 50%;
+            opacity: 0;
+            transition: opacity .32s ease .04s;
+        }
+        .sbc-sector__shade {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(to top, rgba(10, 14, 30, .5) 0%, rgba(10, 14, 30, .12) 45%, rgba(10, 14, 30, 0) 70%);
+            transition: opacity .35s ease .06s;
+        }
+        .sbc-sector__label {
+            position: absolute;
+            right: 2px;
+            bottom: 10px;
+            z-index: 2;
+            font-family: 'Bebas Neue', 'Oswald', 'Arial Narrow', sans-serif;
+            font-size: 44px;
+            font-size: clamp(22px, 52cqw, 58px);
+            line-height: .82;
+            letter-spacing: .01em;
+            color: rgba(255, 255, 255, .86);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, .3);
             white-space: nowrap;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            pointer-events: none;
+            transition: opacity .35s ease .08s, transform .35s ease .08s;
         }
-        .shop-by-category .hero-el__text {
-            font-size: 26px;
+        .sbc-sector__explore {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            z-index: 2;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .94);
+            box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .5);
+            color: #0f1b3d;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
         }
+
+        @media (hover: hover) and (pointer: fine) and (min-width: 900px) {
+            .sbc-sectors > li:hover,
+            .sbc-sectors > li:focus-within {
+                flex: 0 0 var(--sbc-open);
+            }
+            .sbc-sectors:hover > li:focus-within:not(:hover) {
+                flex: 1 1 0;
+            }
+            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__img--full {
+                opacity: 1;
+                transition: opacity .38s ease .04s;
+            }
+            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__img--strip {
+                opacity: 0;
+                transition: opacity .2s ease .3s;
+            }
+            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__shade {
+                opacity: 0;
+                transition: opacity .3s ease;
+            }
+            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__label {
+                opacity: 0;
+                transform: rotate(180deg) translateY(-14px);
+                transition: opacity .25s ease, transform .3s ease;
+            }
+            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__explore {
+                opacity: 1;
+                transform: none;
+                transition: opacity .3s ease .25s, transform .3s ease .25s;
+            }
+            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__img--full,
+            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__explore {
+                opacity: 0;
+            }
+            .sbc-sectors:hover > li:focus-within:not(:hover) :is(.sbc-sector__img--strip, .sbc-sector__shade, .sbc-sector__label) {
+                opacity: 1;
+            }
+            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__label {
+                transform: rotate(180deg);
+            }
+        }
+
+        @media (hover: none), (pointer: coarse), (max-width: 899px) {
+            .sbc-sectors {
+                overflow-x: auto;
+                overscroll-behavior-x: contain;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .sbc-sectors::-webkit-scrollbar {
+                display: none;
+            }
+            .sbc-sectors > li {
+                flex: 0 0 clamp(120px, 17vw, 160px);
+                scroll-snap-align: start;
+            }
+            .sbc-sector__img--full,
+            .sbc-sector__explore {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .sbc-sectors > li,
+            .sbc-sectors .sbc-sector__img,
+            .sbc-sectors .sbc-sector__shade,
+            .sbc-sectors .sbc-sector__label,
+            .sbc-sectors .sbc-sector__explore {
+                transition: none !important;
+            }
+        }
+
         @media (max-width: 1279px) {
-            .shop-by-category .hero-el__heading {
-                padding: 5px 8px;
-                font-size: 9px;
-                letter-spacing: .04em;
+            .sbc-sectors {
+                --sbc-height: 360px;
             }
         }
         @media (max-width: 1100px) {
@@ -2736,8 +2875,8 @@
                 gap: 16px 22px;
                 margin-top: 20px;
             }
-            .shop-by-category .hero-expanding-wrapper {
-                height: 340px;
+            .sbc-sectors {
+                --sbc-height: 340px;
             }
         }
         @media (max-width: 899px) {
@@ -2747,168 +2886,101 @@
             .sbc-text {
                 margin-bottom: 18px;
             }
-            .shop-by-category .hero-expanding-wrapper {
-                height: 300px;
+            .sbc-sectors {
+                --sbc-height: 300px;
             }
         }
     </style>
 
-    <!-- Shop by Category - Expanding Panels -->
+    <!-- Find Your Sector - industry strips -->
     <section class="shop-by-category" aria-labelledby="sbcTitle">
       <div class="sbc-card">
         <div class="sbc-intro">
-            <p class="sbc-eyebrow">Our range</p>
-            <h2 class="sbc-title" id="sbcTitle">Shop by Category</h2>
-            <p class="sbc-text">Quality workwear, uniforms and promotional clothing for every industry, all in one place.</p>
-            <a class="sbc-cta" href="shop-pc.html">Browse All Products <span aria-hidden="true">&rarr;</span></a>
+            <p class="sbc-eyebrow">Industry solutions</p>
+            <h2 class="sbc-title" id="sbcTitle">Find Your Sector</h2>
+            <p class="sbc-text">Branded workwear, uniforms and promotional clothing designed for modern businesses.</p>
+            <a class="sbc-cta" href="shop-pc.html">Explore Industries <span aria-hidden="true">&rarr;</span></a>
             <ul class="sbc-features">
                 <li>
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4h13v12H1zM14 8h4l4 4v4h-8"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg>
+                    <span class="sbc-features__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4h13v12H1zM14 8h4l4 4v4h-8"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg></span>
                     <span><strong>Fast UK Delivery</strong><small>On all orders</small></span>
                 </li>
                 <li>
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+                    <span class="sbc-features__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span>
                     <span><strong>Quality You Can Trust</strong><small>From leading brands</small></span>
                 </li>
                 <li>
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+                    <span class="sbc-features__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19v.5a2.5 2.5 0 0 1-2.5 2.5h-3"/></svg></span>
                     <span><strong>Expert Support</strong><small>Here when you need us</small></span>
                 </li>
             </ul>
         </div>
 
-    <div class="hero-expanding-wrapper">
-        <div class="hero-cont s--inactive" id="hero1">
-            <div class="hero-cont__inner">
-                <div class="hero-el" data-category="tshirts">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">T-Shirts</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom T-Shirts</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="hoodies">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Hoodies</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Hoodies</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="beanies">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Beanies</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Beanies</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="bags">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Bags</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Bags</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="aprons">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Aprons</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Aprons</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="hivis">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Hi-Vis</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Hi-Viz</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="polo">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Polo</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Custom Polo</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="jackets">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Jackets</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Jackets & Softshell</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-el" data-category="sustainable">
-                    <div class="hero-el__overflow">
-                        <div class="hero-el__inner">
-                            <div class="hero-el__bg"></div>
-                            <div class="hero-el__preview-cont">
-                                <h2 class="hero-el__heading">Sustainable</h2>
-                            </div>
-                            <div class="hero-el__content">
-                                <div class="hero-el__text">Eco-Friendly Products</div>
-                                <div class="hero-el__close-btn"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <ul class="sbc-sectors">
+            <li><a class="sbc-sector" href="construction-workwear" style="--sbc-pos: 19%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/construction-800.webp" srcset="brandedukv15-child/assets/images/industries/construction-800.webp 800w, brandedukv15-child/assets/images/industries/construction.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Construction workwear" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/construction-800.webp" srcset="brandedukv15-child/assets/images/industries/construction-800.webp 800w, brandedukv15-child/assets/images/industries/construction.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Construction</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="shop-pc.html?productType=tabards" style="--sbc-pos: 22%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/cleaning-800.webp" srcset="brandedukv15-child/assets/images/industries/cleaning-800.webp 800w, brandedukv15-child/assets/images/industries/cleaning.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Cleaning uniforms" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/cleaning-800.webp" srcset="brandedukv15-child/assets/images/industries/cleaning-800.webp 800w, brandedukv15-child/assets/images/industries/cleaning.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Cleaning</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="hospitality-workwear" style="--sbc-pos: 23%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/hospitality-800.webp" srcset="brandedukv15-child/assets/images/industries/hospitality-800.webp 800w, brandedukv15-child/assets/images/industries/hospitality.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Hospitality workwear" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/hospitality-800.webp" srcset="brandedukv15-child/assets/images/industries/hospitality-800.webp 800w, brandedukv15-child/assets/images/industries/hospitality.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Hospitality</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="shop-pc.html?productType=healthcare" style="--sbc-pos: 21%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/healthcare-800.webp" srcset="brandedukv15-child/assets/images/industries/healthcare-800.webp 800w, brandedukv15-child/assets/images/industries/healthcare.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Healthcare uniforms" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/healthcare-800.webp" srcset="brandedukv15-child/assets/images/industries/healthcare-800.webp 800w, brandedukv15-child/assets/images/industries/healthcare.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Healthcare</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="shop-pc.html?productType[]=Hi%20Vis&amp;productType[]=Jackets&amp;productType[]=Trousers&amp;productType[]=Polos&amp;productType[]=T-Shirts&amp;sector[]=Safety" style="--sbc-pos: 23%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/logistics-800.webp" srcset="brandedukv15-child/assets/images/industries/logistics-800.webp 800w, brandedukv15-child/assets/images/industries/logistics.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Logistics and warehouse workwear" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/logistics-800.webp" srcset="brandedukv15-child/assets/images/industries/logistics-800.webp 800w, brandedukv15-child/assets/images/industries/logistics.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Logistics</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="corporate-uniforms" style="--sbc-pos: 24%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/corporate-800.webp" srcset="brandedukv15-child/assets/images/industries/corporate-800.webp 800w, brandedukv15-child/assets/images/industries/corporate.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Corporate uniforms" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/corporate-800.webp" srcset="brandedukv15-child/assets/images/industries/corporate-800.webp 800w, brandedukv15-child/assets/images/industries/corporate.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Corporate</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="school-uniforms" style="--sbc-pos: 24%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/education-800.webp" srcset="brandedukv15-child/assets/images/industries/education-800.webp 800w, brandedukv15-child/assets/images/industries/education.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Education uniforms" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/education-800.webp" srcset="brandedukv15-child/assets/images/industries/education-800.webp 800w, brandedukv15-child/assets/images/industries/education.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Education</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="shop-pc.html?productType=Polos&amp;sector=Corporate" style="--sbc-pos: 24%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/retail-800.webp" srcset="brandedukv15-child/assets/images/industries/retail-800.webp 800w, brandedukv15-child/assets/images/industries/retail.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Retail uniforms" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/retail-800.webp" srcset="brandedukv15-child/assets/images/industries/retail-800.webp 800w, brandedukv15-child/assets/images/industries/retail.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Retail</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+            <li><a class="sbc-sector" href="sports-teamwear" style="--sbc-pos: 27%">
+                <img class="sbc-sector__img sbc-sector__img--strip" src="brandedukv15-child/assets/images/industries/sports-800.webp" srcset="brandedukv15-child/assets/images/industries/sports-800.webp 800w, brandedukv15-child/assets/images/industries/sports.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="Sports teamwear" loading="lazy" decoding="async">
+                <img class="sbc-sector__img sbc-sector__img--full" src="brandedukv15-child/assets/images/industries/sports-800.webp" srcset="brandedukv15-child/assets/images/industries/sports-800.webp 800w, brandedukv15-child/assets/images/industries/sports.webp 1600w" sizes="(min-width: 900px) 640px, 160px" width="1600" height="900" alt="" loading="lazy" decoding="async">
+                <span class="sbc-sector__shade" aria-hidden="true"></span>
+                <span class="sbc-sector__label" aria-hidden="true">Sports</span>
+                <span class="sbc-sector__explore" aria-hidden="true">Explore &rarr;</span>
+            </a></li>
+        </ul>
       </div>
     </section>
 
@@ -2989,6 +3061,15 @@
         <div class="fixed-partner-banner">
             <img src="brandeduk.com/assets/ChatGPT%20Image%20Sep%2023%2C%202026%2C%2011_50_00%20AM.png" alt="Only Boards official print partner" width="2106" height="747">
             <a class="fixed-partner-banner__cta" href="https://www.onlyboards.co.uk/" target="_blank" rel="noopener">Explore signs &amp; boards</a>
+        </div>
+    </section>
+
+    <!-- Split-flap call board -->
+    <section class="buk-sf" id="splitFlapCall" aria-label="Call Branded UK">
+        <div class="buk-sf__inner">
+            <a class="buk-sf__link" href="tel:+442089742722" aria-label="Call Branded UK on 020 8974 2722">
+                <span class="buk-sf__board" data-buk-split-flap data-messages="WORKWEAR EXPERT|CALL US 02089742722" aria-hidden="true"><span class="buk-sf__fallback">CALL US 02089742722</span></span>
+            </a>
         </div>
     </section>
 
@@ -3984,6 +4065,7 @@
 <script src="brandeduk.com/js/hero.js?v=20260927-backreset"></script>
 <script src="brandeduk.com/js/main.js?v=20260929-qtybadge"></script>
 <script src="brandeduk.com/js/uniform-cube.js?v=20260928-cubefluid"></script>
+<script defer src="brandedukv15-child/assets/js/split-flap.js?v=20261011-sf1"></script>
 <script src="brandeduk.com/js/embroidery-scroll.js?v=20260928-scrub8"></script>
 <script src="mobile/js/popup-contact.js?v=20261003-consent"></script>
 <script src="mobile/js/whatsapp.js?v=20261002-chatlogo"></script>
