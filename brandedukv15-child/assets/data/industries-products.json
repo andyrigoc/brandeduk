@@ -1,73 +1,791 @@
 {
- "generatedAt": "2026-10-11T17:09:39.225Z",
+ "generatedAt": "2026-10-11T18:50:40.467Z",
+ "missingCheckedAt": "2026-10-11T18:56:03.890Z",
  "api": "https://api.brandeduk.com",
- "missingOnSite": [
-  "PR840",
-  "PR842",
-  "RG740",
-  "KK986"
- ],
- "foundNeedsAdding": [
-  "UC801",
-  "UC802",
-  "UC803",
-  "UC804",
-  "UC808",
-  "UC810",
-  "UC807",
-  "UC903",
-  "UC904",
-  "UC906",
-  "UC612",
-  "UX10",
-  "UC601",
-  "UC640",
-  "UC619",
-  "UC410",
-  "UC920",
-  "UC921",
-  "UC127",
-  "UC128",
-  "UC321",
-  "UC905",
-  "UC901",
-  "UC940",
-  "UC609",
-  "UC618",
-  "PR122",
-  "PR162",
-  "UC101",
-  "UC106",
-  "UC108",
-  "UC922",
-  "UC923",
-  "UC924",
-  "UC125",
-  "UC126",
-  "UC207",
-  "UC902",
-  "UC907",
-  "UC604",
-  "UC112",
-  "UC611",
-  "UC613",
-  "UC103",
-  "UC306",
-  "UC203",
-  "UC202",
-  "UC206",
-  "UC502",
-  "UC503",
-  "UC603",
-  "UC806",
-  "UC521",
-  "UC301",
-  "UC318",
-  "UC123",
-  "UC501",
-  "UC213",
-  "UX9",
-  "UC402"
+ "missing": [
+  {
+   "code": "UC813",
+   "possibleMatches": [
+    "RG466 Pro hi-vis ¼-zip sweatshirt",
+    "RG479 Hi-Vis X-Pro Hoodie (Class 2)",
+    "RG488 Hi-Vis Pro contract hoodie"
+   ]
+  },
+  {
+   "code": "UC814",
+   "possibleMatches": [
+    "RG479 Hi-Vis X-Pro Hoodie (Class 2)",
+    "RG488 Hi-Vis Pro contract hoodie",
+    "YK012 Hi-vis zip hoodie (HVK07)"
+   ]
+  },
+  {
+   "code": "DV250",
+   "possibleMatches": [
+    "PR171 Pocket tabard",
+    "PR172 Long length pocket tabard",
+    "R202X Core zip ID safety tabard"
+   ]
+  },
+  {
+   "code": "DE111",
+   "possibleMatches": [
+    "PR172 Long length pocket tabard",
+    "PR171 Pocket tabard",
+    "R202X Core zip ID safety tabard"
+   ]
+  },
+  {
+   "code": "WK274",
+   "possibleMatches": [
+    "BY008 Piqué polo shirt",
+    "GD017 Softstyle™ adult double piqué polo",
+    "GD042 Hammer® piqué sport shirt"
+   ]
+  },
+  {
+   "code": "WK275",
+   "possibleMatches": [
+    "UC115 Ladies Active Cotton Poloshirt",
+    "UC106 Ladies Classic Poloshirt",
+    "UC126 Ladies Ultra Cool Poloshirt"
+   ]
+  },
+  {
+   "code": "WK306",
+   "possibleMatches": [
+    "AQ072 Men's Marinière coastal short sleeve tee",
+    "AQ073 Women's Marinière coastal short sleeve tee",
+    "BA210 B&C #E150"
+   ]
+  },
+  {
+   "code": "WK739",
+   "possibleMatches": [
+    "UC905 Ladies Cargo Trousers",
+    "AA752 AA Polycotton 245 Cargo Trousers Ladies",
+    "RTRJ334 Regatta New Action 170 Trousers Ladies"
+   ]
+  },
+  {
+   "code": "PR840",
+   "possibleMatches": [
+    "PR830 ‘Recyclight’ full-zip microfleece",
+    "PR832 Women’s ‘Recyclight’ full-zip microfleece",
+    "PR831 Unisex ‘Recyclight’ 1/4 zip microfleece"
+   ]
+  },
+  {
+   "code": "PR842",
+   "possibleMatches": [
+    "PR832 Women’s ‘Recyclight’ full-zip microfleece",
+    "PR830 ‘Recyclight’ full-zip microfleece",
+    "RG140 Women's full-zip microfleece"
+   ]
+  },
+  {
+   "code": "DE100",
+   "possibleMatches": [
+    "PR149 Kids bib apron",
+    "PR110 Striped bib apron",
+    "PR123 Espresso bib apron"
+   ]
+  },
+  {
+   "code": "DE101",
+   "possibleMatches": [
+    "UC940 Bib Apron with Pocket",
+    "PR154 Colours bib apron with pocket",
+    "DDP210 Dennys Recycled Full Length Bib Apron With Pocket"
+   ]
+  },
+  {
+   "code": "DE121",
+   "possibleMatches": [
+    "UC940 Bib Apron with Pocket",
+    "PR154 Colours bib apron with pocket",
+    "DDP210 Dennys Recycled Full Length Bib Apron With Pocket"
+   ]
+  },
+  {
+   "code": "DE141",
+   "possibleMatches": [
+    "PR182 Clip ‘n’ Clasp cross-back bib apron",
+    "PR129 Cross back 'barista' bib apron"
+   ]
+  },
+  {
+   "code": "DE142",
+   "possibleMatches": [
+    "PR130 Calibre heavy cotton canvas bib apron",
+    "PR137 Calibre heavy cotton canvas pocket apron",
+    "PR181 ‘Artisan’s choice’ double-pocket canvas apron"
+   ]
+  },
+  {
+   "code": "DE143",
+   "possibleMatches": [
+    "PR130 Calibre heavy cotton canvas bib apron",
+    "PR137 Calibre heavy cotton canvas pocket apron",
+    "PR181 ‘Artisan’s choice’ double-pocket canvas apron"
+   ]
+  },
+  {
+   "code": "DE145",
+   "possibleMatches": [
+    "PR110 Striped bib apron",
+    "PR126 Jeans stitch bib apron",
+    "PR121 ‘Barley’ Contrast Stitch Bib Apron"
+   ]
+  },
+  {
+   "code": "LE100",
+   "possibleMatches": [
+    "PR024 ‘Utility 2.0’ vest apron",
+    "PR138 Metro utility hip apron",
+    "PR023 ‘Utility 2.0’ ripstop apron"
+   ]
+  },
+  {
+   "code": "LE102",
+   "possibleMatches": [
+    "PR129 Cross back 'barista' bib apron",
+    "PR182 Clip ‘n’ Clasp cross-back bib apron",
+    "PR123 Espresso bib apron"
+   ]
+  },
+  {
+   "code": "LE024",
+   "possibleMatches": [
+    "PR136 Division waxed-look denim bib apron with faux leather",
+    "B772 BonChef Tabard Without Pocket",
+    "PR130 Calibre heavy cotton canvas bib apron"
+   ]
+  },
+  {
+   "code": "04454",
+   "possibleMatches": [
+    "PR130 Calibre heavy cotton canvas bib apron",
+    "PR112 Cotton bib apron, organic and Fairtrade certified",
+    "PR113 Cotton denim bib apron, organic and Fairtrade certified"
+   ]
+  },
+  {
+   "code": "04455",
+   "possibleMatches": [
+    "PR130 Calibre heavy cotton canvas bib apron",
+    "PR112 Cotton bib apron, organic and Fairtrade certified",
+    "PR113 Cotton denim bib apron, organic and Fairtrade certified"
+   ]
+  },
+  {
+   "code": "88010",
+   "possibleMatches": [
+    "PR110 Striped bib apron",
+    "PR123 Espresso bib apron",
+    "PR134 District waxed-look denim bib apron"
+   ]
+  },
+  {
+   "code": "BR500",
+   "possibleMatches": [
+    "PR149 Kids bib apron",
+    "PR110 Striped bib apron",
+    "PR123 Espresso bib apron"
+   ]
+  },
+  {
+   "code": "BR501",
+   "possibleMatches": [
+    "PR123 Espresso bib apron",
+    "PR162 Contrast bib apron",
+    "PR122 ‘Regenerate’ Bib Apron"
+   ]
+  },
+  {
+   "code": "BR506",
+   "possibleMatches": [
+    "PR149 Kids bib apron",
+    "PR110 Striped bib apron",
+    "PR123 Espresso bib apron"
+   ]
+  },
+  {
+   "code": "DE106",
+   "possibleMatches": [
+    "PR105 Waist apron",
+    "DDP110 Dennys Recycled Waist Apron 24in With Pocket",
+    "PR125 Jeans stitch denim waist apron"
+   ]
+  },
+  {
+   "code": "DE115",
+   "possibleMatches": []
+  },
+  {
+   "code": "DE116",
+   "possibleMatches": [
+    "PR154 Colours bib apron with pocket",
+    "UC940 Bib Apron with Pocket",
+    "DDP110 Dennys Recycled Waist Apron 24in With Pocket"
+   ]
+  },
+  {
+   "code": "DE117",
+   "possibleMatches": [
+    "PR120 Recycled Polyester & Organic Cotton Apron",
+    "PR112 Cotton bib apron, organic and Fairtrade certified",
+    "PR113 Cotton denim bib apron, organic and Fairtrade certified"
+   ]
+  },
+  {
+   "code": "DE122",
+   "possibleMatches": [
+    "PR105 Waist apron",
+    "DDP110 Dennys Recycled Waist Apron 24in With Pocket",
+    "PR125 Jeans stitch denim waist apron"
+   ]
+  },
+  {
+   "code": "DE123",
+   "possibleMatches": [
+    "PR158 Colours bar apron",
+    "PR129 Cross back 'barista' bib apron",
+    "PR121 ‘Barley’ Contrast Stitch Bib Apron"
+   ]
+  },
+  {
+   "code": "DE125",
+   "possibleMatches": [
+    "DDW15 Dennys Money Pocket Apron With Zip",
+    "B761 BonChef Zipped Money Pocket Apron",
+    "PR138 Metro utility hip apron"
+   ]
+  },
+  {
+   "code": "DE126",
+   "possibleMatches": [
+    "B760 BonChef Money Pocket Apron",
+    "B761 BonChef Zipped Money Pocket Apron",
+    "DDW15 Dennys Money Pocket Apron With Zip"
+   ]
+  },
+  {
+   "code": "DE127",
+   "possibleMatches": [
+    "PR125 Jeans stitch denim waist apron",
+    "PR128 Domain contrast denim waist apron",
+    "PR135 Division waxed-look denim waist apron"
+   ]
+  },
+  {
+   "code": "LE101",
+   "possibleMatches": [
+    "PR024 ‘Utility 2.0’ vest apron",
+    "PR105 Waist apron",
+    "PR138 Metro utility hip apron"
+   ]
+  },
+  {
+   "code": "04456",
+   "possibleMatches": [
+    "PR114 Cotton waist apron, organic and Fairtrade certified",
+    "PR105 Waist apron",
+    "B762 BonChef 24in Waist Apron"
+   ]
+  },
+  {
+   "code": "88020",
+   "possibleMatches": []
+  },
+  {
+   "code": "AF001",
+   "possibleMatches": []
+  },
+  {
+   "code": "AF002",
+   "possibleMatches": []
+  },
+  {
+   "code": "AF005",
+   "possibleMatches": []
+  },
+  {
+   "code": "AF007",
+   "possibleMatches": []
+  },
+  {
+   "code": "DE001",
+   "possibleMatches": [
+    "NM030 Women’s light puffer jacket",
+    "NM031 Light puffer jacket"
+   ]
+  },
+  {
+   "code": "DE002",
+   "possibleMatches": [
+    "NM030 Women’s light puffer jacket",
+    "NM031 Light puffer jacket"
+   ]
+  },
+  {
+   "code": "DE005",
+   "possibleMatches": [
+    "K6108 Ladies' parka",
+    "UC620 Premium Outdoor Jacket",
+    "N104F Women’s Stillwater – premium hybrid down jacket"
+   ]
+  },
+  {
+   "code": "DE006",
+   "possibleMatches": [
+    "K6108 Ladies' parka",
+    "UC620 Premium Outdoor Jacket",
+    "N104F Women’s Stillwater – premium hybrid down jacket"
+   ]
+  },
+  {
+   "code": "LE001",
+   "possibleMatches": []
+  },
+  {
+   "code": "LE002",
+   "possibleMatches": [
+    "PR682 Orchid beauty and spa tunic",
+    "PR683 Blossom beauty and spa tunic",
+    "PR686 Camellia beauty and spa tunic"
+   ]
+  },
+  {
+   "code": "LE003",
+   "possibleMatches": [
+    "RG364 Hampton executive jacket"
+   ]
+  },
+  {
+   "code": "LE004",
+   "possibleMatches": []
+  },
+  {
+   "code": "LE011",
+   "possibleMatches": [
+    "S266X Luxe reflective hi-vis jacket",
+    "UC621 Deluxe Outdoor Jacket"
+   ]
+  },
+  {
+   "code": "LE013",
+   "possibleMatches": [
+    "ST154 Basecamp thermal jacket",
+    "PR800 Selsey Hydrochecker Waterproof jacket",
+    "R192F Women's ice bird padded jacket"
+   ]
+  },
+  {
+   "code": "LE015",
+   "possibleMatches": [
+    "NN200 Limitless Onna-stretch tunic",
+    "NN300 Women’s Limitless Onna-stretch tunic",
+    "NN310 Women’s Invincible Onna-stretch tunic"
+   ]
+  },
+  {
+   "code": "04458",
+   "possibleMatches": []
+  },
+  {
+   "code": "04459",
+   "possibleMatches": [
+    "K6108 Ladies' parka"
+   ]
+  },
+  {
+   "code": "DE146",
+   "possibleMatches": [
+    "PR649 Chef's Coolchecker® t-shirt"
+   ]
+  },
+  {
+   "code": "LE008",
+   "possibleMatches": [
+    "N103F Women’s Kingston – stretch deluxe piqué shirt",
+    "N103M Kingston – stretch deluxe piqué shirt",
+    "PR646 Essential Coolchecker® short sleeve chef’s shirt"
+   ]
+  },
+  {
+   "code": "AF020",
+   "possibleMatches": [
+    "PR552 Pull-on chef’s trousers",
+    "PR553 Essential chef's trousers",
+    "PR554 Chef's select slim leg trousers"
+   ]
+  },
+  {
+   "code": "AF021",
+   "possibleMatches": [
+    "PW124 WX2 stretch holster trousers (CD883) slim fit",
+    "PW126 WX2 stretch work trousers (CD886) slim fit",
+    "PW134 WX2 stretch trade trousers"
+   ]
+  },
+  {
+   "code": "AF022",
+   "possibleMatches": [
+    "UC905 Ladies Cargo Trousers",
+    "AA752 AA Polycotton 245 Cargo Trousers Ladies",
+    "RTRJ334 Regatta New Action 170 Trousers Ladies"
+   ]
+  },
+  {
+   "code": "DE020",
+   "possibleMatches": [
+    "B105 BonChef Hygiene Coat Unisex",
+    "PR552 Pull-on chef’s trousers",
+    "PR553 Essential chef's trousers"
+   ]
+  },
+  {
+   "code": "LE020",
+   "possibleMatches": [
+    "RG030 Wetherby insulated overtrousers",
+    "RG170 Pro cargo trousers",
+    "RG171 Pro action trousers"
+   ]
+  },
+  {
+   "code": "LE021",
+   "possibleMatches": []
+  },
+  {
+   "code": "04457",
+   "possibleMatches": [
+    "B105 BonChef Hygiene Coat Unisex",
+    "PR552 Pull-on chef’s trousers",
+    "PR553 Essential chef's trousers"
+   ]
+  },
+  {
+   "code": "DE030",
+   "possibleMatches": [
+    "ACBNGL Atlantis Bandana Goal S Recycled Bandana",
+    "B801 BonChef Chef Skull Cap",
+    "DDG07 Dennys Chef Skull Cap"
+   ]
+  },
+  {
+   "code": "DE033",
+   "possibleMatches": [
+    "PR653 Chef's skull cap",
+    "PR648 Turn-up chef's hat",
+    "PR658 Chef's zandana"
+   ]
+  },
+  {
+   "code": "DE035",
+   "possibleMatches": [
+    "B801 BonChef Chef Skull Cap",
+    "DDG07 Dennys Chef Skull Cap"
+   ]
+  },
+  {
+   "code": "LE030",
+   "possibleMatches": [
+    "B801 BonChef Chef Skull Cap",
+    "DDG07 Dennys Chef Skull Cap"
+   ]
+  },
+  {
+   "code": "AF030",
+   "possibleMatches": [
+    "ACBNGL Atlantis Bandana Goal S Recycled Bandana",
+    "BC182 Coolmax® flow mesh cap",
+    "YP143 Bandana print visor (8888BP)"
+   ]
+  },
+  {
+   "code": "BK578",
+   "possibleMatches": [
+    "PR258 Banded collar grandad long sleeve shirt",
+    "KK161 Mandarin collar shirt long-sleeved (tailored fit)",
+    "PR358 Women's banded collar 'grandad' shirt"
+   ]
+  },
+  {
+   "code": "BK580",
+   "possibleMatches": [
+    "PR220 Microcheck (Gingham) long sleeve cotton shirt",
+    "PR320 Women's Microcheck (Gingham) long sleeve cotton shirt",
+    "PR221 Microcheck (Gingham) short sleeve cotton shirt"
+   ]
+  },
+  {
+   "code": "BK581",
+   "possibleMatches": [
+    "PR220 Microcheck (Gingham) long sleeve cotton shirt",
+    "PR320 Women's Microcheck (Gingham) long sleeve cotton shirt",
+    "PR221 Microcheck (Gingham) short sleeve cotton shirt"
+   ]
+  },
+  {
+   "code": "JA020",
+   "possibleMatches": [
+    "PR622 Lined polyester waistcoat",
+    "PR623 Women's lined polyester waistcoat"
+   ]
+  },
+  {
+   "code": "JA021",
+   "possibleMatches": []
+  },
+  {
+   "code": "03166",
+   "possibleMatches": []
+  },
+  {
+   "code": "03167",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK320",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK370",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK420",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK470",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK520",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK521",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK519",
+   "possibleMatches": []
+  },
+  {
+   "code": "BK582",
+   "possibleMatches": [
+    "PR284 ‘Supreme’ Oxford long sleeve shirt",
+    "J922M Long sleeve easycare tailored Oxford shirt",
+    "J932F Women's long sleeve easycare Oxford shirt"
+   ]
+  },
+  {
+   "code": "BK583",
+   "possibleMatches": [
+    "J932F Women's long sleeve easycare Oxford shirt",
+    "J932M Long sleeve easycare Oxford shirt",
+    "PR284 ‘Supreme’ Oxford long sleeve shirt"
+   ]
+  },
+  {
+   "code": "BK586",
+   "possibleMatches": [
+    "PR284 ‘Supreme’ Oxford long sleeve shirt",
+    "J932M Long sleeve easycare Oxford shirt",
+    "PR384 Women’s ‘Supreme’ Oxford long sleeve shirt"
+   ]
+  },
+  {
+   "code": "BK587",
+   "possibleMatches": [
+    "PR284 ‘Supreme’ Oxford long sleeve shirt",
+    "J932F Women's long sleeve easycare Oxford shirt",
+    "J932M Long sleeve easycare Oxford shirt"
+   ]
+  },
+  {
+   "code": "BK613",
+   "possibleMatches": [
+    "AQ101 Premium mercerised polo",
+    "SS255 Premium polo",
+    "RX110 Pro premium polo"
+   ]
+  },
+  {
+   "code": "BK614",
+   "possibleMatches": [
+    "AQ101 Premium mercerised polo",
+    "F63030 FotL Premium Open End 180 Regular Fit Polo Ladies",
+    "SS255 Premium polo"
+   ]
+  },
+  {
+   "code": "BK555",
+   "possibleMatches": [
+    "PR808 Men's spun dyed sustainable zip-through sweatshirt",
+    "SS444 Iconic premium zip-neck sweat",
+    "SS830 Premium 70/30 zip-neck sweatshirt"
+   ]
+  },
+  {
+   "code": "BK546",
+   "possibleMatches": [
+    "PR808 Men's spun dyed sustainable zip-through sweatshirt",
+    "SS444 Iconic premium zip-neck sweat",
+    "SS830 Premium 70/30 zip-neck sweatshirt"
+   ]
+  },
+  {
+   "code": "BK554",
+   "possibleMatches": [
+    "KK354 Women's Arundel v-neck cardigan long sleeve (classic fit)",
+    "J715F Women's v-neck knitted cardigan",
+    "PR402 Women's 'essential' acrylic cardigan"
+   ]
+  },
+  {
+   "code": "BK480",
+   "possibleMatches": [
+    "R112X Core microfleece top",
+    "R114J Core junior microfleece jacket",
+    "R114X Core microfleece jacket"
+   ]
+  },
+  {
+   "code": "BK481",
+   "possibleMatches": [
+    "R112X Core microfleece top",
+    "R114J Core junior microfleece jacket",
+    "R114X Core microfleece jacket"
+   ]
+  },
+  {
+   "code": "BK492",
+   "possibleMatches": [
+    "TJ083 Hybrid-stretch jacket (9110)",
+    "TJ084 Women’s hybrid-stretch hooded jacket (9113)",
+    "ST198 Narvik hybrid jacket"
+   ]
+  },
+  {
+   "code": "BK493",
+   "possibleMatches": [
+    "TJ083 Hybrid-stretch jacket (9110)",
+    "TJ084 Women’s hybrid-stretch hooded jacket (9113)",
+    "K6108 Ladies' parka"
+   ]
+  },
+  {
+   "code": "RG740",
+   "possibleMatches": [
+    "TJ089 Active fleece (9160)",
+    "TJ090 Women’s active fleece (9170)",
+    "TR125 Women's TriDri® elements active fitted fleece"
+   ]
+  },
+  {
+   "code": "CN260",
+   "possibleMatches": [
+    "NK374 Women’s Nike One Luxe Dri-FIT short sleeve standard twist top",
+    "NK378 Women’s Nike One Luxe Dri-FIT long sleeve standard fit top",
+    "S253F Women's Spiro quick-dry short sleeve t-shirt"
+   ]
+  },
+  {
+   "code": "CN263",
+   "possibleMatches": [
+    "TJ070 Club polo (7000)",
+    "NK354 Nike Dri-FIT Victory solid long sleeve polo",
+    "NK420 Nike Dri-FIT Tour solid polo"
+   ]
+  },
+  {
+   "code": "CN263F",
+   "possibleMatches": [
+    "NK354 Nike Dri-FIT Victory solid long sleeve polo",
+    "UC106 Ladies Classic Poloshirt",
+    "NK420 Nike Dri-FIT Tour solid polo"
+   ]
+  },
+  {
+   "code": "CN266",
+   "possibleMatches": [
+    "BY425 Tricot track jacket",
+    "TJ092 Club jacket (9602)",
+    "S185X Spiro Crosslite trail and track jacket"
+   ]
+  },
+  {
+   "code": "CN265",
+   "possibleMatches": []
+  },
+  {
+   "code": "CN267",
+   "possibleMatches": [
+    "RG365 Core stretch half-zip mid-layer",
+    "UG030 UA midlayer QZ LB",
+    "NK395 Nike Dri-FIT Victory half-zip top"
+   ]
+  },
+  {
+   "code": "PA358",
+   "possibleMatches": [
+    "ST166 Nautilus performance shell",
+    "NB88M Fairview – warm performance jacket",
+    "NB89M Whitestone – performance shell jacket"
+   ]
+  },
+  {
+   "code": "KK986",
+   "possibleMatches": [
+    "KK100 Workforce shirt short-sleeved (classic fit)",
+    "KK102 Business shirt short-sleeved (classic fit)",
+    "KK109 Corporate Oxford shirt short-sleeved (classic fit)"
+   ]
+  },
+  {
+   "code": "UC522",
+   "possibleMatches": []
+  },
+  {
+   "code": "CN264",
+   "possibleMatches": []
+  },
+  {
+   "code": "UC430",
+   "possibleMatches": [
+    "ACSTFV Atlantis Start 5 Cap 5 Panel",
+    "BC010 Original 5-panel cap",
+    "BC015 Ultimate 5-panel cap"
+   ]
+  },
+  {
+   "code": "CN020",
+   "possibleMatches": [
+    "C1007 Casual Classic Ringspun 190 Regular L/S Polo",
+    "C101 Casual Classic Ringspun 190 Regular Polo Unisex",
+    "C101B Casual Classic Ringspun 190 Regular Polo Kids"
+   ]
+  },
+  {
+   "code": "CN021",
+   "possibleMatches": [
+    "BG022 Classic holdall",
+    "BG023 Classic wheelie holdall",
+    "C1007 Casual Classic Ringspun 190 Regular L/S Polo"
+   ]
+  },
+  {
+   "code": "CN270",
+   "possibleMatches": [
+    "BC183 Technical training cap",
+    "BG560 Small training holdall",
+    "BY003 Jersey big tank"
+   ]
+  }
  ],
  "products": {
   "YK001": {
@@ -1216,6 +1934,34 @@
     {
      "name": "Navy",
      "image": "https://images.uneekclothing.com/model-highres/UC906_M_468.jpg"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Trousers"
+  },
+  "GR91": {
+   "code": "GR91R",
+   "name": "Eco Workwear Cargo Trouser Regular",
+   "brand": "Uneek Clothing",
+   "price": 28.03,
+   "image": "https://images.uneekclothing.com/model-highres/GR91_85.jpg",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://images.uneekclothing.com/colour-highres/coming soon image.png"
+    },
+    {
+     "name": "Grey",
+     "image": "https://images.uneekclothing.com/colour-highres/coming soon image.png"
+    },
+    {
+     "name": "Navy",
+     "image": "https://images.uneekclothing.com/colour-highres/coming soon image.png"
     }
    ],
    "customization": [
@@ -12905,6 +13651,106 @@
    "isBestSeller": false,
    "isRecommended": false,
    "productType": "Rugby Shirts"
+  },
+  "DE124": {
+   "code": "DDP33",
+   "name": "Dennys Wrap Over Waist Apron",
+   "brand": "Dennys",
+   "price": 13.23,
+   "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36453",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://www.absoluteapparel.co.uk/productimage/p-img-900x1200-36452"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Aprons"
+  },
+  "932M": {
+   "code": "J932M",
+   "name": "Long sleeve easycare Oxford shirt",
+   "brand": "Russell Athletic Collection",
+   "price": 30.19,
+   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/cba509d4/69296ba65fa5b59a3a6b9264/J932M_LS00_2026.jpg",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0c0b5840b7.jpg"
+    },
+    {
+     "name": "Bright Navy",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0d265c39c8.jpg"
+    },
+    {
+     "name": "Bright Royal",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0ec55881fc.jpg"
+    },
+    {
+     "name": "Oxford Blue",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b199873df98.jpg"
+    },
+    {
+     "name": "Silver",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1a03b1dcc9.jpg"
+    },
+    {
+     "name": "White",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b1be70deff9.jpg"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Shirts"
+  },
+  "932F": {
+   "code": "J932F",
+   "name": "Women's long sleeve easycare Oxford shirt",
+   "brand": "Russell Athletic Collection",
+   "price": 29.62,
+   "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/78adc44d/692972855fa5b59a3a6ca2b3/J932F_LS00_2026.jpg",
+   "colors": [
+    {
+     "name": "Black",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afbff2f1712.jpg"
+    },
+    {
+     "name": "Bright Navy",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afcb13bf94a.jpg"
+    },
+    {
+     "name": "Bright Royal",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3afde74c191f.jpg"
+    },
+    {
+     "name": "Oxford Blue",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b08ea356dca.jpg"
+    },
+    {
+     "name": "Silver",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b091f06717b.jpg"
+    },
+    {
+     "name": "White",
+     "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d321fe89/5c5c3e3deb9f5b1c75ce3b0aea0806a6.jpg"
+    }
+   ],
+   "customization": [
+    "embroidery",
+    "print"
+   ],
+   "isBestSeller": false,
+   "isRecommended": false,
+   "productType": "Shirts"
   }
  }
 }

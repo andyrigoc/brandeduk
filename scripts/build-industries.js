@@ -5,7 +5,11 @@
  *
  *   node --use-system-ca scripts/build-industries.js --fetch   refresh the product snapshot from the API, then build
  *   node scripts/build-industries.js                           rebuild the HTML from the saved snapshot
- *   add --include-api-matches to also list "Needs adding" styles that the API already returns
+ *   node --use-system-ca scripts/build-industries.js --fetch-missing   only re-check codes the last fetch did not find
+ *
+ * Every PDF code the API returns is shown, whatever the PDF says about its site status.
+ *   --on-site-only              only show codes the PDF marks "On site"
+ *   --missing-report <dir>      write codes-to-import.csv + codes-to-import.txt (codes the API does not return)
  *
  * Output:
  *   industries.html                 hub page        -> /industries
@@ -32,8 +36,14 @@ const API = 'https://api.brandeduk.com';
 const SITE = 'https://www.brandeduk.com';
 const ASSET_VERSION = '20261011-ind2';
 const HIDDEN_BRAND_NAMES = ['absolute', 'ralawise'];
-// --include-api-matches: also show "Needs adding to site catalogue" styles that the API already returns.
-const INCLUDE_API_MATCHES = process.argv.includes('--include-api-matches');
+const ON_SITE_ONLY = process.argv.includes('--on-site-only');
+const MISSING_REPORT_DIR = (() => {
+    const index = process.argv.indexOf('--missing-report');
+    return index > -1 && process.argv[index + 1] ? path.resolve(process.argv[index + 1]) : null;
+})();
+const SUPPLIER_ORDER = ['Ralawise 2026', 'PenCarrie 2026', 'Uneek 2026'];
+const ISSUE_NOT_IN_API = 'Not in API';
+const ISSUE_INCOMPLETE = 'In API but no price/sizes';
 const SECTOR_ORDER = ['construction', 'cleaning', 'hospitality', 'healthcare', 'logistics', 'corporate', 'education', 'retail', 'sports'];
 
 /* ------------------------------------------------------------------ helpers */
@@ -131,52 +141,68 @@ async function apiGet(url) {
     throw new Error('Too many retries for ' + url);
 }
 
+function sameCode(a, b) {
+    const norm = (value) => String(value || '').toUpperCase().replace(/[\s-]+/g, '');
+    return norm(a) === norm(b);
+}
+
 async function findProduct(code) {
-    const search = await apiGet(`${API}/api/products?q=${encodeURIComponent(code)}&limit=20`);
-    const items = (search && search.items) || [];
-    const exact = items.find((item) => String(item.code || item.style_code || '').toUpperCase() === code.toUpperCase());
+    const search = await apiGet(`${API}/api/products?q=${encodeURIComponent(code)}&limit=50`);
+    const exact = ((search && search.items) || []).find((item) => sameCode(item.code || item.style_code, code));
     if (exact) return exact;
+    await sleep(250);
     const detail = await apiGet(`${API}/api/products/${encodeURIComponent(code)}`);
-    if (detail && String(detail.code || '').toUpperCase() === code.toUpperCase()) return detail;
+    if (detail && sameCode(detail.code || detail.style_code, code)) return detail;
     return null;
 }
 
-async function fetchSnapshot(data) {
+/* Name search for codes the API does not return - only a hint for whoever imports them, never shown on the site. */
+async function possibleMatches(item) {
+    const query = item.name.replace(/[^\w\s'-]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!query) return [];
+    const search = await apiGet(`${API}/api/products?q=${encodeURIComponent(query)}&limit=5`);
+    return ((search && search.items) || []).slice(0, 3).map((product) => `${product.code} ${product.name || ''}`.trim());
+}
+
+async function fetchSnapshot(data, previous) {
     const codes = new Map();
     for (const sector of Object.values(data.sectors)) {
         for (const group of sector.groups) {
             for (const item of group.items) {
-                if (!codes.has(item.code)) codes.set(item.code, item.onSite);
+                if (!codes.has(item.code)) codes.set(item.code, item);
             }
         }
     }
+    if (previous) {
+        const retry = new Set((previous.missing || []).map((entry) => entry.code));
+        for (const code of Array.from(codes.keys())) if (!retry.has(code)) codes.delete(code);
+    }
 
-    const products = {};
-    const missingOnSite = [];
-    const foundNeedsAdding = [];
+    const products = previous ? { ...previous.products } : {};
+    const missing = [];
     let index = 0;
-    for (const [code, onSite] of codes) {
+    for (const [code, item] of codes) {
         index++;
-        const product = await findProduct(code);
+        const product = await findProduct(item.apiCode || code);
         if (product) {
             products[code] = toCard(product);
-            if (!onSite) foundNeedsAdding.push(code);
-        } else if (onSite) {
-            missingOnSite.push(code);
+        } else {
+            await sleep(250);
+            missing.push({ code, possibleMatches: await possibleMatches(item) });
         }
-        console.log(`[${index}/${codes.size}] ${code} ${product ? 'found' : 'not in API'}${onSite ? '' : ' (needs adding)'}`);
+        console.log(`[${index}/${codes.size}] ${code} ${product ? 'found' : 'NOT IN API'}${item.onSite ? '' : ' (PDF: needs adding)'}`);
         await sleep(250);
     }
 
     const snapshot = {
-        generatedAt: new Date().toISOString(),
+        generatedAt: previous ? previous.generatedAt : new Date().toISOString(),
+        missingCheckedAt: new Date().toISOString(),
         api: API,
-        missingOnSite,
-        foundNeedsAdding,
+        missing,
         products
     };
     writeFile(SNAPSHOT_FILE, JSON.stringify(snapshot, null, 1) + '\n');
-    console.log(`Snapshot saved: ${Object.keys(products).length} products, ${missingOnSite.length} on-site codes missing from the API.`);
+    console.log(`Snapshot saved: ${Object.keys(products).length} products, ${missing.length} PDF codes not in the API.`);
     return snapshot;
 }
 
@@ -409,17 +435,23 @@ function buildSector(slug, sector, data, snapshot, logoMap, report) {
     const pageUrl = `${SITE}/industries/${slug}`;
     const groups = [];
     const shownCodes = [];
-    const skipped = [];
-    const needsAdding = [];
+    const missing = [];
+    let hidden = 0;
 
     for (const group of sector.groups) {
         const cards = [];
         for (const item of group.items) {
-            if (!item.onSite && !(INCLUDE_API_MATCHES && snapshot.products[item.code])) { needsAdding.push(item); continue; }
+            if (ON_SITE_ONLY && !item.onSite) { hidden++; continue; }
             const card = snapshot.products[item.code];
-            if (!card || !card.image) {
-                console.warn(`[${slug}] ${item.code} is marked "On site" but is not in the API - skipped`);
-                skipped.push(item.code);
+            if (!card) {
+                if (item.onSite) console.warn(`[${slug}] ${item.code} is marked "On site" in the PDF but the API does not return it - skipped`);
+                missing.push({ ...item, group: group.name, issue: ISSUE_NOT_IN_API });
+                continue;
+            }
+            /* The detail endpoint returns bare records (price 0, no sizes) for some styles that cannot be ordered yet. */
+            if (!card.image || !(card.price > 0)) {
+                console.warn(`[${slug}] ${item.code} is in the API without ${card.image ? 'a price' : 'an image'} - skipped`);
+                missing.push({ ...item, group: group.name, issue: ISSUE_INCOMPLETE });
                 continue;
             }
             cards.push(card);
@@ -429,7 +461,7 @@ function buildSector(slug, sector, data, snapshot, logoMap, report) {
     }
 
     const shownCount = groups.reduce((sum, group) => sum + group.cards.length, 0);
-    report.push({ slug, pdfTotal: sector.pdfTotal, onSiteInPdf: sector.groups.reduce((s, g) => s + g.items.filter((i) => i.onSite).length, 0), shown: shownCount, needsAdding: needsAdding.length, skipped });
+    report.push({ slug, title: sector.title, pdfTotal: sector.pdfTotal, shown: shownCount, hidden, missing });
 
     const breadcrumb = {
         '@type': 'BreadcrumbList',
@@ -452,7 +484,7 @@ function buildSector(slug, sector, data, snapshot, logoMap, report) {
                 '@type': 'ListItem',
                 position: i + 1,
                 name: snapshot.products[code].name,
-                url: `${SITE}/product/${encodeURIComponent(code)}`
+                url: `${SITE}/product/${encodeURIComponent(snapshot.products[code].code)}`
             }))
         }
     };
@@ -638,6 +670,8 @@ async function main() {
     let snapshot;
     if (process.argv.includes('--fetch') || !fs.existsSync(SNAPSHOT_FILE)) {
         snapshot = await fetchSnapshot(data);
+    } else if (process.argv.includes('--fetch-missing')) {
+        snapshot = await fetchSnapshot(data, readJson(SNAPSHOT_FILE));
     } else {
         snapshot = readJson(SNAPSHOT_FILE);
     }
@@ -649,13 +683,114 @@ async function main() {
     }
     buildHub(data, report);
 
-    console.log('\nsector        PDF total  on site (PDF)  shown  needs adding  on-site codes missing from API');
+    console.log('\nsector        PDF total  shown  not in API  incomplete  hidden (--on-site-only)');
     for (const row of report) {
-        console.log(`${row.slug.padEnd(13)} ${String(row.pdfTotal).padStart(9)}  ${String(row.onSiteInPdf).padStart(13)}  ${String(row.shown).padStart(5)}  ${String(row.needsAdding).padStart(12)}  ${row.skipped.join(', ') || '-'}`);
+        const count = (issue) => row.missing.filter((item) => item.issue === issue).length;
+        console.log(`${row.slug.padEnd(13)} ${String(row.pdfTotal).padStart(9)}  ${String(row.shown).padStart(5)}  ${String(count(ISSUE_NOT_IN_API)).padStart(10)}  ${String(count(ISSUE_INCOMPLETE)).padStart(10)}  ${String(row.hidden).padStart(6)}`);
     }
-    if (snapshot.foundNeedsAdding && snapshot.foundNeedsAdding.length) {
-        console.log('\n"Needs adding" codes that already exist in the API (not shown):', snapshot.foundNeedsAdding.join(', '));
+
+    if (MISSING_REPORT_DIR) writeMissingReport(data, snapshot, report);
+}
+
+/* ------------------------------------------------------------------ codes the API does not return */
+
+function csvCell(value) {
+    const text = String(value == null ? '' : value);
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+function writeMissingReport(data, snapshot, report) {
+    const supplierRank = (source) => {
+        const rank = SUPPLIER_ORDER.indexOf(source);
+        return rank === -1 ? SUPPLIER_ORDER.length : rank;
+    };
+    const supplierLabel = (source) => String(source || 'Unknown').replace(/\s+\d{4}$/, '');
+    const hints = Object.fromEntries((snapshot.missing || []).map((entry) => [entry.code, entry.possibleMatches || []]));
+
+    const sectorsByCode = {};
+    for (const row of report) {
+        for (const item of row.missing) {
+            (sectorsByCode[item.code] = sectorsByCode[item.code] || []).push(row.title);
+        }
     }
+
+    const rows = [];
+    for (const row of report) {
+        for (const item of row.missing) {
+            rows.push({ ...item, sector: row.title, sectorRank: SECTOR_ORDER.indexOf(row.slug) });
+        }
+    }
+    rows.sort((a, b) => supplierRank(a.source) - supplierRank(b.source) || a.sectorRank - b.sectorRank);
+
+    const header = ['Supplier', 'Sector', 'Group', 'Code', 'Issue', 'Brand', 'Product name (PDF)', 'PDF site status', 'Also listed in', 'Possible API matches by name (check, not confirmed)'];
+    const lines = [header.map(csvCell).join(',')];
+    for (const item of rows) {
+        lines.push([
+            supplierLabel(item.source),
+            item.sector,
+            item.group,
+            item.code,
+            item.issue,
+            item.brand,
+            item.name,
+            item.onSite ? 'On site' : 'Needs adding',
+            sectorsByCode[item.code].filter((title) => title !== item.sector).join('; '),
+            (hints[item.code] || []).join(' | ')
+        ].map(csvCell).join(','));
+    }
+    const csvFile = path.join(MISSING_REPORT_DIR, 'codes-to-import.csv');
+    writeFile(csvFile, '\uFEFF' + lines.join('\r\n') + '\r\n');
+
+    const unique = new Map();
+    for (const item of rows) if (!unique.has(item.code)) unique.set(item.code, item);
+    const notInApi = Array.from(unique.values()).filter((item) => item.issue === ISSUE_NOT_IN_API);
+    const incomplete = Array.from(unique.values()).filter((item) => item.issue === ISSUE_INCOMPLETE);
+    const bySupplier = {};
+    for (const item of notInApi) (bySupplier[supplierLabel(item.source)] = bySupplier[supplierLabel(item.source)] || []).push(item);
+    const allCodes = new Set();
+    const aliases = new Map();
+    for (const sector of Object.values(data.sectors)) {
+        for (const group of sector.groups) {
+            for (const item of group.items) {
+                allCodes.add(item.code);
+                if (item.apiCode) aliases.set(item.code, item);
+            }
+        }
+    }
+
+    const generated = (snapshot.generatedAt || '').slice(0, 10);
+    const text = [
+        'BrandedUK - product codes to import into the product API',
+        '',
+        `Source: BrandedUK_Industries_Product_List.pdf, checked against ${API} on ${generated}.`,
+        'Each code was looked up by product search and by the product detail endpoint.',
+        'Once fixed, re-run "node --use-system-ca scripts/build-industries.js --fetch" and the styles appear on the industry pages automatically.',
+        '',
+        `PDF codes: ${allCodes.size} unique. Shown on the industry pages: ${allCodes.size - unique.size}. Still to fix: ${unique.size} unique codes (${rows.length} sector listings, as some codes appear in more than one sector).`,
+        '',
+        `1) Not in the API at all - ${notInApi.length} codes to import, by supplier:`,
+        ...Object.keys(bySupplier).sort((a, b) => supplierRank(a + ' 2026') - supplierRank(b + ' 2026'))
+            .map((supplier) => `  ${supplier}: ${bySupplier[supplier].length} - ${bySupplier[supplier].map((item) => item.code).join(', ')}`),
+        '',
+        ...(incomplete.length ? [
+            `2) In the API but incomplete - ${incomplete.length} codes: the detail endpoint returns price 0 and no sizes, and product search does not list them:`,
+            ...incomplete.map((item) => `  ${item.code} ${item.brand} - ${item.name} (${supplierLabel(item.source)})`),
+            ''
+        ] : []),
+        'By sector (listings not on the page yet / PDF total):',
+        ...report.map((row) => `  ${row.title}: ${row.missing.length} / ${row.pdfTotal}${row.missing.length ? ' - ' + row.missing.map((item) => item.code).join(', ') : ''}`),
+        '',
+        ...(aliases.size ? [
+            'Shown under a different API code (not in the list above):',
+            ...Array.from(aliases.values()).map((item) => `  ${item.code} -> ${item.apiCode}: ${item.apiCodeNote || ''}`.trimEnd()),
+            ''
+        ] : []),
+        'Full detail (brand, product name, group, sector) is in codes-to-import.csv next to this file.',
+        'The "Possible API matches by name" column is only a hint from a name search - those products have different codes and are not shown on the site.',
+        ''
+    ].join('\r\n');
+    writeFile(path.join(MISSING_REPORT_DIR, 'codes-to-import.txt'), text);
+    console.log(`\nMissing-codes report written to ${csvFile} (${notInApi.length} not in API, ${incomplete.length} incomplete, ${rows.length} rows).`);
 }
 
 main().catch((error) => {

@@ -285,7 +285,9 @@
               "brand": "Uneek Clothing",
               "name": "245GSM Eco Workwear Cargo Trouser",
               "source": "Uneek 2026",
-              "onSite": false
+              "onSite": false,
+              "apiCode": "GR91R",
+              "apiCodeNote": "The API lists this trouser by leg length (GR91R regular, GR91L long, GR91S short); the page shows the regular leg."
             }
           ]
         },
@@ -1155,7 +1157,9 @@
               "brand": "Dennys",
               "name": "Wrap Over Waist Apron",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": false,
+              "apiCode": "DDP33",
+              "apiCodeNote": "Same Dennys apron, listed in the API under its Ralawise code."
             },
             {
               "code": "DE125",
@@ -2632,14 +2636,18 @@
               "brand": "Russell Athletic Collection",
               "name": "Long Sleeve Easy Care Oxford Shirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": false,
+              "apiCode": "J932M",
+              "apiCodeNote": "Same Russell shirt, listed in the API under its Ralawise code."
             },
             {
               "code": "932F",
               "brand": "Russell Athletic Collection",
               "name": "Ladies Long Sleeve Easy Care Oxford Shirt",
               "source": "PenCarrie 2026",
-              "onSite": false
+              "onSite": false,
+              "apiCode": "J932F",
+              "apiCodeNote": "Same Russell shirt, listed in the API under its Ralawise code."
             }
           ]
         },
