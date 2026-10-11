@@ -49,6 +49,7 @@
     { "source": "/hospitality-workwear", "destination": "/hospitality-workwear.html" },
     { "source": "/construction-workwear", "destination": "/construction-workwear.html" },
     { "source": "/corporate-uniforms", "destination": "/corporate-uniforms.html" },
+    { "source": "/industries", "destination": "/industries.html" },
 
     { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
     { "source": "/terms-and-conditions", "destination": "/terms-and-conditions.html" },
