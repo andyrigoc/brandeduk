@@ -290,4 +290,24 @@
     .terms-article {
         padding: 48px 24px 100px;
     }
+
+    /* Undo mobile.css ticker/header overrides so desktop matches promo-bar.css on home/shop;
+       the fixed PC header already reserves its space via body padding. */
+    .terms-page .top-promo-bar {
+        margin-top: 0;
+        background: linear-gradient(135deg, #273469 0%, #1a244d 100%);
+        border-top: 0;
+        border-bottom: 0;
+    }
+
+    .terms-page .top-promo-bar .promo-scroll span {
+        padding: 0 50px 0 0;
+        font-size: inherit;
+        font-weight: inherit;
+        letter-spacing: inherit;
+    }
+
+    .terms-page .site-header {
+        line-height: normal;
+    }
 }
