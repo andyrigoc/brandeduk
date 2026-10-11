@@ -88,7 +88,7 @@
           ["Sustainability", "services.html"],
           ["Blog", "blog/index.html"],
           ["Terms & Conditions", "terms-and-conditions.html"],
-          ["Privacy Policy", "privacy-policy.html"]
+          ["Privacy & Cookies Policy", "/privacy-policy"]
         ]
       }
     ],
@@ -181,8 +181,8 @@
     cookieSettings.dataset.cookieSettings = "1";
     policies.append(
       createLink("Terms & Conditions", "terms-and-conditions.html"),
-      createLink("Privacy Policy", "privacy-policy.html"),
-      createLink("Cookie Policy", "privacy-policy.html#cookies"),
+      createLink("Privacy & Cookies Policy", "/privacy-policy"),
+      createLink("Cookie Policy", "/privacy-policy#cookies"),
       cookieSettings
     );
 

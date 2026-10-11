@@ -16,7 +16,8 @@
   var STORAGE_KEY = 'brandedukCookieConsent';
   var CONSENT_VERSION = 1;
   var MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
-  var POLICY_URL = '/privacy-policy.html#cookies';
+  var PRIVACY_URL = '/privacy-policy';
+  var POLICY_URL = '/privacy-policy#cookies';
   var scriptRef = document.currentScript;
 
   function gtagSafe() {
@@ -147,9 +148,13 @@
     },
       '<p class="buk-cc-banner__text">' +
         '<strong>Cookies on Branded UK.</strong> ' +
-        'We use necessary storage to run the site (basket, login, checkout). ' +
+        'We use cookies and similar storage. Necessary ones run the site (basket, login, checkout). ' +
         'With your permission we also use Google cookies to measure our ads and improve the site. ' +
-        '<a href="' + POLICY_URL + '">Cookie policy</a>' +
+        '<span class="buk-cc-banner__links">' +
+          '<a href="' + PRIVACY_URL + '">Privacy Policy</a>' +
+          '<span aria-hidden="true"> | </span>' +
+          '<a href="' + POLICY_URL + '">Cookie Policy</a>' +
+        '</span>' +
       '</p>' +
       '<div class="buk-cc-banner__actions">' +
         '<button type="button" class="buk-cc-btn buk-cc-btn--choice" data-cc="reject">Reject all</button>' +
@@ -173,7 +178,7 @@
           '<h2 id="bukCcTitle" class="buk-cc-dialog__title">Cookie settings</h2>' +
           '<button type="button" class="buk-cc-dialog__close" data-cc="close" aria-label="Close cookie settings">&times;</button>' +
         '</div>' +
-        '<p id="bukCcIntro" class="buk-cc-dialog__intro">Choose which optional cookies we may use. You can change this at any time from the cookie button or the footer. <a href="' + POLICY_URL + '">Read our cookie policy</a>.</p>' +
+        '<p id="bukCcIntro" class="buk-cc-dialog__intro">Choose which optional cookies we may use. You can change this at any time from the cookie button or the footer. Read our <a href="' + PRIVACY_URL + '">Privacy Policy</a> and <a href="' + POLICY_URL + '">Cookie Policy</a>.</p>' +
         '<div class="buk-cc-cat">' +
           '<div class="buk-cc-cat__row">' +
             '<span class="buk-cc-cat__name" id="bukCcNecLabel">Strictly necessary</span>' +

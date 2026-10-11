@@ -47,7 +47,7 @@
                             <li class="bar-menu-item"><a href="/blog/case-study-500-tshirts-london-event.html">Case Studies</a></li>
                             <li class="bar-menu-item"><a href="/blog/index.html">Blog</a></li>
                             <li class="bar-menu-item"><a href="/terms-and-conditions.html">Terms &amp; Conditions</a></li>
-                            <li class="bar-menu-item"><a href="/privacy-policy.html">Privacy Policy</a></li>
+                            <li class="bar-menu-item"><a href="/privacy-policy">Privacy &amp; Cookies Policy</a></li>
                             <li class="bar-menu-item"><a href="#cookie-settings" data-cookie-settings="1">Cookie settings</a></li>
                         </ul>
                     </div>
@@ -98,4 +98,9 @@
         <a href="mailto:info@brandeduk.com" class="quote-email">info@brandeduk.com</a>
         <div class="footer-spacer"></div>
     </div>
+    <nav class="quote-footer-legal" aria-label="Legal policies">
+        <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+        <a href="/privacy-policy">Privacy &amp; Cookies Policy</a>
+        <a href="#cookie-settings" data-cookie-settings="1">Cookie settings</a>
+    </nav>
 </footer>

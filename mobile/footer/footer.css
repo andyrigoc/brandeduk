@@ -427,6 +427,30 @@
   overflow: hidden;
 }
 
+/* --- Legal links under the black bar --- */
+.quote-footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  padding: 10px 16px 12px;
+  background: var(--black);
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.quote-footer-legal a {
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.quote-footer-legal a:hover,
+.quote-footer-legal a:focus-visible {
+  color: var(--white);
+  text-decoration: underline;
+}
+
 /* --- Clock --- */
 .clock-wrap {
   grid-column: 2;

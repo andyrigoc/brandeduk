@@ -40,9 +40,11 @@
     color: #ff6b00;
 }
 
-.terms-mobile-bar h1 {
+.terms-mobile-bar h1,
+.terms-mobile-title {
     margin: 1px 0 0;
     font-size: 17px;
+    font-weight: 700;
     line-height: 1.2;
     color: #111827;
 }
@@ -136,6 +138,101 @@
     color: #353946;
 }
 
+.terms-toc {
+    margin: 0 0 8px;
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+}
+
+.terms-toc h2 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.terms-toc ol {
+    margin: 0;
+    padding-left: 1.5em;
+    columns: 2;
+    column-gap: 32px;
+}
+
+.terms-toc li {
+    margin: 0 0 6px;
+    font-size: 15px;
+    line-height: 1.4;
+    break-inside: avoid;
+}
+
+.terms-toc a {
+    color: #273469;
+    text-decoration: none;
+}
+
+.terms-toc a:hover,
+.terms-toc a:focus-visible {
+    text-decoration: underline;
+}
+
+.terms-table-wrap {
+    margin: 0 0 18px;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.terms-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.terms-table th,
+.terms-table td {
+    padding: 12px 16px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #2b3040;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.terms-table th {
+    background: #f3f4f6;
+    color: #161821;
+    font-weight: 700;
+}
+
+.terms-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.terms-cookie-settings {
+    display: inline-block;
+    padding: 10px 18px;
+    border: 1px solid #273469;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.terms-rule {
+    margin: 48px 0 20px;
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.terms-body .terms-copyright {
+    font-size: 14px;
+    color: #6b7280;
+}
+
 .terms-company {
     margin: 48px 0 0;
     padding: 24px;
@@ -166,6 +263,20 @@
     .header-with-promo,
     [data-pc-footer] {
         display: none !important;
+    }
+
+    .terms-toc {
+        padding: 16px 18px;
+    }
+
+    .terms-toc ol {
+        columns: 1;
+    }
+
+    .terms-table th,
+    .terms-table td {
+        padding: 10px 12px;
+        font-size: 15px;
     }
 }
 

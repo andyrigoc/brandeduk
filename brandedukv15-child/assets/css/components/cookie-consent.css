@@ -41,6 +41,10 @@
     color: var(--buk-cc-navy);
 }
 
+.buk-cc-banner__links {
+    white-space: nowrap;
+}
+
 .buk-cc-banner a,
 .buk-cc-dialog a {
     color: var(--buk-cc-navy);
