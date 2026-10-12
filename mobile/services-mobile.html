@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <!-- Desktop experience gate: keep this first so tablets/desktops are sent to /services. -->
+    <script data-desktop-experience-gate>
+        (function (d) {
+            var path = window.location.pathname.replace(/\\/g, '/');
+            var mountAt = path.toLowerCase().indexOf('/brandeduk/');
+            var localHost = /^(?:localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname);
+            var base = mountAt !== -1 && (window.location.protocol === 'file:' || localHost)
+                ? path.slice(0, mountAt + '/brandeduk'.length)
+                : '';
+            d.write('<script src="' + base + '/desktop-gate.js?v=20261012-services"><\/script>');
+        }(document));
+    </script>
+    <!-- Google Consent Mode v2 defaults (must stay before the Google tag) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      (function () {
+        try {
+          var c = JSON.parse(localStorage.getItem('brandedukCookieConsent') || 'null');
+          if (c && c.timestamp && Date.now() - c.timestamp < 31536000000) {
+            var ads = c.advertising ? 'granted' : 'denied';
+            gtag('consent', 'update', { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: c.analytics ? 'granted' : 'denied' });
+          }
+        } catch (e) {}
+        try {
+          var u = new URL(location.href), strip = false;
+          ['token', 'email', 'session_id', 'access_token', 'id_token', 'refresh_token'].forEach(function (k) {
+            if (u.searchParams.has(k)) { u.searchParams.delete(k); strip = true; }
+          });
+          if (strip) gtag('set', 'page_location', u.href);
+        } catch (e) {}
+      })();
+      window.brandedAdsConversion = window.brandedAdsConversion || function () { (window.brandedAdsQueue = window.brandedAdsQueue || []).push(arguments); };
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-438771987"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-438771987');
+    </script>
+    <script defer src="/brandedukv15-child/assets/js/cookie-consent.js?v=20261008"></script>
+    <script defer src="/brandedukv15-child/assets/js/ads-conversions.js?v=20261009"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Embroidery &amp; Printing Services UK | BrandedUK</title>
+    <meta name="description" content="Embroidery, screen printing, heat transfer, DTG, digital printing and fleet livery from BrandedUK. Quotes within 8 hours, 7–10 working day production.">
+    <link rel="canonical" href="https://www.brandeduk.com/services">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.brandeduk.com/services">
+    <meta property="og:title" content="Embroidery &amp; Printing Services UK | BrandedUK">
+    <meta property="og:description" content="Embroidery, screen printing, heat transfer, DTG, digital printing and fleet livery from BrandedUK.">
+    <meta property="og:site_name" content="BrandedUK">
+    <meta property="og:image" content="https://www.brandeduk.com/brandedukv15-child/assets/images/ui/bd-logo-3d.png">
+    <meta name="theme-color" content="#273469">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/mobile/css/mobile.css?v=20261002-logocombo">
+    <link rel="stylesheet" href="/mobile/footer/footer.css?v=20260409B">
+    <link rel="stylesheet" href="/mobile/css/services-mobile.css?v=20261012-carousel">
+</head>
+<body class="services-mobile-page">
+    <header class="svm-bar">
+        <a class="svm-back" href="/index-mobile.html?force=mobile" aria-label="Back to home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+        </a>
+        <div>
+            <span class="svm-brand">Branded<span>UK</span></span>
+            <p class="svm-bar-title">Our Services</p>
+        </div>
+        <div class="svm-bar-actions">
+            <a class="svm-icon-btn" href="tel:02089742722" aria-label="Call 020 8974 2722">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </a>
+            <a class="svm-icon-btn svm-icon-btn--wa" href="https://wa.me/447447348564" target="_blank" rel="noopener" aria-label="WhatsApp 07447 348564">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+        </div>
+    </header>
+
+    <main class="svm-main">
+        <header class="svm-hero">
+            <p class="svm-eyebrow">Branded UK · Since 2001</p>
+            <h1>Embroidery &amp; printing services</h1>
+            <p class="svm-deck">Every decoration method explained, with what each one is best for. Not sure which suits your logo? Send it over and we'll recommend the right finish.</p>
+            <ul class="svm-facts">
+                <li><strong>Within 8 hours</strong>Quote turnaround</li>
+                <li><strong>7–10 working days</strong>Production time</li>
+                <li><strong>£7.95</strong>Tracked UK delivery</li>
+                <li><strong>Free logo setup</strong>On orders over £300</li>
+                <li><strong>Mon–Sun, 9am–9pm</strong>Phone, WhatsApp and email</li>
+            </ul>
+            <div class="svm-actions">
+                <button type="button" class="svm-btn svm-btn--primary" data-open-contact="1">Get a quote</button>
+                <a class="svm-btn svm-btn--call" href="tel:02089742722">Call 020 8974 2722</a>
+                <a class="svm-btn svm-btn--wa" href="https://wa.me/447447348564" target="_blank" rel="noopener">WhatsApp 07447 348564</a>
+            </div>
+        </header>
+
+        <nav class="svm-jump" aria-label="Jump to a service">
+            <a href="#embroidery">Embroidery</a>
+            <a href="#screen-printing">Screen Printing</a>
+            <a href="#heat-transfer">Heat Transfer</a>
+            <a href="#dtg-printing">DTG Printing</a>
+            <a href="#fleet-livery">Fleet Livery &amp; Wraps</a>
+            <a href="#digital-printing">Digital Printing</a>
+        </nav>
+
+        <section class="svm-service" id="embroidery">
+            <div class="svm-card">
+                <div class="svm-media" data-svm-carousel>
+                    <div class="svm-slides" aria-label="Embroidery photos">
+                        <div class="svm-slide is-active"><img src="/brandedukv15-child/assets/images/services/embroidery-floral-pattern.webp" srcset="/brandedukv15-child/assets/images/services/embroidery-floral-pattern-800.webp 800w, /brandedukv15-child/assets/images/services/embroidery-floral-pattern.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" fetchpriority="high" decoding="async" alt="Machine embroidery floral pattern close-up"></div>
+                        <div class="svm-slide"><img src="/brandedukv15-child/assets/images/services/embroidery-mexican-colorful.webp" srcset="/brandedukv15-child/assets/images/services/embroidery-mexican-colorful-800.webp 800w, /brandedukv15-child/assets/images/services/embroidery-mexican-colorful.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Vibrant Mexican embroidery patterns"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/embroidery-machine-red.webp" data-srcset="/brandedukv15-child/assets/images/services/embroidery-machine-red-800.webp 800w, /brandedukv15-child/assets/images/services/embroidery-machine-red.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Industrial embroidery machine in action"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/embroidery-rocket-machine.webp" data-srcset="/brandedukv15-child/assets/images/services/embroidery-rocket-machine-800.webp 800w, /brandedukv15-child/assets/images/services/embroidery-rocket-machine.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Automatic embroidery machine stitching a design"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/embroidery-eagle-detail.webp" data-srcset="/brandedukv15-child/assets/images/services/embroidery-eagle-detail-800.webp 800w, /brandedukv15-child/assets/images/services/embroidery-eagle-detail.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Detailed embroidered eagle design"></div>
+                    </div>
+                    <div class="svm-dots">
+                        <button type="button" aria-label="Show photo 1 of 5" aria-current="true"></button>
+                        <button type="button" aria-label="Show photo 2 of 5"></button>
+                        <button type="button" aria-label="Show photo 3 of 5"></button>
+                        <button type="button" aria-label="Show photo 4 of 5"></button>
+                        <button type="button" aria-label="Show photo 5 of 5"></button>
+                    </div>
+                </div>
+                <div class="svm-text">
+                    <h2>Embroidery</h2>
+                    <p>Embroidery decorates fabric by stitching thread directly into the material to create designs, logos or text. It is renowned for its durability and professional appearance, making it ideal for corporate clothing, uniforms and promotional items. Modern embroidery machines produce intricate, multi-colour designs with consistent, high-quality results.</p>
+                </div>
+            </div>
+            <ul class="svm-ratings">
+                <li class="svm-rating">
+                    <h3>Durability</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Embroidery will last as long as the garment itself without losing quality.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Colours</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>The number of colours used does not affect the price. Machines can handle up to <strong>6 colours</strong>.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Setup costs</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Logo setup is free on orders over £300. Below that, setup costs depend on the size and placement of the embroidery.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Complexity</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>Can accommodate most designs but not ideal for photographic details, gradients or spray effects.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Personalised</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Initials and names can be added without setup fees for team orders.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Cost</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>Cost is determined by the size and stitch count of the embroidery. Larger, more detailed embroidery costs more.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="svm-service" id="screen-printing">
+            <div class="svm-card">
+                <div class="svm-media" data-svm-carousel>
+                    <div class="svm-slides" aria-label="Screen Printing photos">
+                        <div class="svm-slide is-active"><img src="/brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.webp" srcset="/brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Colourful printed T-shirts on a conveyor belt in a print facility"></div>
+                        <div class="svm-slide"><img src="/brandedukv15-child/assets/images/services/screen-printing-press-process.webp" srcset="/brandedukv15-child/assets/images/services/screen-printing-press-process-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-press-process.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Person using a screen printing press"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.webp" data-srcset="/brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Streetwear printed with a bold graffiti-inspired design"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/screen-printing-fashion-label.webp" data-srcset="/brandedukv15-child/assets/images/services/screen-printing-fashion-label-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-fashion-label.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Printed label on a blue shirt"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/screen-printing-label-detail.webp" data-srcset="/brandedukv15-child/assets/images/services/screen-printing-label-detail-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-label-detail.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Close-up of a printed garment label"></div>
+                        <div class="svm-slide"><img data-src="/brandedukv15-child/assets/images/services/screen-printing-blue-shirt.webp" data-srcset="/brandedukv15-child/assets/images/services/screen-printing-blue-shirt-800.webp 800w, /brandedukv15-child/assets/images/services/screen-printing-blue-shirt.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Blue shirt with a printed design"></div>
+                    </div>
+                    <div class="svm-dots">
+                        <button type="button" aria-label="Show photo 1 of 6" aria-current="true"></button>
+                        <button type="button" aria-label="Show photo 2 of 6"></button>
+                        <button type="button" aria-label="Show photo 3 of 6"></button>
+                        <button type="button" aria-label="Show photo 4 of 6"></button>
+                        <button type="button" aria-label="Show photo 5 of 6"></button>
+                        <button type="button" aria-label="Show photo 6 of 6"></button>
+                    </div>
+                </div>
+                <div class="svm-text">
+                    <h2>Screen Printing</h2>
+                    <p>Screen printing applies ink to a garment through a mesh screen prepared with a stencil of your design. Each colour needs its own screen, and the ink is pushed through the mesh with a squeegee. It produces vibrant, long-lasting prints and is particularly cost-effective for large orders once the screens are made.</p>
+                </div>
+            </div>
+            <ul class="svm-ratings">
+                <li class="svm-rating">
+                    <h3>Durability</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Print will maintain its quality for the garment's lifespan and fade naturally over time.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Colours</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>We can print up to <strong>6 colours</strong> using both manual and automatic printing methods.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Setup costs</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Setup fees apply per colour and per design. For example, two designs with two colours = four setups.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Complexity</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                    <span class="svm-sr-only">3 out of 5.</span>
+                    <p>Handles most design needs, but small details are limited. No gradients or high-detail patterns.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Personalised</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+                    <span class="svm-sr-only">2 out of 5.</span>
+                    <p>Not the best choice for individual customisation; better suited to bulk production.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Cost</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>Cost is based on the number of garments, colours and printing positions.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="svm-service" id="heat-transfer">
+            <div class="svm-card">
+                <div class="svm-media"><img src="/brandedukv15-child/assets/images/services/heat-transfer.webp" srcset="/brandedukv15-child/assets/images/services/heat-transfer-800.webp 800w, /brandedukv15-child/assets/images/services/heat-transfer.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Heat press beside garments with transferred prints in a print studio"></div>
+                <div class="svm-text">
+                    <h2>Heat Transfer Printing</h2>
+                    <p>Heat transfer printing moves a design from special transfer paper onto the garment using heat and pressure. The design is printed onto the transfer paper first and then applied with a heat press. It allows detailed, full-colour images on fabrics and other materials, and is popular for custom clothing and promotional items thanks to its versatility and high-quality results.</p>
+                </div>
+            </div>
+            <ul class="svm-ratings">
+                <li class="svm-rating">
+                    <h3>Durability</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                    <span class="svm-sr-only">3 out of 5.</span>
+                    <p>Print durability depends on washing. We recommend washing at 40°C, inside out, and avoiding ironing.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Colours</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Various vinyl colours are available, but specific Pantone shades may need DTG or screen printing.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Setup costs</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>No setup fees for basic designs. A wide variety of designs are accepted.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Complexity</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                    <span class="svm-sr-only">3 out of 5.</span>
+                    <p>Best for simple shapes, text, names and logos. Complex details may not work well.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Personalised</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>An ideal process for adding personal touches (names, initials, multi-design options).</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Cost</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>Price depends on the size of the design because of the material used.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="svm-service" id="dtg-printing">
+            <div class="svm-card">
+                <div class="svm-media"><img src="/brandedukv15-child/assets/images/services/dtg-printing.webp" srcset="/brandedukv15-child/assets/images/services/dtg-printing-800.webp 800w, /brandedukv15-child/assets/images/services/dtg-printing.webp 1600w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Full-colour DTG printed T-shirts with garment printers in the studio"></div>
+                <div class="svm-text">
+                    <h2>Direct-to-Garment (DTG) Printing</h2>
+                    <p>Direct-to-garment (DTG) printing prints a digital image straight onto the fabric using specialised inkjet technology. It produces high-resolution, full-colour designs with intricate detail, without screens or stencils. Because setup is minimal, DTG suits small batches and one-off designs. The water-based inks are absorbed by the fibres, giving a soft feel and a durable print.</p>
+                </div>
+            </div>
+            <ul class="svm-ratings">
+                <li class="svm-rating">
+                    <h3>Durability</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+                    <span class="svm-sr-only">4 out of 5.</span>
+                    <p>The life of the print depends on how the garment is washed. Wash at 40°C, turn inside out and avoid ironing for best results.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Colours</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Suitable for photographic-quality prints, gradients and high-detail designs, with a high level of customisation.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Setup costs</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>No setup fees for designs. We welcome a wide range of creative ideas.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Complexity</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>Handles fine details and complex designs with ease.</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Personalised</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                    <span class="svm-sr-only">5 out of 5.</span>
+                    <p>A highly adaptable option for customising clothing (multiple designs, initials, names and colour combinations).</p>
+                </li>
+                <li class="svm-rating">
+                    <h3>Cost</h3>
+                    <div class="svm-rating-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                    <span class="svm-sr-only">3 out of 5.</span>
+                    <p>Pricing depends on the size of the print because of the materials used. The number of colours does not affect the price.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="svm-service" id="fleet-livery">
+            <div class="svm-card">
+                <div class="svm-text">
+                    <h2>Fleet Livery &amp; Wraps</h2>
+                    <p>Fleet livery and wraps apply large vinyl graphics or decals to vehicles, turning them into mobile advertisements. A wrap can cover part or all of a vehicle and is customised with your branding, including logos, contact details and promotional messages. Wraps are a cost-effective way to reach a broad audience as your vehicles travel, and they protect the original paintwork and can be removed or updated as needed.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="svm-service" id="digital-printing">
+            <div class="svm-card">
+                <div class="svm-media"><img src="/brandedukv15-child/assets/images/services/digital-printing.webp" srcset="/brandedukv15-child/assets/images/services/digital-printing-800.webp 800w, /brandedukv15-child/assets/images/services/digital-printing.webp 882w" sizes="(min-width: 700px) 608px, calc(100vw - 32px)" width="800" height="500" loading="lazy" decoding="async" alt="Wide-format digital printer producing a full-colour print beside branded garments"></div>
+                <div class="svm-text">
+                    <h2>Digital Printing</h2>
+                    <p>Digital printing prints digital images directly onto a wide range of media. Unlike traditional methods it needs no printing plates, so it suits short runs and on-demand printing. It offers quick turnaround and easy customisation, making it ideal for personalised marketing materials, business cards and custom textiles, with sharp, vibrant results comparable to traditional printing.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="svm-cta" aria-labelledby="svm-cta-title">
+            <h2 id="svm-cta-title">Ready to brand your team?</h2>
+            <p>Tell us the garments, quantities and logo positions you need and we'll come back with a quote within 8 hours.</p>
+            <div class="svm-actions">
+                <button type="button" class="svm-btn svm-btn--primary" data-open-contact="1">Get a quote</button>
+                <a class="svm-btn svm-btn--call" href="tel:02089742722">Call 020 8974 2722</a>
+                <a class="svm-btn svm-btn--wa" href="https://wa.me/447447348564" target="_blank" rel="noopener">WhatsApp 07447 348564</a>
+            </div>
+            <p class="svm-small">Production 7–10 working days · Tracked UK delivery £7.95 · Logo setup free on orders over £300 · Open Mon–Sun, 9am–9pm</p>
+        </section>
+    </main>
+
+    <div data-mobile-footer></div>
+
+    <nav class="bottom-nav" aria-label="Mobile navigation">
+        <a href="/index-mobile.html?force=mobile" class="nav-item" data-home-nav>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path>
+            </svg>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a href="/profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span class="nav-item-label">Account</span>
+        </a>
+        <a href="/shop.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+            <span class="nav-item-label">Shop</span>
+        </a>
+        <a href="/basket.html#orderSummary" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="nav-item-label">Basket</span>
+        </a>
+        <a href="https://wa.me/447447348564" class="nav-item" target="_blank" rel="noopener">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg>
+            <span class="nav-item-label">Chat</span>
+        </a>
+    </nav>
+
+    <script>
+    (function () {
+        var INTERVAL = 4000;
+        var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+        var restarters = [];
+
+        function load(slide) {
+            var img = slide && slide.querySelector('img[data-src]');
+            if (!img) return;
+            if (img.getAttribute('data-srcset')) img.srcset = img.getAttribute('data-srcset');
+            img.src = img.getAttribute('data-src');
+            img.removeAttribute('data-srcset');
+            img.removeAttribute('data-src');
+        }
+
+        document.querySelectorAll('[data-svm-carousel]').forEach(function (carousel) {
+            var slides = carousel.querySelectorAll('.svm-slide');
+            var dots = carousel.querySelectorAll('.svm-dots button');
+            if (slides.length < 2) return;
+            var index = 0, timer = null, inView = false, touching = false, hovering = false, startX = 0, startY = 0;
+
+            function show(i) {
+                index = (i + slides.length) % slides.length;
+                load(slides[index]);
+                load(slides[(index + 1) % slides.length]);
+                slides.forEach(function (slide, n) {
+                    slide.classList.toggle('is-active', n === index);
+                    if (n === index) slide.removeAttribute('aria-hidden');
+                    else slide.setAttribute('aria-hidden', 'true');
+                });
+                dots.forEach(function (dot, n) {
+                    if (n === index) dot.setAttribute('aria-current', 'true');
+                    else dot.removeAttribute('aria-current');
+                });
+            }
+
+            function stop() {
+                clearInterval(timer);
+                timer = null;
+            }
+
+            function start() {
+                stop();
+                if (!inView || touching || hovering || document.hidden) return;
+                if (reduceMotion && reduceMotion.matches) return;
+                timer = setInterval(function () { show(index + 1); }, INTERVAL);
+            }
+
+            dots.forEach(function (dot, i) {
+                dot.addEventListener('click', function () { show(i); start(); });
+            });
+
+            carousel.addEventListener('touchstart', function (e) {
+                touching = true;
+                stop();
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            carousel.addEventListener('touchend', function (e) {
+                touching = false;
+                var t = e.changedTouches[0];
+                var dx = t.clientX - startX, dy = t.clientY - startY;
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
+                start();
+            }, { passive: true });
+            carousel.addEventListener('touchcancel', function () { touching = false; start(); }, { passive: true });
+
+            // Mouse hover pauses like desktop; touch "hover" would otherwise stick until the next tap elsewhere.
+            carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovering = true; stop(); } });
+            carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovering = false; start(); } });
+
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(function (entries) {
+                    inView = entries[entries.length - 1].isIntersecting;
+                    start();
+                }, { threshold: 0.25 }).observe(carousel);
+            } else {
+                inView = true;
+            }
+
+            restarters.push(start);
+            show(0);
+            start();
+        });
+
+        function restartAll() { restarters.forEach(function (fn) { fn(); }); }
+        document.addEventListener('visibilitychange', restartAll);
+        if (reduceMotion) {
+            if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', restartAll);
+            else if (reduceMotion.addListener) reduceMotion.addListener(restartAll);
+        }
+    })();
+    </script>
+    <script src="/mobile/footer/footer.js?v=20261005-mobilefix" defer></script>
+    <script src="/mobile/js/popup-contact.js?v=20261003-consent"></script>
+</body>
+</html>

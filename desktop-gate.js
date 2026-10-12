@@ -4,7 +4,7 @@
  * Mobile phones stay on mobile forever (never force=desktop).
  * - ?force=mobile → stay on this mobile page
  * - Phone UA (iPhone / Android phone) → stay, even in landscape
- * - Tablets / desktop with CSS width >= 700 → home-pc / shop-pc / etc.
+ * - Tablets / desktop with CSS width >= 700 → home-pc / shop-pc / services / etc.
  */
 (function () {
     'use strict';
@@ -67,6 +67,8 @@
         dest = withParam(root + '/customization-tool/index.html' + search, 'from', 'customize-pc');
     } else if (lower.indexOf('customization-tool-mobile') !== -1) {
         dest = path.replace(/customization-tool-mobile/i, 'customization-tool') + search;
+    } else if (lower.indexOf('services-mobile') !== -1) {
+        dest = root + '/services.html' + search;
     } else {
         // Tablets → PC. Do not use force=desktop here: phones never reach this branch.
         dest = root + '/home-pc.html' + search;

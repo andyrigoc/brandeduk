@@ -88,7 +88,7 @@
     <script>
         // Redirect to mobile version on smaller screens (mobile + tablet)
         if (window.innerWidth < 700) {
-            window.location.href = 'index-mobile.html?force=mobile';
+            window.location.replace('mobile/services-mobile.html' + window.location.hash);
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -1539,7 +1539,7 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              1. EMBROIDERY
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="embroidery">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Embroidery</h2>
@@ -1547,7 +1547,7 @@
                         Embroidery involves decorating fabric by stitching thread directly into the material to
                         create designs, logos, or text. This technique is renowned for its durability and professional
                         appearance, making it ideal for corporate apparel, uniforms, and promotional items. Modern
-                        embroidery utilizes advanced machines that can produce intricate designs with multiple colors,
+                        embroidery uses advanced machines that can produce intricate designs with multiple colours,
                         ensuring consistency and high-quality results.
                     </p>
                 </div>
@@ -1555,19 +1555,19 @@
                     <div class="service-carousel" data-carousel="embroidery">
                         <div class="service-carousel__track">
                             <div class="service-carousel__slide active">
-                                <img src="brandedukv15-child/assets/images/services/embroidery-floral-pattern.jpg" alt="Machine embroidery floral pattern close-up">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-floral-pattern.webp" srcset="brandedukv15-child/assets/images/services/embroidery-floral-pattern-800.webp 800w, brandedukv15-child/assets/images/services/embroidery-floral-pattern.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" fetchpriority="high" decoding="async" alt="Machine embroidery floral pattern close-up">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/embroidery-mexican-colorful.jpg" alt="Vibrant Mexican embroidery patterns">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-mexican-colorful.webp" srcset="brandedukv15-child/assets/images/services/embroidery-mexican-colorful-800.webp 800w, brandedukv15-child/assets/images/services/embroidery-mexican-colorful.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Vibrant Mexican embroidery patterns">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/embroidery-machine-red.jpg" alt="Industrial embroidery machine in action">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-machine-red.webp" srcset="brandedukv15-child/assets/images/services/embroidery-machine-red-800.webp 800w, brandedukv15-child/assets/images/services/embroidery-machine-red.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Industrial embroidery machine in action">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/embroidery-rocket-machine.jpg" alt="Automatic embroidery machine creating design">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-rocket-machine.webp" srcset="brandedukv15-child/assets/images/services/embroidery-rocket-machine-800.webp 800w, brandedukv15-child/assets/images/services/embroidery-rocket-machine.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Automatic embroidery machine creating design">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/embroidery-eagle-detail.jpg" alt="Detailed embroidered eagle design">
+                                <img src="brandedukv15-child/assets/images/services/embroidery-eagle-detail.webp" srcset="brandedukv15-child/assets/images/services/embroidery-eagle-detail-800.webp 800w, brandedukv15-child/assets/images/services/embroidery-eagle-detail.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Detailed embroidered eagle design">
                             </div>
                         </div>
                         <div class="service-carousel__indicators">
@@ -1654,13 +1654,13 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              2. SCREEN PRINTING
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="screen-printing">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Screen Printing</h2>
                     <p class="service-hero__desc">
                         Screen printing is a technique where ink is applied to a substrate through a mesh screen
-                        that has been prepared with a stencil of the desired design. Each color in the design
+                        that has been prepared with a stencil of the desired design. Each colour in the design
                         requires a separate screen, and the ink is pushed through the mesh onto the material using
                         a squeegee. This method is widely used for producing vibrant and long-lasting prints on
                         textiles, posters, and other surfaces. It's particularly cost-effective for large orders
@@ -1671,22 +1671,22 @@
                     <div class="service-carousel" data-carousel="screen-printing">
                         <div class="service-carousel__track">
                             <div class="service-carousel__slide active">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.jpg" alt="Colorful printed t-shirts on conveyor belt in printing facility">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-conveyor-tshirts.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Colourful printed T-shirts on conveyor belt in printing facility">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-press-process.jpg" alt="Person using screen printing press">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-press-process.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-press-process-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-press-process.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Person using screen printing press">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.jpg" alt="Vibrant streetwear branding with bold graffiti inspired design">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-streetwear-graffiti.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Vibrant streetwear branding with bold graffiti inspired design">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-fashion-label.jpg" alt="Blue shirt label symbolizes luxury fashion industry">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-fashion-label.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-fashion-label-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-fashion-label.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Blue shirt label symbolises luxury fashion industry">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-label-detail.jpg" alt="Antique label on elegant silk dress design">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-label-detail.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-label-detail-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-label-detail.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Antique label on elegant silk dress design">
                             </div>
                             <div class="service-carousel__slide">
-                                <img src="brandedukv15-child/assets/images/services/screen-printing-blue-shirt.jpg" alt="Blue shirt with printed design">
+                                <img src="brandedukv15-child/assets/images/services/screen-printing-blue-shirt.webp" srcset="brandedukv15-child/assets/images/services/screen-printing-blue-shirt-800.webp 800w, brandedukv15-child/assets/images/services/screen-printing-blue-shirt.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" alt="Blue shirt with printed design">
                             </div>
                         </div>
                         <div class="service-carousel__indicators">
@@ -1774,7 +1774,7 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              3. HEAT TRANSFER PRINTING
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="heat-transfer">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Heat Transfer Printing</h2>
@@ -1782,14 +1782,14 @@
                         Heat transfer printing involves transferring designs from a special transfer paper onto a
                         substrate using heat and pressure. The design is first printed onto the transfer paper with
                         specific inks and then applied to the desired item using a heat press. This method allows
-                        for detailed and full-color images to be applied to various materials, including fabrics,
+                        for detailed and full-colour images to be applied to various materials, including fabrics,
                         ceramics, and metals. It's particularly popular for custom apparel and promotional items
                         due to its versatility and ability to produce high-quality images.
                     </p>
                 </div>
                 <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/heat-transfer.jpg"
-                         alt="Heat transfer printing machine applying design to garment">
+                    <img src="brandedukv15-child/assets/images/services/heat-transfer.webp" srcset="brandedukv15-child/assets/images/services/heat-transfer-800.webp 800w, brandedukv15-child/assets/images/services/heat-transfer.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async"
+                         alt="Heat press beside garments with transferred prints in a print studio">
                 </div>
             </div>
 
@@ -1866,22 +1866,22 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              4. DIRECT-TO-GARMENT (DTG)
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="dtg-printing">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Direct-to-Garment (DTG) Printing</h2>
                     <p class="service-hero__desc">
                         Direct-to-Garment printing, commonly known as DTG, is a process where a digital image is
-                        printed directly onto fabric using specialized inkjet technology. This method allows for
-                        high-resolution, full-color designs with intricate details to be printed without the need
+                        printed directly onto fabric using specialised inkjet technology. This method allows for
+                        high-resolution, full-colour designs with intricate details to be printed without the need
                         for screens or stencils. DTG is particularly suitable for small batch orders or one-off
                         custom designs, as it requires minimal setup. The inks used are typically water-based and
-                        absorbed by the fibers of the garment, resulting in a soft feel and durable print.
+                        absorbed by the fibres of the garment, resulting in a soft feel and durable print.
                     </p>
                 </div>
                 <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/dtg-printing.jpg"
-                         alt="Brother GTXpro DTG printing machine">
+                    <img src="brandedukv15-child/assets/images/services/dtg-printing.webp" srcset="brandedukv15-child/assets/images/services/dtg-printing-800.webp 800w, brandedukv15-child/assets/images/services/dtg-printing.webp 1600w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async"
+                         alt="Full-colour DTG printed T-shirts with garment printers in the studio">
                 </div>
             </div>
 
@@ -1958,23 +1958,19 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              5. FLEET LIVERY & WRAPS
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="fleet-livery">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Fleet Livery &amp; Wraps</h2>
                     <p class="service-hero__desc">
                         Fleet livery and wraps involve applying large vinyl graphics or decals to vehicles,
                         effectively turning them into mobile advertisements. This process can cover part or all
-                        of a vehicle's exterior and is customized to display a company's branding, including logos,
+                        of a vehicle's exterior and is customised to display a company's branding, including logos,
                         contact information, and promotional messages. Fleet wraps are a cost-effective marketing
                         strategy, offering high visibility and the potential to reach a broad audience as the
                         vehicles travel. Additionally, these wraps protect the vehicle's original paintwork and
                         can be removed or updated as needed.
                     </p>
-                </div>
-                <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/fleet-livery.jpg"
-                         alt="Saxon branded fleet vehicles with custom wraps">
                 </div>
             </div>
         </section>
@@ -1982,7 +1978,7 @@
         <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
              6. DIGITAL PRINTING
              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-        <section class="service-block">
+        <section class="service-block" id="digital-printing">
             <div class="service-hero">
                 <div class="service-hero__text">
                     <h2 class="service-hero__title">Digital Printing</h2>
@@ -1990,15 +1986,15 @@
                         Digital printing refers to the process of printing digital-based images directly onto various
                         media substrates. Unlike traditional printing methods, digital printing doesn't require
                         printing plates, making it suitable for short runs and on-demand printing. This method offers
-                        quick turnaround times and allows for easy customization, making it ideal for personalized
+                        quick turnaround times and allows for easy customisation, making it ideal for personalised
                         marketing materials, business cards, and custom textiles. The quality of digital printing has
                         improved significantly, offering sharp and vibrant images comparable to traditional printing
                         techniques.
                     </p>
                 </div>
                 <div class="service-hero__image">
-                    <img src="brandedukv15-child/assets/images/services/digital-printing.jpg"
-                         alt="Large format digital printer producing vibrant colorful print">
+                    <img src="brandedukv15-child/assets/images/services/digital-printing.webp" srcset="brandedukv15-child/assets/images/services/digital-printing-800.webp 800w, brandedukv15-child/assets/images/services/digital-printing.webp 882w" sizes="(min-width: 1400px) 700px, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async"
+                         alt="Wide-format digital printer producing a full-colour print beside branded garments">
                 </div>
             </div>
         </section>
@@ -2893,7 +2889,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ignore
     }
 
-    var mobileUrl = 'index-mobile.html?force=mobile';
+    var mobileUrl = 'mobile/services-mobile.html';
 
     function isMobileViewport() {
         if (window.matchMedia) {
@@ -2904,7 +2900,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function maybeRedirectToMobile() {
         if (!isMobileViewport()) return;
-        window.location.replace(mobileUrl);
+        window.location.replace(mobileUrl + window.location.hash);
     }
 
     // Run once (after layout) and on viewport changes

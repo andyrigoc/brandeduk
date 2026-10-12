@@ -59,6 +59,7 @@
       {
         title: "Customisation",
         links: [
+          ["Our Services", "/services"],
           ["Embroidery", "embroidery.html"],
           ["Screen Printing", "screen-printing.html"],
           ["DTF Printing", "dtf-printing.html"],
@@ -71,7 +72,7 @@
         title: "Help & Orders",
         links: [
           ["Track Your Order", "track-order.html"],
-          ["Delivery & Lead Times", "services.html"],
+          ["Delivery & Lead Times", "/terms-and-conditions#delivery"],
           ["Returns", "terms-and-conditions.html#returns"],
           ["Size Guides", "shop-pc.html"],
           ["FAQs", "home-pc.html#faq"],
