@@ -21,6 +21,8 @@
 
     var EASE = 0.07;
     var EPS = 0.0004;
+    var HOLD = 1;
+    var TURN = 1;
 
     var section = document.querySelector("[data-uniform-cube]");
     if (!section) return;
@@ -53,6 +55,7 @@
     }
 
     var steps = STOPS.length - 1;
+    var units = STOPS.length * HOLD + steps * TURN;
 
     faces.forEach(function (face, index) {
         var img = new Image();
@@ -107,19 +110,31 @@
         return Math.max(top - (window.innerHeight - section.offsetHeight), 1);
     }
 
+    function cubePos(p) {
+        var u = clamp(p, 0, 1) * units;
+        for (var i = 0; i < steps; i++) {
+            if (u <= HOLD) return i;
+            u -= HOLD;
+            if (u < TURN) return i + u / TURN;
+            u -= TURN;
+        }
+        return steps;
+    }
+
     function scrollToIndex(index) {
-        var p = clamp(index, 0, steps) / steps;
-        var y = section.offsetTop - headerH() + p * scrollSpan();
+        index = clamp(index, 0, steps);
+        var p = (index * (HOLD + TURN) + HOLD / 2) / units;
+        var sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
+        var y = sectionTop - headerH() + p * scrollSpan();
         window.scrollTo({ top: y, behavior: "auto" });
         kick();
     }
 
-    function faceIndex(p) {
-        return clamp(Math.floor(p * steps + 0.001), 0, steps);
+    function faceIndex(t) {
+        return clamp(Math.round(t), 0, steps);
     }
 
-    function updateCube(p) {
-        var t = p * steps;
+    function updateCube(t) {
         var i = Math.min(Math.floor(t), steps - 1);
         var f = t >= steps ? 1 : easeRemaining(t - i);
         var a = STOPS[i];
@@ -134,7 +149,7 @@
     function applyHud(p) {
         if (pct) pct.textContent = String(Math.round(p * 100)).padStart(3, "0") + "%";
         if (fill) fill.style.width = (p * 100) + "%";
-        var index = faceIndex(p);
+        var index = faceIndex(cubePos(p));
         if (index === lastFace) return;
         lastFace = index;
         if (nameEl) nameEl.textContent = NAMES[index];
@@ -157,7 +172,7 @@
             smooth = target;
         }
 
-        updateCube(smooth);
+        updateCube(cubePos(smooth));
         applyHud(smooth);
         applyPin();
 

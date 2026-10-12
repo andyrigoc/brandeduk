@@ -5,9 +5,9 @@
     --uc-ink: #10243b;
     --uc-header: var(--brandeduk-site-header-height, 220px);
     --uc-view: calc(100vh - var(--uc-header));
-    --uc-step: min(58vh, 520px);
+    --uc-unit: min(36vh, 330px);
     position: relative;
-    height: calc(var(--uc-view) + 5 * var(--uc-step));
+    height: calc(var(--uc-view) + 11 * var(--uc-unit));
     background: #fff;
     color: var(--uc-ink);
     font-family: "DM Mono", monospace;
