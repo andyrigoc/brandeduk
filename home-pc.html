@@ -2779,45 +2779,39 @@
             transition: opacity .2s ease, transform .2s ease;
         }
 
+        /* Open state is the JS-managed .is-active class; :hover is only a no-JS fallback,
+           because :hover follows strips sliding under a stationary cursor mid-animation. */
         @media (hover: hover) and (pointer: fine) and (min-width: 900px) {
-            .sbc-sectors > li:hover,
-            .sbc-sectors > li:focus-within {
+            .sbc-sectors > li.is-active,
+            .sbc-sectors:not(.sbc-js) > li:hover {
                 flex: 0 0 var(--sbc-open);
             }
-            .sbc-sectors:hover > li:focus-within:not(:hover) {
-                flex: 1 1 0;
-            }
-            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__img--full {
+            .sbc-sectors > li.is-active .sbc-sector__img--full,
+            .sbc-sectors:not(.sbc-js) > li:hover .sbc-sector__img--full {
                 opacity: 1;
                 transition: opacity .38s ease .04s;
             }
-            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__img--strip {
+            .sbc-sectors > li.is-active .sbc-sector__img--strip,
+            .sbc-sectors:not(.sbc-js) > li:hover .sbc-sector__img--strip {
                 opacity: 0;
                 transition: opacity .2s ease .3s;
             }
-            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__shade {
+            .sbc-sectors > li.is-active .sbc-sector__shade,
+            .sbc-sectors:not(.sbc-js) > li:hover .sbc-sector__shade {
                 opacity: 0;
                 transition: opacity .3s ease;
             }
-            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__label {
+            .sbc-sectors > li.is-active .sbc-sector__label,
+            .sbc-sectors:not(.sbc-js) > li:hover .sbc-sector__label {
                 opacity: 0;
                 transform: rotate(180deg) translateY(-14px);
                 transition: opacity .25s ease, transform .3s ease;
             }
-            .sbc-sectors > li:is(:hover, :focus-within) .sbc-sector__explore {
+            .sbc-sectors > li.is-active .sbc-sector__explore,
+            .sbc-sectors:not(.sbc-js) > li:hover .sbc-sector__explore {
                 opacity: 1;
                 transform: none;
                 transition: opacity .3s ease .25s, transform .3s ease .25s;
-            }
-            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__img--full,
-            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__explore {
-                opacity: 0;
-            }
-            .sbc-sectors:hover > li:focus-within:not(:hover) :is(.sbc-sector__img--strip, .sbc-sector__shade, .sbc-sector__label) {
-                opacity: 1;
-            }
-            .sbc-sectors:hover > li:focus-within:not(:hover) .sbc-sector__label {
-                transform: rotate(180deg);
             }
         }
 
@@ -2983,6 +2977,80 @@
         </ul>
       </div>
     </section>
+    <script>
+        (function () {
+            const list = document.querySelector('.shop-by-category .sbc-sectors');
+            if (!list) return;
+            const items = Array.from(list.children);
+            const INTENT_MS = 150;
+            let active = items.find((li) => li.classList.contains('is-active')) || null;
+            let pending = null;
+            let intentTimer = 0;
+            let lockUntil = 0;
+            let lastX = null;
+            let lastY = null;
+
+            const transitionMs = (li) => {
+                const s = getComputedStyle(li);
+                const dur = parseFloat(s.transitionDuration) || 0;
+                const delay = parseFloat(s.transitionDelay) || 0;
+                const unit = /ms\s*(,|$)/.test(s.transitionDuration) ? 1 : 1000;
+                return (dur + delay) * unit;
+            };
+
+            const cancelIntent = () => {
+                clearTimeout(intentTimer);
+                intentTimer = 0;
+                pending = null;
+            };
+
+            const activate = (li) => {
+                cancelIntent();
+                if (!li || li === active) return;
+                if (active) active.classList.remove('is-active');
+                li.classList.add('is-active');
+                active = li;
+                lockUntil = performance.now() + transitionMs(li);
+            };
+
+            list.classList.add('sbc-js');
+
+            // Document-level so lastX/lastY stay current; a pointermove at an unchanged
+            // position (synthetic, after layout shift or scroll) must not switch strips.
+            document.addEventListener('pointermove', (e) => {
+                const moved = e.clientX !== lastX || e.clientY !== lastY;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                if (!moved || e.pointerType === 'touch') return;
+
+                const li = e.target instanceof Element ? e.target.closest('.sbc-sectors > li') : null;
+                if (!li || li.parentElement !== list || li === active) {
+                    cancelIntent();
+                    return;
+                }
+                if (performance.now() < lockUntil) {
+                    cancelIntent();
+                    return;
+                }
+                if (li === pending) return;
+                cancelIntent();
+                pending = li;
+                intentTimer = setTimeout(() => {
+                    const target = pending;
+                    intentTimer = 0;
+                    pending = null;
+                    if (performance.now() < lockUntil) return;
+                    activate(target);
+                }, INTENT_MS);
+            }, { passive: true });
+
+            list.addEventListener('pointerleave', cancelIntent);
+            list.addEventListener('focusin', (e) => {
+                const li = e.target.closest('.sbc-sectors > li');
+                if (li && li.parentElement === list) activate(li);
+            });
+        })();
+    </script>
 
     <!-- HERO 2 - Get in Touch Neon Banner -->
     <section class="hero-banners-section">
